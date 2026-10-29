@@ -90,8 +90,8 @@ Schedule gate: if transfers or state reconstruction are unreliable, continue thi
 Deliverable: a networked departure, coal search, rescue, and escape using actual Duckz interactions.
 
 - [ ] Integrate train platform movement and STOP/GO lever with consistent shared state.
-- [ ] Add physical horn control and limit audio masking of voice/radio.
-- [ ] Add coal insertion, consumption, fuel gauge, and fuel exhaustion behavior.
+- [ ] Add physical horn control
+- [ ] Add coal insertion, consumption, fuel gauge, and fuel exhaustion behavior. coal should act the same as any item. it can be held, dropped, put into bag, if you drop, anyone else can pick it up.
 - [ ] Make fuel insertion authoritative/idempotent so one coal chunk cannot be counted twice.
 - [ ] Implement stable dropped cargo, including loaded bags, while moving, braking, and changing item ownership.
 - [ ] Add simple physical holders and full-size backpack hooks using existing interaction patterns.
@@ -101,6 +101,7 @@ Deliverable: a networked departure, coal search, rescue, and escape using actual
 - [ ] Implement one-hit down, existing flare behavior, and three-second proximity revive.
 - [ ] Decide crawling, repeated flare behavior, post-revive protection, and a minimum viable full-crew failure rule.
 - [ ] Confirm locomotion/flashlight/melee/backpack feel has not regressed.
+- [ ] Default run starts with 10 fuel already in the train, 2 bats, 2 bags, 2 walkie talkies, 2 helmets, 2 night vision googles, 2 flashlights
 
 Acceptance:
 - [ ] Eight players can collect coal, revive a teammate, board, and leave without developer intervention.
