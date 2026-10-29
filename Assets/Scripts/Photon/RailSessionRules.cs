@@ -7,7 +7,20 @@ public enum RailPhase { Compound, Staging, Departing, Running, Ending, Returning
 
 public static class RailSessionRules
 {
-    public const int Version = 3, CompoundCapacity = 12, CrewCapacity = 8, ReconnectMilliseconds = 120000;
+    public const int Version = 4, CompoundCapacity = 12, CrewCapacity = 8, ReconnectMilliseconds = 120000;
+    public const double ReturnSearchSeconds = 12, ReservationSeconds = 30;
+    public const string Reservations = "rails.reservations";
+    public static bool SearchExistingCompound(int crewSize) => crewSize >= 1 && crewSize <= 4;
+
+    // Persist leases separately from outbound platform transfers. Concurrent crews
+    // must not clear each other's reservations, including after master succession.
+    public static Hashtable ReservationLeases(string[] expected, Hashtable previous, double now)
+    {
+        var leases = new Hashtable();
+        foreach (string user in expected ?? Array.Empty<string>())
+            leases[user] = previous?[user] is double until ? until : now + ReservationSeconds;
+        return leases;
+    }
     public const double CountdownSeconds = 20;
     public const string Schema = "rails.schema", Kind = "rails.kind", Phase = "rails.phase", Revision = "rails.revision";
     public const string Run = "rails.run", Deadline = "rails.deadline", Roster = "rails.roster", Destination = "rails.destination";

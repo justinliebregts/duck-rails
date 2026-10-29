@@ -93,9 +93,8 @@ public static class RailLiveSmokeChecks
                     session.FinishRun(true); Next("Deliberately thrown cargo leaves the carriage"); break;
                 case 8:
                     if (PhotonSession.Kind != RailSessionRules.CompoundKind || !session.WorldReady) return;
-                    Require(PhotonNetwork.CurrentRoom.Name != sourceRoom, "Public return reused the source compound");
                     privateRoom = UnityEngine.Random.Range(70000, 79999).ToString(); session.RequestCreatePrivate(privateRoom);
-                    Next("Public success returns to a fresh compound"); break;
+                    Next("Public success returns to a compatible compound"); break;
                 case 9:
                     if (!PhotonSession.IsPrivate || !session.WorldReady) return;
                     Require(PhotonNetwork.IsMasterClient && PhotonSession.Phase == RailPhase.Staging, "Creator is not staging master");

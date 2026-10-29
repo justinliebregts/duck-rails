@@ -40,12 +40,14 @@ Deliverable: friends can form a crew, depart, join halfway through, see the same
 - First platform occupant starts twenty seconds. Entry/exit cannot reset a nonempty timer. Empty cancels; re-entry starts twenty seconds again.
 - Photon Master Client coordinates changes and passes responsibility on departure; initial private creator launches manually.
 - Authenticated identity; 120-second expedition reconnect reservation while the room remains alive; shared items persist without restoring duplicate disk-saved supplies.
-- Fresh public compound for group return, reserving crew capacity.
+- Public return after success or failure: crews of one to four connected players try an existing compatible compound with whole-crew reservations and bounded fallback to a fresh compound; crews of five to eight use a fresh compound. Keep one coordinated destination for the crew. Runtime implementation is present; multi-client acceptance remains pending.
 - All gameplay rooms use five-digit numeric codes; the private station joins public or private rooms by code. Automatic creation handles occupied codes without matching an unrelated crew.
 - Private staging/run/return retain the same room and code. Last connected player leaving destroys the room immediately.
 - DesktopPlayer is the current test target. Backend/Photon setup is reported complete; multiple actual clients are still required for network acceptance.
 
 ### Implementation and evidence
+Public return follow-up: `RailCrewReturn` keeps a temporary authenticated coordination connection while one gameplay client searches and reserves an existing compound. Search failure/timeout or coordinator loss selects a shared fresh allocation. Five-to-eight-player crews skip the search. Reservation cleanup uses retained per-user deadlines and a compare-and-swap update to preserve concurrent crews. Schema 4 separates this protocol from older clients. Local policy/lease checks and authenticated single-client return evidence are recorded in `week1-session.md`; the group acceptance boxes remain unchecked.
+
 Fuel consumption follow-up: motion and starting fuel are retained atomically in schema 3 room properties, with deterministic distance-based consumption and a zero-fuel stop. Runtime/editor compilation and six new local regression checks passed; two-client fuel agreement, leave/rejoin, and master-departure acceptance remain pending. Coal insertion is not implemented by this change.
 
 See `week1-session.md` for source paths, controls, validation results and pending multi-client evidence. Implemented work is kept separate from milestone acceptance; unchecked scenarios below remain unverified until exercised across real clients. Desktop follow-up adds the tagged Meta-account window from the referenced Classic commits, a Player2-configured Two Ducks scenario, a compact centered status banner and carriage-relative footsteps. Local regression checks passed; two-client sign-in remains pending the second saved account.
@@ -64,6 +66,7 @@ See `week1-session.md` for source paths, controls, validation results and pendin
 - [ ] Replicate actual moving-platform pose, sample fuel value, selected test block, one bat, and one loaded backpack.
 - [ ] Define current-state reconstruction instead of depending on historical events a newcomer did not receive.
 - [ ] Implement temporary success/failure controls and group return.
+- [ ] Extend public return for crews of one to four: coordinate an existing-compound search, reserve the whole crew, and fall back to a fresh compound within a bounded time. Keep fresh-compound return for crews of five to eight.
 - [ ] Handle departures during transfer, interrupted loading, and loss of coordinating client without an indefinite loading state.
 - [ ] Verify voice reconnects/routes correctly through the session changes.
 - [ ] Perform an early loose-item acceleration/braking experiment to expose a separate major risk.
@@ -78,6 +81,7 @@ See `week1-session.md` for source paths, controls, validation results and pendin
 - [ ] Reconnection does not duplicate the player's bag or supplies under the selected policy.
 - [ ] Coordinating-client departure produces the documented recovery behavior.
 - [ ] Crew returns together; private code remains usable while the room remains alive.
+- [ ] Public success and failure returns: crews of one and four enter an existing compound with sufficient unreserved capacity; insufficient capacity, simultaneous arrivals and search failure fall back without splitting the crew. Five-player crews use a fresh compound. Verify coordinator loss during search and transfer, and reservation cleanup.
 
 Schedule gate: if transfers or state reconstruction are unreliable, continue this milestone and update the release forecast. Do not build many scenes around a provisional lifecycle.
 
@@ -216,7 +220,7 @@ Reduce first:
 - Three stats and a few awards.
 - Existing cosmetics with minimal new art.
 - Simple final escape, no bespoke gate puzzle.
-- Fresh public return compound rather than searching/reserving existing rooms.
+- Keep public return matchmaking simple: one coordinated, bounded search for crews of one to four, then fresh-compound fallback; no elaborate room-ranking system.
 - Repeatable block template and validation rather than an elaborate generator/editor suite.
 
 If mandatory systems still do not meet their acceptance tests, extend the schedule. Do not relabel a known unreliable build as release-ready.

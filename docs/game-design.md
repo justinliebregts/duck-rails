@@ -160,7 +160,8 @@ Initial content proposal: four scavenging blocks, choose three per run, one fixe
 - Quackville is not used by Duck Rails. Do not preload its environment beneath Login or gameplay.
 - Public compounds hold twelve players; expeditions hold eight. Automatic placement selects the initial compound only.
 - Public runs take only the trigger occupants at countdown expiry. Emptying the trigger cancels the countdown; the next entrant starts a fresh twenty seconds.
-- Returning public crews enter a fresh compound together, with destination capacity reserved for that crew.
+- After either success or failure, returning public crews of one to four connected players first try to join an existing compatible public compound with space reserved for the whole crew. Use a bounded search and fall back to a fresh compound if no suitable destination can be secured. Crews of five to eight connected players return to a fresh compound together, with destination capacity reserved for that crew.
+- Returning crew members follow one coordinated destination; they do not independently matchmake into different compounds. The prototype now implements this policy with a temporary coordination room, server-side whole-crew reservations, and a shared fresh-compound fallback. Multi-client acceptance remains pending; see `week1-session.md`.
 
 ## Late joining and reconnection
 

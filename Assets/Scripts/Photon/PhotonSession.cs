@@ -14,6 +14,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     static readonly TypedLobby AutomaticLobby = new TypedLobby("rails-auto-v2", LobbyType.Default);
     bool? requestedTrainMoving;
     string requestedTrainRun;
+    RailCrewReturn crewReturn;
     public const string Region = "us", PlayScene = GameScenes.Compound;
     public const int MaxPlayers = 12, RoomCodeLength = 5, StreamRate = 20;
     public const string NoOpenRoomsMessage = "No open compounds", MissingRoomMessage = "No room with that code", RoomFullMessage = "Room is full";
@@ -29,7 +30,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public static bool OnTrain => RailSessionRules.IsOnTrain(Phase);
     public static T Get<T>(string key, T fallback) => PhotonNetwork.CurrentRoom?.CustomProperties[key] is T value ? value : fallback;
 
-    enum Request { None, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound
+    enum Request { None, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound, CrewSearch, CrewDestination, CrewFresh
 #if UNITY_EDITOR
         , EditorQuickStart
 #endif
@@ -50,6 +51,9 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public string RoomRequestMessage => Status;
     public string Status { get; private set; } = "Connecting...";
     public string LastError { get; private set; } = "";
+    public string CrewReturnDiagnostic => crewReturn?.Diagnostic ?? "No crew return";
+    public bool AwaitingCrewDestination => crewReturn != null && crewReturn.Active &&
+        Kind == RailSessionRules.CompoundKind && !crewReturn.InDestination;
     public bool WorldReady { get; private set; }
     public event Action RoomMembershipChanged, RoomRequestStarted;
     public event Action<string> RoomRequestFailed;
@@ -64,8 +68,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         gameObject.AddComponent<DuckPlayerColors>();
         gameObject.AddComponent<PhotonMasterHandoff>();
     }
-    void OnDestroy() { if (Instance == this) Instance = null; }
-    void OnApplicationQuit() => quitting = true;
+    void OnDestroy() { crewReturn?.Dispose(); if (Instance == this) Instance = null; }
+    void OnApplicationQuit() { quitting = true; crewReturn?.Dispose(); }
 
     public IEnumerator ConnectAndJoin(Action<string> status)
     {
@@ -90,7 +94,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
-        settings.AppVersion = source.AppVersion + "-duck-rails-session-v3";
+        settings.AppVersion = source.AppVersion + "-duck-rails-session-v4";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;
@@ -148,12 +152,13 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     void Begin(Request next, string room = null)
     {
         if (HasRoomRequest || quitting) return;
+        if (!IsCrewRequest(next)) { crewReturn?.Dispose(); crewReturn = null; }
         requestedTrainMoving = null;
         if (Kind == RailSessionRules.CompoundKind) previousCompound = PhotonNetwork.CurrentRoom.Name;
         LastError = ""; request = next; requestedRoom = room;
         allocationAttempt = 0;
-        allocation = next == Request.Transfer ? room : null;
-        if (next == Request.Transfer) requestedRoom = RailSessionRules.RoomCode(allocation);
+        allocation = next == Request.Transfer || next == Request.CrewFresh ? room : null;
+        if (allocation != null) requestedRoom = RailSessionRules.RoomCode(allocation);
         if (next == Request.Transfer) DuckzAnalytics.SessionEvent("transfer");
         WorldReady = false; MarkConnectPending(); RoomRequestStarted?.Invoke();
         PhotonHeldItems.DropLocalHands(); RoomObjectRecovery.Flush();
@@ -163,6 +168,25 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             if (!PhotonNetwork.LeaveRoom(false)) RequestFailed("Could not leave the current room.");
         }
         else Connect();
+    }
+    static bool IsCrewRequest(Request value) => value == Request.CrewSearch || value == Request.CrewDestination || value == Request.CrewFresh;
+    public void BeginCrewSearch(string[] users)
+    {
+        transferUsers = users;
+        Begin(Request.CrewSearch);
+    }
+    public void BeginCrewDestination(bool fresh, string destination, string[] users)
+    {
+        transferUsers = users; transferKind = RailSessionRules.CompoundKind; transferRun = "";
+        Begin(fresh ? Request.CrewFresh : Request.CrewDestination, destination);
+    }
+    public void CrewReturnStopped(bool arrived)
+    {
+        if (!arrived)
+        {
+            FailInput("Crew return could not finish. Check your connection, then use the room code to regroup or choose Leave.");
+            SetStatus(LastError);
+        }
     }
     public override void OnConnectedToMaster()
     {
@@ -181,6 +205,20 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         bool queued = false;
         switch (request)
         {
+            case Request.CrewSearch:
+                Started("Reserving a compound for your crew...");
+                queued = PhotonNetwork.JoinRandomRoom(new Hashtable { [RailSessionRules.Kind] = RailSessionRules.CompoundKind,
+                    [RailSessionRules.Schema] = RailSessionRules.Version }, MaxPlayers,
+                    MatchmakingMode.FillRoom, AutomaticLobby, null, transferUsers);
+                break;
+            case Request.CrewDestination:
+                Started("Joining your crew's compound...");
+                queued = PhotonNetwork.JoinRoom(requestedRoom);
+                break;
+            case Request.CrewFresh:
+                Started("Creating a compound for your crew...");
+                queued = JoinAllocatedRoom(RailSessionRules.CompoundKind, "", transferUsers);
+                break;
 #if UNITY_EDITOR
             case Request.EditorQuickStart:
                 Started("Joining the Two Ducks test expedition...");
@@ -236,7 +274,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             (byte)options.MaxPlayers, MatchmakingMode.FillRoom, AutomaticLobby, roomName: requestedRoom,
             roomOptions: options, expectedUsers: users);
     }
-    bool IsAllocatedRequest => request == Request.Transfer
+    bool IsAllocatedRequest => request == Request.Transfer || request == Request.CrewFresh
 #if UNITY_EDITOR
         || request == Request.EditorQuickStart
 #endif
@@ -256,12 +294,14 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public override void OnJoinRandomFailed(short code, string message)
     {
         if (IsAllocatedRequest) { OnCreateRoomFailed(code, message); return; }
+        if (IsCrewRequest(request)) { CrewRequestFailed(); return; }
         operationPending = false; allocation = null; allocationAttempt = 0; request = Request.FreshCompound; ExecuteRequest();
     }
     public override void OnCreateRoomFailed(short code, string message)
     {
         operationPending = false;
         if ((request == Request.FreshCompound || IsAllocatedRequest) && code == ErrorCode.GameIdAlreadyExists && RetryAllocation()) return;
+        if (IsCrewRequest(request)) { CrewRequestFailed(); return; }
         RequestFailed(request == Request.CreatePrivate && code == ErrorCode.GameIdAlreadyExists
             ? "That code is occupied. Choose another code or use Join." : "Could not create the room. Please retry.");
     }
@@ -269,6 +309,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         operationPending = false;
         if (IsAllocatedRequest && code == ErrorCode.GameIdAlreadyExists && RetryAllocation()) return;
+        if (IsCrewRequest(request)) { CrewRequestFailed(); return; }
         if (request == Request.ReturnToCompound) { request = Request.Random; ExecuteRequest(); return; }
         RequestFailed(code == ErrorCode.GameFull ? "Room is full (including reserved reconnect slots)."
             : code == ErrorCode.GameClosed ? "This expedition is ending. Join after the crew returns."
@@ -277,6 +318,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     void RequestFailed(string error)
     {
+        if (IsCrewRequest(request)) { CrewRequestFailed(); return; }
         operationPending = false; FailInput(error); RecoveringConnection = false; resumeRoom = null;
         if (PhotonNetwork.InRoom)
         {
@@ -286,24 +328,34 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         requestedRoom = previousCompound; retryAt = Time.realtimeSinceStartupAsDouble + 1;
         SetStatus(error + " Returning to a compound...");
     }
+    void CrewRequestFailed()
+    {
+        operationPending = false; request = Request.None; leaving = false;
+        crewReturn?.JoinFailed();
+        SetStatus("Securing a shared fallback compound...");
+    }
     public override void OnJoinedRoom()
     {
         operationPending = false;
-        bool allocatedRequest = request == Request.Transfer;
+        bool crewRequest = IsCrewRequest(request);
+        bool allocatedRequest = request == Request.Transfer || request == Request.CrewFresh;
 #if UNITY_EDITOR
         allocatedRequest |= request == Request.EditorQuickStart;
 #endif
         // Validate the crew token before enabling world loading or publishing readiness.
         if (allocatedRequest && (!IsRailsRoom || Get(RailSessionRules.Allocation, "") != allocation))
         {
+            if (crewRequest) { CrewRequestFailed(); return; }
             if (RetryAllocation()) return;
             request = Request.Random; leaving = true;
             FailInput("Could not allocate a room code. Please retry.");
             Started(LastError); PhotonNetwork.LeaveRoom(false); return;
         }
         if (!IsRailsRoom || !RailSessionRules.IsCode(PhotonNetwork.CurrentRoom.Name) ||
+            (crewRequest && Kind != RailSessionRules.CompoundKind) ||
             (request == Request.CreatePrivate && !IsPrivate))
         {
+            if (crewRequest) { CrewRequestFailed(); return; }
             FailInput("Incompatible room. Use the same Duck Rails build.");
             request = Request.Random; leaving = true; Started(LastError); PhotonNetwork.LeaveRoom(false); return;
         }
@@ -316,6 +368,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         PlayerProps.PushCosmetics(); RoomMembershipChanged?.Invoke();
         if (!GameScenes.IsLoaded(PlayScene) && !loadingScene) StartCoroutine(LoadCompound());
         else SetStatus("Loading current world state...");
+        if (crewRequest) crewReturn?.JoinedCompound();
     }
     IEnumerator LoadCompound()
     {
@@ -327,7 +380,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public void MarkWorldReady()
     {
-        if (!IsRailsRoom || HasRoomRequest) return;
+        if (!IsRailsRoom || HasRoomRequest || AwaitingCrewDestination) return;
         if (!WorldReady) DuckzAnalytics.SessionEvent("world_ready");
         WorldReady = true; ClearConnectPending(); SetStatus("Ready");
         string token = RunId + ":" + Phase;
@@ -440,6 +493,13 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         string[] users = Get(RailSessionRules.TransferUsers, Array.Empty<string>());
         if (!users.Contains(PhotonNetwork.LocalPlayer.UserId)) return;
         followedTransfer = destination;
+        if (destination.StartsWith("return-", StringComparison.Ordinal) && Kind == RailSessionRules.ExpeditionKind)
+        {
+            crewReturn?.Dispose();
+            crewReturn = new RailCrewReturn(this, settings, destination, users);
+            SetStatus("Keeping your crew together while finding a compound...");
+            return;
+        }
         transferKind = Kind == RailSessionRules.CompoundKind ? RailSessionRules.ExpeditionKind : RailSessionRules.CompoundKind;
         transferRun = transferKind == RailSessionRules.ExpeditionKind ? destination : ""; transferUsers = users;
         Begin(Request.Transfer, destination);
@@ -451,7 +511,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         var room = PhotonNetwork.CurrentRoom;
         bool shouldOpen = Phase != RailPhase.Ending && Phase != RailPhase.Returning;
         if (room.IsOpen != shouldOpen) room.IsOpen = shouldOpen;
-        if (room.ExpectedUsers != null && room.ExpectedUsers.Length > 0 && now > Get(RailSessionRules.TransferUntil, 0d)) room.ClearExpectedUsers();
+        TickReservations(room, now);
         if (Kind == RailSessionRules.CompoundKind)
         {
             if (Get(RailSessionRules.Destination, "").Length > 0)
@@ -493,9 +553,29 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
                 Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Staging, [RailSessionRules.Run] = "", [RailSessionRules.Cargo] = Array.Empty<int>() });
             }
             else if (Get(RailSessionRules.Destination, "").Length == 0)
-                Commit(new Hashtable { [RailSessionRules.Destination] = "compound-" + Guid.NewGuid().ToString("N"),
-                    [RailSessionRules.TransferUsers] = room.Players.Values.Where(p => !p.IsInactive).Select(p => p.UserId).ToArray(), [RailSessionRules.TransferUntil] = now + 30d });
+                Commit(new Hashtable { [RailSessionRules.Destination] = "return-" + Guid.NewGuid().ToString("N"),
+                    [RailSessionRules.TransferUsers] = room.Players.Values.Where(p => !p.IsInactive).Select(p => p.UserId).ToArray(), [RailSessionRules.TransferUntil] = now + 90d });
         }
+    }
+    void TickReservations(Room room, double now)
+    {
+        string[] expected = room.ExpectedUsers ?? Array.Empty<string>();
+        var old = Get(RailSessionRules.Reservations, new Hashtable());
+        var leases = RailSessionRules.ReservationLeases(expected, old, now);
+        string[] keep = expected.Where(user => (double)leases[user] > now).ToArray();
+        foreach (string user in expected.Except(keep)) leases.Remove(user);
+        if (old.Count == leases.Count && keep.Length == expected.Length && expected.All(user => old.ContainsKey(user))) return;
+        // Include the expected-user CAS in the same server operation so a newly
+        // arriving crew cannot have its reservations erased by stale cleanup.
+        // Room.SetCustomProperties strips byte keys; use the same SetProperties
+        // wire operation as the installed SDK's protected room-property helper.
+        PhotonNetwork.NetworkingClient.LoadBalancingPeer.SendOperation(OperationCode.SetProperties,
+            new System.Collections.Generic.Dictionary<byte, object>
+            {
+                [ParameterCode.Properties] = new Hashtable { [GamePropertyKey.ExpectedUsers] = keep, [RailSessionRules.Reservations] = leases },
+                [ParameterCode.ExpectedValues] = new Hashtable { [GamePropertyKey.ExpectedUsers] = expected },
+                [ParameterCode.Broadcast] = true
+            }, ExitGames.Client.Photon.SendOptions.SendReliable);
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
@@ -503,6 +583,13 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (quitting) return;
         operationPending = false; WorldReady = false;
         DuckzAnalytics.SessionDisconnected(cause.ToString());
+        if (crewReturn != null && !crewReturn.Finished)
+        {
+            joinedRoom = null; request = Request.None; leaving = false;
+            RecoveringConnection = true;
+            if (crewReturn.Active) crewReturn.JoinFailed();
+            RoomMembershipChanged?.Invoke(); return;
+        }
         if (!string.IsNullOrEmpty(joinedRoom) && !leaving)
         {
             resumeRoom = joinedRoom; resumeUntil = Time.realtimeSinceStartupAsDouble + 120;
@@ -520,6 +607,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     void Update()
     {
         if (!initialized || quitting) return;
+        crewReturn?.Tick();
         FlushTrainControl();
         double now = Time.realtimeSinceStartupAsDouble;
         if (operationPending && now > operationUntil && !loadingScene)

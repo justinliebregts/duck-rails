@@ -37,6 +37,19 @@ public static class RailSessionChecks
         Check(publicRoom.MaxPlayers == 12 && publicRoom.IsVisible && publicRoom.PlayerTtl == 0, "Public compounds: twelve players, discoverable, no inactive shoppers");
         Check(privateRoom.MaxPlayers == 8 && !privateRoom.IsVisible && privateRoom.IsOpen, "Private rooms: eight players, hidden, code joinable");
         Check(privateRoom.PlayerTtl == 120000 && privateRoom.EmptyRoomTtl == 0, "120-second reconnect slots; empty rooms close immediately");
+        Check(Enumerable.Range(1, 4).All(RailSessionRules.SearchExistingCompound), "One through four returning players search existing compounds");
+        Check(!RailSessionRules.SearchExistingCompound(0) && Enumerable.Range(5, 4).All(n => !RailSessionRules.SearchExistingCompound(n)),
+            "Five through eight returning players skip random matchmaking");
+        var leases = RailSessionRules.ReservationLeases(new[] { "crew-a", "crew-b" }, null, 100d);
+        Check((double)leases["crew-a"] == 130d && (double)leases["crew-b"] == 130d, "Missing reservation leases receive thirty seconds");
+        var resumed = RailSessionRules.ReservationLeases(new[] { "crew-a", "crew-b", "new-crew" }, leases, 120d);
+        Check((double)resumed["crew-a"] == 130d && (double)resumed["new-crew"] == 150d,
+            "Master succession preserves deadlines while concurrent arrivals receive their own lease");
+        var remaining = RailSessionRules.ReservationLeases(new[] { "new-crew" }, resumed, 131d);
+        Check(remaining.Count == 1 && (double)remaining["new-crew"] == 150d,
+            "Removing an expired crew does not shorten another crew's reservation");
+        Check(RailSessionRules.ReservationLeases(Array.Empty<string>(), remaining, 151d).Count == 0,
+            "Consumed reservations remove obsolete lease metadata");
         Check(RailSessionRules.CanTransition(RailPhase.Staging, RailPhase.Departing) && !RailSessionRules.CanTransition(RailPhase.Staging, RailPhase.Ending), "Invalid phase shortcuts rejected");
         Check(new[] { RailPhase.Departing, RailPhase.Running, RailPhase.Ending, RailPhase.Returning }.All(RailSessionRules.IsOnTrain),
             "Crew stays aboard through ending and returning instead of spawning in a temporary compound");

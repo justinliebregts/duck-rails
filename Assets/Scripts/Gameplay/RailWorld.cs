@@ -49,7 +49,7 @@ public sealed class RailWorld : MonoBehaviour
             Cursor.visible = menu;
         }
         DesktopPlayer.SuppressCursorCapture = menu || !session.WorldReady;
-        if (!PhotonSession.IsRailsRoom || session.HasRoomRequest) { positioned = false; return; }
+        if (!PhotonSession.IsRailsRoom || session.HasRoomRequest || session.AwaitingCrewDestination) { positioned = false; return; }
         string room = PhotonNetwork.CurrentRoom.Name, run = PhotonSession.RunId;
         bool aboard = PhotonSession.OnTrain;
         if (room != presentedRoom || run != presentedRun || aboard != presentedOnTrain)
