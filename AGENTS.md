@@ -1,6 +1,13 @@
 # Duck Rails project guidance
 
-Read `docs/game-design.md` and `docs/execution-plan.md` before planning or implementing features.
+## Defaults for every chat
+- Read and follow this `AGENTS.md` before starting project work; the user should not need to repeat these instructions.
+- Read `docs/game-design.md` and `docs/execution-plan.md` before planning or implementing features. For bugs in the current prototype, also read `docs/week1-session.md` and any relevant setup document.
+- Proactively use Unity MCP whenever it helps inspect or edit scenes/prefabs, read Console errors, refresh/compile scripts, or verify behavior in Play Mode. Do not wait for the user to request MCP.
+- Prefer direct file edits and command-line tools for code/search when they are simpler; choose the most efficient appropriate tool for each step.
+- Before operating Unity, verify that MCP targets this Duck Rails project. Other Unity projects may be open; leave their editors and files alone unless the user asks otherwise.
+- If Unity MCP tools are not exposed, check the existing `unity_duck_rails` relay configuration before considering new setup. If MCP remains unavailable, continue useful file/CLI work and clearly state any editor validation that could not be completed.
+- Keep verified behavior, known issues, and setup instructions in the repository documentation so a new chat can continue without the previous conversation.
 
 ## Project context
 - Cooperative VR horror-comedy: up to eight cartoon ducks scavenge coal during a modern nighttime train journey and escape into dawn.
