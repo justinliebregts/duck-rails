@@ -27,7 +27,7 @@ Ported the tagged Meta test-user setup from Gun Raiders Classic commits `981f7aa
 
 1. Keep the main editor's account in **Meta > Platform > Edit Settings**, with standalone test-user authentication enabled.
 2. Open **Duck Rails > Multiplayer Play Mode Users** in the main editor. Enter `Player2`, the second Meta test user's email/password, then choose **Sign in and save**.
-3. Use the existing **Two Ducks** scenario in **Window > Play Mode > Scenarios**. Its second editor now has the `Player2` tag, and both editors start in Login.
+3. Use the existing **Two Ducks** scenario in **Window > Play Mode > Scenarios**. Its second editor has the `Player2` tag, and both editors start in Login. With **Duck Rails > Two Ducks Quick Start** checked (the default), both join the same test expedition automatically after authentication. Uncheck it before Play to test normal compound boarding. Keep the main editor's `RailsQuickStart` tag and the second editor's `Player2` tag.
 4. Restart additional editors after saving/changing accounts. The tag must exactly match, including case. Each concurrent player must use a different account.
 
 The window saves access tokens and email in local, project-scoped EditorPrefs, not tracked assets; it does not save the password. Virtual editors resolve the main project's preference key, then apply the selected account before Meta SDK initialization. Main-editor credentials are left alone. Missing or ambiguous account tags produce actionable errors rather than selecting an arbitrary or fake user. Credentials saved in the Classic project are not imported automatically.

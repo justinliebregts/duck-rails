@@ -25,7 +25,11 @@ public class PhotonSession : MonoBehaviourPunCallbacks
     public static bool OnTrain => Phase == RailPhase.Departing || Phase == RailPhase.Running || Phase == RailPhase.Ending;
     public static T Get<T>(string key, T fallback) => PhotonNetwork.CurrentRoom?.CustomProperties[key] is T value ? value : fallback;
 
-    enum Request { None, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound }
+    enum Request { None, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound
+#if UNITY_EDITOR
+        , EditorQuickStart
+#endif
+    }
     Request request;
     string requestedRoom, previousCompound, resumeRoom, transferKind, transferRun, joinedRoom, followedTransfer;
     string[] transferUsers = Array.Empty<string>();
@@ -64,6 +68,13 @@ public class PhotonSession : MonoBehaviourPunCallbacks
         if (!initialized)
         {
             initialized = true; request = Request.Random;
+#if UNITY_EDITOR
+            if (RailEditorQuickStart.TryGetRoom(out string editorRoom))
+            {
+                request = Request.EditorQuickStart;
+                requestedRoom = editorRoom;
+            }
+#endif
             MarkConnectPending(); Connect();
         }
         while (!WorldReady) yield return null;
@@ -159,6 +170,15 @@ public class PhotonSession : MonoBehaviourPunCallbacks
         bool queued = false;
         switch (request)
         {
+#if UNITY_EDITOR
+            case Request.EditorQuickStart:
+                Started("Joining the Two Ducks test expedition...");
+                // Either editor can authenticate first. Photon arbitrates creation;
+                // slower clients use the existing late-join/world-ready path.
+                queued = PhotonNetwork.JoinOrCreateRoom(requestedRoom,
+                    RailSessionRules.Options(RailSessionRules.ExpeditionKind, Guid.NewGuid().ToString("N")), TypedLobby.Default);
+                break;
+#endif
             case Request.Random:
                 Started("Finding a public compound...");
                 queued = PhotonNetwork.JoinRandomRoom(new Hashtable { [RailSessionRules.Kind] = RailSessionRules.CompoundKind, [RailSessionRules.Schema] = RailSessionRules.Version }, MaxPlayers);

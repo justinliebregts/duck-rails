@@ -48,6 +48,8 @@ Deliverable: friends can form a crew, depart, join halfway through, see the same
 See `week1-session.md` for source paths, controls, validation results and pending multi-client evidence. Implemented work is kept separate from milestone acceptance; unchecked scenarios below remain unverified until exercised across real clients. Desktop follow-up adds the tagged Meta-account window from the referenced Classic commits, a Player2-configured Two Ducks scenario, a compact centered status banner and carriage-relative footsteps. Local regression checks passed; two-client sign-in remains pending the second saved account.
 
 ### Work
+
+- Editor testing convenience implemented: **Two Ducks Quick Start** routes the Two Ducks editors directly into one hidden expedition after normal authentication. Main-editor selection now reads the active scenario configuration rather than its unreliable runtime tags. Six regression checks and the runtime/editor build passed; live main-editor quick-start entry is verified. Justin confirmed the combined two-client launch works. Live disabled-toggle behavior still requires verification. This does not change production boarding requirements or satisfy the acceptance scenarios below.
 - [ ] Define session phases: compound/staging, departing, running, ending, returning. Define valid transitions and who can request/commit them.
 - [ ] Give each expedition a run identifier so completion and transfers can be deduplicated.
 - [ ] Build a gray-box public compound and occupancy/countdown platform.
