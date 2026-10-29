@@ -14,7 +14,7 @@ In Compound: WASD/mouse to move/look, Space to jump, left mouse to grip, Tab to 
 
 Walk to the private terminal on the left, press Tab, enter five digits, and choose Create or Join. Create never silently joins an occupied code. In private staging, the current Master Client can Start expedition. Anyone can join its code while running if capacity (including reconnect reservations) allows.
 
-The test carriage contains a loose bat and a loaded backpack. The master can use Tab controls to GO, STOP, simulate success or failure, and return the crew. The inherited E-to-spawn-bats debug shortcut is disabled in Rails rooms. Private return preserves the room/code; public return creates a fresh compound. Leaving the last connected player closes a private room immediately.
+The test carriage contains a loose bat and a loaded backpack. Any ready crew member can use Tab controls to GO or STOP during a running expedition. Non-master requests are sent reliably to the current master, which validates the sender's readiness and run ID and commits shared train motion. The latest request waits through an in-flight room update. Simulating success or failure and returning the crew remain master-only controls. The inherited E-to-spawn-bats debug shortcut is disabled in Rails rooms. Private return preserves the room/code; public return creates a fresh compound. Leaving the last connected player closes a private room immediately.
 
 ## Source and state
 
@@ -33,6 +33,7 @@ Private creators start as Master Client. Desktop focus changes do not move autho
 ## Validation
 
 - Quick-start main-editor fix: the initial implementation depended on `CurrentPlayer.Tags` and the user observed only Player2 entering the expedition. MCP reproduced empty main-editor tags with Two Ducks selected and quick-start eligibility false. Reading the selected scenario's serialized main tag changes eligibility to true in that same editor. All six `RailQuickStartChecks` passed through MCP (empty/stale main tags, other scenarios, Player2, other additional editors and disabled toggle); runtime/editor C# build passed with zero errors and 428 existing warnings. A real authenticated main-editor Play Mode run then entered the expected quick-start room, reached `Running` with `WorldReady` and `OnTrain` true, and activated the expedition environment. That validation used one client and was stopped afterward. Justin subsequently confirmed that the corrected Two Ducks launch works with both editors. This verifies the shortcut, not the remaining Week 1 network acceptance scenarios.
+- Shared Tab GO/STOP follow-up: runtime/editor C# build passed with zero errors (428 existing warnings), and `RailSessionChecks.Run` completed successfully through Unity MCP. Justin confirmed the non-master control issue is fixed. Detailed stress and recovery scenarios remain pending below.
 - Unity compiled and executed scene authoring through the installed Unity MCP relay.
 - Runtime and editor C# builds passed with zero errors: `dotnet build Assembly-CSharp-Editor.csproj -p:LangVersion=9.0 -v:q`. Existing warnings remain. Pin C# 9 to match Unity rather than the installed SDK latest language overload rules.
 - All 17 session regression checks passed in Unity.
@@ -47,6 +48,8 @@ Private creators start as Master Client. Desktop focus changes do not move autho
 One final validation attempt timed out during a fresh private launch and returned to staging. A manual retry, a subsequent full fifteen-stage smoke pass, and ten consecutive fresh private launches all succeeded. The cause is unresolved; do not treat those retries as a fix. Timeout diagnostics now include phase, readiness, revision, run/seed, cargo manifest and editor pause state. Reproduce and resolve this before signing off Week 1.
 
 ## Pending acceptance
+
+Shared Tab GO/STOP follow-up: record two-client acceleration/braking evidence, including rapid GO then STOP while a room update is pending. Verify a late joiner can control it after loading, and control still works after master departure. Requests target the current master and are not cached; a click during master disconnection may need repeating. Justin's confirmation of the fix does not establish these stress and recovery scenarios.
 
 All Week 1 multi-client acceptance boxes remain unchecked. Exercise seven departing/one remaining, simultaneous code creation, live late entry with moving carriage and changed bag contents, ninth-player rejection, network-loss reconnect, owner/master loss while carrying cargo, voice after transfers, private code lifetime and repeated group returns. Run sustained acceleration/braking, drop/grab/handoff and deliberate overboard trials. Record client count, network conditions and failures. Single-client Play Mode and deterministic checks cannot establish these outcomes.
 

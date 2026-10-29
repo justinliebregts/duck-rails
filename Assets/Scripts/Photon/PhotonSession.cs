@@ -8,8 +8,11 @@ using UnityEngine.SceneManagement;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 /// <summary>Authenticated connection, crew transfers and server-retained session state.</summary>
-public class PhotonSession : MonoBehaviourPunCallbacks
+public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
 {
+    const byte TrainControlEvent = 107;
+    bool? requestedTrainMoving;
+    string requestedTrainRun;
     public const string Region = "us", PlayScene = GameScenes.Compound;
     public const int MaxPlayers = 12, RoomCodeLength = 5, StreamRate = 20;
     public const string NoOpenRoomsMessage = "No open compounds", MissingRoomMessage = "No private room with that code", RoomFullMessage = "Room is full";
@@ -141,6 +144,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks
     void Begin(Request next, string room = null)
     {
         if (HasRoomRequest || quitting) return;
+        requestedTrainMoving = null;
         if (Kind == RailSessionRules.CompoundKind) previousCompound = PhotonNetwork.CurrentRoom.Name;
         LastError = ""; request = next; requestedRoom = room;
         if (next == Request.Transfer) DuckzAnalytics.SessionEvent("transfer");
@@ -307,10 +311,46 @@ public class PhotonSession : MonoBehaviourPunCallbacks
     }
     public void SetTrainMoving(bool moving)
     {
-        if (Phase != RailPhase.Running || !PhotonNetwork.IsMasterClient) return;
+        if (!IsRailsRoom || Phase != RailPhase.Running || !WorldReady || HasRoomRequest) return;
+        if (PhotonNetwork.IsMasterClient) QueueTrainControl(RunId, moving);
+        else PhotonNetwork.RaiseEvent(TrainControlEvent, new object[] { RunId, moving },
+            new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, ExitGames.Client.Photon.SendOptions.SendReliable);
+    }
+    public void OnEvent(ExitGames.Client.Photon.EventData photonEvent)
+    {
+        if (photonEvent.Code != TrainControlEvent || !PhotonNetwork.IsMasterClient || !IsRailsRoom ||
+            Phase != RailPhase.Running || HasRoomRequest) return;
+        var sender = PhotonNetwork.CurrentRoom.GetPlayer(photonEvent.Sender);
+        if (sender == null || sender.IsInactive ||
+            !(sender.CustomProperties[RailSessionRules.Ready] is string ready) || ready != RunId + ":" + RailPhase.Running) return;
+        if (!(photonEvent.CustomData is object[] data) || data.Length != 2 ||
+            !(data[0] is string run) || run != RunId || !(data[1] is bool moving)) return;
+        QueueTrainControl(run, moving);
+    }
+    void QueueTrainControl(string run, bool moving)
+    {
+        requestedTrainRun = run;
+        requestedTrainMoving = moving;
+        FlushTrainControl();
+    }
+    void FlushTrainControl()
+    {
+        if (!requestedTrainMoving.HasValue) return;
+        if (!IsRailsRoom || !PhotonNetwork.IsMasterClient || HasRoomRequest ||
+            Phase != RailPhase.Running || requestedTrainRun != RunId)
+        { requestedTrainMoving = null; return; }
+        // Keep the latest request until observed in room state. Another commit may
+        // be in flight, including an earlier GO followed immediately by STOP.
+        if (!WorldReady || (pendingRevision >= 0 && Time.realtimeSinceStartupAsDouble - lastCommit < 1)) return;
+        float target = requestedTrainMoving.Value ? 4f : 0f;
         var command = Get(RailSessionRules.Motion, new object[] { PhotonNetwork.Time, 0f, 0f, 0f });
+        if (command.Length == 4 && command[3] is float currentTarget && currentTarget == target)
+        {
+            if (pendingRevision < 0) requestedTrainMoving = null;
+            return;
+        }
         RailSessionRules.EvaluateMotion(command, PhotonNetwork.Time, out float z, out float speed);
-        Commit(new Hashtable { [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, z, speed, moving ? 4f : 0f } });
+        Commit(new Hashtable { [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, z, speed, target } });
     }
     public override void OnRoomPropertiesUpdate(Hashtable changed)
     {
@@ -322,6 +362,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks
     }
     public override void OnMasterClientSwitched(Player master)
     {
+        requestedTrainMoving = null;
         pendingRevision = -1; nextAuthorityTick = 0;
         if (master.IsLocal) DuckzAnalytics.SessionEvent("master_changed");
     }
@@ -392,6 +433,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
+        requestedTrainMoving = null;
         if (quitting) return;
         operationPending = false; WorldReady = false;
         DuckzAnalytics.SessionDisconnected(cause.ToString());
@@ -412,6 +454,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks
     void Update()
     {
         if (!initialized || quitting) return;
+        FlushTrainControl();
         double now = Time.realtimeSinceStartupAsDouble;
         if (operationPending && now > operationUntil && !loadingScene)
         { operationPending = false; PhotonNetwork.Disconnect(); RetryConnection("Connection timed out."); }
