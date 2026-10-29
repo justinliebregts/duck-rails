@@ -11,11 +11,12 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     const byte TrainControlEvent = 107;
+    static readonly TypedLobby AutomaticLobby = new TypedLobby("rails-auto-v2", LobbyType.Default);
     bool? requestedTrainMoving;
     string requestedTrainRun;
     public const string Region = "us", PlayScene = GameScenes.Compound;
     public const int MaxPlayers = 12, RoomCodeLength = 5, StreamRate = 20;
-    public const string NoOpenRoomsMessage = "No open compounds", MissingRoomMessage = "No private room with that code", RoomFullMessage = "Room is full";
+    public const string NoOpenRoomsMessage = "No open compounds", MissingRoomMessage = "No room with that code", RoomFullMessage = "Room is full";
     public static PhotonSession Instance { get; private set; }
     public static bool ConnectPending { get; private set; }
     public static void MarkConnectPending() => ConnectPending = true;
@@ -36,6 +37,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     Request request;
     string requestedRoom, previousCompound, resumeRoom, transferKind, transferRun, joinedRoom, followedTransfer;
     string[] transferUsers = Array.Empty<string>();
+    int allocationAttempt;
+    string allocation;
     AppSettings settings;
     Action<string> loginStatus;
     bool operationPending, loadingScene, quitting, initialized, leaving;
@@ -75,7 +78,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             if (RailEditorQuickStart.TryGetRoom(out string editorRoom))
             {
                 request = Request.EditorQuickStart;
-                requestedRoom = editorRoom;
+                allocation = editorRoom;
+                requestedRoom = RailSessionRules.RoomCode(allocation);
             }
 #endif
             MarkConnectPending(); Connect();
@@ -86,7 +90,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
-        settings.AppVersion = source.AppVersion + "-duck-rails-session-v1";
+        settings.AppVersion = source.AppVersion + "-duck-rails-session-v2";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;
@@ -147,6 +151,9 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         requestedTrainMoving = null;
         if (Kind == RailSessionRules.CompoundKind) previousCompound = PhotonNetwork.CurrentRoom.Name;
         LastError = ""; request = next; requestedRoom = room;
+        allocationAttempt = 0;
+        allocation = next == Request.Transfer ? room : null;
+        if (next == Request.Transfer) requestedRoom = RailSessionRules.RoomCode(allocation);
         if (next == Request.Transfer) DuckzAnalytics.SessionEvent("transfer");
         WorldReady = false; MarkConnectPending(); RoomRequestStarted?.Invoke();
         PhotonHeldItems.DropLocalHands(); RoomObjectRecovery.Flush();
@@ -179,17 +186,19 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
                 Started("Joining the Two Ducks test expedition...");
                 // Either editor can authenticate first. Photon arbitrates creation;
                 // slower clients use the existing late-join/world-ready path.
-                queued = PhotonNetwork.JoinOrCreateRoom(requestedRoom,
-                    RailSessionRules.Options(RailSessionRules.ExpeditionKind, Guid.NewGuid().ToString("N")), TypedLobby.Default);
+                queued = JoinAllocatedRoom(RailSessionRules.ExpeditionKind, Guid.NewGuid().ToString("N"), null);
                 break;
 #endif
             case Request.Random:
                 Started("Finding a public compound...");
-                queued = PhotonNetwork.JoinRandomRoom(new Hashtable { [RailSessionRules.Kind] = RailSessionRules.CompoundKind, [RailSessionRules.Schema] = RailSessionRules.Version }, MaxPlayers);
+                queued = PhotonNetwork.JoinRandomRoom(new Hashtable { [RailSessionRules.Kind] = RailSessionRules.CompoundKind, [RailSessionRules.Schema] = RailSessionRules.Version }, MaxPlayers,
+                    MatchmakingMode.FillRoom, AutomaticLobby, null);
                 break;
             case Request.FreshCompound:
                 Started("Creating a compound...");
-                queued = PhotonNetwork.CreateRoom("compound-" + Guid.NewGuid().ToString("N"), RailSessionRules.Options(RailSessionRules.CompoundKind));
+                if (allocation == null) allocation = Guid.NewGuid().ToString("N");
+                requestedRoom = RailSessionRules.RoomCode(allocation, allocationAttempt);
+                queued = PhotonNetwork.CreateRoom(requestedRoom, RailSessionRules.Options(RailSessionRules.CompoundKind), AutomaticLobby);
                 break;
             case Request.CreatePrivate:
                 Started("Creating private room " + requestedRoom + "...");
@@ -205,28 +214,61 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
                 break;
             case Request.Transfer:
                 Started("Travelling with your crew...");
-                var options = RailSessionRules.Options(transferKind, transferRun);
-                options.CustomRoomProperties[RailSessionRules.TransferUntil] = PhotonNetwork.Time + 30d;
                 // Any selected crew member can create it if the old coordinator disappears.
                 // Expected users reserve capacity on the Photon server.
-                queued = PhotonNetwork.JoinOrCreateRoom(requestedRoom, options, TypedLobby.Default, transferUsers);
+                queued = JoinAllocatedRoom(transferKind, transferRun, transferUsers);
                 break;
         }
         if (!queued) RequestFailed("The connection is not ready. Please retry.");
     }
+    bool JoinAllocatedRoom(string kind, string run, string[] users)
+    {
+        var options = RailSessionRules.Options(kind, run);
+        options.CustomRoomProperties[RailSessionRules.Allocation] = allocation;
+        options.CustomRoomProperties[RailSessionRules.TransferUntil] = PhotonNetwork.Time + 30d;
+        // Server-side matching by allocation prevents joining an unrelated occupied
+        // code, even briefly. Public matchmaking still filters exclusively to compounds.
+        // Private rooms remain hidden and are never added to this lobby.
+        options.IsVisible = true;
+        options.CustomRoomPropertiesForLobby = new[] { RailSessionRules.Kind, RailSessionRules.Schema, RailSessionRules.Allocation };
+        return PhotonNetwork.JoinRandomOrCreateRoom(
+            new Hashtable { [RailSessionRules.Allocation] = allocation, [RailSessionRules.Kind] = kind, [RailSessionRules.Schema] = RailSessionRules.Version },
+            (byte)options.MaxPlayers, MatchmakingMode.FillRoom, AutomaticLobby, roomName: requestedRoom,
+            roomOptions: options, expectedUsers: users);
+    }
+    bool IsAllocatedRequest => request == Request.Transfer
+#if UNITY_EDITOR
+        || request == Request.EditorQuickStart
+#endif
+        ;
+    bool RetryAllocation()
+    {
+        if (++allocationAttempt >= 100) return false;
+        requestedRoom = RailSessionRules.RoomCode(allocation, allocationAttempt);
+        if (PhotonNetwork.InRoom)
+        {
+            leaving = true; Started("Finding an available room code...");
+            PhotonNetwork.LeaveRoom(false);
+        }
+        else retryAt = Time.realtimeSinceStartupAsDouble + 1;
+        return true;
+    }
     public override void OnJoinRandomFailed(short code, string message)
     {
-        operationPending = false; request = Request.FreshCompound; ExecuteRequest();
+        if (IsAllocatedRequest) { OnCreateRoomFailed(code, message); return; }
+        operationPending = false; allocation = null; allocationAttempt = 0; request = Request.FreshCompound; ExecuteRequest();
     }
     public override void OnCreateRoomFailed(short code, string message)
     {
         operationPending = false;
+        if ((request == Request.FreshCompound || IsAllocatedRequest) && code == ErrorCode.GameIdAlreadyExists && RetryAllocation()) return;
         RequestFailed(request == Request.CreatePrivate && code == ErrorCode.GameIdAlreadyExists
             ? "That code is occupied. Choose another code or use Join." : "Could not create the room. Please retry.");
     }
     public override void OnJoinRoomFailed(short code, string message)
     {
         operationPending = false;
+        if (IsAllocatedRequest && code == ErrorCode.GameIdAlreadyExists && RetryAllocation()) return;
         if (request == Request.ReturnToCompound) { request = Request.Random; ExecuteRequest(); return; }
         RequestFailed(code == ErrorCode.GameFull ? "Room is full (including reserved reconnect slots)."
             : code == ErrorCode.GameClosed ? "This expedition is ending. Join after the crew returns."
@@ -247,8 +289,20 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public override void OnJoinedRoom()
     {
         operationPending = false;
-        bool privateRequest = request == Request.JoinPrivate || request == Request.CreatePrivate;
-        if (!IsRailsRoom || (privateRequest && !IsPrivate))
+        bool allocatedRequest = request == Request.Transfer;
+#if UNITY_EDITOR
+        allocatedRequest |= request == Request.EditorQuickStart;
+#endif
+        // Validate the crew token before enabling world loading or publishing readiness.
+        if (allocatedRequest && (!IsRailsRoom || Get(RailSessionRules.Allocation, "") != allocation))
+        {
+            if (RetryAllocation()) return;
+            request = Request.Random; leaving = true;
+            FailInput("Could not allocate a room code. Please retry.");
+            Started(LastError); PhotonNetwork.LeaveRoom(false); return;
+        }
+        if (!IsRailsRoom || !RailSessionRules.IsCode(PhotonNetwork.CurrentRoom.Name) ||
+            (request == Request.CreatePrivate && !IsPrivate))
         {
             FailInput("Incompatible room. Use the same Duck Rails build.");
             request = Request.Random; leaving = true; Started(LastError); PhotonNetwork.LeaveRoom(false); return;

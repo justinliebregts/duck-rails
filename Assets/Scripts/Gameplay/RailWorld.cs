@@ -139,7 +139,7 @@ public sealed class RailWorld : MonoBehaviour
         statusStyle ??= new GUIStyle(GUI.skin.box) { alignment = TextAnchor.MiddleCenter };
         float width = Mathf.Min(420, Screen.width - 24);
         string status = "DUCK RAILS  •  " + PhotonSession.Phase +
-            (PhotonSession.IsPrivate ? "  •  Code: " + PhotonNetwork.CurrentRoom.Name : "") +
+            (PhotonNetwork.InRoom ? "  •  Code: " + PhotonNetwork.CurrentRoom.Name : "") +
             (session.WorldReady ? "" : "\n" + session.Status);
         GUI.Box(new Rect((Screen.width - width) * .5f, 12, width, 36), status, statusStyle);
         if (!string.IsNullOrEmpty(session.LastError))
@@ -154,7 +154,7 @@ public sealed class RailWorld : MonoBehaviour
         bool nearTerminal = GR.Player.instance != null && Vector3.Distance(GR.Player.instance.transform.position, privateTerminal.position) < 4;
         if (!PhotonSession.OnTrain && nearTerminal)
         {
-            GUILayout.Label("Private expedition — five digits");
+            GUILayout.Label("Five-digit code: create private or join any room");
             code = GUILayout.TextField(code, 5);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Create")) session.RequestCreatePrivate(code);

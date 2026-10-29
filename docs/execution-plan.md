@@ -41,6 +41,7 @@ Deliverable: friends can form a crew, depart, join halfway through, see the same
 - Photon Master Client coordinates changes and passes responsibility on departure; initial private creator launches manually.
 - Authenticated identity; 120-second expedition reconnect reservation while the room remains alive; shared items persist without restoring duplicate disk-saved supplies.
 - Fresh public compound for group return, reserving crew capacity.
+- All gameplay rooms use five-digit numeric codes; the private station joins public or private rooms by code. Automatic creation handles occupied codes without matching an unrelated crew.
 - Private staging/run/return retain the same room and code. Last connected player leaving destroys the room immediately.
 - DesktopPlayer is the current test target. Backend/Photon setup is reported complete; multiple actual clients are still required for network acceptance.
 
@@ -69,6 +70,7 @@ See `week1-session.md` for source paths, controls, validation results and pendin
 - [ ] Seven players can leave while an eighth remains shopping in the compound.
 - [ ] Repeated platform entry/exit cannot reset a nonempty group's timer indefinitely.
 - [ ] Two users attempting the same private code do not silently create/join the wrong expedition.
+- [ ] A friend enters a public expedition code at the private station and appears aboard the correct train; exercise automatic code collisions and crew transfers.
 - [ ] A friend enters a running private code and appears aboard the correct moving train with current world state.
 - [ ] A full run rejects a ninth player cleanly.
 - [ ] Reconnection does not duplicate the player's bag or supplies under the selected policy.

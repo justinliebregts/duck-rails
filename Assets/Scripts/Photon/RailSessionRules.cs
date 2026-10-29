@@ -7,7 +7,7 @@ public enum RailPhase { Compound, Staging, Departing, Running, Ending, Returning
 
 public static class RailSessionRules
 {
-    public const int Version = 1, CompoundCapacity = 12, CrewCapacity = 8, ReconnectMilliseconds = 120000;
+    public const int Version = 2, CompoundCapacity = 12, CrewCapacity = 8, ReconnectMilliseconds = 120000;
     public const double CountdownSeconds = 20;
     public const string Schema = "rails.schema", Kind = "rails.kind", Phase = "rails.phase", Revision = "rails.revision";
     public const string Run = "rails.run", Deadline = "rails.deadline", Roster = "rails.roster", Destination = "rails.destination";
@@ -25,6 +25,16 @@ public static class RailSessionRules
         if (value == null || value.Length != 5) return false;
         foreach (char c in value) if (c < '0' || c > '9') return false;
         return true;
+    }
+
+    public const string Allocation = "rails.allocation";
+
+    // Stable across processes: transferring crew members probe the same codes.
+    public static string RoomCode(string allocation, int attempt = 0)
+    {
+        uint hash = 2166136261;
+        unchecked { foreach (char c in allocation) hash = (hash ^ c) * 16777619; }
+        return ((hash % 100000 + (uint)attempt) % 100000).ToString("D5", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     public static RoomOptions Options(string kind, string run = "") => new RoomOptions

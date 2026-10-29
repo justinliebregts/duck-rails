@@ -133,6 +133,8 @@ Initial content proposal: four scavenging blocks, choose three per run, one fixe
 - Public departure platform counts down and takes only its occupants, up to eight.
 - People outside the platform cannot hold up departure.
 - Private creation uses a separate area/terminal, never a toggle that hijacks public boarding.
+- Every gameplay room has an exactly five-digit numeric code, including public compounds, public expeditions, private rooms, and editor quick-start expeditions. Leading zeroes are preserved.
+- The private station can join any live room by code, including public expeditions for late entry or rejoining. The current code is always shown in the session banner.
 - Private creator chooses a five-digit code; Create and Join are separate actions.
 - Creation must reject an occupied code. Use server-side room creation as the collision arbiter rather than a check-then-create race.
 - Photon uses one region. Compatible app/version settings are still required.

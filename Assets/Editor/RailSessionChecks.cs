@@ -19,6 +19,11 @@ public static class RailSessionChecks
         checks = 0;
         Check(RailSessionRules.IsCode("00001") && RailSessionRules.IsCode("99999"), "Five-digit codes preserve leading zeroes");
         Check(!RailSessionRules.IsCode("1234") && !RailSessionRules.IsCode("123456") && !RailSessionRules.IsCode("12a45") && !RailSessionRules.IsCode("１２３４５"), "Invalid and non-ASCII codes rejected");
+        var codes = Enumerable.Range(0, 100000).Select(i => RailSessionRules.RoomCode("crew-token", i)).ToArray();
+        Check(codes.All(RailSessionRules.IsCode) && codes.Distinct().Count() == 100000,
+            "Allocation probes cover every five-digit code without repeats");
+        Check(RailSessionRules.RoomCode("crew-token") == RailSessionRules.RoomCode("crew-token", 100000),
+            "Crew allocation is deterministic and wraps at the code-space boundary");
         double start = RailSessionRules.Countdown(0, 1, 10);
         Check(start == 30, "First occupant starts twenty seconds");
         Check(RailSessionRules.Countdown(start, 8, 14) == 30 && RailSessionRules.Countdown(start, 1, 29) == 30, "Entry/exit cannot extend a nonempty countdown");
