@@ -105,10 +105,17 @@ public static class RailLiveSmokeChecks
                 case 11:
                     if (PhotonSession.Phase != RailPhase.Staging || !session.WorldReady) return;
                     Require(PhotonNetwork.CurrentRoom.Name == privateRoom, "Private return changed the code");
+                    Require(!RailWorld.HasLiveCargo, "Private staging became ready before old network cargo was removed");
                     session.StartPrivateRun(); Next("Private failure returns to staging with the same code"); break;
                 case 12:
                     if (PhotonSession.Phase != RailPhase.Running || !session.WorldReady) return;
                     Require(PhotonSession.Get(RailSessionRules.Cargo, Array.Empty<int>()).Length == 2, "Replay duplicated test supplies");
+                    foreach (int id in PhotonSession.Get(RailSessionRules.Cargo, Array.Empty<int>()))
+                    {
+                        var view = PhotonView.Find(id);
+                        Require(view != null && view.InstantiationData is object[] data && data.Length >= 3 &&
+                            data[data.Length - 2] as string == PhotonSession.RunId, "Replay retained cargo from a previous run");
+                    }
                     session.RequestJoinRandom(); Next("Private replay creates exactly one fresh supply set"); break;
                 case 13:
                     if (PhotonSession.Kind != RailSessionRules.CompoundKind || !session.WorldReady) return;

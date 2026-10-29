@@ -387,6 +387,13 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!(PhotonNetwork.LocalPlayer.CustomProperties[RailSessionRules.Ready] is string ready) || ready != token)
             PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [RailSessionRules.Ready] = token });
     }
+    public void MarkWorldLoading()
+    {
+        if (!WorldReady) return;
+        WorldReady = false; loadingSince = Time.realtimeSinceStartupAsDouble;
+        SetStatus("Preparing current world state...");
+        if (IsRailsRoom) PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [RailSessionRules.Ready] = "" });
+    }
     public void SetBoarding(bool value)
     {
         if (!IsRailsRoom || !WorldReady || Kind != RailSessionRules.CompoundKind) return;
@@ -405,7 +412,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public void StartPrivateRun()
     {
-        if (!IsPrivate || Phase != RailPhase.Staging || !WorldReady || !PhotonNetwork.IsMasterClient) return;
+        if (!IsPrivate || Phase != RailPhase.Staging || !WorldReady || !PhotonNetwork.IsMasterClient || RailWorld.HasLiveCargo) return;
         Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Departing, [RailSessionRules.Run] = Guid.NewGuid().ToString("N"),
             [RailSessionRules.Deadline] = PhotonNetwork.Time + 30d, [RailSessionRules.Fuel] = 100f,
             [RailSessionRules.Cargo] = Array.Empty<int>(), [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 0f, 0f, 0f } });

@@ -46,6 +46,8 @@ Deliverable: friends can form a crew, depart, join halfway through, see the same
 - DesktopPlayer is the current test target. Backend/Photon setup is reported complete; multiple actual clients are still required for network acceptance.
 
 ### Implementation and evidence
+Private replay follow-up (October 29): fixed the reproduced four-supply duplication by requiring old networked cargo to be removed before staging readiness and restart. Cleanup runs on each item's controlling client and includes inactive objects. Eight authenticated solo rounds/seven immediate replays passed with success/failure and inactive bag/bat coverage; see `week1-session.md`. Multi-client ownership and master-loss acceptance remain unchecked.
+
 Public return follow-up: `RailCrewReturn` keeps a temporary authenticated coordination connection while one gameplay client searches and reserves an existing compound. Search failure/timeout or coordinator loss selects a shared fresh allocation. Five-to-eight-player crews skip the search. Reservation cleanup uses retained per-user deadlines and a compare-and-swap update to preserve concurrent crews. Schema 4 separates this protocol from older clients. Local policy/lease checks and authenticated single-client return evidence are recorded in `week1-session.md`; the group acceptance boxes remain unchecked.
 
 Fuel consumption follow-up: motion and starting fuel are retained atomically in schema 3 room properties, with deterministic distance-based consumption and a zero-fuel stop. Runtime/editor compilation and six new local regression checks passed; two-client fuel agreement, leave/rejoin, and master-departure acceptance remain pending. Coal insertion is not implemented by this change.

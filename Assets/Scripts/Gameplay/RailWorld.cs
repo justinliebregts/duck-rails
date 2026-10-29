@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using UnityEngine;
@@ -58,21 +59,30 @@ public sealed class RailWorld : MonoBehaviour
             compound.SetActive(!aboard); expedition.SetActive(aboard);
             menu = false;
         }
-        if (PhotonNetwork.IsMasterClient && Time.unscaledTime >= nextManifest)
+        if (Time.unscaledTime >= nextManifest)
         {
             nextManifest = Time.unscaledTime + .5f;
-            MaintainCargo();
+            // Held cargo may belong to another connected player. Every client
+            // removes its own cargo; room-owned cargo is removed by the master.
+            if (!aboard) ClearCargo();
+            else if (PhotonNetwork.IsMasterClient) MaintainCargo();
         }
         var local = GR.Player.instance;
         if (local == null) return;
-        bool snapshotReady = !aboard || (PhotonSession.Get("rails.seeded", "") == run &&
+        // Staging is not ready until the old objects have actually been removed.
+        // Otherwise an immediate Start can skip the half-second cleanup tick.
+        bool snapshotReady = !aboard ? !HasLiveCargo : (PhotonSession.Get("rails.seeded", "") == run &&
             PhotonSession.Get(RailSessionRules.Cargo, Array.Empty<int>()).All(id =>
             {
                 var view = PhotonView.Find(id);
                 var cargo = view != null ? view.GetComponent<RailCargo>() : null;
                 return cargo != null && cargo.StateReady;
             }));
-        if (!snapshotReady) return;
+        if (!snapshotReady)
+        {
+            if (!aboard) session.MarkWorldLoading();
+            return;
+        }
         if (!positioned)
         {
             Vector3 position = aboard ? train.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 4 - 1.5f) * .7f, .35f, -2f)) : compoundSpawn.position;
@@ -95,21 +105,29 @@ public sealed class RailWorld : MonoBehaviour
         }
     }
 
+    // The Photon registry includes inactive/stowed objects and excludes local
+    // bag miniatures, prefab assets and objects already removed from the network.
+    static IEnumerable<PhotonView> CargoViews()
+    {
+        foreach (var view in PhotonNetwork.PhotonViewCollection)
+            if (view != null && view.ViewID != 0 && view.TryGetComponent<RailCargo>(out _)) yield return view;
+    }
+    public static bool HasLiveCargo => CargoViews().Any();
+    static void ClearCargo()
+    {
+        // Destroy unregisters views synchronously; do not mutate the live iterator.
+        foreach (var view in CargoViews().Where(v => v.IsMine).ToArray())
+            if (view != null && PhotonView.Find(view.ViewID) == view) PhotonNetwork.Destroy(view.gameObject);
+    }
     void MaintainCargo()
     {
-        if (!PhotonSession.OnTrain)
-        {
-            foreach (var cargo in FindObjectsByType<RailCargo>(FindObjectsSortMode.None))
-                if (cargo.photonView.ViewID != 0) PhotonNetwork.Destroy(cargo.gameObject);
-            return;
-        }
         string run = PhotonSession.RunId;
         if (string.IsNullOrEmpty(run)) return;
         if (PhotonSession.Get("rails.seeded", "") != run)
         {
             // Instantiation markers survive a master change between spawn and manifest commit.
-            bool HasSeed(string name) => FindObjectsByType<RailCargo>(FindObjectsSortMode.None).Any(c =>
-                c.photonView.InstantiationData is object[] data && data.Length >= 3 &&
+            bool HasSeed(string name) => CargoViews().Any(view =>
+                view.InstantiationData is object[] data && data.Length >= 3 &&
                 data[data.Length - 2] as string == run && data[data.Length - 1] as string == name);
             if (!HasSeed("bat")) PhotonNetwork.InstantiateRoomObject(batPrefab.name,
                 train.transform.TransformPoint(new Vector3(-1, .6f, 0)), Quaternion.Euler(0, 0, 90), 0, new object[] { "rails", run, "bat" });
@@ -130,7 +148,7 @@ public sealed class RailWorld : MonoBehaviour
                 PhotonSession.Instance.Commit(new Hashtable { [RailSessionRules.Cargo] = current });
         }
     }
-    static int[] CurrentCargo() => FindObjectsByType<RailCargo>(FindObjectsSortMode.None).Select(c => c.photonView.ViewID).Where(id => id != 0).OrderBy(id => id).ToArray();
+    static int[] CurrentCargo() => CargoViews().Select(view => view.ViewID).OrderBy(id => id).ToArray();
 
     void OnGUI()
     {
