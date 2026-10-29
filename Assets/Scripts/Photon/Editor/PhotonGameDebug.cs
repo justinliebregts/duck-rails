@@ -132,8 +132,6 @@ static class PhotonGameDebug
 
             if (PhotonNetwork.InRoom)
             {
-                if (GUILayout.Button("Spawn gold bar"))
-                    GoldBarDropper.Drop();
                 if (GUILayout.Button("Leave room"))
                     PhotonSession.Ensure().LeaveCurrentRoom();
             }
