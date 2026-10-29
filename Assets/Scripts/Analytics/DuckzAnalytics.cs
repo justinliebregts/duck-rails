@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -9,12 +8,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Thin GameAnalytics wrapper for Duckz. Call Ensure() early; configure platform keys in
+/// Duck Rails analytics; the class name preserves inherited interaction call sites.
+/// Call Ensure() early; configure platform keys in
 /// Window → GameAnalytics → Settings before expecting events in a build.
 /// </summary>
 public sealed class DuckzAnalytics : MonoBehaviour
 {
-    const float GoldPulseSeconds = 300f;
     const int GoldTarget = 40;
     const int GoldLow = 30;
     const int GoldHigh = 50;
@@ -34,8 +33,8 @@ public sealed class DuckzAnalytics : MonoBehaviour
     float sessionStarted = -1f;
     float presenceFlushAt;
     string currentAreaKey = "other";
-    Coroutine goldPulse;
     bool initialized;
+    bool initializationAttempted;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Bootstrap() => Ensure();
@@ -90,22 +89,22 @@ public sealed class DuckzAnalytics : MonoBehaviour
         if (!initialized)
             EnsureSdk();
         TickPresence();
-        if (PhotonNetwork.InRoom && PhotonNetwork.IsMasterClient)
-        {
-            if (goldPulse == null)
-                goldPulse = StartCoroutine(GoldPulseRoutine());
-        }
-        else if (goldPulse != null)
-        {
-            StopCoroutine(goldPulse);
-            goldPulse = null;
-        }
     }
 
     void EnsureSdk()
     {
-        if (initialized)
+        if (initializationAttempted)
             return;
+        initializationAttempted = true;
+        // Editor calls are local previews, never uploads. Avoid the SDK's noisy stubs.
+        if (Application.isEditor) { initialized = true; return; }
+        var settings = GameAnalytics.SettingsGA;
+        int platform = settings.Platforms.IndexOf(Application.platform);
+        if (platform < 0 || string.IsNullOrEmpty(settings.GetGameKey(platform)) || string.IsNullOrEmpty(settings.GetSecretKey(platform)))
+        {
+            Debug.LogWarning("Duck Rails analytics disabled: configure GameAnalytics keys for " + Application.platform);
+            return;
+        }
         if (FindAnyObjectByType<GameAnalytics>() == null)
         {
             var ga = new GameObject("GameAnalytics");
@@ -117,27 +116,34 @@ public sealed class DuckzAnalytics : MonoBehaviour
         initialized = GameAnalytics.Initialized;
     }
 
-    static bool Ready => Instance != null && Instance.initialized && GameAnalytics.Initialized;
+    static bool Ready => Instance != null && Instance.initialized && (Application.isEditor || GameAnalytics.Initialized);
+
+    static bool Preview(string message)
+    {
+        if (!Application.isEditor) return false;
+        if (GameAnalytics.SettingsGA.InfoLogEditor) Debug.Log("[Duck Rails Analytics preview] " + message);
+        return true;
+    }
 
     static void Design(string eventId)
     {
         if (!Ready || string.IsNullOrEmpty(eventId))
             return;
-        GameAnalytics.NewDesignEvent(eventId);
+        if (!Preview(eventId)) GameAnalytics.NewDesignEvent(eventId);
     }
 
     static void Design(string eventId, float value)
     {
         if (!Ready || string.IsNullOrEmpty(eventId))
             return;
-        GameAnalytics.NewDesignEvent(eventId, value);
+        if (!Preview(eventId + " value=" + value)) GameAnalytics.NewDesignEvent(eventId, value);
     }
 
     static void Design(string eventId, float value, IDictionary<string, object> fields)
     {
         if (!Ready || string.IsNullOrEmpty(eventId))
             return;
-        GameAnalytics.NewDesignEvent(eventId, value, fields);
+        if (!Preview(eventId + " value=" + value)) GameAnalytics.NewDesignEvent(eventId, value, fields);
     }
 
     static void Error(GAErrorSeverity severity, string message)
@@ -146,7 +152,7 @@ public sealed class DuckzAnalytics : MonoBehaviour
             return;
         if (message.Length > 8192)
             message = message.Substring(0, 8192);
-        GameAnalytics.NewErrorEvent(severity, message);
+        if (!Preview("error:" + severity + " " + message)) GameAnalytics.NewErrorEvent(severity, message);
     }
 
     /// <summary>GameAnalytics event segments are max 16 chars.</summary>
@@ -225,6 +231,33 @@ public sealed class DuckzAnalytics : MonoBehaviour
         Design(Id("session", "join_fail"));
     }
 
+    // Participant observations, not unique expedition counts. IDs never contain codes or player IDs.
+    public static void SessionEvent(string action)
+    {
+        Ensure();
+        Design(Id("rails", "session", action), 1f, new Dictionary<string, object>
+        {
+            ["kind"] = PhotonSession.Kind,
+            ["phase"] = PhotonSession.Phase.ToString().ToLowerInvariant(),
+            ["players"] = PhotonNetwork.CurrentRoom?.PlayerCount ?? 0,
+            ["client"] = Application.isEditor ? "editor" : Debug.isDebugBuild ? "development" : "release"
+        });
+    }
+
+    public static void SessionPhaseChanged()
+    {
+        Ensure();
+        Design(Id("rails", "phase", PhotonSession.Phase.ToString()));
+        if (PhotonSession.Phase == RailPhase.Ending)
+            SessionEvent(PhotonSession.Get("rails.success", false) ? "success" : "failure");
+    }
+
+    public static void SessionDisconnected(string cause)
+    {
+        Ensure();
+        Design(Id("rails", "disconnect", cause));
+    }
+
     public static void GoldCount(int count, int players)
     {
         var fields = new Dictionary<string, object>
@@ -298,7 +331,7 @@ public sealed class DuckzAnalytics : MonoBehaviour
         if (!Ready)
             return;
         string itemId = Segment(sku);
-        GameAnalytics.NewBusinessEvent(currency, Math.Max(0, amountCents), "bundle", itemId, "store");
+        if (!Application.isEditor) GameAnalytics.NewBusinessEvent(currency, Math.Max(0, amountCents), "bundle", itemId, "store");
         Design(Id("iap", "buy", itemId), amountCents);
         SessionFirst("iap");
     }
@@ -361,32 +394,14 @@ public sealed class DuckzAnalytics : MonoBehaviour
         return Mathf.RoundToInt((float)(dollars * 100.0));
     }
 
-    IEnumerator GoldPulseRoutine()
-    {
-        while (PhotonNetwork.InRoom && PhotonNetwork.IsMasterClient)
-        {
-            yield return new WaitForSecondsRealtime(GoldPulseSeconds);
-            if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMasterClient)
-                break;
-            PhotonItemManager items = PhotonItemManager.instance;
-            if (items == null)
-            {
-                Error(GAErrorSeverity.Error, "gold_manager_missing");
-                continue;
-            }
-            int players = PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.PlayerCount : 0;
-            GoldCount(items.LiveGoldBarCount, players);
-        }
-        goldPulse = null;
-    }
-
     void TickPresence()
     {
         if (!TryLocalHead(out Vector3 head))
             return;
 
         AnalyticsArea area = AnalyticsArea.FindAt(head);
-        string key = area != null ? area.AreaKey : "other";
+        string key = PhotonSession.IsRailsRoom ? Segment(PhotonSession.Kind + "_" + PhotonSession.Phase)
+            : area != null ? area.AreaKey : "other";
         if (key != currentAreaKey)
         {
             if (PhotonNetwork.InRoom)

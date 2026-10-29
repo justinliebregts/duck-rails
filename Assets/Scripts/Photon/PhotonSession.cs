@@ -1,872 +1,406 @@
-﻿using System;
+using System;
 using System.Collections;
-using Game.AI;
+using System.Linq;
 using Photon.Pun;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-/// <summary>
-/// Connects to Photon in the US region and joins an open room, creating one when none have space.
-/// Survives the login scene so the room is already joined when Main loads.
-/// Menu switches keep one pending request. New rooms use a 4-digit name.
-/// </summary>
+/// <summary>Authenticated connection, crew transfers and server-retained session state.</summary>
 public class PhotonSession : MonoBehaviourPunCallbacks
 {
-    public const string Region = "us";
-    public const string PlayScene = "Main";
-    public const int MaxPlayers = 12;
-    public const int RoomCodeLength = 4;
-    public const int StreamRate = 20;
-
-    public const string NoOpenRoomsMessage = "No open rooms";
-    public const string MissingRoomMessage = "No room with that code";
-    public const string RoomFullMessage = "Room is full";
-
-    // PUN stores the synced scene under this room property. See PhotonNetwork.CurrentSceneProperty.
-    const string SceneProperty = "curScn";
-    const int MaxAttempts = 5;
-
+    public const string Region = "us", PlayScene = GameScenes.Compound;
+    public const int MaxPlayers = 12, RoomCodeLength = 5, StreamRate = 20;
+    public const string NoOpenRoomsMessage = "No open compounds", MissingRoomMessage = "No private room with that code", RoomFullMessage = "Room is full";
     public static PhotonSession Instance { get; private set; }
-
-    /// <summary>True from editor play sign-in until the room join finishes or is abandoned. Enemy spawn waits this out.</summary>
     public static bool ConnectPending { get; private set; }
-
     public static void MarkConnectPending() => ConnectPending = true;
-
     public static void ClearConnectPending() => ConnectPending = false;
+    public static bool IsRailsRoom => PhotonNetwork.InRoom && Get(RailSessionRules.Schema, 0) == RailSessionRules.Version;
+    public static RailPhase Phase => (RailPhase)Get(RailSessionRules.Phase, (int)RailPhase.Compound);
+    public static string Kind => Get(RailSessionRules.Kind, "");
+    public static string RunId => Get(RailSessionRules.Run, "");
+    public static bool IsPrivate => Kind == RailSessionRules.PrivateKind;
+    public static bool OnTrain => Phase == RailPhase.Departing || Phase == RailPhase.Running || Phase == RailPhase.Ending;
+    public static T Get<T>(string key, T fallback) => PhotonNetwork.CurrentRoom?.CustomProperties[key] is T value ? value : fallback;
 
-    enum RoomRequest
-    {
-        None,
-        Random,
-        Public,
-        Private,
-        Code,
-    }
-
-    Action<string> _status;
-    AppSettings _settings;
-    int _attempts;
-    bool _joined;
-    bool _failed;
-    bool _holdRoomJoin;
-    bool _enteringPlay;
-    RoomRequest _request = RoomRequest.None;
-    string _requestCode;
-    int _codeTries;
-    int _lastRoomCode = -1;
-    bool _switching;
-    bool _requestSent;
-    bool _leavingRoom;
-    bool _returningToLogin;
-    bool _quitting;
-    AsyncOperation _sceneOperation;
-    Coroutine _retryCoroutine;
-
+    enum Request { None, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound }
+    Request request;
+    string requestedRoom, previousCompound, resumeRoom, transferKind, transferRun, joinedRoom, followedTransfer;
+    string[] transferUsers = Array.Empty<string>();
+    AppSettings settings;
+    Action<string> loginStatus;
+    bool operationPending, loadingScene, quitting, initialized, leaving;
+    double operationUntil, retryAt, resumeUntil, nextAuthorityTick, lastCommit, loadingSince;
+    int pendingRevision = -1;
     public bool RecoveringConnection { get; private set; }
-    public bool ReturningToLogin => _returningToLogin;
-    public bool HasRoomRequest => _request != RoomRequest.None;
-    public string RoomRequestMessage => _request == RoomRequest.Private
-        ? "Creating private room..."
-        : _request == RoomRequest.Public ? "Creating room..."
-        : _request == RoomRequest.Code ? "Joining room " + _requestCode + "..."
-        : "Joining a room...";
-
-    public event Action RoomMembershipChanged;
-    public event Action RoomRequestStarted;
+    public bool ReturningToLogin => false;
+    public bool HasRoomRequest => request != Request.None || operationPending || loadingScene;
+    public string RoomRequestMessage => Status;
+    public string Status { get; private set; } = "Connecting...";
+    public string LastError { get; private set; } = "";
+    public bool WorldReady { get; private set; }
+    public event Action RoomMembershipChanged, RoomRequestStarted;
     public event Action<string> RoomRequestFailed;
 
-    public static PhotonSession Ensure()
+    public static PhotonSession Ensure() => Instance != null ? Instance : new GameObject(nameof(PhotonSession)).AddComponent<PhotonSession>();
+    void Awake()
     {
-        if (Instance != null)
-            return Instance;
-
-        var gameObject = new GameObject(nameof(PhotonSession));
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
         DontDestroyOnLoad(gameObject);
-        return gameObject.AddComponent<PhotonSession>();
+        Application.runInBackground = true;
+        gameObject.AddComponent<DuckPlayerColors>();
+        gameObject.AddComponent<PhotonMasterHandoff>();
     }
+    void OnDestroy() { if (Instance == this) Instance = null; }
+    void OnApplicationQuit() => quitting = true;
 
     public IEnumerator ConnectAndJoin(Action<string> status)
     {
-        if (LoginFlow.Previewing)
+        if (LoginFlow.Previewing) yield break;
+        loginStatus = status;
+        if (!initialized)
         {
-            DuckzLog.Log("Login spot preview: not joining a room.");
-            status?.Invoke("Login preview.");
-            yield break;
+            initialized = true; request = Request.Random;
+            MarkConnectPending(); Connect();
         }
-
-        _status = status;
-        _joined = false;
-        _failed = false;
-        _attempts = 0;
-        _holdRoomJoin = false;
-
-        Configure();
-
-        if (PhotonNetwork.InRoom)
-        {
-            HandleJoined();
-            yield break;
-        }
-
-#if UNITY_EDITOR
-        if (GameManager.observePhotonRooms && !HasRoomRequest)
-        {
-            yield return JoinObservedLobby();
-            yield break;
-        }
-#endif
-
-        Report(HasRoomRequest ? RoomRequestMessage : "Connecting to Photon...");
-        if (PhotonNetwork.IsConnectedAndReady)
-            RunPendingOrRandom();
-        else if (!BeginConnect())
-            Retry("Could not start the Photon connection.");
-
-        while (!_joined && !_failed)
-            yield return null;
+        while (!WorldReady) yield return null;
     }
-
-    void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        if (!TryGetComponent<DuckPlayerColors>(out _))
-            gameObject.AddComponent<DuckPlayerColors>();
-        if (!TryGetComponent<PhotonMasterHandoff>(out _))
-            gameObject.AddComponent<PhotonMasterHandoff>();
-        DontDestroyOnLoad(gameObject);
-    }
-
-    void OnDestroy()
-    {
-        if (Instance == this)
-            Instance = null;
-    }
-
-    void OnApplicationQuit() => _quitting = true;
-
     void Configure()
     {
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
-        _settings = source.CopyTo(new AppSettings());
-        // Spawn generations and optional cabin snapshots change the wire layout;
-        // keep older builds in separate rooms (all peers must understand passenger poses).
-        _settings.AppVersion = source.AppVersion + "-room-recovery-v3-cabin-v1";
-        _settings.FixedRegion = Region;
-
-        // LoadLevel uses single-scene mode and would unload Quackville_Env. Clients follow the room property instead.
+        settings = source.CopyTo(new AppSettings());
+        settings.AppVersion = source.AppVersion + "-duck-rails-session-v1";
+        settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
-        PhotonNetwork.SendRate = StreamRate;
-        PhotonNetwork.SerializationRate = StreamRate;
-
-        var session = PlayerSession.Instance;
-        PhotonNetwork.NickName = session != null && !string.IsNullOrEmpty(session.DisplayName)
-            ? session.DisplayName
-            : "Duck";
-
-        // A new AuthenticationValues has no Token. After LeaveRoom, Photon must
-        // authenticate on the master server, and that only succeeds with the token
-        // from the first name-server connect. Keep that object and update the user id.
-        if (session != null && !string.IsNullOrEmpty(session.PlayerId))
+        PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;
+        var account = PlayerSession.Instance;
+        if (account == null) return;
+        PhotonNetwork.NickName = account.DisplayName;
+        string id = string.IsNullOrEmpty(account.GrId) ? account.PlayerId : account.GrId;
+        if (PhotonNetwork.AuthValues == null) PhotonNetwork.AuthValues = new AuthenticationValues(id);
+        else PhotonNetwork.AuthValues.UserId = id;
+        if (!PhotonNetwork.IsConnected && account.TryGetAccessToken(out string token))
         {
-            string photonUserId = string.IsNullOrEmpty(session.GrId) ? session.PlayerId : session.GrId;
-            if (PhotonNetwork.AuthValues == null)
-                PhotonNetwork.AuthValues = new AuthenticationValues(photonUserId);
-            else if (PhotonNetwork.AuthValues.UserId != photonUserId)
-                PhotonNetwork.AuthValues.UserId = photonUserId;
-
-            // Only configure backend credentials before a new connection. Preserve
-            // Photon's issued token while moving between rooms/master/game servers.
-            if (!PhotonNetwork.IsConnected && session.TryGetAccessToken(out string accessToken))
-            {
-                PhotonNetwork.AuthValues.AuthType = CustomAuthenticationType.Custom;
-                PhotonNetwork.AuthValues.AuthGetParameters = null;
-                PhotonNetwork.AuthValues.AddAuthParameter("usr", session.PlayerId);
-                PhotonNetwork.AuthValues.AddAuthParameter("pla", session.Platform);
-                PhotonNetwork.AuthValues.AddAuthParameter("tkn", accessToken);
-            }
+            PhotonNetwork.AuthValues.AuthType = CustomAuthenticationType.Custom;
+            PhotonNetwork.AuthValues.AuthGetParameters = null;
+            PhotonNetwork.AuthValues.AddAuthParameter("usr", account.PlayerId);
+            PhotonNetwork.AuthValues.AddAuthParameter("pla", account.Platform);
+            PhotonNetwork.AuthValues.AddAuthParameter("tkn", token);
         }
     }
-
-    bool BeginConnect()
+    void SetStatus(string text) { Status = text; loginStatus?.Invoke(text); }
+    void Started(string text)
     {
-        if (PhotonNetwork.IsConnected)
-            return true;
-
-        return PhotonNetwork.ConnectUsingSettings(_settings, false);
+        operationPending = true; operationUntil = Time.realtimeSinceStartupAsDouble + 30;
+        SetStatus(text);
     }
-
-    public void JoinOpenRoom()
+    void Connect()
     {
-        if (PhotonNetwork.InRoom || _switching)
-            return;
-
-        _holdRoomJoin = false;
-        _joined = false;
-        _failed = false;
-        _attempts = 0;
-        MarkConnectPending();
+        if (quitting) return;
         Configure();
-
-        if (PhotonNetwork.IsConnectedAndReady)
-            RequestRandomRoom();
-        else if (!BeginConnect())
-        {
-            Report("Could not start the Photon connection.", failure: true);
-            ClearConnectPending();
-        }
+        if (PhotonNetwork.IsConnectedAndReady && !PhotonNetwork.InRoom) { ExecuteRequest(); return; }
+        Started(RecoveringConnection ? "Reconnecting..." : "Connecting to Photon...");
+        if (!PhotonNetwork.IsConnected && !PhotonNetwork.ConnectUsingSettings(settings, false)) RetryConnection("Could not connect to Photon.");
     }
 
-    public void LeaveCurrentRoom()
+    public void RequestJoinRandom() => Begin(Request.Random);
+    public void RequestCreatePublic() => Begin(Request.FreshCompound);
+    public void RequestCreatePrivate() => FailInput("Enter a five-digit code, then choose Create.");
+    public void RequestCreatePrivate(string code)
     {
-        if (!PhotonNetwork.InRoom || _switching)
-            return;
-
-        _holdRoomJoin = true;
-        _joined = false;
-        _leavingRoom = true;
-        ClearConnectPending();
-        NotifyRoomMembership();
-
-        if (!PhotonNetwork.LeaveRoom())
-        {
-            _holdRoomJoin = false;
-            _joined = true;
-            _leavingRoom = false;
-            NotifyRoomMembership();
-        }
+        if (!RailSessionRules.IsCode(code)) { FailInput("Enter exactly five digits."); return; }
+        Begin(Request.CreatePrivate, code);
     }
-
-    public bool HasCurrentRoom(out string code, out bool isPublic)
-    {
-        code = null;
-        isPublic = false;
-        if (_leavingRoom || !PhotonNetwork.IsConnected || !PhotonNetwork.InRoom || PhotonNetwork.CurrentRoom == null)
-            return false;
-
-        code = PhotonNetwork.CurrentRoom.Name;
-        isPublic = PhotonNetwork.CurrentRoom.IsVisible;
-        return true;
-    }
-
-    public void RequestJoinRandom() => BeginRequest(RoomRequest.Random, null);
-
-    public void RequestCreatePublic() => BeginRequest(RoomRequest.Public, null);
-
-    public void RequestCreatePrivate() => BeginRequest(RoomRequest.Private, null);
-
     public void RequestJoinCode(string code)
     {
-        if (string.IsNullOrEmpty(code) || code.Length != RoomCodeLength)
-            return;
-
-        BeginRequest(RoomRequest.Code, code);
+        if (!RailSessionRules.IsCode(code)) { FailInput("Enter exactly five digits."); return; }
+        Begin(Request.JoinPrivate, code);
     }
-
-    void BeginRequest(RoomRequest request, string code)
+    public void JoinOpenRoom() { if (!HasRoomRequest) Begin(Request.Random); }
+    public void LeaveCurrentRoom() => Begin(Request.Random);
+    public bool HasCurrentRoom(out string code, out bool isPublic)
     {
-        if (_switching || _returningToLogin || _quitting)
-            return;
-
-        _switching = true;
-        _request = request;
-        _requestCode = code;
-        _requestSent = false;
-        _joined = false;
-        _failed = false;
-        _holdRoomJoin = true;
-        _returningToLogin = true;
-        RecoveringConnection = false;
-        _status = null;
-        if (_retryCoroutine != null)
-            StopCoroutine(_retryCoroutine);
-        _retryCoroutine = null;
-        MarkConnectPending();
-        RoomRequestStarted?.Invoke();
-        _leavingRoom = PhotonNetwork.InRoom;
-        PhotonNetwork.IsMessageQueueRunning = true;
-        // Disconnect deliberately so the old room cannot survive the scene transition.
-        PhotonNetwork.Disconnect();
-        DisablePlayScene();
-        NotifyRoomMembership();
-        StartCoroutine(ReturnToLogin());
+        code = PhotonNetwork.CurrentRoom?.Name; isPublic = Kind == RailSessionRules.CompoundKind;
+        return PhotonNetwork.InRoom && !leaving;
     }
-
-    void RunPendingOrRandom()
+    void FailInput(string text) { LastError = text; DuckzAnalytics.SessionJoinFailed(text); RoomRequestFailed?.Invoke(text); }
+    void Begin(Request next, string room = null)
     {
-        if (HasRoomRequest)
-            RunRequest();
-        else
-            RequestRandomRoom();
-    }
-
-    void RunRequest()
-    {
-        if (_request == RoomRequest.None || _requestSent || _holdRoomJoin || _returningToLogin)
-            return;
-
-        _requestSent = true;
-        switch (_request)
+        if (HasRoomRequest || quitting) return;
+        if (Kind == RailSessionRules.CompoundKind) previousCompound = PhotonNetwork.CurrentRoom.Name;
+        LastError = ""; request = next; requestedRoom = room;
+        if (next == Request.Transfer) DuckzAnalytics.SessionEvent("transfer");
+        WorldReady = false; MarkConnectPending(); RoomRequestStarted?.Invoke();
+        PhotonHeldItems.DropLocalHands(); RoomObjectRecovery.Flush();
+        if (PhotonNetwork.InRoom)
         {
-            case RoomRequest.Random:
-                Report("Joining a room...");
-                if (!PhotonNetwork.JoinRandomRoom(null, MaxPlayers))
-                    FailRoomRequest("Could not join a room.");
-                break;
-            case RoomRequest.Public:
-                _codeTries = 0;
-                CreateRoomWithCode(true);
-                break;
-            case RoomRequest.Private:
-                _codeTries = 0;
-                CreateRoomWithCode(false);
-                break;
-            case RoomRequest.Code:
-                Report(RoomRequestMessage);
-                if (!PhotonNetwork.JoinRoom(_requestCode))
-                    FailRoomRequest("Could not join room " + _requestCode + ".");
-                break;
+            leaving = true; Started("Leaving room...");
+            if (!PhotonNetwork.LeaveRoom(false)) RequestFailed("Could not leave the current room.");
         }
+        else Connect();
     }
-
-    void FailRoomRequest(string message)
-    {
-        _requestSent = false;
-        _leavingRoom = false;
-        DuckzAnalytics.SessionJoinFailed(message);
-        RoomRequestFailed?.Invoke(message);
-        NotifyRoomMembership();
-        Retry(message);
-    }
-
-    void NotifyRoomMembership() => RoomMembershipChanged?.Invoke();
-
-    void RequestRandomRoom()
-    {
-        Report("Joining a room...");
-        if (!PhotonNetwork.JoinRandomRoom(null, MaxPlayers))
-            Retry("Could not join a room.");
-    }
-
-    void CreateOpenRoom()
-    {
-        _codeTries = 0;
-        CreateRoomWithCode(true);
-    }
-
-    void CreateRoomWithCode(bool visible)
-    {
-        Report(visible ? "Creating room..." : "Creating private room...");
-        var options = new RoomOptions
-        {
-            MaxPlayers = MaxPlayers,
-            IsOpen = true,
-            IsVisible = visible,
-            PublishUserId = true,
-            // Per-spawn recovery keys must disappear on destruction, not accumulate null entries.
-            DeleteNullProperties = true,
-        };
-        if (PhotonNetwork.CreateRoom(NewRoomCode(), options))
-            return;
-
-        if (_request == RoomRequest.Random || _request == RoomRequest.Public || _request == RoomRequest.Private)
-            FailRoomRequest("Could not create a room.");
-        else
-            Retry("Could not create a room.");
-    }
-
-    string NewRoomCode()
-    {
-        int code = UnityEngine.Random.Range(0, 10000);
-        if (code == _lastRoomCode)
-            code = (code + 1) % 10000;
-
-        _lastRoomCode = code;
-        return code.ToString("D4");
-    }
-
     public override void OnConnectedToMaster()
     {
-        if (_returningToLogin || _quitting || _holdRoomJoin || _retryCoroutine != null)
-            return;
-        if (_request != RoomRequest.None)
-        {
-            RunRequest();
-            return;
-        }
-
-#if UNITY_EDITOR
-        // Editor room list stays on the master, including after Leave room.
-        if (GameManager.observePhotonRooms)
-        {
-            if (!PhotonNetwork.InLobby)
-                PhotonNetwork.JoinLobby();
-            return;
-        }
-#endif
-
-        if (_joined || _holdRoomJoin)
-            return;
-
-        RequestRandomRoom();
+        operationPending = false;
+        if (!quitting && request != Request.None) ExecuteRequest();
     }
-
-    public override void OnJoinedRoom()
-    {
-        if (_returningToLogin || _holdRoomJoin)
-            return;
-        HandleJoined();
-    }
-
     public override void OnLeftRoom()
     {
-        _leavingRoom = false;
-        NotifyRoomMembership();
+        leaving = false; WorldReady = false; joinedRoom = null;
+        RoomMembershipChanged?.Invoke();
+        // Wait for OnConnectedToMaster before submitting the next operation.
     }
-
-    void HandleJoined()
+    void ExecuteRequest()
     {
-        string joinKind = _request == RoomRequest.Private ? "private"
-            : _request == RoomRequest.Public ? "public"
-            : _request == RoomRequest.Code ? "code"
-            : _request == RoomRequest.Random ? "random"
-            : PhotonNetwork.CurrentRoom != null && PhotonNetwork.CurrentRoom.IsVisible ? "public" : "private";
-        int players = PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.PlayerCount : 0;
-        _attempts = 0;
-        if (_retryCoroutine != null)
-            StopCoroutine(_retryCoroutine);
-        _retryCoroutine = null;
-        _request = RoomRequest.None;
-        _requestCode = null;
-        _requestSent = false;
-        _switching = false;
-        _leavingRoom = false;
-        _holdRoomJoin = false;
-        _joined = true;
-        PlayerProps.PushCosmetics();
-        ClearConnectPending();
-        EnemyManager.ReleaseLocalSpawns();
-        DuckzAnalytics.SessionJoined(joinKind, players);
-        Report("Joined a room.");
-        NotifyRoomMembership();
-
-        if (InPlayScene())
+        if (operationPending || PhotonNetwork.InRoom || request == Request.None) return;
+        bool queued = false;
+        switch (request)
         {
-            PublishPlayScene();
-            return;
+            case Request.Random:
+                Started("Finding a public compound...");
+                queued = PhotonNetwork.JoinRandomRoom(new Hashtable { [RailSessionRules.Kind] = RailSessionRules.CompoundKind, [RailSessionRules.Schema] = RailSessionRules.Version }, MaxPlayers);
+                break;
+            case Request.FreshCompound:
+                Started("Creating a compound...");
+                queued = PhotonNetwork.CreateRoom("compound-" + Guid.NewGuid().ToString("N"), RailSessionRules.Options(RailSessionRules.CompoundKind));
+                break;
+            case Request.CreatePrivate:
+                Started("Creating private room " + requestedRoom + "...");
+                queued = PhotonNetwork.CreateRoom(requestedRoom, RailSessionRules.Options(RailSessionRules.PrivateKind));
+                break;
+            case Request.JoinPrivate:
+            case Request.ReturnToCompound:
+                Started("Joining " + requestedRoom + "..."); queued = PhotonNetwork.JoinRoom(requestedRoom);
+                break;
+            case Request.Rejoin:
+                Started("Rejoining your crew...");
+                queued = Time.realtimeSinceStartupAsDouble < resumeUntil ? PhotonNetwork.RejoinRoom(resumeRoom) : PhotonNetwork.JoinRoom(resumeRoom);
+                break;
+            case Request.Transfer:
+                Started("Travelling with your crew...");
+                var options = RailSessionRules.Options(transferKind, transferRun);
+                options.CustomRoomProperties[RailSessionRules.TransferUntil] = PhotonNetwork.Time + 30d;
+                // Any selected crew member can create it if the old coordinator disappears.
+                // Expected users reserve capacity on the Photon server.
+                queued = PhotonNetwork.JoinOrCreateRoom(requestedRoom, options, TypedLobby.Default, transferUsers);
+                break;
         }
-
-        if (PhotonNetwork.IsMasterClient)
-            PublishPlayScene();
-
-        if (PhotonNetwork.IsMasterClient || RoomIsPlayScene())
-            EnterPlayScene();
+        if (!queued) RequestFailed("The connection is not ready. Please retry.");
     }
-
-    public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+    public override void OnJoinRandomFailed(short code, string message)
     {
-        if (!_joined || _holdRoomJoin || propertiesThatChanged == null || !propertiesThatChanged.ContainsKey(SceneProperty))
-            return;
-
-        if (propertiesThatChanged[SceneProperty] is string scene && scene == PlayScene)
-            EnterPlayScene();
+        operationPending = false; request = Request.FreshCompound; ExecuteRequest();
     }
-
-    bool RoomIsPlayScene()
+    public override void OnCreateRoomFailed(short code, string message)
     {
-        return PhotonNetwork.CurrentRoom != null
-            && PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(SceneProperty, out var existing)
-            && existing is string scene
-            && scene == PlayScene;
+        operationPending = false;
+        RequestFailed(request == Request.CreatePrivate && code == ErrorCode.GameIdAlreadyExists
+            ? "That code is occupied. Choose another code or use Join." : "Could not create the room. Please retry.");
     }
-
-    bool InPlayScene() => GameScenes.IsLoaded(PlayScene) && !GameScenes.IsLoaded(GameScenes.Login);
-
-    void EnterPlayScene()
+    public override void OnJoinRoomFailed(short code, string message)
     {
-        if (_returningToLogin || _quitting || LoginFlow.Previewing || _enteringPlay || InPlayScene())
-            return;
-
-        _enteringPlay = true;
-        StartCoroutine(LoadPlayScene());
+        operationPending = false;
+        if (request == Request.ReturnToCompound) { request = Request.Random; ExecuteRequest(); return; }
+        RequestFailed(code == ErrorCode.GameFull ? "Room is full (including reserved reconnect slots)."
+            : code == ErrorCode.GameClosed ? "This expedition is ending. Join after the crew returns."
+            : code == ErrorCode.GameDoesNotExist ? "Room not found. Check the code and game version."
+            : "Could not join the room. Check your connection and game version.");
     }
-
-    IEnumerator LoadPlayScene()
+    void RequestFailed(string error)
     {
-        PhotonNetwork.IsMessageQueueRunning = false;
-        _status = null;
-
-        yield return GameScenes.EnsureEnvironment();
-        if (_returningToLogin)
+        operationPending = false; FailInput(error); RecoveringConnection = false; resumeRoom = null;
+        if (PhotonNetwork.InRoom)
         {
-            _enteringPlay = false;
-            yield break;
+            request = Request.None; leaving = false; WorldReady = true; ClearConnectPending(); return;
         }
-
-        // Login and DuckPlayer each own an OVRManager. Unload Login first:
-        // otherwise Main's manager destroys itself as a duplicate, and unloading
-        // Login afterwards leaves the VR rig without a tracking/input manager.
-        Scene login = SceneManager.GetSceneByName(GameScenes.Login);
-        if (login.isLoaded)
+        request = string.IsNullOrEmpty(previousCompound) ? Request.Random : Request.ReturnToCompound;
+        requestedRoom = previousCompound; retryAt = Time.realtimeSinceStartupAsDouble + 1;
+        SetStatus(error + " Returning to a compound...");
+    }
+    public override void OnJoinedRoom()
+    {
+        operationPending = false;
+        bool privateRequest = request == Request.JoinPrivate || request == Request.CreatePrivate;
+        if (!IsRailsRoom || (privateRequest && !IsPrivate))
         {
-            AsyncOperation unload = _sceneOperation = SceneManager.UnloadSceneAsync(login);
-            while (unload != null && !unload.isDone)
-                yield return null;
+            FailInput("Incompatible room. Use the same Duck Rails build.");
+            request = Request.Random; leaving = true; Started(LastError); PhotonNetwork.LeaveRoom(false); return;
         }
-
-        if (_returningToLogin)
+        DuckzAnalytics.SessionJoined(Kind, PhotonNetwork.CurrentRoom.PlayerCount);
+        DuckzAnalytics.SessionEvent(request == Request.Rejoin ? "rejoined" : "joined");
+        request = Request.None; RecoveringConnection = false; leaving = false;
+        joinedRoom = PhotonNetwork.CurrentRoom.Name; followedTransfer = null; pendingRevision = -1;
+        loadingSince = Time.realtimeSinceStartupAsDouble; WorldReady = false;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [RailSessionRules.Boarding] = false, [RailSessionRules.Ready] = "" });
+        PlayerProps.PushCosmetics(); RoomMembershipChanged?.Invoke();
+        if (!GameScenes.IsLoaded(PlayScene) && !loadingScene) StartCoroutine(LoadCompound());
+        else SetStatus("Loading current world state...");
+    }
+    IEnumerator LoadCompound()
+    {
+        loadingScene = true; PhotonNetwork.IsMessageQueueRunning = false; SetStatus("Loading Compound...");
+        var load = SceneManager.LoadSceneAsync(PlayScene, LoadSceneMode.Single);
+        if (load != null) yield return load;
+        loadingScene = false; PhotonNetwork.IsMessageQueueRunning = true; loginStatus = null;
+        if (!GameScenes.IsLoaded(PlayScene)) RequestFailed("Could not load Compound.");
+    }
+    public void MarkWorldReady()
+    {
+        if (!IsRailsRoom || HasRoomRequest) return;
+        if (!WorldReady) DuckzAnalytics.SessionEvent("world_ready");
+        WorldReady = true; ClearConnectPending(); SetStatus("Ready");
+        string token = RunId + ":" + Phase;
+        if (!(PhotonNetwork.LocalPlayer.CustomProperties[RailSessionRules.Ready] is string ready) || ready != token)
+            PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [RailSessionRules.Ready] = token });
+    }
+    public void SetBoarding(bool value)
+    {
+        if (!IsRailsRoom || !WorldReady || Kind != RailSessionRules.CompoundKind) return;
+        if (PhotonNetwork.LocalPlayer.CustomProperties[RailSessionRules.Boarding] is bool old && old == value) return;
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [RailSessionRules.Boarding] = value });
+    }
+    public bool Commit(Hashtable changes)
+    {
+        if (!IsRailsRoom || !PhotonNetwork.IsMasterClient) return false;
+        if (changes[RailSessionRules.Phase] is int next && !RailSessionRules.CanTransition(Phase, (RailPhase)next)) return false;
+        int revision = Get(RailSessionRules.Revision, 0);
+        if (pendingRevision == revision && Time.realtimeSinceStartupAsDouble - lastCommit < 1) return false;
+        changes[RailSessionRules.Revision] = revision + 1;
+        pendingRevision = revision; lastCommit = Time.realtimeSinceStartupAsDouble;
+        return PhotonNetwork.CurrentRoom.SetCustomProperties(changes, new Hashtable { [RailSessionRules.Revision] = revision });
+    }
+    public void StartPrivateRun()
+    {
+        if (!IsPrivate || Phase != RailPhase.Staging || !WorldReady || !PhotonNetwork.IsMasterClient) return;
+        Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Departing, [RailSessionRules.Run] = Guid.NewGuid().ToString("N"),
+            [RailSessionRules.Deadline] = PhotonNetwork.Time + 30d, [RailSessionRules.Fuel] = 100f,
+            [RailSessionRules.Cargo] = Array.Empty<int>(), [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 0f, 0f, 0f } });
+    }
+    public void FinishRun(bool success)
+    {
+        if (Phase != RailPhase.Running || !PhotonNetwork.IsMasterClient) return;
+        Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Ending,
+            [RailSessionRules.Deadline] = PhotonNetwork.Time + 5d, ["rails.success"] = success });
+    }
+    public void SetTrainMoving(bool moving)
+    {
+        if (Phase != RailPhase.Running || !PhotonNetwork.IsMasterClient) return;
+        var command = Get(RailSessionRules.Motion, new object[] { PhotonNetwork.Time, 0f, 0f, 0f });
+        RailSessionRules.EvaluateMotion(command, PhotonNetwork.Time, out float z, out float speed);
+        Commit(new Hashtable { [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, z, speed, moving ? 4f : 0f } });
+    }
+    public override void OnRoomPropertiesUpdate(Hashtable changed)
+    {
+        if (changed.ContainsKey(RailSessionRules.Phase) || changed.ContainsKey(RailSessionRules.Run))
+        { WorldReady = false; loadingSince = Time.realtimeSinceStartupAsDouble; }
+        if (changed.ContainsKey(RailSessionRules.Phase)) DuckzAnalytics.SessionPhaseChanged();
+        if (changed.ContainsKey(RailSessionRules.Revision)) pendingRevision = -1;
+        FollowTransfer();
+    }
+    public override void OnMasterClientSwitched(Player master)
+    {
+        pendingRevision = -1; nextAuthorityTick = 0;
+        if (master.IsLocal) DuckzAnalytics.SessionEvent("master_changed");
+    }
+    void FollowTransfer()
+    {
+        if (HasRoomRequest || !IsRailsRoom) return;
+        string destination = Get(RailSessionRules.Destination, "");
+        if (destination.Length == 0 || destination == followedTransfer || Get(RailSessionRules.TransferUntil, 0d) < PhotonNetwork.Time) return;
+        string[] users = Get(RailSessionRules.TransferUsers, Array.Empty<string>());
+        if (!users.Contains(PhotonNetwork.LocalPlayer.UserId)) return;
+        followedTransfer = destination;
+        transferKind = Kind == RailSessionRules.CompoundKind ? RailSessionRules.ExpeditionKind : RailSessionRules.CompoundKind;
+        transferRun = transferKind == RailSessionRules.ExpeditionKind ? destination : ""; transferUsers = users;
+        Begin(Request.Transfer, destination);
+    }
+    void TickAuthority()
+    {
+        if (!PhotonNetwork.IsMasterClient || !IsRailsRoom || HasRoomRequest) return;
+        double now = PhotonNetwork.Time;
+        var room = PhotonNetwork.CurrentRoom;
+        bool shouldOpen = Phase != RailPhase.Ending && Phase != RailPhase.Returning;
+        if (room.IsOpen != shouldOpen) room.IsOpen = shouldOpen;
+        if (room.ExpectedUsers != null && room.ExpectedUsers.Length > 0 && now > Get(RailSessionRules.TransferUntil, 0d)) room.ClearExpectedUsers();
+        if (Kind == RailSessionRules.CompoundKind)
         {
-            _enteringPlay = false;
-            yield break;
-        }
-        Scene play = SceneManager.GetSceneByName(PlayScene);
-        if (!play.isLoaded)
-        {
-            AsyncOperation load = _sceneOperation = SceneManager.LoadSceneAsync(PlayScene, LoadSceneMode.Additive);
-            while (load != null && !load.isDone)
-                yield return null;
-            play = SceneManager.GetSceneByName(PlayScene);
-        }
-
-        if (!play.IsValid() || !play.isLoaded)
-        {
+            if (Get(RailSessionRules.Destination, "").Length > 0)
             {
-                if (DuckzLog.AllowError(out var logNotice1))
-                    logNotice1.Write("Could not load " + PlayScene + ".");
+                var users = Get(RailSessionRules.TransferUsers, Array.Empty<string>());
+                if (now < Get(RailSessionRules.TransferUntil, 0d) && room.Players.Values.Any(p => !p.IsInactive && users.Contains(p.UserId))) return;
+                Commit(new Hashtable { [RailSessionRules.Destination] = "", [RailSessionRules.Roster] = Array.Empty<int>(), [RailSessionRules.Deadline] = 0d }); return;
             }
-            PhotonNetwork.IsMessageQueueRunning = true;
-            _enteringPlay = false;
-            yield break;
-        }
-
-        GameScenes.ActivateEnvironment();
-
-        _sceneOperation = null;
-        if (!_returningToLogin)
-            RecoveringConnection = false;
-        PhotonNetwork.IsMessageQueueRunning = true;
-        _enteringPlay = false;
-    }
-
-    void PublishPlayScene()
-    {
-        if (!PhotonNetwork.IsMasterClient || PhotonNetwork.CurrentRoom == null)
-            return;
-
-        if (PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue(SceneProperty, out var existing)
-            && existing is string scene
-            && scene == PlayScene)
-            return;
-
-        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { SceneProperty, PlayScene } });
-    }
-
-    public override void OnJoinRandomFailed(short returnCode, string message)
-    {
-        if (DuckzLog.AllowWarning(out var logNotice2))
-            logNotice2.Write($"Photon random-room failure ({returnCode}): {message}");
-        if (_joined || _returningToLogin || _holdRoomJoin)
-            return;
-
-        if (_request == RoomRequest.Random)
-        {
-            CreateOpenRoom();
-            return;
-        }
-
-        if (_request != RoomRequest.None)
-            return;
-
-        CreateOpenRoom();
-    }
-
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
-        if (DuckzLog.AllowWarning(out var logNotice3))
-            logNotice3.Write($"Photon room-join failure ({returnCode}): {message}");
-        if (_joined || _returningToLogin || _holdRoomJoin)
-            return;
-
-        if (_request == RoomRequest.Code)
-        {
-            if (returnCode == ErrorCode.GameFull || returnCode == ErrorCode.GameDoesNotExist
-                || returnCode == ErrorCode.GameClosed)
+            var occupants = room.Players.Values.Where(p => !p.IsInactive && p.CustomProperties[RailSessionRules.Boarding] is bool b && b
+                && RailWorld.IsActorOnPlatform(p.ActorNumber)).Select(p => p.ActorNumber);
+            int[] old = Get(RailSessionRules.Roster, Array.Empty<int>()), roster = RailSessionRules.Admit(old, occupants);
+            double deadline = RailSessionRules.Countdown(Get(RailSessionRules.Deadline, 0d), roster.Length, now);
+            if (roster.Length > 0 && now >= deadline)
             {
-                string reason = "Room " + _requestCode
-                    + (returnCode == ErrorCode.GameFull ? " is full."
-                    : returnCode == ErrorCode.GameClosed ? " is closed." : " not found.");
-                _request = RoomRequest.Random;
-                _requestCode = null;
-                FailRoomRequest(reason + " Joining another room...");
+                string[] users = roster.Select(id => room.GetPlayer(id)?.UserId).Where(id => !string.IsNullOrEmpty(id)).Distinct().ToArray();
+                if (users.Length != roster.Length) return;
+                Commit(new Hashtable { [RailSessionRules.Roster] = roster, [RailSessionRules.Destination] = "run-" + Guid.NewGuid().ToString("N"),
+                    [RailSessionRules.TransferUsers] = users, [RailSessionRules.TransferUntil] = now + 30d, [RailSessionRules.Deadline] = 0d });
             }
-            else
-                FailRoomRequest("Could not join room " + _requestCode + ".");
+            else if (!old.SequenceEqual(roster) || deadline != Get(RailSessionRules.Deadline, 0d))
+                Commit(new Hashtable { [RailSessionRules.Roster] = roster, [RailSessionRules.Deadline] = deadline });
             return;
         }
-
-        if (_request != RoomRequest.None)
+        if (Phase == RailPhase.Departing)
         {
-            FailRoomRequest(MissingRoomMessage);
-            return;
+            double deadline = Get(RailSessionRules.Deadline, 0d);
+            if (deadline == 0d) { Commit(new Hashtable { [RailSessionRules.Deadline] = now + 30d }); return; }
+            bool ready = WorldReady && room.Players.Values.Where(p => !p.IsInactive).All(p =>
+                p.CustomProperties[RailSessionRules.Ready] is string r && r == RunId + ":" + RailPhase.Departing);
+            if (ready || now >= deadline)
+                Commit(new Hashtable { [RailSessionRules.Phase] = (int)(WorldReady ? RailPhase.Running : RailPhase.Returning), [RailSessionRules.Deadline] = now + 2d });
         }
-
-        if (returnCode == ErrorCode.GameFull)
+        else if (Phase == RailPhase.Ending && now >= Get(RailSessionRules.Deadline, 0d))
+            Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Returning, [RailSessionRules.Deadline] = now + 2d });
+        else if (Phase == RailPhase.Returning && now >= Get(RailSessionRules.Deadline, 0d))
         {
-            CreateOpenRoom();
-            return;
+            if (IsPrivate)
+            {
+                Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Staging, [RailSessionRules.Run] = "", [RailSessionRules.Cargo] = Array.Empty<int>() });
+            }
+            else if (Get(RailSessionRules.Destination, "").Length == 0)
+                Commit(new Hashtable { [RailSessionRules.Destination] = "compound-" + Guid.NewGuid().ToString("N"),
+                    [RailSessionRules.TransferUsers] = room.Players.Values.Where(p => !p.IsInactive).Select(p => p.UserId).ToArray(), [RailSessionRules.TransferUntil] = now + 30d });
         }
-
-        Retry("Could not join a room.");
     }
-
-    public override void OnCreateRoomFailed(short returnCode, string message)
-    {
-        if (DuckzLog.AllowWarning(out var logNotice4))
-            logNotice4.Write($"Photon room-creation failure ({returnCode}): {message}");
-        if (_joined || _returningToLogin || _holdRoomJoin)
-            return;
-
-        if (returnCode == ErrorCode.GameIdAlreadyExists && _codeTries + 1 < MaxAttempts)
-        {
-            _codeTries++;
-            CreateRoomWithCode(_request != RoomRequest.Private);
-            return;
-        }
-
-        if (_request == RoomRequest.Public || _request == RoomRequest.Private)
-        {
-            FailRoomRequest("Could not create a room.");
-            return;
-        }
-
-        if (_request != RoomRequest.None)
-        {
-            FailRoomRequest("Could not create a room.");
-            return;
-        }
-
-        Retry("Could not create a room.");
-    }
-
     public override void OnDisconnected(DisconnectCause cause)
     {
-        if (DuckzLog.AllowWarning(out var logNotice5))
-            logNotice5.Write("Photon disconnected: " + cause);
-        if (_quitting || cause == DisconnectCause.ApplicationQuit || _returningToLogin)
-            return;
-
-        if (_joined || _enteringPlay || GameScenes.IsLoaded(PlayScene))
+        if (quitting) return;
+        operationPending = false; WorldReady = false;
+        DuckzAnalytics.SessionDisconnected(cause.ToString());
+        if (!string.IsNullOrEmpty(joinedRoom) && !leaving)
         {
-            BeginLoginRecovery();
-            return;
+            resumeRoom = joinedRoom; resumeUntil = Time.realtimeSinceStartupAsDouble + 120;
+            request = Request.Rejoin; joinedRoom = null;
         }
-
-        _leavingRoom = false;
-        if (_holdRoomJoin)
-            return;
-        if (_request != RoomRequest.None)
-        {
-            FailRoomRequest("Disconnected from Photon.");
-            return;
-        }
-
-        NotifyRoomMembership();
-
-        if (_joined || _failed || _holdRoomJoin)
-            return;
-
-        Retry("Disconnected from Photon.");
+        if (request == Request.None) request = Request.Random;
+        leaving = false; RecoveringConnection = true; RetryConnection("Connection lost.");
+        RoomMembershipChanged?.Invoke();
     }
-
-    void BeginLoginRecovery()
+    void RetryConnection(string reason)
     {
-        _returningToLogin = true;
-        RecoveringConnection = true;
-        if (_retryCoroutine != null)
-            StopCoroutine(_retryCoroutine);
-        _retryCoroutine = null;
-        _status = null;
-        _joined = false;
-        _failed = false;
-        _holdRoomJoin = true;
-        _request = RoomRequest.None;
-        _requestCode = null;
-        _requestSent = false;
-        _switching = false;
-        _leavingRoom = false;
-        _attempts = 0;
-        ClearConnectPending();
-        PhotonNetwork.IsMessageQueueRunning = true;
-        DisablePlayScene();
-        NotifyRoomMembership();
-        StartCoroutine(ReturnToLogin());
+        operationPending = false; retryAt = Time.realtimeSinceStartupAsDouble + 2;
+        SetStatus(reason + " Reconnecting..."); MarkConnectPending();
     }
-
-    static void DisablePlayScene()
+    void Update()
     {
-        Scene play = SceneManager.GetSceneByName(PlayScene);
-        if (play.isLoaded)
-            foreach (GameObject root in play.GetRootGameObjects())
-                root.SetActive(false);
-    }
-
-    IEnumerator ReturnToLogin()
-    {
-        // Unity scene operations cannot be cancelled. Drain any interrupted load
-        // before unloading Main, so it cannot finish behind the new login rig.
-        while (_enteringPlay || (_sceneOperation != null && !_sceneOperation.isDone))
-            yield return null;
-        _sceneOperation = null;
-        if (_switching)
-        {
-            while (PhotonNetwork.IsConnected)
-                yield return null;
-            _leavingRoom = false;
-        }
-        DisablePlayScene();
-        yield return GameScenes.EnsureEnvironment();
-        if (GameScenes.IsLoaded(PlayScene))
-            yield return SceneManager.UnloadSceneAsync(PlayScene);
-
-        // Unload the gameplay OVRManager before creating Login's OVRManager.
-        // A disconnect before Main starts can leave an old LoginFlow running.
-        if (GameScenes.IsLoaded(GameScenes.Login))
-            yield return SceneManager.UnloadSceneAsync(GameScenes.Login);
-        yield return SceneManager.LoadSceneAsync(GameScenes.Login, LoadSceneMode.Additive);
-        GameScenes.ActivateEnvironment();
-        _returningToLogin = false;
-    }
-
-    void Retry(string reason)
-    {
-        // One pending retry per failure, even if Photon emits multiple callbacks.
-        if (_retryCoroutine != null || _returningToLogin || _quitting)
-            return;
-
-        // Saturate the counter so an extended outage cannot overflow it.
-        _attempts = Mathf.Min(_attempts + 1, 7);
-        int delay = _attempts <= 5 ? 2 : _attempts == 6 ? 4 : 8;
-        _retryCoroutine = StartCoroutine(RetryConnect(reason, delay));
-    }
-
-    IEnumerator RetryConnect(string reason, int delay)
-    {
-        for (int remaining = delay; remaining > 0; remaining--)
-        {
-            // Keep the failure visible throughout the existing retry wait.
-            Report(reason + " Retrying in " + remaining + " seconds...",
-                ShortFailure(reason) + (reason.Contains(" Joining another room...")
-                    ? " Joining another room..." : " Retrying..."));
-            yield return new WaitForSecondsRealtime(1f);
-        }
-        _retryCoroutine = null;
-        if (_joined || _failed || _holdRoomJoin)
-            yield break;
-
-        Report(HasRoomRequest ? RoomRequestMessage : "Connecting to Photon...");
-#if UNITY_EDITOR
-        if (GameManager.observePhotonRooms && !HasRoomRequest)
-        {
-            if (PhotonNetwork.IsConnectedAndReady)
-            {
-                if (!PhotonNetwork.InLobby)
-                    PhotonNetwork.JoinLobby();
-            }
-            else if (!PhotonNetwork.IsConnected && !BeginConnect())
-                Retry("Could not start the Photon connection.");
-
-            yield break;
-        }
-#endif
-
-        if (PhotonNetwork.IsConnectedAndReady)
-            RunPendingOrRandom();
-        else if (!PhotonNetwork.IsConnected && !BeginConnect())
-            Retry("Could not start the Photon connection.");
-    }
-
-#if UNITY_EDITOR
-    IEnumerator JoinObservedLobby()
-    {
-        if (PhotonNetwork.InLobby)
-        {
-            ClearConnectPending();
-            Report("In the lobby.");
-            yield break;
-        }
-
-        Report("Connecting to Photon...");
-        if (PhotonNetwork.IsConnectedAndReady)
-        {
-            if (!PhotonNetwork.JoinLobby())
-            {
-                Report("Could not join the lobby.", failure: true);
-                ClearConnectPending();
-                yield break;
-            }
-        }
-        else if (!BeginConnect())
-        {
-            Report("Could not start the Photon connection.", failure: true);
-            ClearConnectPending();
-            yield break;
-        }
-
-        while (!PhotonNetwork.InLobby && !_failed)
-            yield return null;
-
-        if (PhotonNetwork.InLobby)
-        {
-            ClearConnectPending();
-            Report("In the lobby.");
-        }
-    }
-#endif
-
-    static string ShortFailure(string reason)
-    {
-        if (reason.Contains(" not found.")) return "Room not found.";
-        if (reason.Contains(" is full.")) return "Room is full.";
-        if (reason.Contains(" is closed.")) return "Room is closed.";
-        if (reason == MissingRoomMessage) return "Room not found.";
-        if (reason == "Could not create a room.") return "Couldn't create room.";
-        if (reason.StartsWith("Could not join")) return "Couldn't join room.";
-        return "Connection failed.";
-    }
-
-    void Report(string message, string displayMessage = null, bool failure = false)
-    {
-        if (failure)
-        {
-            if (DuckzLog.AllowWarning(out var logNotice6, message))
-                logNotice6.Write(message);
-        }
-        else DuckzLog.Log(message);
-        if (displayMessage == null)
-        {
-            switch (message)
-            {
-                // Network steps remain detailed in logs, but share one visible phase.
-                case "Connecting to Photon...":
-                case "Joining a room...":
-                case "Creating room...":
-                case "Creating private room...":
-                    displayMessage = RecoveringConnection ? "Reconnecting..." : RoomRequestMessage;
-                    break;
-                case "Joined a room.": return;
-                case "Could not start the Photon connection.": displayMessage = "Connection failed."; break;
-                case "Could not join the lobby.": displayMessage = "Couldn't join lobby."; break;
-                default: displayMessage = message; break;
-            }
-        }
-        _status?.Invoke(displayMessage);
+        if (!initialized || quitting) return;
+        double now = Time.realtimeSinceStartupAsDouble;
+        if (operationPending && now > operationUntil && !loadingScene)
+        { operationPending = false; PhotonNetwork.Disconnect(); RetryConnection("Connection timed out."); }
+        if (!operationPending && request != Request.None && !PhotonNetwork.InRoom && now >= retryAt && !loadingScene) Connect();
+        if (!IsRailsRoom || HasRoomRequest) return;
+        FollowTransfer();
+        if (!WorldReady && now - loadingSince > 30 && Phase == RailPhase.Running)
+        { Begin(Request.Random); FailInput("World loading timed out. Returning to a compound."); return; }
+        if (now < nextAuthorityTick) return;
+        nextAuthorityTick = now + .1; TickAuthority();
     }
 }

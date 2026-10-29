@@ -12,7 +12,9 @@ Scheduling proposal: four-week closed alpha, six-week public V1. This is a miles
 
 Deliverable: runnable baseline plus a verified reuse inventory.
 
-October 28 authentication progress: separate Unity and simplified backend copies are confirmed; client/backend sign-in compatibility changes compile and local backend tests pass. See `authentication-setup.md`. Deployment, live platform authentication, and two-headset acceptance remain unverified; the broader readiness items below are not complete.
+October 28 authentication progress: separate Unity and simplified backend copies are confirmed; client/backend sign-in compatibility changes compile and local backend tests pass. See `authentication-setup.md`. Justin subsequently confirmed backend and Photon authentication setup completed. This milestone targets DesktopPlayer first; headset acceptance is deferred. The broader readiness items below are not complete.
+
+Analytics follow-up: separate Duck Rails Android keys are now entered, inherited gold polling is removed, and Rails session events are instrumented. Editor previews are local only. Actual dashboard delivery and Windows platform configuration remain pending; see `analytics-setup.md`.
 
 - [ ] Obtain the intended Duckz source location and confirm whether this repo will be a full project fork, an imported subset, or another supported arrangement.
 - [ ] Read source/project guidance before copying or changing anything. Preserve the original Duckz project.
@@ -32,13 +34,18 @@ Do not copy credentials into tracked documentation. Do not claim systems verifie
 
 Deliverable: friends can form a crew, depart, join halfway through, see the same moving platform and objects, and return together.
 
-### Decisions to settle before implementation
-- Public compound capacity and basic entry policy.
-- Coordinating authority under the existing networking stack and its succession on disconnect.
-- Player identity across reconnects and item ownership policy.
-- Public return strategy; recommended smallest scope is a fresh compound for the group.
-- Private room lifetime and staging launch behavior.
-- What counts as new arrival versus reconnect; temporary slot reservation if supported.
+### Decisions confirmed October 28
+- Standalone Login art and random camera spots; authenticate/connect/join before transitioning to Compound. No Quackville use.
+- Twelve-player public compounds, automatic initial compound placement; eight-player expeditions.
+- First platform occupant starts twenty seconds. Entry/exit cannot reset a nonempty timer. Empty cancels; re-entry starts twenty seconds again.
+- Photon Master Client coordinates changes and passes responsibility on departure; initial private creator launches manually.
+- Authenticated identity; 120-second expedition reconnect reservation while the room remains alive; shared items persist without restoring duplicate disk-saved supplies.
+- Fresh public compound for group return, reserving crew capacity.
+- Private staging/run/return retain the same room and code. Last connected player leaving destroys the room immediately.
+- DesktopPlayer is the current test target. Backend/Photon setup is reported complete; multiple actual clients are still required for network acceptance.
+
+### Implementation and evidence
+See `week1-session.md` for source paths, controls, validation results and pending multi-client evidence. Implemented work is kept separate from milestone acceptance; unchecked scenarios below remain unverified until exercised across real clients. Desktop follow-up adds the tagged Meta-account window from the referenced Classic commits, a Player2-configured Two Ducks scenario, a compact centered status banner and carriage-relative footsteps. Local regression checks passed; two-client sign-in remains pending the second saved account.
 
 ### Work
 - [ ] Define session phases: compound/staging, departing, running, ending, returning. Define valid transitions and who can request/commit them.

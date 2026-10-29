@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &1107019195810030832
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1795818489445174633, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: grabSurface
+      value: 
+      objectReference: {fileID: 11400000, guid: 1e22181c1c98ae142ba9afb4bd4c67ac, type: 2}
+    - target: {fileID: 2647454512975538669, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_Name
+      value: RailBat
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.329
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.629
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4337183180017027322, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120458993317240871, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: Synchronization
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120458993317240871, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: ObservedComponents.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6120458993317240871, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      propertyPath: 'ObservedComponents.Array.data[2]'
+      value: 
+      objectReference: {fileID: 6471978947014606490}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2647454512975538669, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6471978947014606490}
+  m_SourcePrefab: {fileID: 100100000, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+--- !u!1 &3161889561045552413 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2647454512975538669, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+  m_PrefabInstance: {fileID: 1107019195810030832}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6471978947014606490
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3161889561045552413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415fd5c502307204781da8b1c3e7364e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RailCargo

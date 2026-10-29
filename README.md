@@ -1,12 +1,13 @@
 # Duck Rails
 
-Cooperative VR horror-comedy built on Duckz: up to eight ducks ride a train through a modern zombie outbreak, scavenge coal, rescue teammates, and escape into dawn.
+Cooperative VR horror-comedy built from the Duckz Unity project: up to eight ducks ride a train, scavenge supplies, and escape together.
 
-## Project documentation
-- [Game design](docs/game-design.md): confirmed V1 decisions, Duckz reuse, proposed defaults, and open questions.
-- [Execution plan](docs/execution-plan.md): architecture-first milestones, implementation dependencies, verification, risks, and scope cuts.
-- [Agent guidance](AGENTS.md): concise orientation for future development sessions.
+Unity version: **6000.3.24f1**. Networking: **PUN over Photon Realtime**, plus Photon Voice.
 
-This repository currently contains planning documentation only. Duckz source has not been imported or inspected. The handoff records the design discussion through October 28, 2026; it is not an implementation audit.
+Open `Assets/Scenes/Login.unity` and press Play for the DesktopPlayer session prototype. Login authenticates and connects before loading Compound. Quackville is not used. See [Week 1 controls and validation](docs/week1-session.md).
 
-Start by locating the intended Duckz source and establishing its Unity, networking, voice, interaction, and build dependencies. Preserve its working multiplayer interactions while implementing the new session and expedition flow.
+- [Game design](docs/game-design.md)
+- [Execution plan](docs/execution-plan.md)
+- [Authentication setup](docs/authentication-setup.md)
+
+The source Duckz project remains separate. Week 1 multi-client and headset acceptance are not implied by compilation or local checks.

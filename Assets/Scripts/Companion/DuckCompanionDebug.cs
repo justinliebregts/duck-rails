@@ -1,14 +1,11 @@
 using Photon.Pun;
 using UnityEngine;
 
-/// <summary>Editor-only readout and typed fallback. Small toggle restores the panel.</summary>
+/// <summary>Editor-only readout and typed fallback, toggled with F8.</summary>
 public sealed class DuckCompanionDebug : MonoBehaviour
 {
 #if UNITY_EDITOR
     const string VisiblePrefKey = "Duck.CompanionDebug.Visible";
-    const float ToggleWidth = 72f;
-    const float ToggleHeight = 24f;
-    const float TogglePad = 8f;
 
     public static bool IsTyping { get; private set; }
     public static bool IsHovered { get; private set; }
@@ -30,15 +27,8 @@ public sealed class DuckCompanionDebug : MonoBehaviour
     {
         if (!visible)
         {
-            Rect toggle = new Rect(
-                Mathf.Max(TogglePad, Screen.width - ToggleWidth - TogglePad),
-                TogglePad,
-                ToggleWidth,
-                ToggleHeight);
-            IsHovered = toggle.Contains(Event.current.mousePosition);
+            IsHovered = false;
             IsTyping = false;
-            if (GUI.Button(toggle, "Duck"))
-                SetVisible(true);
             return;
         }
 

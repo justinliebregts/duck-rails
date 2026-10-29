@@ -27,6 +27,7 @@ public sealed class EquipmentInventory : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        if (PhotonSession.IsRailsRoom) return;
         if (!PhotonNetwork.InRoom) return;
         var player = GR.Player.instance;
         if (!UserPlayerPrefs.IsReady || player == null || player.IsDead ||

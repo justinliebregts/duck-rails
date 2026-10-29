@@ -217,6 +217,7 @@ public class DesktopPlayer : MonoBehaviour
 
     void Update()
     {
+        if (RailWorld.InputBlocked) return;
         bool typing = DuckCompanionDebug.IsTyping;
         bool simulated = false;
         Vector2 moveInput = typing ? Vector2.zero : new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -254,7 +255,7 @@ public class DesktopPlayer : MonoBehaviour
             _pitch.localRotation = Quaternion.Euler(_pitchAngle, 0f, 0f);
         }
 
-        if (!typing && Input.GetKeyDown(KeyCode.E))
+        if (!typing && !PhotonSession.IsRailsRoom && Input.GetKeyDown(KeyCode.E))
             ThrowTestBat();
 
         UpdateMenuClick(typing);

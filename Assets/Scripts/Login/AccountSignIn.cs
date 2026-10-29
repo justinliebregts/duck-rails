@@ -1,7 +1,5 @@
-﻿using System;
+using System;
 using System.Collections;
-using System.Diagnostics;
-using System.Reflection;
 using UnityEngine;
 
 public static class AccountSignIn
@@ -16,19 +14,6 @@ public static class AccountSignIn
     {
         if (config == null)
             config = GameConfig.Current;
-
-#if UNITY_EDITOR
-        if (IsAdditionalEditor())
-        {
-            string playerId = "editor-" + Process.GetCurrentProcess().Id;
-            UserPlayerPrefs.SetCurrentUser(playerId);
-            PlayerSession session = PlayerSession.CreateLocal(playerId, "Player 2");
-            DuckzLog.Log("Signed in as " + session.DisplayName + ".");
-            DuckzLog.Log("Editor player ID: " + session.PlayerId);
-            completed(new Outcome { SignedIn = true });
-            yield break;
-        }
-#endif
 
         if (config == null || string.IsNullOrEmpty(config.backendBaseUrl))
         {
@@ -131,13 +116,4 @@ public static class AccountSignIn
         DuckzLog.Log(message);
         status?.Invoke(displayMessage ?? message);
     }
-
-#if UNITY_EDITOR
-    static bool IsAdditionalEditor()
-    {
-        var type = Type.GetType("Unity.Multiplayer.PlayMode.CurrentPlayer, UnityEngine.MultiplayerModule");
-        var property = type?.GetProperty("IsMainEditor", BindingFlags.Public | BindingFlags.Static);
-        return property?.GetValue(null) is bool mainEditor && !mainEditor;
-    }
-#endif
 }

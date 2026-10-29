@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     IEnumerator Start()
     {
+        if (usingDesktopPlayer) yield break;
         // Wait until the HMD is actually presenting so the frequency is real
         while (OVRManager.instance == null || !OVRManager.isHmdPresent)
             yield return null;

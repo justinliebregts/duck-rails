@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Game.Animation;
 using Game.Audio;
 using Photon.Pun;
@@ -191,6 +191,8 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
     // Once per room: if a bag was on our back when we last left, ask for it back onto our back.
     void TryRestore()
     {
+        // Duck Rails supplies live in the room; never recreate a disk-saved bag.
+        if (PhotonSession.IsRailsRoom) return;
         if (!PhotonNetwork.InRoom)
         {
             restoreRequested = false;

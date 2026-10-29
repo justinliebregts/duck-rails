@@ -1,4 +1,4 @@
-﻿// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // <copyright file="PunVoiceClient.cs" company="Exit Games GmbH">
 // Photon Voice - Copyright (C) 2018 Exit Games GmbH
 // </copyright>
@@ -212,6 +212,9 @@ namespace Photon.Voice.PUN
             {
                 settings = new AppSettings();
                 settings = PhotonNetwork.PhotonServerSettings.AppSettings.CopyTo(settings); // creates an independent copy (cause we need to modify it slightly)
+                // Private codes may be reused in incompatible game-version partitions.
+                // Voice must follow the active version too, not just the serialized asset default.
+                settings.AppVersion = PhotonNetwork.NetworkingClient.AppVersion;
                 if (!string.IsNullOrEmpty(PhotonNetwork.CloudRegion))
                 {
                     settings.FixedRegion = PhotonNetwork.CloudRegion; // makes sure the voice connection follows into the same cloud region (as PUN uses now).

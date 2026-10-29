@@ -52,7 +52,7 @@ public partial class ControllerInput : MonoBehaviour
     }
 
     void MouseGripInput() {
-      bool locked = Cursor.lockState == CursorLockMode.Locked && !DesktopPlayer.SuppressMouseGrip;
+      bool locked = Cursor.lockState == CursorLockMode.Locked && !DesktopPlayer.SuppressMouseGrip && !RailWorld.InputBlocked;
       // The click that recaptures the cursor is not a grab.
       bool down = rightGripButton.down
         ? locked && Input.GetMouseButton(0)

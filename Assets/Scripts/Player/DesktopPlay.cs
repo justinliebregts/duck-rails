@@ -19,16 +19,18 @@ public class DesktopPlay : MonoBehaviour
         {
 #if UNITY_EDITOR
             return UnityEditor.EditorPrefs.GetBool(PrefKey, true);
+#elif UNITY_STANDALONE
+            return true;
 #else
             return false;
 #endif
         }
     }
 
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void StopEditorXr()
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_STANDALONE
         if (!UseDesktop)
             return;
 
@@ -63,8 +65,7 @@ public class DesktopPlay : MonoBehaviour
             return;
 
         var desktopPlayer = Instantiate(desktopPlayerPrefab, origin, rotation);
-        // Quackville stays active across transitions. Keep the player and its
-        // child camera in the gameplay scene so unloading Main removes both.
+        // Keep the rig and camera in the scene that owns their lifetime.
         SceneManager.MoveGameObjectToScene(desktopPlayer, gameObject.scene);
     }
 

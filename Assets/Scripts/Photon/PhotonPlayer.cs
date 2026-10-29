@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Game.Animation;
 using Photon.Pun;
 using TMPro;
@@ -85,7 +85,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     // after this avatar's Awake. All hit/death/pose paths must agree on identity.
     public DuckCompanion Companion => companion != null ? companion : (companion = GetComponent<DuckCompanion>());
     public bool IsCompanion => Companion != null;
-    public bool IsLocalHuman => !IsCompanion && photonView != null && photonView.IsMine;
+    public bool IsLocalHuman => !IsCompanion && photonView != null && photonView.Owner != null && photonView.Owner.IsLocal;
     public float MinHitSpeed => minHitSpeed;
     public bool SwingLocked => Time.time < _swingLockUntil;
 
@@ -391,8 +391,9 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
                     rHandSource,
                     _fingerSource != null ? _fingerSource.Curl : default);
                 var manager = HelicopterManager.instance;
-                if (IsLocalHuman && manager != null
-                    && manager.TryGetLocalPassengerFrame(out int arrival, out int pad, out Transform frame))
+                int arrival = 0, pad = 0; Transform frame = null;
+                if (IsLocalHuman && ((manager != null && manager.TryGetLocalPassengerFrame(out arrival, out pad, out frame))
+                    || RailTrain.TryLocalFrame(out arrival, out pad, out frame)))
                 {
                     packet.CabinArrival = arrival;
                     packet.CabinLanding = pad;
@@ -746,7 +747,9 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     {
         if (_renderCabinArrival <= 0) return;
         var manager = HelicopterManager.instance;
-        if (manager == null || !manager.TryGetPassengerFrame(_renderCabinArrival, _renderCabinPad, out Transform frame))
+        Transform frame = null;
+        if (!(manager != null && manager.TryGetPassengerFrame(_renderCabinArrival, _renderCabinPad, out frame))
+            && !RailTrain.TryFrame(_renderCabinArrival, out frame))
             return;
         Quaternion deltaRotation = frame.rotation * Quaternion.Inverse(_renderCabinRotation);
         Vector3 deltaPosition = frame.position - deltaRotation * _renderCabinPosition;
@@ -760,8 +763,8 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     {
         var manager = HelicopterManager.instance;
         Transform frame = null;
-        bool passenger = sample.arrival > 0 && manager != null
-            && manager.TryGetPassengerFrame(sample.arrival, sample.pad, out frame);
+        bool passenger = sample.arrival > 0 && ((manager != null
+            && manager.TryGetPassengerFrame(sample.arrival, sample.pad, out frame)) || RailTrain.TryFrame(sample.arrival, out frame));
         int arrival = passenger ? sample.arrival : 0;
         int pad = passenger ? sample.pad : 0;
         if (arrival != _renderCabinArrival || pad != _renderCabinPad) _recoveryRemaining = 0f;

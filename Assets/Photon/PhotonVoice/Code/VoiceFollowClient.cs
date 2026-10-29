@@ -322,6 +322,18 @@ namespace Photon.Voice
             return this.Client.OpJoinOrCreateRoom(roomParams);
         }
 
+        private bool followPending;
+
+        protected override void Update()
+        {
+            base.Update();
+            if (!this.followPending) return;
+            this.followPending = false;
+            // StateChanged runs inside Realtime's join handler, before nickname/property updates.
+            // Defer room switches until that handler finishes to avoid issuing SetProperties while Leaving.
+            this.FollowLeader();
+        }
+
         private void FollowLeader(ClientState toState)
         {
             switch (toState)
@@ -330,7 +342,7 @@ namespace Photon.Voice
                 case ClientState.Disconnected:
                 case ClientState.ConnectedToMasterServer:
                     this.Logger.Log(LogLevel.Debug, $"FollowLeader for state {toState}");
-                    this.FollowLeader();
+                    this.followPending = true;
                     break;
             }
         }

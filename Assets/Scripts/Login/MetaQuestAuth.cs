@@ -26,6 +26,11 @@ public static class MetaQuestAuth
     public static IEnumerator SignIn(Action<Result> completed)
     {
 #if UNITY_EDITOR
+        if (PlatformSettings.UseStandalonePlatform && !MppmStandaloneCredentials.TryApplyForCurrentPlayer(out string editorError))
+        {
+            completed(Retry(editorError));
+            yield break;
+        }
         if (PlatformSettings.UseStandalonePlatform && string.IsNullOrEmpty(StandalonePlatformSettings.OculusPlatformTestUserAccessToken))
         {
             completed(Retry("Editor test user is not logged in. Use Meta > Platform > Edit Settings."));

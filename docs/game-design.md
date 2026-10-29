@@ -139,23 +139,25 @@ Initial content proposal: four scavenging blocks, choose three per run, one fixe
 - Private rooms are hidden from public discovery but joinable by code. A code is not authenticated friends-only access.
 - Friends can join active runs and spawn on the train, subject to eight-player capacity.
 
-### Proposed public platform behavior
+### Confirmed public platform behavior
 - First occupant starts a 20-second timer; joining/leaving does not reset it.
 - Empty platform cancels; fewer than eight can depart.
 - Show time and occupancy; clearly indicate who is aboard and when full.
 - At zero, lock the roster, transfer it, and reopen the source platform afterward.
 - Validate membership/capacity through the room's coordinating authority.
 
-### Proposed private lifecycle
+### Confirmed private lifecycle
 - Successful creation enters private staging; friends can arrive before or after departure.
 - Private session remains the same Photon room through staging, run, results, and return so its code persists while alive.
-- Do not promise that an empty room/code persists indefinitely; define room lifetime separately.
+- The creator is initially Master Client and starts the expedition manually. Responsibilities pass to another connected player when the Master Client leaves.
+- When the last connected player leaves, the room closes immediately and releases its code. No empty-room recovery window.
 
-### Public return remains open
-- User suggested finding a compound with sufficient capacity, or creating a new one for larger crews.
-- Simpler recommended V1 default: create a fresh compound for every returning public group.
-- Whichever approach is selected must keep the group together; existing-room returns require group capacity reservation.
-- Social compound capacity, public auto-fill, and public run discoverability are not finalized.
+### Confirmed compound entry and public return
+- Start in the standalone Login scene, with its own art and random camera spots. Authenticate, connect to Photon, join a compatible public compound, then transition into Compound.
+- Quackville is not used by Duck Rails. Do not preload its environment beneath Login or gameplay.
+- Public compounds hold twelve players; expeditions hold eight. Automatic placement selects the initial compound only.
+- Public runs take only the trigger occupants at countdown expiry. Emptying the trigger cancels the countdown; the next entrant starts a fresh twenty seconds.
+- Returning public crews enter a fresh compound together, with destination capacity reserved for that crew.
 
 ## Late joining and reconnection
 
@@ -163,7 +165,11 @@ Required: a code can join an active run; player spawns aboard after loading curr
 
 Synchronize route/block selection, run phase, train pose/motion, fuel, shared items and bag contents, relevant enemy state, and player states before enabling interactions.
 
-Open: reconnect identity and slot reservation, disposition of abandoned gear, initial late-arrival loadout, ending cutoff, and empty-room recovery. Avoid duplicated bags or free-supply farming through repeated rejoining. Existing-item ownership and persistence rules must be explicit.
+Confirmed: authenticated account identity is used across reconnects. Reserve disconnected expedition slots for 120 seconds while another connected player keeps the room alive. Retain gear as shared room objects and do not grant duplicate supplies on reconnect. The Photon Master Client coordinates session transitions; a successor reconstructs current state. If recovery cannot continue, provide a usable return path.
+
+Prototype defaults: late arrivals use the same shared test supplies, without a personal loadout; new joins close during ending/return and reopen in private staging. Final gameplay loadouts and escape-credit eligibility remain open.
+
+Current validation target: DesktopPlayer, including multiple authenticated desktop clients. Justin reports backend and Photon authentication setup completed. Headset validation is deferred, not satisfied by desktop checks.
 
 ## Dawn ending, results, and progression
 

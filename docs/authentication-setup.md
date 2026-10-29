@@ -19,12 +19,25 @@ Registration returns the existing access token, refresh token, `gr_id`, separate
 
 `PhotonSession` uses PUN over Realtime and supplies Custom authentication parameters `usr`, `pla`, and `tkn`. It preserves Photon's issued authentication object during room transitions and uses the backend's composed `gr_id` identity. `PhotonVoiceChat` copies the PUN authentication settings.
 
-Both Photon apps must have Custom authentication configured to `https://duckrails.gunraidersapi.com/api/photon/authenticate`, with the dashboard-only `secret` parameter matching the backend's `PHOTON_AUTH_PHASE`. Do not put that secret in Unity. The inherited local-session shortcut for additional Editor instances has no backend token and cannot be used as evidence of secured multiplayer authentication; use separate authenticated accounts/headsets.
+Both Photon apps must have Custom authentication configured to `https://duckrails.gunraidersapi.com/api/photon/authenticate`, with the dashboard-only `secret` parameter matching the backend's `PHOTON_AUTH_PHASE`. Do not put that secret in Unity. DesktopPlayer instances, including additional Editors, use real authentication. Use separate authenticated accounts for concurrent clients; the inherited additional-editor local-session shortcut has been removed.
+
+## Multiplayer Play Mode accounts
+
+Ported the tagged Meta test-user setup from Gun Raiders Classic commits `981f7aaa7eebfa96fac13b072d45500d32a20884` and `bc3c49c349a76183582a00a277bf64f1781436ff`. The source project was read only.
+
+1. Keep the main editor's account in **Meta > Platform > Edit Settings**, with standalone test-user authentication enabled.
+2. Open **Duck Rails > Multiplayer Play Mode Users** in the main editor. Enter `Player2`, the second Meta test user's email/password, then choose **Sign in and save**.
+3. Use the existing **Two Ducks** scenario in **Window > Play Mode > Scenarios**. Its second editor now has the `Player2` tag, and both editors start in Login.
+4. Restart additional editors after saving/changing accounts. The tag must exactly match, including case. Each concurrent player must use a different account.
+
+The window saves access tokens and email in local, project-scoped EditorPrefs, not tracked assets; it does not save the password. Virtual editors resolve the main project's preference key, then apply the selected account before Meta SDK initialization. Main-editor credentials are left alone. Missing or ambiguous account tags produce actionable errors rather than selecting an arbitrary or fake user. Credentials saved in the Classic project are not imported automatically.
+
+The second account must also be entitled to the Duck Rails Meta app and permitted by the backend's `META_EDITOR_USER_IDS`. A successful Meta sign-in followed by a backend rejection is a separate configuration issue; this change does not bypass either check. The Four Ducks scenario retains its existing LobbyTest behavior and needs distinct saved account tags before authenticated four-client use.
 
 ## Verification and remaining work
 
 On October 28, 2026, `go test ./middleware ./config ./handler -count=1` passed, including a new multipart Unity request/session-response test and existing valid/invalid Editor proof checks. `go build` passed. `dotnet build Assembly-CSharp.csproj` passed with 429 warnings and zero errors. These are source-level/local checks; Meta is stubbed in the backend contract test.
 
-The backend is not deployed. DNS/TLS, database/schema/account, credentials, Editor allowlist and both Photon dashboard providers still need setup. Then test fresh/repeat login, rejected credentials, session refresh, Realtime/Voice connections, room switching and reconnect on actual headsets. No milestone acceptance is claimed from compilation.
+Justin confirmed backend deployment and Photon authentication setup completed on October 28. The Week 1 implementation subsequently exercised real Meta/backend sign-in and authenticated Photon room entry with DesktopPlayer. Rejected credentials, session refresh, multiple concurrent accounts and headset behavior still require their own evidence. See `week1-session.md`; no multi-client acceptance is claimed from compilation or one desktop client.
 
 The Classic backend lacks the Duckz wallet/store/IAP/loadout/admin-check and player-cosmetics endpoints invoked asynchronously after login. Their failures do not gate sign-in. Confirmed October 28: V1 has no coins or wallet, so inherited wallet/coin client requests should be removed rather than implementing matching backend endpoints. Direct platform IAP item transactions are required; integrate applicable existing verification, transaction deduplication, ownership and restoration functionality. Product types remain to be defined. This scope update records the decision; it does not implement those changes.

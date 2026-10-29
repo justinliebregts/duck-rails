@@ -39,12 +39,12 @@ public partial class PhotonGrabbable
         }
         return new object[] { IsHeldByAnyPlayer, HeldActor, left, holdVersion, hasBeenPickedUp, dropDeadline,
             IsStashed, grip, rotation, transform.position, transform.rotation, releasedActor, releasedVersion,
-            headEquipment != null ? headEquipment.RecoveryWearer : 0 };
+            headEquipment != null ? headEquipment.RecoveryWearer : 0, GetComponent<RailCargo>()?.CaptureFrame() };
     }
 
     void ApplyRecovery(object[] data)
     {
-        if (data.Length != 14) return;
+        if (data.Length != 14 && data.Length != 15) return;
         bool held = (bool)data[0]; int actor = (int)data[1];
         bool preserveHand = IsHeld && held && actor == PhotonNetwork.LocalPlayer.ActorNumber;
         if (!preserveHand) CancelLocalHold();
@@ -70,6 +70,7 @@ public partial class PhotonGrabbable
         TrackHeld();
         if (transformView != null) transformView.ResetNetworkState();
         RefreshRemoteTransformSync();
+        if (data.Length == 15) GetComponent<RailCargo>()?.RestoreFrame(data[14] as object[]);
     }
 
     void RecoverDetachedHand()

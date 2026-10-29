@@ -28,6 +28,7 @@ public sealed class PlayerFootstepAudio : MonoBehaviour
                 bounds.extents.y + groundTolerance, groundMask, QueryTriggerInteraction.Ignore);
             if (grounded) point.y = hit.point.y;
         }
-        footsteps.Tick(point, grounded, Vector3.up);
+        RailTrain.TryPassengerFrame(out Transform carriage);
+        footsteps.Tick(point, grounded, Vector3.up, carriage);
     }
 }

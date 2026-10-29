@@ -539,6 +539,14 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
         if (orphaned)
         {
             orphaned = false;
+            if (PhotonSession.IsRailsRoom && state != BagState.Dropped)
+            {
+                // Expedition equipment remains a shared room object when its wearer leaves.
+                DropLocal(Vector3.zero);
+                PhotonHeldItems.ReturnToRoom(photonView);
+                RecoveryChanged();
+                return;
+            }
             if (state == BagState.Stowed && PhotonNetwork.InRoom)
             {
                 DuckzLog.Log($"[Bag] Wearer #{holderActor} left with bag {bagId} on their back; it went with them", this);

@@ -113,7 +113,7 @@ public class RoomMenu : MonoBehaviour
 
         PhotonSession session = PhotonSession.Ensure();
         Listen(session);
-        session.RequestCreatePrivate();
+        session.RequestCreatePrivate(typed);
     }
 
     void EnterCode() {

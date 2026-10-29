@@ -11,7 +11,7 @@ using UnityEngine.XR;
 public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     static PhotonMasterHandoff instance;
-    public static bool LocalAvailable => instance == null || (instance.focused && instance.xrFocused && !instance.paused);
+    public static bool LocalAvailable => instance == null || ((instance.focused || DesktopPlay.UseDesktop) && instance.xrFocused && !instance.paused);
     const byte HeartbeatCode = 105;
     const double HeartbeatInterval = 1;
     const int TimeoutMilliseconds = 5000;
@@ -33,7 +33,7 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
     double nextHeartbeat, retryAt, observeUntil, nextHeldCheck;
     Room room;
 
-    bool Ready => focused && xrFocused && !paused && PhotonNetwork.IsMessageQueueRunning
+    bool Ready => (focused || DesktopPlay.UseDesktop) && xrFocused && !paused && PhotonNetwork.IsMessageQueueRunning
         && GameScenes.IsLoaded(PhotonSession.PlayScene) && PhotonPlayer.Local != null;
 
     void Awake() { instance = this; focused = Application.isFocused; }

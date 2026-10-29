@@ -8,10 +8,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 7759910305007508434, guid: 5f3c8a1e9b2d4c7a8e6f0d1b3a4c5e6f, type: 3}
-      propertyPath: trackPalms
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 400001, guid: 5f3c8a1e9b2d4c7a8e6f0d1b3a4c5e6f, type: 3}
       propertyPath: m_Name
       value: DuckCompanion
@@ -104,6 +100,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 7378947710722030645, guid: d1e07e17625817c4682242d69be8ddc4, type: 3}
+    - target: {fileID: 7759910305007508434, guid: 5f3c8a1e9b2d4c7a8e6f0d1b3a4c5e6f, type: 3}
+      propertyPath: trackPalms
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8846939123413222044, guid: 5f3c8a1e9b2d4c7a8e6f0d1b3a4c5e6f, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 

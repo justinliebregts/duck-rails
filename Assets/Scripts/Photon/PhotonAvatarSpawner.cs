@@ -3,7 +3,7 @@ using Photon.Pun;
 using UnityEngine;
 
 /// <summary>
-/// Spawns the local networked duck once Quackville is loaded and the client is in a room.
+/// Spawns or rebinds the local duck after the gameplay rig and room are ready.
 /// </summary>
 public class PhotonAvatarSpawner : MonoBehaviour
 {
@@ -29,25 +29,25 @@ public class PhotonAvatarSpawner : MonoBehaviour
             return;
         }
 
-        if (!_spawned)
+        if (!_spawned || PhotonPlayer.Local == null)
             TrySpawn();
     }
 
     void TrySpawn()
     {
-        if (_spawned || photonPlayerPrefab == null || !PhotonNetwork.InRoom)
+        if (photonPlayerPrefab == null || !PhotonNetwork.InRoom)
             return;
-
-        if (AlreadySpawned())
-        {
-            _spawned = true;
-            return;
-        }
 
         var driver = FindAnyObjectByType<LocalBodyDriver>();
         if (driver == null || driver.HeadAnchor == null || driver.LeftHandAnchor == null || driver.RightHandAnchor == null)
             return;
 
+        if (PhotonPlayer.Local != null)
+        {
+            PhotonPlayer.Local.BindSources(driver.HeadAnchor, driver.LeftHandAnchor, driver.RightHandAnchor, driver);
+            _spawned = true;
+            return;
+        }
         var head = driver.HeadAnchor;
         var avatar = PhotonNetwork.Instantiate(photonPlayerPrefab.name, head.position, head.rotation);
         var player = avatar.GetComponent<PhotonPlayer>();
@@ -56,15 +56,4 @@ public class PhotonAvatarSpawner : MonoBehaviour
         DuckzAnalytics.MarkAlive();
     }
 
-    static bool AlreadySpawned()
-    {
-        var players = FindObjectsByType<PhotonPlayer>(FindObjectsSortMode.None);
-        for (int i = 0; i < players.Length; i++)
-        {
-            if (players[i].IsLocalHuman)
-                return true;
-        }
-
-        return false;
-    }
 }

@@ -158,6 +158,7 @@ public class PlayerHand : MonoBehaviour
 
     void LateUpdate()
     {
+        if (RailWorld.Instance != null && (PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady)) { Release(); return; }
         if (!holdPointOnSkin)
             TryAttachHoldPointToSkin();
 

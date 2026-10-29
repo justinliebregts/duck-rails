@@ -55,7 +55,7 @@ public class Helicopter : MonoBehaviour
     {
         currentPropellerSpeed = Mathf.Lerp(currentPropellerSpeed, targetPropellerSpeed, propellerLerpSpeed * Time.deltaTime);
         float rotorAngle = propellerRotateSpeed * Time.deltaTime;
-        propeller.Rotate(0f, rotorAngle, 0f, Space.Self);
+        if (propeller != null) propeller.Rotate(0f, rotorAngle, 0f, Space.Self);
         if (tailRotor != null) tailRotor.Rotate(rotorAngle, 0f, 0f, Space.Self);
     }
 

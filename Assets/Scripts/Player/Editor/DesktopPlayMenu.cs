@@ -14,6 +14,10 @@ static class DesktopPlaySceneButtons
     static DesktopPlaySceneButtons()
     {
         SceneView.duringSceneGui += OnScene;
+        EditorApplication.playModeStateChanged += state =>
+        {
+            if (state == PlayModeStateChange.ExitingEditMode) SetStandaloneXrInitOnStart(!DesktopPlay.UseDesktop);
+        };
     }
 
     static void OnScene(SceneView sceneView)
@@ -27,10 +31,10 @@ static class DesktopPlaySceneButtons
         if (ModeButton("VR", !DesktopPlay.UseDesktop))
             SetMode(false);
         GUILayout.EndHorizontal();
-        using (new EditorGUI.DisabledScope(Application.isPlaying || MainIsLoaded()))
+        using (new EditorGUI.DisabledScope(Application.isPlaying || LoginIsLoaded()))
         {
-            if (GUILayout.Button("Load Main", GUILayout.Height(22f)))
-                EditorSceneManager.OpenScene("Assets/Scenes/Main.unity", OpenSceneMode.Additive);
+            if (GUILayout.Button("Load Login", GUILayout.Height(22f)))
+                EditorSceneManager.OpenScene("Assets/Scenes/Login.unity", OpenSceneMode.Single);
         }
         if (GUILayout.Button("Clear PlayerPrefs", GUILayout.Height(22f)))
             ClearPlayerPrefs();
@@ -39,11 +43,11 @@ static class DesktopPlaySceneButtons
         Handles.EndGUI();
     }
 
-    static bool MainIsLoaded()
+    static bool LoginIsLoaded()
     {
         for (int i = 0; i < SceneManager.sceneCount; i++)
         {
-            if (SceneManager.GetSceneAt(i).path == "Assets/Scenes/Main.unity")
+            if (SceneManager.GetSceneAt(i).path == "Assets/Scenes/Login.unity")
                 return true;
         }
 
@@ -72,8 +76,7 @@ static class DesktopPlaySceneButtons
     static void SetMode(bool desktop)
     {
         EditorPrefs.SetBool(DesktopPlay.PrefKey, desktop);
-        if (!desktop)
-            SetStandaloneXrInitOnStart(true);
+        SetStandaloneXrInitOnStart(!desktop);
         SceneView.RepaintAll();
     }
 

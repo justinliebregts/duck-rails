@@ -28,12 +28,12 @@ public partial class BagObject
     {
         if (state == BagState.Held) MeasureHeldOffset();
         return new object[] { (byte)state, holderActor, holdVersion, heldLeft, heldOffsetPos, heldOffsetRot,
-            transform.position, transform.rotation, droppedAt, awaitingClaim, Keys(), releasedActor, releasedVersion };
+            transform.position, transform.rotation, droppedAt, awaitingClaim, Keys(), releasedActor, releasedVersion, GetComponent<RailCargo>()?.CaptureFrame() };
     }
 
     void ApplyRecovery(object[] data)
     {
-        if (data.Length != 13) return;
+        if (data.Length != 13 && data.Length != 14) return;
         var next = (BagState)(byte)data[0]; int holder = (int)data[1];
         PlayerHand hand = state == BagState.Held && next == BagState.Held && holder == LocalActor ? holdingHand : null;
         holdVersion = (int)data[2]; heldOffsetPos = (Vector3)data[4]; heldOffsetRot = (Quaternion)data[5];
@@ -51,6 +51,7 @@ public partial class BagObject
             transform.SetPositionAndRotation(netPos, netRot);
         }
         ApplyPhysics();
+        if (data.Length == 14) GetComponent<RailCargo>()?.RestoreFrame(data[13] as object[]);
         BagInventory.Local?.ReattachRecoveredBack(this);
     }
 
