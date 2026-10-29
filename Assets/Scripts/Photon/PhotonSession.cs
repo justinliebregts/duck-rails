@@ -90,7 +90,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
-        settings.AppVersion = source.AppVersion + "-duck-rails-session-v2";
+        settings.AppVersion = source.AppVersion + "-duck-rails-session-v3";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;
@@ -363,6 +363,15 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Ending,
             [RailSessionRules.Deadline] = PhotonNetwork.Time + 5d, ["rails.success"] = success });
     }
+    public static float CurrentFuel
+    {
+        get
+        {
+            RailSessionRules.EvaluateTrain(Get(RailSessionRules.Motion, new object[] { 0d, 0f, 0f, 0f }),
+                Get(RailSessionRules.Fuel, 100f), PhotonNetwork.Time, out _, out _, out float fuel);
+            return fuel;
+        }
+    }
     public void SetTrainMoving(bool moving)
     {
         if (!IsRailsRoom || Phase != RailPhase.Running || !WorldReady || HasRoomRequest) return;
@@ -396,15 +405,18 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         // Keep the latest request until observed in room state. Another commit may
         // be in flight, including an earlier GO followed immediately by STOP.
         if (!WorldReady || (pendingRevision >= 0 && Time.realtimeSinceStartupAsDouble - lastCommit < 1)) return;
-        float target = requestedTrainMoving.Value ? 4f : 0f;
+        double now = PhotonNetwork.Time;
+        float target = requestedTrainMoving.Value && CurrentFuel > 0f ? 4f : 0f;
         var command = Get(RailSessionRules.Motion, new object[] { PhotonNetwork.Time, 0f, 0f, 0f });
         if (command.Length == 4 && command[3] is float currentTarget && currentTarget == target)
         {
             if (pendingRevision < 0) requestedTrainMoving = null;
             return;
         }
-        RailSessionRules.EvaluateMotion(command, PhotonNetwork.Time, out float z, out float speed);
-        Commit(new Hashtable { [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, z, speed, target } });
+        RailSessionRules.EvaluateTrain(command, Get(RailSessionRules.Fuel, 100f), now,
+            out float z, out float speed, out float fuel);
+        Commit(new Hashtable { [RailSessionRules.Motion] = new object[] { now, z, speed, target },
+            [RailSessionRules.Fuel] = fuel });
     }
     public override void OnRoomPropertiesUpdate(Hashtable changed)
     {

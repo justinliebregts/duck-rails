@@ -7,7 +7,7 @@ public enum RailPhase { Compound, Staging, Departing, Running, Ending, Returning
 
 public static class RailSessionRules
 {
-    public const int Version = 2, CompoundCapacity = 12, CrewCapacity = 8, ReconnectMilliseconds = 120000;
+    public const int Version = 3, CompoundCapacity = 12, CrewCapacity = 8, ReconnectMilliseconds = 120000;
     public const double CountdownSeconds = 20;
     public const string Schema = "rails.schema", Kind = "rails.kind", Phase = "rails.phase", Revision = "rails.revision";
     public const string Run = "rails.run", Deadline = "rails.deadline", Roster = "rails.roster", Destination = "rails.destination";
@@ -74,6 +74,23 @@ public static class RailSessionRules
         foreach (int actor in available)
             if (admitted.Count < CrewCapacity) admitted.Add(actor);
         return admitted.ToArray();
+    }
+
+    // Fuel is retained at the motion command's starting distance and committed
+    // atomically with it. Shared time reconstructs consumption without local timers.
+    public const float FuelPerMetre = .025f; // 0.1/second at 4 m/s cruise speed.
+    public static void EvaluateTrain(object[] command, float startingFuel, double now,
+        out float distance, out float speed, out float fuel)
+    {
+        EvaluateMotion(command, now, out distance, out speed);
+        float travelled = Math.Max(0f, distance - (float)command[1]);
+        float available = Math.Max(0f, startingFuel);
+        fuel = Math.Max(0f, available - travelled * FuelPerMetre);
+        if (fuel <= 0f)
+        {
+            distance = (float)command[1] + available / FuelPerMetre;
+            speed = 0f;
+        }
     }
 
     // Exact integration of a two-second ramp, shared by existing and late-joining clients.

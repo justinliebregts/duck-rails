@@ -52,6 +52,7 @@ Authentication source inspection (October 28, 2026): the Unity copy is in `X:\Wo
 - Large physical STOP/GO lever: accelerate or stop. Exact acceleration curve is tuning.
 - Train horn operated by a physical button or cord. Pull cord is the favored proposal; exact implementation is open.
 - Coal fuels the train; furnace and readable fuel feedback are needed.
+- Fuel decreases slowly as the train moves and remains shared room state across late joining, rejoining, and master changes. Prototype tuning: 0.025 fuel per metre (1 fuel per 10 seconds at cruise); no idle consumption. This rate is provisional.
 - Permanent radio communications station aboard the train, communicating both ways with handheld walkie-talkies.
 - Physical equipment storage, not backpack-style slots: an item stays where placed until picked up.
 - Approximately four full-size backpack hooks. Bags remain full size and usable; no inventory nesting.

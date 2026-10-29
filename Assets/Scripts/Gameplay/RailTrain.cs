@@ -17,7 +17,8 @@ public sealed class RailTrain : MonoBehaviour
     {
         if (!PhotonSession.IsRailsRoom || !PhotonSession.OnTrain) return;
         var command = PhotonSession.Get(RailSessionRules.Motion, new object[] { PhotonNetwork.Time, 0f, 0f, 0f });
-        RailSessionRules.EvaluateMotion(command, PhotonNetwork.Time, out float distance, out float speed);
+        RailSessionRules.EvaluateTrain(command, PhotonSession.Get(RailSessionRules.Fuel, 100f),
+            PhotonNetwork.Time, out float distance, out float speed, out _);
         Speed = speed;
         Vector3 next = origin + Vector3.forward * distance;
         Delta = initialized ? next - transform.position : Vector3.zero;

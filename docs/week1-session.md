@@ -32,13 +32,23 @@ Private creators start as Master Client. Desktop focus changes do not move autho
 
 ## Five-digit room allocation
 
-All gameplay rooms now use five-digit numeric names in schema 2 / the `-duck-rails-session-v2` partition. Restart both clients on this build; old long-name rooms cannot mix with it. The banner shows the current code in public and private rooms. The private station's Join action accepts any live room code. Public departures/returns get new codes; private staging/run/return preserves its code. Empty rooms still close immediately.
+All gameplay rooms now use five-digit numeric names in schema 3 / the `-duck-rails-session-v3` partition. Restart both clients on this build; older rooms cannot mix with the fuel-aware protocol. The banner shows the current code in public and private rooms. The private station's Join action accepts any live room code. Public departures/returns get new codes; private staging/run/return preserves its code. Empty rooms still close immediately.
 
 Private Create remains hidden and rejects occupied codes. Automatic rooms use the `rails-auto-v2` lobby: normal matchmaking filters to compounds, while transfers and Two Ducks quick start use server-side `JoinRandomOrCreateRoom` matching their unique allocation token, kind, and schema. Automatic rooms must be lobby-visible for token matching, but expeditions are excluded from normal compound discovery. Direct numeric Join works across both lobbies. Long internal transfer/run identifiers are not displayed room codes.
 
 Occupied automatic candidates retry with the next deterministic code, up to 100 attempts with a one-second delay. The allocation filter prevents entering an unrelated room to inspect it, and lets later crew members find the matching allocation regardless of which candidate succeeded. Capacity and ending-phase restrictions still apply.
 
 ## Validation
+
+- Shared fuel: runtime/editor compilation passed using Unity's Roslyn compiler and generated response files. All 27 session checks passed through Unity MCP, including six new checks for acceleration/braking fuel usage, idle stability, snapshot reconstruction, exhaustion, empty restart, and future command timing. The Console query returned no errors. Live multi-client agreement/rejoining/master succession remain unverified.
+
+## Shared fuel behavior
+
+`rails.fuel` is fuel at the starting distance of `rails.motion`, not a periodically decremented counter. The master commits both together on GO/STOP; every client uses the same Photon clock and motion integration to derive current fuel through `PhotonSession.CurrentFuel`. Late entry and master succession reconstruct from those retained properties without resetting fuel or relying on missed events. New runs start at 100; the current tuning burns 0.025 per metre (0.1 per second at cruise), including braking distance, and nothing at rest. The Tab display shows tenths. At zero fuel, motion is capped at the affordable distance and stops; smooth exhaustion braking and refuelling are future work. Fuel continues to follow motion during ending/returning while the train is still moving.
+
+Rejoin persistence requires another connected client to keep the room alive: the existing last-player-leaves policy still destroys the room. Verify with two clients: GO and compare fuel, STOP and confirm idle stability, leave/rejoin the same code while the other continues, then disconnect the master and compare again. New private runs should reset to 100. Check rapid GO/STOP during pending room commits and zero-fuel stopping on both clients.
+
+## Earlier validation
 
 - Five-digit update: runtime and editor source compilation passed with Unity's Roslyn compiler and generated response files. A standalone check executed the compiled generator across all 100,000 candidates, verifying unique five-digit ASCII codes and deterministic wrap. All 21 session checks passed through Unity MCP, including two new allocation checks; the Console error query returned zero errors. Real multi-client code collisions, public-code late joining/rejoining, and transfer acceptance remain pending. The ordinary dotnet project build stalled in dependency processing and was stopped; it is not counted as a pass.
 
@@ -65,4 +75,4 @@ Shared Tab GO/STOP follow-up: record two-client acceleration/braking evidence, i
 
 All Week 1 multi-client acceptance boxes remain unchecked. Exercise seven departing/one remaining, simultaneous code creation, live late entry with moving carriage and changed bag contents, ninth-player rejection, network-loss reconnect, owner/master loss while carrying cargo, voice after transfers, private code lifetime and repeated group returns. Run sustained acceleration/braking, drop/grab/handoff and deliberate overboard trials. Record client count, network conditions and failures. Single-client Play Mode and deterministic checks cannot establish these outcomes.
 
-The carriage and controls are test fixtures. No fuel consumption, authored scavenging gameplay, enemy encounters, polished train controls, shop UI or full results/progression is implied. Headset acceptance remains deferred by the current DesktopPlayer scope.
+The carriage and controls are test fixtures. Fuel consumption is implemented as described above; authored scavenging gameplay, coal insertion, enemy encounters, polished train controls, shop UI and full results/progression remain pending. Headset acceptance remains deferred by the current DesktopPlayer scope.

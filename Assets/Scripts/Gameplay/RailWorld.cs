@@ -170,7 +170,7 @@ public sealed class RailWorld : MonoBehaviour
         }
         if (PhotonSession.Phase == RailPhase.Running)
         {
-            GUILayout.Label("Fuel: " + PhotonSession.Get(RailSessionRules.Fuel, 100f).ToString("0") + "   Block: rail-yard-test-v1");
+            GUILayout.Label("Fuel: " + PhotonSession.CurrentFuel.ToString("0.0") + "   Block: rail-yard-test-v1");
             GUI.enabled = session.WorldReady && !session.HasRoomRequest;
             if (GUILayout.Button("GO — accelerate")) session.SetTrainMoving(true);
             if (GUILayout.Button("STOP — brake")) session.SetTrainMoving(false);

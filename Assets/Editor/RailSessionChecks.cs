@@ -48,6 +48,26 @@ public static class RailSessionChecks
         Check(z == 16 && v == 4, "Late join reconstructs moving train from current command");
         RailSessionRules.EvaluateMotion(new object[] { 15d, 16f, 4f, 0f }, 20, out z, out v);
         Check(z == 20 && v == 0, "Braking stops without changing past position");
+        var go = new object[] { 10d, 0f, 0f, 4f };
+        RailSessionRules.EvaluateTrain(go, 100f, 21d, out z, out v, out float fuel);
+        Check(Mathf.Abs(fuel - 99f) < .0001f && z == 40f, "Fuel burns with travelled distance, including acceleration");
+        var stop = new object[] { 21d, z, v, 0f };
+        RailSessionRules.EvaluateTrain(stop, fuel, 30d, out z, out v, out float stoppedFuel);
+        RailSessionRules.EvaluateTrain(stop, fuel, 300d, out float laterZ, out _, out float laterFuel);
+        Check(Mathf.Abs(stoppedFuel - 98.9f) < .0001f && stoppedFuel == laterFuel && z == laterZ,
+            "Braking consumes fuel; a stopped train does not");
+        RailSessionRules.EvaluateTrain(go, 100f, 21d, out z, out v, out fuel);
+        var checkpoint = new object[] { 21d, z, v, 4f };
+        RailSessionRules.EvaluateTrain(checkpoint, fuel, 41d, out z, out v, out fuel);
+        RailSessionRules.EvaluateTrain(go, 100f, 41d, out laterZ, out float laterV, out laterFuel);
+        Check(z == laterZ && v == laterV && Mathf.Abs(fuel - laterFuel) < .0001f,
+            "Restored room snapshot preserves fuel and motion across a master checkpoint");
+        RailSessionRules.EvaluateTrain(go, .1f, 100d, out z, out v, out fuel);
+        Check(z == 4f && v == 0f && fuel == 0f, "Fuel exhaustion caps travel and stops even without authority ticks");
+        RailSessionRules.EvaluateTrain(new object[] { 100d, z, v, 4f }, fuel, 200d, out laterZ, out laterV, out laterFuel);
+        Check(laterZ == z && laterV == 0f && laterFuel == 0f, "Empty fuel cannot restart or become negative");
+        RailSessionRules.EvaluateTrain(go, 100f, 9d, out z, out v, out fuel);
+        Check(z == 0f && v == 0f && fuel == 100f, "Future motion commands do not burn fuel early");
         Check(EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).SequenceEqual(new[] { "Assets/Scenes/Login.unity", "Assets/Scenes/Compound.unity" }), "Build starts at Login and excludes Quackville/Main");
         foreach (string name in new[] { "RailBat", "RailBag" })
         {
