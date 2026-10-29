@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1578501055200348185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5600497983160768524}
+  - component: {fileID: 1831202601917228324}
+  - component: {fileID: 9045248938970766584}
+  m_Layer: 0
+  m_Name: VoicePatrol_Photon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5600497983160768524
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578501055200348185}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1831202601917228324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578501055200348185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b84993b54d191e847bf1834d543db298, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &9045248938970766584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1578501055200348185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01a2aac6a7387e845a78c48c629de02a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _apiKey: 
+  _ageVerification: 0
+  _debugLogs: 0
+  _enablePrivateRoomFiltering: 0
+  _privateRoomIdentifier: _private
+  _enableAutomatedMuting: 0
+  _muteRules:
+  - action: 0
+    muteDurationMinutes: 0
+  - action: 1
+    muteDurationMinutes: 0
+  - action: 2
+    muteDurationMinutes: 60
+  - action: 2
+    muteDurationMinutes: 120
+  - action: 2
+    muteDurationMinutes: 180
+  - action: 2
+    muteDurationMinutes: 240
+  - action: 2
+    muteDurationMinutes: 300
+  - action: 2
+    muteDurationMinutes: 360
+  - action: 2
+    muteDurationMinutes: 420
+  - action: 2
+    muteDurationMinutes: 480
+  - action: 2
+    muteDurationMinutes: 540
+  - action: 2
+    muteDurationMinutes: 600
+  - action: 2
+    muteDurationMinutes: 660
+  - action: 2
+    muteDurationMinutes: 720
+  _maxMuteDurationMinutes: 720
+  _headless: 0

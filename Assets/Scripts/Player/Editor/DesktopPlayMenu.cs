@@ -1,0 +1,91 @@
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEditor.XR.Management;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.XR.Management;
+
+[InitializeOnLoad]
+static class DesktopPlaySceneButtons
+{
+    static readonly Color ActiveColor = new Color(0.35f, 0.75f, 0.45f);
+
+    static DesktopPlaySceneButtons()
+    {
+        SceneView.duringSceneGui += OnScene;
+    }
+
+    static void OnScene(SceneView sceneView)
+    {
+        Handles.BeginGUI();
+
+        GUILayout.BeginArea(new Rect(8f, 8f, 168f, 78f));
+        GUILayout.BeginHorizontal();
+        if (ModeButton("Desktop", DesktopPlay.UseDesktop))
+            SetMode(true);
+        if (ModeButton("VR", !DesktopPlay.UseDesktop))
+            SetMode(false);
+        GUILayout.EndHorizontal();
+        using (new EditorGUI.DisabledScope(Application.isPlaying || MainIsLoaded()))
+        {
+            if (GUILayout.Button("Load Main", GUILayout.Height(22f)))
+                EditorSceneManager.OpenScene("Assets/Scenes/Main.unity", OpenSceneMode.Additive);
+        }
+        if (GUILayout.Button("Clear PlayerPrefs", GUILayout.Height(22f)))
+            ClearPlayerPrefs();
+        GUILayout.EndArea();
+
+        Handles.EndGUI();
+    }
+
+    static bool MainIsLoaded()
+    {
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            if (SceneManager.GetSceneAt(i).path == "Assets/Scenes/Main.unity")
+                return true;
+        }
+
+        return false;
+    }
+
+    static bool ModeButton(string label, bool active)
+    {
+        var previous = GUI.backgroundColor;
+        GUI.backgroundColor = active ? ActiveColor : Color.white;
+        var style = new GUIStyle(GUI.skin.button);
+        if (active)
+            style.fontStyle = FontStyle.Bold;
+        var pressed = GUILayout.Button(label, style, GUILayout.Height(22f));
+        GUI.backgroundColor = previous;
+        return pressed && !active;
+    }
+
+    static void ClearPlayerPrefs()
+    {
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save();
+        Debug.Log("Cleared all PlayerPrefs.");
+    }
+
+    static void SetMode(bool desktop)
+    {
+        EditorPrefs.SetBool(DesktopPlay.PrefKey, desktop);
+        if (!desktop)
+            SetStandaloneXrInitOnStart(true);
+        SceneView.RepaintAll();
+    }
+
+    static void SetStandaloneXrInitOnStart(bool enabled)
+    {
+        var settings = XRGeneralSettingsPerBuildTarget.XRGeneralSettingsForBuildTarget(BuildTargetGroup.Standalone);
+        if (settings == null || settings.InitManagerOnStart == enabled)
+            return;
+
+        settings.InitManagerOnStart = enabled;
+        EditorUtility.SetDirty(settings);
+        AssetDatabase.SaveAssetIfDirty(settings);
+    }
+}
+#endif

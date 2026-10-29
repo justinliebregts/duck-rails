@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfdadde786bc47c48ed89086f9bd547a, type: 3}
+  m_Name: HandHit_Default
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.SoundEvent
+  clips:
+  - {fileID: 8300000, guid: 5afc4fee09bb1c742826403931acc15f, type: 3}
+  - {fileID: 8300000, guid: b34d8699a98b5ff46882f1082f92646b, type: 3}
+  - {fileID: 8300000, guid: 4783ffa0127253246991566e859ac86e, type: 3}
+  avoidImmediateRepeat: 0
+  pitchRange: {x: 0.95, y: 1.05}
+  volumeRange: {x: 0.4, y: 0.5}
+  spatialBlend: 1
+  minDistance: 1
+  maxDistance: 25
+  rolloff: 1
+  cullDistance: 40
+  mixerOverride: {fileID: 0}
+  priority: 128
+  maxInstances: 4
+  reverbZoneMix: 1

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3a44084f2184bf6832f9bcc6a3fe3ec, type: 3}
+  m_Name: Player_Footsteps
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.SurfaceSoundSet
+  entries:
+  - surface: {fileID: 11400000, guid: b91fd7e6203a4111a92064a760d9af5e, type: 2}
+    sound: {fileID: 11400000, guid: c6efb7d96c0e4728a5bb7f6206aae9b5, type: 2}
+  - surface: {fileID: 11400000, guid: 3f762ce52508452eb891f0e9f92ffbb6, type: 2}
+    sound: {fileID: 11400000, guid: 04463667a2f34a878907728d4975c452, type: 2}
+  - surface: {fileID: 11400000, guid: dd77956cc65845b2a7ea4400447f942b, type: 2}
+    sound: {fileID: 11400000, guid: 78e498bb5a2f4c06be9e046f737b2809, type: 2}
+  - surface: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
+    sound: {fileID: 11400000, guid: 690d4b655b21407e92cdc59c00aba854, type: 2}
+  - surface: {fileID: 11400000, guid: 0f006a46dfbf4e3fbccbd660ed3d02aa, type: 2}
+    sound: {fileID: 11400000, guid: 2b04b0a3a33748f381d0a4767c0ad575, type: 2}
+  - surface: {fileID: 11400000, guid: 13ff67e1690742dd89d120d6f77ecd00, type: 2}
+    sound: {fileID: 11400000, guid: 1d58d0de36e74ab8b4bc2bf5e64ee5d0, type: 2}
+  - surface: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
+    sound: {fileID: 11400000, guid: a87948597c82419799731d5d405ac742, type: 2}
+  - surface: {fileID: 11400000, guid: e784153c09a24dd981b3962aa8a4b41c, type: 2}
+    sound: {fileID: 11400000, guid: c1e395fa96f0409a87045e5fdedc5b9a, type: 2}
+  - surface: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
+    sound: {fileID: 11400000, guid: cc4f0732029e4f4ca0d3bb56e39752aa, type: 2}
+  fallback: {fileID: 11400000, guid: 331bae918752428397a7c411de3cae1c, type: 2}

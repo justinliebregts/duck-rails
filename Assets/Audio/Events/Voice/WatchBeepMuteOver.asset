@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfdadde786bc47c48ed89086f9bd547a, type: 3}
+  m_Name: WatchBeepMuteOver
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.SoundEvent
+  clips:
+  - {fileID: 8300000, guid: e785a173879cb454a969f3857e681259, type: 3}
+  avoidImmediateRepeat: 0
+  pitchRange: {x: 1, y: 1}
+  volumeRange: {x: 1, y: 1}
+  spatialBlend: 1
+  minDistance: 1
+  maxDistance: 8
+  rolloff: 1
+  cullDistance: 0
+  mixerOverride: {fileID: 0}
+  priority: 32
+  maxInstances: 2
+  reverbZoneMix: 0

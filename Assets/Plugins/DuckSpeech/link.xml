@@ -1,0 +1,8 @@
+<linker>
+  <assembly fullname="Microsoft.ML.OnnxRuntime" preserve="all" />
+  <assembly fullname="Assembly-CSharp">
+    <type fullname="DuckOfflineRecognition" preserve="all" />
+    <type fullname="DuckOfflineRecognition/Native" preserve="all" />
+    <type fullname="DuckCompanionDialogue" preserve="all" />
+  </assembly>
+</linker>

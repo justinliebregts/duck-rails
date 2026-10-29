@@ -1,0 +1,44 @@
+Duck offline speech experiment
+
+Kokoro-82M v1.0, hexgrad, Apache-2.0; ONNX INT8 export by onnx-community.
+https://huggingface.co/hexgrad/Kokoro-82M/tree/f3ff3571791e39611d31c381e3a41a3af07b4987
+https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/tree/1939ad2a8e416c0acfeecc08a694d14ef25f2231
+Bundled voice styles: am_puck (default), am_fenrir. Raw float32 voice data.
+Token vocabulary converted from the upstream config; no model training performed.
+Code license source: https://github.com/hexgrad/kokoro/tree/dfb907a02bba8152ca444717ca5d78747ccb4bec
+See Kokoro/manifest.json and Kokoro/checksums.tsv for exact sources and SHA256 hashes.
+
+Misaki 0.9.4 English pronunciation dictionaries and preparation code, hexgrad, Apache-2.0.
+https://pypi.org/project/misaki/0.9.4/
+Dictionary data converted to TSV with Kokoro's compact phonemes preserved.
+Contextual dialogue pronunciations prepared locally with Misaki and spaCy's
+en_core_web_sm 3.8.0 (MIT; development-only dependency, not bundled).
+https://github.com/explosion/spacy-models/releases/tag/en_core_web_sm-3.8.0
+No Python, spaCy, eSpeak runtime, model download or speech server runs in the game.
+
+Microsoft ONNX Runtime 1.23.2, Microsoft Corporation, MIT.
+https://github.com/microsoft/onnxruntime/releases/tag/v1.23.2
+Managed package: Microsoft.ML.OnnxRuntime.Managed 1.23.2 (netstandard2.0).
+Android: com.microsoft.onnxruntime:onnxruntime-android:1.23.2 (ARM64).
+See Licenses/ONNXRuntime-ThirdPartyNotices.txt for upstream component notices.
+
+Vosk API, Alpha Cephei, Apache-2.0.
+Windows: official vosk-win64-0.3.45 release.
+https://github.com/alphacep/vosk-api/releases/tag/v0.3.45
+Android: com.alphacephei:vosk-android:0.3.47 (ARM64).
+English recognition model: vosk-model-small-en-us-0.15, Apache-2.0.
+https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
+Vosk uses Kaldi/OpenFST (Apache-2.0) and OpenBLAS (BSD).
+Windows distribution also contains MinGW GCC runtime libraries (GPLv3 with
+GCC Runtime Library Exception) and winpthreads (MIT/BSD notices).
+Upstream source: https://github.com/alphacep/vosk-api
+https://github.com/kaldi-asr/kaldi
+https://www.openfst.org/
+https://github.com/OpenMathLib/OpenBLAS
+https://gcc.gnu.org/releases.html
+https://www.mingw-w64.org/
+Retain the bundled license texts and upstream redistribution notices.
+
+These bundled engines do not call an inference service. The game still uses
+its existing Photon room/voice services; recognized player text and chosen
+Duck replies are synchronized through that room.

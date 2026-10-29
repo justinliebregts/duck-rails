@@ -1,0 +1,32 @@
+{
+    "name": "Obi.Lck.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a7a5625c6f9c2d0479f8cfc58b84c32d",
+        "GUID:4847341ff46394e83bb78fbd0652937e",
+        "GUID:95054a9710b0f114a85f6ced6b7f891c",
+        "GUID:15fc0a57446b3144c949da3e2b9737a9"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.xr.openxr",
+            "expression": "1.9.1",
+            "define": "LCK_UNITY_XR_HAS_FORCE_REMOVE_INTERNET_PERMISSION"
+        },
+        {
+            "name": "com.unity.render-pipelines.universal",
+            "expression": "",
+            "define": "LCK_UNITY_URP"
+        }
+    ],
+    "noEngineReferences": false
+}

@@ -1,0 +1,21 @@
+{
+    "name": "VoicePatrol.Integration.PhotonVoice",
+    "rootNamespace": "",
+    "references": [
+        "VoicePatrol.Runtime",
+        "PhotonVoice",
+        "PhotonVoice.API",
+        "PhotonRealtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "VOICEPATROL_PHOTON_VOICE"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

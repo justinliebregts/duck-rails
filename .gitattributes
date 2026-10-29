@@ -1,0 +1,30 @@
+# Keep Unity's text-serialized project files stable across operating systems.
+.gitattributes text eol=lf
+*.cs text eol=lf
+*.shader text eol=lf
+*.cginc text eol=lf
+*.hlsl text eol=lf
+*.compute text eol=lf
+*.prefab text eol=lf
+*.unity text eol=lf
+*.asset text eol=lf
+*.meta text eol=lf
+*.mat text eol=lf
+*.anim text eol=lf
+*.controller text eol=lf
+*.overrideController text eol=lf
+*.asmdef text eol=lf
+*.asmref text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
+*.uxml text eol=lf
+*.uss text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+
+# Crawl graphs and other raw payloads must never be line-ending normalized.
+*.bytes binary
+
+# Kokoro text assets are checksummed byte-for-byte; checkout must preserve LF.
+Tools/DuckVoiceSource/*.tsv text eol=lf
+*.ogg binary

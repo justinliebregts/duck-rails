@@ -1,0 +1,21 @@
+{
+    "name": "VoicePatrol.Integration.PhotonVoicePun",
+    "rootNamespace": "VoicePatrol.Scripts",
+    "references": [
+        "VoicePatrol.Runtime",
+        "PhotonVoice",
+        "PhotonRealtime",
+        "PhotonUnityNetworking"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "VOICEPATROL_PHOTON_VOICE_PUN"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

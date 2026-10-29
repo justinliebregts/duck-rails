@@ -1,0 +1,238 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4da236b37843b25469680a1e3ccf87b4, type: 3}
+  m_Name: StoreCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::StoreCatalog
+  items:
+  - key: weapon_nail_bat
+    payment: 0
+    price: 275
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 2647454512975538669, guid: 96eb0813c0c6571408f64a257f2694fe, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: weapon_knife
+    payment: 0
+    price: 0
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 2647454512975538669, guid: 9b2941ebfac049d099fe257687f9e063, type: 3}
+    bundleSku: duckz_rambro_bundle
+    pullCooldown: 120
+  - key: weapon_fry_pan
+    payment: 0
+    price: 175
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 2647454512975538669, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: weapon_ninja_knife
+    payment: 0
+    price: 0
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 2647454512975538669, guid: a7c18e4d2f6b49c0b1e35a8d90c24f71, type: 3}
+    bundleSku: duckz_ninja_bundle
+    pullCooldown: 120
+  - key: weapon_gorilla
+    payment: 0
+    price: 0
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 2647454512975538669, guid: 1a77f576515f439fac546f3b968d796c, type: 3}
+    bundleSku: duckz_gorilla_bundle
+    pullCooldown: 120
+  - key: item_helmet
+    payment: 0
+    price: 75
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 8107147980949860816, guid: 3d4d1009c12054743a1dc540e63954b7, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: item_flashlight
+    payment: 0
+    price: 25
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 4210583910027311001, guid: 9b4e2d7a1c3f4a6e8d0b5c7e2f9a1d43, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: item_walkie_talkie
+    payment: 0
+    price: 50
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 7744112233445566001, guid: c4e8a1b27d6f4e0a9c3b5d7e1f2a4b60, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: item_night_vision_goggles
+    payment: 0
+    price: 300
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 8107147980949860816, guid: 837eb3d505ce90e4782a1e9f95d87cc8, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: skin_duck_default
+    payment: 0
+    price: 0
+    durable: 1
+    type: 1
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: 
+    pullCooldown: 0
+  - key: skin_duck_rambro
+    payment: 0
+    price: 0
+    durable: 1
+    type: 1
+    skinId: 1
+    skinModel: {fileID: 919132149155446097, guid: 2222bad55beef754ca85d7a73cd942fa, type: 3}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: duckz_rambro_bundle
+    pullCooldown: 0
+  - key: skin_duck_ninja
+    payment: 0
+    price: 0
+    durable: 1
+    type: 1
+    skinId: 2
+    skinModel: {fileID: 919132149155446097, guid: 291813d65a3bbe443a18ce0fb424951c, type: 3}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: duckz_ninja_bundle
+    pullCooldown: 0
+  - key: skin_duck_gorilla
+    payment: 0
+    price: 0
+    durable: 1
+    type: 1
+    skinId: 3
+    skinModel: {fileID: 919132149155446097, guid: a90b34250d50aba43bdf34cabde6e3d3, type: 3}
+    eyeMaterial: {fileID: 2100000, guid: 1ab7ad5a71fae634a9e406907d7ab5cb, type: 2}
+    bagId: 0
+    bagModel: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: duckz_gorilla_bundle
+    pullCooldown: 0
+  - key: bag_basic
+    payment: 0
+    price: 100
+    durable: 0
+    type: 3
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 2
+    bagModel: {fileID: 5704298873570786917, guid: 43a6206bcc42481bb8eb9fadca8e2f0f, type: 3}
+    prefab: {fileID: 0}
+    bundleSku: 
+    pullCooldown: 0
+  - key: bag_rambro
+    payment: 0
+    price: 0
+    durable: 0
+    type: 3
+    skinId: 0
+    skinModel: {fileID: 0}
+    bagId: 1
+    bagModel: {fileID: 4100000000000000001, guid: d678bafb08f34df089bd59ba16a3472d, type: 3}
+    prefab: {fileID: 0}
+    bundleSku: duckz_rambro_bundle
+    pullCooldown: 120
+  - key: bag_ninja
+    payment: 0
+    price: 0
+    durable: 0
+    type: 3
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 3
+    bagModel: {fileID: 4200000000000000001, guid: e8c4a1b27d6f4e0a9c3b5d7e1f2a4b91, type: 3}
+    prefab: {fileID: 0}
+    bundleSku: duckz_ninja_bundle
+    pullCooldown: 120
+  - key: bag_gorilla
+    payment: 0
+    price: 0
+    durable: 0
+    type: 3
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagDropOverride: {fileID: 11400000, guid: f4ff962697794bfaab523a1372e9cefd, type: 2}
+    bagGrabOverride: {fileID: 11400000, guid: 9b1dc948a5314a299ce42fbf899b20f2, type: 2}
+    bagStowOverride: {fileID: 11400000, guid: 8004988edd234719aa4625cac3e53c97, type: 2}
+    bagId: 4
+    bagModel: {fileID: 4300000000000000001, guid: 60b5b29aecef4d62ad02d6232c6c34b5, type: 3}
+    prefab: {fileID: 0}
+    bundleSku: duckz_gorilla_bundle
+    pullCooldown: 120
+  bundles:
+  - sku: duckz_rambro_bundle
+    displayName: Rambro Bundle
+    displayPrice: $9.99
+  - sku: duckz_ninja_bundle
+    displayName: Ninja Bundle
+    displayPrice: $9.99
+  - sku: duckz_gorilla_bundle
+    displayName: Gorilla Bundle
+    displayPrice: $9.99

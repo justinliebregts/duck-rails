@@ -1,0 +1,758 @@
+/* =============================================================================
+   LCK Setup Wizard Stylesheet
+   Design: LIV.tv color scheme + Setup Wizard layout patterns
+
+   Color Reference:
+   - Background Primary: #131516
+   - Background Secondary: #131414
+   - Background Card: #1E1E21
+   - Text Primary: #FFFFFF
+   - Text Secondary: #A0A0A0
+   - Text Muted: #666666
+   - Accent Purple: #6B5CE7
+   - Accent Success: #D4FF2A
+   - Border Default: #2A2A2D
+   ============================================================================= */
+
+/* -----------------------------------------------------------------------------
+   Root / Window
+   ----------------------------------------------------------------------------- */
+.lck-wizard-root {
+    background-color: #131516;
+    flex-grow: 1;
+}
+
+/* -----------------------------------------------------------------------------
+   Main Layout
+   ----------------------------------------------------------------------------- */
+.lck-main-layout {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+/* -----------------------------------------------------------------------------
+   Navigation Sidebar
+   ----------------------------------------------------------------------------- */
+.lck-nav-sidebar {
+    width: 200px;
+    background-color: #131516;
+    padding-top: 24px;
+    padding-bottom: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-right-width: 1px;
+    border-right-color: #2A2A2D;
+}
+
+.lck-sidebar-logo-container {
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 24px;
+    margin-bottom: 8px;
+}
+
+.lck-sidebar-logo {
+    width: 78px;
+    height: 42px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.lck-sidebar-logo:hover {
+    cursor: link;
+}
+
+.lck-nav-section-header {
+    font-size: 11px;
+    -unity-font-style: bold;
+    color: #666666;
+    margin-bottom: 8px;
+    margin-top: 16px;
+    margin-left: 8px;
+}
+
+.lck-nav-section-header-first {
+    margin-top: 0;
+}
+
+.lck-nav-button {
+    height: 32px;
+    margin-bottom: 2px;
+    padding-left: 10px;
+    padding-right: 12px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 6px;
+    flex-direction: row;
+    align-items: center;
+    cursor: link;
+}
+
+.lck-nav-button:hover {
+    background-color: #1A1A1C;
+}
+
+.lck-nav-button:hover .lck-nav-label {
+    color: #FFFFFF;
+}
+
+.lck-nav-button.lck-nav-button--active {
+    background-color: #6B5CE7;
+}
+
+.lck-nav-button.lck-nav-button--active .lck-nav-label {
+    color: #FFFFFF;
+    -unity-font-style: bold;
+}
+
+.lck-nav-button.lck-nav-button--active .lck-nav-icon {
+    -unity-background-image-tint-color: #FFFFFF;
+}
+
+.lck-nav-button.lck-nav-button--update {
+    background-color: #2A3A1E;
+    border-left-width: 3px;
+    border-left-color: #D4FF2A;
+}
+
+.lck-nav-button.lck-nav-button--update .lck-nav-label {
+    color: #D4FF2A;
+}
+
+.lck-nav-button.lck-nav-button--update .lck-nav-icon {
+    -unity-background-image-tint-color: #D4FF2A;
+}
+
+.lck-nav-button.lck-nav-button--indented {
+    margin-left: 16px;
+}
+
+.lck-nav-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    -unity-background-image-tint-color: #A0A0A0;
+}
+
+.lck-nav-button .lck-nav-icon--required {
+    -unity-background-image-tint-color: #FF4D4D;
+}
+
+.lck-nav-button .lck-nav-icon--suggested {
+    -unity-background-image-tint-color: #FFB84D;
+}
+
+.lck-nav-button .lck-nav-icon--valid {
+    -unity-background-image-tint-color: #D4FF2A;
+}
+
+/* Override active state for validation status colors */
+.lck-nav-button.lck-nav-button--active .lck-nav-icon--required {
+    -unity-background-image-tint-color: #FF4D4D;
+}
+
+.lck-nav-button.lck-nav-button--active .lck-nav-icon--suggested {
+    -unity-background-image-tint-color: #FFB84D;
+}
+
+.lck-nav-button.lck-nav-button--active .lck-nav-icon--valid {
+    -unity-background-image-tint-color: #D4FF2A;
+}
+
+.lck-nav-label {
+    color: #A0A0A0;
+    font-size: 13px;
+    -unity-text-align: middle-left;
+}
+
+/* -----------------------------------------------------------------------------
+   Content Area
+   ----------------------------------------------------------------------------- */
+.lck-content-scroll {
+    flex-grow: 1;
+    background-color: #131414;
+}
+
+.lck-content-area {
+    flex-grow: 1;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    background-color: #131414;
+}
+
+/* -----------------------------------------------------------------------------
+   Page Title
+   ----------------------------------------------------------------------------- */
+.lck-page-title {
+    font-size: 28px;
+    -unity-font-style: bold;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+    -unity-text-align: upper-left;
+}
+
+.lck-page-title--center {
+    -unity-text-align: upper-center;
+}
+
+.lck-page-subtitle {
+    font-size: 13px;
+    color: #A0A0A0;
+    margin-bottom: 16px;
+    white-space: normal;
+}
+
+.lck-page-subtitle--center {
+    -unity-text-align: upper-center;
+}
+
+/* -----------------------------------------------------------------------------
+   Cards
+   ----------------------------------------------------------------------------- */
+.lck-card {
+    background-color: #1E1E21;
+    border-radius: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    margin-bottom: 12px;
+    border-width: 1px;
+    border-color: #2A2A2D;
+}
+
+.lck-card--compact {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.lck-card--clickable {
+    cursor: link;
+}
+
+.lck-card--clickable * {
+    cursor: link;
+}
+
+.lck-card--clickable:hover {
+    background-color: #252528;
+    border-color: #6B5CE7;
+}
+
+.lck-card--selected {
+    border-color: #6B5CE7;
+    border-left-width: 3px;
+    border-left-color: #6B5CE7;
+}
+
+.lck-card--horizontal {
+    flex-direction: row;
+    padding-left: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-right: 16px;
+    align-items: stretch;
+}
+
+.lck-card-image-wrapper {
+    width: 160px;
+    min-height: 100px;
+    margin-right: 16px;
+    border-radius: 4px;
+    background-color: #2A2A2D;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.lck-card-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -unity-background-scale-mode: scale-and-crop;
+    /* Note: transition and scale properties require Unity 2021.1+
+       They are applied via C# for compatible Unity versions */
+}
+
+.lck-card-content {
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.lck-card-title {
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+}
+
+.lck-card-description {
+    font-size: 13px;
+    color: #A0A0A0;
+    white-space: normal;
+    margin-bottom: 12px;
+}
+
+/* Body text - consistent style for all descriptive text */
+.lck-body-text {
+    font-size: 13px;
+    color: #A0A0A0;
+    white-space: normal;
+    margin-bottom: 12px;
+}
+
+/* -----------------------------------------------------------------------------
+   Configuration Page Elements
+   ----------------------------------------------------------------------------- */
+.lck-config-row {
+    margin-bottom: 16px;
+}
+
+.lck-config-label {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: #FFFFFF;
+    margin-bottom: 6px;
+}
+
+.lck-config-description {
+    font-size: 12px;
+    color: #808080;
+    white-space: normal;
+    margin-top: 4px;
+}
+
+/* -----------------------------------------------------------------------------
+   Buttons
+   ----------------------------------------------------------------------------- */
+.lck-button {
+    height: 36px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    -unity-font-style: bold;
+    border-width: 0;
+    cursor: link;
+}
+
+.lck-button--primary {
+    background-color: #FFFFFF;
+    color: #0A0A0B;
+}
+
+.lck-button--primary:hover {
+    background-color: #DBFF7B;
+}
+
+.lck-button--secondary {
+    background-color: rgba(0, 0, 0, 0);
+    color: #FFFFFF;
+    border-width: 1px;
+    border-color: #3A3A3D;
+}
+
+.lck-button--secondary:hover {
+    background-color: #1E1E21;
+    border-color: #4A4A4D;
+}
+
+.lck-button--accent {
+    background-color: #6B5CE7;
+    color: #FFFFFF;
+}
+
+.lck-button--accent:hover {
+    background-color: #7D6FF0;
+}
+
+.lck-button--success {
+    background-color: #1E3A1E;
+    color: #D4FF2A;
+    border-width: 1px;
+    border-color: #D4FF2A;
+}
+
+.lck-button--small {
+    height: 28px;
+    padding-left: 12px;
+    padding-right: 12px;
+    font-size: 12px;
+}
+
+.lck-button--large {
+    height: 44px;
+    padding-left: 28px;
+    padding-right: 28px;
+    font-size: 16px;
+}
+
+.lck-button-with-icon {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    cursor: link;
+}
+
+.lck-button-with-icon * {
+    cursor: link;
+}
+
+.lck-button-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.lck-button-icon--discord {
+    width: 24px;
+    height: 18px;
+}
+
+/* -----------------------------------------------------------------------------
+   Form Elements
+   ----------------------------------------------------------------------------- */
+.lck-toggle {
+    margin-bottom: 8px;
+}
+
+.lck-toggle > Label {
+    color: #A0A0A0;
+    font-size: 13px;
+}
+
+/* -----------------------------------------------------------------------------
+   Validation Elements
+   ----------------------------------------------------------------------------- */
+.lck-validation-row {
+    flex-direction: row;
+    align-items: center;
+    background-color: #1E1E21;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-width: 1px;
+    border-color: #2A2A2D;
+}
+
+.lck-validation-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.lck-validation-icon--valid {
+    -unity-background-image-tint-color: #D4FF2A;
+}
+
+.lck-validation-icon--invalid {
+    -unity-background-image-tint-color: #FF4D4D;
+}
+
+.lck-validation-icon--required {
+    -unity-background-image-tint-color: #FF4D4D;
+}
+
+.lck-validation-icon--suggested {
+    -unity-background-image-tint-color: #FFB84D;
+}
+
+.lck-validation-text {
+    flex-grow: 1;
+    font-size: 14px;
+    color: #A0A0A0;
+}
+
+/* -----------------------------------------------------------------------------
+   Version Box (Update Available Page)
+   ----------------------------------------------------------------------------- */
+.lck-version-box {
+    background-color: #1E1E21;
+    border-radius: 12px;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    margin-top: 16px;
+    margin-bottom: 24px;
+    align-items: flex-start;
+    border-width: 1px;
+    border-color: #2A2A2D;
+}
+
+.lck-version-current {
+    font-size: 14px;
+    color: #A0A0A0;
+    margin-bottom: 8px;
+}
+
+.lck-version-arrow {
+    font-size: 24px;
+    color: #666666;
+    margin-bottom: 8px;
+}
+
+.lck-version-new {
+    font-size: 20px;
+    -unity-font-style: bold;
+    color: #D4FF2A;
+    cursor: link;
+}
+
+.lck-version-new:hover {
+    color: #8FFF6F;
+}
+
+/* -----------------------------------------------------------------------------
+   Section Headers
+   ----------------------------------------------------------------------------- */
+.lck-section-header {
+    font-size: 12px;
+    -unity-font-style: bold;
+    color: #FFFFFF;
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+.lck-section-header--first {
+    margin-top: 0;
+}
+
+/* -----------------------------------------------------------------------------
+   Spacers
+   ----------------------------------------------------------------------------- */
+.lck-spacer-sm {
+    height: 8px;
+}
+
+.lck-spacer-md {
+    height: 16px;
+}
+
+.lck-spacer-lg {
+    height: 24px;
+}
+
+.lck-spacer-xl {
+    height: 32px;
+}
+
+/* -----------------------------------------------------------------------------
+   Hero Section (Welcome Page)
+   ----------------------------------------------------------------------------- */
+.lck-hero {
+    align-items: flex-start;
+    margin-bottom: 24px;
+}
+
+.lck-hero-title {
+    font-size: 28px;
+    -unity-font-style: bold;
+    color: #FFFFFF;
+    margin-bottom: 8px;
+    -unity-text-align: upper-left;
+}
+
+.lck-hero-description {
+    font-size: 13px;
+    color: #A0A0A0;
+    -unity-text-align: upper-left;
+    white-space: normal;
+    margin-bottom: 24px;
+}
+
+/* -----------------------------------------------------------------------------
+   Button Row
+   ----------------------------------------------------------------------------- */
+.lck-button-row {
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-top: 16px;
+}
+
+.lck-button-row > Button {
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+/* -----------------------------------------------------------------------------
+   Page Controls (Previous/Next)
+   ----------------------------------------------------------------------------- */
+.lck-page-controls {
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top-width: 1px;
+    border-top-color: #2A2A2D;
+}
+
+.lck-page-controls > Button {
+    margin-right: 8px;
+}
+
+/* -----------------------------------------------------------------------------
+   Info/Warning/Success Boxes
+   ----------------------------------------------------------------------------- */
+.lck-info-box {
+    background-color: #1A1A3A;
+    border-radius: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-left-width: 3px;
+    border-left-color: #6B5CE7;
+}
+
+.lck-info-box-text {
+    font-size: 13px;
+    color: #A0A0A0;
+    white-space: normal;
+}
+
+.lck-warning-box {
+    background-color: #3A2A1A;
+    border-radius: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-left-width: 3px;
+    border-left-color: #FFB84D;
+}
+
+.lck-warning-box-text {
+    font-size: 13px;
+    color: #FFB84D;
+    white-space: normal;
+}
+
+.lck-success-box {
+    background-color: #DBFF7B;
+    border-radius: 8px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-left-width: 0;
+}
+
+.lck-success-box-text {
+    font-size: 13px;
+    color: #0A0A0B;
+    white-space: normal;
+    -unity-font-style: bold;
+}
+
+/* -----------------------------------------------------------------------------
+   Dropdown / Popup Fields
+   ----------------------------------------------------------------------------- */
+.lck-wizard-root .unity-base-popup-field__input {
+    background-color: #1E1F21;
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: #3F3F47;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 12px;
+    padding-right: 8px;
+    min-height: 28px;
+}
+
+.lck-wizard-root .unity-base-popup-field__input:hover {
+    border-color: #5A5A62;
+}
+
+.lck-wizard-root .unity-base-popup-field__input:focus {
+    border-color: #6B5CE7;
+}
+
+.lck-wizard-root .unity-base-popup-field__text {
+    color: #FFFFFF;
+}
+
+.lck-wizard-root .unity-base-popup-field__arrow {
+    -unity-background-image-tint-color: #A0A0A0;
+}
+
+/* Toggle styling */
+.lck-wizard-root .unity-toggle__input {
+    background-color: #1E1F21;
+    border-radius: 4px;
+    border-width: 1px;
+    border-color: #3F3F47;
+}
+
+.lck-wizard-root .unity-toggle__input:checked {
+    background-color: #6B5CE7;
+    border-color: #6B5CE7;
+}
+
+.lck-wizard-root .unity-toggle__checkmark {
+    -unity-background-image-tint-color: #FFFFFF;
+}
+
+/* -----------------------------------------------------------------------------
+   Cursor Styling - Force hand cursor on all interactive elements
+   ----------------------------------------------------------------------------- */
+.lck-wizard-root Button {
+    cursor: link;
+}
+
+.lck-wizard-root .unity-button {
+    cursor: link;
+}
+
+.lck-wizard-root .unity-toggle {
+    cursor: link;
+}
+
+.lck-wizard-root .unity-toggle__input {
+    cursor: link;
+}
+
+.lck-wizard-root .unity-base-popup-field {
+    cursor: link;
+}
+
+.lck-wizard-root .unity-base-popup-field__input {
+    cursor: link;
+}
+
+.lck-wizard-root .unity-text-field {
+    cursor: text;
+}
+
+.lck-wizard-root .lck-card--clickable,
+.lck-wizard-root .lck-card--clickable * {
+    cursor: link;
+}
+
+.lck-wizard-root .lck-sidebar-logo {
+    cursor: link;
+}
+
+.lck-wizard-root Image:hover {
+    cursor: link;
+}
+
+.lck-clickable {
+    cursor: link;
+}

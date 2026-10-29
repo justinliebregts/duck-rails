@@ -1,0 +1,36 @@
+{
+  "model": "Pre-generated Kokoro am_puck, 24 kHz mono Ogg Vorbis, 32 kbps",
+  "modelRevision": "1939ad2a8e416c0acfeecc08a694d14ef25f2231",
+  "lexicon": "hexgrad/misaki",
+  "runtime": "Audio clip playback; no runtime TTS",
+  "recognitionModel": "vosk-model-small-en-us-0.15",
+  "recognitionRuntimeWindows": "Vosk 0.3.45",
+  "recognitionRuntimeAndroid": "Vosk 0.3.47",
+  "sourceArchiveHashes": {
+    "android.zip": "82048d1f462218adae4ba76477089ab0ba76093d84f733540066db1a8ba6b827",
+    "managed.zip": "6e29d09318b9ec1a3207fd97fe0dfebfcccec15b936c85bdff2f6c8080e91836",
+    "vosk-android.zip": "e3b82bb877753569f5e5f007807e4bc6165c34ba04e772d1df93552af0d27ffa",
+    "vosk-windows.zip": "f1dcc9cca460630f81ea8f71794f69c80bed6556d2a4e6237b5785e1d2dff34b",
+    "windows.zip": "0b38df9af21834e41e73d602d90db5cb06dbd1ca618948b8f1d66d607ac9f3cd"
+  },
+  "files": {
+    "Assets/StreamingAssets/DuckSpeech/Licenses/GCC-GPL-3.0.txt": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+    "Assets/StreamingAssets/DuckSpeech/Licenses/GCC-Runtime-Exception.txt": "9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74",
+    "Assets/StreamingAssets/DuckSpeech/Licenses/Kaldi-Apache-2.0.txt": "e68f06f3248553b47aa0014d176697c3cabab88395dd073f2887312742fa80b9",
+    "Assets/StreamingAssets/DuckSpeech/Licenses/KittenTTS-Apache-2.0.txt": "787aa312b93eee80b636f35652469df29efdb7582239d6a9c088467555a3c7fd",
+    "Assets/StreamingAssets/DuckSpeech/Licenses/Kokoro-Apache-2.0.txt": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "Assets/StreamingAssets/DuckSpeech/Licenses/Misaki-Apache-2.0.txt": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "Assets/StreamingAssets/DuckSpeech/Licenses/OpenBLAS-BSD.txt": "190b5a9c8d9723fe958ad33916bd7346d96fab3c5ea90832bb02d854f620fcff",
+    "Assets/StreamingAssets/DuckSpeech/Licenses/Vosk-Apache-2.0.txt": "bb618af833c817ab01c1564bd3ec75ba4b4f9cf30910a4a2168e30a674ee8cc6",
+    "Assets/StreamingAssets/DuckSpeech/Licenses/WinPthreads-License.txt": "63263614cdd29f2f93cba85e992f041b31f9fc7b4033692f31269489a8a1b177",
+    "Assets/StreamingAssets/DuckSpeech/NOTICE.txt": "91c0af11b8e6dbc612cb330816ad015516b634f8d26346a78b9fe0974598c2aa",
+    "Assets/StreamingAssets/DuckSpeech/recognition.zip": "30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498",
+    "Assets/Plugins/DuckSpeech/Android/arm64-v8a/libvosk.so": "29ddc0282af7e44c790f2a7dfbcf7ed9e557361dc1acf609142c89b792d714e1",
+    "Assets/Plugins/DuckSpeech/link.xml": "1b4c1541a7909a8649e6d30a5e618c37499d5ec3795e7fc308effb54c8df903f",
+    "Assets/Plugins/DuckSpeech/Windows/x86_64/libgcc_s_seh-1.dll": "201bf8a54ebb490f93ea4beb20740a483bf67036b90b5720f32d0c746a72d1e9",
+    "Assets/Plugins/DuckSpeech/Windows/x86_64/libstdc++-6.dll": "a1d96a848a567d7657e152cfe92e2fd62da412968cc11ec8bdb04bf20ebc5747",
+    "Assets/Plugins/DuckSpeech/Windows/x86_64/libvosk.dll": "9331c2f6a32cf77141af27c9750e79532718f51bbc2e3cea3c60f14ca4251e4e",
+    "Assets/Plugins/DuckSpeech/Windows/x86_64/libwinpthread-1.dll": "92caeb8a4ea281c674003462a233f3b445b685b0a6f93eb11254feda2dda9cde"
+  },
+  "lexiconVersion": "0.9.4"
+}

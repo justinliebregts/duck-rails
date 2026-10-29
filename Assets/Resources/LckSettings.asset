@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 164437c82c0c88a4ab4bf268cb917193, type: 3}
+  m_Name: LckSettings
+  m_EditorClassIdentifier: LIV.LCK::Liv.Lck.Settings.LckSettings
+  ShowSetupWizard: 0
+  DismissedUpdateVersion: 
+  LastShownOverviewVersion: 1.4.7
+  DismissedNotificationBarVersion: 
+  TrackingId: 8e7d8e9b-f364-4aab-b866-2cd5702c07ee
+  GameName: Duck Z
+  RecordingFilenamePrefix: DuckZClip
+  RecordingAlbumName: Duck Z
+  RecordingDateSuffixFormat: yyyy-MM-dd_HH-mm-ss
+  MicPermissionType: 3
+  AddMicPermissionsToAndroidManifest: 0
+  AddControlCenterPermissionsToAndroidManifest: 0
+  AddInternetPermissionsToAndroidManifest: 0
+  DisableIntervaledRendering: 0
+  BaseLogLevel: 1
+  MicrophoneLogLevel: 1
+  NativeLogLevel: 2
+  CoreLogLevel: 1
+  ShowOpenGLMessages: 0
+  GameAudioSyncTimeOffsetInMS: 250
+  AudioLimiter: 0
+  FallbackSampleRate: 48000
+  ImageCaptureFileFormat: 3
+  TriggerEnterTag: Finger
