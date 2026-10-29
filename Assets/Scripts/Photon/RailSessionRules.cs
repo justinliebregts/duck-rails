@@ -15,6 +15,11 @@ public static class RailSessionRules
     public const string Block = "rails.block", Fuel = "rails.fuel", Motion = "rails.motion", Cargo = "rails.cargo";
     public const string CompoundKind = "compound", PrivateKind = "private", ExpeditionKind = "expedition";
 
+    // Returning still belongs to the expedition. Present the compound only after
+    // joining its room (public) or committing Staging (private).
+    public static bool IsOnTrain(RailPhase phase) => phase == RailPhase.Departing ||
+        phase == RailPhase.Running || phase == RailPhase.Ending || phase == RailPhase.Returning;
+
     public static bool IsCode(string value)
     {
         if (value == null || value.Length != 5) return false;

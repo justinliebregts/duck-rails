@@ -33,6 +33,10 @@ public static class RailSessionChecks
         Check(privateRoom.MaxPlayers == 8 && !privateRoom.IsVisible && privateRoom.IsOpen, "Private rooms: eight players, hidden, code joinable");
         Check(privateRoom.PlayerTtl == 120000 && privateRoom.EmptyRoomTtl == 0, "120-second reconnect slots; empty rooms close immediately");
         Check(RailSessionRules.CanTransition(RailPhase.Staging, RailPhase.Departing) && !RailSessionRules.CanTransition(RailPhase.Staging, RailPhase.Ending), "Invalid phase shortcuts rejected");
+        Check(new[] { RailPhase.Departing, RailPhase.Running, RailPhase.Ending, RailPhase.Returning }.All(RailSessionRules.IsOnTrain),
+            "Crew stays aboard through ending and returning instead of spawning in a temporary compound");
+        Check(!RailSessionRules.IsOnTrain(RailPhase.Compound) && !RailSessionRules.IsOnTrain(RailPhase.Staging),
+            "Public compound arrival and private staging present the compound");
         RailSessionRules.EvaluateMotion(new object[] { 10d, 0f, 0f, 4f }, 11, out float z, out float v);
         Check(Mathf.Abs(z - 1f) < .0001f && v == 2, "Acceleration integrates correct distance and speed");
         RailSessionRules.EvaluateMotion(new object[] { 10d, 0f, 0f, 4f }, 15, out z, out v);

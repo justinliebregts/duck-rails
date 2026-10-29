@@ -25,7 +25,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public static string Kind => Get(RailSessionRules.Kind, "");
     public static string RunId => Get(RailSessionRules.Run, "");
     public static bool IsPrivate => Kind == RailSessionRules.PrivateKind;
-    public static bool OnTrain => Phase == RailPhase.Departing || Phase == RailPhase.Running || Phase == RailPhase.Ending;
+    public static bool OnTrain => RailSessionRules.IsOnTrain(Phase);
     public static T Get<T>(string key, T fallback) => PhotonNetwork.CurrentRoom?.CustomProperties[key] is T value ? value : fallback;
 
     enum Request { None, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound
