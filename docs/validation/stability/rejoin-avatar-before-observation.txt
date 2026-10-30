@@ -1,0 +1,17 @@
+Diagnostic observation, October 30, 2026 (Unity MCP; before cached-avatar fix):
+Main client rejoined expedition 67406, phase Running, WorldReady=True,
+HasRoomRequest=False, Status=Ready.
+Actor 1: active, PhotonPlayer.ForActor found the remote avatar (view 1001).
+Actor 2: active, local view 2001 existed, but PhotonPlayer.ForActor returned null.
+One PhotonAvatarSpawner and a valid DesktopPlayer LocalBodyDriver were present.
+The driver had LeftHand/RightHand anchors. Local avatar HandSource(true/false)
+were both null.
+
+Main Console at 02:49:29 local time:
+PhotonView ID duplicate found: 2001. New: View 2001 on PhotonPlayer(Clone)
+old: View 2001 on PhotonPlayer(Clone). Destroying old entry, adding new.
+Stack: PhotonNetwork.RegisterPhotonView -> PhotonView.ViewID ->
+PhotonNetwork.NetworkInstantiate -> PhotonNetwork.OnEvent.
+
+The harness timed out waiting for the restored local pose at 09:51:42 UTC.
+This was a production failure, separate from the earlier test-fixture corrections.

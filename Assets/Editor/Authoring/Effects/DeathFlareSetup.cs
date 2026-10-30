@@ -13,7 +13,7 @@ public static class DeathFlareSetup
     const string PlayCheckKey = "DeathFlare.PlayChecks";
     static DeathFlare liveFlare;
     static double playStarted;
-    static bool checkedDelay, checkedAudio, checkedDescent;
+    static bool checkedAudio, checkedDescent;
     static int lastCheckSecond;
 
     static DeathFlareSetup()
@@ -29,8 +29,9 @@ public static class DeathFlareSetup
             new GameObject("Flare check listener").AddComponent<AudioListener>();
             Physics.SyncTransforms();
             liveFlare = DeathFlare.SpawnAfterDeath(AssetDatabase.LoadAssetAtPath<DeathFlare>(PrefabPath), Vector3.up * 0.5f);
+            Check(liveFlare.IsBurning, "flare burns immediately on downing");
             playStarted = Time.unscaledTimeAsDouble;
-            Time.timeScale = 0; // The death delay and flight both use real time.
+            Time.timeScale = 0; // Flight uses real time.
             EditorApplication.update += CheckPlayFrame;
         };
     }
@@ -51,16 +52,6 @@ public static class DeathFlareSetup
         {
             double deathAge = Time.unscaledTimeAsDouble - playStarted;
             double age = deathAge - DeathFlare.DeathLaunchDelay;
-            if (deathAge > 0.15 && deathAge < 1.9)
-            {
-                checkedDelay = true;
-                Check(liveFlare.transform.position == Vector3.up * 0.5f, "no motion during death delay");
-                Check(!liveFlare.GetComponentInChildren<Light>().enabled, "no light during death delay");
-                foreach (var particles in liveFlare.GetComponentsInChildren<ParticleSystem>())
-                    Check(particles.particleCount == 0 && !particles.isPlaying, "no particles during death delay");
-                var audioField = typeof(DeathFlare).GetField("launchAudio", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                Check(!((AudioHandle)audioField.GetValue(liveFlare)).IsPlaying, "no audio during death delay");
-            }
             if ((int)age / 5 > lastCheckSecond)
             {
                 lastCheckSecond = (int)age / 5;
@@ -69,7 +60,6 @@ public static class DeathFlareSetup
             if (!checkedAudio && age > 0.15)
             {
                 checkedAudio = true;
-                Check(checkedDelay, "observed two-second death delay");
                 var field = typeof(DeathFlare).GetField("launchAudio", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 Check(((AudioHandle)field.GetValue(liveFlare)).IsPlaying, "pooled AudioManager launch sound");
                 Check(liveFlare.GetComponentInChildren<ParticleSystem>().particleCount > 0, "live particles");
@@ -83,8 +73,8 @@ public static class DeathFlareSetup
             }
             if (age < DeathFlare.Lifetime - 0.1) Check(liveFlare != null, "survives until lifetime expires");
             if (age < DeathFlare.Lifetime + 0.2) return;
-            Check(liveFlare == null, "destroyed at lifetime expiry while paused");
-            Debug.Log($"[DeathFlare] Play checks passed: silent/invisible two-second death delay, pooled launch audio, live particles, ascent/descent, full {DeathFlare.Lifetime}-second lifetime after launch, cleanup at timeScale zero.");
+            Check(liveFlare == null || !liveFlare.gameObject.activeSelf, "released at lifetime expiry while paused");
+            Debug.Log($"[DeathFlare] Play checks passed: immediate downing launch, pooled launch audio, live particles, ascent/descent, full {DeathFlare.Lifetime}-second lifetime after launch, cleanup at timeScale zero.");
             FinishPlayChecks(0);
         }
         catch (Exception exception) { Debug.LogException(exception); FinishPlayChecks(1); }

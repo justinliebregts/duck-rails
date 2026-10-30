@@ -41,6 +41,34 @@ public class PlayerHand : MonoBehaviour
 
     Transform holdPoint;
     bool holdPointOnSkin;
+    Transform buttonTouchRoot;
+    SphereCollider[] buttonTouchColliders;
+
+    // DuckPlayer's finger colliders live on the posed skin, not under PlayerHand.
+    public bool TouchesButton(Collider button)
+    {
+        var driver = GetComponentInParent<LocalBodyDriver>();
+        var body = driver != null ? driver.Body : null;
+        Transform skin = body == null ? null : IsControllerLTouch ? body.LeftHand : body.RightHand;
+        if (skin == null) return false;
+        if (skin != buttonTouchRoot)
+        {
+            buttonTouchRoot = skin;
+            buttonTouchColliders = skin.GetComponentsInChildren<SphereCollider>(true);
+        }
+        foreach (var finger in buttonTouchColliders)
+            if (ButtonContact(button, finger)) return true;
+        return false;
+    }
+
+    public static bool ButtonContact(Collider button, SphereCollider finger)
+    {
+        if (button == null || !button.enabled || finger == null || !finger.enabled || !finger.gameObject.activeInHierarchy) return false;
+        // Explicit poses follow this frame's animated fingers without relying on the
+        // physics layer matrix, rigidbodies or a FixedUpdate trigger callback.
+        return Physics.ComputePenetration(button, button.transform.position, button.transform.rotation,
+            finger, finger.transform.position, finger.transform.rotation, out _, out _);
+    }
     Grabbable held;
     IHandLocomotionShape heldShape;
     Vector3[] posSamples;
@@ -52,6 +80,9 @@ public class PlayerHand : MonoBehaviour
     public bool IsControllerLTouch => controller == OVRInput.Controller.LTouch;
     public bool IsControllerRTouch => controller == OVRInput.Controller.RTouch;
     public bool IsHolding => held != null;
+    public bool IsDesktopInput => input != null && input.mouseGrip;
+    public bool IsGripHeld => input != null && input.ReturnButtonPress(ButtonName.Grip, this).down;
+    RailControl driveControl;
     public Grabbable Held => held;
     public Transform HoldPoint => holdPoint != null ? holdPoint : transform;
     public float GrabTolerance
@@ -59,7 +90,7 @@ public class PlayerHand : MonoBehaviour
         get => grabRadius;
         set => grabRadius = Mathf.Max(0f, value);
     }
-    public bool CanGrab => PhotonMasterHandoff.LocalAvailable && (GR.Player.instance == null || !GR.Player.instance.IsDead);
+    public bool CanGrab => PhotonMasterHandoff.LocalAvailable && !RailExpedition.LocalDown && (GR.Player.instance == null || !GR.Player.instance.IsDead);
 
     /// <summary>True on the frame any of this hand's use buttons goes down: A, B or trigger on the right, X, Y or trigger on the left.</summary>
     public bool WasUsePressed
@@ -175,10 +206,18 @@ public class PlayerHand : MonoBehaviour
         if (input == null) return;
 
         ButtonStatus grip = input.ReturnButtonPress(ButtonName.Grip, this);
+        if (driveControl != null)
+        {
+            if (!driveControl.HeldBy(this)) driveControl = null;
+            else { if (!grip.down) { driveControl.ReleaseDrive(); driveControl = null; } return; }
+        }
         if (held == null)
         {
             if (grip.wasPressed && (GripHandler == null || !GripHandler.OnGripPressed(this)))
-                TryGrab();
+            {
+                driveControl = RailControl.TryGripDrive(this);
+                if (driveControl == null) TryGrab();
+            }
             else if (grip.wasReleased && GripHandler != null)
                 GripHandler.OnGripReleased(this);
         }
@@ -192,7 +231,7 @@ public class PlayerHand : MonoBehaviour
     /// <summary>Grabs a specific item regardless of distance. Returns false if the hand is busy or the grab was refused.</summary>
     public bool ForceGrab(Grabbable item)
     {
-        if (!CanGrab || item == null || held != null) return false;
+        if (!CanGrab || item == null || held != null || driveControl != null) return false;
 
         item.Grab(this);
         if (item.Holder != this) return false;
@@ -221,6 +260,7 @@ public class PlayerHand : MonoBehaviour
 
     public void Release()
     {
+        if (driveControl != null) { driveControl.ReleaseDrive(); driveControl = null; }
         if (held == null) return;
 
         ComputeThrowVelocity(out Vector3 lin, out Vector3 ang);
@@ -335,7 +375,7 @@ public class PlayerHand : MonoBehaviour
 
     public bool TryGrab(Grabbable item)
     {
-        if (!CanGrab || held != null || item == null || !item.CanBeGrabbed)
+        if (!CanGrab || held != null || driveControl != null || item == null || !item.CanBeGrabbed)
             return false;
 
         item.Grab(this);

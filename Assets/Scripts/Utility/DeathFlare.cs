@@ -58,7 +58,7 @@ public sealed class DeathFlare : MonoBehaviour
         return true;
     }
     public const float Lifetime = 30f;
-    public const float DeathLaunchDelay = 2f;
+    public const float DeathLaunchDelay = 0f;
     [SerializeField, Min(0f)] float launchHeight = 24f;
     [SerializeField, Min(0.01f)] float launchDuration = 1.25f;
     [SerializeField, Min(0.01f)] float descentSpeed = 1.1f;
@@ -100,7 +100,7 @@ public sealed class DeathFlare : MonoBehaviour
         foreach (var ps in waitingParticles) ps.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 
-    // Age is measured from death, so remote clients wait only the remaining delay.
+    // Launch immediately; remote clients catch up from the original downing timestamp.
     public static DeathFlare SpawnAfterDeath(DeathFlare prefab, Vector3 position, float deathAge = 0f)
         => Spawn(prefab, position, Mathf.Max(0f, deathAge) - DeathLaunchDelay);
 

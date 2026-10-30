@@ -34,7 +34,7 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
     Room room;
 
     bool Ready => (focused || DesktopPlay.UseDesktop) && xrFocused && !paused && PhotonNetwork.IsMessageQueueRunning
-        && GameScenes.IsLoaded(PhotonSession.PlayScene) && PhotonPlayer.Local != null;
+        && GameScenes.IsLoaded(PhotonSession.RequiredScene) && PhotonPlayer.Local != null;
 
     void Awake() { instance = this; focused = Application.isFocused; }
     void OnDestroy() { if (instance == this) instance = null; }

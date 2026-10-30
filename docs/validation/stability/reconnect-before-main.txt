@@ -1,0 +1,12 @@
+2026-10-30T09:31:57.5334775Z Starting three-client public lifecycle and network recovery test; Unity 6000.3.24f1
+2026-10-30T09:31:57.5355089Z step=0 round=0
+2026-10-30T09:32:13.5984590Z step=1 round=0
+2026-10-30T09:32:19.2121363Z PASS round=0 step=1 Three accounts gathered in fresh public compound avatars=1:1001,2:2001,3:3001
+2026-10-30T09:32:19.3072743Z step=2 round=0
+2026-10-30T09:32:47.2061439Z PASS round=0 step=2 Public departure loaded Expedition with only platform occupants avatars=1:1001,2:2001
+2026-10-30T09:32:47.4116859Z step=3 round=0
+2026-10-30T09:33:03.4474394Z PASS round=0 step=3 Moving passengers and loose bags under simulated latency/loss avatars=1:1001,2:2001
+2026-10-30T09:33:03.5475954Z step=4 round=0
+2026-10-30T09:33:15.8594647Z PASS round=0 step=4 16 rapid GO/STOP requests converged to stopped train avatars=1:1001,2:2001
+2026-10-30T09:33:15.9610124Z step=5 round=0
+2026-10-30T09:33:15.9630481Z Injected 100% transport loss

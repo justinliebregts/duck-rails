@@ -970,7 +970,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         return view == null || !PhotonNetwork.InRoom || view.IsMine;
     }
 
-    static bool IsPlayerDead() => GR.Player.instance != null && GR.Player.instance.IsDead;
+    static bool IsPlayerDead() => RailExpedition.LocalDown || (GR.Player.instance != null && GR.Player.instance.IsDead);
 
     static void PlaySound(SoundEvent sound, Vector3 position)
     {

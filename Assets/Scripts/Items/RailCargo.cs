@@ -31,6 +31,15 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
         body.position += delta;
         transform.position = body.position;
     }
+    public void Carry(Vector3 previous, Quaternion oldRotation, Vector3 next, Quaternion rotation)
+    {
+        if (!photonView.IsMine || !attached || !Loose || body == null) return;
+        Quaternion turn = rotation * Quaternion.Inverse(oldRotation);
+        body.position = next + turn * (body.position - previous);
+        body.rotation = turn * body.rotation;
+        if (!body.isKinematic) { body.linearVelocity = turn * body.linearVelocity; body.angularVelocity = turn * body.angularVelocity; }
+        transform.SetPositionAndRotation(body.position, body.rotation);
+    }
     void LateUpdate()
     {
         var train = RailTrain.Instance;
@@ -39,7 +48,7 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
             bool wasAttached = attached;
             attached = train != null && Loose && train.Contains(transform.position);
             if (attached && !previousLoose && body != null && !body.isKinematic)
-                body.linearVelocity -= Vector3.forward * train.Speed;
+                body.linearVelocity -= train.Velocity;
             if (attached)
             {
                 localPose = train.transform.InverseTransformPoint(transform.position);
@@ -48,7 +57,7 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
             }
             // Cargo velocity is relative aboard the carriage. Leaving the volume restores train velocity.
             if (wasAttached && !attached && Loose && body != null && !body.isKinematic && train != null)
-                body.linearVelocity += Vector3.forward * train.Speed;
+                body.linearVelocity += train.Velocity;
             previousLoose = Loose;
         }
         else if (received && attached && Loose && train != null && run == PhotonSession.RunId)

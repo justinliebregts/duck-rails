@@ -68,7 +68,7 @@ public static class DeathLifecycleChecks
         var point = new Vector3(50, 10, 50);
         var first = DeathFlare.SpawnAfterDeath(flarePrefab, point);
         Call(first, "OnEnable"); // Editor fixtures explicitly deliver lifecycle callbacks.
-        Check(!first.IsBurning && !first.GetComponentInChildren<Light>().enabled, "Launch delay has no protection/light");
+        Check(first.IsBurning && (bool)Get(first, "launched"), "Downing launches immediately with protection");
         Set(first, "started", Time.unscaledTimeAsDouble - 1); Call(first, "Update");
         Check(first.IsBurning && DeathFlare.FindNear(first.transform.position, 2) == first, "Burning flare protects");
         Check(!DeathFlare.AllowsMovement(first.transform.position + Vector3.right * 2, first.transform.position, 1), "Flare blocks approach");
@@ -76,12 +76,12 @@ public static class DeathLifecycleChecks
         Set(first, "landed", true); Set(first, "started", Time.unscaledTimeAsDouble - 31); Call(first, "Update");
         Check(!first.gameObject.activeSelf && pool.ActiveCount == 0, "Expiry returns effect");
         var second = DeathFlare.SpawnAfterDeath(flarePrefab, point + Vector3.right);
-        Check(second == first && !(bool)Get(second, "landed") && !(bool)Get(second, "launched"), "Flare reuses/reset flight");
+        Check(second == first && !(bool)Get(second, "landed") && (bool)Get(second, "launched"), "Flare reuses/reset flight");
         Check(second.GetComponentInChildren<Light>().intensity > .01f, "Flare restores authored intensity");
         pool.Release(second.gameObject);
         var late = DeathFlare.SpawnAfterDeath(flarePrefab, point, 10);
         Check(late.IsBurning && (bool)Get(late, "launched"), "Delayed event catches up"); pool.Release(late.gameObject);
-        Check(DeathFlare.SpawnAfterDeath(flarePrefab, point, 33) == null, "Expired network event ignored");
+        Check(DeathFlare.SpawnAfterDeath(flarePrefab, point, 30) == null, "Expired network event ignored");
         var held = new DeathFlare[9];
         for (int i = 0; i < held.Length; i++) held[i] = DeathFlare.Spawn(flarePrefab, point + Vector3.right * i);
         Check(pool.ActiveCount == 9 && pool.OverflowCreates == 1 && held[0].IsBurning, "Overflow preserves all live protection");
@@ -114,7 +114,7 @@ public static class DeathLifecycleChecks
         };
         Bench("flare+gib create/reset/release (excludes audio/network)", original, reused);
         Check(pool.CreatedObjects == created && pool.ActiveCount == 0, "No warmed effect creation");
-        Debug.Log("Death effects PASS: delayed launch, age catchup, expiry, light reset, protection, overflow and bomber revisions");
+        Debug.Log("Death effects PASS: immediate launch, age catchup, expiry, light reset, protection, overflow and bomber revisions");
     }
     static void AvatarRagdoll()
     {

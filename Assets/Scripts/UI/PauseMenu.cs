@@ -92,6 +92,7 @@ public class PauseMenu : MonoBehaviour
     }
 
     private void Update() {
+        if (RailDiagnosticPanel.OwnsMenuInput && !IsOpen) return;
         if (GR.Player.instance == null)
             return;
         if (GR.Player.instance.IsDead) {
@@ -107,7 +108,7 @@ public class PauseMenu : MonoBehaviour
             wasPressed = true;
         }
         if (wasPressed) {
-            TogglePause();
+            if (RailDiagnosticPanel.OwnsMenuInput) CloseForDeath(); else TogglePause();
         }
 
         if (!paused || (grabbable != null && grabbable.IsHeld)) {
@@ -292,6 +293,10 @@ public class PauseMenu : MonoBehaviour
 
         mesh.SetActive(paused);
         PlayMenuSound(paused ? openSound : closeSound, transform.position);
+    }
+
+    public void OpenFromDiagnostics() {
+        if (!paused) TogglePause();
     }
 
     void PlaceInFrontOfPlayer() {

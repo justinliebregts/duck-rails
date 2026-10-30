@@ -5,6 +5,7 @@ public static class GameScenes
 {
     public const string Login = "Login";
     public const string Compound = "Compound";
+    public const string Expedition = "Expedition";
     public static bool IsLoaded(string name)
     {
         var scene = SceneManager.GetSceneByName(name);

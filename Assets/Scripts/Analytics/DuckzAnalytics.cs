@@ -80,7 +80,7 @@ public sealed class DuckzAnalytics : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == PhotonSession.PlayScene)
+        if (scene.name == PhotonSession.PlayScene || scene.name == GameScenes.Expedition)
             MarkAlive();
     }
 

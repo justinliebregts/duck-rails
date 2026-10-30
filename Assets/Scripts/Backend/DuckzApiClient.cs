@@ -117,6 +117,7 @@ public static class DuckzApiClient
     {
         string url = baseUrl.TrimEnd('/') + "/" + path.TrimStart('/');
         var request = new UnityWebRequest(url, method) { downloadHandler = new DownloadHandlerBuffer() };
+        request.timeout = 20;
         if (json != null)
         {
             request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));

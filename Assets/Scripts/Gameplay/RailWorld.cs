@@ -32,7 +32,7 @@ public sealed class RailWorld : MonoBehaviour
 
     public static bool IsActorOnPlatform(int actor)
     {
-        if (Instance == null) return false;
+        if (Instance == null || Instance.boardingTrigger == null) return false;
         if (PhotonNetwork.LocalPlayer != null && actor == PhotonNetwork.LocalPlayer.ActorNumber)
             return GR.Player.instance != null && Instance.boardingTrigger.bounds.Contains(GR.Player.instance.transform.position + Vector3.up);
         var player = PhotonPlayer.ForActor(actor);
@@ -43,6 +43,7 @@ public sealed class RailWorld : MonoBehaviour
     {
         var session = PhotonSession.Instance;
         if (session == null) return;
+        if (PhotonSession.IsRailsRoom && gameObject.scene.name != PhotonSession.RequiredScene) { session.MarkWorldLoading(); return; }
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             menu = !menu;
@@ -56,9 +57,10 @@ public sealed class RailWorld : MonoBehaviour
         if (room != presentedRoom || run != presentedRun || aboard != presentedOnTrain)
         {
             presentedRoom = room; presentedRun = run; presentedOnTrain = aboard; positioned = false;
-            compound.SetActive(!aboard); expedition.SetActive(aboard);
+            if (compound != null) compound.SetActive(!aboard); if (expedition != null) expedition.SetActive(aboard);
             menu = false;
         }
+        if (aboard && RailRoute.Instance != null && !RailRoute.Instance.EnsureReady()) { session.MarkWorldLoading(); return; }
         if (Time.unscaledTime >= nextManifest)
         {
             nextManifest = Time.unscaledTime + .5f;
@@ -85,7 +87,9 @@ public sealed class RailWorld : MonoBehaviour
         }
         if (!positioned)
         {
-            Vector3 position = aboard ? train.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 4 - 1.5f) * .7f, .35f, -2f)) : compoundSpawn.position;
+            int spawnSlot = (PhotonNetwork.LocalPlayer.ActorNumber - 1) % 12;
+            Vector3 position = aboard ? train.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 4 - 1.5f) * .7f, .35f, -2f))
+                : compoundSpawn.position + new Vector3((spawnSlot % 4 - 1.5f) * 1.5f, 0, spawnSlot / 4 * 1.5f);
             var desktop = local.GetComponent<DesktopPlayer>();
             if (desktop != null) desktop.Teleport(position, Quaternion.identity, true);
             else if (NewPlayer.instance != null) NewPlayer.instance.Warp(position, Quaternion.identity);
@@ -115,6 +119,9 @@ public sealed class RailWorld : MonoBehaviour
     public static bool HasLiveCargo => CargoViews().Any();
     static void ClearCargo()
     {
+        if (PhotonNetwork.IsMasterClient)
+            foreach (var enemy in Game.AI.Enemy.Active.ToArray())
+                if (enemy != null && enemy.TryGetComponent<PhotonView>(out var enemyView) && enemyView.IsMine) PhotonNetwork.Destroy(enemy.gameObject);
         // Destroy unregisters views synchronously; do not mutate the live iterator.
         foreach (var view in CargoViews().Where(v => v.IsMine).ToArray())
             if (view != null && PhotonView.Find(view.ViewID) == view) PhotonNetwork.Destroy(view.gameObject);
@@ -125,6 +132,12 @@ public sealed class RailWorld : MonoBehaviour
         if (string.IsNullOrEmpty(run)) return;
         if (PhotonSession.Get("rails.seeded", "") != run)
         {
+            if (RailExpedition.Instance != null && RailExpedition.Instance.supplies.Length > 0)
+            {
+                RailExpedition.Instance.SeedCargo();
+                PhotonSession.Instance.Commit(new Hashtable { ["rails.seeded"] = run, [RailSessionRules.Cargo] = CurrentCargo() });
+                return;
+            }
             // Instantiation markers survive a master change between spawn and manifest commit.
             bool HasSeed(string name) => CargoViews().Any(view =>
                 view.InstantiationData is object[] data && data.Length >= 3 &&
@@ -169,7 +182,7 @@ public sealed class RailWorld : MonoBehaviour
         GUILayout.BeginArea(new Rect(20, 145, 370, 420), GUI.skin.box);
         GUILayout.Label("SESSION CONTROLS");
         GUI.enabled = session.WorldReady;
-        bool nearTerminal = GR.Player.instance != null && Vector3.Distance(GR.Player.instance.transform.position, privateTerminal.position) < 4;
+        bool nearTerminal = privateTerminal != null && GR.Player.instance != null && Vector3.Distance(GR.Player.instance.transform.position, privateTerminal.position) < 4;
         if (!PhotonSession.OnTrain && nearTerminal)
         {
             GUILayout.Label("Five-digit code: create private or join any room");
@@ -188,13 +201,17 @@ public sealed class RailWorld : MonoBehaviour
         }
         if (PhotonSession.Phase == RailPhase.Running)
         {
-            GUILayout.Label("Fuel: " + PhotonSession.CurrentFuel.ToString("0.0") + "   Block: rail-yard-test-v1");
+            GUILayout.Label("Fuel: " + PhotonSession.CurrentFuel.ToString("0.0") + "   Stops: 5 + bridge");
             GUI.enabled = session.WorldReady && !session.HasRoomRequest;
             if (GUILayout.Button("GO — accelerate")) session.SetTrainMoving(true);
             if (GUILayout.Button("STOP — brake")) session.SetTrainMoving(false);
+#if UNITY_EDITOR
+            if (GUILayout.Button("+1 Fuel")) RailExpedition.Instance?.Request("editor-fuel");
+            if (RailExpedition.LocalDown && GUILayout.Button("Revive"))
+                RailExpedition.Instance.Request("editor-revive");
+#endif
             GUI.enabled = session.WorldReady && PhotonNetwork.IsMasterClient;
-            if (GUILayout.Button("Test success / return crew")) session.FinishRun(true);
-            if (GUILayout.Button("Test failure / return crew")) session.FinishRun(false);
+            GUILayout.Label("E: drive / bridge. Hold left-click: horn / radio.\nVR: keep your hand on the horn / TALK button.\nRevive: aim at a downed teammate and hold left-click.\nVR: hold a hand near a downed teammate.");
         }
         GUI.enabled = !session.HasRoomRequest;
         if (GUILayout.Button("Leave for public compound")) session.RequestJoinRandom();

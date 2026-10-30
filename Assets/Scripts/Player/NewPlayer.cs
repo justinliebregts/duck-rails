@@ -2125,6 +2125,10 @@ public class NewPlayer : MonoBehaviour
         */
 
         public void SetVelToAverageVel() {
+          if (RailExpedition.LocalDown) {
+            rb.linearVelocity = Vector3.ClampMagnitude(Vector3.ProjectOnPlane(denormalizedVelocityAverage, Vector3.up), .65f);
+            return;
+          }
           bool isDead = Player.instance != null && Player.instance.IsDead;
           float velLimit = isDead ? deadVelocityLimit : velocityLimit;
           float jumpSpeed = isDead ? deadMaxJumpSpeed : maxJumpSpeed;

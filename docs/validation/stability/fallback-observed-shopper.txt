@@ -1,0 +1,67 @@
+2026-10-30T09:56:01.5900339Z Starting three-client public lifecycle and network recovery test; Unity 6000.3.24f1
+2026-10-30T09:56:01.5921032Z Network PeerCreated room= master=False
+2026-10-30T09:56:01.5936145Z step=0 round=0
+2026-10-30T09:56:03.2499617Z Network ConnectingToNameServer room= master=False
+2026-10-30T09:56:03.6055310Z Network Authenticating room= master=False
+2026-10-30T09:56:03.9107546Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:56:04.6240054Z Network Authenticating room= master=False
+2026-10-30T09:56:04.7260333Z Network Joining room= master=False
+2026-10-30T09:56:05.0322575Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:56:05.4417844Z Network Authenticating room= master=False
+2026-10-30T09:56:05.5417215Z Network Joining room= master=False
+2026-10-30T09:56:07.5136226Z Network Joined room=00446 master=True
+2026-10-30T09:56:24.9391141Z step=1 round=0
+2026-10-30T09:56:25.0408010Z Network Leaving room=00446 master=True
+2026-10-30T09:56:25.1408290Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:56:25.5466331Z Network Authenticating room= master=False
+2026-10-30T09:56:25.7501603Z Network Joining room= master=False
+2026-10-30T09:56:25.9539244Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:56:26.3589794Z Network Authenticating room= master=False
+2026-10-30T09:56:26.4585406Z Network Joining room= master=False
+2026-10-30T09:56:26.6607673Z Network Joined room=73589 master=False
+2026-10-30T09:56:29.7256400Z PASS round=0 step=1 Three accounts gathered in fresh public compound avatars=1:1001,2:2001,3:3001
+2026-10-30T09:56:30.0277304Z step=2 round=0
+2026-10-30T09:56:50.6536921Z Network Joined room=73589 master=True
+2026-10-30T09:56:50.6546976Z PASS round=0 step=2 Shopper remained in source compound avatars=2:2001
+2026-10-30T09:56:58.1723161Z step=3 round=0
+2026-10-30T09:56:58.1733226Z PASS round=0 step=3 Shopper stays available avatars=2:2001
+2026-10-30T09:57:14.3162066Z step=4 round=0
+2026-10-30T09:57:14.3172413Z PASS round=0 step=4 Shopper stays available avatars=2:2001
+2026-10-30T09:57:26.4386103Z step=5 round=0
+2026-10-30T09:57:26.4391267Z PASS round=0 step=5 Shopper unaffected by expedition transport loss avatars=2:2001
+2026-10-30T09:57:52.6408386Z step=6 round=0
+2026-10-30T09:57:52.6413738Z PASS round=0 step=6 Shopper unaffected avatars=2:2001
+2026-10-30T09:57:55.7965387Z step=7 round=0
+2026-10-30T09:57:55.7980540Z PASS round=0 step=7 Shopper waits for returning crew avatars=2:2001
+2026-10-30T09:57:56.1006132Z step=8 round=0
+2026-10-30T09:58:10.0359833Z PASS round=0 step=8 Whole crew returned to occupied compound; clean objects and voice routing avatars=2:2001,4:4001,5:5001
+2026-10-30T09:58:12.2132831Z step=2 round=1
+2026-10-30T09:58:32.9574126Z PASS round=1 step=2 Shopper remained in source compound avatars=2:2001
+2026-10-30T09:58:40.7933305Z step=3 round=1
+2026-10-30T09:58:40.7948355Z PASS round=1 step=3 Shopper stays available avatars=2:2001
+2026-10-30T09:58:56.9211185Z step=4 round=1
+2026-10-30T09:58:56.9216428Z PASS round=1 step=4 Shopper stays available avatars=2:2001
+2026-10-30T09:59:09.0932217Z step=7 round=1
+2026-10-30T09:59:09.0947338Z PASS round=1 step=7 Shopper waits for returning crew avatars=2:2001
+2026-10-30T09:59:10.1112024Z step=8 round=1
+2026-10-30T09:59:23.0548255Z PASS round=1 step=8 Whole crew returned to occupied compound; clean objects and voice routing avatars=2:2001,6:6001,7:7001
+2026-10-30T09:59:25.3037520Z step=2 round=2
+2026-10-30T09:59:46.0252511Z PASS round=2 step=2 Shopper remained in source compound avatars=2:2001
+2026-10-30T09:59:53.4500661Z step=3 round=2
+2026-10-30T09:59:53.4516250Z PASS round=2 step=3 Shopper stays available avatars=2:2001
+2026-10-30T10:00:09.6622761Z step=4 round=2
+2026-10-30T10:00:09.6627989Z PASS round=2 step=4 Shopper stays available avatars=2:2001
+2026-10-30T10:00:21.7998396Z step=7 round=2
+2026-10-30T10:00:21.8008454Z PASS round=2 step=7 Shopper waits for returning crew avatars=2:2001
+2026-10-30T10:00:22.5163704Z step=8 round=2
+2026-10-30T10:00:35.5226597Z PASS round=2 step=8 Whole crew returned to occupied compound; clean objects and voice routing avatars=2:2001,8:8001,9:9001
+2026-10-30T10:00:37.8640046Z step=2 round=3
+2026-10-30T10:00:58.4869572Z PASS round=3 step=2 Shopper remained in source compound avatars=2:2001
+2026-10-30T10:01:06.1192519Z step=3 round=3
+2026-10-30T10:01:06.1203879Z PASS round=3 step=3 Shopper stays available avatars=2:2001
+2026-10-30T10:01:22.3190913Z step=4 round=3
+2026-10-30T10:01:22.3201427Z PASS round=3 step=4 Shopper stays available avatars=2:2001
+2026-10-30T10:01:34.5573681Z step=7 round=3
+2026-10-30T10:01:34.5578729Z PASS round=3 step=7 Shopper waits for returning crew avatars=2:2001
+2026-10-30T10:01:35.3689259Z step=8 round=3
+2026-10-30T10:04:05.4245286Z FAIL Peer failure: Timeout phase=Compound status=Ready control=Disconnected active=False destination=

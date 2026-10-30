@@ -102,14 +102,14 @@ namespace Game.AI
             Instance = this;
 
             Graph = CrawlGraph.Load(graphAsset);
-            if (Graph == null)
+            if (Graph == null && GetComponent<RailRoute>() == null)
             {
                 {
                     if (DuckzLog.AllowError(out var logNotice2))
                         logNotice2.Write("[EnemyManager] No crawl graph assigned or it failed to load. Enemies will not move.", this);
                 }
             }
-            else
+            else if (Graph != null)
             {
                 ApplyCrawlBoundaries();
                 Pathfinder = new CrawlPathfinder(Graph, maxExpansions) { CorridorClusters = corridorClusters };
@@ -124,6 +124,13 @@ namespace Game.AI
                 for (int i = 0; i < enemyPrefabs.Length; i++)
                     PhotonPreparePool.Register(enemyPrefabs[i]);
             }
+        }
+
+        public void SetGraph(CrawlGraph graph)
+        {
+            CancelPathRequest(); Graph = graph;
+            Pathfinder = new CrawlPathfinder(Graph, maxExpansions) { CorridorClusters = corridorClusters };
+            Pathfinder.SetSurfaceCosts(floorCost, wallCost, ceilingCost);
         }
 
         void OnDestroy()
@@ -368,7 +375,7 @@ namespace Game.AI
             for (int i = 0; i < players.Count; i++)
             {
                 PhotonPlayer player = players[i];
-                if (player.IsDead) continue;
+                if (player.IsDead || !RailExpedition.CanTarget(player)) continue;
                 if (player.TryGetHeadPosition(out Vector3 head))
                 {
                     UpdateSlot(player, head);
@@ -376,7 +383,7 @@ namespace Game.AI
                 }
             }
 
-            if (registered == 0)
+            if (registered == 0 && !PhotonSession.IsRailsRoom)
             {
                 bool localDead = GR.Player.instance != null && GR.Player.instance.IsDead;
                 if (!localDead && fallbackTarget != null)

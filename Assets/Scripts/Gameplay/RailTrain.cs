@@ -10,6 +10,8 @@ public sealed class RailTrain : MonoBehaviour
     public Vector3 origin = new Vector3(0, 1, 70);
     public Vector3 Delta { get; private set; }
     public float Speed { get; private set; }
+    public float Distance { get; private set; }
+    public Vector3 Velocity => transform.forward * Speed;
     bool initialized;
     void OnEnable() { Instance = this; initialized = false; }
     void OnDisable() { if (Instance == this) Instance = null; }
@@ -19,11 +21,14 @@ public sealed class RailTrain : MonoBehaviour
         var command = PhotonSession.Get(RailSessionRules.Motion, new object[] { PhotonNetwork.Time, 0f, 0f, 0f });
         RailSessionRules.EvaluateTrain(command, PhotonSession.Get(RailSessionRules.Fuel, 100f),
             PhotonNetwork.Time, out float distance, out float speed, out _);
-        Speed = speed;
+        if (RailRoute.Instance != null && !RailRoute.Instance.Ready) return;
+        Speed = speed; Distance = distance;
         Vector3 next = origin + Vector3.forward * distance;
+        Quaternion rotation = Quaternion.identity;
+        if (RailRoute.Instance != null) RailRoute.Instance.Sample(distance, out next, out rotation);
         Delta = initialized ? next - transform.position : Vector3.zero;
-        foreach (var cargo in RailCargo.Active) cargo.Carry(Delta);
-        cabin.MoveCabin(next, Quaternion.identity, initialized);
+        if (initialized) foreach (var cargo in RailCargo.Active) cargo.Carry(transform.position, transform.rotation, next, rotation);
+        cabin.MoveCabin(next, rotation, initialized);
         initialized = true;
     }
     public bool Contains(Vector3 point)

@@ -102,6 +102,7 @@ public static class RailSceneBuilder
         world.privateTerminal = terminal.transform;
         Text("Private instructions", root, "PRIVATE EXPEDITIONS\nTab: Create / Join\nChoose a five-digit code", new Vector3(-9, 3, 1), .65f);
         Text("Controls", root, "WASD move • Mouse grip\nSpace jump • Tab controls", new Vector3(8, 2, 0), .65f);
+        RailPrivateTerminalBuilder.Install(world);
         var gm = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Manager/GameManager.prefab"));
         gm.transform.position = Vector3.zero;
         var manager = gm.GetComponent<GameManager>(); manager.respawnPoint = spawn;

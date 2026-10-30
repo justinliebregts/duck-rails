@@ -47,6 +47,7 @@ public class DesktopPlayer : MonoBehaviour
     Vector3 _pushVelocity;
     PauseMenu _pauseMenu;
     PauseMenuButton _pressedButton;
+    PressableButton _worldButton;
 #if UNITY_EDITOR
     DesktopLobbySimulator _lobbySimulator;
 #endif
@@ -77,6 +78,8 @@ public class DesktopPlayer : MonoBehaviour
 
     void ReleaseMenuButton()
     {
+        if (_worldButton != null) _worldButton.Release();
+        _worldButton = null;
         if (_pressedButton != null) _pressedButton.Release();
         _pressedButton = null;
     }
@@ -88,12 +91,29 @@ public class DesktopPlayer : MonoBehaviour
             ReleaseMenuButton();
             SuppressMouseGrip = false;
         }
-        if (typing || Cursor.lockState != CursorLockMode.Locked || _pauseMenu == null || !_pauseMenu.IsOpen)
+        if (typing || Cursor.lockState != CursorLockMode.Locked)
         {
             ReleaseMenuButton();
             return;
         }
+        if (_worldButton != null && ((!_worldButton.diagnostic && RailExpedition.LocalDown) || (_pauseMenu != null && _pauseMenu.IsOpen) ||
+            PressableButton.Aim(new Ray(_camera.position, _camera.forward), reach,
+                Physics.DefaultRaycastLayers & ~(1 << gameObject.layer)) != _worldButton))
+            ReleaseMenuButton();
         if (Time.frameCount == CursorLockedFrame || !Input.GetMouseButtonDown(0)) return;
+
+        if (_pauseMenu == null || !_pauseMenu.IsOpen)
+        {
+            var target = PressableButton.Aim(new Ray(_camera.position, _camera.forward), reach,
+                Physics.DefaultRaycastLayers & ~(1 << gameObject.layer));
+            if (target != null)
+            {
+                SuppressMouseGrip = true;
+                _worldButton = target;
+                if (target.diagnostic || !RailExpedition.LocalDown) target.Press();
+            }
+            return;
+        }
 
         // The menu's grab volume may surround the buttons; pick the nearest button inside it.
         PauseMenuButton button = null;
@@ -217,7 +237,17 @@ public class DesktopPlayer : MonoBehaviour
 
     void Update()
     {
-        if (RailWorld.InputBlocked) return;
+        if (RailWorld.InputBlocked)
+        {
+            ReleaseMenuButton(); SuppressMouseGrip = false;
+            if (RailDiagnosticPanel.Instance != null && RailDiagnosticPanel.Instance.IsOpen && Input.GetMouseButtonDown(0) && Camera.main != null)
+            {
+                var ray = Cursor.lockState == CursorLockMode.Locked ? new Ray(_camera.position, _camera.forward) : Camera.main.ScreenPointToRay(Input.mousePosition);
+                var button = PressableButton.Aim(ray, reach, Physics.DefaultRaycastLayers);
+                if (button != null && button.diagnostic) { button.Press(); _worldButton = button; SuppressMouseGrip = true; }
+            }
+            return;
+        }
         bool typing = DuckCompanionDebug.IsTyping;
         bool simulated = false;
         Vector2 moveInput = typing ? Vector2.zero : new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -266,6 +296,9 @@ public class DesktopPlayer : MonoBehaviour
             planar.Normalize();
 
         float speed = sprintInput ? sprintSpeed : moveSpeed;
+        if (RailExpedition.LocalDown) { speed = .65f; jumpInput = false; }
+        if (PhotonSession.IsRailsRoom && _yaw != null)
+            _yaw.localPosition = new Vector3(0, RailExpedition.LocalDown ? .55f : eyeHeight, 0);
         var motion = _yaw.TransformDirection(planar) * speed;
 
         bool pushRising = _pushVelocity.y > 0f;
@@ -350,9 +383,17 @@ public class DesktopPlayer : MonoBehaviour
         Transform hand = _rightHand.transform;
         hand.localPosition = Vector3.MoveTowards(hand.localPosition, RightHandRest, handReturnSpeed * Time.deltaTime);
 
-        if (Cursor.lockState != CursorLockMode.Locked || Time.frameCount == CursorLockedFrame || !Input.GetMouseButtonDown(0))
+        if (Cursor.lockState != CursorLockMode.Locked || Time.frameCount == CursorLockedFrame || !Input.GetMouseButton(0))
             return;
         int mask = Physics.DefaultRaycastLayers & ~(1 << gameObject.layer);
+        // Avatars share the excluded player layer. Aim at retained downed-player
+        // poses explicitly, and keep reaching for the whole three-second rescue.
+        if (_rightHand.Held == null && RailExpedition.TryGetDesktopRescuePoint(new Ray(_camera.position, _camera.forward), reach, mask, out var rescuePoint))
+        {
+            hand.position = rescuePoint;
+            return;
+        }
+        if (!Input.GetMouseButtonDown(0)) return;
         if (Physics.Raycast(_camera.position, _camera.forward, out RaycastHit hit, reach, mask, QueryTriggerInteraction.Ignore))
             hand.position = hit.point - _camera.forward * 0.02f;
     }

@@ -100,6 +100,7 @@ namespace GR {
         public void SetDeadFromDuck(DuckCompanion killer, int attempt) => SetDeadInternal(killer, attempt, "duck", Vector3.zero);
 
         void SetDeadInternal(DuckCompanion killer, int attempt, string cause, Vector3 impact, Vector3 rotation = default) {
+            if (PhotonSession.IsRailsRoom) { RailExpedition.RequestDown(); return; }
             using var sample = DeathProfile.Local.Auto();
             if (IsDead) {
                 return;

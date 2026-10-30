@@ -1,0 +1,14 @@
+Diagnostic observation, October 30, 2026 (Unity MCP; not an automatic harness assertion):
+Control file expected expedition 00144, source compound 36076.
+After injected 100% loss, the main Console recorded TimeoutDisconnect while Joined,
+then another TimeoutDisconnect while ConnectingToNameServer.
+MCP read PhotonNetwork.CurrentRoom.Name=36076, NetworkClientState=Joined,
+IsMasterClient=True, PhotonSession.Instance.Status=Ready, LastError empty.
+Player2 remained in expedition 00144 and acknowledged becoming master.
+The main harness never acknowledged rejoining 00144. Test stopped for diagnosis.
+
+SDK callback order inspected in Assets/Photon/PhotonRealtime/Code/LoadBalancingClient.cs:
+OnStatusChanged(StatusCode.Disconnect) calls MatchMakingCallbackTargets.OnLeftRoom()
+before ConnectionCallbackTargets.OnDisconnected(...).
+PhotonSession.OnLeftRoom cleared joinedRoom unconditionally, so OnDisconnected
+could not choose Request.Rejoin and fell back to Request.Random.

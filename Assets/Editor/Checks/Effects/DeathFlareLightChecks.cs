@@ -21,7 +21,7 @@ public static class DeathFlareLightChecks
             "prefab has a twelve-metre activation distance");
         var near = Create("Near", new Vector3(2, 0, 0));
         var farther = Create("Farther", new Vector3(5, 0, 0));
-        var waiting = Create("Waiting", Vector3.zero, -DeathFlare.DeathLaunchDelay);
+        var waiting = Create("Waiting", Vector3.zero, -2f);
         try
         {
             Select(Vector3.zero);

@@ -219,7 +219,7 @@ public class WalkieRadio : MonoBehaviour
             return;
 
         Transform existing = slot.transform.Find("WalkieSpeaker");
-        if (slot.ItemKey != WalkieTalkie.PrefabName)
+        if (slot.ItemKey != WalkieTalkie.PrefabName && slot.ItemKey != "RailWalkie")
         {
             if (existing != null)
                 UnityEngine.Object.Destroy(existing.gameObject);

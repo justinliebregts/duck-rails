@@ -1,0 +1,92 @@
+Log: RAILS PASS: Five-digit codes preserve leading zeroes
+Log: RAILS PASS: Invalid and non-ASCII codes rejected
+Log: RAILS PASS: Allocation probes cover every five-digit code without repeats
+Log: RAILS PASS: Crew allocation is deterministic and wraps at the code-space boundary
+Log: RAILS PASS: First occupant starts twenty seconds
+Log: RAILS PASS: Entry/exit cannot extend a nonempty countdown
+Log: RAILS PASS: Empty cancels and re-entry starts a fresh countdown
+Log: RAILS PASS: Ninth occupant waits outside the eight-player roster
+Log: RAILS PASS: Vacated slots refill without evicting admitted players
+Log: RAILS PASS: Public compounds: twelve players, discoverable, no inactive shoppers
+Log: RAILS PASS: Private rooms: eight players, hidden, code joinable
+Log: RAILS PASS: 120-second reconnect slots; empty rooms close immediately
+Log: RAILS PASS: One through four returning players search existing compounds
+Log: RAILS PASS: Five through eight returning players skip random matchmaking
+Log: RAILS PASS: Missing reservation leases receive thirty seconds
+Log: RAILS PASS: Master succession preserves deadlines while concurrent arrivals receive their own lease
+Log: RAILS PASS: Removing an expired crew does not shorten another crew's reservation
+Log: RAILS PASS: Consumed reservations remove obsolete lease metadata
+Log: RAILS PASS: Invalid phase shortcuts rejected
+Log: RAILS PASS: Crew stays aboard through ending and returning instead of spawning in a temporary compound
+Log: RAILS PASS: Public compound arrival and private staging present the compound
+Log: RAILS PASS: Acceleration integrates correct distance and speed
+Log: RAILS PASS: Late join reconstructs moving train from current command
+Log: RAILS PASS: Braking stops without changing past position
+Log: RAILS PASS: Fuel burns with travelled distance, including acceleration
+Log: RAILS PASS: Braking consumes fuel; a stopped train does not
+Log: RAILS PASS: Restored room snapshot preserves fuel and motion across a master checkpoint
+Log: RAILS PASS: Fuel exhaustion caps travel and stops even without authority ticks
+Log: RAILS PASS: Empty fuel cannot restart or become negative
+Log: RAILS PASS: Future motion commands do not burn fuel early
+Log: RAILS PASS: Build starts at Login, includes Expedition and excludes Quackville/Main
+Log: RAILS PASS: RailBat observes cargo state over PUN
+Log: RAILS PASS: RailBag observes cargo state over PUN
+Log: RAILS CHECKS PASSED: 33. These are local checks, not multi-client acceptance.
+SUITE PASS RailSessionChecks
+Log: Duck Rails desktop regression checks passed (10 checks).
+SUITE PASS RailDesktopChecks
+Log: Duck Rails quick-start checks passed (8 checks).
+SUITE PASS RailQuickStartChecks
+Log: RAILS WEEK 2 PASS: Bridge uses one retained 60-second clock
+Log: RAILS WEEK 2 PASS: Late-join/master reconstruction preserves bridge progress
+Log: RAILS WEEK 2 PASS: One downed passenger wins; left-behind player remains a non-finisher
+Log: RAILS WEEK 2 PASS: Catch-up/repeated finish cannot change locked results
+Log: RAILS WEEK 2 PASS: Crash produces failure without reviving anyone
+Log: RAILS WEEK 2 PASS: Default expedition begins with ten fuel
+Log: RAILS WEEK 2 PASS: RailCoal uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailBat uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailBag uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailWalkie uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailHelmet uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailGoggles uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailFlashlight uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: Authored depot has a baked crawlgraph
+Log: RAILS WEEK 2 PASS: Coal follows the existing grabbable ownership contract
+Log: RAILS WEEK 2 PASS: Coal deduplication distinguishes recycled Photon view IDs
+Log: RAILS WEEK 2 PASS: Remote controller release accepts the same hold generation despite a stale held pose
+Log: RAILS WEEK 2 PASS: Release may precede the remote grab snapshot
+Log: RAILS WEEK 2 PASS: Former controller cannot consume transferred coal
+Log: RAILS WEEK 2 PASS: Delayed release cannot consume a recycled view
+Log: RAILS WEEK 2 PASS: A newer pickup invalidates the pending insertion
+Log: RAILS WEEK 2 PASS: Coal outside the furnace is rejected
+Log: RAILS WEEK 2 PASS: Expired insertion is rejected
+Log: RAILS WEEK 2 PASS: Invalid insertion geometry is rejected
+Log: RAILS WEEK 2 RULES: 24 checks passed
+SUITE PASS RailWeek2Checks
+Log: WEEK 3 CHECKS: 432 passed (includes per-node indexing), evidence Temp/rails-week3-checks.txt
+SUITE PASS RailWeek3Checks
+Log: RAILS DRIVE PASS: Grip starts in STOP even with a GO payload
+Log: RAILS DRIVE PASS: Another player or hand cannot steal an active hold
+Log: RAILS DRIVE PASS: Non-holder cannot drive or release
+Log: RAILS DRIVE PASS: Partial hand travel replicates without GO
+Log: RAILS DRIVE PASS: Held GO renews the timeout
+Log: RAILS DRIVE PASS: Release clears ownership and GO
+Log: RAILS DRIVE PASS: Delayed heartbeat cannot reacquire after release
+Log: RAILS DRIVE PASS: Old release cannot cancel a new holder
+Log: RAILS DRIVE PASS: Timeout/master reset needs a fresh grip
+Log: RAILS DRIVE PASS: Forward travel is bounded; backward movement stays OFF
+Log: RAILS DRIVE PASS: Push snaps GO and small backward movements do not chatter
+Log: RAILS DRIVE PASS: Pull back snaps OFF and stays OFF until pushed forward again
+Log: RAILS DRIVE PASS: Handle and base are non-solid interaction triggers
+Log: RAILS DRIVE PASS: Locomotion casts pass through the lever and base
+Log: RAILS DRIVE PASS: Desktop targeting still hits the trigger control
+Log: RAILS DRIVE PASS: Grip proximity still detects a hand inside the handle trigger
+Log: RAILS DRIVE PASS: Handle swings forward about the base rather than its centre
+Log: RAILS VR DRIVE: 17 checks passed
+SUITE PASS RailDriveChecks
+Log: 10 VR button contact checks passed using DuckPlayer prefab hands.
+SUITE PASS RailButtonTouchChecks
+Log: 9 hold-button checks passed. Headset and multi-client checks remain pending.
+SUITE PASS RailHoldControlChecks
+Log: COAL AVATAR LOOKUP: 4 checks passed
+SUITE PASS AvatarLookup

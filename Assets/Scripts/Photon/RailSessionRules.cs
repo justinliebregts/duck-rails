@@ -7,7 +7,7 @@ public enum RailPhase { Compound, Staging, Departing, Running, Ending, Returning
 
 public static class RailSessionRules
 {
-    public const int Version = 4, CompoundCapacity = 12, CrewCapacity = 8, ReconnectMilliseconds = 120000;
+    public const int Version = 5, CompoundCapacity = 12, CrewCapacity = 8, ReconnectMilliseconds = 120000;
     public const double ReturnSearchSeconds = 12, ReservationSeconds = 30;
     public const string Reservations = "rails.reservations";
     public static bool SearchExistingCompound(int crewSize) => crewSize >= 1 && crewSize <= 4;
@@ -63,7 +63,7 @@ public static class RailSessionRules
             [Phase] = (int)(kind == CompoundKind ? RailPhase.Compound : kind == PrivateKind ? RailPhase.Staging : RailPhase.Departing),
             [Run] = run, [Deadline] = 0d, [Roster] = Array.Empty<int>(), [Destination] = "",
             [TransferUsers] = Array.Empty<string>(), [TransferUntil] = 0d,
-            [Block] = "rail-yard-test-v1", [Fuel] = 100f,
+            [Block] = "maintenance-depot-v1", [Fuel] = 10f,
             [Motion] = new object[] { 0d, 0f, 0f, 0f }, [Cargo] = Array.Empty<int>()
         }
     };
@@ -91,7 +91,7 @@ public static class RailSessionRules
 
     // Fuel is retained at the motion command's starting distance and committed
     // atomically with it. Shared time reconstructs consumption without local timers.
-    public const float FuelPerMetre = .025f; // 0.1/second at 4 m/s cruise speed.
+    public const float FuelPerMetre = .05f; // 8 fuel per 160m block; a coal chunk supplies 100m.
     public static void EvaluateTrain(object[] command, float startingFuel, double now,
         out float distance, out float speed, out float fuel)
     {

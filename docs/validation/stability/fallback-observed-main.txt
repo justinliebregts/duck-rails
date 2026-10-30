@@ -1,0 +1,157 @@
+2026-10-30T09:56:11.6681962Z Starting three-client public lifecycle and network recovery test; Unity 6000.3.24f1
+2026-10-30T09:56:11.6687125Z Network PeerCreated room= master=False
+2026-10-30T09:56:11.6702328Z step=0 round=0
+2026-10-30T09:56:14.0724438Z Network ConnectingToNameServer room= master=False
+2026-10-30T09:56:14.4223889Z Network Authenticating room= master=False
+2026-10-30T09:56:14.6293178Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:56:15.1564536Z Network Authenticating room= master=False
+2026-10-30T09:56:15.2566609Z Network Joining room= master=False
+2026-10-30T09:56:15.4646051Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:56:15.9803128Z Network Authenticating room= master=False
+2026-10-30T09:56:16.1901159Z Network Joining room= master=False
+2026-10-30T09:56:17.2024892Z Network Joined room=00446 master=False
+2026-10-30T09:56:20.3325736Z Network Leaving room=00446 master=False
+2026-10-30T09:56:20.4519890Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:56:20.8647816Z Network Authenticating room= master=False
+2026-10-30T09:56:21.0691418Z Network Joining room= master=False
+2026-10-30T09:56:21.1702264Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:56:21.5835348Z Network Authenticating room= master=False
+2026-10-30T09:56:21.7933123Z Network Joining room= master=False
+2026-10-30T09:56:21.9039524Z Network Joined room=73589 master=True
+2026-10-30T09:56:25.0083267Z step=1 round=0
+2026-10-30T09:56:28.1067955Z PASS round=0 step=1 Three accounts gathered in fresh public compound avatars=1:1001,2:2001,3:3001
+2026-10-30T09:56:30.0701512Z step=2 round=0
+2026-10-30T09:56:50.5721272Z Network Leaving room=73589 master=True
+2026-10-30T09:56:50.7279020Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:56:51.2355440Z Network Authenticating room= master=False
+2026-10-30T09:56:51.4378510Z Network Joining room= master=False
+2026-10-30T09:56:52.1601386Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:56:52.6671600Z Network Authenticating room= master=False
+2026-10-30T09:56:52.7684827Z Network Joining room= master=False
+2026-10-30T09:56:52.9329802Z Network Joined room=52569 master=False
+2026-10-30T09:56:57.7879454Z PASS round=0 step=2 Public departure loaded Expedition with only platform occupants avatars=1:1001,2:2001
+2026-10-30T09:56:58.1041572Z Network Joined room=52569 master=True
+2026-10-30T09:56:58.2096357Z step=3 round=0
+2026-10-30T09:57:09.4088273Z Network Joined room=52569 master=False
+2026-10-30T09:57:14.2421521Z PASS round=0 step=3 Moving passengers and loose bags under simulated latency/loss avatars=1:1001,2:2001
+2026-10-30T09:57:14.3485134Z step=4 round=0
+2026-10-30T09:57:18.9674926Z Network Joined room=52569 master=True
+2026-10-30T09:57:26.4304792Z PASS round=0 step=4 16 rapid GO/STOP requests converged to stopped train avatars=1:1001,2:2001
+2026-10-30T09:57:26.5318421Z step=5 round=0
+2026-10-30T09:57:26.5333466Z Injected 100% transport loss
+2026-10-30T09:57:32.7568595Z Network Disconnected room= master=False
+2026-10-30T09:57:34.7569621Z Network ConnectingToNameServer room= master=False
+2026-10-30T09:57:41.7153023Z Network Authenticating room= master=False
+2026-10-30T09:57:41.8227411Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:57:42.3372601Z Network Authenticating room= master=False
+2026-10-30T09:57:42.4399115Z Network Joining room= master=False
+2026-10-30T09:57:42.5442290Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:57:43.0577784Z Network Authenticating room= master=False
+2026-10-30T09:57:43.1624870Z Network Joining room= master=False
+2026-10-30T09:57:43.2858608Z Network Joined room=52569 master=False
+2026-10-30T09:57:52.6201650Z PASS round=0 step=5 Master experienced transport disconnect and automatically rejoined reserved slot avatars=1:1001,2:2001
+2026-10-30T09:57:52.7326506Z step=6 round=0
+2026-10-30T09:57:55.7718934Z PASS round=0 step=6 Reconnect preserved route, supplies, unique avatars and voice room avatars=1:1001,2:2001
+2026-10-30T09:57:55.8716085Z step=7 round=0
+2026-10-30T09:57:56.0855637Z PASS round=0 step=7 Session finish path requested avatars=n/a
+2026-10-30T09:57:56.1913427Z step=8 round=0
+2026-10-30T09:58:04.8823781Z Network Joined room=52569 master=True
+2026-10-30T09:58:06.5643538Z Network Leaving room=52569 master=True
+2026-10-30T09:58:06.6707361Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:58:07.1019771Z Network Authenticating room= master=False
+2026-10-30T09:58:07.2060467Z Network Joining room= master=False
+2026-10-30T09:58:07.4258119Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:58:07.9506944Z Network Authenticating room= master=False
+2026-10-30T09:58:08.1584771Z Network Joining room= master=False
+2026-10-30T09:58:09.0679819Z Network Joined room=73589 master=False
+2026-10-30T09:58:12.1542536Z PASS round=0 step=8 Whole crew returned to occupied compound; clean objects and voice routing avatars=2:2001,4:4001,5:5001
+2026-10-30T09:58:12.2616468Z step=2 round=1
+2026-10-30T09:58:32.7464679Z Network Leaving room=73589 master=False
+2026-10-30T09:58:32.8640512Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:58:33.3818064Z Network Authenticating room= master=False
+2026-10-30T09:58:33.5863123Z Network Joining room= master=False
+2026-10-30T09:58:34.5342355Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:58:35.2248793Z Network Authenticating room= master=False
+2026-10-30T09:58:35.3292900Z Network Joining room= master=False
+2026-10-30T09:58:35.4583438Z Network Joined room=81129 master=False
+2026-10-30T09:58:40.3994850Z PASS round=1 step=2 Public departure loaded Expedition with only platform occupants avatars=1:1001,2:2001
+2026-10-30T09:58:40.7219848Z Network Joined room=81129 master=True
+2026-10-30T09:58:40.8242052Z step=3 round=1
+2026-10-30T09:58:56.8937031Z PASS round=1 step=3 Moving passengers and loose bags under simulated latency/loss avatars=1:1001,2:2001
+2026-10-30T09:58:56.9975753Z step=4 round=1
+2026-10-30T09:59:09.0354537Z PASS round=1 step=4 16 rapid GO/STOP requests converged to stopped train avatars=1:1001,2:2001
+2026-10-30T09:59:09.1402540Z step=7 round=1
+2026-10-30T09:59:09.3476594Z PASS round=1 step=7 Session finish path requested avatars=n/a
+2026-10-30T09:59:10.1920381Z step=8 round=1
+2026-10-30T09:59:18.0956272Z Network Leaving room=81129 master=True
+2026-10-30T09:59:18.2096598Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:59:18.7199975Z Network Authenticating room= master=False
+2026-10-30T09:59:18.8212742Z Network Joining room= master=False
+2026-10-30T09:59:18.9231585Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:59:19.5381749Z Network Authenticating room= master=False
+2026-10-30T09:59:19.6392344Z Network Joining room= master=False
+2026-10-30T09:59:19.7445241Z Network Joining room=73589 master=False
+2026-10-30T09:59:20.4249568Z Network Joined room=73589 master=False
+2026-10-30T09:59:23.4324187Z PASS round=1 step=8 Whole crew returned to occupied compound; clean objects and voice routing avatars=2:2001,6:6001,7:7001
+2026-10-30T09:59:25.3953628Z step=2 round=2
+2026-10-30T09:59:45.8524446Z Network Leaving room=73589 master=False
+2026-10-30T09:59:45.9568824Z Network ConnectingToMasterServer room= master=False
+2026-10-30T09:59:46.3744935Z Network Authenticating room= master=False
+2026-10-30T09:59:46.4790712Z Network Joining room= master=False
+2026-10-30T09:59:47.4051434Z Network ConnectingToGameServer room= master=False
+2026-10-30T09:59:47.9183617Z Network Authenticating room= master=False
+2026-10-30T09:59:48.0238570Z Network Joining room= master=False
+2026-10-30T09:59:48.2000216Z Network Joined room=88522 master=False
+2026-10-30T09:59:53.0797244Z PASS round=2 step=2 Public departure loaded Expedition with only platform occupants avatars=1:1001,2:2001
+2026-10-30T09:59:53.3859533Z Network Joined room=88522 master=True
+2026-10-30T09:59:53.4912256Z step=3 round=2
+2026-10-30T10:00:09.5693824Z PASS round=2 step=3 Moving passengers and loose bags under simulated latency/loss avatars=1:1001,2:2001
+2026-10-30T10:00:09.6791459Z step=4 round=2
+2026-10-30T10:00:21.7287413Z PASS round=2 step=4 16 rapid GO/STOP requests converged to stopped train avatars=1:1001,2:2001
+2026-10-30T10:00:21.8328485Z step=7 round=2
+2026-10-30T10:00:22.0448130Z PASS round=2 step=7 Session finish path requested avatars=n/a
+2026-10-30T10:00:22.5694383Z step=8 round=2
+2026-10-30T10:00:32.4921115Z Network Leaving room=88522 master=True
+2026-10-30T10:00:32.5996892Z Network ConnectingToMasterServer room= master=False
+2026-10-30T10:00:33.1338457Z Network Authenticating room= master=False
+2026-10-30T10:00:33.2377577Z Network Joining room= master=False
+2026-10-30T10:00:33.3399733Z Network ConnectingToGameServer room= master=False
+2026-10-30T10:00:33.8726052Z Network Authenticating room= master=False
+2026-10-30T10:00:33.9731718Z Network Joining room= master=False
+2026-10-30T10:00:34.0765188Z Network Joined room=73589 master=False
+2026-10-30T10:00:37.7815676Z PASS round=2 step=8 Whole crew returned to occupied compound; clean objects and voice routing avatars=2:2001,8:8001,9:9001
+2026-10-30T10:00:37.8827549Z step=2 round=3
+2026-10-30T10:00:58.3382167Z Network Leaving room=73589 master=False
+2026-10-30T10:00:58.5802579Z Network ConnectingToMasterServer room= master=False
+2026-10-30T10:00:58.9866624Z Network Authenticating room= master=False
+2026-10-30T10:00:59.0912234Z Network Joining room= master=False
+2026-10-30T10:01:00.0255697Z Network ConnectingToGameServer room= master=False
+2026-10-30T10:01:00.6472208Z Network Authenticating room= master=False
+2026-10-30T10:01:00.7543896Z Network Joining room= master=False
+2026-10-30T10:01:00.9284071Z Network Joined room=16426 master=False
+2026-10-30T10:01:05.8684966Z PASS round=3 step=2 Public departure loaded Expedition with only platform occupants avatars=1:1001,2:2001
+2026-10-30T10:01:06.0788784Z Network Joined room=16426 master=True
+2026-10-30T10:01:06.1802762Z step=3 round=3
+2026-10-30T10:01:22.1980726Z PASS round=3 step=3 Moving passengers and loose bags under simulated latency/loss avatars=1:1001,2:2001
+2026-10-30T10:01:22.4030663Z step=4 round=3
+2026-10-30T10:01:34.4832360Z PASS round=3 step=4 16 rapid GO/STOP requests converged to stopped train avatars=1:1001,2:2001
+2026-10-30T10:01:34.5913734Z step=7 round=3
+2026-10-30T10:01:34.8025544Z PASS round=3 step=7 Session finish path requested avatars=n/a
+2026-10-30T10:01:35.4386330Z step=8 round=3
+2026-10-30T10:01:43.4955982Z Network Leaving room=16426 master=True
+2026-10-30T10:01:43.5985696Z Network ConnectingToMasterServer room= master=False
+2026-10-30T10:01:44.1203851Z Network Authenticating room= master=False
+2026-10-30T10:01:44.2198771Z Network Joining room= master=False
+2026-10-30T10:01:44.3203951Z Network ConnectingToGameServer room= master=False
+2026-10-30T10:01:44.8357798Z Network Authenticating room= master=False
+2026-10-30T10:01:44.9383592Z Network Joining room= master=False
+2026-10-30T10:01:45.6868270Z Network Leaving room=73589 master=False
+2026-10-30T10:01:45.9047103Z Network ConnectingToMasterServer room= master=False
+2026-10-30T10:01:46.3204029Z Network Authenticating room= master=False
+2026-10-30T10:01:46.4232993Z Network Joining room= master=False
+2026-10-30T10:01:46.6296860Z Network ConnectingToGameServer room= master=False
+2026-10-30T10:01:47.1439999Z Network Authenticating room= master=False
+2026-10-30T10:01:47.3488487Z Network Joining room= master=False
+2026-10-30T10:01:47.4529063Z Network Joined room=77103 master=False
+2026-10-30T10:01:52.6369611Z Network Joined room=77103 master=True
+2026-10-30T10:04:05.4240017Z FAIL Peer failure: Timeout phase=Compound status=Ready control=Disconnected active=False destination=

@@ -10,7 +10,13 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 /// <summary>Authenticated connection, crew transfers and server-retained session state.</summary>
 public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
 {
-    const byte TrainControlEvent = 107;
+    const byte TrainControlEvent = 107, DriveGripEvent = 110;
+    public const string DriveGripProperty = "rails.driveGrip";
+    readonly RailDriveLease driveLease = new RailDriveLease();
+    string driveLeaseRun;
+    bool driveLeaseDirty;
+    public static object[] DriveGripState => Get(DriveGripProperty, new object[] { "", 0, "", 0f });
+    public static int DriveGripActor => Phase == RailPhase.Running && DriveGripState[0] is string run && run == RunId ? (int)DriveGripState[1] : 0;
     static readonly TypedLobby AutomaticLobby = new TypedLobby("rails-auto-v2", LobbyType.Default);
     bool? requestedTrainMoving;
     string requestedTrainRun;
@@ -97,7 +103,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
-        settings.AppVersion = source.AppVersion + "-duck-rails-session-v4";
+        settings.AppVersion = source.AppVersion + "-duck-rails-session-v5";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;
@@ -207,7 +213,11 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public override void OnLeftRoom()
     {
-        leaving = false; WorldReady = false; joinedRoom = null;
+        // Realtime also calls OnLeftRoom before OnDisconnected after transport
+        // loss. Keep the last room until recovery captures it; only an explicit
+        // room transfer/leave should discard the reconnect destination here.
+        if (leaving) joinedRoom = null;
+        leaving = false; WorldReady = false;
         RoomMembershipChanged?.Invoke();
         // Wait for OnConnectedToMaster before submitting the next operation.
     }
@@ -382,17 +392,25 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         loadingSince = Time.realtimeSinceStartupAsDouble; WorldReady = false;
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [RailSessionRules.Boarding] = false, [RailSessionRules.Ready] = "" });
         PlayerProps.PushCosmetics(); RoomMembershipChanged?.Invoke();
-        if (!GameScenes.IsLoaded(PlayScene) && !loadingScene) StartCoroutine(LoadCompound());
+        if (!GameScenes.IsLoaded(RequiredScene) && !loadingScene) StartCoroutine(LoadWorldScene());
         else SetStatus("Loading current world state...");
         if (crewRequest) crewReturn?.JoinedCompound();
     }
-    IEnumerator LoadCompound()
+    public static string RequiredScene => OnTrain ? GameScenes.Expedition : GameScenes.Compound;
+    IEnumerator LoadWorldScene()
     {
-        loadingScene = true; PhotonNetwork.IsMessageQueueRunning = false; SetStatus("Loading Compound...");
-        var load = SceneManager.LoadSceneAsync(PlayScene, LoadSceneMode.Single);
+        MarkWorldLoading();
+        string destinationScene = RequiredScene;
+        loadingScene = true; PhotonNetwork.IsMessageQueueRunning = false; SetStatus("Loading " + destinationScene + "...");
+        // Cached room objects may arrive before scene loading. Keep their Photon IDs alive.
+        foreach (var view in PhotonNetwork.PhotonViewCollection)
+            if (view != null && view.ViewID != 0 && !view.IsSceneView) DontDestroyOnLoad(view.transform.root.gameObject);
+        var load = SceneManager.LoadSceneAsync(destinationScene, LoadSceneMode.Single);
         if (load != null) yield return load;
         loadingScene = false; PhotonNetwork.IsMessageQueueRunning = true; loginStatus = null;
-        if (!GameScenes.IsLoaded(PlayScene)) RequestFailed("Could not load Compound.");
+        loadingSince = Time.realtimeSinceStartupAsDouble;
+        foreach (var player in PhotonPlayer.Active) GameManager.instance?.AddPhotonPlayer(player);
+        if (!GameScenes.IsLoaded(destinationScene)) RequestFailed("Could not load " + destinationScene + ".");
     }
     public void MarkWorldReady()
     {
@@ -430,7 +448,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (!IsPrivate || Phase != RailPhase.Staging || !WorldReady || !PhotonNetwork.IsMasterClient || RailWorld.HasLiveCargo) return;
         Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Departing, [RailSessionRules.Run] = Guid.NewGuid().ToString("N"),
-            [RailSessionRules.Deadline] = PhotonNetwork.Time + 30d, [RailSessionRules.Fuel] = 100f,
+            [RailSessionRules.Deadline] = PhotonNetwork.Time + 30d, [RailSessionRules.Fuel] = 10f, [RailExpedition.StateKey] = "",
             [RailSessionRules.Cargo] = Array.Empty<int>(), [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 0f, 0f, 0f } });
     }
     public void FinishRun(bool success)
@@ -450,21 +468,73 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public void SetTrainMoving(bool moving)
     {
+        if (RailExpedition.LocalDown) return;
         if (!IsRailsRoom || Phase != RailPhase.Running || !WorldReady || HasRoomRequest) return;
-        if (PhotonNetwork.IsMasterClient) QueueTrainControl(RunId, moving);
+        if (PhotonNetwork.IsMasterClient) { TickDriveLease(); if (driveLease.Actor == 0) QueueTrainControl(RunId, moving); }
         else PhotonNetwork.RaiseEvent(TrainControlEvent, new object[] { RunId, moving },
             new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, ExitGames.Client.Photon.SendOptions.SendReliable);
     }
     public void OnEvent(ExitGames.Client.Photon.EventData photonEvent)
     {
+        if (photonEvent.Code == DriveGripEvent)
+        {
+            if (photonEvent.CustomData is object[] grip && grip.Length == 4 && grip[0] is string gripRun &&
+                grip[1] is string token && grip[2] is int operation && grip[3] is float progress)
+                ApplyDriveGrip(photonEvent.Sender, gripRun, token, operation, progress);
+            return;
+        }
         if (photonEvent.Code != TrainControlEvent || !PhotonNetwork.IsMasterClient || !IsRailsRoom ||
             Phase != RailPhase.Running || HasRoomRequest) return;
         var sender = PhotonNetwork.CurrentRoom.GetPlayer(photonEvent.Sender);
-        if (sender == null || sender.IsInactive ||
+        if (sender == null || sender.IsInactive || RailExpedition.ActorDown(sender.ActorNumber) ||
             !(sender.CustomProperties[RailSessionRules.Ready] is string ready) || ready != RunId + ":" + RailPhase.Running) return;
         if (!(photonEvent.CustomData is object[] data) || data.Length != 2 ||
             !(data[0] is string run) || run != RunId || !(data[1] is bool moving)) return;
-        QueueTrainControl(run, moving);
+        TickDriveLease();
+        if (driveLease.Actor == 0) QueueTrainControl(run, moving);
+    }
+    public void RequestDriveGrip(string run, string token, int operation, float progress)
+    {
+        if (!IsRailsRoom) return;
+        if (PhotonNetwork.IsMasterClient) ApplyDriveGrip(PhotonNetwork.LocalPlayer.ActorNumber, run, token, operation, progress);
+        else PhotonNetwork.RaiseEvent(DriveGripEvent, new object[] { run, token, operation, progress },
+            new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, ExitGames.Client.Photon.SendOptions.SendReliable);
+    }
+    void ApplyDriveGrip(int actor, string run, string token, int operation, float progress)
+    {
+        if (!PhotonNetwork.IsMasterClient || !IsRailsRoom || Phase != RailPhase.Running || run != RunId || HasRoomRequest) return;
+        TickDriveLease();
+        var sender = PhotonNetwork.CurrentRoom.GetPlayer(actor);
+        if (sender == null || sender.IsInactive) return;
+        if (operation != 2 && (RailExpedition.ActorDown(actor) ||
+            !(sender.CustomProperties[RailSessionRules.Ready] is string ready) || ready != RunId + ":" + RailPhase.Running)) return;
+        if (!driveLease.Apply(actor, token, operation, progress, PhotonNetwork.Time)) return;
+        driveLeaseDirty = true;
+        QueueTrainControl(run, driveLease.Progress >= 1f);
+    }
+    void TickDriveLease()
+    {
+        if (!PhotonNetwork.IsMasterClient || !IsRailsRoom) return;
+        if (driveLeaseRun != RunId)
+        {
+            bool orphaned = DriveGripActor != 0;
+            driveLease.Reset(); driveLeaseRun = RunId; driveLeaseDirty = orphaned;
+            if (orphaned && Phase == RailPhase.Running) QueueTrainControl(RunId, false);
+        }
+        if (driveLease.Actor == 0)
+        {
+            // A previous master's final property write can arrive after the handoff callback.
+            if (DriveGripActor != 0 && !driveLeaseDirty)
+            { driveLeaseDirty = true; QueueTrainControl(RunId, false); }
+            return;
+        }
+        var holder = PhotonNetwork.CurrentRoom.GetPlayer(driveLease.Actor);
+        if (Phase != RailPhase.Running || holder == null || holder.IsInactive || RailExpedition.ActorDown(driveLease.Actor) ||
+            PhotonNetwork.Time >= driveLease.Expires)
+        {
+            driveLease.Reset(); driveLeaseDirty = true;
+            if (Phase == RailPhase.Running) QueueTrainControl(RunId, false);
+        }
     }
     void QueueTrainControl(string run, bool moving)
     {
@@ -484,15 +554,22 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         double now = PhotonNetwork.Time;
         float target = requestedTrainMoving.Value && CurrentFuel > 0f ? 4f : 0f;
         var command = Get(RailSessionRules.Motion, new object[] { PhotonNetwork.Time, 0f, 0f, 0f });
-        if (command.Length == 4 && command[3] is float currentTarget && currentTarget == target)
+        if (command.Length == 4 && command[3] is float currentTarget && currentTarget == target && (!driveLeaseDirty || DriveGripMatches()))
         {
-            if (pendingRevision < 0) requestedTrainMoving = null;
+            if (pendingRevision < 0) { requestedTrainMoving = null; driveLeaseDirty = false; }
             return;
         }
         RailSessionRules.EvaluateTrain(command, Get(RailSessionRules.Fuel, 100f), now,
             out float z, out float speed, out float fuel);
         Commit(new Hashtable { [RailSessionRules.Motion] = new object[] { now, z, speed, target },
-            [RailSessionRules.Fuel] = fuel });
+            [RailSessionRules.Fuel] = fuel,
+            [DriveGripProperty] = new object[] { RunId, driveLease.Actor, driveLease.Token, driveLease.Progress } });
+    }
+    bool DriveGripMatches()
+    {
+        var state = DriveGripState;
+        return (string)state[0] == RunId && (int)state[1] == driveLease.Actor &&
+            (string)state[2] == driveLease.Token && (float)state[3] == driveLease.Progress;
     }
     public override void OnRoomPropertiesUpdate(Hashtable changed)
     {
@@ -500,11 +577,13 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         { WorldReady = false; loadingSince = Time.realtimeSinceStartupAsDouble; }
         if (changed.ContainsKey(RailSessionRules.Phase)) DuckzAnalytics.SessionPhaseChanged();
         if (changed.ContainsKey(RailSessionRules.Revision)) pendingRevision = -1;
+        if (!GameScenes.IsLoaded(RequiredScene)) { if (!loadingScene) StartCoroutine(LoadWorldScene()); return; }
         FollowTransfer();
     }
     public override void OnMasterClientSwitched(Player master)
     {
         requestedTrainMoving = null;
+        driveLease.Reset(); driveLeaseRun = null;
         pendingRevision = -1; nextAuthorityTick = 0;
         if (master.IsLocal) DuckzAnalytics.SessionEvent("master_changed");
     }
@@ -603,6 +682,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public override void OnDisconnected(DisconnectCause cause)
     {
         requestedTrainMoving = null;
+        driveLease.Reset(); driveLeaseRun = null;
         if (quitting) return;
         operationPending = false; WorldReady = false;
         DuckzAnalytics.SessionDisconnected(cause.ToString());
@@ -631,6 +711,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (!initialized || quitting) return;
         crewReturn?.Tick();
+        TickDriveLease();
         FlushTrainControl();
         double now = Time.realtimeSinceStartupAsDouble;
         if (operationPending && now > operationUntil && !loadingScene)

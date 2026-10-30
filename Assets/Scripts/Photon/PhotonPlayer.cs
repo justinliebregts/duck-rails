@@ -228,10 +228,17 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
 
     public static PhotonPlayer ForActor(int actorNumber)
     {
+        PhotonPlayer latest = null;
         foreach (PhotonPlayer player in Active)
-            if (player != null && !player.IsCompanion && player.photonView != null && player.photonView.OwnerActorNr == actorNumber)
-                return player;
-        return null;
+        {
+            if (player == null || player.IsCompanion || player.photonView == null || player.photonView.OwnerActorNr != actorNumber) continue;
+            if (player.IsLocalHuman && player.headSource != null) return player;
+            // Scene transfers can leave an older cached avatar alongside the
+            // current one. Its prefab head is not evidence of the player's pose.
+            if (!player._hasPose) continue;
+            if (latest == null || player._lastPoseRealtime > latest._lastPoseRealtime) latest = player;
+        }
+        return latest;
     }
 
     public bool TryGetHeadPosition(out Vector3 position)

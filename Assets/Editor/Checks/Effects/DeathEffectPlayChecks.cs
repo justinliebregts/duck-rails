@@ -44,14 +44,14 @@ public static class DeathEffectPlayChecks
         DeathFlare.Prewarm(prefab); var pool = DeathEffectPool.Get(); pool.Prewarm(gib, 4);
         var position = Vector3.up * 10;
         var flare = DeathFlare.SpawnAfterDeath(prefab, position);
-        Require(!flare.IsBurning, "No early protection");
+        Require(flare.IsBurning, "Immediate protection on downing");
         while (!flare.IsBurning) yield return null;
         Require(DeathFlare.FindNear(flare.transform.position, 2) == flare, "Real OnEnable registers burning flare");
         Require((bool)typeof(DeathFlare).GetField("launched", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(flare), "Real Update launches flare");
         pool.Release(flare.gameObject);
         Require(DeathFlare.FindNear(flare.transform.position, 2) == null, "Real OnDisable removes flare protection");
         var again = DeathFlare.SpawnAfterDeath(prefab, position);
-        Require(again == flare && !again.IsBurning, "Second lease restarts delay");
+        Require(again == flare && again.IsBurning, "Second lease launches immediately");
         pool.Release(again.gameObject);
         var effect = pool.Rent(gib, position, Quaternion.identity); pool.Activate(effect, .1f);
         while (effect.activeSelf) yield return null;
@@ -80,7 +80,7 @@ public static class DeathEffectPlayChecks
         while (pool != null) yield return null;
         Require(DeathFlare.FindNear(position, 100) == null, "Teardown removes live protection");
         Require(DeathEffectPool.Get().CreatedObjects == 0, "Scene-owned pool can rebuild cleanly");
-        Debug.Log("DeathEffectPlayChecks: ALL PASSED; real delay/launch, protection registry, particle restart, expiry; 20 warmed flare+gib cycles = 0 GC allocation events, 0 new effects");
+        Debug.Log("DeathEffectPlayChecks: ALL PASSED; immediate launch, protection registry, particle restart, expiry; 20 warmed flare+gib cycles = 0 GC allocation events, 0 new effects");
     }
 
     static void CheckBomberLaunch()

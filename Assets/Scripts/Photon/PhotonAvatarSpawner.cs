@@ -9,7 +9,7 @@ public class PhotonAvatarSpawner : MonoBehaviour
 {
     [SerializeField] GameObject photonPlayerPrefab;
 
-    bool _spawned;
+    PhotonPlayer _boundPlayer;
 
     void Awake()
     {
@@ -25,17 +25,26 @@ public class PhotonAvatarSpawner : MonoBehaviour
     {
         if (!PhotonNetwork.InRoom)
         {
-            _spawned = false;
+            _boundPlayer = null;
             return;
         }
 
-        if (!_spawned || PhotonPlayer.Local == null)
+        var local = PhotonPlayer.Local;
+        if (local == null || local != _boundPlayer || local.HandSource(true) == null || local.HandSource(false) == null)
             TrySpawn();
     }
 
     void TrySpawn()
     {
-        if (photonPlayerPrefab == null || !PhotonNetwork.InRoom)
+        if (photonPlayerPrefab == null || !PhotonNetwork.InRoom || !PhotonNetwork.IsMessageQueueRunning)
+            return;
+
+        // Joining an expedition can complete while the outgoing Compound rig
+        // still updates. LoadWorldScene has already preserved existing views;
+        // a new avatar here would be destroyed locally by scene unloading while
+        // its cached Instantiate event survives on peers and late joiners.
+        var session = PhotonSession.Instance;
+        if (session != null && (session.HasRoomRequest || gameObject.scene.name != PhotonSession.RequiredScene))
             return;
 
         var driver = FindAnyObjectByType<LocalBodyDriver>();
@@ -45,14 +54,20 @@ public class PhotonAvatarSpawner : MonoBehaviour
         if (PhotonPlayer.Local != null)
         {
             PhotonPlayer.Local.BindSources(driver.HeadAnchor, driver.LeftHandAnchor, driver.RightHandAnchor, driver);
-            _spawned = true;
+            _boundPlayer = PhotonPlayer.Local;
             return;
         }
+        // A reserved-slot rejoin restores the owner's cached Instantiate after
+        // OnJoinedRoom. Spawning before that event arrives can reuse its ViewID
+        // and replace a bound avatar with an unbound cached copy.
+        if (PhotonNetwork.LocalPlayer.HasRejoined)
+            return;
+
         var head = driver.HeadAnchor;
         var avatar = PhotonNetwork.Instantiate(photonPlayerPrefab.name, head.position, head.rotation);
         var player = avatar.GetComponent<PhotonPlayer>();
         player.BindSources(head, driver.LeftHandAnchor, driver.RightHandAnchor, driver);
-        _spawned = true;
+        _boundPlayer = player;
         DuckzAnalytics.MarkAlive();
     }
 

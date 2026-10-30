@@ -1467,6 +1467,7 @@ namespace Game.AI
             ClearStun();
             SpawnHitBlood(velocity, hitPosition);
             if (!HasAuthority || root == null) return;
+            GetComponent<RailCoalCarrier>()?.Hit();
 
             Vector3 support = _climb != null && root.up.sqrMagnitude > 1e-6f ? root.up.normalized : Vector3.up;
             Vector3 dir = Vector3.ProjectOnPlane(velocity / speed, support);
