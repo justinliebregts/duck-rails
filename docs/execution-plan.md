@@ -4,6 +4,10 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 
 ## Planning basis
 
+October 30 Voice Patrol configuration: integration retained, with GameManager's **Enable Voice Patrol** startup switch off by default. Bootstrap and initialization require explicit opt-in. This does not change Photon voice requirements or complete multiplayer/headset voice acceptance.
+
+Validation: source diff/whitespace checks passed. Unity MCP initially verified `X:/Work/duck-rails`, then became unavailable during script reload (no fresh discovery files), so post-change editor/Play Mode verification remains pending. The diagnostic inbox query failed DNS resolution; three local reports remain open and were not resolved by this configuration change.
+
 October 30 testing-tools follow-up: [testing-tools.md](testing-tools.md) records the development panel, report capture/upload pipeline, automatic state checks, presets and unified runner. Two real desktop clients passed the dashboard-launched coal/handoff test. Production backend deployment and Quest panel acceptance remain pending; this tooling does not close the existing multiplayer/headset acceptance boxes.
 
 Build on Duckz's working framework. Keep Photon Realtime. Implement room/session architecture before the full expedition, with a small real moving-platform/shared-item test rather than an empty-room-only prototype.

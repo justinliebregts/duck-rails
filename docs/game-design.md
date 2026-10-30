@@ -4,6 +4,8 @@ Handoff date: October 28, 2026.
 
 ## Status and intent
 
+October 30 Voice Patrol decision: retain the integration but disable moderation by default. The GameManager Inspector's **Enable Voice Patrol** is a per-client startup setting; enable it before launch/Play Mode and restart to apply changes. Photon voice chat remains independent. The shared GameManager prefab defaults to off; scenes without a GameManager do not start moderation. Existing stored bans are retained but are not loaded/applied while the integration is off.
+
 October 30 testing-tools decision: add development-only scenario shortcuts, a unified Unity Test Center, persistent diagnostic reports with backend upload, automatic invariant detection, saved reproduction presets and a left-forearm panel toggled by the existing left menu input. DuckPlayer fingertip buttons include Report Bug. Detected reports produce a headset notification and remain open for investigation/resolution. See [testing-tools.md](testing-tools.md) for implementation, deployment and validation limits.
 
 This document transfers the design conversation into the repository. **Confirmed** means explicitly selected or clearly established by the user. **Proposed** means a suggested implementation or tuning default that has not received a final decision. Existing Duckz capabilities are user-reported and require source inspection.

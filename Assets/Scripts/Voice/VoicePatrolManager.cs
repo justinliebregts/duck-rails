@@ -29,8 +29,11 @@ public class VoicePatrolManager : MonoBehaviour
     float languageWarningUntil;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
-    static void Boot()
+    public static void Boot()
     {
+        if (!IsEnabled)
+            return;
+
         if (Instance != null || FindAnyObjectByType<VoicePatrolManager>() != null)
             return;
 
@@ -124,6 +127,9 @@ public class VoicePatrolManager : MonoBehaviour
 
     void TryInitialize()
     {
+        if (!IsEnabled)
+            return;
+
         if (!duckReady && PhotonPlayer.Local != null)
             duckReady = true;
 
@@ -136,6 +142,9 @@ public class VoicePatrolManager : MonoBehaviour
         patrol.Initialize(uniqueId);
         RefreshPrivateRoom();
     }
+
+    // Fail closed in login/test scenes without a GameManager, too.
+    static bool IsEnabled => GameManager.instance != null && GameManager.instance.enableVoicePatrol;
 
     void TrackSession()
     {

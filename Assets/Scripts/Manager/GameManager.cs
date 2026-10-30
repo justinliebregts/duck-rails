@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     public bool disableEnemySpawning;
     [Tooltip("Master Client: the only Duck enable switch in every build. Checked removes Duck from the room; unchecked allows automatic spawning and retries.")]
     public bool disableDuckCompanion;
+    [Tooltip("Enables Voice Patrol moderation on this client. Off by default. Set before starting the game; restart to apply changes. Photon voice chat works independently.")]
+    public bool enableVoicePatrol = false;
     [HideInInspector] public bool usingDesktopPlayer = false;
 
     List<PhotonPlayer> photonPlayers = new List<PhotonPlayer>();
@@ -30,6 +32,8 @@ public class GameManager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     IEnumerator Start()
     {
+        // Login can load the gameplay scene after runtime initialization has already run.
+        VoicePatrolManager.Boot();
         if (usingDesktopPlayer) yield break;
         // Wait until the HMD is actually presenting so the frequency is real
         while (OVRManager.instance == null || !OVRManager.isHmdPresent)
