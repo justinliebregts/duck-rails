@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -117,12 +118,18 @@ public sealed class GrabSurfaceBaker : AssetPostprocessor, IPreprocessBuildWithR
             if (filter.GetComponentInParent<Grabbable>(true) != prefab.GetComponent<Grabbable>()) continue;
             Matrix4x4 model = root.worldToLocalMatrix * filter.transform.localToWorldMatrix;
             if (reference == null) { reference = mesh; referencePose = model; }
-            // Unity permits editor mesh reads without enabling runtime Read/Write on imports.
-            Vector3[] vertices = mesh.vertices;
-            for (int s = 0; s < mesh.subMeshCount; s++)
+            // The editor API also permits non-readable imports during the Play Mode
+            // transition, when ordinary mesh.vertices/GetTriangles reads can fail.
+            using var snapshot = MeshUtility.AcquireReadOnlyMeshData(mesh);
+            var geometry = snapshot[0];
+            using var vertices = new NativeArray<Vector3>(geometry.vertexCount, Allocator.Temp);
+            geometry.GetVertices(vertices);
+            for (int s = 0; s < geometry.subMeshCount; s++)
             {
-                if (mesh.GetTopology(s) != MeshTopology.Triangles) continue;
-                int[] indices = mesh.GetTriangles(s);
+                var submesh = geometry.GetSubMesh(s);
+                if (submesh.topology != MeshTopology.Triangles) continue;
+                using var indices = new NativeArray<int>(submesh.indexCount, Allocator.Temp);
+                geometry.GetIndices(indices, s, applyBaseVertex: true);
                 for (int i = 0; i < indices.Length; i += 3)
                 {
                     Vector3 a = model.MultiplyPoint3x4(vertices[indices[i]]);
