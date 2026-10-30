@@ -82,13 +82,16 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             if (RailEditorQuickStart.TryGetRoom(out string editorRoom))
             {
                 request = Request.EditorQuickStart;
-                allocation = editorRoom;
-                requestedRoom = RailSessionRules.RoomCode(allocation);
+                allocation = "editor-quick-start-" + editorRoom;
+                requestedRoom = editorRoom;
             }
 #endif
             MarkConnectPending(); Connect();
         }
         while (!WorldReady) yield return null;
+        // Direct Compound entry skips LoadCompound, so release its startup
+        // callback here as well as on the scene-loading path.
+        loginStatus = null;
     }
     void Configure()
     {
@@ -113,7 +116,16 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             PhotonNetwork.AuthValues.AddAuthParameter("tkn", token);
         }
     }
-    void SetStatus(string text) { Status = text; loginStatus?.Invoke(text); }
+    void SetStatus(string text)
+    {
+        if (Status == text) return;
+        Status = text;
+        loginStatus?.Invoke(text);
+    }
+#if UNITY_EDITOR
+    // Direct scene Play uses the same status banner before Photon connects.
+    public void SetEditorSignInStatus(string text) => SetStatus(text);
+#endif
     void Started(string text)
     {
         operationPending = true; operationUntil = Time.realtimeSinceStartupAsDouble + 30;
@@ -281,6 +293,10 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         ;
     bool RetryAllocation()
     {
+#if UNITY_EDITOR
+        // Quick start uses the requested fixed code, never a generated fallback.
+        if (request == Request.EditorQuickStart) return false;
+#endif
         if (++allocationAttempt >= 100) return false;
         requestedRoom = RailSessionRules.RoomCode(allocation, allocationAttempt);
         if (PhotonNetwork.InRoom)

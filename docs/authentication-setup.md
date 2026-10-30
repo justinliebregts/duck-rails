@@ -23,6 +23,8 @@ Both Photon apps must have Custom authentication configured to `https://duckrail
 
 ## Multiplayer Play Mode accounts
 
+For solo desktop iteration, use Default launch with Compound open and Desktop mode selected. Play signs in directly in Compound, displaying progress in its session banner; no Login scene transition is needed. See `week1-session.md` for measured startup evidence. Multiplayer Play Mode retains its configured scene startup below.
+
 Ported the tagged Meta test-user setup from Gun Raiders Classic commits `981f7aaa7eebfa96fac13b072d45500d32a20884` and `bc3c49c349a76183582a00a277bf64f1781436ff`. The source project was read only.
 
 1. Keep the main editor's account in **Meta > Platform > Edit Settings**, with standalone test-user authentication enabled.
@@ -31,6 +33,8 @@ Ported the tagged Meta test-user setup from Gun Raiders Classic commits `981f7aa
 4. Restart additional editors after saving/changing accounts. The tag must exactly match, including case. Each concurrent player must use a different account.
 
 The window saves access tokens and email in local, project-scoped EditorPrefs, not tracked assets; it does not save the password. Virtual editors resolve the main project's preference key, then apply the selected account before Meta SDK initialization. Main-editor credentials are left alone. Missing or ambiguous account tags produce actionable errors rather than selecting an arbitrary or fake user. Credentials saved in the Classic project are not imported automatically.
+
+Quick-start routing follow-up: the main editor's `RailsQuickStart` tag now gates both clients. Setting it to None keeps both in normal compound matchmaking while Player2 retains its account tag. When enabled, quick start uses fixed room `11111`, ignoring the former cached dynamic room. The menu toggle still disables quick start for both clients.
 
 The second account must also be entitled to the Duck Rails Meta app and permitted by the backend's `META_EDITOR_USER_IDS`. A successful Meta sign-in followed by a backend rejection is a separate configuration issue; this change does not bypass either check. The Four Ducks scenario retains its existing LobbyTest behavior and needs distinct saved account tags before authenticated four-client use.
 

@@ -14,14 +14,19 @@ public static class RailQuickStartChecks
             "Stale runtime tags must not enable quick start for solo Play.");
         Require(!RailEditorQuickStart.ShouldQuickStart(true, true, Array.Empty<string>(), "LobbyTest"),
             "Other scenarios must retain normal matchmaking.");
-        Require(RailEditorQuickStart.ShouldQuickStart(true, false, new[] { "Player2" }, null),
+        Require(RailEditorQuickStart.ShouldQuickStart(true, false, new[] { "Player2" }, "RailsQuickStart"),
             "Additional Player2 editor must join the shared expedition.");
         Require(!RailEditorQuickStart.ShouldQuickStart(true, false, new[] { "LobbyTest" }, "RailsQuickStart"),
             "Other additional players must retain normal matchmaking.");
         Require(!RailEditorQuickStart.ShouldQuickStart(false, true, Array.Empty<string>(), "RailsQuickStart") &&
-            !RailEditorQuickStart.ShouldQuickStart(false, false, new[] { "Player2" }, null),
+            !RailEditorQuickStart.ShouldQuickStart(false, false, new[] { "Player2" }, "RailsQuickStart"),
             "Disabling quick start must restore normal matchmaking for both editors.");
-        Debug.Log("Duck Rails quick-start checks passed (6 checks).");
+        Require(!RailEditorQuickStart.ShouldQuickStart(true, false, new[] { "Player2" }, null) &&
+            !RailEditorQuickStart.ShouldQuickStart(true, false, new[] { "Player2" }, "") &&
+            !RailEditorQuickStart.ShouldQuickStart(true, false, new[] { "Player2" }, "None"),
+            "Player2's account tag must not enable quick start when the main tag is None.");
+        Require(RailEditorQuickStart.RoomCode == "11111", "Quick start must use the fixed room code.");
+        Debug.Log("Duck Rails quick-start checks passed (8 checks).");
     }
 
     static void Require(bool condition, string message)

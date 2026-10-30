@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Multiplayer.PlayMode;
@@ -12,6 +11,7 @@ public static class RailEditorQuickStart
 {
     const string MenuPath = "Duck Rails/Two Ducks Quick Start";
     const string HostTag = "RailsQuickStart";
+    public const string RoomCode = "11111";
     static string Key => MppmStandaloneCredentials.PrefsKeyForAssets(Application.dataPath) + ".QuickStart";
 
     public static bool Enabled
@@ -22,20 +22,33 @@ public static class RailEditorQuickStart
 
     static RailEditorQuickStart()
     {
-        // A random local rendezvous avoids sharing a hard-coded Photon room with
-        // other developers. Keep it while an additional editor is still running.
-        if (CurrentPlayer.IsMainEditor && !EditorPrefs.HasKey(Key + ".Room"))
-            EditorPrefs.SetString(Key + ".Room", "editor-" + Guid.NewGuid().ToString("N"));
+        if (!CurrentPlayer.IsMainEditor) return;
+        EditorApplication.update += SyncSelectedMainTag;
+        EditorApplication.playModeStateChanged += state =>
+        {
+            if (state == PlayModeStateChange.ExitingEditMode) PublishSelectedMainTag();
+        };
+    }
+
+    static void SyncSelectedMainTag()
+    {
+        if (!EditorApplication.isPlayingOrWillChangePlaymode) PublishSelectedMainTag();
+    }
+
+    static void PublishSelectedMainTag()
+    {
+        string tag = SelectedMainEditorTag() ?? "";
+        if (EditorPrefs.GetString(Key + ".MainTag", "") != tag)
+            EditorPrefs.SetString(Key + ".MainTag", tag);
     }
 
     public static bool TryGetRoom(out string room)
     {
         room = null;
-        if (!ShouldQuickStart(Enabled, CurrentPlayer.IsMainEditor, CurrentPlayer.Tags, SelectedMainEditorTag())) return false;
-        room = EditorPrefs.GetString(Key + ".Room", "");
-        if (!string.IsNullOrEmpty(room)) return true;
-        Debug.LogWarning("Two Ducks quick start has no shared room. Open the main Duck Rails editor first.");
-        return false;
+        string mainTag = CurrentPlayer.IsMainEditor ? SelectedMainEditorTag() : EditorPrefs.GetString(Key + ".MainTag", "");
+        if (!ShouldQuickStart(Enabled, CurrentPlayer.IsMainEditor, CurrentPlayer.Tags, mainTag)) return false;
+        room = RoomCode;
+        return true;
     }
 
     public static bool ShouldQuickStart(bool enabled, bool mainEditor, IReadOnlyList<string> runtimeTags, string selectedMainTag)
@@ -43,7 +56,8 @@ public static class RailEditorQuickStart
         // Main-editor runtime tags can be empty/stale even with a tagged scenario
         // selected. Its launch configuration is the source of truth. Do not let a
         // stale runtime tag enable quick start after switching back to solo Play.
-        return enabled && (mainEditor ? selectedMainTag == HostTag : runtimeTags != null && runtimeTags.Contains("Player2"));
+        return enabled && selectedMainTag == HostTag &&
+            (mainEditor || runtimeTags != null && runtimeTags.Contains("Player2"));
     }
 
     static string SelectedMainEditorTag()
