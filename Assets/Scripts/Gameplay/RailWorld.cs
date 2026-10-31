@@ -211,7 +211,7 @@ public sealed class RailWorld : MonoBehaviour
                 RailExpedition.Instance.Request("editor-revive");
 #endif
             GUI.enabled = session.WorldReady && PhotonNetwork.IsMasterClient;
-            GUILayout.Label("E: drive / bridge. Hold left-click: horn / radio.\nVR: keep your hand on the horn / TALK button.\nRevive: aim at a downed teammate and hold left-click.\nVR: hold a hand near a downed teammate.");
+            GUILayout.Label("Keyboard or VR mode: hold T for throttle GO; release to STOP.\nQ/E reach hands; right mouse grips in Keyboard mode.\nTouch horn / TALK buttons to hold; withdraw to release.\nRevive: hold a hand near a downed teammate.");
         }
         GUI.enabled = !session.HasRoomRequest;
         if (GUILayout.Button("Leave for public compound")) session.RequestJoinRandom();

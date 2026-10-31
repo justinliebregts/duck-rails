@@ -1,5 +1,7 @@
 # Duck Rails — Week 1 session prototype
 
+October 30 input update: the historical DesktopPlayer controls/evidence below predate the [shared DuckPlayer rig](shared-rig.md). Current gameplay uses Keyboard or VR input on DuckPlayer, supports F2 switching during Play, Q/E reach, and right mouse grip on both hands. Rails live fixtures now warp the shared rig.
+
 ## Default editor launch from Compound — October 29
 
 For fast desktop iteration, open `Assets/Scenes/Compound.unity`, select the Default launch scenario and Desktop mode, then press Play. `EditorPlaySignIn` authenticates in place and joins a public compound without loading Login. The session now exists before sign-in, enabling background execution and showing sign-in/retry progress in the existing Compound banner; desktop input stays gated until world readiness. An existing PlayerSession no longer causes connection startup to be skipped. Login/MPPM startup and Two Ducks quick-start selection are unchanged.

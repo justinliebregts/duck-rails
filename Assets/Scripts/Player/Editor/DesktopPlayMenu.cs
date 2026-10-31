@@ -16,7 +16,9 @@ static class DesktopPlaySceneButtons
         SceneView.duringSceneGui += OnScene;
         EditorApplication.playModeStateChanged += state =>
         {
-            if (state == PlayModeStateChange.ExitingEditMode) SetStandaloneXrInitOnStart(!DesktopPlay.UseDesktop);
+            // Keep Link initialized even when starting with simulated input, so
+            // F2 can hand the same rig to the headset during this Play session.
+            if (state == PlayModeStateChange.ExitingEditMode) SetStandaloneXrInitOnStart(true);
         };
     }
 
@@ -26,7 +28,7 @@ static class DesktopPlaySceneButtons
 
         GUILayout.BeginArea(new Rect(8f, 8f, 168f, 78f));
         GUILayout.BeginHorizontal();
-        if (ModeButton("Desktop", DesktopPlay.UseDesktop))
+        if (ModeButton("Keyboard", DesktopPlay.UseDesktop))
             SetMode(true);
         if (ModeButton("VR", !DesktopPlay.UseDesktop))
             SetMode(false);
@@ -75,8 +77,14 @@ static class DesktopPlaySceneButtons
 
     static void SetMode(bool desktop)
     {
+        if (Application.isPlaying)
+        {
+            SimulatedRigInput.Instance?.SetSimulating(desktop);
+            return;
+        }
         EditorPrefs.SetBool(DesktopPlay.PrefKey, desktop);
-        SetStandaloneXrInitOnStart(!desktop);
+        DesktopPlay.SetSessionSimulation(null);
+        SetStandaloneXrInitOnStart(true);
         SceneView.RepaintAll();
     }
 

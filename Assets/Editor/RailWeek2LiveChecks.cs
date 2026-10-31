@@ -59,7 +59,7 @@ public static class RailWeek2LiveChecks
     static void Ack() => PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [AckKey] = localStage });
     static bool AllAck => PhotonNetwork.PlayerList.Length == 3 && PhotonNetwork.PlayerList.All(p => p.CustomProperties[AckKey] is int n && n == localStage);
     static void Stage(int next) { PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { [StageKey] = next }); }
-    static void Teleport(Vector3 p) => GR.Player.instance.GetComponent<DesktopPlayer>().Teleport(p, Quaternion.identity, true);
+    static void Teleport(Vector3 p) => NewPlayer.instance.Warp(p, Quaternion.identity);
     static void Board() => Teleport(RailTrain.Instance.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 3 - 1) * 1.2f, .35f, -2)));
     static void Tick()
     {

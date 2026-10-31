@@ -37,18 +37,53 @@ public partial class ControllerInput : MonoBehaviour
 
     [Tooltip("Desktop stand-in: no controllers. The left mouse button is the right hand's grip; everything else stays released.")]
     public bool mouseGrip;
+    [System.NonSerialized] public SimulatedRigInput simulation;
+    bool requireNeutral;
+
+    public void RequireNeutralInput() { requireNeutral = true; ApplySimulationButtons(default); }
 
     private void Start()
     {
     }
 
     private void Update() {
+      if (simulation != null && simulation.IsSimulating) {
+        ApplySimulationButtons(simulation.Buttons);
+        return;
+      }
       if (mouseGrip) {
         MouseGripInput();
         return;
       }
       OculusControllerInput();
+      if (requireNeutral) {
+        if (!leftGripButton.down && !rightGripButton.down && !leftTriggerButton.down && !rightTriggerButton.down)
+          requireNeutral = false;
+        ApplySimulationButtons(default);
+      }
       return;
+    }
+
+    public void ApplySimulationButtons(SimulatedRigInput.Frame frame) {
+      SetButton(ref leftGripButton, frame.grip);
+      SetButton(ref rightGripButton, frame.grip);
+      SetButton(ref leftTriggerButton, frame.trigger);
+      SetButton(ref rightTriggerButton, frame.trigger);
+      SetButton(ref xButton, frame.x); SetButton(ref yButton, frame.y);
+      SetButton(ref aButton, frame.a); SetButton(ref bButton, frame.b);
+      SetButton(ref leftStartButton, frame.menu); SetButton(ref rightStartButton, false);
+      SetButton(ref leftThumbstickButton, false); SetButton(ref rightThumbstickButton, false);
+      leftGripValue = rightGripValue = frame.grip ? 1 : 0;
+      leftTriggerValue = rightTriggerValue = frame.trigger ? 1 : 0;
+      leftThumbstickValue = rightThumbstickValue = Vector2.zero;
+      leftThumbstickStatus = rightThumbstickStatus = default;
+      leftThumbHover = leftThumbTouch = rightThumbHover = rightThumbTouch = false;
+    }
+
+    static void SetButton(ref ButtonStatus button, bool down) {
+      button.wasPressed = down && !button.down;
+      button.wasReleased = !down && button.down;
+      button.down = down;
     }
 
     void MouseGripInput() {

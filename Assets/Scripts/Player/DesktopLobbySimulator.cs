@@ -33,7 +33,7 @@ internal sealed class DesktopLobbySimulator
         return false;
     }
 
-    internal void Sample(DesktopPlayer desktop, out Vector2 move, out Vector2 lookDegrees, out bool jump)
+    internal void Sample(MonoBehaviour desktop, out Vector2 move, out Vector2 lookDegrees, out bool jump)
     {
         move = lookDegrees = Vector2.zero;
         jump = false;

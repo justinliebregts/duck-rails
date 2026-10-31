@@ -77,7 +77,7 @@ public static class RailWeek2Builder
         Control("Horn", train, new Vector3(1.1f, 1, 3.5f), RailControl.Action.Horn, safety);
         Control("Train radio", train, new Vector3(-1.8f, 1, -.8f), RailControl.Action.Radio, steel);
         Text(train, "RADIO\nHold the TALK button", new Vector3(-1.8f, 1.8f, -.6f), 1.4f);
-        Text(train, "STOP / GO                  HORN\nVR: grip + push / release to stop; Desktop: E", new Vector3(0, 2.7f, 4.5f), 1.8f);
+        Text(train, "STOP / GO                  HORN\nGrip + push / release to stop", new Vector3(0, 2.7f, 4.5f), 1.8f);
         // Open furnace mouth: loose coal settles on the bottom within the acceptance radius.
         var furnace = new GameObject("Furnace mouth").transform; furnace.SetParent(train, false); furnace.localPosition = new Vector3(0, .55f, 2); run.furnace = furnace;
         Box("Furnace bottom", train, new Vector3(0, .15f, 2), new Vector3(1.4f, .2f, 1.4f), red);

@@ -2,7 +2,7 @@ using System;
 using Photon.Pun;
 using UnityEngine;
 
-/// <summary>Grip-and-hold drive in VR; look and press E to toggle on DesktopPlayer.</summary>
+/// <summary>Grip-and-hold drive, with a hold-T shortcut in desktop Keyboard or VR mode.</summary>
 public sealed class RailControl : MonoBehaviour
 {
     public enum Action { Drive, Horn, Bridge, Radio }
@@ -18,6 +18,7 @@ public sealed class RailControl : MonoBehaviour
     string gripToken, gripRun, releasedToken;
     float gripStartZ, gripStarted, nextHeartbeat, driveProgress;
     bool gripGranted, forwardLatched;
+    bool simulatedDrive, throttleWasHeld;
     Vector3 handleRest;
     void OnEnable() { drives.Add(this); }
     void Awake() { if (handle != null) handleRest = handle.localPosition; }
@@ -77,42 +78,62 @@ public sealed class RailControl : MonoBehaviour
             PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady || PhotonSession.Phase != RailPhase.Running) return null;
         foreach (var control in drives)
         {
-            if (control.action != Action.Drive || control.handle == null || control.driveHand != null || PhotonSession.DriveGripActor != 0) continue;
+            if (control.action != Action.Drive || control.handle == null || control.driveHand != null || control.simulatedDrive || PhotonSession.DriveGripActor != 0) continue;
             var collider = control.handle.GetComponent<Collider>();
             if (collider == null || Vector3.Distance(collider.ClosestPoint(hand.transform.position), hand.transform.position) > .12f) continue;
-            control.driveHand = hand; control.gripRun = PhotonSession.RunId; control.gripToken = Guid.NewGuid().ToString("N");
+            control.driveHand = hand;
             control.gripStartZ = control.transform.InverseTransformPoint(hand.transform.position).z;
-            control.gripStarted = Time.unscaledTime; control.nextHeartbeat = 0;
-            control.driveProgress = 0; control.gripGranted = control.forwardLatched = false;
-            PhotonSession.Instance.RequestDriveGrip(control.gripRun, control.gripToken, 0, 0);
+            control.BeginDrive();
             return control;
         }
         return null;
     }
+    void BeginDrive()
+    {
+        gripRun = PhotonSession.RunId; gripToken = Guid.NewGuid().ToString("N");
+        gripStarted = Time.unscaledTime; nextHeartbeat = 0;
+        driveProgress = 0; gripGranted = forwardLatched = false;
+        PhotonSession.Instance.RequestDriveGrip(gripRun, gripToken, 0, 0);
+    }
     public void ReleaseDrive()
     {
-        if (driveHand == null) return;
+        if (driveHand == null && !simulatedDrive) return;
         PhotonSession.Instance?.RequestDriveGrip(gripRun, gripToken, 2, 0);
         releasedToken = gripToken;
-        driveHand = null; gripGranted = forwardLatched = false; driveProgress = 0;
+        driveHand = null; simulatedDrive = false; gripGranted = forwardLatched = false; driveProgress = 0;
         PoseDrive(0);
     }
     void OnApplicationFocus(bool focused) { if (!focused) ReleaseDrive(); }
     void OnApplicationPause(bool paused) { if (paused) ReleaseDrive(); }
     void UpdateDrive()
     {
-        if (driveHand != null)
+        var simulator = SimulatedRigInput.Instance;
+        bool throttleHeld = simulator != null && simulator.isActiveAndEnabled && simulator.ThrottleHeld;
+        // One press acquires the normal shared lease; a denied/lost lease needs a
+        // fresh press, so a held key cannot steal another player's control later.
+        if (throttleHeld && !throttleWasHeld && driveHand == null && !simulatedDrive && handle != null &&
+            !RailWorld.InputBlocked && !RailExpedition.LocalDown && PhotonSession.Instance != null &&
+            PhotonSession.Instance.WorldReady && PhotonSession.Phase == RailPhase.Running && PhotonSession.DriveGripActor == 0)
+        {
+            simulatedDrive = true;
+            BeginDrive();
+        }
+        throttleWasHeld = throttleHeld;
+        if (driveHand != null || simulatedDrive)
         {
             var state = PhotonSession.DriveGripState;
             bool granted = PhotonNetwork.LocalPlayer != null && PhotonSession.DriveGripActor == PhotonNetwork.LocalPlayer.ActorNumber && (string)state[2] == gripToken;
-            if (!driveHand.isActiveAndEnabled || !driveHand.IsGripHeld || !driveHand.CanGrab || RailWorld.InputBlocked ||
+            bool released = simulatedDrive ? !throttleHeld :
+                !driveHand.isActiveAndEnabled || !driveHand.IsGripHeld || !driveHand.CanGrab ||
+                Vector3.Distance(driveHand.transform.position, transform.position) > 1.5f;
+            if (released || RailWorld.InputBlocked || RailExpedition.LocalDown ||
                 PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady || PhotonSession.Phase != RailPhase.Running ||
-                gripRun != PhotonSession.RunId || Vector3.Distance(driveHand.transform.position, transform.position) > 1.5f ||
+                gripRun != PhotonSession.RunId ||
                 (gripGranted && !granted) || (!granted && Time.unscaledTime - gripStarted > 1.5f)) ReleaseDrive();
             else
             {
                 gripGranted |= granted;
-                float travel = RailDriveLease.Travel(transform.InverseTransformPoint(driveHand.transform.position).z - gripStartZ);
+                float travel = simulatedDrive ? 1 : RailDriveLease.Travel(transform.InverseTransformPoint(driveHand.transform.position).z - gripStartZ);
                 forwardLatched = RailDriveLease.ForwardDetent(forwardLatched, travel);
                 driveProgress = forwardLatched ? 1 : (travel <= .2f ? 0 : travel);
                 if (Time.unscaledTime >= nextHeartbeat)
@@ -125,7 +146,7 @@ public sealed class RailControl : MonoBehaviour
         var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { 0d, 0f, 0f, 0f });
         float progress = PhotonSession.DriveGripActor != 0 ? (float)PhotonSession.DriveGripState[3] : ((float)motion[3] > 0 ? 1 : 0);
         if (!string.IsNullOrEmpty(releasedToken) && (string)PhotonSession.DriveGripState[2] == releasedToken) progress = 0;
-        if (driveHand != null) progress = gripGranted ? driveProgress : 0;
+        if (driveHand != null || simulatedDrive) progress = gripGranted ? driveProgress : 0;
         PoseDrive(progress);
     }
     void PoseDrive(float progress)

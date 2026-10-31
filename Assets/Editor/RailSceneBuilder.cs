@@ -110,10 +110,7 @@ public static class RailSceneBuilder
         PrefabUtility.RecordPrefabInstancePropertyModifications(manager);
         var rig = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Player/DuckPlayer.prefab"));
         rig.transform.position = spawn.position;
-        var desktop = new GameObject("Desktop rig selection").AddComponent<DesktopPlay>();
-        var serialized = new SerializedObject(desktop);
-        serialized.FindProperty("desktopPlayerPrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Player/DesktopPlayer.prefab");
-        serialized.ApplyModifiedPropertiesWithoutUndo();
+        new GameObject("Rig input selection").AddComponent<DesktopPlay>();
         world.expedition = new GameObject("Expedition test block — rail-yard-test-v1");
         root = world.expedition.transform;
         Box("Track bed", root, new Vector3(0, -.4f, 2000), new Vector3(70, .8f, 4200), ground);

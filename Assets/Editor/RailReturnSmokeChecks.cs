@@ -24,7 +24,7 @@ public static class RailReturnSmokeChecks
         EditorApplication.update += Tick;
         MoveToPlatform(); Save("running");
     }
-    static void MoveToPlatform() => UnityEngine.Object.FindAnyObjectByType<DesktopPlayer>().Teleport(new Vector3(0, .4f, 4), Quaternion.identity, true);
+    static void MoveToPlatform() => NewPlayer.instance.Warp(new Vector3(0, .4f, 4), Quaternion.identity);
     static void Save(string status) => File.WriteAllText("Temp/rails-return-smoke.txt", status + "\n" + string.Join("\n", passed));
     static void Tick()
     {

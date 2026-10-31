@@ -150,7 +150,7 @@ public static class RailTestRunner
         var rows = new List<string>();
         foreach (var check in new Action[] { RailSessionChecks.Run, RailDesktopChecks.Run, RailQuickStartChecks.Run,
             RailWeek2Checks.Run, RailWeek3Checks.Run, RailDriveChecks.Run, RailButtonTouchChecks.Run, RailHoldControlChecks.Run,
-            RailCoalLiveChecks.CheckAvatarLookup, RailDiagnosticChecks.Run })
+            RailCoalLiveChecks.CheckAvatarLookup, RailDiagnosticChecks.Run, RailRigChecks.Run })
         {
             try { check(); rows.Add("PASS " + check.Method.DeclaringType.Name); }
             catch (Exception e) { rows.Add("FAIL " + check.Method.DeclaringType.Name + ": " + e.Message); }

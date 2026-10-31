@@ -2,6 +2,8 @@
 
 Implemented October 30, 2026. These are development tools, not milestone acceptance for headsets or eight-player play.
 
+Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, with F2 switching during Play. See [shared-rig.md](shared-rig.md) for Q/E reach, simultaneous grip and physical panel controls. Quick regression includes the shared-rig checks. After starting the manual sandbox, **Duck Rails > Run Live Shared Rig Checks** exercises actual proximity grabs, fingertip buttons and the physical drive lever. Existing network fixtures use the shared rig but still retain their documented setup shortcuts.
+
 ## In-game panel
 
 In the Editor or a **Development Build**, press the left controller's existing game-menu input (`ButtonName.Start`, mapped to `OVRInput.RawButton.Start`) to show/hide the panel. On desktop use **P**. In VR it is parented to the left forearm and faces the head for readability. DuckPlayer's actual fingertip colliders press the buttons; no controller ray or grip is required. The diagnostic controls remain usable while downed or while world loading blocks ordinary gameplay input.

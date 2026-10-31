@@ -4,6 +4,12 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 
 ## Planning basis
 
+- [x] October 31 editor/desktop throttle convenience: hold T for GO, release for STOP in Keyboard or VR mode, retaining shared lever ownership. Unity compilation, 28 shared-rig checks, 17 drive checks and a solo live Photon/lever hold-release check passed. See [evidence and limits](shared-rig.md#hold-t-throttle-shortcut--october-31). Actual headset and multi-client shortcut acceptance remain separate.
+
+October 30 shared-rig follow-up: replace the DesktopPlayer gameplay launch path with simulated poses/buttons on the existing DuckPlayer; preserve Quest Link and allow input switching during Play. The accepted controls and verification workflow are in [shared-rig.md](shared-rig.md). Older DesktopPlayer evidence below remains historical and does not establish acceptance of the shared rig. Headset and multi-client acceptance remain required.
+
+Shared-rig editor evidence: all 11 quick suites and the solo real-frame hand/button/lever check passed. Two authenticated editor clients then passed stopped/moving-train coal and master-handoff checks (21:53:42 UTC). [Recorded evidence](shared-rig.md#recorded-editor-evidence-october-30). Worn Quest Link switching and target-headset acceptance remain open; these editor results do not close the headset milestone boxes.
+
 October 30 Voice Patrol configuration: integration retained, with GameManager's **Enable Voice Patrol** startup switch off by default. Bootstrap and initialization require explicit opt-in. This does not change Photon voice requirements or complete multiplayer/headset voice acceptance.
 
 Validation: source diff/whitespace checks passed. Unity MCP initially verified `X:/Work/duck-rails`, then became unavailable during script reload (no fresh discovery files), so post-change editor/Play Mode verification remains pending. The diagnostic inbox query failed DNS resolution; three local reports remain open and were not resolved by this configuration change.

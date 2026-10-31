@@ -215,6 +215,20 @@ public class NewPlayer : MonoBehaviour
             SeedHandLocomotionSamples(true);
         }
 
+        // Input-source changes must not turn a tracked-pose discontinuity into a
+        // hand launch, body sweep across the scene, or throw velocity.
+        public void ReseedTrackingPose()
+        {
+            bodyCollider.transform.position = headCollider.transform.position + BodyForwardRot() * headBodyOffset;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+            InitializeValues();
+            lastBodyMidpoint = bodyMidpoint.position;
+            lastPos = transform.position;
+            leftHandVelHistory.Clear(); rightHandVelHistory.Clear();
+            wasLeftHandTouching = wasRightHandTouching = wasHeadTouching = false;
+        }
+
         public void Warp(Vector3 pos, Quaternion rotation) {
           // Align the tracked head's heading, not just the rig's forward axis.
           transform.rotation = Quaternion.Euler(0f, transform.eulerAngles.y, 0f);
@@ -393,10 +407,10 @@ public class NewPlayer : MonoBehaviour
               }
             }
 
-            if(Input.GetKeyDown(KeyCode.Q)) {
+            if(controllerInput.simulation == null && Input.GetKeyDown(KeyCode.Q)) {
               Turn(-snapRotateAmount);
             }
-            if(Input.GetKeyDown(KeyCode.E)) {
+            if(controllerInput.simulation == null && Input.GetKeyDown(KeyCode.E)) {
               Turn(snapRotateAmount);
             }
           } else if(rotateMode == 1) { //smooth turn
@@ -462,7 +476,7 @@ public class NewPlayer : MonoBehaviour
           // hands touching the ground can't immediately damp/override the launch.
           if(!disableMovement && dTime > 0f) {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if(!stickMove) {
+            if(!stickMove || (controllerInput.simulation != null && controllerInput.simulation.IsSimulating)) {
               Movement(dTime);
             } else {
               StoreVelocities(dTime);
@@ -513,7 +527,10 @@ public class NewPlayer : MonoBehaviour
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         void StickMove(float dTime) {
+          // The simulator already supplies room-scale pose motion.
+          if (controllerInput != null && controllerInput.simulation != null && controllerInput.simulation.IsSimulating) return;
 #if UNITY_EDITOR
+          if (controllerInput == null || controllerInput.simulation == null) {
               Vector2 wasd = Vector2.zero;
               if(Input.GetKey(KeyCode.W)) wasd.y += 1f;
               if(Input.GetKey(KeyCode.A)) wasd.x -= 1f;
@@ -522,6 +539,7 @@ public class NewPlayer : MonoBehaviour
               float jetpack = 0f;
               if(Input.GetKey(KeyCode.Space)) jetpack = 1f;
               MoveFromStick(wasd, jetpack, dTime);
+          }
 #endif
           if(stickMove) {
             Vector2 moveAxis = controllerInput.leftThumbstickValue;

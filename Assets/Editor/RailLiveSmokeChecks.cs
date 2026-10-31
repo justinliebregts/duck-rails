@@ -29,7 +29,7 @@ public static class RailLiveSmokeChecks
         EditorApplication.update += Tick;
         Save("running");
     }
-    static void Move(Vector3 position) => UnityEngine.Object.FindAnyObjectByType<DesktopPlayer>().Teleport(position, Quaternion.identity, true);
+    static void Move(Vector3 position) => NewPlayer.instance.Warp(position, Quaternion.identity);
     static void Next(string message)
     {
         passed.Add(message); Debug.Log("RAILS LIVE PASS: " + message); stage++; entered = Now; Save("running");

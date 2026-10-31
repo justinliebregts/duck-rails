@@ -4,6 +4,8 @@ Handoff date: October 28, 2026.
 
 ## Status and intent
 
+October 30 shared-rig decision: use one DuckPlayer for headset/Quest Link and keyboard/mouse simulation, including switching input sources during Editor Play. Q/E reach left/right hands and right mouse grips both; simulated input must exercise the same grabbing, fingertip buttons, bag and physical train controls. This supersedes DesktopPlayer as the gameplay test target and its separate toggle/click interaction defaults. See [shared-rig.md](shared-rig.md) for controls and validation limits. Coal's interior pickup defect remains separate.
+
 October 30 Voice Patrol decision: retain the integration but disable moderation by default. The GameManager Inspector's **Enable Voice Patrol** is a per-client startup setting; enable it before launch/Play Mode and restart to apply changes. Photon voice chat remains independent. The shared GameManager prefab defaults to off; scenes without a GameManager do not start moderation. Existing stored bans are retained but are not loaded/applied while the integration is off.
 
 October 30 testing-tools decision: add development-only scenario shortcuts, a unified Unity Test Center, persistent diagnostic reports with backend upload, automatic invariant detection, saved reproduction presets and a left-forearm panel toggled by the existing left menu input. DuckPlayer fingertip buttons include Report Bug. Detected reports produce a headset notification and remain open for investigation/resolution. See [testing-tools.md](testing-tools.md) for implementation, deployment and validation limits.
@@ -56,11 +58,11 @@ Authentication source inspection (October 28, 2026): the Unity copy is in `X:\Wo
 ### Confirmed
 - Reuse moving-platform technology for a real moving train.
 - Large physical STOP/GO lever: accelerate or stop. Exact acceleration curve is tuning.
-- VR driving is hold-to-run: grip the OFF lever, push the hand forward until it snaps to GO, and keep gripping. Pulling back while gripping snaps to OFF; pushing forward again resumes GO. Releasing also springs it back to OFF and brakes the train. Only one player/hand controls it at a time. DesktopPlayer retains its toggle controls for testing.
-- Train horn uses a physical hold button: loop the horn while a hand presses it; stop on release. Desktop holds left-click on the button.
+- Driving is hold-to-run: grip the OFF lever, push the hand forward until it snaps to GO, and keep gripping. Pulling back while gripping snaps to OFF; pushing forward again resumes GO. Releasing also springs it back to OFF and brakes the train. Only one player/hand controls it at a time. October 31 shortcut: holding T engages GO and releasing T returns to STOP in either Keyboard or VR mode on the editor/desktop client, using the same shared ownership. Physical hand control remains available.
+- Train horn uses a physical hold button: loop the horn while a hand presses it; stop on release. Simulated hands use the same fingertip contact.
 - Coal fuels the train; furnace and readable fuel feedback are needed.
 - Fuel decreases slowly as the train moves and remains shared room state across late joining, rejoining, and master changes. Prototype tuning: 0.025 fuel per metre (1 fuel per 10 seconds at cruise); no idle consumption. This rate is provisional.
-- Permanent radio communications station aboard the train, communicating both ways with handheld walkie-talkies. Transmit through the station only while a hand holds its physical TALK button; release stops transmission. Desktop holds left-click on the button.
+- Permanent radio communications station aboard the train, communicating both ways with handheld walkie-talkies. Transmit through the station only while a hand holds its physical TALK button; release stops transmission. Simulated hands use the same fingertip contact.
 - Physical equipment storage, not backpack-style slots: an item stays where placed until picked up.
 - Approximately four full-size backpack hooks. Bags remain full size and usable; no inventory nesting.
 - Loose cargo must work independently of holders.
@@ -187,7 +189,7 @@ Confirmed: authenticated account identity is used across reconnects. Reserve dis
 
 Prototype defaults: late arrivals use the same shared test supplies, without a personal loadout; new joins close during ending/return and reopen in private staging. Final gameplay loadouts and escape-credit eligibility remain open.
 
-Current validation target: DesktopPlayer, including multiple authenticated desktop clients. Justin reports backend and Photon authentication setup completed. Headset validation is deferred, not satisfied by desktop checks.
+Current validation target: the shared DuckPlayer with simulated input, including multiple authenticated clients, followed by Quest Link/headset validation. Justin reports backend and Photon authentication setup completed. Simulated-input checks do not satisfy headset acceptance.
 
 ## Bridge finale, dawn ending, results, and progression
 

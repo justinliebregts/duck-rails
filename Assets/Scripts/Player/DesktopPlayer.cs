@@ -3,7 +3,8 @@ using Photon.Pun;
 using UnityEngine;
 
 /// <summary>
-/// Keyboard-and-mouse stand-in for the VR rig. No headset, camera rig, or Meta scripts.
+/// Retired stand-in retained for legacy non-Rails fixtures only. Gameplay launches
+/// DuckPlayer with SimulatedRigInput; never instantiate this for new gameplay/tests.
 /// Head and hand transforms feed the same body driver Photon already streams.
 /// The right hand is a real PlayerHand: hold the left mouse button to grip. The click reaches the hand to whatever
 /// is under the crosshair, then it drifts back to rest, bringing anything it grabbed.

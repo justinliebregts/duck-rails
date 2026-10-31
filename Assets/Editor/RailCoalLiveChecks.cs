@@ -60,7 +60,7 @@ public static class RailCoalLiveChecks
     }
     static void Log(string text) { File.AppendAllText(LogPath, DateTime.UtcNow.ToString("O") + " " + text + "\n"); Debug.Log("COAL LIVE: " + text); }
     static void Require(bool ok, string text) { if (!ok) throw new Exception(text); }
-    static void Teleport(Vector3 point) => GR.Player.instance.GetComponent<DesktopPlayer>().Teleport(point, Quaternion.identity, true);
+    static void Teleport(Vector3 point) => NewPlayer.instance.Warp(point, Quaternion.identity);
     static void Tick()
     {
         if (!EditorApplication.isPlaying || done || EditorApplication.timeSinceStartup < nextTick || !File.Exists(ArmPath)) return;

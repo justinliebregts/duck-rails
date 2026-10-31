@@ -79,6 +79,12 @@ public class TeleportTrigger : MonoBehaviour
 
         _readyAt = Time.time + 0.5f;
 
+        if (NewPlayer.instance != null)
+        {
+            NewPlayer.instance.Warp(destination.position, destination.rotation);
+            return;
+        }
+
         if (GameManager.instance != null && GameManager.instance.usingDesktopPlayer)
         {
             DesktopPlayer desktop = FindAnyObjectByType<DesktopPlayer>();

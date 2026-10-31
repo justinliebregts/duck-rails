@@ -59,7 +59,7 @@ public static class RailWeek3LiveChecks
     }
     static bool AllAck => PhotonNetwork.PlayerList.Length == 3 && PhotonNetwork.PlayerList.All(p => p.CustomProperties[AckKey] is int n && n == stage);
     static void Stage(int value) => PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { [StageKey] = value });
-    static void Teleport(Vector3 p) => GR.Player.instance.GetComponent<DesktopPlayer>().Teleport(p, Quaternion.identity, true);
+    static void Teleport(Vector3 p) => NewPlayer.instance.Warp(p, Quaternion.identity);
     static void Board() => Teleport(RailTrain.Instance.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 3 - 1) * 1.2f, .35f, -2)));
     static void Tick()
     {
@@ -202,7 +202,7 @@ public static class RailWeek3LiveChecks
             {
                 // All crew look away. Empty the authored supplies and hit every
                 // initially equipped carrier so recovery, not untouched loot, is required.
-                GR.Player.instance.GetComponent<DesktopPlayer>().Teleport(train.transform.position + Vector3.back * 2 + Vector3.up * .35f, Quaternion.Euler(0, 180, 0), true);
+                NewPlayer.instance.Warp(train.transform.position + Vector3.back * 2 + Vector3.up * .35f, Quaternion.Euler(0, 180, 0));
                 if (PhotonNetwork.IsMasterClient && !action)
                 {
                     if (!session.Commit(new Hashtable { [RailSessionRules.Fuel] = 0f, [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 0f, 0f, 0f } })) return;

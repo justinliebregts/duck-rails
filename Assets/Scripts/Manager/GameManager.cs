@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour
     {
         // Login can load the gameplay scene after runtime initialization has already run.
         VoicePatrolManager.Boot();
-        if (usingDesktopPlayer) yield break;
-        // Wait until the HMD is actually presenting so the frequency is real
-        while (OVRManager.instance == null || !OVRManager.isHmdPresent)
+        // Keyboard mode may switch to Quest Link later in this same Play session.
+        // Wait until the HMD is actually presenting so the frequency is real.
+        while (DesktopPlay.UseDesktop || OVRManager.instance == null || !OVRManager.isHmdPresent)
             yield return null;
 
         float hz = OVRPlugin.systemDisplayFrequency;   // or OVRManager.display.frequency, depending on SDK version
@@ -80,11 +80,11 @@ public class GameManager : MonoBehaviour
 
    public void RespawnPlayer() {
         if (!TryGetPlayerSpawnPose(out Vector3 position, out Quaternion rotation)) return;
-        if (usingDesktopPlayer) {
+        if (NewPlayer.instance != null) {
+            NewPlayer.instance.Warp(position, rotation);
+        } else if (usingDesktopPlayer) {
             DesktopPlayer d = GR.Player.instance.GetComponent<DesktopPlayer>();
             d.Teleport(position, rotation, resetLook: true);
-        } else {
-            NewPlayer.instance.Warp(position, rotation);
         }
         DuckzLog.Log("Respawned");
         GR.Player.instance.IsDead = false;

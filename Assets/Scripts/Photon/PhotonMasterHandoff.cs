@@ -11,7 +11,7 @@ using UnityEngine.XR;
 public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     static PhotonMasterHandoff instance;
-    public static bool LocalAvailable => instance == null || ((instance.focused || DesktopPlay.UseDesktop) && instance.xrFocused && !instance.paused);
+    public static bool LocalAvailable => instance == null || ((instance.focused || DesktopPlay.UseDesktop) && (instance.xrFocused || DesktopPlay.UseDesktop) && !instance.paused);
     const byte HeartbeatCode = 105;
     const double HeartbeatInterval = 1;
     const int TimeoutMilliseconds = 5000;
@@ -33,7 +33,7 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
     double nextHeartbeat, retryAt, observeUntil, nextHeldCheck;
     Room room;
 
-    bool Ready => (focused || DesktopPlay.UseDesktop) && xrFocused && !paused && PhotonNetwork.IsMessageQueueRunning
+    bool Ready => (focused || DesktopPlay.UseDesktop) && (xrFocused || DesktopPlay.UseDesktop) && !paused && PhotonNetwork.IsMessageQueueRunning
         && GameScenes.IsLoaded(PhotonSession.RequiredScene) && PhotonPlayer.Local != null;
 
     void Awake() { instance = this; focused = Application.isFocused; }
@@ -67,7 +67,9 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
     {
         if (xrFocused == value) return;
         xrFocused = value;
-        AvailabilityChanged(value);
+        // Link can lose headset focus while the shared rig is keyboard-controlled.
+        // Track it for the next mode switch without dropping simulated hands.
+        if (!DesktopPlay.UseDesktop) AvailabilityChanged(value);
     }
 
     public override void OnJoinedRoom() => ResetRoom();

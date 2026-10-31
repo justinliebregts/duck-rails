@@ -1,0 +1,28 @@
+PASS — real frames on one authenticated shared rig; headset and multi-client acceptance separate stage=11
+2026-10-30T21:51:31.1469409Z
+PASS One DuckPlayer, two authored VR hands, no DesktopPlayer or desktop interaction mode
+PASS Simulated room-scale movement passes through NewPlayer
+PASS Releasing movement stops horizontal input
+Setup root=(16.14, -1.08, 62.00) left=(16.06, 0.40, 62.57) right=(16.23, 0.40, 62.57) candidates=-1661686/-1661818
+Grab frame=2119 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:True, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2120 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2121 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2122 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2123 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2124 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2125 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2126 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2127 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2128 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2129 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2130 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2131 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2132 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+Grab frame=2133 root=(16.14, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-1661686/-1661818 palms=(16.06, 0.40, 62.57)/(16.23, 0.40, 62.57) coal=(16.06, 0.55, 62.57)/(16.23, 0.55, 62.57)
+PASS Both hands acquire authored coal through ordinary proximity and shared grip; no ForceGrab
+PASS Grip release drops both items; trigger input reaches both hands
+PASS Physical button presses through DuckPlayer fingertip contact
+PASS Withdrawing simulated hand releases the physical button
+PASS Train lever acquired through PlayerHand grip path
+PASS Simulated forward hand travel engages networked hold-to-run GO
+PASS Grip release clears networked drive lease and brakes

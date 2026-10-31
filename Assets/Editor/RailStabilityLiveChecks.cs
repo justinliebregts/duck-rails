@@ -106,7 +106,7 @@ public static class RailStabilityLiveChecks
             return EditorApplication.timeSinceStartup - readySince > 3;
         }
     }
-    static void Teleport(Vector3 position) => GR.Player.instance.GetComponent<DesktopPlayer>().Teleport(position, Quaternion.identity, true);
+    static void Teleport(Vector3 position) => NewPlayer.instance.Warp(position, Quaternion.identity);
     static void Board() => Teleport(RailTrain.Instance.transform.TransformPoint(new Vector3(Host ? -1 : 1, .35f, -1)));
     static bool VoiceReady()
     {
