@@ -1,0 +1,35 @@
+[18:36:17] MRUK Shared: Global context has already been created!
+UnityEngine.Debug:LogFormat (UnityEngine.LogType,UnityEngine.LogOption,UnityEngine.Object,string,object[])
+Meta.XR.MRUtilityKit.MRUK:OnSharedLibLog (Meta.XR.MRUtilityKit.MRUKNativeFuncs/MrukLogLevel,char*,uint) (at ./Library/PackageCache/com.meta.xr.mrutilitykit@2979546e7179/Core/Scripts/MRUK.cs:677)
+Meta.XR.MRUtilityKit.MRUK:InitializeSharedLibrary () (at ./Library/PackageCache/com.meta.xr.mrutilitykit@2979546e7179/Core/Scripts/MRUK.Shared.cs:83)
+
+./Library/PackageCache/com.meta.xr.mrutilitykit@2979546e7179/Core/Scripts/MRUK.cs
+
+[18:36:17] Failed to create global context
+UnityEngine.Debug:LogError (object)
+Meta.XR.MRUtilityKit.MRUK:InitializeSharedLibrary () (at ./Library/PackageCache/com.meta.xr.mrutilitykit@2979546e7179/Core/Scripts/MRUK.Shared.cs:85)
+
+./Library/PackageCache/com.meta.xr.mrutilitykit@2979546e7179/Core/Scripts/MRUK.Shared.cs
+
+[18:37:33] NullReferenceException: Object reference not set to an instance of an object
+System.Collections.Generic.List`1+Enumerator[T]..ctor (System.Collections.Generic.List`1[T] list) <0x15f99d00ea0 + 0x00050> in <d49d4cb128564ee1b54a84338c98d353>:0
+OVRPlugin+UnityOpenXR.OnInstanceDestroy (System.UInt64 xrInstance) (at ./Library/PackageCache/com.meta.xr.sdk.core@c0efcbf2ba70/Scripts/OVRPlugin.cs:13217)
+Meta.XR.MetaXRFeature.OnInstanceDestroy (System.UInt64 xrInstance) (at ./Library/PackageCache/com.meta.xr.sdk.core@c0efcbf2ba70/Scripts/OpenXRFeatures/MetaXRFeature.cs:329)
+UnityEngine.XR.OpenXR.Features.OpenXRFeature.ReceiveNativeEvent (UnityEngine.XR.OpenXR.Features.OpenXRFeature+NativeEvent e, System.UInt64 payload) (at ./Library/PackageCache/com.unity.xr.openxr@ef0033a586bf/Runtime/Features/OpenXRFeature.cs:724)
+UnityEngine.XR.OpenXR.OpenXRLoaderBase.ReceiveNativeEvent (UnityEngine.XR.OpenXR.Features.OpenXRFeature+NativeEvent e, System.UInt64 payload) (at ./Library/PackageCache/com.unity.xr.openxr@ef0033a586bf/Runtime/OpenXRLoader.cs:707)
+(wrapper native-to-managed) UnityEngine.XR.OpenXR.OpenXRLoaderBase.ReceiveNativeEvent(UnityEngine.XR.OpenXR.Features.OpenXRFeature/NativeEvent,ulong)
+UnityEngine.XR.OpenXR.OpenXRLoaderBase.Deinitialize () (at ./Library/PackageCache/com.unity.xr.openxr@ef0033a586bf/Runtime/OpenXRLoader.cs:481)
+UnityEngine.XR.Management.XRManagerSettings.DeinitializeLoader () (at ./Library/PackageCache/com.unity.xr.management@df145a5bc89e/Runtime/XRManagerSettings.cs:449)
+UnityEngine.XR.Management.XRGeneralSettings.DeInitXRSDK () (at ./Library/PackageCache/com.unity.xr.management@df145a5bc89e/Runtime/XRGeneralSettings.cs:148)
+UnityEngine.XR.Management.XRGeneralSettings.Quit () (at ./Library/PackageCache/com.unity.xr.management@df145a5bc89e/Runtime/XRGeneralSettings.cs:85)
+UnityEngine.XR.Management.XRGeneralSettings.InternalPlayModeStateChanged (UnityEditor.PlayModeStateChange state) (at ./Library/PackageCache/com.unity.xr.management@df145a5bc89e/Runtime/XRGeneralSettings.cs:169)
+UnityEditor.XR.Management.XRGeneralSettingsPerBuildTarget.PlayModeStateChanged (UnityEditor.PlayModeStateChange state) (at ./Library/PackageCache/com.unity.xr.management@df145a5bc89e/Editor/XRGeneralSettingsPerBuildTarget.cs:120)
+UnityEditor.EditorApplication.Internal_PlayModeStateChanged (UnityEditor.PlayModeStateChange state) (at <8c0bcab5a3cf47549b7148fa2785366a>:0)
+UnityEditor.EditorApplication:ExitPlaymode()
+Unity.Multiplayer.PlayMode.Editor.<StopPlayer>d__18:MoveNext()
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder:Start(<StopPlayer>d__18&)
+Unity.Multiplayer.PlayMode.Editor.EditorMultiplayerPlaymodeRunNode:StopPlayer()
+Unity.Multiplayer.PlayMode.Editor.<MonitorAsync>d__17:MoveNext()
+UnityEngine.UnitySynchronizationContext:ExecuteTasks()
+
+./Library/PackageCache/com.meta.xr.sdk.core@c0efcbf2ba70/Scripts/OVRPlugin.cs

@@ -165,6 +165,7 @@ public static class RailWeek3Builder
     {
         var scene = EditorSceneManager.OpenScene(Source);
         var world = Object.FindFirstObjectByType<RailWorld>(); var run = world.GetComponent<RailExpedition>();
+        RailModularTrainBuilder.InstallPrefab(world, run);
         world.expedition.SetActive(true);
         var env = world.expedition.transform.Find("Week 2 Environment");
         var keep = new[] { "Far bank", "Ravine", "Exit rail", "Bridge control island", "Lower bridge button", "LOWER BRIDGE", "Bridge hinge", "Tunnel roof", "Tunnel wall", "DAWN", "BRIDGE AHEAD", "BRAKE NOW", "Warning post" };

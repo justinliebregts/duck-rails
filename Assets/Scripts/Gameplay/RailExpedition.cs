@@ -81,6 +81,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (!(e.CustomData is object[] d) || (d.Length != 3 && d.Length != 4) || d[0] as string != PhotonSession.RunId || !(d[1] is string action) || !(d[2] is int target)) return;
         if (requests.Count < 64) requests.Enqueue((e.Sender, action, target, d.Length == 4 ? d[3] as object[] : null));
     }
+    // Legacy test carriages retain their radius; modular fireboxes also require a point inside the cavity.
+    public bool AcceptsFurnaceSample(Vector3 offset)
+    {
+        if (furnace == null) return false;
+        var module = furnace.GetComponentInParent<RailFurnaceModule>();
+        return module == null || module.AcceptsSample(offset);
+    }
     public void RequestCoal(PhotonView view, PhotonGrabbable item)
     {
         if (!PhotonSession.IsRailsRoom || !PhotonSession.OnTrain || view == null || !view.IsMine ||
@@ -285,12 +292,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             if (coalSample.Length != 4 || !(coalSample[0] is string spawn) || !(coalSample[1] is int version) ||
                 !(coalSample[2] is Vector3 offset) || !(coalSample[3] is double sent) ||
                 !RailCoal.ValidInsertion(p.actor, view.ControllerActorNr, spawn, view.SpawnToken,
-                    version, item.HoldVersion, offset, now - sent)) return;
+                    version, item.HoldVersion, offset, now - sent) || !AcceptsFurnaceSample(offset)) return;
             // Local authority has newer direct evidence; remote held state can be
             // the pre-release snapshot and must not veto its controller's release.
             if (view.IsMine && (item.IsHeldByAnyPlayer || item.IsStashed)) return;
         }
-        else if (item.IsHeldByAnyPlayer || item.IsStashed || Vector3.Distance(coal.transform.position, furnace.position) > .9f) return;
+        else if (item.IsHeldByAnyPlayer || item.IsStashed || Vector3.Distance(coal.transform.position, furnace.position) > .9f ||
+            !AcceptsFurnaceSample(Quaternion.Inverse(furnace.rotation) * (coal.transform.position - furnace.position))) return;
         state.consumed.Add(target); state.consumedSpawns.Add(view.SpawnToken); p.coal++;
         if (view.InstantiationData is object[] data && data.Length >= 3 && data[data.Length - 1] is string marker) state.consumedMarkers.Add(marker);
         var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
@@ -309,7 +317,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     void Present()
     {
         double now = PhotonNetwork.Time;
-        if (gauge != null) gauge.text = "FUEL  " + PhotonSession.CurrentFuel.ToString("0.0") + "\nRelease coal into furnace (+2.5)";
+        if (gauge != null) gauge.text = "FUEL  " + PhotonSession.CurrentFuel.ToString("0.0") +
+            (gauge.GetComponentInParent<RailTrainAssembly>() == null ? "\nRelease coal into furnace (+2.5)" : "");
         float progress = State.BridgeProgress(now);
         bridgeDeck.localRotation = Quaternion.Euler(-80 * (1 - progress), 0, 0);
         bridgeLabel.text = progress >= 1 ? "BRIDGE READY\nBOARD THE TRAIN" : State.bridgeAt > 0 ? "DEFEND THE CREW\n" + Mathf.CeilToInt((float)(RailRunState.BridgeSeconds - (now - State.bridgeAt))) + " seconds" : "STOP BEFORE BRIDGE\nPress button to lower";

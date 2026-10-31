@@ -92,9 +92,7 @@ public static class RailWeek2Builder
             Box("Backpack hook support", train, new Vector3(1.85f, .3f, z), new Vector3(.6f, .12f, .6f), steel);
         }
         Box("Equipment shelf", train, new Vector3(-1.8f, .3f, -2.8f), new Vector3(1, .15f, 3), steel);
-        run.results = Text(train, "RESULTS", new Vector3(0, 2.3f, 4.3f), 1.5f); run.results.rectTransform.sizeDelta = new Vector2(5, 4.5f); run.results.gameObject.SetActive(false);
-        var backing = Box("Results backing", run.results.transform, new Vector3(0, 0, .06f), new Vector3(5.2f, 4.5f, .03f), ground);
-        UnityEngine.Object.DestroyImmediate(backing.GetComponent<Collider>());
+        run.results = Text(train, "RESULTS", new Vector3(0, 4, 9), 1.5f); run.results.rectTransform.sizeDelta = new Vector2(5, 4.5f); run.results.gameObject.SetActive(false);
         run.runningLabels = train.GetComponentsInChildren<TMP_Text>(true).Where(t => t != run.results).ToArray();
         run.explosionMaterial = red;
         var bat = Variant("Assets/Prefabs/Weapons/WeaponNailBat.prefab", "RailBat");

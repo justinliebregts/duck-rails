@@ -1,0 +1,25 @@
+PASS — real frames on one authenticated shared rig; headset and multi-client acceptance separate stage=11
+2026-10-31T01:33:46.5374444Z
+PASS One DuckPlayer, two authored VR hands, no DesktopPlayer or desktop interaction mode
+PASS Simulated room-scale movement passes through NewPlayer
+PASS Releasing movement stops horizontal input
+Setup root=(16.17, -1.08, 62.00) left=(16.09, 0.40, 62.57) right=(16.26, 0.40, 62.57) candidates=-63530/-63706
+Grab frame=5477 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:True, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5478 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5479 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5480 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5481 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5482 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5483 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5484 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5485 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5486 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5487 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+Grab frame=5488 root=(16.17, -1.08, 62.00) grip=down:True, wPressed:False, wReleased:False held=-63530/-63706 palms=(16.09, 0.40, 62.57)/(16.26, 0.40, 62.57) coal=(16.09, 0.55, 62.57)/(16.26, 0.55, 62.57)
+PASS Both hands acquire authored coal through ordinary proximity and shared grip; no ForceGrab
+PASS Grip release drops both items; trigger input reaches both hands
+PASS Physical button presses through DuckPlayer fingertip contact
+PASS Withdrawing simulated hand releases the physical button
+PASS Train lever acquired through PlayerHand grip path
+PASS Simulated forward hand travel engages networked hold-to-run GO
+PASS Grip release clears networked drive lease and brakes

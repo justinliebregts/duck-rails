@@ -208,6 +208,7 @@ Confirmed October 29, 2026: the current implementation scope is Week 2 plus the 
 7. Present individual accomplishments, finish status, and humorous superlatives on a world-space board. A failed run also shows this board before group return. Return everyone together using the established public/private compound return policy.
 
 ### Run outcome and results — confirmed
+- October 31 presentation update: show floating results text above and farther in front of the train, with no opaque backing panel. Retain the shared success/failure content and finish timing.
 - At least one escaped player makes the overall run a success; the entire crew does not need to escape. Zero escaped players means failure.
 - Lock individual escape status at the bridge-entry finish trigger, before catch-up teleports. Downed players already aboard escape normally; players left behind do not.
 - A bridge crash or full-crew-down failure before the finish records no escaped players. Failure ends the run; it does not introduce a dead state or revive players automatically during gameplay.

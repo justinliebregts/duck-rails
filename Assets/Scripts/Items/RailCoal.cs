@@ -12,7 +12,8 @@ public sealed class RailCoal : MonoBehaviour
     {
         var run = RailExpedition.Instance;
         if (run == null || view == null || !view.IsMine || item.IsHeldByAnyPlayer || item.IsStashed || PhotonSession.Phase != RailPhase.Running) return;
-        if (PhotonNetwork.Time < nextRequest || Vector3.Distance(transform.position, run.furnace.position) > .75f) return;
+        if (run.furnace == null || PhotonNetwork.Time < nextRequest || Vector3.Distance(transform.position, run.furnace.position) > .75f ||
+            !run.AcceptsFurnaceSample(Quaternion.Inverse(run.furnace.rotation) * (transform.position - run.furnace.position))) return;
         nextRequest = PhotonNetwork.Time + .5;
         run.RequestCoal(view, item);
     }

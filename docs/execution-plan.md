@@ -117,6 +117,7 @@ Implementation and three-client DesktopPlayer evidence are recorded in [week2-se
 - Duck Rails Unity and backend repositories may be changed as needed. Duckz and Classic remain read-only references.
 
 Additional finale/results work in this scope:
+- [ ] Review October 31 floating results placement in-game: backing removed from the train prefab, text centered at local Y=4 m / Z=9 m, and legacy authoring updated. File structure/reference checks passed; Unity and headset visual validation remain pending.
 - [x] Add advance bridge warning signs and require manual braking. Hitting the raised or incompletely lowered bridge explodes the train and fails the team; no protective automatic stop.
 - [x] Complete the Week 3 bridge-button, timed defense, synchronized lowering, finish snapshot, catch-up, and automatic dawn-ride tasks.
 - [x] Show the same world-space run-stat canvas after success and failure, with **SUCCESS** or **FAIL** at the top and **Escaped** or **Didn't make it** for every participant.
