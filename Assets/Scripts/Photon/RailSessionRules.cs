@@ -101,8 +101,29 @@ public static class RailSessionRules
         fuel = Math.Max(0f, available - travelled * FuelPerMetre);
         if (fuel <= 0f)
         {
-            distance = (float)command[1] + available / FuelPerMetre;
-            speed = 0f;
+            // Find the exact exhaustion point within the ramp or subsequent cruise.
+            // Then coast at a fixed rate so checkpointing an empty moving train
+            // preserves its remaining stopping distance and time.
+            double budget = available / FuelPerMetre;
+            double start = (float)command[2], target = (float)command[3];
+            double acceleration = (target - start) / 2d;
+            double rampDistance = start + target;
+            double exhaustedAt;
+            if (budget <= 0d) exhaustedAt = 0d;
+            else if (budget <= rampDistance)
+            {
+                double endSpeed = Math.Sqrt(Math.Max(0d, start * start + 2d * acceleration * budget));
+                exhaustedAt = 2d * budget / (start + endSpeed);
+            }
+            else exhaustedAt = 2d + (budget - rampDistance) / target;
+
+            double exhaustionSpeed = start + acceleration * Math.Min(2d, exhaustedAt);
+            const double coastDeceleration = 2d; // Cruise speed (4 m/s) stops in two seconds.
+            double coastTime = Math.Min(exhaustionSpeed / coastDeceleration,
+                Math.Max(0d, now - (double)command[0] - exhaustedAt));
+            distance = (float)((float)command[1] + budget + exhaustionSpeed * coastTime
+                - .5d * coastDeceleration * coastTime * coastTime);
+            speed = (float)Math.Max(0d, exhaustionSpeed - coastDeceleration * coastTime);
         }
     }
 

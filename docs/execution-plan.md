@@ -4,6 +4,9 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 
 ## Planning basis
 
+- [x] October 31 fuel-exhaustion coast implemented: deterministic deceleration from exhaustion speed, preserving empty moving checkpoints and refuelling continuity. Runtime/editor compilation, 13 fuel/coast checks and Unity Session Checks passed; Console error query empty. See [evidence](week1-session.md#fuel-exhaustion-coast--october-31).
+- [ ] Verify fuel-exhaustion coasting and loose cargo across real clients, late joining/master loss, and target headsets.
+
 - [x] October 31 editor/desktop throttle convenience: hold T for GO, release for STOP in Keyboard or VR mode, retaining shared lever ownership. Unity compilation, 28 shared-rig checks, 17 drive checks and a solo live Photon/lever hold-release check passed. See [evidence and limits](shared-rig.md#hold-t-throttle-shortcut--october-31). Actual headset and multi-client shortcut acceptance remain separate.
 
 October 30 shared-rig follow-up: replace the DesktopPlayer gameplay launch path with simulated poses/buttons on the existing DuckPlayer; preserve Quest Link and allow input switching during Play. The accepted controls and verification workflow are in [shared-rig.md](shared-rig.md). Older DesktopPlayer evidence below remains historical and does not establish acceptance of the shared rig. Headset and multi-client acceptance remain required.
