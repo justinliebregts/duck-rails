@@ -28,6 +28,14 @@ The retired DesktopPlayer asset/class remain for historical non-Rails fixtures; 
 
 ## Validation
 
+### Quest Link keypad and editor focus — October 31
+
+Justin reproduced keypad failure specifically when Unity lost desktop window focus: the same VR fingertip presses worked while Unity was focused. A live read-only capture confirmed right-hand contact with key 8, `IsPressed=true`, and code `88888` with the input gates open; subsequent unfocused samples showed `LocalAvailable=false` and `CanGrab=false`. Ignored raw evidence: `Temp/keypad-probe.txt`. This was an availability gate, not missing finger colliders.
+
+`PhotonMasterHandoff` now accepts headset focus independently of desktop window focus when an XR display is running in the Unity editor. Both hand availability and master readiness use that policy; a desktop focus change that leaves VR available no longer drops hands or initiates handoff. XR focus loss and pause still block availability, and player-build focus policy is unchanged. Keyboard mode retains its previous policy.
+
+Unity compiled the fix and all 18 VR button checks passed (eight focus-policy cases plus ten actual DuckPlayer fingertip checks). Post-fix worn-headset testing with Unity focused/unfocused and the Link dashboard open remains pending. The four existing local/backend diagnostic reports were inspected and left open because they do not establish this specific failure.
+
 ### Hold-T throttle shortcut — October 31
 
 - Unity compiled the change. All 28 shared-rig checks and 17 drive checks passed, including Keyboard and synthetic VR-mode hold/release, source-switch release/neutral gating, and focus-loss/reacquisition behavior.

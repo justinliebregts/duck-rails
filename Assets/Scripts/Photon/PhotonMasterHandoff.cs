@@ -11,7 +11,13 @@ using UnityEngine.XR;
 public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     static PhotonMasterHandoff instance;
-    public static bool LocalAvailable => instance == null || ((instance.focused || DesktopPlay.UseDesktop) && (instance.xrFocused || DesktopPlay.UseDesktop) && !instance.paused);
+    public static bool LocalAvailable => instance == null || instance.InputAvailable;
+    // Link's headset focus is independent of Unity's Game/Scene window focus.
+    // Keep the app-focus requirement unless an editor XR display is running.
+    bool InputAvailable => HasInputFocus(DesktopPlay.UseDesktop, focused, xrFocused, paused,
+        Application.isEditor && display != null && display.running);
+    static bool HasInputFocus(bool keyboard, bool appFocus, bool xrFocus, bool appPaused, bool editorXR)
+        => !appPaused && (keyboard || ((appFocus || editorXR) && xrFocus));
     const byte HeartbeatCode = 105;
     const double HeartbeatInterval = 1;
     const int TimeoutMilliseconds = 5000;
@@ -33,7 +39,7 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
     double nextHeartbeat, retryAt, observeUntil, nextHeldCheck;
     Room room;
 
-    bool Ready => (focused || DesktopPlay.UseDesktop) && (xrFocused || DesktopPlay.UseDesktop) && !paused && PhotonNetwork.IsMessageQueueRunning
+    bool Ready => InputAvailable && PhotonNetwork.IsMessageQueueRunning
         && GameScenes.IsLoaded(PhotonSession.RequiredScene) && PhotonPlayer.Local != null;
 
     void Awake() { instance = this; focused = Application.isFocused; }
@@ -103,8 +109,9 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
     void OnApplicationFocus(bool value)
     {
         if (focused == value) return;
+        bool wasAvailable = InputAvailable;
         focused = value;
-        AvailabilityChanged(value);
+        if (DesktopPlay.UseDesktop || wasAvailable != InputAvailable) AvailabilityChanged(value);
     }
 
     void AvailabilityChanged(bool resuming)

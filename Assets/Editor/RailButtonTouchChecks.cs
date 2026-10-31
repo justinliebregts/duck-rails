@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Game.Animation;
 using UnityEditor;
 using UnityEngine;
@@ -12,6 +13,17 @@ public static class RailButtonTouchChecks
         var key = new GameObject("Button contact fixture");
         try
         {
+            var focus = typeof(PhotonMasterHandoff).GetMethod("HasInputFocus", BindingFlags.Static | BindingFlags.NonPublic);
+            bool Available(bool keyboard, bool app, bool xr, bool paused, bool editorXR) =>
+                (bool)focus.Invoke(null, new object[] { keyboard, app, xr, paused, editorXR });
+            Check(Available(false, false, true, false, true), "Link interaction survives editor window focus loss");
+            Check(Available(false, true, true, false, true), "Focused Link interaction remains available");
+            Check(!Available(false, false, false, false, true), "Link dashboard focus loss blocks interaction");
+            Check(!Available(false, true, false, false, true), "Editor focus cannot override headset focus loss");
+            Check(!Available(false, false, true, true, true), "Paused Link blocks interaction");
+            Check(!Available(false, false, true, false, false), "No running editor XR display retains app focus requirement");
+            Check(Available(true, false, false, false, false), "Keyboard simulation retains existing focus policy");
+            Check(!Available(true, true, true, true, false), "Pause still blocks keyboard simulation");
             key.transform.position = new Vector3(1000, 1000, 1000);
             key.transform.rotation = Quaternion.Euler(90, 25, 0);
             var volume = key.AddComponent<BoxCollider>(); volume.size = new Vector3(.23f, .2f, .07f); volume.isTrigger = true;
@@ -31,7 +43,7 @@ public static class RailButtonTouchChecks
                 finger.enabled = true; finger.transform.position += Vector3.up;
                 Check(!hand.TouchesButton(volume), "Withdrawal releases contact");
             }
-            Debug.Log("10 VR button contact checks passed using DuckPlayer prefab hands.");
+            Debug.Log("18 VR button checks passed: Link focus policy and DuckPlayer prefab hands.");
         }
         finally { UnityEngine.Object.DestroyImmediate(rig); UnityEngine.Object.DestroyImmediate(key); }
     }
