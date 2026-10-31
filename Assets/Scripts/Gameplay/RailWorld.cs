@@ -34,10 +34,21 @@ public sealed class RailWorld : MonoBehaviour
     {
         if (Instance == null || Instance.boardingTrigger == null) return false;
         if (PhotonNetwork.LocalPlayer != null && actor == PhotonNetwork.LocalPlayer.ActorNumber)
-            return GR.Player.instance != null && Instance.boardingTrigger.bounds.Contains(GR.Player.instance.transform.position + Vector3.up);
+            return IsLocalOnPlatform();
         var player = PhotonPlayer.ForActor(actor);
         if (player == null || player.Chest == null) return false;
         return Instance.boardingTrigger.bounds.Contains(player.Chest.position);
+    }
+    public static bool IsLocalOnPlatform()
+    {
+        var player = GR.Player.instance;
+        if (Instance == null || Instance.boardingTrigger == null || player == null) return false;
+        var rig = player.GetComponent<NewPlayer>();
+        // The tracking origin can settle below the floor with simulated poses.
+        // Test the physical duck, not an assumed metre above that origin.
+        Vector3 position = rig != null && rig.bodyCollider != null
+            ? rig.bodyCollider.bounds.center : player.transform.position + Vector3.up;
+        return Instance.boardingTrigger.bounds.Contains(position);
     }
     void Update()
     {
@@ -98,7 +109,7 @@ public sealed class RailWorld : MonoBehaviour
         session.MarkWorldReady();
         if (!aboard)
         {
-            bool onPlatform = boardingTrigger.bounds.Contains(local.transform.position + Vector3.up);
+            bool onPlatform = IsLocalOnPlatform();
             session.SetBoarding(onPlatform);
             int[] roster = PhotonSession.Get(RailSessionRules.Roster, Array.Empty<int>());
             double deadline = PhotonSession.Get(RailSessionRules.Deadline, 0d);

@@ -28,6 +28,16 @@ The retired DesktopPlayer asset/class remain for historical non-Rails fixtures; 
 
 ## Validation
 
+### Keyboard public-platform countdown — October 31
+
+Reproduced the brief 20-second display followed by cancellation. Keyboard-start poses put the tracking origin below the floor once the physical duck settles: root Y=-0.88, body center Y=0.45 on the platform. The old root-plus-one-metre probe fell below the boarding trigger's Y=0.15 lower boundary even though the body remained aboard. VR's different tracking-origin offset masked that assumption. Evidence: `validation/keyboard-boarding/before.txt`.
+
+`RailWorld.IsLocalOnPlatform` now tests the actual NewPlayer body collider center. Both the client's boarding property and the master's local-actor validation use this same check; the remote chest check and 20-second/empty-cancel rules remain unchanged. The legacy DesktopPlayer fixture retains its old root-based fallback. This fixes occupancy without changing the shared rig or locomotion.
+
+Unity compilation and session regression checks passed. The final authenticated keyboard-only run passed entry, empty cancellation, re-entry, an uninterrupted 20-second countdown and transfer to a ready expedition: `validation/keyboard-boarding/after.txt`. The first new fixture needed a normal jump over the raised curb, then its transfer assertion needed to recognize the brief between-room state and changing Photon server clock; neither required further runtime changes. Existing diagnostic reports were left open because their evidence did not identify this failure. Worn VR and multi-client validation remain separate.
+
+**Duck Rails > Run Live Keyboard Boarding Check** requires a ready public compound with only the local player in Keyboard mode. It positions the player near the platform, uses normal movement/jump input over its 20 cm curb, verifies entry, exit/cancellation and re-entry, then waits for the full timer and expedition readiness. Results are written to `Temp/rails-keyboard-boarding.txt`. This is solo editor evidence, not a two-headset acceptance test.
+
 ### Quest Link keypad and editor focus — October 31
 
 Justin reproduced keypad failure specifically when Unity lost desktop window focus: the same VR fingertip presses worked while Unity was focused. A live read-only capture confirmed right-hand contact with key 8, `IsPressed=true`, and code `88888` with the input gates open; subsequent unfocused samples showed `LocalAvailable=false` and `CanGrab=false`. Ignored raw evidence: `Temp/keypad-probe.txt`. This was an availability gate, not missing finger colliders.
