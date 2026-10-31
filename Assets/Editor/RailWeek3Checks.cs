@@ -22,6 +22,11 @@ public static class RailWeek3Checks
             Check(b.transform.localScale == Vector3.one && b.entry.localPosition == Vector3.zero && b.exit.localPosition == new Vector3(0, 0, 160), b.id + " consistent entry/exit/pivot");
             Check(b.track.Length > 2 && b.track[0] == Vector3.zero && Vector3.Distance(b.track.Last(), Vector3.forward * 160) < .001f && b.TrackLength >= 160, b.id + " complete track");
             Check(b.variations.Length == 3 && b.variations.All(v => v.coal.Length == 6 && v.enemies.Length == 2), b.id + " three authored supply/enemy variations");
+            foreach (var variation in b.variations)
+            {
+                Check(variation.coal.All(p => p.GetComponent<CoalSpawner>() != null && PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(p.gameObject) == RailCoalAuthoring.PrefabPath), b.id + " reusable coal marker instances");
+                Check(variation.coal.All(a => variation.coal.All(bPoint => a == bPoint || Vector3.Distance(a.position, bPoint.position) >= 8f)), b.id + " coal separated by at least eight metres");
+            }
             var g = CrawlGraph.Load(b.graph);
             Check(g != null && g.NodeCount > 100 && g.CellSize == 1, b.id + " prebaked graph");
             foreach (var point in b.variations.SelectMany(v => v.enemies.Concat(v.coal)))

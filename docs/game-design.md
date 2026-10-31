@@ -117,6 +117,8 @@ Deferred: enemy boarding, moving-train pathfinding, pounce-and-retreat attacks, 
 
 ## Authored level blocks and crawlgraphs
 
+October 31 authoring update: coal placements use reusable, editor-visible CoalSpawner markers in every scavenging block. Six pieces per selected variation remain unchanged; closely paired placements were spread across the encounter (12 m minimum in the current authored catalogue). See `week3-session.md` for editing and validation.
+
 ### Confirmed
 - Pre-generate/author reusable level pieces and bake their custom crawlgraphs ahead of time.
 - Runs select from prebuilt blocks at runtime. No runtime geometry generation or crawlgraph rebaking.

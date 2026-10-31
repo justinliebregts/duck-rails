@@ -71,9 +71,9 @@ public static class RailWeek3Builder
         for (int v = 0; v < 3; v++)
         {
             var parent = Point(root.transform, "Spawn variation " + v, Vector3.zero);
-            var order = candidates.OrderBy(p => StableOrder(p, v)).ToArray();
+            var order = RailCoalAuthoring.Spread(candidates, v);
             block.variations[v] = new RailSpawnSet {
-                coal = Enumerable.Range(0, 6).Select(c => Point(parent, "Coal " + c, order[c % 3] + Vector3.right * (c / 3 * .6f))).ToArray(),
+                coal = Enumerable.Range(0, 6).Select(c => RailCoalAuthoring.Create(parent, "CoalSpawner " + (c + 1), order[c])).ToArray(),
                 enemies = new[] { Point(parent, "Enemy A", new Vector3(12, .2f, 50 + v * 4)), Point(parent, "Enemy B", new Vector3(12, .2f, 110 - v * 4)) }
             };
         }
@@ -82,7 +82,6 @@ public static class RailWeek3Builder
         EditorSceneManager.MarkSceneDirty(scene); // disposable authoring scene, no scene asset required
         return prefab;
     }
-    static int StableOrder(Vector3 p, int v) => unchecked(((int)p.x * 73856093 ^ (int)p.z * 19349663 ^ (v + 1) * 83492791) & int.MaxValue);
     static void Layout(Transform root, int i)
     {
         void BoxAt(string name, float x, float y, float z, float sx, float sy, float sz, Material material = null) => Box(root, name, new Vector3(x, y, z), new Vector3(sx, sy, sz), material ?? steel);

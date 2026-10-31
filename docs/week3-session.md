@@ -10,6 +10,16 @@ Open `Assets/Scenes/Login.unity` and enter Play normally. Private staging and pu
 
 ## Authoring contract
 
+### Coal markers — October 31, 2026
+
+All twelve scavenging blocks use nested `Assets/DuckRails/Authoring/CoalSpawner.prefab` instances. Open a block in Prefab Mode, expand `Spawn variation 0`, `1`, or `2`, and move its `CoalSpawner 1`–`6` instances. Enable Scene-view **Gizmos** to see gold wire markers, a single prefab icon and centered labels such as `COAL V1 / S5` (one-based variation and spawn indices). Only one variation supplies coal during a run; markers from different variations can share locations. Use the Hierarchy's Scene visibility eye to hide other variations while editing, rather than disabling their GameObjects. The marker is authoring-only: the existing RailBlock coal arrays still drive networked spawning. Adding a new marker also requires assigning it to the appropriate RailBlock variation's coal array.
+
+The previous 0.6-metre pairs were replaced with six spread-out, collision-cleared candidates per variation. The authoring algorithm requires at least eight metres separation; the saved catalogue's measured minimum is twelve metres. Coal count and fuel values are unchanged. The bridge finale has no coal markers. Geometry and baked graphs were not changed.
+
+The Week 3 builder now creates these same nested markers and spread-out positions. `Duck Rails > Authoring > Spread Block Coal Markers` reapplies the placement defaults to existing block assets without rebuilding scenes or navigation; it overwrites manual coal placement edits. The full expedition builder still overwrites generated block edits as described below.
+
+Validation: Unity compiled; all 504 Week 3 checks passed, including 216 marker references/navigation coverage and per-variation spacing checks. Console contained no errors on inspection. Evidence: `docs/validation/coal-markers/week3-checks.txt`. No multiplayer/headset playtest was run for this authoring change. Local diagnostics were inspected; backend inbox DNS lookup failed, so its status was unavailable and no reports were resolved.
+
 - Root/entry `(0,0,0)`, forward +Z, unit scale; exit `(0,0,160)`. Ground surface Y=0; train reference Y=1. Runtime placements are translations only, starting Z=70 in 160-metre increments.
 - Encounter bounds are X=9–37, Z=45–115 locally. The remaining lead-in/out provides 90 metres between adjacent encounters, about 22.5 seconds at 4 m/s. Preserve that spacing when changing layouts.
 - Every selected block remains loaded with rendering, collision, supplies and AI. No block streaming or renderer culling is enabled yet.

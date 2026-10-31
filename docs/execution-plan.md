@@ -148,6 +148,8 @@ Record device, client count, network conditions, and reproducible failures. Test
 
 ## Week 3 — full expedition and repeatable content workflow
 
+- October 31 authoring improvement: all twelve scavenging blocks now use visible nested CoalSpawner prefabs and spread-out coal positions (12 m measured minimum within each variation). Unity compilation and 504 Week 3 checks passed; this is editor evidence, not new multiplayer/headset acceptance. See `week3-session.md`.
+
 Deliverable: a complete start-to-finish run assembled from authored blocks.
 
 Confirmed scope: twelve gray-box locations, five distinct randomized stops plus the bridge finale, three authored spawn variations per location, roughly twenty seconds or more between encounter areas, and a ten-minute typical-run target. Separate Expedition scene; keep all selected blocks loaded, including collision/gameplay. Internal track bends return to the common connection. Lighting is deferred. See [week3-session.md](week3-session.md) for implementation and evidence; desktop checks do not close headset or unfamiliar-player acceptance.
