@@ -6,7 +6,9 @@ Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, w
 
 ## In-game panel
 
-In the Editor or a **Development Build**, press the left controller's existing game-menu input (`ButtonName.Start`, mapped to `OVRInput.RawButton.Start`) to show/hide the panel. On desktop use **P**. In VR it is parented to the left forearm and faces the head for readability. DuckPlayer's actual fingertip colliders press the buttons; no controller ray or grip is required. The diagnostic controls remain usable while downed or while world loading blocks ordinary gameplay input.
+In the Editor or a **Development Build**, press the left controller's existing game-menu input (`ButtonName.Start`, mapped to `OVRInput.RawButton.Start`) to show/hide the panel. In VR it follows the left forearm, with its center 32 cm above the wrist in the viewing direction's up axis and 10 cm toward the eyes, and faces the head. This moves the lower edge clear of the wrist instead of placing the panel across the arm. DuckPlayer's actual fingertip colliders press the buttons; no controller ray or grip is required. Headset comfort and reach still need validation.
+
+In **Keyboard mode**, **P** opens a centered, scrollable screen GUI with mouse buttons for reporting, status, network simulation and test shortcuts. Mouse look, movement, grabbing and throttle input are suppressed while it is open. **P**, **Esc** or **Close** hides it; click back into the game to resume mouse look. F2 switching chooses the corresponding screen or wrist interface. The GUI detects the real DuckPlayer's `SimulatedRigInput`, as well as the legacy desktop fixture. Diagnostic controls remain usable while downed or while world loading blocks ordinary gameplay input; the multiplayer simulation is not paused.
 
 - **Report Bug** saves a report ID and up to 60 one-second state samples, recent diagnostic events, current route, build identifier, ownership, bag contents, connection state and reproduction preset. Manual presses have a five-second cooldown.
 - **Game Menu** opens the existing room/settings menu. The arm panel does not pause the multiplayer simulation.
@@ -78,6 +80,8 @@ From the Unity project:
 ```
 
 ## Validation and remaining work
+
+- October 31 panel revision: all eleven current quick-regression suites passed, including 29 diagnostic checks (three cover wrist clearance and rotated placement). A live signed-in private sandbox verified the keyboard GUI with actual mouse clicks: Show test tools opened the second page, Fuel 20 changed shared fuel to 20, cursor stayed unlocked, and P closed the GUI and released its input block. Injected grip/trigger/throttle/movement input was suppressed while open. Opaque background was visually inspected in the Game view. The revised VR position still needs a headset comfort/reach check; existing open reports were not resolved based on this unrelated test.
 
 - Unity compilation and all ten quick-regression suites passed: 573 checks (the existing 547 plus 26 diagnostic checks covering storage, redaction, debounce, upload ownership/privacy and actual DuckPlayer fingertip-to-button action).
 - A live manual sandbox verified exactly-once report-button capture with 60 history samples, fuel 20, a loaded shared bag (42 to 43 cargo), bridge distance equal to the expected approach, boarding, simulation apply/restore commands, and repeat-route selection/clearing. Panel rendering was inspected and typography corrected. This remains desktop evidence.

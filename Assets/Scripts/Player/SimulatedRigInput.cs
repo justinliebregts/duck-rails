@@ -195,6 +195,11 @@ public sealed class SimulatedRigInput : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F2) && !DuckCompanionDebug.IsTyping) SetSimulating(!IsSimulating);
         if (Input.GetKeyDown(KeyCode.F1)) showHelp = !showHelp;
+        if (IsSimulating && RailDiagnosticPanel.BlocksDesktopInput)
+        {
+            Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
+            ReleaseInput(); ApplyFrame(default, Time.deltaTime); return;
+        }
         if (!IsSimulating)
         {
             // The keyboard throttle is also available while Quest Link supplies
@@ -247,6 +252,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
     public void ApplyFrame(Frame frame, float dt)
     {
         if (!IsSimulating || !started) return;
+        if (RailDiagnosticPanel.BlocksDesktopInput) frame = default;
         dt = Mathf.Clamp(dt, 0, .05f);
         bool blocked = RailWorld.InputBlocked;
         // Hands/head remain positionable for the diagnostic panel while loading.

@@ -8,7 +8,15 @@ using UnityEngine;
 public sealed class RailDiagnosticPanel : MonoBehaviour
 {
     public static RailDiagnosticPanel Instance { get; private set; }
-    public bool IsOpen => panel != null && panel.activeSelf;
+    public bool IsOpen => desktopOpen || (panel != null && panel.activeSelf);
+    public static bool KeyboardMode => (SimulatedRigInput.Instance != null && SimulatedRigInput.Instance.IsSimulating) ||
+        (GR.Player.instance != null && GR.Player.instance.GetComponent<DesktopPlayer>() != null);
+    public static bool BlocksDesktopInput => Instance != null && (Instance.desktopOpen || Time.frameCount <= Instance.closedFrame);
+    bool desktopOpen;
+    int closedFrame = -1;
+    Vector2 desktopScroll;
+    string statusText = "";
+    string desktopToast = "";
     GameObject panel;
     TMP_Text readout;
     Transform anchor;
@@ -22,19 +30,24 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
     float toastUntil;
     public static bool OwnsMenuInput => Instance != null && RailDiagnostics.Development && GR.Player.instance != null;
     void Awake() { Instance = this; }
+    void OnDisable() { Close(); }
     void OnDestroy() { if (panel != null) Destroy(panel); if (toast != null) Destroy(toast.gameObject); if (panelMaterial != null) Destroy(panelMaterial); if (buttonMaterial != null) Destroy(buttonMaterial); if (Instance == this) Instance = null; RailTestTools.RestoreNetwork(); }
     void Update()
     {
         if (!RailDiagnostics.Development) return;
         var player = GR.Player.instance;
-        if (player == null) { if (panel != null) panel.SetActive(false); return; }
-        if (player.ReturnButtonPress_Left(ButtonName.Start).wasPressed || Input.GetKeyDown(KeyCode.P)) Toggle();
+        if (player == null) { Close(); return; }
+        if (IsOpen && desktopOpen != KeyboardMode) { Close(); Toggle(); }
+        if (player.ReturnButtonPress_Left(ButtonName.Start).wasPressed || (Input.GetKeyDown(KeyCode.P) && !DuckCompanionDebug.IsTyping)) Toggle();
+        if (desktopOpen && Input.GetKeyDown(KeyCode.Escape)) Close();
+        if (desktopOpen) { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
         if (!RailTestTools.Allowed) RailTestTools.RestoreNetwork();
-        if (toast != null) toast.gameObject.SetActive(Time.unscaledTime < toastUntil);
+        if (toast != null) toast.gameObject.SetActive(!KeyboardMode && Time.unscaledTime < toastUntil);
     }
     public void Notify(string text)
     {
-        if (Camera.main == null) return;
+        desktopToast = text; toastUntil = Time.unscaledTime + 6;
+        if (KeyboardMode || Camera.main == null) return;
         if (toast == null)
         {
             var go = new GameObject("Diagnostic notification"); go.transform.SetParent(Camera.main.transform, false);
@@ -47,34 +60,40 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
     public void Toggle()
     {
         if (!RailDiagnostics.Development) return;
+        if (IsOpen) { Close(); return; }
+        if (KeyboardMode) {
+            desktopOpen = true; refresh = 0;
+            Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
+            return;
+        }
         if (panel == null) Build();
-        panel.SetActive(!panel.activeSelf);
-        if (IsOpen) PlaceDesktop();
+        panel.SetActive(true); refresh = 0;
     }
     void LateUpdate()
     {
         if (!IsOpen || GR.Player.instance == null) return;
         var driver = GR.Player.instance.GetComponent<LocalBodyDriver>();
         var hand = driver != null ? driver.Body?.LeftHand : null;
-        var desktop = GR.Player.instance.GetComponent<DesktopPlayer>();
-        Transform target = desktop != null ? null : hand != null ? hand.parent : null;
+        bool desktop = desktopOpen;
+        Transform target = desktop ? null : hand != null ? hand.parent : null;
         if (target != null && anchor != target) { anchor = target; panel.transform.SetParent(anchor, false); }
-        if (desktop == null && hand != null && anchor != null)
+        if (!desktop && hand != null && anchor != null)
         {
-            panel.transform.position = Vector3.Lerp(anchor.position, hand.position, .7f) + hand.up * .13f;
+            if (Camera.main != null) panel.transform.position = WristPanelPosition(hand.position, Camera.main.transform.position, Camera.main.transform.up);
             panel.transform.localScale = new Vector3(1 / anchor.lossyScale.x, 1 / anchor.lossyScale.y, 1 / anchor.lossyScale.z);
             if (Camera.main != null) panel.transform.rotation = Quaternion.LookRotation(panel.transform.position - Camera.main.transform.position, Camera.main.transform.up);
         }
         if (Time.unscaledTime < refresh) return;
         refresh = Time.unscaledTime + .25f;
-        readout.text = "DUCK RAILS · TEST PANEL\n" +
+        statusText = "DUCK RAILS · TEST PANEL\n" +
             "Room " + (PhotonNetwork.CurrentRoom?.Name ?? "—") + " · " + PhotonSession.Phase + "\n" +
             "Frame " + (RailDiagnostics.Instance?.FrameMs ?? 0).ToString("F1") + " ms · Ping " + PhotonNetwork.GetPing() + " ms\n" +
             "Master " + (PhotonNetwork.MasterClient?.ActorNumber ?? 0) + " · Fuel " + PhotonSession.CurrentFuel.ToString("F1") + "\n" +
             Held("L", GR.Player.instance.leftPlayerHand) + "  " + Held("R", GR.Player.instance.rightPlayerHand) + "\n" +
             (RailDiagnostics.Instance?.Notice ?? "") + "\n" + (string.IsNullOrEmpty(notice) ?
                 (RailTestTools.Allowed && RailTestTools.Status == "Test tools require a private room" ? "Private test room ready" : RailTestTools.Status) : notice);
-        if (markers && driver != null)
+        if (!desktop && readout != null) readout.text = statusText;
+        if (!desktop && markers && driver != null)
         {
             Mark(ref leftMarker, driver.Body?.LeftHand); Mark(ref rightMarker, driver.Body?.RightHand);
         }
@@ -123,20 +142,63 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         else
         {
             Button("FINGER MARKERS", -.095f, -.065f, () => { markers = !markers; if (leftMarker != null) leftMarker.SetActive(markers); if (rightMarker != null) rightMarker.SetActive(markers); notice = markers ? "Finger markers on" : "Finger markers off"; });
-            Button("GAME MENU", .095f, -.065f, () => { var menu = FindFirstObjectByType<PauseMenu>(); menu?.OpenFromDiagnostics(); panel.SetActive(false); });
+            Button("GAME MENU", .095f, -.065f, () => { var menu = FindFirstObjectByType<PauseMenu>(); menu?.OpenFromDiagnostics(); Close(); });
             Button("SIMULATE LAG", -.095f, -.125f, () => RailTestTools.ApplyNetwork(true)); Button("NORMAL NETWORK", .095f, -.125f, RailTestTools.RestoreNetwork);
-            Button("SAVE PRESET", -.095f, -.185f, RailTestTools.SavePreset); Button("CLOSE", .095f, -.185f, () => panel.SetActive(false));
+            Button("SAVE PRESET", -.095f, -.185f, RailTestTools.SavePreset); Button("CLOSE", .095f, -.185f, Close);
         }
     }
-    void Rebuild() { anchor = null; leftMarker = rightMarker = null; Build(); panel.SetActive(true); PlaceDesktop(); }
-    void PlaceDesktop()
+    void Rebuild() { anchor = null; leftMarker = rightMarker = null; Build(); panel.SetActive(true); }
+    // The 44 cm panel's lower edge clears the wrist by 10 cm in the viewing plane.
+    public static Vector3 WristPanelPosition(Vector3 wrist, Vector3 eye, Vector3 viewUp) =>
+        wrist + viewUp.normalized * .32f + (eye - wrist).normalized * .10f;
+    public void Close()
     {
-        if (GR.Player.instance == null || GR.Player.instance.GetComponent<DesktopPlayer>() == null || Camera.main == null) return;
-        var camera = Camera.main.transform;
-        var train = RailTrain.Instance;
-        panel.transform.SetParent(train != null && train.Contains(camera.position) ? train.transform : null, true);
-        panel.transform.SetPositionAndRotation(camera.position + camera.forward * .65f, camera.rotation);
-        panel.transform.localScale = Vector3.one;
+        if (desktopOpen) { closedFrame = Time.frameCount; Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
+        desktopOpen = false;
+        if (panel != null) panel.SetActive(false);
+    }
+    void OnGUI()
+    {
+        if (!RailDiagnostics.Development || !KeyboardMode) return;
+        if (!desktopOpen) {
+            if (Time.unscaledTime < toastUntil) GUI.Box(new Rect(20, 20, Mathf.Min(500, Screen.width - 40), 55), desktopToast);
+            return;
+        }
+        float scale = Mathf.Min(1.5f, Mathf.Min(Screen.width / 560f, Screen.height / 650f));
+        var matrix = GUI.matrix;
+        GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one * scale);
+        float width = Screen.width / scale, height = Screen.height / scale;
+        int depth = GUI.depth; GUI.depth = -100;
+        var color = GUI.color; GUI.color = new Color(.025f, .045f, .065f, 1);
+        GUI.DrawTexture(new Rect((width - 520) / 2, (height - 610) / 2, 520, 610), Texture2D.whiteTexture);
+        GUI.color = color;
+        var label = new GUIStyle(GUI.skin.label) { fontSize = 16, wordWrap = true };
+        var button = new GUIStyle(GUI.skin.button) { fontSize = 17, fixedHeight = 42 };
+        GUILayout.BeginArea(new Rect((width - 520) / 2, (height - 610) / 2, 520, 610), GUI.skin.box);
+        desktopScroll = GUILayout.BeginScrollView(desktopScroll);
+        GUILayout.Label(statusText, label);
+        GUILayout.Space(10);
+        if (GUILayout.Button("Report bug", button)) RailDiagnostics.Instance?.ReportBug();
+        if (GUILayout.Button(tools ? "Show status controls" : "Show test tools", button)) tools = !tools;
+        if (tools) {
+            GuiPair("Bridge", RailTestTools.Bridge, "Board train", RailTestTools.Board, button);
+            GuiPair("Fuel 20", () => RailTestTools.SetFuel(20), "Loaded bag", RailTestTools.SpawnBag, button);
+            GuiPair("Down me", RailTestTools.DownSelf, "Repeat route", RailTestTools.RepeatRoute, button);
+        } else {
+            GuiPair("Simulate lag", () => RailTestTools.ApplyNetwork(true), "Normal network", RailTestTools.RestoreNetwork, button);
+            GuiPair("Save preset", RailTestTools.SavePreset, "Game menu", () => { FindFirstObjectByType<PauseMenu>()?.OpenFromDiagnostics(); Close(); }, button);
+        }
+        GUILayout.Space(8);
+        GUILayout.Label("P or Esc closes this panel. Click the game afterward to resume mouse look.", label);
+        if (GUILayout.Button("Close", button)) Close();
+        GUILayout.EndScrollView(); GUILayout.EndArea(); GUI.matrix = matrix; GUI.depth = depth;
+    }
+    static void GuiPair(string first, System.Action a, string second, System.Action b, GUIStyle style)
+    {
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button(first, style)) a();
+        if (GUILayout.Button(second, style)) b();
+        GUILayout.EndHorizontal();
     }
     void Button(string label, float x, float y, UnityEngine.Events.UnityAction action)
     {

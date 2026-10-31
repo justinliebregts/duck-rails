@@ -13,16 +13,17 @@ public static class RailDiagnosticChecks
         if (!EditorApplication.isPlaying || GR.Player.instance == null || RailDiagnosticPanel.Instance == null) throw new Exception("Requires a live local player");
         var panel = RailDiagnosticPanel.Instance;
         if (!panel.IsOpen) panel.Toggle();
-        var button = UnityEngine.Object.FindObjectsByType<PressableButton>(FindObjectsSortMode.None).Single(b => b.diagnostic && b.name == "REPORT BUG");
+        var button = RailDiagnosticPanel.KeyboardMode ? null : UnityEngine.Object.FindObjectsByType<PressableButton>(FindObjectsSortMode.None).Single(b => b.diagnostic && b.name == "REPORT BUG");
         int before = RailDiagnostics.Instance.SessionReports;
-        button.Release(); button.Press(); button.Press();
+        if (button != null) { button.Release(); button.Press(); button.Press(); }
+        else { RailDiagnostics.Instance.ReportBug(); RailDiagnostics.Instance.ReportBug(); }
         if (RailDiagnostics.Instance.SessionReports != before + 1) throw new Exception("Report button did not save exactly once");
         var report = RailDiagnostics.ReadReports().First(r => r.category == "manual" && r.status == "open");
         if (report.snapshot == null || report.history.Length == 0 || report.snapshot.objects == null || report.preset == null) throw new Exception("Report missing evidence");
         // This is a tool validation artifact, not an unresolved game bug. Do not send it to production.
         report.category = "tool-validation"; report.status = "resolved"; report.resolution = "Live Report Bug button saved exactly one complete report"; report.uploaded = true;
         RailDiagnostics.Write(report);
-        button.Release();
+        if (button != null) button.Release();
         return "PASS report button saved " + report.id + " history=" + report.history.Length + " objects=" + report.snapshot.objects.Length;
     }
     [MenuItem("Duck Rails/Run Diagnostic Checks")]
@@ -30,6 +31,13 @@ public static class RailDiagnosticChecks
     {
         int checks = 0;
         void Check(bool condition, string reason) { if (!condition) throw new Exception(reason); checks++; }
+        var wrist = new Vector3(-.25f, 1.2f, .5f);
+        var eye = new Vector3(0, 1.7f, 0);
+        var position = RailDiagnosticPanel.WristPanelPosition(wrist, eye, Vector3.up);
+        Check(position.y - .22f > wrist.y + .08f, "Panel lower edge clears wrist");
+        Check(position.z < wrist.z, "Panel sits toward viewer from wrist");
+        var rotation = Quaternion.Euler(20, 80, 15);
+        Check(Vector3.Distance(RailDiagnosticPanel.WristPanelPosition(rotation * wrist, rotation * eye, rotation * Vector3.up), rotation * position) < .001f, "Wrist clearance rotates with view");
         Check(!RailDiagnostics.Sanitize("Authorization=secret-value").Contains("secret-value"), "Authorization redaction");
         Check(!RailDiagnostics.Sanitize("Bearer secret-value").Contains("secret-value"), "Bearer redaction");
         Check(!RailDiagnostics.Sanitize("account 1234567890123456").Contains("1234567890123456"), "Account redaction");

@@ -238,6 +238,12 @@ public class DesktopPlayer : MonoBehaviour
 
     void Update()
     {
+        if (RailDiagnosticPanel.BlocksDesktopInput)
+        {
+            ReleaseMenuButton(); SuppressMouseGrip = true;
+            Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
+            return;
+        }
         if (RailWorld.InputBlocked)
         {
             ReleaseMenuButton(); SuppressMouseGrip = false;
