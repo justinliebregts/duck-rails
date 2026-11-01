@@ -1,0 +1,61 @@
+# Subway compound blockout
+
+November 1, 2026. The user approved a walkable, roughly textured Unity blockout of the subway concept. The banked outdoor concept remains an alternative. This is a layout/interaction prototype, not finished environment art or headset acceptance.
+
+## Open and edit
+
+Open `Assets/Scenes/Compound.unity`. Under `Compound Geometry`, the `SubwayCompound` instance now references `Assets/DuckRails/Compound/SubwayV2/SubwayCompound.prefab`. Enter Prefab Mode to edit seven nested modules: terminal shell, blocked surface stairs, shallow fountain, station information nook, walk-through supplies store, platforms/controls wall, and lighting/repairs. The first version remains in `Subway` as a fallback.
+
+Meshes, materials and point-filtered 64 x 64 textures are saved in the SubwayV2 folder. UVs repeat at consistent physical scale. All solid collision uses the existing Environment layer. Most shapes are boxes with independently editable transforms; custom silhouette modeling and final atlases come later.
+
+The revised occupied floor is 18 m wide and 24 m long, with a 7 m clear original ceiling. The first version was 26 x 30 m with a roughly 4.8 m ceiling. Fountain rim height remains 0.36 m. These are implemented trial dimensions, not user-approved final measurements or twelve-player acceptance. The DuckPlayer rig and locomotion are unchanged.
+
+## Concept fidelity corrections — confirmed November 1
+
+The user identified that the first blockout did not reproduce the concept's architecture or spatial proportions. Passing collision/session checks does not establish visual acceptance. The November 1 V2 scene implements the following correction brief; visual acceptance remains with the user.
+
+- **Former boarding edges on both sides:** the left and right boundaries originally allowed passengers to board trains. They must read as recognizable subway platform edges/open boarding bays now sealed with improvised barricades, not ordinary permanent room walls. Retain inaccessible track space beyond them and the intended offscreen tunnel sounds. Establish the original platform edge, track trench and repeated structural bays before dressing the barriers.
+- **Narrower occupied space:** the current 26 m width feels too wide. Bring the information/store fronts, columns and shared center closer together. Maintain usable paths and player clearance, but do not use the whole outer structural footprint as an empty gathering court.
+- **High original roof, low improvised enclosure:** the main subway ceiling is higher than the first blockout communicates. Makeshift partitions stop well below it, revealing an overhead volume with columns, beams, pipes and darkness continuing above. The player-level refuge feels enclosed while the original station feels larger overhead. Avoid a continuous low ceiling or perimeter infill that visually seals this upper space.
+- **Pillars are structural landmarks:** place columns as a coherent original subway grid, with stalls and barricades fitted between them. The illustrated P1–P6 plan is an interpretation of the perspective concepts, not an approved measured grid. Preserve the prominent pillar beside the fountain/store relationship and the columns flanking the stair approach without blocking entrances.
+
+Next-pass handoff should include a dimensioned plan, a cross-section through both track edges and central concourse, and forward/reverse cameras matched to the approved concept views. Annotate original structure versus survivor additions. Measure playable width between barrier faces, clear width between shop/info fronts, floor-to-ceiling height, partition height, pillar spacing and passage widths separately. Low-eye-line captures supplement the concept-camera comparisons rather than replacing them.
+
+**Proposed trial dimensions, not user-approved:** occupied concourse width 16–18 m rather than 26 m; length 22–24 m rather than 30 m; original ceiling 6–7 m; improvised partitions approximately 2.4–2.8 m. Determine the separate track-strip widths from the platform section. Tune these together with the existing DuckPlayer and twelve-player staging needs. Do not resize the rig to force a fit.
+
+Confirmed follow-up choices: provide occasional narrow glimpses of rails and platform edges through the side barricades (option 1A). Keep the overhead station volume mostly dark, with work lights catching selected beams and pipes (option 2C). V2 includes recessed tracks, platform lips and yellow edge strips behind patched corrugated panels with approximately 17 cm viewing slits. A continuous see-through wire guard closes the track boundary up to the ceiling, including above climbable panels. Small uplights catch selected original structure above the low shelters. The exact clustering and dimensions remain tunable.
+
+## V2 measured layout
+
+Coordinates use metres, with Y up and positive Z toward Platforms. The fountain is at the origin. The occupied floor extends X -9 to +9 and Z -13 to +11. Inner sheet faces lie at X ±8.585, giving 17.17 m between barricade faces. Track centres lie at X ±10.45; outer tunnel walls are at ±12.15. The original structural envelope is wider than the occupied refuge.
+
+Six 0.65 m square pillars stand at X ±3.4, in three rows at Z 5.5, -0.8 and -7.1. P1/P2 are the far row, P3/P4 the fountain row, P5/P6 the arrival row; odd numbers are on the left (negative X). Row spacing is 6.3 m, transverse spacing 6.8 m, and clear space between paired pillars is 6.15 m. The 3 m fountain leaves 1.575 m between its sides and the nearest pillar faces. Validated circulation routes run at X ±2.5 around it.
+
+Station info is centred at (-5.65, 0, 3.4), yaw -65 degrees; supplies at (5.7, 0, 2.4), yaw +70 degrees. Their open fronts turn toward the central space and arrival approach. Supplies retains a separate side opening. Because both bays are angled, front-to-front clearance varies along their length; use actual prefab outlines rather than a single nominal hall width. Platforms sits at Z 9; its boarding trigger spans Z 5–8.6. The keypad remains beside it. Spawn is at (0, 0.2, -6.7); sealed surface stairs occupy the opposite end.
+
+Section dimensions: floor Y 0; recessed rail heads approximately Y -0.77; ballast top Y -1; salvage barriers about 2.6 m; shelter walls 2.8 m and canopy tops 3.15 m; ceiling underside 7 m. This leaves 3.85 m above the shelter roofs. Original crossbeams lower the local clearance to roughly 6.325 m. The full-height mesh is visually open, unlike the lower metal sheets. Pillars, beams, platform edges and tracks represent original subway structure; corrugated shelters, bracing, barricades and work lights represent survivor additions.
+
+## Gameplay and authoring (current blockout)
+
+The existing RailWorld, departure collider, countdown text, private keypad components/events, player prefab, GameManager and scene flashlight are retained. The departure zone moves to the gate; the physical keypad moves to the blank wall beside it. Decorative Create/Join doors/signs are absent; retained functional keypad buttons still carry their existing labels. The supplies stock is visual placeholder geometry, not new purchasing functionality.
+
+Old gray-box geometry is disabled, not deleted. The spawn anchor moves slightly forward of the stairs. The public boarding area is flush with the floor. `RailBoardingLiveChecks` now derives its approach/exit positions from actual trigger bounds instead of assuming the old platform location.
+
+`RailSceneBuilder` installs the saved prefab whenever it rebuilds Compound. It does not regenerate or overwrite artist-edited prefab geometry. **Duck Rails > Compound > Create Subway Blockout** refuses to overwrite existing assets. **Install Saved Subway Blockout** reuses the prefab and reapplies gameplay placement. Whole-scene rebuilds still replace scene-level changes; preserve environment work in the prefab/modules.
+
+## Validation
+
+- Unity compilation succeeded. The existing session check suite passed.
+- 55 V2 blockout checks passed: nested assets, missing scripts/materials, collision layers, all twelve spawn positions, routes around the fountain, both store openings, track guards at walking/climbing heights, viewing gaps, roof clearance, sealed stairs and retained keypad/boarding bindings. See [edit-mode evidence](validation/subway-compound-v2/editmode-checks.txt).
+- One authenticated V2 desktop client using the real DuckPlayer keyboard simulation passed walk-on, empty-platform cancellation, re-entry, the full twenty-second countdown and transfer into a ready expedition. See [V2 live evidence](validation/subway-compound-v2/live-boarding.txt). This is not multi-client or worn-headset acceptance. The first test invocation was too early in session initialization and declined to run; the completed test began after the public room was ready. Existing XR/backend-cosmetics/voice warnings appeared at startup; no runtime error was returned by the Console query.
+- Actual V2 geometry renders: [forward](../output/compound-blockout-v2/forward.png), [reverse](../output/compound-blockout-v2/reverse.png), [0.5 m eye line](../output/compound-blockout-v2/low-eye.png), [boarding edge](../output/compound-blockout-v2/left-boarding-edge.png), [upper volume](../output/compound-blockout-v2/upper-volume.png). These share the saved Unity geometry; their cameras approximate the concept directions and are not calibrated perspective matches.
+- Current inventory: 274 renderers, 127 colliders, nine provisional shadowless real-time lights. Counts are not performance budgets or a performance pass. Baked lighting/probes and Quest profiling remain future work.
+- Backend diagnostic inbox failed with DNS resolution unavailable. Existing local reports were inspected and left open. No report was resolved by this art task.
+
+Re-run using **Duck Rails > Compound > Validate Subway Blockout** and **Render Subway Views**. The live boarding check requires one ready public-compound client in Keyboard mode.
+
+## Remaining review
+
+Headset navigation, low-eye-line readability, fingertip reach, twelve-player crowding, and multiplayer transitions require review. Finished silhouettes, asymmetric repairs, map artwork, water treatment, texture refinement, lighting/shadows and performance remain pending. Side-track anchors and sealed geometry exist, but no new ambience clips or playback behavior were added. Store commerce integration is separate.
+
+Concepts: [forward](../output/imagegen/duck-rails-compound-subway-v1.png), [blocked stairway](../output/imagegen/duck-rails-compound-subway-reverse-v1.png), [banked outdoor alternative](../output/imagegen/duck-rails-compound-outdoor-approved-v1.png).

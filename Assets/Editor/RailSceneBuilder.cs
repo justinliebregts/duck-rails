@@ -138,6 +138,7 @@ public static class RailSceneBuilder
         cabin.swayBobMeters = cabin.swayPitchDegrees = cabin.swayRollDegrees = 0;
         world.train = carriage.AddComponent<RailTrain>(); world.train.cabin = cabin;
         world.expedition.SetActive(false);
+        RailSubwayCompoundBuilder.InstallExisting(world);
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/Compound.unity");
     }
     static void BuildLogin()

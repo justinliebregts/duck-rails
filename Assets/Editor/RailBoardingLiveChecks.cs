@@ -13,6 +13,7 @@ public static class RailBoardingLiveChecks
     static SimulatedRigInput rig;
     static int stage;
     static double started, stageAt, nextSample, deadline, dueAt;
+    static float platformEntry, platformCenter, platformX;
     public static string Status { get; private set; } = "Not run";
 
     [MenuItem("Duck Rails/Run Live Keyboard Boarding Check")]
@@ -28,7 +29,9 @@ public static class RailBoardingLiveChecks
         RailDiagnosticPanel.Instance?.Close();
         lines.Clear(); stage = 0; deadline = dueAt = 0; started = stageAt = EditorApplication.timeSinceStartup; nextSample = 0;
         rig.UseInjectedInput = true;
-        NewPlayer.instance.Warp(new Vector3(0, NewPlayer.instance.transform.position.y, -1), Quaternion.identity);
+        var bounds = RailWorld.Instance.boardingTrigger.bounds;
+        platformEntry = bounds.min.z; platformCenter = bounds.center.z; platformX = bounds.center.x;
+        NewPlayer.instance.Warp(new Vector3(platformX, NewPlayer.instance.transform.position.y, platformEntry - 2), Quaternion.identity);
         Status = "Walking onto platform";
         EditorApplication.update += Tick;
     }
@@ -60,8 +63,8 @@ public static class RailBoardingLiveChecks
             case 4:
                 // The platform has a 20 cm curb; use the normal keyboard jump to get aboard.
                 rig.InjectedInput = new SimulatedRigInput.Frame { move = Vector2.up,
-                    jump = player.bodyCollider.bounds.center.z < 1.3f && rig.HasBodySupport };
-                if (player.bodyCollider.bounds.center.z >= 3)
+                    jump = player.bodyCollider.bounds.center.z < platformEntry + .3f && rig.HasBodySupport };
+                if (player.bodyCollider.bounds.center.z >= platformCenter)
                 { rig.InjectedInput = default; stage = stage == 0 ? 1 : 5; stageAt = now; }
                 break;
             case 1:
@@ -69,7 +72,7 @@ public static class RailBoardingLiveChecks
                 break;
             case 2:
                 rig.InjectedInput = new SimulatedRigInput.Frame { move = Vector2.down };
-                if (player.bodyCollider.bounds.center.z < 0) { rig.InjectedInput = default; stage = 3; stageAt = now; }
+                if (player.bodyCollider.bounds.center.z < platformEntry - 1) { rig.InjectedInput = default; stage = 3; stageAt = now; }
                 break;
             case 3:
                 if (roomDeadline == 0 && !RailWorld.IsLocalOnPlatform()) { stage = 4; stageAt = now; }

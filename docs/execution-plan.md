@@ -4,6 +4,11 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 
 ## Art direction deliverables
 
+- [x] November 1: create and install the modular subway compound blockout with rough pixel textures, open store, shallow fountain, sealed stairs and retained session controls. Editor geometry checks and solo DuckPlayer departure passed. See [subway compound](subway-compound.md).
+- [ ] Review subway layout/lighting in Quest 3 and with twelve compound players; complete finished art, ambience, commerce presentation and performance profiling. The blockout does not close these acceptance items.
+- [x] November 1: implement V2 concept-fidelity geometry: 18 m occupied floor, former side boarding edges with recessed tracks and improvised barriers, narrow viewing gaps, and 7 m original ceiling above low shelters. All 55 geometry checks and session rule checks pass; dimensions and actual Unity views are recorded in `docs/subway-compound.md`. V1 assets are preserved.
+- [ ] Review V2 against the concept in headset and approve final dimensions; produce the final annotated plan/section and calibrate concept-matched cameras before finished art. Current coordinate/section notes and approximate cameras are tuning aids, not visual acceptance.
+
 - [x] Build and install the modular Unity train blockout (October 30): main train prefab in Expedition, four nested station prefabs, separate shell pieces, hollow furnace, relocated coal acceptance, existing drive/horn/radio interactions, headlight and bounded fire/smoke. Geometry/binding checks and all eleven quick regression suites passed; two authenticated clients passed stopped/moving/post-handoff coal consumption. The Week 3 builder preserves the edited train prefab. See [implementation and evidence](train-production.md#unity-blockout--october-30-2026).
 - [ ] Review the blockout on target headsets for control reach, natural low sightlines, rear/side boarding and eight-player circulation; profile lights and particles. Finish production meshes and atlas mapping after layout review.
 

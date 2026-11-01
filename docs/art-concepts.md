@@ -2,6 +2,22 @@
 
 October 30, 2026. Concept explorations using the [art guide](art-guide.md), generated with the built-in image generation tool. These are visual proposals, not production meshes, measured plans, Unity captures or performance results. The user endorsed the low-poly train look and requested darker, spooky nighttime locations. Preserve existing DuckZ character identity in production.
 
+## Compound alternatives — November 1, 2026
+
+The user approved banking the [outdoor compound concept](../output/imagegen/duck-rails-compound-outdoor-approved-v1.png) as the outdoor alternative, then requested an additional, more cramped and apocalyptic refuge inside an abandoned subway terminal. This is not a decision to replace the outdoor version or implement either scene.
+
+Outdoor direction: low-poly geometry and pixelated textures; rundown brick/timber station and enlarged supplies store facing the common space; open walk-through bay on the store; station information beside the platforms gate; blank wall reserved for in-game private-session controls, without Create/Join signs or doors. Continuous fortified walls have taller sections, corrugated-metal repairs and retrofitted swivel searchlights above the wall with exposed cables. A broken central fountain holds shallow water. Cold courtyard light and faint warm interiors preserve safety within a scary world. Forest and abandoned town lie beyond the perimeter. No train is visible in this pre-platform hub.
+
+Subway exploration brief: retain station information, platforms access and supplies, compress them into an abandoned underground terminal, and make the refuge feel assembled ad hoc from salvaged materials. Preserve low sightlines and clear entries. Exact layout is a proposal pending image review. Neither concept is a production mesh or validated gameplay layout.
+
+Generated with the built-in image tool; the outdoor image is an appearance reference, not Unity implementation evidence.
+
+[Subway terminal exploration v1](../output/imagegen/duck-rails-compound-subway-v1.png): proposed cramped concourse with salvaged partitions, station information left, barricaded platforms ahead and walk-in supplies right. Review pending; the rendered detail remains denser than the intended economical game meshes. [Generation prompt](../output/imagegen/duck-rails-compound-subway-v1-prompt.json).
+
+Subway user review, November 1: the user endorsed this concept. Railway tracks lie behind the left and right walls, inaccessible to players but audible from the terminal. Behind the concept camera, stairs lead up toward the outside; makeshift crates and panels completely block this route. This is a sealed environmental boundary, not an accessible exit or a barricade-removal objective. The platforms remain the departure destination. Specific tunnel sound events and their timing remain proposals. These decisions describe the concept, not implemented geometry or audio.
+
+The user also approved the [reverse stairway concept](../output/imagegen/duck-rails-compound-subway-reverse-v1.png) and authorized a walkable Unity blockout. See [subway implementation and evidence](subway-compound.md); finished art and headset acceptance remain pending.
+
 ## Dark nighttime location studies
 
 User review, October 30: the latest Maintenance Depot, Roadside Motel and Lakeside Campground night renders, together with the low-poly train render, are approved as the visual direction. This endorses their look and atmosphere; exact layouts, dimensions, production meshes and target-device performance still require implementation and review.
