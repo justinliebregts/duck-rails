@@ -98,6 +98,11 @@ public static class RailSceneBuilder
         world.departureBoard = Text("Public countdown", root, "PUBLIC DEPARTURE\nStep onto the platform", new Vector3(0, 3, 8));
         Text("Title", root, "DUCK RAILS", new Vector3(0, 5, 11.6f), 2);
         var spawn = new GameObject("Compound spawn").transform; spawn.position = new Vector3(0, .2f, -8); world.compoundSpawn = spawn;
+        var flashlight = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Items/ItemFlashlight.prefab"));
+        flashlight.name = "Compound lighting test flashlight";
+        flashlight.transform.position = new Vector3(-2.25f, .05f, -6.75f);
+        flashlight.GetComponent<PhotonView>().sceneViewId = 900;
+        PrefabUtility.RecordPrefabInstancePropertyModifications(flashlight.GetComponent<PhotonView>());
         var terminal = Box("Private terminal", root, new Vector3(-9, 1, 0), new Vector3(2.5f, 2, 1), teal);
         world.privateTerminal = terminal.transform;
         Text("Private instructions", root, "PRIVATE EXPEDITIONS\nTab: Create / Join\nChoose a five-digit code", new Vector3(-9, 3, 1), .65f);
