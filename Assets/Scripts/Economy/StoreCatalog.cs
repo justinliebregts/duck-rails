@@ -13,7 +13,7 @@ public class StoreItem
     [Tooltip("Coin items: must match store_items[].key in the backend duckz_economy.json. IAP items: the Meta SKU, listed in iap_skus.")]
     public string key;
     public StorePayment payment = StorePayment.Coins;
-    [Tooltip("Shown only until GET /duckz/store returns. duckz_economy.json is the price that is displayed and charged.")]
+    [Tooltip("Shown only until GET /store returns. duckz_economy.json is the price that is displayed and charged.")]
     public int price;
     [Tooltip("Durable items are owned forever. IAP items are always durable. Repeatable goods, like the nail bat, are not.")]
     public bool durable = true;

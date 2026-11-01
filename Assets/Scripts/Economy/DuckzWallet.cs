@@ -36,6 +36,10 @@ public class DuckzWallet : MonoBehaviour
     /// <summary>False until this account has saved a loadout on the server.</summary>
     public bool ServerHasLoadout { get; private set; }
     public event Action OnChanged;
+    public event Action<string, int> OnRewardCredited;
+    readonly HashSet<string> scheduledRewards = new HashSet<string>();
+    float nextRewardRetry;
+    bool buying, refreshing;
 
     readonly HashSet<string> entitlements = new HashSet<string>();
     readonly HashSet<string> purchases = new HashSet<string>();
@@ -105,7 +109,7 @@ public class DuckzWallet : MonoBehaviour
     /// <summary>A durable Meta SKU the server has granted, or Meta reports on this device.</summary>
     public bool OwnsSku(string sku) => !string.IsNullOrEmpty(sku) && (entitlements.Contains(sku) || platformOwned.Contains(sku));
 
-    // Price and durable flag from duckz_economy.json, once GET /duckz/store has loaded.
+    // Price and durable flag from duckz_economy.json, once GET /store has loaded.
     public bool TryListed(string key, out int price, out bool durable)
     {
         if (!string.IsNullOrEmpty(key) && listed.TryGetValue(key, out ListedItem item))
@@ -121,24 +125,27 @@ public class DuckzWallet : MonoBehaviour
 
     public void Refresh()
     {
+        if (refreshing) return;
+        refreshing = true;
         StartCoroutine(RefreshRoutine());
     }
 
     IEnumerator RefreshRoutine()
     {
-        if (!DuckzApiClient.IsReady)
-            yield break;
+        if (!DuckzApiClient.IsReady) { refreshing = false; yield break; }
+        while (buying || flushingPending) yield return null;
 
         yield return FetchStore();
 
         DuckzApiClient.Response<WalletData> response = null;
-        yield return DuckzApiClient.Get<WalletData>("duckz/wallet", r => response = r);
+        yield return DuckzApiClient.Get<WalletData>("wallet", r => response = r);
         if (!response.Success || response.Data == null)
         {
             {
                 if (DuckzLog.AllowWarning(out var logNotice2))
                     logNotice2.Write("Wallet fetch failed: " + response.Message);
             }
+            refreshing = false;
             yield break;
         }
 
@@ -153,14 +160,14 @@ public class DuckzWallet : MonoBehaviour
         DuckzLog.Log($"[DuckzWallet] Balance {Coins} coins, entitlements [{string.Join(", ", entitlements)}], purchases [{string.Join(", ", purchases)}], " +
                   $"loadout {(ServerHasLoadout ? $"'{ServerEquippedSkin}'" : "none saved")}");
         OnChanged?.Invoke();
-
+        refreshing = false;
         yield return FlushPendingDeposits();
     }
 
     IEnumerator FetchStore()
     {
         DuckzApiClient.Response<ServerStoreList> response = null;
-        yield return DuckzApiClient.Get<ServerStoreList>("duckz/store", r => response = r);
+        yield return DuckzApiClient.Get<ServerStoreList>("store", r => response = r);
         if (response == null || !response.Success || response.Data == null || response.Data.items == null)
         {
             {
@@ -179,6 +186,23 @@ public class DuckzWallet : MonoBehaviour
         }
         DuckzLog.Log($"[DuckzWallet] Store list {listed.Count} items [{string.Join(", ", listed.Keys)}]");
         OnChanged?.Invoke();
+    }
+
+    // A retained room receipt maps to one backend request per recipient, including reconnects.
+    public bool QueueReward(string requestId, int bars)
+    {
+        if (!UserPlayerPrefs.IsReady || bars <= 0 || bars > MaxBarsPerRequest) return false;
+        if (!scheduledRewards.Add(requestId)) return true;
+        AddPendingDeposit(requestId, bars);
+        nextRewardRetry = 0;
+        return true;
+    }
+
+    void Update()
+    {
+        if (!Loaded || !DuckzApiClient.IsReady || Time.unscaledTime < nextRewardRetry) return;
+        nextRewardRetry = Time.unscaledTime + 15;
+        StartCoroutine(FlushPendingDeposits());
     }
 
     // Bars that land within DepositBatchSeconds are sent as one request.
@@ -211,13 +235,14 @@ public class DuckzWallet : MonoBehaviour
     IEnumerator SendDeposit(string requestId, int bars)
     {
         DuckzApiClient.Response<DepositData> response = null;
-        yield return DuckzApiClient.PostSigned<DepositData>("duckz/coins/deposit",
+        yield return DuckzApiClient.PostSigned<DepositData>("coins/deposit",
             new DepositBody { request_id = requestId, bars = bars }, r => response = r);
 
         if (response.Success && response.Data != null)
         {
             RemovePendingDeposit(requestId);
             Coins = response.Data.coins;
+            if (!response.Data.idempotent) OnRewardCredited?.Invoke(requestId, response.Data.credited);
             DuckzLog.Log($"[DuckzWallet] Deposited {bars} bars, balance {Coins} coins");
             DuckzAnalytics.GoldDeposited(bars);
             OnChanged?.Invoke();
@@ -236,7 +261,7 @@ public class DuckzWallet : MonoBehaviour
 
     IEnumerator FlushPendingDeposits()
     {
-        if (flushingPending || !UserPlayerPrefs.IsReady)
+        if (flushingPending || buying || refreshing || !UserPlayerPrefs.IsReady)
             yield break;
         flushingPending = true;
         foreach (string entry in UserPlayerPrefs.GetStringArray(PendingDepositsKey))
@@ -251,14 +276,21 @@ public class DuckzWallet : MonoBehaviour
 
     public void Buy(string itemKey, Action<BuyStatus> completed)
     {
-        StartCoroutine(BuyRoutine(itemKey, completed));
+        if (buying || flushingPending || refreshing || !Loaded) { completed?.Invoke(BuyStatus.Failed); return; }
+        buying = true;
+        StartCoroutine(BuyRoutine(itemKey, status => { buying = false; completed?.Invoke(status); }));
     }
 
     IEnumerator BuyRoutine(string itemKey, Action<BuyStatus> completed)
     {
         DuckzApiClient.Response<BuyData> response = null;
-        yield return DuckzApiClient.PostSigned<BuyData>("duckz/store/buy",
-            new BuyBody { request_id = Guid.NewGuid().ToString("N"), item_key = itemKey }, r => response = r);
+        var request = new BuyBody { request_id = Guid.NewGuid().ToString("N"), item_key = itemKey };
+        for (int attempt = 0; attempt < 3; attempt++)
+        {
+            yield return DuckzApiClient.PostSigned<BuyData>("store/buy", request, r => response = r);
+            if (response.Success || (response.Code != 0 && response.Code < 500 && response.Code != 401)) break;
+            yield return new WaitForSecondsRealtime(1);
+        }
 
         BuyStatus status;
         // Error replies have no data, but JsonUtility still builds a BuyData with coins = 0.
@@ -292,7 +324,7 @@ public class DuckzWallet : MonoBehaviour
     IEnumerator GrantIapRoutine(string sku, string platformTxnId, Action<bool> completed)
     {
         DuckzApiClient.Response<GrantData> response = null;
-        yield return DuckzApiClient.PostSigned<GrantData>("duckz/iap/grant",
+        yield return DuckzApiClient.PostSigned<GrantData>("iap/grant",
             new GrantBody { sku = sku, platform_txn_id = platformTxnId }, r => response = r);
 
         if (response.Success && response.Data != null)
@@ -329,7 +361,7 @@ public class DuckzWallet : MonoBehaviour
         }
 
         DuckzApiClient.Response<LoadoutData> response = null;
-        yield return DuckzApiClient.PostSigned<LoadoutData>("duckz/loadout", new LoadoutBody { skin_key = skinKey }, r => response = r);
+        yield return DuckzApiClient.PostSigned<LoadoutData>("loadout", new LoadoutBody { skin_key = skinKey }, r => response = r);
         if (response.Success)
         {
             ServerEquippedSkin = skinKey;
@@ -388,7 +420,9 @@ public class DuckzWallet : MonoBehaviour
     {
         if (!UserPlayerPrefs.IsReady)
             return;
-        var list = new List<string>(UserPlayerPrefs.GetStringArray(PendingDepositsKey)) { requestId + ":" + bars };
+        var list = new List<string>(UserPlayerPrefs.GetStringArray(PendingDepositsKey));
+        if (list.Exists(e => e.StartsWith(requestId + ":", StringComparison.Ordinal))) return;
+        list.Add(requestId + ":" + bars);
         UserPlayerPrefs.SetStringArray(PendingDepositsKey, list.ToArray());
         UserPlayerPrefs.Save();
     }

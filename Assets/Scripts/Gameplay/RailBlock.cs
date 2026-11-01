@@ -40,6 +40,7 @@ public sealed class RailBlock : MonoBehaviour
 public sealed class RailSpawnSet
 {
     public Transform[] coal, enemies;
+    public Transform[] gold = Array.Empty<Transform>();
 }
 
 [Serializable]

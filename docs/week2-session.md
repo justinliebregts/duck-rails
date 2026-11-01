@@ -2,6 +2,14 @@
 
 Implementation session: October 29, 2026. Scope is Week 2 plus the bridge finale, using DesktopPlayer and three configured authenticated accounts. Week 1 is the user-verified baseline. Quest 3 testing is Justin's follow-up; commerce, persistent escape counters, extra blocks, and player dragging are excluded.
 
+## VR coal pickup investigation — October 30
+
+Justin reports that the first natural DuckPlayer coal grab frequently fails until withdrawing/reaching again, and the hand penetrates coal. Unity MCP verified this project in Edit Mode. The coal prefab has an enabled solid BoxCollider, a valid 12-triangle baked grab surface and a 0.3-metre cube mesh. Both DuckPlayer hands have a 0.06-metre grab tolerance. An isolated temporary coal instance confirmed that `TryGetSurfaceDistance` rejects points at its center and 0.05 metres from center, but accepts points 0.10 and 0.15 metres from center. Selection measures distance to the surface, not occupancy inside the solid; collider fallback explicitly skips items with baked surfaces. DuckPlayer's `NewPlayer.locomotionEnabledLayers` is 64 and excludes coal's layer 8. Grip acquisition runs only on the press edge. These findings explain a plausible penetration/interior-selection failure; actual headset first-attempt timing remains unverified. No gameplay fix has been applied.
+
+Desktop coverage differs materially: DesktopPlay disables DuckPlayer and instantiates DesktopPlayer; DesktopPlayer supplies a raycast-positioned right PlayerHand with 0.12-metre tolerance. The live coal fixture uses ForceGrab, bypassing candidate selection. Its network/furnace passes do not validate natural VR pickup. Proposed direction for discussion: retain DuckPlayer as the common rig and supply either tracked or keyboard/mouse-simulated head/hand poses and button states, exercising the same interaction paths. This is not an implemented or accepted milestone.
+
+The diagnostic backend query failed DNS resolution during this investigation. Three local reports remained open (two manual reports and one Unity-error report); their summaries/events do not establish this grab defect. None were resolved. Temporary inspection objects were removed; no Play Mode/headset run was performed.
+
 ## Playing the encounter
 
 Start from Login with DesktopPlayer. The existing public platform and private code terminal still launch runs. The carriage starts at z=70 with 10 fuel and two each of bats, empty four-slot bags, walkies, flashlight helmets, night-vision goggles, and flashlights. Supplies belong to the crew. Late arrivals share them.

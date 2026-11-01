@@ -4,11 +4,31 @@
 
 This phase implements the approved twelve-location gray-box catalogue, five distinct randomized stops plus the existing bridge finale, authored spawn variations, consistent prefab connections, internal bends, a separate Expedition scene, and renewable coal carriers. Lighting remains deferred. The original train controls, item interactions, revive flow and bridge ending are retained.
 
-Open `Assets/Scenes/Login.unity` and enter Play normally. Private staging and public boarding use Compound; departures load Expedition. Private runs keep the same Photon room/code across both scenes. Build settings contain Login, Compound and Expedition. Network protocol is `session-v5`; all clients must use this version.
+Open `Assets/Scenes/Login.unity` and enter Play normally. Private staging and public boarding use Compound; departures load Expedition. Private runs keep the same Photon room/code across both scenes. Build settings contain Login, Compound and Expedition. Network protocol is `session-v6`; all clients must use this version.
 
 `Assets/DuckRails/Blocks` contains Maintenance Depot, Convenience Store, Roadside Motel, Lumber Yard, Container Yard, Passenger Station, Farm Silos, Tunnel Works, Scrapyard, Lakeside Campground, Electrical Substation and Quarry. Each is an editable prefab, with a versioned stable ID, tags, graph asset, entry/exit/stop markers, three authored sets of six coal/two enemy markers, and sampled track. Four locations bend gently left/right before returning to the centerline.
 
 ## Authoring contract
+
+### Fixed starting station — October 31, 2026
+
+Every expedition now includes `Assets/DuckRails/StartingStation.prefab` before the five randomized scavenging blocks and bridge. It is outside the twelve-location catalogue and adds no coal/enemy spawns. The 160-metre station spans world Z=-10 to 150; distance zero remains world (0,1,70), centered on its track with ground under both ends of the train. The first random block now starts at Z=150. Train distance includes the remaining 80 metres of station track before the random route; bridge approach shortcuts and the curved-travel fixture account for this distance. Fuel tuning is unchanged.
+
+The basic station has two boarding platforms with steps, canopies, benches, a sign, an open-front hall, and a `Future Store Area` marker. Open the station prefab to customize it. `Duck Rails > Authoring > Install Starting Station` installs it without rebuilding other assets. The full Week 3 builder also installs it and preserves an existing station prefab, including later edits. Its track length/entry/exit are the fixed route contract; customize buildings without changing those anchors.
+
+Photon app-version partition is now `session-v6` so old clients cannot mix incompatible distance/placement rules. Restart/update all clients together. Older exact-route diagnostic presets fall back to random selection with the existing incompatible-preset message.
+
+Validation: Unity compilation and all 462 Week 3 checks passed, including centered spawn, train-end ground support, seamless track connection and bridge sampling. An assembled scene with seed 123 had five random blocks, 12 catalogue choices, train start (0,1,70), finale distance 880.4927 and bridge Z=1030. Four-angle scene inspection confirmed station layout; Console error query was empty before the live attempt. Evidence: `validation/starting-station/week3-checks.txt`. The solo sandbox launcher failed with a reflection invocation exception before gameplay, so live startup, multiplayer and headset acceptance remain unverified. Diagnostic backend was unavailable due to DNS failure; no local report JSON files were present and no reports were resolved.
+
+### Buildings and coal on both sides — October 31, 2026
+
+All twelve scavenging prefabs now include `Left-side buildings`, with two open-front gray-box buildings facing the track. Their names follow each stop (parts store/workshop, motel office/guest rooms, farm workshop/feed barn, cabins/boathouse, etc.). Each of the three spawn variations has three coal markers on the left and three on the right, still six chunks total. Campground water moved farther left and its dock was extended so the new cabins sit on dry ground. New geometry stays within the existing encounter's Z extent and leaves the track/boarding corridor clear.
+
+Existing right-side buildings, enemy spawn markers, enemy bounds and baked graphs are retained. Left-side scavenging currently has no enemy patrol; player locomotion uses physical collision, not the enemy crawlgraph. No runtime/navigation or networking changes are part of this layout edit. New runs load the changed prefabs automatically.
+
+The full builder includes this layout. **Duck Rails > Authoring > Add Left-Side Buildings and Coal** applies only these additions to existing block prefabs without rebuilding gameplay scenes or the train. Repeating it does not duplicate buildings, but reapplies the default coal positions. **Spread Block Coal Markers** also preserves the three-per-side split; either placement command overwrites manual marker positions. Markers retain their nested prefab instances and serialized references.
+
+Validation: Unity compilation and all 456 Week 3 checks passed, covering both-side counts, marker prefab references/spacing, physical ground/clearance, existing enemy/right-side coal navigation, route serialization and graph assembly. The old fuel assertion was updated to match the already-implemented four-metre exhaustion coast after 50 powered metres; fuel behavior was not changed here. Representative depot and campground layouts were inspected using Unity's four-angle view. Evidence: `docs/validation/left-side-blocks/week3-checks.txt`. No multiplayer or headset playtest was run. The backend diagnostic inbox was unavailable due to DNS failure; no local report JSON files were present and no reports were resolved.
 
 ### Coal markers — October 31, 2026
 
@@ -20,8 +40,8 @@ The Week 3 builder now creates these same nested markers and spread-out position
 
 Validation: Unity compiled; all 504 Week 3 checks passed, including 216 marker references/navigation coverage and per-variation spacing checks. Console contained no errors on inspection. Evidence: `docs/validation/coal-markers/week3-checks.txt`. No multiplayer/headset playtest was run for this authoring change. Local diagnostics were inspected; backend inbox DNS lookup failed, so its status was unavailable and no reports were resolved.
 
-- Root/entry `(0,0,0)`, forward +Z, unit scale; exit `(0,0,160)`. Ground surface Y=0; train reference Y=1. Runtime placements are translations only, starting Z=70 in 160-metre increments.
-- Encounter bounds are X=9–37, Z=45–115 locally. The remaining lead-in/out provides 90 metres between adjacent encounters, about 22.5 seconds at 4 m/s. Preserve that spacing when changing layouts.
+- Root/entry `(0,0,0)`, forward +Z, unit scale; exit `(0,0,160)`. Ground surface Y=0; train reference Y=1. Runtime placements are translations only, starting Z=150 in 160-metre increments after the fixed station.
+- Enemy encounter bounds are X=9–37, Z=45–115 locally. Player scavenging now also extends left of the track; the left buildings occupy X=-34–-14 and Z=51–109. The remaining lead-in/out provides 90 metres between adjacent encounters, about 22.5 seconds at 4 m/s. Preserve that spacing when changing layouts.
 - Every selected block remains loaded with rendering, collision, supplies and AI. No block streaming or renderer culling is enabled yet.
 - Bake navigation in the editor with the existing crawlgraph baker. The runtime assembler translates/reindexes baked nodes and preserves disconnected components; it never probes geometry, rebakes or creates inter-block edges. Enemies are additionally clamped to their own authored bounds and cannot target crew aboard.
 - `Duck Rails > Run Week 3 Checks` validates assets, markers, translated graphs and route serialization. `Duck Rails > Build Week 3 Expedition` regenerates all twelve prefabs, graphs and both gameplay scenes from the preserved `Assets/DuckRails/Authoring/Week2Baseline.unity`. **Regeneration overwrites generated block/scene edits.** Save authored changes separately or extend the builder before using that command again. It refuses unsaved open scenes.

@@ -1,0 +1,9 @@
+{
+  "tool": "built-in image_gen",
+  "intent": "precise-object-edit",
+  "refs": [
+    "X:/Work/duck-rails/output/imagegen/duck-rails-train-top-plan-v3.png",
+    "X:/Work/duck-rails/output/imagegen/duck-rails-train-cockpit-v3.png"
+  ],
+  "prompt": "Precisely edit image 1, the top-down Duck Rails deck layout. Image 2 is ONLY reference for the centered EMPTY seat and dashboard arrangement. Change ONLY the cockpit contents within the ivory frame at left of image 1. Remove the duck entirely, including helmet, hands and body. Move the EMPTY seat and the dashboard controls downward in the image until the seat center and throttle center lie exactly on the train longitudinal centerline, halfway between top and bottom sidewalls: at approximately image y=455 of the 887px tall reference (51.3% of image height). Seat center x remains approx 322; seat faces LEFT toward front. Existing cockpit interior extends from y=295 to y=618, so its lateral midpoint is y=456.5; place seat center exactly there, not near upper wall. Dashboard immediately ahead of seat (to its LEFT in image), centered at same y. Three controls: amber horn at y approx 390 (driver right / image upper), throttle at y456 (exact middle, aligned to seat center), fuel gauge at y522 (driver left / image lower). Use cockpit reference 2 appearance: empty dark low seat, central lever, simple gauge and horn. Floor left empty in old position. No character anywhere. No duplicate seats or controls. Preserve EVERYTHING outside the cockpit interior: roof/frame, lamps, train proportions, radio table outside cockpit, furnace/stack outside cockpit, pixel materials, open deck, side gaps, open rear with no rail, title 'DUCK RAILS / DECK LAYOUT 3', all callout labels, arrows, dark background and camera. Maintain same low-poly 3D-render concept style and exact composition. No red annotation circles."
+}

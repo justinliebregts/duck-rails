@@ -26,6 +26,7 @@ public class CrateGoldBar : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other) {
+        if (PhotonSession.IsRailsRoom) return;
         ItemGoldBar gold = other.GetComponent<ItemGoldBar>();
         if (gold != null && gold.enabled) {
             PhotonView pView = other.GetComponent<PhotonView>();

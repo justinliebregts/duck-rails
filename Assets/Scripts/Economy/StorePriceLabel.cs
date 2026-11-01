@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 // World-space price for a store item. Stays on the shelf while the item is pulled or held.
-// The number comes from duckz_economy.json once GET /duckz/store has loaded.
+// The number comes from duckz_economy.json once GET /store has loaded.
 public class StorePriceLabel : MonoBehaviour
 {
     Component host;

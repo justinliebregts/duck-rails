@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 // The equipped avatar. Saved on device per account via UserPlayerPrefs so it applies instantly at startup.
-// It is also saved on the server (POST duckz/loadout) so it follows the account to other headsets and reinstalls.
+// It is also saved on the server (POST loadout) so it follows the account to other headsets and reinstalls.
 // Weapons are not equipped. Bags are world objects (BagObject); the one on your back is saved by BagInventory.
 public class EquippedLoadout : MonoBehaviour
 {

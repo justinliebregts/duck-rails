@@ -2,6 +2,8 @@
 
 Handoff date: October 28, 2026.
 
+Art direction draft (October 30): [Art guide](art-guide.md) defines the proposed visual identity, palette, materials, lighting, train and environment treatment, and gameplay readability. It preserves the confirmed design below; its new art choices remain proposals pending review of the first finished train/depot slice.
+
 ## Status and intent
 
 October 30 shared-rig decision: use one DuckPlayer for headset/Quest Link and keyboard/mouse simulation, including switching input sources during Editor Play. Q/E reach left/right hands and right mouse grips both; simulated input must exercise the same grabbing, fingertip buttons, bag and physical train controls. This supersedes DesktopPlayer as the gameplay test target and its separate toggle/click interaction defaults. See [shared-rig.md](shared-rig.md) for controls and validation limits. Coal's interior pickup defect remains separate.
@@ -18,6 +20,8 @@ October 30 validation update: the [multiplayer stability pass](multiplayer-stabi
 
 ## Experience and tone — confirmed
 
+- October 30 art follow-up: the user endorsed the low-poly train concept's look and requested darker, spooky nighttime locations in the same style. Use deeper ambient shadows and localized lights while retaining nearby action/path readability; the generated night studies are visual explorations, not measured headset lighting targets. See [concept index](art-concepts.md).
+- October 30 visual direction: match existing DuckZ assets with low-poly geometry and visibly pixelated textures. Supplied avatar and Quackville screenshots establish the style reference. Preserve DuckZ character anatomy and locomotion silhouette; prioritize target-headset performance. The train render concept is an image exploration, not an implemented or profiled asset.
 - Cooperative VR horror-comedy for up to eight players.
 - Modern-day setting; no Old West requirement.
 - Cartoon duck avatars with expressive eyes; zombie-duck enemies.
@@ -55,17 +59,27 @@ Authentication source inspection (October 28, 2026): the Unity copy is in `X:\Wo
 
 ## Train
 
+October 31 starting-station decision: every expedition begins at the midpoint of a fixed, editable train-station block before the five randomized scavenging blocks. The station is additional to the random block count and reserves space for a future store; store functionality is not part of this change.
+
 ### Confirmed
 - Reuse moving-platform technology for a real moving train.
+- October 30 art direction: keep the train mostly open air; a small, lightly enclosed front is optional. Windows must extend low enough for the user-reported typical eye line of approximately 0.5 metres above the local ground/deck during gorilla movement. Design around that view, keeping sills and front bodywork from blocking the track and nearby hazards. Exact enclosure and window dimensions require in-rig validation; 0.5 metres is a design reference, not a measured fixed rig height.
 - Large physical STOP/GO lever: accelerate or stop. Exact acceleration curve is tuning.
 - Driving is hold-to-run: grip the OFF lever, push the hand forward until it snaps to GO, and keep gripping. Pulling back while gripping snaps to OFF; pushing forward again resumes GO. Releasing also springs it back to OFF and brakes the train. Only one player/hand controls it at a time. October 31 shortcut: holding T engages GO and releasing T returns to STOP in either Keyboard or VR mode on the editor/desktop client, using the same shared ownership. Physical hand control remains available.
 - Train horn uses a physical hold button: loop the horn while a hand presses it; stop on release. Simulated hands use the same fingertip contact.
 - Coal fuels the train; furnace and readable fuel feedback are needed.
 - October 31: when fuel runs out, coast smoothly to a stop instead of stopping instantly. Current implementation tuning is 2 m/s² deceleration (two seconds from cruise); headset feel remains to be reviewed.
+- Train art modularity: cockpit chair, controls, radio table and furnace must be separate meshes that can be repositioned in the Unity editor. Keep associated interaction anchors and collision aligned when moving a module. This does not request runtime pickup/rearrangement of train equipment.
+- October 30 implementation authorization: build the basic 3D blockout from the production PDF, give each station its own prefab and existing functionality, and replace the live scene train with a main assembly prefab. Implemented in Expedition; see [train blockout](train-production.md#unity-blockout--october-30-2026). Shell meshes remain independently editable. Seat mechanics remain unchanged. The open rear takes precedence over the former displayed rack/hook layout; functional supply items and backpacks remain available. Dimensions and light/effect settings are provisional until target-headset review.
+- October 30 furnace construction clarification: its mouth must be a real opening into a hollow cube interior so objects can be inserted. Fire is separate particle FX inside the cavity, not a solid textured/emissive front panel. Preserve the approved enlarged mouth and tall-stack exterior. This art handoff does not claim implemented geometry or collision.
+- Latest October 30 furnace art correction supersedes the earlier 0.5 x 0.5 metre mouth target: make the single opening larger and the smokestack three times the previous concept's height above its casing, retaining its thickness. Exact enlarged opening dimensions remain unspecified. Furnace stays outside the cockpit. See [furnace revision 4](train-production.md).
 - Fuel decreases slowly as the train moves and remains shared room state across late joining, rejoining, and master changes. Prototype tuning: 0.025 fuel per metre (1 fuel per 10 seconds at cruise); no idle consumption. This rate is provisional.
 - Permanent radio communications station aboard the train, communicating both ways with handheld walkie-talkies. Transmit through the station only while a hand holds its physical TALK button; release stops transmission. Simulated hands use the same fingertip contact.
+- October 30 radio art requirement: a dedicated table carries the radio and a separate upright microphone, following the user's reference. Place the TALK button at the bottom of the microphone assembly/on its base, facing the player. Table size, height and exact placement remain proposals in the [train production study](train-production.md); no scene changes are implied by the drawing.
+- October 30 train art revision: simplify the radio receiver to avoid modeled buttons or knobs suggesting interaction; optional control markings are texture only. Keep the physical mic-base TALK button. Add a forward headlight, a front-center seat with the throttle on the dashboard ahead, and left/right cockpit lamps without a hanging lamp. Use one larger furnace connected to a thick smokestack, with one opening on one face approximately 0.5 x 0.5 metres. Remove the extra edge-mounted furnace and all decorative coal bins/piles/loose coal. Smoke particles emit above the stack while moving. Seat mechanics, exact equipment placement and dimensions beyond that opening target remain proposals, with low-eye-line validation required; this is an art decision, not implemented behavior.
 - Physical equipment storage, not backpack-style slots: an item stays where placed until picked up.
 - Approximately four full-size backpack hooks. Bags remain full size and usable; no inventory nesting.
+- October 30 art layout follow-up supersedes the v2 in-cockpit station placement: put the single furnace and radio table outside the cockpit on opposite sides of the open deck, matching the user's top-view reference. Stack rises directly from the furnace into open sky. The simplified radio is approved. Driver seat/throttle are centered, fuel gauge left and horn right. Remove displayed bags at the rear and remove the rear transverse rail to allow boarding from behind. Reconcile the earlier four-hook storage requirement before implementation; player backpacks and loose-cargo behavior remain in scope. See [revision 3](train-production.md).
 - Loose cargo must work independently of holders.
 
 ### Loose-item contract — launch requirement
@@ -85,6 +99,8 @@ Authentication source inspection (October 28, 2026): the Unity copy is in `X:\Wo
 - A train-mounted spotlight can be grabbed and swiveled, then released to stay on and hold aim relative to the train. Desired idea, but not a launch commitment.
 
 ## Resources and equipment
+
+October 31 confirmed economy decision: implement the [gold economy](gold-economy.md). One-time 100-coin starting wallet; departure and midpoint stores with seven standard gear types and Duckz pull-to-buy interaction; no free gear on the train. Shop deposits pay every connected crew member immediately. Only bars irreversibly deposited in the train safe pay at successful extraction, only to escaped participants. Safe count is visible; held, bagged and loose bars never cash out. Persistent coins and admin credits reuse the Duckz backend. This supersedes the earlier no-wallet and fresh-free-loadout directions. Prices and spawn counts remain initial tuning.
 
 Confirmed: coal scavenging, existing backpack/item interactions, and freely shared equipment.
 
@@ -117,6 +133,8 @@ The user authorized sensible defaults: 0.65 m/s crawling, three-second continuou
 Deferred: enemy boarding, moving-train pathfinding, pounce-and-retreat attacks, and acid spit or other ranged threats aboard.
 
 ## Authored level blocks and crawlgraphs
+
+October 31 layout follow-up: add buildings and coal on the left side of the track as requested. All twelve scavenging blocks now have two additional left-side buildings; each authored variation distributes its existing six coal chunks three per side. Entrances face the track. Existing right-side enemy patrols and baked graphs remain unchanged; the left additions are player scavenging areas. See `week3-session.md` for validation and limits.
 
 October 31 authoring update: coal placements use reusable, editor-visible CoalSpawner markers in every scavenging block. Six pieces per selected variation remain unchanged; closely paired placements were spread across the encounter (12 m minimum in the current authored catalogue). See `week3-session.md` for editing and validation.
 
@@ -243,16 +261,16 @@ Confirmed October 29, 2026: the current implementation scope is Week 2 plus the 
 
 ### Persistence direction
 - Persistent escape count beneath the nametag; reuse cosmetic ownership/purchasing.
-- Current recommended scope: fresh gameplay supplies each run; persist cosmetics, preferences, and escape count.
-- No permanent power progression, classes, or economy planned.
+- Gameplay items reset each run; coins persist in the backend alongside cosmetics, preferences and escape count. The wallet receives 100 coins once, not on every run.
+- No permanent item upgrades or classes. Earned gameplay coins fund repeatable shop purchases.
 
 ## Monetization and scope
 
 Confirmed: reuse existing Duckz cosmetic purchasing infrastructure and provide compound access.
 
-Confirmed October 28: Duck Rails V1 has no coins or wallet. Items are purchased directly through platform IAP transactions. Reuse applicable purchase verification, transaction deduplication, ownership, and restoration code; do not port coin balances, deposits, or coin-priced purchases. Exact purchasable items and whether any are consumable remain to be defined.
+October 31 supersedes the October 28 no-wallet decision: gameplay coins use the Duckz transaction ledger and admin-credit system. Coins buy only in-run equipment. Existing cosmetic IAP remains separate; this change does not authorize selling coins or gameplay advantages for real money.
 
-Proposed: free-to-play, small themed cosmetic selection, no paid gameplay supplies or revives. Upfront pricing is not finalized. No new premium currency, battle pass, shop backend, or cosmetic economy is authorized by this plan.
+Proposed: free-to-play, small themed cosmetic selection, no paid gameplay supplies or revives. Upfront pricing is not finalized. No premium currency, battle pass or new cosmetic economy is authorized; the earned gameplay wallet reuses Duckz infrastructure.
 
 Target headset/store, age-rating suitability, voice/account restrictions, and submission requirements must be verified for the actual release. Earlier discussion assumed Quest and a young audience; treat this as a release requirement to validate, not a completed platform review.
 

@@ -197,14 +197,15 @@ public static class RailStabilityLiveChecks
                         Teleport(RailWorld.Instance.boardingTrigger.bounds.center - Vector3.up * .8f);
                     else if (PhotonSession.Phase == RailPhase.Running && Settled && AllPoses)
                     {
-                        Require(PhotonNetwork.PlayerList.Length == 2 && RailCargo.Active.Count == 42, "Exactly two departing crew and 42 fresh supplies");
+                        Require(PhotonNetwork.PlayerList.Length == 2 && RailCargo.Active.Count == 40, "Exactly two departing crew and 40 authored resources");
                         Board(); Ack("Public departure loaded Expedition with only platform occupants");
                     }
                     if (Host && AllAck)
                     {
                         if (!PhotonNetwork.IsMasterClient) { PhotonNetwork.SetMasterClient(PhotonNetwork.LocalPlayer); break; }
                         control.expedition = PhotonNetwork.CurrentRoom.Name; control.run = PhotonSession.RunId;
-                        control.route = PhotonSession.Get(RailRoute.StateKey, ""); Next(3);
+                        control.route = PhotonSession.Get(RailRoute.StateKey, "");
+                        RailTestTools.SpawnBag(); Next(3);
                     }
                     break;
                 case 3:
@@ -221,7 +222,7 @@ public static class RailStabilityLiveChecks
                     if (age > 16)
                     {
                         Require(RailTrain.Instance.Distance > distance + 20 && RailTrain.Instance.Speed > 3.9f, "Non-master GO under latency");
-                        Require(BagObject.Active.All(b => RailTrain.Instance.Contains(b.transform.position)), "Loose bags remain aboard");
+                        Require(BagObject.Active.Count == 1 && BagObject.Active.All(b => RailTrain.Instance.Contains(b.transform.position)), "Loose bags remain aboard");
                         Require(RailTrain.Instance.Contains(GR.Player.instance.transform.position + Vector3.up), "Local passenger remains aboard");
                         Ack("Moving passengers and loose bags under simulated latency/loss");
                     }
@@ -269,7 +270,7 @@ public static class RailStabilityLiveChecks
                     if (Shopper) { Ack("Shopper unaffected"); break; }
                     if (!Settled || PhotonNetwork.PlayerList.Count(p => !p.IsInactive) != 2 || !AllPoses) break;
                     Require(PhotonSession.RunId == control.run && PhotonSession.Get(RailRoute.StateKey, "") == control.route, "Reconnect changed run/route");
-                    Require(RailCargo.Active.Count == 42, "Reconnect duplicated or lost cargo");
+                    Require(RailCargo.Active.Count == 41, "Reconnect duplicated or lost cargo");
                     if (!VoiceReady()) break;
                     Ack("Reconnect preserved route, supplies, unique avatars and voice room");
                     if (Host && AllAck) Next(7); break;

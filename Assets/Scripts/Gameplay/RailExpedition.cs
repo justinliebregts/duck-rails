@@ -17,6 +17,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     public GameObject[] supplies;
     public Transform[] supplyPoints, coalPoints, enemyPoints;
     public GameObject coalPrefab, enemyPrefab;
+    public GameObject goldPrefab;
+    public Transform[] goldPoints = Array.Empty<Transform>();
     public Transform furnace, bridgeButton, bridgeDeck;
     public TMP_Text gauge, bridgeLabel, results;
     public TMP_Text[] runningLabels;
@@ -48,7 +50,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     {
         Instance = this;
         foreach (var prefab in supplies) PhotonPreparePool.Register(prefab);
-        PhotonPreparePool.Register(coalPrefab); PhotonPreparePool.Register(enemyPrefab);
+        PhotonPreparePool.Register(goldPrefab); PhotonPreparePool.Register(coalPrefab); PhotonPreparePool.Register(enemyPrefab);
         reviveClip = RailControl.Tone("Revive", 330, 1);
         reviveAudio = gameObject.AddComponent<AudioSource>(); reviveAudio.clip = reviveClip; reviveAudio.loop = true; reviveAudio.volume = .12f;
     }
@@ -168,6 +170,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         }
         Present();
         ConsumeCommittedCoal();
+        RailGoldReceiver.PresentRewards(this);
         if (PhotonNetwork.IsMasterClient) SpawnCarrierDrops();
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.Time >= nextTick)
         { nextTick = PhotonNetwork.Time + .1; TickAuthority(); }
@@ -281,6 +284,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             state.bridgeAt = now;
         if (action == "horn" && RailTrain.Instance.Contains(position) && now - p.hornAt > 1)
         { p.horns++; p.hornAt = now; }
+        if (action == "gold") { RailGoldReceiver.ApplyDeposit(state, p, position, target, coalSample, now); return; }
         if (action != "coal") return;
         var view = PhotonView.Find(target);
         if (view == null || state.WasConsumed(target, view.SpawnToken)) return;
@@ -311,7 +315,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         foreach (int id in State.consumed)
         {
             var view = PhotonView.Find(id);
-            if (view != null && State.WasConsumed(id, view.SpawnToken) && view.GetComponent<RailCoal>() != null && view.IsMine) PhotonNetwork.Destroy(view.gameObject);
+            if (view != null && State.WasConsumed(id, view.SpawnToken) &&
+                (view.GetComponent<RailCoal>() != null || view.GetComponent<ItemGoldBar>() != null) && view.IsMine) PhotonNetwork.Destroy(view.gameObject);
         }
     }
     void Present()
@@ -380,14 +385,10 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     {
         string run = PhotonSession.RunId;
         bool Has(string marker) => HasMarker(run, marker);
-        for (int i = 0; i < supplies.Length; i++)
-        {
-            string marker = "supply-" + i;
-            if (Has(marker)) continue;
-            object[] initial = supplies[i].GetComponent<BagObject>() != null ? BagObject.SpawnData(1, new[] { "", "", "", "" }, 0, BagObject.Target.Dropped, 0) : Array.Empty<object>();
-            var data = initial.Concat(new object[] { "rails", run, marker }).ToArray();
-            PhotonNetwork.InstantiateRoomObject(supplies[i].name, supplyPoints[i].position, supplyPoints[i].rotation, 0, data);
-        }
+        // Equipment is bought at shops; never seed free gear aboard the train.
+        for (int i = 0; i < goldPoints.Length; i++)
+            if (!Has("gold-" + i) && !State.consumedMarkers.Contains("gold-" + i))
+                PhotonNetwork.InstantiateRoomObject(goldPrefab.name, goldPoints[i].position, Quaternion.identity, 0, new object[] { "rails", run, "gold-" + i });
         for (int i = 0; i < coalPoints.Length; i++)
             if (!Has("coal-" + i)) PhotonNetwork.InstantiateRoomObject(coalPrefab.name, coalPoints[i].position, Quaternion.identity, 0, new object[] { "rails", run, "coal-" + i });
     }

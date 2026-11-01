@@ -19,7 +19,12 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
     public static void InvalidateHandClaims() { unchecked { HandClaimEpoch++; } }
     public static void InvalidateLife() { unchecked { Life++; } }
     /// <summary>The networked bag prefab (a BagObject). Every client registers it so the master's room objects can spawn.</summary>
-    public static GameObject BagPrefab { get; private set; }
+    static GameObject defaultBagPrefab;
+    public static GameObject BagPrefab
+    {
+        get => PhotonSession.IsRailsRoom && RailWorld.Instance != null ? RailWorld.Instance.bagPrefab : defaultBagPrefab;
+        private set => defaultBagPrefab = value;
+    }
 
     [Header("Rig")]
     [Tooltip("The networked bag prefab, with a PhotonView and BagObject.")]

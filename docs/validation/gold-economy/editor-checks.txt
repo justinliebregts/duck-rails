@@ -1,0 +1,35 @@
+PASS Safe retains one unpaid bar during run
+PASS Downed escaped passenger receives safe payout
+PASS Left-behind player receives no safe payout
+PASS Reconnect and host reconstruction retain safe and eligibility
+PASS Catch-up cannot grant safe payout
+PASS Failure pays no safe gold
+PASS Shop proceeds survive failure for all deposit-time recipients
+PASS Late join cannot claim previous shop deposits
+PASS Reward receipt stable across retries
+PASS Receipts separate runs and recipients
+PASS Loose or held bars are absent from safe accounting
+PASS Exactly seven standard gear types
+PASS All shop purchases are repeatable gameplay goods
+PASS weapon_nail_bat replicates loose train cargo
+PASS weapon_fry_pan replicates loose train cargo
+PASS item_helmet replicates loose train cargo
+PASS item_flashlight replicates loose train cargo
+PASS item_walkie_talkie replicates loose train cargo
+PASS item_night_vision_goggles replicates loose train cargo
+PASS One Duckz pull-to-buy display per item
+PASS container-yard-v1 two editable gold spawners in every variation
+PASS convenience-store-v1 two editable gold spawners in every variation
+PASS electrical-substation-v1 two editable gold spawners in every variation
+PASS farm-silos-v1 two editable gold spawners in every variation
+PASS lakeside-campground-v1 two editable gold spawners in every variation
+PASS lumber-yard-v1 two editable gold spawners in every variation
+PASS maintenance-depot-v1 two editable gold spawners in every variation
+PASS passenger-station-v1 two editable gold spawners in every variation
+PASS quarry-v1 two editable gold spawners in every variation
+PASS roadside-motel-v1 two editable gold spawners in every variation
+PASS scrapyard-v1 two editable gold spawners in every variation
+PASS tunnel-works-v1 two editable gold spawners in every variation
+PASS Safe has count label and Duckz coin shower
+PASS Safe intake accepts interior and excludes deck below
+PASS Safe cannot use immediate Duckz deposit path

@@ -60,6 +60,14 @@ public static class RailWeek3LiveChecks
     static bool AllAck => PhotonNetwork.PlayerList.Length == 3 && PhotonNetwork.PlayerList.All(p => p.CustomProperties[AckKey] is int n && n == stage);
     static void Stage(int value) => PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { [StageKey] = value });
     static void Teleport(Vector3 p) => NewPlayer.instance.Warp(p, Quaternion.identity);
+    // Explicit fixture gear replaces the old free train loadout.
+    static BagObject SpawnFixtureBag()
+    {
+        var prefab = RailWorld.Instance.bagPrefab;
+        var go = PhotonNetwork.InstantiateRoomObject(prefab.name, RailTrain.Instance.transform.position + Vector3.up * .5f,
+            Quaternion.identity, 0, BagObject.SpawnData(1, new[] { "", "", "", "" }, 0, BagObject.Target.Dropped, 0));
+        return go.GetComponent<BagObject>();
+    }
     static void Board() => Teleport(RailTrain.Instance.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 3 - 1) * 1.2f, .35f, -2)));
     static void Tick()
     {
@@ -105,22 +113,22 @@ public static class RailWeek3LiveChecks
                 Require(route.Ready && route.Blocks.Count == 5 && route.Blocks.Select(b => b.id).SequenceEqual(route.Selection.blocks), "Exact five-block route loaded");
                 // WorldReady covers cargo reconstruction, while enemy spawn messages can
                 // arrive afterwards. Give each client a bounded replication settle window.
-                bool seeded = RailCargo.Active.Count == 42 && Game.AI.Enemy.Active.Count == 10;
+                bool seeded = RailCargo.Active.Count == 40 && Game.AI.Enemy.Active.Count == 10;
                 if (!seeded && EditorApplication.timeSinceStartup - worldReadySince < 15) return;
-                Require(seeded, "Expected 42 cargo and 10 enemies after settling; observed cargo=" + RailCargo.Active.Count + " enemies=" + Game.AI.Enemy.Active.Count);
+                Require(seeded, "Expected 40 cargo and 10 enemies after settling; observed cargo=" + RailCargo.Active.Count + " enemies=" + Game.AI.Enemy.Active.Count);
                 firstRun = PhotonSession.RunId; firstRoute = PhotonSession.Get(RailRoute.StateKey, "");
-                if (!action) { Record("Five matching blocks/placements, 42 cargo, 10 enemies; separate Expedition scene"); Ack(); action = true; }
+                if (!action) { Record("Five matching blocks/placements, 40 cargo, 10 enemies; separate Expedition scene"); Ack(); action = true; }
                 if (Host && AllAck) Stage(recovery ? 20 : 2);
             }
             else if (stage == 2 && age > 1)
             {
                 if (PhotonNetwork.IsMasterClient && !action)
                 {
-                    float distance = 0; bool curved = false;
+                    float distance = RailRoute.StationDepartureLength; bool curved = false;
                     foreach (var b in route.Blocks) { if (b.track.Any(p => Mathf.Abs(p.x) > 1)) { curved = true; break; } distance += b.TrackLength; }
                     Require(curved, "Selected route includes a curve for cargo test");
                     if (!session.Commit(new Hashtable { [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, distance + 10, 0f, 0f }, [RailSessionRules.Fuel] = 40f })) return;
-                    bag = BagObject.Active.First(); var coal = UnityEngine.Object.FindFirstObjectByType<RailCoal>(); bag.Put(bag.FirstEmptySlot(), "RailCoal", coal.transform.position, .3f); PhotonNetwork.Destroy(coal.gameObject);
+                    bag = SpawnFixtureBag(); var coal = UnityEngine.Object.FindFirstObjectByType<RailCoal>(); bag.Put(bag.FirstEmptySlot(), "RailCoal", coal.transform.position, .3f); PhotonNetwork.Destroy(coal.gameObject);
                     PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { ["test.week3.bag"] = bag.photonView.ViewID }); action = true;
                 }
                 if (age > 4 && bag != null && bag.Keys().Contains("RailCoal")) { Board(); bagLocal = train.transform.InverseTransformPoint(bag.transform.position); Ack(); }
@@ -147,7 +155,7 @@ public static class RailWeek3LiveChecks
                     var enemy = Game.AI.Enemy.Active.First(e => run.State.carriers.Any(c => c.marker == e.GetComponent<RailCoalCarrier>().Marker && c.carrying));
                     enemy.ReceiveTrustedHit(new Vector3(4, 0, 2), enemy.Root.position); action = true;
                 }
-                if (run.State.carriers.Any(c => c.drops.Count > 0) && RailCargo.Active.Count == 42) Ack();
+                if (run.State.carriers.Any(c => c.drops.Count > 0) && RailCargo.Active.Count == 41) Ack();
                 if (Host && AllAck) { Record("Accepted enemy hit dropped one replicated coal chunk"); Stage(6); }
             }
             else if (stage == 6)
@@ -171,7 +179,7 @@ public static class RailWeek3LiveChecks
                 if (PhotonNetwork.PlayerList.Any(p => PhotonPlayer.ForActor(p.ActorNumber) == null)) return;
                 Require(firstRoute == PhotonSession.Get(RailRoute.StateKey, "") && route.Ready, "Late re-entry preserves exact route");
                 Require(run.State.bridgeAt == bridgeAt && run.State.BridgeProgress(PhotonNetwork.Time) > .1f, "Bridge clock survives handoff/re-entry");
-                Require(bag != null && bag.Keys().Contains("RailCoal") && RailCargo.Active.Count == 42, "Re-entry retains cargo and bag contents");
+                Require(bag != null && bag.Keys().Contains("RailCoal") && RailCargo.Active.Count == 41, "Re-entry retains cargo and bag contents");
                 Board(); Ack(); if (Host && AllAck) { Record("Route, bridge clock and loaded cargo reconstructed by late rejoiner"); Stage(9); }
             }
             else if (stage == 9 && run.State.BridgeProgress(PhotonNetwork.Time) >= 1)
@@ -189,7 +197,7 @@ public static class RailWeek3LiveChecks
             else if (stage == 12 && PhotonSession.Phase == RailPhase.Staging) { if (PhotonNetwork.IsMasterClient && age > 1) session.StartPrivateRun(); }
             else if (stage == 12 && PhotonSession.Phase == RailPhase.Running && age > 3)
             {
-                Require(PhotonSession.RunId != firstRun && route.Selection.run == PhotonSession.RunId && RailCargo.Active.Count == 42, "Replay has new route snapshot and exactly fresh supplies");
+                Require(PhotonSession.RunId != firstRun && route.Selection.run == PhotonSession.RunId && RailCargo.Active.Count == 40, "Replay has new route snapshot and exactly fresh supplies");
                 Board(); Ack(); if (Host && AllAck) { Record("Replay loaded fresh five-block route and supplies"); Stage(13); }
             }
             else if (stage == 13 && PhotonSession.Phase == RailPhase.Running)
@@ -237,7 +245,7 @@ public static class RailWeek3LiveChecks
             {
                 if (PhotonNetwork.IsMasterClient && !action && age > 1)
                 {
-                    bag = BagObject.Active.First(b => b.photonView.IsMine); var coal = UnityEngine.Object.FindFirstObjectByType<RailCoal>();
+                    bag = SpawnFixtureBag(); var coal = UnityEngine.Object.FindFirstObjectByType<RailCoal>();
                     bag.Put(bag.FirstEmptySlot(), "RailCoal", coal.transform.position, .3f); PhotonNetwork.Destroy(coal.gameObject);
                     PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { ["test.week3.bag"] = bag.photonView.ViewID }); action = true;
                 }

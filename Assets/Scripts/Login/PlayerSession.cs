@@ -80,7 +80,7 @@ public class PlayerSession : MonoBehaviour
     IEnumerator RefreshAdminRoutine()
     {
         DuckzApiClient.Response<object> response = null;
-        yield return DuckzApiClient.Get<object>("duckz/admin/check", r => response = r);
+        yield return DuckzApiClient.Get<object>("admin/check", r => response = r);
         IsAdmin = response.Success;
     }
 

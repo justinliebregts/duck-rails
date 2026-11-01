@@ -143,7 +143,7 @@ public sealed class RailWorld : MonoBehaviour
         if (string.IsNullOrEmpty(run)) return;
         if (PhotonSession.Get("rails.seeded", "") != run)
         {
-            if (RailExpedition.Instance != null && RailExpedition.Instance.supplies.Length > 0)
+            if (RailExpedition.Instance != null)
             {
                 RailExpedition.Instance.SeedCargo();
                 PhotonSession.Instance.Commit(new Hashtable { ["rails.seeded"] = run, [RailSessionRules.Cargo] = CurrentCargo() });

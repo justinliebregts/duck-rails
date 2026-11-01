@@ -1,0 +1,504 @@
+
+> @coreui/coreui-free-vue-admin-template@3.1.4 build
+> vue-cli-service build
+
+
+-  Building for production...
+DEPRECATION WARNING [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
+
+More info: https://sass-lang.com/d/legacy-js-api
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+13 │ @import 'assets/scss/style';
+   │         ^^^^^^^^^^^^^^^^^^^
+   ╵
+    src\App.vue 13:9  root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+2 │ @import "variables";
+  │         ^^^^^^^^^^^
+  ╵
+    src\assets\scss\style.scss 2:9  @import
+    src\App.vue 13:9                root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+4 │ @import "~@coreui/coreui/scss/coreui";
+  │         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  ╵
+    src\assets\scss\style.scss 4:9  @import
+    src\App.vue 13:9                root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+6 │ @import "custom";
+  │         ^^^^^^^^
+  ╵
+    src\assets\scss\style.scss 6:9  @import
+    src\App.vue 13:9                root stylesheet
+
+DEPRECATION WARNING [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+  ╷
+9 │ @import "functions";
+  │         ^^^^^^^^^^^
+  ╵
+    node_modules\@coreui\coreui\scss\coreui.scss 9:9  @import
+    src\assets\scss\style.scss 4:9                    @import
+    src\App.vue 13:9                                  root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($level > 0): $black; else: $white)
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+108 │   $color-base: if($level > 0, $black, $white);
+    │                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules\@coreui\coreui\scss\_functions.scss 108:16  @import
+    node_modules\@coreui\coreui\scss\coreui.scss 9:9         @import
+    src\assets\scss\style.scss 4:9                           @import
+    src\App.vue 13:9                                         root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($return-calc == true): calc(#{$value1} + #{$value2}); else: $value1 + unquote(" + ") + $value2)
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+129 │   @return if($return-calc == true, calc(#{$value1} + #{$value2}), $value1 + unquote(" + ") + $value2);
+    │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules\@coreui\coreui\scss\_functions.scss 129:11  @import
+    node_modules\@coreui\coreui\scss\coreui.scss 9:9         @import
+    src\assets\scss\style.scss 4:9                           @import
+    src\App.vue 13:9                                         root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($return-calc == true): calc(#{$value1} - #{$value2}); else: $value1 + unquote(" - ") + $value2)
+
+More info: https://sass-lang.com/d/if-function
+
+    ╷
+149 │   @return if($return-calc == true, calc(#{$value1} - #{$value2}), $value1 + unquote(" - ") + $value2);
+    │           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules\@coreui\coreui\scss\_functions.scss 149:11  @import
+    node_modules\@coreui\coreui\scss\coreui.scss 9:9         @import
+    src\assets\scss\style.scss 4:9                           @import
+    src\App.vue 13:9                                         root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+21 │   $grays: map-merge(
+   │ ┌─────────^
+22 │ │   (
+23 │ │     "100":  $gray-100,
+24 │ │     "200":  $gray-200,
+25 │ │     "300":  $gray-300,
+26 │ │     "400":  $gray-400,
+27 │ │     "500":  $gray-500,
+28 │ │     "600":  $gray-600,
+29 │ │     "700":  $gray-700,
+30 │ │     "800":  $gray-800,
+31 │ │     "900":  $gray-900
+32 │ │   ),
+33 │ │   $grays
+34 │ │ );
+   │ └─^
+   ╵
+    node_modules\@coreui\coreui\scss\variables\_colors.scss 21:9  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 7:9          @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9             @import
+    src\assets\scss\style.scss 4:9                                @import
+    src\App.vue 13:9                                              root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+99  │   $theme-colors: map-merge(
+    │ ┌────────────────^
+100 │ │   (
+101 │ │     "primary":    $primary,
+102 │ │     "secondary":  $secondary-25,
+103 │ │     "success":    $success,
+104 │ │     "info":       $info,
+105 │ │     "warning":    $warning,
+106 │ │     "danger":     $danger,
+107 │ │     "light":      $light,
+108 │ │     "dark":       $dark
+109 │ │   ),
+110 │ │   $theme-colors
+111 │ │ );
+    │ └─^
+    ╵
+    node_modules\@coreui\coreui\scss\variables\_colors.scss 99:16  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 7:9           @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9              @import
+    src\assets\scss\style.scss 4:9                                 @import
+    src\App.vue 13:9                                               root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+    ╷
+126 │   $yiq-theme-map: map-merge(
+    │ ┌─────────────────^
+127 │ │   (
+128 │ │     default: (
+129 │ │       "yiq-text-dark":  $yiq-text-dark,
+130 │ │       "yiq-text-light":  $yiq-text-light
+131 │ │     )
+132 │ │   ),
+133 │ │   $yiq-theme-map
+134 │ │ );
+    │ └─^
+    ╵
+    node_modules\@coreui\coreui\scss\variables\_colors.scss 126:17  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 7:9            @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9               @import
+    src\assets\scss\style.scss 4:9                                  @import
+    src\App.vue 13:9                                                root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+24 │   $brands-colors: map-merge(
+   │ ┌─────────────────^
+25 │ │   (
+26 │ │     "facebook":        $facebook,
+27 │ │     "twitter":         $twitter,
+28 │ │     "linkedin":        $linkedin,
+29 │ │     "flickr":          $flickr,
+30 │ │     "tumblr":          $tumblr,
+31 │ │     "xing":            $xing,
+32 │ │     "github":          $github,
+33 │ │     "stack-overflow":  $stack-overflow,
+34 │ │     "youtube":         $youtube,
+35 │ │     "dribbble":        $dribbble,
+36 │ │     "instagram":       $instagram,
+37 │ │     "pinterest":       $pinterest,
+38 │ │     "vk":              $vk,
+39 │ │     "yahoo":           $yahoo,
+40 │ │     "behance":         $behance,
+41 │ │     "reddit":          $reddit,
+42 │ │     "vimeo":           $vimeo
+43 │ │   ),
+44 │ │   $brands-colors
+45 │ │ );
+   │ └─^
+   ╵
+    node_modules\@coreui\coreui\scss\variables\_brand-colors.scss 24:17  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 8:9                 @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                    @import
+    src\assets\scss\style.scss 4:9                                       @import
+    src\App.vue 13:9                                                     root stylesheet
+
+DEPRECATION WARNING [global-builtin]: Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use map.merge instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+   ╷
+47 │   $theme-gradients: map-merge(
+   │ ┌───────────────────^
+48 │ │   (
+49 │ │     "primary":    $primary-gradient,
+50 │ │     "secondary":  $secondary-gradient,
+51 │ │     "success":    $success-gradient,
+52 │ │     "info":       $info-gradient,
+53 │ │     "warning":    $warning-gradient,
+54 │ │     "danger":     $danger-gradient,
+55 │ │     "light":      $light-gradient,
+56 │ │     "dark":       $dark-gradient
+57 │ │   ),
+58 │ │   $theme-gradients
+59 │ │ );
+   │ └─^
+   ╵
+    node_modules\@coreui\coreui\scss\variables\_gradients.scss 47:19  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 9:9              @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                 @import
+    src\assets\scss\style.scss 4:9                                    @import
+    src\App.vue 13:9                                                  root stylesheet
+
+DEPRECATION WARNING [slash-div]: Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+
+Recommendation: math.div($spacer, 2) or calc($spacer / 2)
+
+More info and automated migrator: https://sass-lang.com/d/slash-div
+
+   ╷
+31 │ $headings-margin-bottom:  $spacer / 2 !default;
+   │                           ^^^^^^^^^^^
+   ╵
+    node_modules\@coreui\coreui\scss\variables\_typography.scss 31:27  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 18:9              @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                  @import
+    src\assets\scss\style.scss 4:9                                     @import
+    src\App.vue 13:9                                                   root stylesheet
+
+DEPRECATION WARNING [color-functions]: darken() is deprecated. Suggestions:
+
+color.scale($color, $lightness: -30.6%)
+color.adjust($color, $lightness: -15%)
+
+More info: https://sass-lang.com/d/color-functions
+
+   ╷
+13 │ $link-hover-color:                         darken($link-color, 15%) !default;
+   │                                            ^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    node_modules\@coreui\coreui\scss\variables\components\_links.scss 13:44  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 22:9                    @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                        @import
+    src\assets\scss\style.scss 4:9                                           @import
+    src\App.vue 13:9                                                         root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 13.6607142857%)
+color.adjust($color, $lightness: 7.5%)
+
+More info: https://sass-lang.com/d/color-functions
+
+   ╷
+35 │ $table-dark-border-color:  lighten($table-dark-bg, 7.5%) !default;
+   │                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    node_modules\@coreui\coreui\scss\variables\components\_tables.scss 35:28  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 23:9                     @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                         @import
+    src\assets\scss\style.scss 4:9                                            @import
+    src\App.vue 13:9                                                          root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 49.0384615385%)
+color.adjust($color, $lightness: 25%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+108 │ $input-focus-border-color:  lighten($component-active-bg, 25%) !default;
+    │                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules\@coreui\coreui\scss\variables\components\_buttons-forms.scss 108:29  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 24:9                             @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                                 @import
+    src\assets\scss\style.scss 4:9                                                    @import
+    src\App.vue 13:9                                                                  root stylesheet
+
+DEPRECATION WARNING [slash-div]: Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+
+Recommendation: math.div($input-padding-y, 2) or calc($input-padding-y / 2)
+
+More info and automated migrator: https://sass-lang.com/d/slash-div
+
+    ╷
+120 │ $input-height-inner-quarter:  add($input-line-height * .25em, $input-padding-y / 2) !default;
+    │                                                               ^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules\@coreui\coreui\scss\variables\components\_buttons-forms.scss 120:63  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 24:9                             @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                                 @import
+    src\assets\scss\style.scss 4:9                                                    @import
+    src\App.vue 13:9                                                                  root stylesheet
+
+DEPRECATION WARNING [slash-div]: Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+
+Recommendation: math.div($custom-control-indicator-size, 2) or calc($custom-control-indicator-size / 2)
+
+More info and automated migrator: https://sass-lang.com/d/slash-div
+
+   ╷
+28 │ $custom-switch-indicator-border-radius:  $custom-control-indicator-size / 2 !default;
+   │                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    node_modules\@coreui\coreui\scss\variables\components\_custom-forms.scss 28:42  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 25:9                           @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                               @import
+    src\assets\scss\style.scss 4:9                                                  @import
+    src\App.vue 13:9                                                                root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 68.6538461538%)
+color.adjust($color, $lightness: 35%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+112 │ $custom-control-indicator-active-bg:            lighten($component-active-bg, 35%) !default;
+    │                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules\@coreui\coreui\scss\variables\components\_custom-forms.scss 112:49  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 25:9                            @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                                @import
+    src\assets\scss\style.scss 4:9                                                   @import
+    src\App.vue 13:9                                                                 root stylesheet
+
+DEPRECATION WARNING [color-functions]: lighten() is deprecated. Suggestions:
+
+color.scale($color, $lightness: 68.6538461538%)
+color.adjust($color, $lightness: 35%)
+
+More info: https://sass-lang.com/d/color-functions
+
+    ╷
+135 │ $custom-range-thumb-active-bg:    lighten($component-active-bg, 35%) !default;
+    │                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+    node_modules\@coreui\coreui\scss\variables\components\_custom-forms.scss 135:35  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 25:9                            @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                                @import
+    src\assets\scss\style.scss 4:9                                                   @import
+    src\App.vue 13:9                                                                 root stylesheet
+
+DEPRECATION WARNING [slash-div]: Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+
+Recommendation: math.div($spacer, 2) or calc($spacer / 2)
+
+More info and automated migrator: https://sass-lang.com/d/slash-div
+
+   ╷
+16 │ $nav-divider-margin-y:  $spacer / 2 !default;
+   │                         ^^^^^^^^^^^
+   ╵
+    node_modules\@coreui\coreui\scss\variables\components\_navs.scss 16:25  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 26:9                   @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                       @import
+    src\assets\scss\style.scss 4:9                                          @import
+    src\App.vue 13:9                                                        root stylesheet
+
+DEPRECATION WARNING [slash-div]: Using / for division outside of calc() is deprecated and will be removed in Dart Sass 2.0.0.
+
+Recommendation: math.div($spacer, 2) or calc($spacer / 2)
+
+More info and automated migrator: https://sass-lang.com/d/slash-div
+
+  ╷
+5 │ $navbar-padding-y:  $spacer / 2 !default;
+  │                     ^^^^^^^^^^^
+  ╵
+    node_modules\@coreui\coreui\scss\variables\components\_navbar.scss 5:21  @import
+    node_modules\@coreui\coreui\scss\_variables.scss 27:9                    @import
+    node_modules\@coreui\coreui\scss\coreui.scss 10:9                        @import
+    src\assets\scss\style.scss 4:9                                           @import
+    src\App.vue 13:9                                                         root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass(type-of($fs) == "number"): unit($fs); else: false)
+
+More info: https://sass-lang.com/d/if-function
+
+   ╷
+66 │   $fs-unit: if(type-of($fs) == "number", unit($fs), false);
+   │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    node_modules\@coreui\coreui\scss\vendors\_rfs.scss 66:13  @import
+    node_modules\@coreui\coreui\scss\_mixins.scss 6:9         @import
+    node_modules\@coreui\coreui\scss\coreui.scss 11:9         @import
+    src\assets\scss\style.scss 4:9                            @import
+    src\App.vue 13:9                                          root stylesheet
+
+DEPRECATION WARNING [if-function]: The Sass if() syntax is deprecated in favor of the modern CSS syntax.
+
+Suggestion: if(sass($important): " !important"; else: "")
+
+More info: https://sass-lang.com/d/if-function
+
+   ╷
+69 │   $rfs-suffix: if($important, " !important", "");
+   │                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   ╵
+    node_modules\@coreui\coreui\scss\vendors\_rfs.scss 69:16  @import
+    node_modules\@coreui\coreui\scss\_mixins.scss 6:9         @import
+    node_modules\@coreui\coreui\scss\coreui.scss 11:9         @import
+    src\assets\scss\style.scss 4:9                            @import
+    src\App.vue 13:9                                          root stylesheet
+
+WARNING: 728 repetitive deprecation warnings omitted.
+
+ WARNING  Compiled with 2 warnings5:00:18 PM
+
+ warning
+
+asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets:
+  css/app.bdad1978.css (384 KiB)
+  js/chunk-2d225dd6.43b7a21c.js (399 KiB)
+  js/chunk-vendors.dcd18b24.js (1.27 MiB)
+
+ warning
+
+entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+Entrypoints:
+  app (1.68 MiB)
+      js/chunk-vendors.dcd18b24.js
+      css/app.bdad1978.css
+      js/app.2f84e8c8.js
+
+
+  File                                    Size              Gzipped
+
+  dist\js\chunk-vendors.dcd18b24.js       1303.70 KiB       387.56 KiB
+  dist\js\chunk-2d225dd6.43b7a21c.js      398.64 KiB        96.83 KiB
+  dist\js\app.2f84e8c8.js                 28.61 KiB         10.33 KiB
+  dist\js\chunk-2d237702.be4c9c49.js      21.09 KiB         5.83 KiB
+  dist\js\chunk-2d0f0833.f88692f5.js      18.67 KiB         4.70 KiB
+  dist\js\chunk-686e56d2.a1d9e9f8.js      13.09 KiB         4.32 KiB
+  dist\js\chunk-240c27d0.4454b506.js      12.95 KiB         4.66 KiB
+  dist\js\chunk-2d217a8f.d60d6f93.js      9.60 KiB          3.54 KiB
+  dist\js\chunk-686f0f46.a127c22e.js      8.91 KiB          3.17 KiB
+  dist\js\chunk-2d0c4e40.5b5f3f8a.js      6.06 KiB          1.95 KiB
+  dist\js\chunk-2d0cfaf2.4a8a5a34.js      5.08 KiB          1.61 KiB
+  dist\js\chunk-07fe4db5.a80074fe.js      4.56 KiB          2.34 KiB
+  dist\js\chunk-911d87f6.50140e40.js      4.53 KiB          1.83 KiB
+  dist\js\chunk-2d21a3d2.b92402cd.js      1.62 KiB          0.86 KiB
+  dist\js\chunk-2d0e6155.d30ec0d2.js      1.46 KiB          0.81 KiB
+  dist\js\chunk-2d0c4303.a6f83eb0.js      1.08 KiB          0.62 KiB
+  dist\js\chunk-2d22c303.e5ee7126.js      1.06 KiB          0.63 KiB
+  dist\css\app.bdad1978.css               384.38 KiB        45.02 KiB
+  dist\css\chunk-240c27d0.e60e0274.css    0.58 KiB          0.29 KiB
+  dist\css\chunk-911d87f6.7bccac6b.css    0.19 KiB          0.11 KiB
+  dist\css\chunk-07fe4db5.62e57bf1.css    0.05 KiB          0.07 KiB
+
+  Images and other types of assets omitted.
+
+ DONE  Build complete. The dist directory is ready to be deployed.
+ INFO  Check out deployment instructions at https://cli.vuejs.org/guide/deployment.html

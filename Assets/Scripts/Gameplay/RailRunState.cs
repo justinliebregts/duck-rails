@@ -12,6 +12,8 @@ public sealed class RailRunState
     public double bridgeAt, allDownAt, finishedAt;
     public bool finished, success;
     public string reason;
+    public List<RailGoldDeposit> gold = new List<RailGoldDeposit>();
+    public int SafeBars => gold.Count(g => g.safe);
     public List<RailParticipant> players = new List<RailParticipant>();
     public List<int> consumed = new List<int>();
     public List<string> consumedSpawns = new List<string>();
@@ -34,6 +36,15 @@ public sealed class RailRunState
         foreach (var p in players) { p.escaped = winners.Contains(p.id); p.reviveAt = 0; p.rescuer = ""; }
         finished = true; finishedAt = now; reason = cause; success = players.Any(p => p.escaped);
     }
+}
+
+[Serializable]
+public sealed class RailGoldDeposit
+{
+    public string token;
+    public int receiver;
+    public bool safe;
+    public string[] recipients;
 }
 
 [Serializable]

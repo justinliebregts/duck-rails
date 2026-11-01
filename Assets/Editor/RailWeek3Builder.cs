@@ -55,32 +55,76 @@ public static class RailWeek3Builder
         for (int z = 12; z < 160; z += 24)
         { Box(root.transform, "Trackside post", new Vector3(-10, 2, z), new Vector3(.3f, 4, .3f), steel); }
         Layout(root.transform, index);
+        AddLeftSide(root.transform, index);
         Text(root.transform, Names[index].ToUpperInvariant(), new Vector3(15, 4, 45), 2.5f);
         Text(root.transform, "STOP • FIND COAL • REGROUP\nHit coal-carrying zombies to knock coal loose", new Vector3(10, 2.4f, 52), 1.3f);
         // Authored candidate lanes; choose different subsets, never random positions in geometry.
         Physics.SyncTransforms();
-        var candidates = new System.Collections.Generic.List<Vector3>();
-        foreach (float z in new[] { 56f, 68f, 80f, 92f, 104f }) foreach (float x in new[] { 12f, 16f, 24f, 32f })
-        {
-            if (!Physics.Raycast(new Vector3(x, 1.8f, z), Vector3.down, out var hit, 4, 1 << 6)) continue;
-            if (hit.point.y > 2 || Physics.CheckSphere(hit.point + Vector3.up * .65f, .45f, 1 << 6, QueryTriggerInteraction.Ignore)) continue;
-            candidates.Add(hit.point + Vector3.up * .45f);
-        }
-        if (candidates.Count < 9) throw new InvalidOperationException(Names[index] + " has too few clear spawn candidates.");
+        var candidates = RailCoalAuthoring.Candidates(root);
         block.variations = new RailSpawnSet[3];
         for (int v = 0; v < 3; v++)
         {
             var parent = Point(root.transform, "Spawn variation " + v, Vector3.zero);
-            var order = RailCoalAuthoring.Spread(candidates, v);
+            var order = RailCoalAuthoring.SpreadBothSides(candidates, v);
             block.variations[v] = new RailSpawnSet {
                 coal = Enumerable.Range(0, 6).Select(c => RailCoalAuthoring.Create(parent, "CoalSpawner " + (c + 1), order[c])).ToArray(),
                 enemies = new[] { Point(parent, "Enemy A", new Vector3(12, .2f, 50 + v * 4)), Point(parent, "Enemy B", new Vector3(12, .2f, 110 - v * 4)) }
             };
         }
         Bake(block, Id(index));
+        RailEconomyBuilder.AddGold(block);
         var prefab = PrefabUtility.SaveAsPrefabAsset(root, Folder + "/" + Id(index) + ".prefab").GetComponent<RailBlock>();
         EditorSceneManager.MarkSceneDirty(scene); // disposable authoring scene, no scene asset required
         return prefab;
+    }
+    // Additive authoring also lets existing blocks gain a left side without rebuilding scenes or graphs.
+    public static void AddLeftSide(Transform root, int index)
+    {
+        if (root.Find("Left-side buildings") != null) return;
+        var left = Point(root, "Left-side buildings", Vector3.zero);
+        string[] near = { "Parts store", "Stockroom", "Motel office", "Tool shed", "Dispatch office", "Ticket hall", "Farm workshop", "Site office", "Salvage office", "Lakeside cabin", "Service cabin", "Quarry office" };
+        string[] far = { "Maintenance workshop", "Delivery shelter", "Guest rooms", "Saw workshop", "Freight shelter", "Waiting shelter", "Feed barn", "Tool store", "Parts workshop", "Boathouse", "Switchgear shelter", "Equipment shed" };
+        var metal = Material("Metal"); var station = Material("Station"); var safety = Material("Safety");
+        void Shed(string name, float x, float z, float width, float depth)
+        {
+            var building = Point(left, name, new Vector3(x, 0, z));
+            Box(building, "Back wall", new Vector3(-width / 2, 2, 0), new Vector3(.4f, 4, depth), station);
+            Box(building, "End wall A", new Vector3(0, 2, -depth / 2), new Vector3(width, 4, .4f), station);
+            Box(building, "End wall B", new Vector3(0, 2, depth / 2), new Vector3(width, 4, .4f), station);
+            Box(building, "Roof", new Vector3(0, 4.1f, 0), new Vector3(width, .25f, depth), metal);
+            // The open +X face looks toward the train, with clear walk-in access.
+            Box(building, "Workbench", new Vector3(-width / 2 + 2, .6f, 0), new Vector3(2, 1.2f, 3), safety);
+        }
+        Shed(near[index], -24, 62, 16, index % 3 == 0 ? 22 : 18);
+        Shed(far[index], index % 2 == 0 ? -26 : -22, 98, 16, index % 3 == 1 ? 22 : 18);
+        if (index == 9)
+        {
+            // Keep the new cabins on dry shoreline and retain the lake/dock silhouette.
+            var lake = root.Find("Lake surface");
+            lake.localPosition = new Vector3(-40, -.08f, 80); lake.localScale = new Vector3(14, .1f, 65);
+            var dock = root.Find("Dock");
+            dock.localPosition = new Vector3(-27, .18f, 80); dock.localScale = new Vector3(22, .35f, 4);
+        }
+    }
+
+    [MenuItem("Duck Rails/Authoring/Add Left-Side Buildings and Coal")]
+    public static void AddLeftSides()
+    {
+        if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");
+        for (int i = 0; i < Names.Length; i++)
+        {
+            string path = Folder + "/" + Id(i) + ".prefab";
+            var root = PrefabUtility.LoadPrefabContents(path);
+            try
+            {
+                AddLeftSide(root.transform, i);
+                RailCoalAuthoring.PlaceMarkers(root.GetComponent<RailBlock>());
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+        AssetDatabase.SaveAssets();
+        Debug.Log("Added left-side buildings and split coal three per side in all twelve blocks.");
     }
     static void Layout(Transform root, int i)
     {
@@ -187,7 +231,9 @@ public static class RailWeek3Builder
         PrefabUtility.SaveAsPrefabAsset(env.gameObject, Folder + "/bridge-finale-v1.prefab");
         env.position = Vector3.forward * 870; run.bridgeZ = 950;
         var routeObject = new GameObject("Authored route"); var route = routeObject.AddComponent<RailRoute>(); var manager = routeObject.AddComponent<EnemyManager>();
+        RailStartingStationBuilder.Install(route);
         route.catalog = catalog; route.finale = finalBlock; route.finaleRoot = env; route.expedition = run; route.manager = manager; run.enemies = manager;
+        RailEconomyBuilder.InstallScene(route);
         var serialized = new SerializedObject(manager); serialized.FindProperty("surfaceMask").intValue = 1 << 6; serialized.FindProperty("visionMask").intValue = 1 << 6; serialized.FindProperty("maxEnemies").intValue = 0; serialized.ApplyModifiedPropertiesWithoutUndo();
         run.coalPoints = Array.Empty<Transform>(); run.enemyPoints = Array.Empty<Transform>();
         Text(world.train.transform, "FIVE STOPS → BRIDGE → DAWN\nRelease coal into furnace. Hold a hand near a downed duck for 3 seconds.\nBrake at the bridge. Press the outside button. Wait until fully lowered.", new Vector3(0, 2.1f, -4.4f), 1.1f).transform.localRotation = Quaternion.Euler(0, 180, 0);

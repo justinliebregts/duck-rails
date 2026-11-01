@@ -22,7 +22,7 @@
 ## Working approach
 - Implement and prove session architecture first, using actual moving-platform and shared-item state; then build the expedition loop.
 - Preserve existing locomotion, grabbing, backpack, voice, and moving-platform feel.
-- Reuse cosmetic purchasing infrastructure; do not introduce a new currency or commerce backend.
+- Reuse existing Duckz purchasing and wallet infrastructure. October 31: gameplay coins, gold deposits, two expedition shops and the train safe are authorized; keep them separate from real-money cosmetics. See docs/gold-economy.md.
 - Keep confirmed decisions separate from proposed defaults and unresolved questions. Do not silently promote a proposal into a requirement.
 - Update the design and milestone checklist when decisions change or deliverables are verified.
 - Test networked behavior across real clients and target headsets; a single editor instance is insufficient evidence.

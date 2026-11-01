@@ -2,6 +2,47 @@
 
 Handoff date: October 28, 2026. Read `game-design.md` for decision status and scope.
 
+## Art direction deliverables
+
+- [x] Build and install the modular Unity train blockout (October 30): main train prefab in Expedition, four nested station prefabs, separate shell pieces, hollow furnace, relocated coal acceptance, existing drive/horn/radio interactions, headlight and bounded fire/smoke. Geometry/binding checks and all eleven quick regression suites passed; two authenticated clients passed stopped/moving/post-handoff coal consumption. The Week 3 builder preserves the edited train prefab. See [implementation and evidence](train-production.md#unity-blockout--october-30-2026).
+- [ ] Review the blockout on target headsets for control reach, natural low sightlines, rear/side boarding and eight-player circulation; profile lights and particles. Finish production meshes and atlas mapping after layout review.
+
+- [x] Deliver five-view train turnaround and proposed 16-tile material atlas in the [production study](train-production.md): front, back, right side, top and rear-right three-quarter; two-page supplement visually reviewed. Station sides and camera-facing details refined. Generated concepts only, not exact projections from a shared mesh; UV mapping, padding and production texture settings remain pending.
+
+- [x] Clarify the furnace construction in concept revision 5: actual mouth, hollow cube interior and separate fire particle FX. Retain the approved larger opening and tall stack. Updated [concept package](train-production.md), visually reviewed the revised image/PDF page, and recorded future collision/insertion constraints; no Unity implementation claimed.
+
+- [x] Deliver furnace art revision 4: enlarged single opening and stack three times the prior concept height above the casing, retaining thickness. Saved standalone image and updated five-page [train package](train-production.md); changed PDF pages visually reviewed. Supersedes the old 0.5 x 0.5 m opening target; final dimensions and implementation remain pending.
+
+- [x] Deliver [train study revision 3](train-production.md) (October 30): furnace and radio outside the cockpit, straight furnace stack into open sky, approved simplified radio, centered seat/throttle with fuel left and horn right, no displayed rear bags, and open rear boarding without a transverse rail. Revised top-view and cockpit concepts plus four-page PDF visually reviewed. Earlier storage-hook requirements remain to reconcile; no Unity implementation or ergonomic acceptance claimed.
+
+- [x] Revise the [train production study](train-production.md) to a four-page v2 PDF (October 30): simplified receiver, retained mic-base TALK button, front headlight, center seat with throttle ahead, two side lamps, and one larger furnace with a single approximately 0.5 x 0.5 m mouth and connected thick stack. Decorative coal and hanging lamp removed. Images and PDF visually reviewed; generated orientation/spacing remains illustrative. No models or Unity changes; rig reach, sightlines, seat behavior, particles and lighting acceptance remain pending.
+
+- [x] Create the [train production study](train-production.md): three-page PDF with deck layout, provisional heights, turnaround views, and the required table-mounted radio/mic with TALK button at the mic base (October 30). PDF visually reviewed. Drawing delivery only; model dimensions, interaction reach and headset acceptance remain unverified.
+
+- [x] Record user approval of the low-poly train render and the three latest night location renders as the visual direction (October 30). Production geometry, interaction fit, headset lighting and performance remain unverified.
+
+- [x] Produce darker night location concepts in the endorsed low-poly style: Maintenance Depot, Roadside Motel and Lakeside Campground (October 30). Images and prompts are saved in the [concept index](art-concepts.md); no production scene or lighting acceptance is claimed.
+
+- [x] Revise the train concept toward DuckZ's low-poly, pixel-textured asset style using the supplied references; update Art Guide v0.3 (October 30). Generated image only, with no 3D/Unity asset or performance claim. See [concept index](art-concepts.md).
+- [ ] Carry the confirmed DuckZ style through production meshes and texture treatment, then profile the assembled route on Quest 3.
+
+- [x] Deliver initial [rough 2D concepts](art-concepts.md): an open-air train sheet with low-eye-line study, Maintenance Depot and Roadside Motel (October 30). Visual exploration only; no 3D/Unity changes, production design approval or headset acceptance.
+
+- [x] Create the initial [art guide](art-guide.md), with an editable source and six-page PDF reading copy (`output/pdf/duck-rails-art-guide.pdf`); all PDF pages visually reviewed October 30. This completes the guide deliverable, not approval of the proposed look or in-game art acceptance.
+- [ ] Develop train concepts and a Maintenance Depot lighting sample using the guide; establish an authoring workflow that protects art from builder regeneration.
+- [ ] Apply the October 30 mostly open-air train direction, with optional light enclosure at the front. Review a section drawing and in-rig views at approximately 0.5 metres above the deck; verify low windows, front bodywork, rails and cargo preserve visibility of the track and nearby hazards without standing or climbing. Exact dimensions remain to be validated.
+- [ ] Validate the finished train/depot art slice on Quest 3 before expanding the treatment across the route.
+
+## October 31 — gold economy
+
+Confirmed scope and validation are tracked in [gold-economy.md](gold-economy.md). This supersedes the old no-wallet and free train gear requirements.
+
+- [x] Local economy implementation and bounded validation: seven-item shops, gold spawners, train safe, persistent-reward queue, backend welcome grant/admin controls. Twelve editor suites (35 economy assertions), solo intake/pull checks, three-client expedition regression, Go tests and admin build passed. See the validation record for manual test setup and limits; this does not close deployed economy or headset acceptance.
+- [ ] Validate first-wallet 100 coins exactly once, persistent balance and admin credits against the deployed Rails backend.
+- [ ] Verify both shops with all seven standard gear types, physical pull line, success, insufficient funds and restocking on real clients/headsets.
+- [ ] Verify shared shop payouts, safe count/irreversible intake, escape-only safe payout, failure, loose/held exclusions, reconnect and master handoff.
+- [ ] Apply additive economy SQL and deploy API/admin images to Duck Rails; record production evidence separately.
+
 ## Planning basis
 
 - [x] October 31 fuel-exhaustion coast implemented: deterministic deceleration from exhaustion speed, preserving empty moving checkpoints and refuelling continuity. Runtime/editor compilation, 13 fuel/coast checks and Unity Session Checks passed; Console error query empty. See [evidence](week1-session.md#fuel-exhaustion-coast--october-31).
@@ -138,7 +179,7 @@ Additional finale/results work in this scope:
 - [x] Implement one-hit down, immediate flare launch (no intentional delay), and three-second proximity revive. No dead state or bleed-out: downing persists until teammate revival or quitting. No timed automatic revival.
 - [x] Decide crawling, repeated flare behavior, post-revive protection, and a minimum viable full-crew failure rule.
 - [ ] Confirm locomotion/flashlight/melee/backpack feel has not regressed.
-- [x] Default run starts with 10 fuel already in the train, 2 bats, 2 bags, 2 walkie talkies, 2 helmets, 2 night vision googles, 2 flashlights
+- [x] Historical Week 2 default supplied 10 fuel and twelve items. October 31 supersedes the free items: retain 10 fuel, buy equipment at departure/midpoint stores.
 
 Acceptance:
 - [ ] Eight players can collect coal, revive a teammate, board, and leave without developer intervention.
@@ -151,6 +192,11 @@ Acceptance:
 Record device, client count, network conditions, and reproducible failures. Test beyond a single LAN/editor setup using the existing supported simulation tools where available.
 
 ## Week 3 — full expedition and repeatable content workflow
+
+- [x] October 31 fixed starting station: separate editable prefab, centered train spawn, five randomized stops retained, continuous station/route track and updated bridge distance. Unity compilation and 462 Week 3 checks passed, plus assembled-scene inspection. See `week3-session.md`.
+- [ ] Validate station departure, boarding and late joining across real clients and headsets. The solo sandbox launcher failed before entering gameplay; editor evidence does not close this acceptance item.
+
+- [x] October 31 left-side layout follow-up: add two buildings to each of the twelve scavenging blocks and distribute every coal variation three per side, retaining six chunks total. Unity compilation, 456 Week 3 checks and representative depot/campground visual inspection passed. Existing enemy patrols remain on the right; headset layout/feel and crew-size balance remain unverified. See `week3-session.md`.
 
 - October 31 authoring improvement: all twelve scavenging blocks now use visible nested CoalSpawner prefabs and spread-out coal positions (12 m measured minimum within each variation). Unity compilation and 504 Week 3 checks passed; this is editor evidence, not new multiplayer/headset acceptance. See `week3-session.md`.
 
@@ -197,7 +243,7 @@ Deliverable: a coherent small game that outside friend groups can play repeatedl
 - [ ] Implement bridge-entry finish snapshots and did-not-finish labels on the world-space board. Resolve remaining late-arrival, disconnected-player, onboard-boundary, and ending-stat rules. Downed onboard players are confirmed finishers.
 - [ ] Persist escape counts once per eligible player/run; verify duplicate messages or reconnects do not grant duplicates.
 - [ ] Reuse existing cosmetic browse/equip/purchase infrastructure in the compound.
-- [ ] Adapt direct platform IAP item purchases, verification, transaction deduplication, and ownership/restoration. Remove inherited client wallet/coin requests; no wallet or coins in V1. Define product types before implementing consumable handling.
+- [ ] Adapt direct platform IAP item purchases, verification, transaction deduplication, and ownership/restoration. Keep cosmetic purchases separate from the October 31 earned-coin gameplay wallet. Define product types before implementing consumable handling.
 - [ ] Verify voice during radios, horn use, scene changes, and eight-player conversations.
 - [ ] Profile actual target devices; set concrete frame-time, memory, and network budgets from the project baseline and platform target.
 - [ ] Check footage readability: players, threats, and physical jokes must remain visible in recordings.
@@ -289,4 +335,3 @@ If mandatory systems still do not meet their acceptance tests, extend the schedu
 All checklist items are initially unverified. Update them only with concrete implementation and test evidence.
 
 Radio/horn follow-up (October 29): physical hold buttons implemented with release-to-stop station transmission and looped horn audio. Runtime/editor compilation passed; editor checks, Quest 3 feel, and two-client release/disconnect/late-join/audio acceptance remain pending. See week2-session.md.
-

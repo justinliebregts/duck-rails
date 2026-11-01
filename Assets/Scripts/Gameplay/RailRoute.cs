@@ -13,7 +13,9 @@ public sealed class RailRoute : MonoBehaviour
     public static RailRoute Instance { get; private set; }
     public RailBlock[] catalog;
     public RailBlock finale;
+    public RailBlock startingStation;
     public Transform finaleRoot;
+    public Transform midpointShop;
     public RailExpedition expedition;
     public Game.AI.EnemyManager manager;
     public readonly List<RailBlock> Blocks = new List<RailBlock>();
@@ -21,7 +23,9 @@ public sealed class RailRoute : MonoBehaviour
     public string LoadedRun { get; private set; }
     public RailRouteState Selection { get; private set; }
     public float FinaleStart { get; private set; }
-    public const float StartZ = 70;
+    public const float StationLength = 160;
+    public const float StationDepartureLength = StationLength / 2;
+    public const float StartZ = 150;
     void Awake() { Instance = this; }
     void OnDestroy() { if (Instance == this) Instance = null; }
 
@@ -71,16 +75,19 @@ public sealed class RailRoute : MonoBehaviour
         }
         Ready = false;
         foreach (var block in Blocks) if (block != null) Destroy(block.gameObject);
-        Blocks.Clear(); var coal = new List<Transform>(); var enemies = new List<Transform>();
+        Blocks.Clear(); var coal = new List<Transform>(); var enemies = new List<Transform>(); var gold = new List<Transform>();
         var graphs = new List<Game.AI.CrawlGraph>(); var offsets = new List<Vector3>();
-        float distance = 0;
+        float distance = StationDepartureLength;
         for (int i = 0; i < 5; i++)
         {
             var block = Instantiate(catalog.Single(b => b.id == state.blocks[i]), state.placements[i], Quaternion.identity, transform);
             Blocks.Add(block); distance += block.TrackLength;
             coal.AddRange(block.variations[state.variations[i]].coal); enemies.AddRange(block.variations[state.variations[i]].enemies);
+            gold.AddRange(block.variations[state.variations[i]].gold ?? Array.Empty<Transform>());
             graphs.Add(Game.AI.CrawlGraph.Load(block.graph)); offsets.Add(block.transform.position);
         }
+        if (midpointShop != null) midpointShop.position = state.placements[2] + new Vector3(-16, 0, 148);
+        expedition.goldPoints = gold.ToArray();
         FinaleStart = distance;
         finaleRoot.position = new Vector3(0, 0, z);
         graphs.Add(Game.AI.CrawlGraph.Load(finale.graph)); offsets.Add(finaleRoot.position);
@@ -96,6 +103,12 @@ public sealed class RailRoute : MonoBehaviour
     }
     public void Sample(float distance, out Vector3 position, out Quaternion rotation)
     {
+        if (distance <= StationDepartureLength)
+        {
+            startingStation.Sample(StationDepartureLength + distance, out position, out rotation);
+            position.y += 1; return;
+        }
+        distance -= StationDepartureLength;
         foreach (var block in Blocks)
         {
             if (distance <= block.TrackLength) { block.Sample(distance, out position, out rotation); position.y += 1; return; }

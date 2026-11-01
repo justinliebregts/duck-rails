@@ -1,0 +1,7 @@
+PASS authenticated run: 10 gold, 30 coal, no default gear.
+PASS actual physics trigger accepted one bar, destroyed it once, retained safe count=1, no reward before finish.
+PASS loose deck gold did not enter safe accounting.
+PASS shop physics intake consumed exactly one bar and queued one recipient reward; no production wallet endpoint yet.
+PASS existing shop display grabbed with PlayerHand; one pull line visible.
+PASS unavailable wallet (Loaded=false): pull beyond threshold returns display and hides tether, without spawning gear. Server insufficient-funds response and successful purchase not tested.
+PASS removed the exact unpaid synthetic shop receipt after verifying it against the generated fixture ID; recoverable backup in Temp/EconomyChecks/pending-before-cleanup.txt.

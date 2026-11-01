@@ -1,0 +1,11 @@
+Executed from X:/Work/duck-rails-web/api/gofiber:
+go test -p 2 ./repository/duckz ./service/duckz ./config ./router ./router/duckz
+
+ok  gofiber/repository/duckz 0.111s
+ok  gofiber/service/duckz 0.119s
+ok  gofiber/config 0.124s
+ok  gofiber/router 0.109s
+?   gofiber/router/duckz [no test files]
+Exit code: 0
+
+These are local Go checks, not production database or API rollout evidence.

@@ -5,7 +5,7 @@ using Oculus.Platform;
 using Oculus.Platform.Models;
 using UnityEngine;
 
-// Durable Meta Quest IAPs. Ownership is recorded server-side via /duckz/iap/grant, which verifies with Meta.
+// Durable Meta Quest IAPs. Ownership is recorded server-side via /iap/grant, which verifies with Meta.
 // Purchases are read from Meta online, or from the device cache when offline, at sign-in and again when the app
 // resumes, so something bought outside the app (e.g. the Store on the phone) unlocks without a restart.
 public class DuckzIap : MonoBehaviour
