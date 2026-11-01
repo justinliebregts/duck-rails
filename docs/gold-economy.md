@@ -33,6 +33,8 @@ The midpoint shop sits in the quiet stretch after the third scavenging encounter
 
 ## Backend and rollout
 
+November 1 publication update: game/API/admin commits are pushed and both Docker images are published to TCR. SQL execution remains with Justin; TKE rollout remains pending until the migration. See [image tags and digests](validation/gold-economy/tcr-2026-11-01.txt). The October 31 validation record below describes the earlier local-only state.
+
 Changes are in `X:\Work\duck-rails-web`; source Duckz repositories remain untouched. The Rails API base is `https://duckrails.gunraidersapi.com/api/v1`. Economy paths are `/wallet`, `/store`, `/store/buy`, `/coins/deposit` and `/admin/...`, without a game-name prefix. Duckz request/response contracts and implementation are reused; internal package/table names do not determine the public URL. Update the API, Unity client and admin together; the unshipped prefixed routes are not retained as aliases.
 
 Apply `api/sql/create_duckz_economy.sql` only to **duckrails_tencent_global**, then publish/deploy the Duck Rails API and admin using that repository's `AGENTS.md`. The migration creates the Duckz economy receipt tables plus `rails_wallet_grants`; balances remain in the existing `transactions` ledger. The welcome receipt is independent of balance and ledger soft-deletion, preventing another starter grant when a wallet reaches zero. No production migration or deployment is implied by local implementation.

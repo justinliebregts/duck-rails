@@ -1,0 +1,24 @@
+Duck Rails economy publication — November 1, 2026 (Vancouver)
+
+Game implementation commit: cb872e4 (duck-rails/main), pushed to GitHub.
+API/admin source commit: 320b6bd (duck-rails-web/main), pushed to GitHub.
+
+API image:
+uswccr.ccs.tencentyun.com/gr-tcr/duckrails-api-golang:api-320b6bd
+sha256:b3e4e76cd2150c6f720aeab56eca0304f36b1cf0d4e339596e9452406b3428b5
+
+Admin image:
+uswccr.ccs.tencentyun.com/gr-tcr/duckrails-api-admin:adm-duckrails-320b6bd
+sha256:0d43f1506a6a13799eb109553362b6b46027b2f745b2b8c75973279b71a699cf
+
+Both repository build/push scripts completed successfully. Registry manifest
+inspection confirmed each image and digest. Both contain linux/amd64 images.
+The web checkout was clean at image build time.
+
+SQL: NOT EXECUTED. Justin will apply api/sql/create_duckz_economy.sql from
+duck-rails-web to duckrails_tencent_global.
+TKE: NOT ROLLED OUT. After the SQL, select the above image tags on the existing
+Duck Rails API and admin workloads in the Tencent console, then verify readiness
+and wallet/store/admin behavior. TCR image publication is not a live rollout.
+
+No source Duckz or Classic repository, database or workload was changed.
