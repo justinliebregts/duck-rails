@@ -2522,6 +2522,7 @@ GameObject:
   m_Component:
   - component: {fileID: 365693810}
   - component: {fileID: 365693811}
+  - component: {fileID: 365693812}
   m_Layer: 0
   m_Name: Lower bridge button
   m_TagString: Untagged
@@ -2543,6 +2544,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 751017566}
+  - {fileID: 1299698500}
   m_Father: {fileID: 1772786532}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &365693811
@@ -16092,6 +16094,123 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5885405109982517438, guid: 19b3219488c049649b7a68e87c552df1, type: 3}
   m_PrefabInstance: {fileID: 6769755190769228345}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1299698500 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+  m_PrefabInstance: {fileID: 1299698499}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1299698499
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 365693810}
+    m_Modifications:
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 789004765287219664, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_text
+      value: 'HOLD
+
+        LOWER'
+      objectReference: {fileID: 0}
+    - target: {fileID: 789004765287219664, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_fontSize
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 789004765287219664, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 1884533646028075191, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_Name
+      value: Hold button
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5202316720461926551, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+  m_SourcePrefab: {fileID: 100100000, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+--- !u!114 &365693812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 365693809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e3b09f115846584997ef298a651c4a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RailHoldControl
+  button: {fileID: 1299698501}
+  radio: 0
+  bridge: 1
+--- !u!114 &1299698501 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4888848316258778862, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+  m_PrefabInstance: {fileID: 1299698499}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1103ef198a551134683813b5848455fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PressableButton
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

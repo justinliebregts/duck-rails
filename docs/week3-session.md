@@ -1,10 +1,12 @@
 # Week 3 — authored expedition blocks
 
+November 1 bridge change: continuous holding now advances lowering; release pauses with progress retained. The initial duration is 30 seconds of accumulated holding. Protocol is `session-v9`; restart all clients together. Earlier timer-based validation below is historical. See [bridge hold](bridge-hold.md) for current evidence and remaining solo/headset acceptance.
+
 ## Scope and setup
 
 This phase implements the approved twelve-location gray-box catalogue, five distinct randomized stops plus the existing bridge finale, authored spawn variations, consistent prefab connections, internal bends, a separate Expedition scene, and renewable coal carriers. Lighting remains deferred. The original train controls, item interactions, revive flow and bridge ending are retained.
 
-Open `Assets/Scenes/Login.unity` and enter Play normally. Private staging and public boarding use Compound; departures load Expedition. Private runs keep the same Photon room/code across both scenes. Build settings contain Login, Compound and Expedition. Network protocol is `session-v8`; all clients must use this version.
+Open `Assets/Scenes/Login.unity` and enter Play normally. Private staging and public boarding use Compound; departures load Expedition. Private runs keep the same Photon room/code across both scenes. Build settings contain Login, Compound and Expedition. Network protocol is `session-v9`; all clients must use this version.
 
 `Assets/DuckRails/Blocks` contains Maintenance Depot, Convenience Store, Roadside Motel, Lumber Yard, Container Yard, Passenger Station, Farm Silos, Tunnel Works, Scrapyard, Lakeside Campground, Electrical Substation and Quarry. Each is an editable prefab, with a versioned stable ID, tags, graph asset, entry/exit/stop markers, three authored sets of six coal/six enemy candidate markers, and sampled track. Four locations bend gently left/right before returning to the centerline.
 
@@ -57,7 +59,7 @@ Coal carrier equipment/drop positions are retained in the expedition snapshot. A
 
 ## Pacing and acceptance limits
 
-Five blocks total roughly 800 metres. Driving to the bridge, the 60-second bridge defense and the automatic 32-second ending occupy approximately five minutes; about one minute of scavenging at each stop yields the ten-minute target. This is a tuning budget, **not a measured unfamiliar-player completion time**. Stops are opportunities, not invisible mandatory gates.
+Five blocks total roughly 800 metres. The original pacing budget allowed roughly five minutes for driving, a 60-second bridge defense and the automatic 32-second ending. November 1 replaces that fixed defense interval with 30 seconds of accumulated button holding plus interruptions; elapsed finale duration needs remeasurement. About one minute of scavenging at each stop remains a proposed contribution toward the ten-minute target, **not a measured unfamiliar-player completion time**. Stops are opportunities, not invisible mandatory gates.
 
 Initial balancing defaults: ten starting fuel, 0.05 fuel per metre (eight per straight block), +2.5 per coal chunk, cap 40. A chunk buys 50 metres. Roughly fourteen collected chunks supplement the starting fuel to reach the bridge, with thirty authored chunks available plus carriers. This leaves room for missed/wasted supplies without making stops irrelevant.
 

@@ -25,7 +25,7 @@ public sealed class RailControl : MonoBehaviour
     void Start()
     {
         ConfigureDriveColliders();
-        if ((action == Action.Horn || action == Action.Radio) && GetComponent<RailHoldControl>() == null && holdButtonPrefab != null)
+        if ((action == Action.Horn || action == Action.Radio || action == Action.Bridge) && GetComponent<RailHoldControl>() == null && holdButtonPrefab != null)
         {
             var button = Instantiate(holdButtonPrefab, transform);
             button.name = "Hold button";
@@ -33,15 +33,15 @@ public sealed class RailControl : MonoBehaviour
             button.transform.localRotation = Quaternion.Euler(90, 0, 0);
             button.transform.localScale = Vector3.one * 1.5f;
             var hold = gameObject.AddComponent<RailHoldControl>();
-            hold.button = button; hold.radio = action == Action.Radio;
+            hold.button = button; hold.radio = action == Action.Radio; hold.bridge = action == Action.Bridge;
             var label = button.GetComponentInChildren<TMPro.TMP_Text>();
-            label.text = hold.radio ? "HOLD\nTALK" : "HOLD\nHORN"; label.fontSize = .65f;
+            label.text = hold.bridge ? "HOLD\nLOWER" : hold.radio ? "HOLD\nTALK" : "HOLD\nHORN"; label.fontSize = .65f;
         }
         if (handle != null) handleRest = handle.localPosition;
     }
     void Update()
     {
-        if (action == Action.Horn || action == Action.Radio) return;
+        if (action == Action.Horn || action == Action.Radio || action == Action.Bridge) return;
         if (action == Action.Drive) UpdateDrive();
         if (!PhotonSession.OnTrain || GR.Player.instance == null) return;
         var player = GR.Player.instance;
@@ -160,7 +160,6 @@ public sealed class RailControl : MonoBehaviour
         if (RailExpedition.LocalDown) return;
         if (action == Action.Drive)
         { var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { 0d, 0f, 0f, 0f }); PhotonSession.Instance.SetTrainMoving((float)motion[3] <= 0); }
-        else if (action == Action.Bridge) RailExpedition.Instance.Request("bridge");
 
     }
     public static AudioClip Tone(string name, float hz, float seconds)

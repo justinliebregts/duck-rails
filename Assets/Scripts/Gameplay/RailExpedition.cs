@@ -220,6 +220,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             if (rescued != lastJson) PhotonSession.Instance.Commit(new Hashtable { [StateKey] = rescued });
             return;
         }
+        next.UpdateBridgeHold(now, BridgeHoldUntil(next, now));
         bool allDown = next.players.Any(p => IsConnected(p.actor)) && next.players.Where(p => IsConnected(p.actor)).All(p => p.down);
         if (!allDown) next.allDownAt = 0;
         else if (next.allDownAt <= 0) next.allDownAt = now;
@@ -252,6 +253,25 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         { pendingRequestJson = json; pendingRequestAt = now; }
     }
     static bool IsConnected(int actor) => PhotonNetwork.CurrentRoom?.GetPlayer(actor)?.IsInactive == false;
+    double BridgeHoldUntil(RailRunState state, double now)
+    {
+        if (bridgeButton == null) return 0;
+        var control = bridgeButton.GetComponent<RailHoldControl>();
+        if (control == null || !control.isActiveAndEnabled || control.button == null || !control.button.interactable) return 0;
+        double until = 0;
+        foreach (var player in PhotonNetwork.PlayerList)
+        {
+            var participant = state.players.Find(p => p.actor == player.ActorNumber);
+            var value = player.CustomProperties[RailHoldControl.BridgeKey];
+            if (player.IsInactive || participant == null || participant.down ||
+                !RailHoldControl.IsLive(value, state.run, now) ||
+                !Position(player.ActorNumber, out var position) || Vector3.Distance(position, bridgeButton.position) >= 3 ||
+                (RailTrain.Instance != null && RailTrain.Instance.Contains(position)) ||
+                !HandNear(player.ActorNumber, control.button.transform.position, .65f)) continue;
+            until = Math.Max(until, (double)((object[])value)[1]);
+        }
+        return until;
+    }
     void ApplyRequest(RailRunState state, RailParticipant p, Vector3 position, string action, int target, double now, Hashtable changes, object[] coalSample = null)
     {
 #if UNITY_EDITOR
@@ -282,8 +302,6 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             return;
         }
         if (p.down) return;
-        if (action == "bridge" && state.bridgeAt <= 0 && Vector3.Distance(position, bridgeButton.position) < 3)
-            state.bridgeAt = now;
         if (action == "horn" && RailTrain.Instance.Contains(position) && now - p.hornAt > 1)
         { p.horns++; p.hornAt = now; }
         if (action == "gold") { RailGoldReceiver.ApplyDeposit(state, p, position, target, coalSample, now); return; }
@@ -328,7 +346,9 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             (gauge.GetComponentInParent<RailTrainAssembly>() == null ? "\nRelease coal into furnace (+2.5)" : "");
         float progress = State.BridgeProgress(now);
         bridgeDeck.localRotation = Quaternion.Euler(-80 * (1 - progress), 0, 0);
-        bridgeLabel.text = progress >= 1 ? "BRIDGE READY\nBOARD THE TRAIN" : State.bridgeAt > 0 ? "DEFEND THE CREW\n" + Mathf.CeilToInt((float)(RailRunState.BridgeSeconds - (now - State.bridgeAt))) + " seconds" : "STOP BEFORE BRIDGE\nPress button to lower";
+        bridgeLabel.text = progress >= 1 ? "BRIDGE READY\nBOARD THE TRAIN" :
+            (State.BridgeMoving(now) ? "LOWERING BRIDGE" : State.bridgeAt > 0 ? "PAUSED — HOLD TO LOWER" : "STOP — HOLD BUTTON TO LOWER") +
+            "\n" + Mathf.CeilToInt((float)(RailRunState.BridgeSeconds - State.BridgeElapsed(now))) + " seconds of holding left";
         foreach (var p in State.players)
         {
             if (p.flareAt > 0 && (!shownFlares.TryGetValue(p.id, out var shown) || shown != p.flareAt))

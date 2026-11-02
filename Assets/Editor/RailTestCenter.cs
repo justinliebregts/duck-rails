@@ -149,7 +149,7 @@ public static class RailTestRunner
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Stop Play first");
         var rows = new List<string>();
         foreach (var check in new Action[] { RailSessionChecks.Run, RailDesktopChecks.Run, RailQuickStartChecks.Run,
-            RailWeek2Checks.Run, RailWeek3Checks.Run, RailDriveChecks.Run, RailButtonTouchChecks.Run, RailHoldControlChecks.Run,
+            RailWeek2Checks.Run, RailWeek3Checks.Run, RailDriveChecks.Run, RailButtonTouchChecks.Run, RailHoldControlChecks.Run, RailBridgeHoldChecks.Run,
             RailCoalLiveChecks.CheckAvatarLookup, RailDiagnosticChecks.Run, RailRigChecks.Run, RailEconomyChecks.Run })
         {
             try { check(); rows.Add("PASS " + check.Method.DeclaringType.Name); }

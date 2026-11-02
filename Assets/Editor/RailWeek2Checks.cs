@@ -9,12 +9,14 @@ public static class RailWeek2Checks
     [MenuItem("Duck Rails/Run Week 2 Rules Checks")]
     public static void Run()
     {
-        var state = new RailRunState { run = "test", bridgeAt = 100 };
+        var state = new RailRunState { run = "test" };
         state.players.Add(new RailParticipant { id = "aboard", down = true });
         state.players.Add(new RailParticipant { id = "left-behind" });
-        Check(state.BridgeProgress(99) == 0 && state.BridgeProgress(130) == .5f && state.BridgeProgress(160) == 1, "Bridge uses one retained 60-second clock");
+        state.UpdateBridgeHold(100, 101);
+        Check(state.BridgeProgress(99) == 0 && Mathf.Approximately(state.BridgeProgress(100.5), .5f / 30) &&
+            Mathf.Approximately(state.BridgeProgress(160), 1f / 30), "Bridge only advances within the retained live hold");
         var reconstructed = JsonUtility.FromJson<RailRunState>(JsonUtility.ToJson(state));
-        Check(reconstructed.BridgeProgress(145) == .75f, "Late-join/master reconstruction preserves bridge progress");
+        Check(reconstructed.BridgeProgress(145) == state.BridgeProgress(145), "Late-join/master reconstruction preserves bounded bridge progress");
         state.Finish(161, "Bridge crossed", new[] { "aboard" });
         Check(state.success && state.Player("aboard").escaped && state.Player("aboard").down && !state.Player("left-behind").escaped, "One downed passenger wins; left-behind player remains a non-finisher");
         state.Finish(180, "duplicate", new[] { "left-behind" });

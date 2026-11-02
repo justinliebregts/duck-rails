@@ -9,6 +9,8 @@ public sealed class RailHoldControl : MonoBehaviour
 {
     public PressableButton button;
     public bool radio;
+    public bool bridge;
+    public const string BridgeKey = "rails.bridgeHold";
     AudioSource source;
     AudioClip clip;
     bool held, focused = true, paused;
@@ -16,9 +18,10 @@ public sealed class RailHoldControl : MonoBehaviour
     string heldRun;
     readonly HashSet<int> listeners = new HashSet<int>();
     readonly HashSet<int> current = new HashSet<int>();
-    string Key => radio ? "rails.radioHold" : "rails.hornHold";
+    string Key => bridge ? BridgeKey : radio ? "rails.radioHold" : "rails.hornHold";
     void Start()
     {
+        if (bridge) return;
         source = gameObject.AddComponent<AudioSource>();
         source.playOnAwake = false; source.spatialBlend = 1;
         if (radio) gameObject.AddComponent<WalkieSpeaker>().Configure(0, true);
@@ -37,10 +40,13 @@ public sealed class RailHoldControl : MonoBehaviour
     {
         bool allowed = focused && !paused && PhotonSession.OnTrain && PhotonSession.Instance != null &&
             PhotonSession.Instance.WorldReady && !RailWorld.InputBlocked && !RailExpedition.LocalDown;
+        if (bridge) allowed &= PhotonSession.Phase == RailPhase.Running && RailExpedition.Instance != null &&
+            RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time) < 1;
         bool want = allowed && button != null && button.IsPressed && (!radio || !PhotonVoiceChat.IsLocallyMuted);
         if (held && heldRun != PhotonSession.RunId) SetHeld(false);
         if (want != held) SetHeld(want);
         if (held && PhotonNetwork.Time >= nextHeartbeat) Publish(true);
+        if (bridge) return;
         current.Clear();
         if (PhotonSession.OnTrain)
             foreach (var player in PhotonNetwork.PlayerList)
@@ -67,7 +73,7 @@ public sealed class RailHoldControl : MonoBehaviour
     {
         held = value; heldRun = PhotonSession.RunId;
         Publish(value);
-        if (value && !radio && PhotonSession.Phase == RailPhase.Running) RailExpedition.Instance?.Request("horn");
+        if (value && !radio && !bridge && PhotonSession.Phase == RailPhase.Running) RailExpedition.Instance?.Request("horn");
     }
     void Publish(bool value)
     {

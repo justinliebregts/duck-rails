@@ -27,6 +27,8 @@ public static class RailWeek3LiveChecks
     static Vector3 bagLocal;
     static readonly List<string> evidence = new List<string>();
     static double worldReadySince;
+    static double pausedBridgeWork;
+    static bool bridgePauseChecked;
     static RailWeek3LiveChecks() => EditorApplication.update += Tick;
     [MenuItem("Duck Rails/Arm Three Client Week 3 Test")]
     public static void Arm()
@@ -42,7 +44,7 @@ public static class RailWeek3LiveChecks
     [MenuItem("Duck Rails/Arm Three Client Week 3 Coal Recovery Test")]
     public static void ArmRecovery() { Arm(); File.WriteAllText(RecoveryPath, "true"); }
     [MenuItem("Duck Rails/Disarm Three Client Week 3 Test")]
-    public static void Disarm() { File.WriteAllText(ArmPath, ""); RailEditorQuickStart.Enabled = EditorPrefs.GetBool("Rails.Week3.PreviousQuickStart", true); }
+    public static void Disarm() { RailBridgeHoldFixture.SetHeld(false); File.WriteAllText(ArmPath, ""); RailEditorQuickStart.Enabled = EditorPrefs.GetBool("Rails.Week3.PreviousQuickStart", true); }
     static void Record(string message)
     {
         evidence.Add(DateTime.UtcNow.ToString("O") + " " + message);
@@ -101,10 +103,12 @@ public static class RailWeek3LiveChecks
                 if (Host) { Stage(1); session.StartPrivateRun(); }
             }
             int current = PhotonSession.Get(StageKey, 0);
-            if (current != stage) { stage = current; entered = EditorApplication.timeSinceStartup; action = false; }
+            if (current != stage) { stage = current; entered = EditorApplication.timeSinceStartup; action = false; pausedBridgeWork = -1; bridgePauseChecked = false; }
             double age = EditorApplication.timeSinceStartup - entered;
             Require(age < 160, "Stage timeout " + stage + ", phase=" + PhotonSession.Phase);
             var route = RailRoute.Instance; var run = RailExpedition.Instance; var train = RailTrain.Instance;
+            RailBridgeHoldFixture.SetHeld(Second && stage >= 6 && stage <= 9 && (stage != 7 || age >= 3) &&
+                PhotonSession.Phase == RailPhase.Running && run.State.BridgeProgress(PhotonNetwork.Time) < 1);
             var bagView = PhotonView.Find(PhotonSession.Get("test.week3.bag", 0)); var bag = bagView != null ? bagView.GetComponent<BagObject>() : null;
             int second = PhotonNetwork.PlayerList.FirstOrDefault(p => p.CustomProperties["test.week3.second"] is bool yes && yes)?.ActorNumber ?? 0;
             if (stage == 1 && PhotonSession.Phase == RailPhase.Running && age > 3)
@@ -161,12 +165,20 @@ public static class RailWeek3LiveChecks
             else if (stage == 6)
             {
                 if (PhotonNetwork.IsMasterClient && !action) action = session.Commit(new Hashtable { [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, route.FinaleStart + 55, 0f, 0f }, [RailSessionRules.Fuel] = 10f });
-                if (age > 2) { Board(); if (Second && run.State.bridgeAt <= 0) { Teleport(run.bridgeButton.position + Vector3.back); run.Request("bridge"); } }
-                if (run.State.bridgeAt > 0) { bridgeAt = run.State.bridgeAt; Board(); Ack(); }
+                if (age > 2 && !Second) Board();
+                if (run.State.bridgeAt > 0) { bridgeAt = run.State.bridgeAt; if (!Second) Board(); Ack(); }
                 if (Host && AllAck) Stage(7);
             }
             else if (stage == 7)
             {
+                if (Second && age < 3) Board();
+                if (age > 1.5 && pausedBridgeWork < 0) pausedBridgeWork = run.State.BridgeElapsed(PhotonNetwork.Time);
+                if (age > 2.5 && !bridgePauseChecked)
+                {
+                    Require(!run.State.BridgeMoving(PhotonNetwork.Time) && Math.Abs(run.State.BridgeElapsed(PhotonNetwork.Time) - pausedBridgeWork) < .02,
+                        "Withdrawn bridge hold pauses and retains work on every client");
+                    Record("Physical hold release paused bridge with retained work=" + pausedBridgeWork); bridgePauseChecked = true;
+                }
                 if (Host && age > 2 && !action) { PhotonNetwork.SetMasterClient(PhotonNetwork.CurrentRoom.GetPlayer(second)); action = true; }
                 if (!Host && !Second && age > 4 && !action) { action = true; session.LeaveCurrentRoom(); }
                 if (Host && age > 6 && PhotonNetwork.PlayerList.Length == 2) { Record("Master handoff and third-client departure during bridge lowering"); Stage(8); }
@@ -180,7 +192,7 @@ public static class RailWeek3LiveChecks
                 Require(firstRoute == PhotonSession.Get(RailRoute.StateKey, "") && route.Ready, "Late re-entry preserves exact route");
                 Require(run.State.bridgeAt == bridgeAt && run.State.BridgeProgress(PhotonNetwork.Time) > .1f, "Bridge clock survives handoff/re-entry");
                 Require(bag != null && bag.Keys().Contains("RailCoal") && RailCargo.Active.Count == 41, "Re-entry retains cargo and bag contents");
-                Board(); Ack(); if (Host && AllAck) { Record("Route, bridge clock and loaded cargo reconstructed by late rejoiner"); Stage(9); }
+                if (!Second) Board(); Ack(); if (Host && AllAck) { Record("Route, held bridge progress and loaded cargo reconstructed by late rejoiner"); Stage(9); }
             }
             else if (stage == 9 && run.State.BridgeProgress(PhotonNetwork.Time) >= 1)
             { if (!action) { if (!Host && !Second) Teleport(train.transform.position + Vector3.left * 12); else Board(); Ack(); action = true; } if (Host && AllAck) Stage(10); }
@@ -278,7 +290,7 @@ public static class RailWeek3LiveChecks
                 if (age > 4 && train.Distance > 5 && train.Speed > 0) { Record("PASS: empty fuel, delayed carrier replenishment, shared hit drop, bag storage, host handoff, exactly-once refuel and resumed driving"); done = true; }
             }
         }
-        catch (Exception error) { Record("FAIL stage " + stage + ": " + error); done = true; }
+        catch (Exception error) { RailBridgeHoldFixture.SetHeld(false); Record("FAIL stage " + stage + ": " + error); done = true; }
     }
 }
 #endif

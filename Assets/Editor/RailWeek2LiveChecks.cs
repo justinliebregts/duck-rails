@@ -48,7 +48,7 @@ public static class RailWeek2LiveChecks
     [MenuItem("Duck Rails/Arm Three Client Week 2 Recovery Test")]
     public static void ArmRecovery() { Arm(); File.WriteAllText(RecoveryPath, "true"); }
     [MenuItem("Duck Rails/Disarm Three Client Week 2 Test")]
-    public static void Disarm() { File.WriteAllText(ArmPath, ""); RailEditorQuickStart.Enabled = true; }
+    public static void Disarm() { RailBridgeHoldFixture.SetHeld(false); File.WriteAllText(ArmPath, ""); RailEditorQuickStart.Enabled = true; }
     static void Record(string value)
     {
         evidence.Add(DateTime.UtcNow.ToString("O") + " " + value);
@@ -172,16 +172,15 @@ public static class RailWeek2LiveChecks
             }
             else if (stage == 9 && age > 2)
             {
-                if (Second && !action) { Teleport(run.bridgeButton.position + Vector3.back); action = true; }
-                if (Second && age > 3) run.Request("bridge");
+                if (Second) RailBridgeHoldFixture.SetHeld(true);
                 if (run.State.bridgeAt > 0) { Ack(); if (!action) action = true; }
-                if (Host && AllAck) { Record("Remote bridge button started shared timer"); Stage(10); }
+                if (Host && AllAck) { Record("Remote physical bridge hold started lowering"); Stage(10); }
             }
             else if (stage == 10)
             {
-                if (Second && !action) { Board(); action = true; }
+                if (Second) RailBridgeHoldFixture.SetHeld(run.State.BridgeProgress(PhotonNetwork.Time) < 1);
                 if (age > 3) { Require(Game.AI.Enemy.Active.Count == 4, "Defense adds two enemies"); }
-                if (run.State.BridgeProgress(PhotonNetwork.Time) >= 1) { Ack(); if (Host && AllAck) { Record("Full 60-second bridge lowering completed"); Stage(11); } }
+                if (run.State.BridgeProgress(PhotonNetwork.Time) >= 1) { Ack(); if (Host && AllAck) { Record("Continuous bridge holding completed"); Stage(11); } }
             }
             else if (stage == 11)
             {
@@ -226,7 +225,7 @@ public static class RailWeek2LiveChecks
             else if (stage == 17 && PhotonSession.Phase == RailPhase.Staging)
             { Require(!RailWorld.HasLiveCargo, "Failure cargo cleanup"); Record("PASS: three clients, success + crew-down + crash, two replays"); done = true; }
         }
-        catch (Exception ex) { Record("FAIL: " + ex.Message); done = true; }
+        catch (Exception ex) { RailBridgeHoldFixture.SetHeld(false); Record("FAIL: " + ex.Message); done = true; }
     }
 
     static void RecoveryStage(int stage, double age, RailExpedition run, PhotonSession session)
@@ -288,8 +287,8 @@ public static class RailWeek2LiveChecks
         else if (stage == 106)
         {
             if (Host && !action) { if (session.Commit(new Hashtable { [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 455f, 0f, 0f }, [RailSessionRules.Fuel] = 10f })) action = true; }
-            if (Second && age > 2 && run.State.bridgeAt <= 0) { Teleport(run.bridgeButton.position + Vector3.back); run.Request("bridge"); }
-            if (run.State.bridgeAt > 0) { bridgeStart = run.State.bridgeAt; Board(); Ack(); }
+            if (Second && age > 2) RailBridgeHoldFixture.SetHeld(true);
+            if (run.State.bridgeAt > 0) { bridgeStart = run.State.bridgeAt; if (!Second) Board(); Ack(); }
             if (Host && AllAck) Stage(107);
         }
         else if (stage == 107)
@@ -303,7 +302,7 @@ public static class RailWeek2LiveChecks
             Require(PhotonNetwork.MasterClient.ActorNumber == second, "Successor remains authority");
             Require(run.State.bridgeAt == bridgeStart && run.State.BridgeProgress(PhotonNetwork.Time) > .15f, "Bridge timer survived master change and re-entry");
             Require(RailCargo.Active.Count == 19 && bag != null && bag.Keys().Contains("RailCoal"), "Re-entry restores shared supplies and bag contents without duplication");
-            if (!action) { Board(); Record("Late re-entry restored bridge clock, loaded bag and 19 cargo under successor master"); Ack(); action = true; }
+            if (!action) { if (!Second) Board(); Record("Late re-entry restored held bridge progress, loaded bag and 19 cargo under successor master"); Ack(); action = true; }
             if (Host && AllAck) Stage(109);
         }
         else if (stage == 109 && run.State.BridgeProgress(PhotonNetwork.Time) >= 1)

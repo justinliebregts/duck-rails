@@ -1,0 +1,59 @@
+Log: RAILS PASS: Five-digit codes preserve leading zeroes
+Log: RAILS PASS: Invalid and non-ASCII codes rejected
+Log: RAILS PASS: Allocation probes cover every five-digit code without repeats
+Log: RAILS PASS: Crew allocation is deterministic and wraps at the code-space boundary
+Log: RAILS PASS: First occupant starts twenty seconds
+Log: RAILS PASS: Entry/exit cannot extend a nonempty countdown
+Log: RAILS PASS: Empty cancels and re-entry starts a fresh countdown
+Log: RAILS PASS: Ninth occupant waits outside the eight-player roster
+Log: RAILS PASS: Vacated slots refill without evicting admitted players
+Log: RAILS PASS: Public compounds: twelve players, discoverable, no inactive shoppers
+Log: RAILS PASS: Private rooms: eight players, hidden, code joinable
+Log: RAILS PASS: 120-second reconnect slots; empty rooms close immediately
+Log: RAILS PASS: One through four returning players search existing compounds
+Log: RAILS PASS: Five through eight returning players skip random matchmaking
+Log: RAILS PASS: Missing reservation leases receive thirty seconds
+Log: RAILS PASS: Master succession preserves deadlines while concurrent arrivals receive their own lease
+Log: RAILS PASS: Removing an expired crew does not shorten another crew's reservation
+Log: RAILS PASS: Consumed reservations remove obsolete lease metadata
+Log: RAILS PASS: Invalid phase shortcuts rejected
+Log: RAILS PASS: Crew stays aboard through ending and returning instead of spawning in a temporary compound
+Log: RAILS PASS: Public compound arrival and private staging present the compound
+Log: RAILS PASS: Acceleration integrates correct distance and speed
+Log: RAILS PASS: Late join reconstructs moving train from current command
+Log: RAILS PASS: Braking stops without changing past position
+Log: RAILS PASS: Fuel burns with travelled distance, including acceleration
+Log: RAILS PASS: Braking consumes fuel; a stopped train does not
+Log: RAILS PASS: Restored room snapshot preserves fuel and motion across a master checkpoint
+Log: RAILS PASS: Fuel exhaustion during acceleration coasts to rest without authority ticks
+Log: RAILS PASS: Empty fuel cannot restart or become negative
+Log: RAILS PASS: Exhaustion preserves speed at the fuel boundary
+Log: RAILS PASS: Empty train advances while smoothly slowing
+Log: RAILS PASS: Empty moving checkpoint preserves coast across master handoff
+Log: RAILS PASS: Late join reconstructs the final coast stop without creeping
+Log: RAILS PASS: Exhaustion during braking keeps motion continuous
+Log: RAILS PASS: Refuelling a coasting GO command resumes acceleration
+Log: RAILS PASS: Fuel exhaustion after the ramp also coasts smoothly
+Log: RAILS PASS: Future motion commands do not burn fuel early
+Log: RAILS PASS: Build starts at Login/Compound/Expedition, permits additive lighting companions and excludes other gameplay scenes
+Log: RAILS PASS: RailBat observes cargo state over PUN
+Log: RAILS PASS: RailBag observes cargo state over PUN
+Log: RAILS CHECKS PASSED: 40. These are local checks, not multi-client acceptance.
+Log: BRIDGE HOLD PASS: Idle bridge never lowers
+Log: BRIDGE HOLD PASS: Continuous hold lowers bridge
+Log: BRIDGE HOLD PASS: Release saves progress and pauses indefinitely
+Log: BRIDGE HOLD PASS: Resume and renewed hold retain prior work without counting idle time
+Log: BRIDGE HOLD PASS: Late join reconstructs active hold and prior work
+Log: BRIDGE HOLD PASS: Missing heartbeat or authority cannot lower beyond lease expiry
+Log: BRIDGE HOLD PASS: Paused state survives master reconstruction
+Log: BRIDGE HOLD PASS: Replacement operator resumes without losing work or adding downtime
+Log: BRIDGE HOLD PASS: Duplicate or overlapping holds do not multiply lowering speed
+Log: BRIDGE HOLD PASS: Malformed hold stops safely
+Log: BRIDGE HOLD PASS: Unbounded hold cannot restart lowering
+Log: BRIDGE HOLD PASS: Fully lowered bridge locks in place
+Log: BRIDGE HOLD PASS: Completed bridge stays down after release
+Log: BRIDGE HOLD PASS: End of run stops bridge movement and rejects later holds
+Log: BRIDGE HOLD PASS: Replay starts raised with no carried progress
+Log: BRIDGE HOLD PASS: Authoring installs one bridge hold with a real pressable button
+Log: BRIDGE HOLD PASS: Physical control explains continuous holding
+Log: BRIDGE HOLD: 17 checks passed

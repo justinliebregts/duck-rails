@@ -210,6 +210,7 @@ public static class RailWeek3Builder
     {
         var scene = EditorSceneManager.OpenScene(Source);
         var world = Object.FindFirstObjectByType<RailWorld>(); var run = world.GetComponent<RailExpedition>();
+        RailHoldControlBuilder.Install(run.bridgeButton.GetComponent<RailControl>());
         RailModularTrainBuilder.InstallPrefab(world, run);
         world.expedition.SetActive(true);
         var env = world.expedition.transform.Find("Week 2 Environment");
@@ -237,7 +238,7 @@ public static class RailWeek3Builder
         RailEconomyBuilder.InstallScene(route);
         var serialized = new SerializedObject(manager); serialized.FindProperty("surfaceMask").intValue = 1 << 6; serialized.FindProperty("visionMask").intValue = 1 << 6; serialized.FindProperty("maxEnemies").intValue = 0; serialized.ApplyModifiedPropertiesWithoutUndo();
         run.coalPoints = Array.Empty<Transform>(); run.enemyPoints = Array.Empty<Transform>();
-        Text(world.train.transform, "FIVE STOPS → BRIDGE → DAWN\nRelease coal into furnace. Hold a hand near a downed duck for 3 seconds.\nBrake at the bridge. Press the outside button. Wait until fully lowered.", new Vector3(0, 2.1f, -4.4f), 1.1f).transform.localRotation = Quaternion.Euler(0, 180, 0);
+        Text(world.train.transform, "FIVE STOPS → BRIDGE → DAWN\nRelease coal into furnace. Hold a hand near a downed duck for 3 seconds.\nBrake at the bridge. Hold the outside button to lower. Release pauses progress.", new Vector3(0, 2.1f, -4.4f), 1.1f).transform.localRotation = Quaternion.Euler(0, 180, 0);
         Object.DestroyImmediate(world.compound); world.compound = null; world.boardingTrigger = null; world.departureBoard = null; world.privateTerminal = null;
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat; RenderSettings.ambientLight = new Color(.36f, .42f, .5f); RenderSettings.fogDensity = .012f;
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/Expedition.unity");

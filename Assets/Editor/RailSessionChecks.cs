@@ -105,7 +105,10 @@ public static class RailSessionChecks
             "Fuel exhaustion after the ramp also coasts smoothly");
         RailSessionRules.EvaluateTrain(go, 100f, 9d, out z, out v, out fuel);
         Check(z == 0f && v == 0f && fuel == 100f, "Future motion commands do not burn fuel early");
-        Check(EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).SequenceEqual(new[] { "Assets/Scenes/Login.unity", "Assets/Scenes/Compound.unity", "Assets/Scenes/Expedition.unity" }), "Build starts at Login, includes Expedition and excludes Quackville/Main");
+        var buildScenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
+        Check(buildScenes.Take(3).SequenceEqual(new[] { "Assets/Scenes/Login.unity", "Assets/Scenes/Compound.unity", "Assets/Scenes/Expedition.unity" }) &&
+            buildScenes.Skip(3).All(path => path.StartsWith("Assets/DuckRails/Lighting/", StringComparison.Ordinal)),
+            "Build starts at Login/Compound/Expedition, permits additive lighting companions and excludes other gameplay scenes");
         foreach (string name in new[] { "RailBat", "RailBag" })
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/" + name + ".prefab");

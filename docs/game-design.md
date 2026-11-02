@@ -223,8 +223,10 @@ Current validation target: the shared DuckPlayer with simulated input, including
 Confirmed October 29, 2026: the current implementation scope is Week 2 plus the bridge finale and a world-space run-results board for both success and failure. This supersedes the earlier gate/power-restoration concept. These are confirmed design requirements, not verified runtime behavior. Commerce and persistent escape-count implementation remain outside this scope.
 
 ### Sequence
-1. Warning signs before the raised bridge give the crew time to brake. Players must stop the train before it hits the raised or incompletely lowered bridge; a collision causes the train to explode and the run to fail for the whole team. Do not automatically stop the train to prevent this failure. A volunteer leaves the stopped train and presses an external button to start lowering the bridge.
-2. Lowering takes approximately one minute. Additional enemies spawn during this interval and players defend themselves with the existing repel/retreat and rescue mechanics.
+November 1 confirmed change: the external bridge button requires a continuous physical hold. Releasing pauses lowering and retains all progress; anyone can resume it. This supersedes the one-touch, unattended minute-long timer. The train remains safe from enemies. See [bridge hold](bridge-hold.md) for implementation and validation.
+
+1. Warning signs before the raised bridge give the crew time to brake. Players must stop the train before it hits the raised or incompletely lowered bridge; a collision causes the train to explode and the run to fail for the whole team. Do not automatically stop the train to prevent this failure. A volunteer leaves the stopped train and holds down the external button to lower the bridge.
+2. Lowering advances only while at least one eligible player holds the button. Release, downing, leaving the control or disconnecting pauses progress without resetting it. Multiple operators do not increase speed. Additional enemies spawn after the first activation; players defend themselves with the existing repel/retreat and rescue mechanics. Once fully lowered, the bridge stays down. Initial tuning is 30 seconds of accumulated holding, not a confirmed balance target.
 3. Once the bridge is fully lowered, players board and manually drive the train toward/across it.
 4. The train entering the bridge crosses the finish line. At this instant, record each participant's finish status and switch the train to automatic forward travel. Players can no longer control its motion.
 5. Anyone not aboard is teleported onto the train for the shared ending, but receives no completion credit and is marked did not finish. Downed players already aboard finish normally. Teleporting does not itself revive anyone.
@@ -258,11 +260,11 @@ Confirmed October 29, 2026: the current implementation scope is Week 2 plus the 
 
 ### Encounter constraints and implementation decisions
 - Finale enemies remain local to the authored approach block and cannot board the train. No moving-train navigation or runtime crawlgraph baking is introduced.
-- Playtest whether the external-button trip and extra spawns create enough pressure while the train stays safe. Do not silently add enemy boarding to solve this.
+- Solo players must be able to release the button, repel or evade enemies, retreat to the train, and return to resume work. Readable approaches, usable retreat routes, unarmed feasibility and recovery windows remain playtest requirements; enemy boarding is excluded.
 - Define authoritative bridge timing, duplicate-button handling, recovery after Master Client departure, and passage gating until the bridge is fully lowered.
 - Define the train reference point/onboard volume used at the finish line, including players hanging from boarding rails.
 - Week 2 default: the fixed ending ride receives sufficient fuel in the same atomic finish commit so it cannot stall after credit is committed.
-- Tune the approximately 60-second defense, enemy pressure, off-train recovery boundary, return delay, and presentation for one to eight players.
+- Tune total holding time (initially 30 seconds), enemy pressure, off-train recovery boundary, return delay, and presentation for one to eight players. Current mixed-enemy counts are not evidence of solo balance.
 - Week 2 default: stats freeze at the finish line. Ending horn use still produces sound without changing results.
 
 ### Persistence direction

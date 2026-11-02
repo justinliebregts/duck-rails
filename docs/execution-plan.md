@@ -219,7 +219,8 @@ Confirmed scope: twelve gray-box locations, five distinct randomized stops plus 
 - [x] Choose the initial block lifetime: load all five selected blocks plus finale and retain them until return. Target-device profiling remains pending; runtime baking remains excluded.
 - [x] Avoid intermediate block unloading so players and dropped supplies remain available for the whole run.
 - [x] Author all twelve gray-box scavenging prefabs with three spawn variations each (supersedes the two-block initial scope). Individual gameplay playtests remain pending.
-- [x] Build the confirmed raised-bridge finale (included in the current Week 2 scope): external button, approximately 60-second lowering interval, and increased local enemy spawns. Enemies remain off the train.
+- [x] Build the original raised-bridge finale: external button and increased local enemy spawns. November 1 supersedes its unattended timer with a continuous hold; see [bridge hold](bridge-hold.md).
+- [ ] Validate the November 1 hold-to-lower finale across real clients and headsets: release saves/pauses, another operator resumes, overlapping holds retain normal speed, downing/disconnect pauses, late join/master change retain progress, and completion stays down. Three authenticated desktop clients passed physical release/pause, resume, master handoff, late rejoin, completion, success/replay/crash and cleanup; a solo physical fixture also verified downing pauses. Natural solo/unarmed balance, concurrent operators, operator disconnect and headset acceptance remain open. Initial holding duration is 30 seconds; enemies remain off the train. See [evidence and limits](bridge-hold.md).
 - [x] Synchronize bridge timing and gate passage until fully lowered; handle repeated presses and Master Client changes without restarting progress.
 - [x] At bridge entry, atomically capture per-player finish status before any catch-up teleport, then disable driving controls and commit automatic forward travel.
 - [x] Teleport only left-behind participants aboard as non-finishers without escape credit; downed players already aboard finish normally. Catch-up teleport does not revive players.
@@ -326,7 +327,7 @@ Reduce first:
 - No spotlight.
 - Three stats and a few awards.
 - Existing cosmetics with minimal new art.
-- Keep the proposed bridge finale to one external button and a timed lowering defense; no extra fuse/battery puzzle. Replacing it with a plain escape now requires a design discussion rather than an automatic scope cut.
+- Keep the bridge finale to one external hold-to-lower button with retained progress and local enemy defense; no extra fuse/battery puzzle. Replacing it with a plain escape requires a design discussion rather than an automatic scope cut.
 - Keep public return matchmaking simple: one coordinated, bounded search for crews of one to four, then fresh-compound fallback; no elaborate room-ranking system.
 - Repeatable block template and validation rather than an elaborate generator/editor suite.
 
