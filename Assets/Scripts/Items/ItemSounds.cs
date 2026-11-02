@@ -59,13 +59,12 @@ public class ItemSounds : MonoBehaviour
     float nextFleshImpactTime = float.NegativeInfinity;
     public bool HasFleshImpact => fleshImpact != null;
 
-    /// <summary>Called for a qualifying strike, independently of target knockback cooldowns.</summary>
+    /// <summary>Called for a qualifying strike, including worn headbutts, independently of target knockback cooldowns.</summary>
     public void PlayFleshImpact(Vector3 position)
     {
         if (!isActiveAndEnabled || fleshImpact == null || Time.time < nextFleshImpactTime ||
             (PhotonNetwork.InRoom && view != null && !view.IsMine) ||
-            (grabbable != null && grabbable.IsStashed) ||
-            (equipment != null && equipment.IsEquipped))
+            (grabbable != null && grabbable.IsStashed))
             return;
         nextFleshImpactTime = Time.time + Mathf.Max(0.01f, fleshImpactCooldown);
         RoomRpc.PlaySound(fleshImpact, position);
