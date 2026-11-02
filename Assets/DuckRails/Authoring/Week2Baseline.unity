@@ -4843,6 +4843,21 @@ MonoBehaviour:
   action: 2
   handle: {fileID: 0}
   holdButtonPrefab: {fileID: 0}
+--- !u!114 &365693812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 365693809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e3b09f115846584997ef298a651c4a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RailHoldControl
+  button: {fileID: 2015404085}
+  radio: 0
+  bridge: 1
 --- !u!1 &372603770
 GameObject:
   m_ObjectHideFlags: 0
@@ -11578,10 +11593,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5202316720461926551, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
 --- !u!4 &1123485821 stripped
 Transform:
@@ -13634,10 +13646,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5202316720461926551, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
 --- !u!4 &1344748801 stripped
 Transform:
@@ -15942,6 +15951,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailHoldControl
   button: {fileID: 1344748802}
   radio: 0
+  bridge: 0
 --- !u!1 &1632666272
 GameObject:
   m_ObjectHideFlags: 0
@@ -16625,6 +16635,9 @@ MonoBehaviour:
   - {fileID: 426819674}
   coalPrefab: {fileID: 5574739811840279064, guid: 9701d10c8ed43fa4980429128389ab6b, type: 3}
   enemyPrefab: {fileID: 8004392001833856099, guid: c892e8b65db74414d8ae0d84997e019f, type: 3}
+  enemyTypes: 
+  goldPrefab: {fileID: 0}
+  goldPoints: []
   furnace: {fileID: 304560893}
   bridgeButton: {fileID: 365693810}
   bridgeDeck: {fileID: 940855010}
@@ -16638,6 +16651,7 @@ MonoBehaviour:
   explosionMaterial: {fileID: 2100000, guid: 349e7c45810f14d4dbf3130e9dc3f823, type: 2}
   enemies: {fileID: 688592670}
   bridgeZ: 550
+  baseEnemyCount: 2
   flarePrefab: {fileID: 4432458544549534367, guid: 7765c40a483ec9a40a3de5a9d404e71e, type: 3}
 --- !u!1 &1682996352
 GameObject:
@@ -19399,6 +19413,105 @@ Transform:
   m_Children: []
   m_Father: {fileID: 909778539}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2015404083
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 365693810}
+    m_Modifications:
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 789004765287219664, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_text
+      value: 'HOLD
+
+        LOWER'
+      objectReference: {fileID: 0}
+    - target: {fileID: 789004765287219664, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_fontSize
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 789004765287219664, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 1884533646028075191, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+      propertyPath: m_Name
+      value: Hold button
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+--- !u!4 &2015404084 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+  m_PrefabInstance: {fileID: 2015404083}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2015404085 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4888848316258778862, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
+  m_PrefabInstance: {fileID: 2015404083}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1103ef198a551134683813b5848455fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PressableButton
 --- !u!1 &2041110431
 GameObject:
   m_ObjectHideFlags: 0
@@ -20491,6 +20604,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailHoldControl
   button: {fileID: 1123485822}
   radio: 1
+  bridge: 0
 --- !u!1 &2122008820
 GameObject:
   m_ObjectHideFlags: 0
@@ -20827,120 +20941,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2144812140}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!4 &2015404084 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-  m_PrefabInstance: {fileID: 2015404083}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &2015404083
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 365693810}
-    m_Modifications:
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.22
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.7071068
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 226039035001199884, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 789004765287219664, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_text
-      value: 'HOLD
-
-        LOWER'
-      objectReference: {fileID: 0}
-    - target: {fileID: 789004765287219664, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_fontSize
-      value: 0.65
-      objectReference: {fileID: 0}
-    - target: {fileID: 789004765287219664, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_fontSizeBase
-      value: 0.65
-      objectReference: {fileID: 0}
-    - target: {fileID: 1884533646028075191, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-      propertyPath: m_Name
-      value: Hold button
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
---- !u!114 &365693812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 365693809}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e3b09f115846584997ef298a651c4a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RailHoldControl
-  button: {fileID: 2015404085}
-  radio: 0
-  bridge: 1
---- !u!114 &2015404085 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4888848316258778862, guid: 551b53b59b88ff0409cda5dc83cb2fb1, type: 3}
-  m_PrefabInstance: {fileID: 2015404083}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1103ef198a551134683813b5848455fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PressableButton
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
