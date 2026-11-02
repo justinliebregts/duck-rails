@@ -1,0 +1,20 @@
+ControllerPalmCalibrationChecks PASS 1956: includes bare-hand orientation, tracking loss, input switching and Photon rotation parity
+ControllerPalmInteractionChecks PASS 1184: four skins, both hands, four rotations; grab boundaries, transfers, throws, actual held/bare wall sweeps, unstick, PUN held-item callbacks.
+TrackedHandInputChecks PASS 363: joint curl, gesture edges, post-grab trigger guard, tracking loss, controller isolation, item use and network curls.
+HeadPivotMovementChecks PASS: 1285 assertions; room-scale offsets, zero/snap/smooth turning, no pivot-launch impulses, warp destination/heading, carry, hand pushes and offset body sweep.
+HeadPivotSynchronizationChecks PASS: 139 assertions; zero/tiny/multiple carry, sync protection, warp, disable, destruction, loop ordering and zero recurring allocations.
+HeadPivotLifeNetworkChecks PASS: 210 assertions; six B respawn/pose combinations, ragdoll sync, compact pose codec, remote death/respawn and stale death rejection.
+HelicopterCabinCollisionChecks: ALL PASSED (2267 assertions; real ceiling, render rates, moving cabin, full interior coverage, independent shop trigger, exits)
+HelicopterSupportChecks: ALL PASSED (3101 assertions; VR/desktop roof, single hand, alternating hands, hops, edges, ghost/warp, real mesh, allocation)
+HelicopterNetworkChecks: ALL PASSED (127990 assertions; simulated peers, actual Photon stream and codec)
+DevelopmentMovementChecks PASS: 232 assertions; analog/cadence, body/head sweeps, slide/corners, tracking, gravity/lift, transitions and warmed allocations.
+DevelopmentMovementNetworkChecks PASS: 153412 assertions; actual motor/collisions/toggles, unchanged 39-byte pose codec, late join, 80-250ms delivery/jitter/loss, stale packets and remote body playback.
+PickupRegrabChecks ALL PASSED (4 cases, 150 assertions)
+PickupRecoveryChecks ALL PASSED (268 assertions)
+RoomObjectRecoveryChecks ALL PASSED (289 assertions)
+HeldItemRecoveryChecks: ALL PASSED (137 assertions)
+EquipmentPersistenceChecks PASS: helmet/goggles prefab observers, save/removal/teardown/death, Photon stream wearer and equipped state.
+EquipmentPersistenceChecks PASS: helmet/goggles prefab observers, save/removal/teardown/death, Photon stream wearer and equipped state.
+PhotonGrabbableChecks: ALL PASSED
+RoomObjectRecoveryChecks REGRESSIONS PASSED
+Rail cargo port: PASS sampled release, pending carry, authority, stale checkpoint, cancellation, off-train release

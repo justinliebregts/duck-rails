@@ -1,0 +1,29 @@
+PASS ControllerPalmCalibrationChecks
+FAIL ControllerPalmInteractionChecks: System.Exception: ControllerPalmInteractionChecks: remote held item matches calibrated owner: 0.02802495
+  at ControllerPalmInteractionChecks.Check (System.Boolean condition, System.String label) [0x00015] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Rendering\ControllerPalmInteractionChecks.cs:194 
+  at ControllerPalmInteractionChecks.Near (UnityEngine.Vector3 a, UnityEngine.Vector3 b, System.String label, System.Single tolerance) [0x00000] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Rendering\ControllerPalmInteractionChecks.cs:193 
+  at ControllerPalmInteractionChecks.CheckNetwork (PhotonPlayer owner, PhotonPlayer peer, PhotonGrabbable item, PhotonGrabbable replica) [0x000cc] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Rendering\ControllerPalmInteractionChecks.cs:170 
+  at ControllerPalmInteractionChecks.Run () [0x0056c] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Rendering\ControllerPalmInteractionChecks.cs:75 
+  at RailDuckzPortChecks.RunBatch () [0x00124] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\RailDuckzPortChecks.cs:95 
+PASS TrackedHandInputChecks
+PASS HeadPivotMovementChecks
+PASS HeadPivotSynchronizationChecks
+PASS HeadPivotLifeNetworkChecks
+PASS HelicopterCabinCollisionChecks
+PASS HelicopterSupportChecks
+FAIL HelicopterNetworkChecks: System.Exception: Owner captures passenger frame for VR
+  at HelicopterNetworkChecks.Check (System.Boolean condition, System.String message) [0x00015] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Networking\HelicopterNetworkChecks.cs:25 
+  at HelicopterNetworkChecks.Playback (HelicopterNetworkChecks+Actor owner, System.Boolean desktop, System.Double latency, System.Int32 support) [0x003d4] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Networking\HelicopterNetworkChecks.cs:285 
+  at HelicopterNetworkChecks.Run () [0x0009e] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Networking\HelicopterNetworkChecks.cs:164 
+  at RailDuckzPortChecks.RunBatch () [0x00124] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\RailDuckzPortChecks.cs:95 
+PASS DevelopmentMovementChecks
+PASS DevelopmentMovementNetworkChecks
+PASS PickupRecoveryChecks
+FAIL RoomObjectRecoveryChecks: System.Exception: stale holder metadata still recovers if both old holder and new owner become unavailable
+  at HeldItemRecoveryChecks.Check (System.Boolean value, System.String label) [0x00015] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Items\HeldItemRecoveryChecks.cs:28 
+  at HeldItemRecoveryChecks.Heartbeat (Photon.Realtime.Room room, Photon.Realtime.Player local, Photon.Realtime.Player remote) [0x00276] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Items\HeldItemRecoveryChecks.cs:247 
+  at HeldItemRecoveryChecks.Run () [0x0010e] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Items\HeldItemRecoveryChecks.cs:95 
+  at RoomObjectRecoveryChecks.Run () [0x00285] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\Checks\Networking\RoomObjectRecoveryChecks.cs:150 
+  at RailDuckzPortChecks.RunBatch () [0x00124] in X:\Work\duck-rails\tmp\duckz-port-validation\Assets\Editor\RailDuckzPortChecks.cs:95 
+PASS RailDuckzPortChecks
+PASS RailTestRunner

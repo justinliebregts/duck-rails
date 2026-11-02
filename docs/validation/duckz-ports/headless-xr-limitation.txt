@@ -1,0 +1,3 @@
+[XR] [123868] [10:52:40.677][Error  ] xrCreateSession: XR_ERROR_GRAPHICS_DEVICE_INVALID
+0x00007FFFE9F06FCF (UnityOpenXR) main_UnloadOpenXRLibrary
+Retry with automatic XR initialization disabled in the disposable copy also crashed at xrCreateSession with XR_ERROR_GRAPHICS_DEVICE_INVALID. DevelopmentMovementPlayChecks did not produce a passing result. Production XR settings were not modified.
