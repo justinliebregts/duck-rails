@@ -62,12 +62,84 @@ public static class HeadPivotMovementChecks
                 Near(p.PassengerFoot,foot+carry,"Carry displaced foot incorrectly");
                 Near(p.rb.linearVelocity,new Vector3(1,2,3),"Carry changed player velocity");
             }
-            HandPush(); BodySweep();
+            HandPush(); BodySweep(); RespawnHands();
             Debug.Log("HeadPivotMovementChecks PASS: "+checks+" assertions; room-scale offsets, zero/snap/smooth turning, no pivot-launch impulses, warp destination/heading, carry, hand pushes and offset body sweep.");
         } finally {
             Object.DestroyImmediate(services);GR.Player.instance=oldPlayer;NewPlayer.instance=oldVR;HelicopterManager.instance=oldHeli;
             Physics.simulationMode=mode;Physics.autoSyncTransforms=sync;
         }
+    }
+    // One batch entry point for the respawn fix and adjacent movement regressions.
+    public static void RunRespawnRegression()
+    {
+        PlayerMovementTimingChecks.Run();
+        Run();
+        HelicopterCarryChecks.Run();
+        Debug.Log("Respawn regression suite: PASS");
+    }
+
+    static void RespawnHands()
+    {
+        // A flat roof isolates initial clearance and landing from the bus mesh.
+        var roof = new GameObject("Respawn roof"); roof.layer = 6;
+        roof.transform.position = new Vector3(0, 4.4f, 0);
+        roof.AddComponent<BoxCollider>().size = new Vector3(20, .2f, 20);
+        int cases = 0;
+        Vector3 cleanPush = Vector3.zero;
+        try {
+            foreach (float headHeight in new[] { .7f, 1.6f })
+            foreach (float rightHeight in new[] { 0f, .8f })
+            foreach (var offset in new[] { Vector3.zero, new Vector3(2, 0, -1) })
+            foreach (float yaw in new[] { 0f, 90f, 180f })
+            foreach (bool staleContacts in new[] { false, true })
+            using (var rig = new MovementTestRig()) {
+                var p = rig.p;
+                p.headCollider.transform.localPosition = offset + Vector3.up * headHeight;
+                p.leftHandTransform.localPosition = offset + new Vector3(-.3f, 0, 0);
+                p.rightHandTransform.localPosition = offset + new Vector3(.3f, rightHeight, 0);
+                p.maxArmLength = 1.5f;
+                p.minimumRaycastDistance = .05f;
+                p.locomotionEnabledLayers = 1 << 6;
+                p.velocityLimit = float.MaxValue; // Measure hand pushes without launching.
+                p.wasLeftHandTouching = p.wasRightHandTouching = p.wasHeadTouching = staleContacts;
+                p.rb.linearVelocity = new Vector3(3, -8, 2);
+                p.Warp(new Vector3(0, 4.8f, 0), Quaternion.Euler(0, yaw, 0));
+                Check(!p.IsGrounded(), "Respawn retained stale grounding");
+                Near(p.rb.linearVelocity, Vector3.zero, "Respawn retained falling velocity");
+                Check(p.lastLeftHandPosition.y - p.minimumRaycastDistance > 4.5f
+                    && p.lastRightHandPosition.y - p.minimumRaycastDistance > 4.5f,
+                    "Low hand did not clear the roof at spawn");
+                p.rb.useGravity = true;
+                bool landed = false;
+                for (int frame = 0; frame < 180; frame++) {
+                    Physics.SyncTransforms(); rig.move(Step);
+                    Check(p.lastLeftHandPosition.y > 4.5f && p.lastRightHandPosition.y > 4.5f,
+                        "Hand anchor crossed into the roof during landing");
+                    if (p.leftHandColliding) { landed = true; break; }
+                    Physics.SyncTransforms(); Physics.Simulate(Step);
+                }
+                Check(landed, "Floor-level hand never landed on the roof");
+                Vector3 before = p.headCollider.transform.position;
+                // Pull the planted left hand inward. Moving it farther out while
+                // already reach-limited lifts its clamped anchor off the roof.
+                Vector3 pushDirection = p.transform.right;
+                p.leftHandTransform.position += pushDirection * .1f;
+                p.rightHandTransform.position += pushDirection * .1f;
+                rig.move(Step);
+                Vector3 displacement = p.headCollider.transform.position - before;
+                // Arm-reach clamping can reduce a tracked 10 cm push. Require movement
+                // and identical behavior to the same pose without pre-death contacts.
+                Check(Vector3.Dot(displacement, -pushDirection) > .01f,
+                    "Player could not push away after respawning with low hands: case=" + cases
+                    + ", head=" + headHeight + ", right=" + rightHeight + ", offset=" + offset + ", yaw=" + yaw
+                    + ", displacement=" + displacement.ToString("F4")
+                    + ", contacts=" + p.leftHandColliding + "/" + p.rightHandColliding);
+                if (staleContacts) Near(displacement, cleanPush, "Old contacts changed post-respawn hand movement");
+                else cleanPush = displacement;
+                cases++;
+            }
+            Debug.Log("RespawnHands PASS: " + cases + " standing/crouched, one/both low hands, room-scale offset and yaw cases; landing and hand-push recovery");
+        } finally { Object.DestroyImmediate(roof); }
     }
     static void HandPush()
     {

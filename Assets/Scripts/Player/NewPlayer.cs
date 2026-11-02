@@ -260,6 +260,10 @@ public partial class NewPlayer : MonoBehaviour
           rb.position = pos;
           rb.linearVelocity = Vector3.zero;
           currentVelocity = Vector3.zero;
+          // Contacts from before the warp do not describe the respawn destination.
+          wasLeftHandTouching = false;
+          wasRightHandTouching = false;
+          wasHeadTouching = false;
           InitializeValues();
           // Start the body collision sweep at the destination, not before the teleport.
           lastBodyMidpoint = bodyMidpoint.position;

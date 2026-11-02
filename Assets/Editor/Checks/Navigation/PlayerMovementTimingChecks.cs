@@ -200,14 +200,20 @@ public static class PlayerMovementTimingChecks
             Near(player.GetCurrentVelocity(), Vector3.zero, "Warp notification observes stale raw velocity");
             Near(player.rb.linearVelocity, Vector3.zero, "Warp notification observes stale physics velocity");
             Near((Vector3)average.GetValue(player), Vector3.zero, "Warp notification observes stale history");
+            if (player.wasLeftHandTouching || player.wasRightHandTouching || player.wasHeadTouching)
+                throw new Exception("Warp notification observes stale contact state");
         };
         NewPlayer.OnWarp += onWarp;
         try
         {
             foreach (bool rotate in new[] { false, true })
+            for (int contacts = 0; contacts < 8; contacts++)
             foreach (LaunchType mode in new[] { LaunchType.OverwriteVelocity, LaunchType.CombineVelocity, LaunchType.OverwriteVerticalCombineHorizontal })
             {
                 player.LaunchPlayer(incoming, LaunchType.OverwriteVelocity);
+                player.wasLeftHandTouching = (contacts & 1) != 0;
+                player.wasRightHandTouching = (contacts & 2) != 0;
+                player.wasHeadTouching = (contacts & 4) != 0;
                 notified = false;
                 Vector3 destination = new Vector3(10f, 2f, -5f);
                 if (rotate) player.Warp(destination, Quaternion.Euler(0f, 90f, 0f));
@@ -222,7 +228,10 @@ public static class PlayerMovementTimingChecks
         finally { NewPlayer.OnWarp -= onWarp; }
 
         player.LaunchPlayer(incoming, LaunchType.OverwriteVelocity);
+        player.wasLeftHandTouching = player.wasRightHandTouching = player.wasHeadTouching = true;
         player.ApplyPassengerDisplacement(new Vector3(1f, .5f, 0f));
+        if (!player.wasLeftHandTouching || !player.wasRightHandTouching || !player.wasHeadTouching)
+            throw new Exception("Passenger carry cleared valid contacts");
         Near(player.GetCurrentVelocity(), incoming, "Passenger carry cleared player momentum");
         Near(player.rb.linearVelocity, incoming, "Passenger carry cleared physics velocity");
 
