@@ -18,12 +18,9 @@ namespace Liv.Lck.Streaming
         private readonly ILckTelemetryClient _telemetryClient;
         private readonly ILckTelemetryContextProvider _telemetryContextProvider;
         
-        private const EncoderConsumer ConsumerName = EncoderConsumer.Streaming;
-
         private float _streamStartTime;
         private bool _disposed;
         private CameraTrackDescriptor _currentStreamDescriptor;
-        private LckEncodedPacketHandler _streamingPacketHandler;
         private Dictionary<string, object> _streamingTelemetryContext = new Dictionary<string, object>();
         
         public bool IsStreaming => CurrentCaptureState != LckCaptureState.Idle;
@@ -177,16 +174,15 @@ namespace Liv.Lck.Streaming
                 return;
             }
 
-            _streamingPacketHandler = new LckEncodedPacketHandler(this,
+            var streamPacketHandler = new LckEncodedPacketHandler(this, 
                 _nativeStreamingService.GetStreamPacketCallback());
-
-            var acquireResult = _encoder.AcquireEncoder(ConsumerName, _currentStreamDescriptor,
-                new[] { _streamingPacketHandler });
-            if (!acquireResult.Success)
+            
+            var startEncodingResult = _encoder.StartEncoding(_currentStreamDescriptor, new[] { streamPacketHandler });
+            if (!startEncodingResult.Success)
             {
                 CurrentCaptureState = LckCaptureState.Idle;
-                LckLog.LogError($"Failed to start encoding for streaming (resolution: {width}x{height}): {acquireResult.Message}");
-                TriggerStreamingStartedEvent(acquireResult);
+                LckLog.LogError($"Failed to start encoding for streaming (resolution: {width}x{height}): {startEncodingResult.Message}");
+                TriggerStreamingStartedEvent(startEncodingResult);
                 return;
             }
 
@@ -219,11 +215,10 @@ namespace Liv.Lck.Streaming
         {
             try
             {
-                var releaseResult = await _encoder.ReleaseEncoderAsync(ConsumerName,
-                    new[] { _streamingPacketHandler });
-                if (!releaseResult.Success)
+                var stopEncodingResult = await _encoder.StopEncodingAsync();
+                if (!stopEncodingResult.Success)
                 {
-                    TriggerStreamingStoppedEvent(releaseResult);
+                    TriggerStreamingStoppedEvent(stopEncodingResult);
                     return;
                 }
 

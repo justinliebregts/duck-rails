@@ -21,7 +21,7 @@ namespace Liv.Lck
         public RenderTexture CameraTrackTexture { get; private set; }
 
         [Preserve]
-        public LckVideoMixer(ILckOutputConfigurer outputConfigurer, ILckEventBus eventBus,
+        public LckVideoMixer(ILckOutputConfigurer outputConfigurer, ILckEventBus eventBus, 
             ILckTelemetryClient telemetryClient)
         {
             _eventBus = eventBus;
@@ -30,7 +30,7 @@ namespace Liv.Lck
             _eventBus.AddListener<CameraResolutionChangedEvent>(OnResolutionChanged);
             LckMediator.CameraRegistered += OnCameraRegistered;
             LckMediator.CameraUnregistered += OnCameraUnregistered;
-
+            
             // Initialize texture resolution based on initial output configuration
             var initialCameraTrackDescriptor = outputConfigurer.GetActiveCameraTrackDescriptor().Result;
             UpdateTextureResolution(initialCameraTrackDescriptor.CameraResolutionDescriptor);
@@ -49,7 +49,7 @@ namespace Liv.Lck
                 return LckResult.NewError(LckError.CameraIdNotFound,
                     LckResultMessageBuilder.BuildCameraIdNotFoundMessage(cameraId, LckMediator.GetCameras().ToList()));
             }
-
+            
             // Swap active camera
             _activeCamera?.DeactivateCamera();
             _activeCamera = cameraToActivate;
@@ -66,7 +66,7 @@ namespace Liv.Lck
 
             return LckResult.NewSuccess();
         }
-
+        
         public LckResult StopActiveCamera()
         {
             if (_activeCamera != null)
@@ -75,14 +75,14 @@ namespace Liv.Lck
                 _activeCamera = null;
                 TriggerActiveCameraChangedEvent();
             }
-
+            
             return LckResult.NewSuccess();
         }
-
+        
         public void Dispose()
         {
             ReleaseCameraTrackTextures();
-
+            
             LckMediator.CameraRegistered -= OnCameraRegistered;
             LckMediator.CameraUnregistered -= OnCameraUnregistered;
         }
@@ -91,24 +91,24 @@ namespace Liv.Lck
         {
             TriggerActiveCameraChangedEvent(LckResult<ILckCamera>.NewSuccess(_activeCamera));
         }
-
+        
         private void TriggerActiveCameraChangedEvent(LckResult<ILckCamera> result)
         {
             _eventBus.Trigger(new ActiveCameraChangedEvent(result));
         }
-
+        
         private void ReleaseCameraTrackTextures()
         {
             if (!CameraTrackTexture)
                 return;
-
-            CameraTrackTexture.Release();
+            
+            CameraTrackTexture.Release(); 
             UnityEngine.Object.Destroy(CameraTrackTexture);
             CameraTrackTexture = null;
-
+            
             LckLog.Log("Released camera track texture");
         }
-
+        
         private LckResult UpdateMonitorTexture(string monitorId)
         {
             var monitor = LckMediator.GetMonitorById(monitorId);
@@ -118,7 +118,7 @@ namespace Liv.Lck
                     LckResultMessageBuilder.BuildMonitorIdNotFoundMessage(monitorId,
                         LckMediator.GetMonitors().ToList()));
             }
-
+            
             monitor.SetRenderTexture(CameraTrackTexture);
             return LckResult.NewSuccess();
         }
@@ -127,20 +127,16 @@ namespace Liv.Lck
         {
             var width = (int)cameraResolutionDescriptor.Width;
             var height = (int)cameraResolutionDescriptor.Height;
-
-            // We should avoid 16bit depth as it produces z-fighting issues with most modern games.
-            // Stencil is needed for Unity UI masking to work.
+            
 #if UNITY_2020
-            // Unity docs was confusing: Number of bits in depth buffer (0, 16 or 24). Note that only 24 bit depth has stencil buffer.
-            // what it really means: depth 24, stencil 8
             RenderTextureDescriptor renderTextureDescriptor = new RenderTextureDescriptor(width, height,
-                RenderTextureFormat.ARGB32, 24)
+                RenderTextureFormat.ARGB32,  LckSettings.Instance.EnableStencilSupport ?  24 : 16)
 #else
             RenderTextureDescriptor renderTextureDescriptor = new RenderTextureDescriptor(
                 width,
                 height,
                 GraphicsFormat.R8G8B8A8_UNorm,
-                GraphicsFormat.D24_UNorm_S8_UInt)
+                LckSettings.Instance.EnableStencilSupport ? GraphicsFormat.D24_UNorm_S8_UInt : GraphicsFormat.D16_UNorm)
 #endif
             {
                 memoryless = RenderTextureMemoryless.None,
@@ -158,10 +154,10 @@ namespace Liv.Lck
             //NOTE: These need to be called twice to make sure the ptr is available
             renderTexture.GetNativeTexturePtr();
             renderTexture.GetNativeDepthBufferPtr();
-
+            
             return renderTexture;
         }
-
+        
         private void InitCameraTexture(CameraResolutionDescriptor resolution)
         {
             if (!resolution.IsValid())
@@ -191,11 +187,11 @@ namespace Liv.Lck
             _eventBus.Trigger(new ActiveCameraTrackTextureChangedEvent(
                 LckResult<RenderTexture>.NewSuccess(CameraTrackTexture)));
         }
-
-
+        
+        
         private void OnCameraRegistered(ILckCamera camera)
         {
-
+            
         }
 
         private void OnCameraUnregistered(ILckCamera camera)
@@ -205,7 +201,7 @@ namespace Liv.Lck
                 StopActiveCamera();
             }
         }
-
+        
         private void OnResolutionChanged(CameraResolutionChangedEvent cameraResolutionChangedEvent)
         {
             var eventResult = cameraResolutionChangedEvent.Result;
@@ -214,7 +210,7 @@ namespace Liv.Lck
                 LckLog.LogWarning($"{nameof(LckVideoMixer)} ignoring failed camera resolution change ({cameraResolutionChangedEvent.Result.Message})");
                 return;
             }
-
+            
             UpdateTextureResolution(eventResult.Result);
         }
 

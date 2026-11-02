@@ -24,8 +24,6 @@ namespace Liv.Lck.Encoding
         private readonly ILckTelemetryClient _telemetryClient;
         private readonly ILckCaptureErrorDispatcher _captureErrorDispatcher;
         private readonly IList<LckEncodedPacketHandler> _registeredPacketHandlers = new List<LckEncodedPacketHandler>();
-        private readonly HashSet<EncoderConsumer> _activeConsumers = new HashSet<EncoderConsumer>();
-        private readonly Dictionary<EncoderConsumer, List<LckEncodedPacketHandler>> _consumerHandlers = new Dictionary<EncoderConsumer, List<LckEncodedPacketHandler>>();
         private readonly LckNativeEncodingApi.AudioTrack[] _audioTracks = new LckNativeEncodingApi.AudioTrack[1];
         private readonly bool[] _readyVideoTracks = { false };
         
@@ -79,99 +77,48 @@ namespace Liv.Lck.Encoding
                 encodedPacketHandler.CaptureStateProvider.IsPaused().Result);
         }
         
-        public LckResult AcquireEncoder(EncoderConsumer consumer, CameraTrackDescriptor descriptor,
-            IEnumerable<LckEncodedPacketHandler> handlers)
+        public LckResult StartEncoding(CameraTrackDescriptor cameraTrackDescriptor, 
+            IEnumerable<LckEncodedPacketHandler> encodedPacketHandlers)
         {
-            if (_activeConsumers.Contains(consumer))
+            if (_isActive)
             {
                 return LckResult.NewError(LckError.CaptureAlreadyStarted,
-                    $"Consumer '{consumer}' has already acquired the encoder");
+                    "Encoding has already started");
             }
-
-            var handlerList = new List<LckEncodedPacketHandler>(handlers);
-
-            if (!_isActive)
-            {
-                // First consumer - start encoder with handlers registered before native start
-                var result = StartEncoderInternal(descriptor, handlerList);
-                if (!result.Success) return result;
-            }
-            else
-            {
-                // Encoder already running - just add handlers
-                AddEncodedPacketHandlers(handlerList);
-            }
-            _consumerHandlers[consumer] = handlerList;
-            _activeConsumers.Add(consumer);
-
-            LckLog.Log($"Encoder acquired by consumer '{consumer}' (total consumers: {_activeConsumers.Count})");
-            return LckResult.NewSuccess();
-        }
-
-        public async Task<LckResult> ReleaseEncoderAsync(EncoderConsumer consumer,
-            IEnumerable<LckEncodedPacketHandler> handlers)
-        {
-            if (!_activeConsumers.Remove(consumer))
-            {
-                return LckResult.NewError(LckError.EncodingError,
-                    $"Consumer '{consumer}' has not acquired the encoder");
-            }
-
-            foreach (var handler in handlers)
-            {
-                RemoveEncodedPacketHandler(handler);
-            }
-            _consumerHandlers.Remove(consumer);
-
-            LckLog.Log($"Encoder released by consumer '{consumer}' (remaining consumers: {_activeConsumers.Count})");
-
-            if (_activeConsumers.Count == 0)
-            {
-                return await StopEncoderInternal();
-            }
-
-            return LckResult.NewSuccess();
-        }
-
-        private LckResult StartEncoderInternal(CameraTrackDescriptor cameraTrackDescriptor,
-            IEnumerable<LckEncodedPacketHandler> initialHandlers = null)
-        {
+            
             if (!CreateEncoderInstance())
             {
                 return LckResult.NewError(LckError.EncodingError, "Failed to create encoder instance");
             }
-
-            // Register packet handlers BEFORE starting the native encoder thread,
-            // so callbacks are in place when the encoder begins producing packets.
-            if (initialHandlers != null)
-                AddEncodedPacketHandlers(initialHandlers);
-
+            
+            AddEncodedPacketHandlers(encodedPacketHandlers);
+            
             _resourceContext = LckNativeEncodingApi.GetResourceContext(_encoderContext);
             if (_resourceContext == IntPtr.Zero)
             {
-                return LckResult.NewError(LckError.EncodingError,
+                return LckResult.NewError(LckError.EncodingError, 
                     "Resource context pointer is not set");
             }
-
+            
             _resourceInitData = new Handle<LckNativeEncodingApi.ResourceData>(new LckNativeEncodingApi.ResourceData()
             {
-                encoderContext = _encoderContext
+                encoderContext = _encoderContext 
             });
-
-            var trackInfos = CreateTrackInfoInteropData(cameraTrackDescriptor,
-                _outputConfigurer.GetAudioSampleRate().Result,
+            
+            var trackInfos = CreateTrackInfoInteropData(cameraTrackDescriptor, 
+                _outputConfigurer.GetAudioSampleRate().Result, 
                 _outputConfigurer.GetNumberOfAudioChannels().Result);
-
+            
             var initCameraRenderDataResult = InitCameraRenderData(trackInfos);
             if (!initCameraRenderDataResult.Success)
                 return initCameraRenderDataResult;
-
+            
             var success = LckNativeEncodingApi.StartEncoder(_encoderContext, trackInfos, (uint)trackInfos.Length);
             if (!success)
             {
                 return LckResult.NewError(LckError.EncodingError, "Failed to start native encoder");
             }
-
+            
             ExecuteNativeInitResourcesFunction();
             InitTextureHandles();
 
@@ -179,54 +126,55 @@ namespace Liv.Lck.Encoding
             _currentEncoderSessionData = new EncoderSessionData();
 
             LckLog.Log("Encoder started successfully");
-
+            
             var result = LckResult.NewSuccess();
             _eventBus.Trigger(new EncoderStartedEvent(result));
             return result;
         }
-
-        private LckResult StopNativeEncoder()
+        
+        public async Task<LckResult> StopEncodingAsync()
         {
-            _isActive = false;
-            try
+            if (!IsActive())
             {
-                LckNativeEncodingApi.StopEncoder(_encoderContext);
+                // Encoder is already stopped - treat as success (idempotent operation)
+                LckLog.Log($"{nameof(StopEncodingAsync)} called while encoder is already inactive - treating as success");
                 return LckResult.NewSuccess();
             }
-            catch (Exception ex)
+
+            _isActive = false;
+            var stopEncoderResult = await Task.Run(() =>
             {
-                LckLog.LogError($"An exception occurred while stopping the encoder: {ex}");
-                return LckResult.NewError(LckError.EncodingError, ex.Message);
+                try
+                {
+                    LckNativeEncodingApi.StopEncoder(_encoderContext);
+                    return LckResult.NewSuccess();
+                }
+                catch (Exception ex)
+                {
+                    LckLog.LogError($"An exception occurred while stopping the encoder: {ex}");
+                    return LckResult.NewError(LckError.EncodingError, ex.Message);
+                }
+            });
+
+            if (!stopEncoderResult.Success)
+            {
+                return stopEncoderResult;
             }
-        }
 
-        private LckResult FinalizeEncoderStop()
-        {
             UnregisterEncodedPacketHandlers();
-            _activeConsumers.Clear();
-            _consumerHandlers.Clear();
-
+            
             ReleaseResources();
-
+            
             // DestroyEncoder will be called by ReleaseResource in native from the render thread
             //LckNativeEncodingApi.DestroyEncoder(_encoderContext);
-
+            
             _encoderContext = IntPtr.Zero;
 
             LckLog.Log("Encoding stopped successfully");
-
+            
             var result = LckResult.NewSuccess();
             _eventBus.Trigger(new EncoderStoppedEvent(result));
             return result;
-        }
-
-        private async Task<LckResult> StopEncoderInternal()
-        {
-            var stopResult = await Task.Run(StopNativeEncoder);
-            if (!stopResult.Success)
-                return stopResult;
-
-            return FinalizeEncoderStop();
         }
         
         public bool EncodeFrame(float videoTimeSeconds, AudioBuffer audioData, bool encodeVideo)
@@ -500,7 +448,7 @@ namespace Liv.Lck.Encoding
         private void HandleEncodeFrameError(string errorMessage)
         {
             LckLog.LogError(errorMessage);
-            _ = StopEncoderInternal();
+            _ = StopEncodingAsync();
         }
         
         private static LckNativeEncodingApi.TrackInfo[] CreateTrackInfoInteropData(
@@ -545,21 +493,19 @@ namespace Liv.Lck.Encoding
         {
             if (_disposed)
                 return;
-
+            
             if (IsActive())
             {
-                // Call synchronously — StopEncoderInternal().Result deadlocks because .Result
-                // blocks the main thread while the async continuation needs it to resume.
-                var stopResult = StopNativeEncoder();
-                if (stopResult.Success)
-                    FinalizeEncoderStop();
-                else
-                    LckLog.LogError($"{nameof(LckEncoder)} was disposed while active, but failed to stop encoding: " +
-                                    stopResult.Message);
+                var stopEncodingResult = StopEncodingAsync().Result;
+                if (!stopEncodingResult.Success)
+                {
+                    LckLog.LogError($"{nameof(LckEncoder)} was disposed while active, but failed to stop encoding: " + 
+                                    stopEncodingResult.Message);
+                }
             }
 
             CaptureErrorDispatcher = null;
-
+            
             _disposed = true;
         }
     }

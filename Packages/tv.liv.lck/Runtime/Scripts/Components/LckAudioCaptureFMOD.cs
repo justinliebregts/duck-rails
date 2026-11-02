@@ -2,7 +2,6 @@
 #define LCK_FMOD
 #endif
 using System;
-using System.Collections;
 using System.Runtime.InteropServices;
 using Liv.Lck.Collections;
 using UnityEngine;
@@ -16,8 +15,6 @@ namespace Liv.Lck
         private FMOD.DSP_READ_CALLBACK mReadCallback;
         private FMOD.DSP mCaptureDSP;
         public static int samplerate = 0;
-        private bool _dspAttached;
-        private Coroutine _attachDspCoroutine;
 #endif
         private GCHandle mObjHandle;
         private AudioBuffer _tmpDownmixBuffer = new AudioBuffer(98000);
@@ -120,26 +117,6 @@ namespace Liv.Lck
         void Start()
         {
 #if LCK_FMOD
-            samplerate = 0;
-            _attachDspCoroutine = StartCoroutine(AttachDspWhenFmodReady());
-#endif
-        }
-
-#if LCK_FMOD
-        private IEnumerator AttachDspWhenFmodReady()
-        {
-            while (!FMODUnity.RuntimeManager.IsInitialized)
-            {
-                yield return null;
-            }
-            yield return null;
-
-            AttachDsp();
-            _attachDspCoroutine = null;
-        }
-
-        private void AttachDsp()
-        {
             // Assign the callback to a member variable to avoid garbage collection
             mReadCallback = CaptureDSPReadCallback;
 
@@ -164,11 +141,7 @@ namespace Liv.Lck
                 {
                     if (FMODUnity.RuntimeManager.CoreSystem.createDSP(ref desc, out mCaptureDSP) == FMOD.RESULT.OK)
                     {
-                        if (masterCG.addDSP(0, mCaptureDSP) == FMOD.RESULT.OK)
-                        {
-                            _dspAttached = true;
-                        }
-                        else
+                        if (masterCG.addDSP(0, mCaptureDSP) != FMOD.RESULT.OK)
                         {
                             LckLog.LogWarning("LCK FMOD: Unable to add mCaptureDSP to the master channel group");
                         }
@@ -187,18 +160,12 @@ namespace Liv.Lck
             {
                 LckLog.LogWarning("LCK FMOD: Unable to create a GCHandle: mObjHandle");
             }
-        }
 #endif
+        }
 
         void OnDestroy()
         {
 #if LCK_FMOD
-            if (_attachDspCoroutine != null)
-            {
-                StopCoroutine(_attachDspCoroutine);
-                _attachDspCoroutine = null;
-            }
-
             if (mObjHandle.IsAllocated)
             {
                 // Remove the capture DSP from the master channel group
@@ -215,8 +182,6 @@ namespace Liv.Lck
                 }
                 mObjHandle.Free();
             }
-
-            _dspAttached = false;
 #endif
         }
 

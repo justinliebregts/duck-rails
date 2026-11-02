@@ -68,9 +68,14 @@ namespace Liv.Lck.Settings
         [SerializeField]
         [Tooltip("Allow LCK to modify the AndroidManifest.xml file to add Internet permissions. Disable if you want to manually add permissions.")]
         public bool AddInternetPermissionsToAndroidManifest = true;
+
         [SerializeField]
-        [Tooltip("Intervaled rendering can cause flickering artifacts for some VRIK users. Disable intervaled rendering if you notice flickering in the LCK viewfinder.")]
-        public bool DisableIntervaledRendering = false;
+        [Tooltip(
+            "Enabling stencil buffer support allows for advanced rendering effects, such as masking and outlining, to be recorded in the recording. "
+                + "UI elements may often utilise the stencil buffer and may otherwise appear incorrect in the recordings. "
+                + "Disable to optimise performance if stencil effects are not needed."
+        )]
+        public bool EnableStencilSupport = true;
 
         [Space(10)]
         [Header("Logging")]
@@ -149,10 +154,10 @@ namespace Liv.Lck.Settings
         public string TriggerEnterTag = "Hand";
 
         [HideInInspector]
-    public const string Version = "1.4.7";
+    public const string Version = "1.4.5";
 
         [HideInInspector]
-        public const int Build = -1;
+        public const int Build = 3618;
 
         private static LckSettings _instance;
 

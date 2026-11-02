@@ -4,13 +4,6 @@ using UnityEngine;
 
 namespace Liv.Lck
 {
-    public enum EchoDisableReason
-    {
-        User,
-        LowStorage,
-        Error
-    }
-
     internal class LckEvents
     {
         internal interface IEventWithResult<out TResult> where TResult : ILckResult
@@ -72,40 +65,7 @@ namespace Liv.Lck
         }
         
         #endregion
-
-        #region Echo Events
-
-        internal struct EchoSavedEvent : IEventWithResult<LckResult<RecordingData>>
-        {
-            public LckResult<RecordingData> SaveResult { get; }
-            public LckResult<RecordingData> Result => SaveResult;
-
-            public EchoSavedEvent(LckResult<RecordingData> saveResult)
-            {
-                SaveResult = saveResult;
-            }
-        }
-
-        internal struct EchoEnabledEvent : IEventWithResult<LckResult>
-        {
-            public LckResult Result { get; }
-            public EchoEnabledEvent(LckResult result) => Result = result;
-        }
-
-        internal struct EchoDisabledEvent : IEventWithResult<LckResult>
-        {
-            public LckResult Result { get; }
-            public EchoDisableReason Reason { get; }
-
-            public EchoDisabledEvent(LckResult result, EchoDisableReason reason = EchoDisableReason.User)
-            {
-                Result = result;
-                Reason = reason;
-            }
-        }
-
-        #endregion
-
+        
         #region Streaming events
 
         internal struct StreamingStartedEvent: IEventWithResult<LckResult>

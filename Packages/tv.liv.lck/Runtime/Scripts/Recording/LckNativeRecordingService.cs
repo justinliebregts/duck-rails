@@ -7,7 +7,7 @@ namespace Liv.Lck.Recorder
 {
     internal class LckNativeRecordingService : ILckNativeRecordingService
     {
-        private const string RecordingLib = "lck_rs";
+        private const string RecordingLib = "qck";
         
         private IntPtr _nativeMuxerContext = IntPtr.Zero;
         private NGFX.LogLevel _logLevel =  NGFX.LogLevel.Error;

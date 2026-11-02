@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Liv.Lck.Collections;
 using Liv.Lck.Core;
 using Liv.Lck.Encoding;
-using Liv.Lck.ErrorHandling;
 using Liv.Lck.Telemetry;
 using UnityEngine;
 using UnityEngine.Scripting;
@@ -17,7 +16,6 @@ namespace Liv.Lck
         private readonly ILckOutputConfigurer _outputConfigurer;
         private readonly ILckAudioMixer _audioMixer;
         private readonly ILckVideoCapturer _videoCapturer;
-        private readonly ILckEventBus _eventBus;
         private readonly ILckTelemetryClient _telemetryClient;
 
         private float _pausedForTime;
@@ -44,10 +42,9 @@ namespace Liv.Lck
             _outputConfigurer = outputConfigurer;
             _audioMixer = audioMixer;
             _videoCapturer = videoCapturer;
-            _eventBus = eventBus;
             _telemetryClient = telemetryClient;
 
-            _eventBus.AddListener<LckEvents.EncoderStartedEvent>(OnEncoderStarted);
+            eventBus.AddListener<LckEvents.EncoderStartedEvent>(OnEncoderStarted);
         }
         
         public void EarlyUpdate()
@@ -136,8 +133,7 @@ namespace Liv.Lck
         private void HandleEncodeFrameError(string errorMessage)
         {
             LckLog.LogError(errorMessage);
-            _eventBus.Trigger(new LckEvents.CaptureErrorEvent(
-                new LckCaptureError(CaptureErrorType.EncoderError, errorMessage)));
+            _encoder.StopEncodingAsync();
         }
 
         private IEnumerator StartEncodingAfterWarmupFrames(int warmupFrameCount)

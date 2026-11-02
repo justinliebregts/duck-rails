@@ -89,14 +89,6 @@ namespace Liv.Lck.Core.FFI
         [DllImport(__DllName, EntryPoint = "log", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
         internal static extern void log(LogType level, IntPtr message, IntPtr member_name, IntPtr file_path, int line_number);
 
-        /// <summary>
-        ///  # Safety
-        ///  `out_buf` must point to a buffer of at least `buf_len` bytes.
-        ///  Returns the number of bytes written (excluding null terminator), or -1 if no error is stored.
-        /// </summary>
-        [DllImport(__DllName, EntryPoint = "get_last_streaming_error", CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        internal static extern int get_last_streaming_error(IntPtr out_buf, System.UIntPtr buf_len);
-
 
     }
 
@@ -117,8 +109,6 @@ namespace Liv.Lck.Core.FFI
         Fatal = 11,
         RateLimiterBackoff = 12,
         InvalidTrackingId = 13,
-        StreamingProviderError = 14,
-        TrackingIdNotVerified = 15,
     }
 
 

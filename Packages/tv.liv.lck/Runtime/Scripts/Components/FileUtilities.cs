@@ -46,7 +46,7 @@ namespace Liv.Lck.Utilities
 
                             if (success)
                             {
-                                await DeleteMatchingFilesAsync(sourceFilePath);
+                                await DeleteAllFilesWithSameExtensionAsync(sourceFilePath);
                             }
                         }
 
@@ -62,10 +62,9 @@ namespace Liv.Lck.Utilities
                                 fileName,
                                 new NativeGallery.MediaSaveCallback(WrappedMediaSaveCallback));
 
-                        if (permission != NativeGallery.Permission.Granted)
+                        if (permission == NativeGallery.Permission.Granted)
                         {
-                            callback.Invoke(false, sourceFilePath);
-                            LckLog.LogError($"LCK Gallery permission not granted: {permission}");
+                            await Task.Run(() => File.Delete(sourceFilePath));
                         }
                     }
                     else
@@ -82,7 +81,7 @@ namespace Liv.Lck.Utilities
 
                         // Use Task.Run to perform file copying asynchronously
                         await Task.Run(() => File.Copy(sourceFilePath, destinationFilePath, overwrite: true));
-                        await DeleteMatchingFilesAsync(sourceFilePath);
+                        await DeleteAllFilesWithSameExtensionAsync(sourceFilePath);
 
                         // Invoke the callback on the main thread if necessary
                         callback.Invoke(true, destinationFilePath);
@@ -108,44 +107,21 @@ namespace Liv.Lck.Utilities
             return filename;
         }
 
-        public static string GenerateEchoFilename(string extension)
-        {
-            string date = DateTime.Now.ToString(LckSettings.Instance.RecordingDateSuffixFormat);
-            string filename = $"{LckSettings.Instance.RecordingFilenamePrefix}_Echo_{date}.{extension}";
-            return filename;
-        }
-
-        private const string EchoFileMarker = "_Echo_";
-
-        private static bool IsEchoFile(string filePath)
-        {
-            return Path.GetFileName(filePath).Contains(EchoFileMarker);
-        }
-
-        /// <summary>
-        /// Deletes all files in the same folder that share the same extension and category
-        /// (echo vs recording) as the given file. This prevents echo saves from deleting
-        /// in-progress recording temp files and vice versa.
-        /// </summary>
-        private static async Task DeleteMatchingFilesAsync(string filePath)
+        private static async Task DeleteAllFilesWithSameExtensionAsync(string filePath)
         {
             try
             {
                 var folderPath = Path.GetDirectoryName(filePath);
                 var fileExtension = Path.GetExtension(filePath);
-                var sourceIsEcho = IsEchoFile(filePath);
 
                 if (folderPath != null)
                 {
                     await Task.Run(() =>
                     {
-                        var candidates = Directory.GetFiles(folderPath, $"*{fileExtension}");
-                        for (var index = 0; index < candidates.Length; index++)
+                        var filesToDelete = Directory.GetFiles(folderPath, $"*{fileExtension}");
+                        for (var index = 0; index < filesToDelete.Length; index++)
                         {
-                            var file = candidates[index];
-                            if (IsEchoFile(file) != sourceIsEcho)
-                                continue;
-
+                            var file = filesToDelete[index];
                             try
                             {
                                 File.Delete(file);

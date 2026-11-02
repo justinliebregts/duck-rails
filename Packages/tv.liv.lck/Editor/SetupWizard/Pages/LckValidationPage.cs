@@ -1,14 +1,10 @@
+using Liv.Lck.Audio;
 using Liv.Lck.Settings;
 using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
-
-
-#if LCK_UNITY_URP
-using UnityEngine.Rendering.Universal;
-#endif
 
 namespace Liv.Lck
 {
@@ -125,79 +121,6 @@ namespace Liv.Lck
                 }
             ));
 
-            // Suggested: DeptPrepass & DepthPriming Disabled
-            bool isDepthPrepassAndDepthPrimingDisabled = true;
-#if LCK_UNITY_URP && UNITY_2022_1_OR_NEWER
-            if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android &&
-                UniversalRenderPipeline.asset != null)
-            {
-                bool usesDepthPrimingMode = false;
-                bool usesDepthPrepass = false;
-#if UNITY_6000_0_OR_NEWER
-                var scriptableRendererDatas = UniversalRenderPipeline.asset.rendererDataList.ToArray();
-#else
-                var rendererDataListField = typeof(UniversalRenderPipelineAsset).GetField("m_RendererDataList", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                var scriptableRendererDatas = rendererDataListField?.GetValue(UniversalRenderPipeline.asset) as ScriptableRendererData[]
-                    ?? System.Array.Empty<ScriptableRendererData>();
-#endif
-                foreach (ScriptableRendererData scriptableRendererData in scriptableRendererDatas)
-                {
-                    UniversalRendererData universalRendererData = scriptableRendererData as UniversalRendererData;
-                    if (universalRendererData == null)
-                        continue;
-
-                    usesDepthPrimingMode |= universalRendererData.depthPrimingMode != DepthPrimingMode.Disabled;
-                    usesDepthPrepass |= universalRendererData.copyDepthMode == CopyDepthMode.ForcePrepass;
-                }
-
-                isDepthPrepassAndDepthPrimingDisabled = !(usesDepthPrepass || usesDepthPrimingMode);
-                _contentArea.Add(CreateValidationElement(
-                    "Depth Prepass & Depth Priming disabled (Android)",
-                    isDepthPrepassAndDepthPrimingDisabled,
-                    ValidationSeverity.Suggested,
-                    "Apply Fix",
-                    () =>
-                    {
-                        try
-                        {
-                            var m_RendererDataList = typeof(UniversalRenderPipelineAsset).GetField("m_RendererDataList", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-                            if (m_RendererDataList == null)
-                            {
-                                throw new Exception($"Failed to obtain field via reflection: {nameof(m_RendererDataList)}");
-                            }
-
-                            ScriptableRendererData[] scriptableRendererDatas = m_RendererDataList.GetValue(UniversalRenderPipeline.asset) as ScriptableRendererData[];
-                            if (scriptableRendererDatas == null)
-                            {
-                                throw new Exception($"Failed to obtain field value via reflection: {nameof(m_RendererDataList)}");
-                            }
-
-                            foreach (ScriptableRendererData scriptableRendererData in scriptableRendererDatas)
-                            {
-                                UniversalRendererData universalRendererData = scriptableRendererData as UniversalRendererData;
-                                if (universalRendererData == null)
-                                    continue;
-
-                                universalRendererData.depthPrimingMode = DepthPrimingMode.Disabled;
-                                if (universalRendererData.copyDepthMode == CopyDepthMode.ForcePrepass)
-                                {
-                                    universalRendererData.copyDepthMode = CopyDepthMode.AfterOpaques;
-                                }
-                            }
-                            EditorUtility.SetDirty(UniversalRenderPipeline.asset);
-                            RefreshContent();
-                        }
-                        catch (System.Exception ex)
-                        {
-                            Debug.LogError($"[LckValidationPage] Failed to apply Depth Prepass & Depth Priming fix: {ex.Message}");
-                        }
-                    }
-                ));
-
-            }
-
-#endif
-
             // Suggested: LCK Tablet Layer
             bool hasLckTabletLayer = HasLayer("LCK Tablet");
             _contentArea.Add(CreateValidationElement(
@@ -242,57 +165,10 @@ namespace Liv.Lck
                 () => RefreshContent()
             ));
 
-            // Suggested: when VRIK is present, disable intervaled rendering            
-            bool isIntervaledRenderingDisabledWhenVrikIsPresent = true;
-            const string VRIK_TYPE_NAME = "RootMotion.FinalIK.VRIK";
-            var vrikType = System.Type.GetType($"{VRIK_TYPE_NAME}, Assembly-CSharp");
-            if (vrikType == null)
-            {
-                foreach (var assembly in System.AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    vrikType = assembly.GetType(VRIK_TYPE_NAME);
-                    if (vrikType != null)
-                        break;
-                }
-            }
-            // VRIK is not present, don't show
-            if (vrikType != null)
-            {
-                try
-                {
-                    LckSettings settings = LckSettings.Instance;
-                    isIntervaledRenderingDisabledWhenVrikIsPresent = settings != null && settings.DisableIntervaledRendering;
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogError($"[LckValidationPage] Error checking DisableIntervaledRendering: {ex.Message}");
-                }
-
-                _contentArea.Add(CreateValidationElement(
-                "Disable intervaled rendering (VRIK)",
-                isIntervaledRenderingDisabledWhenVrikIsPresent,
-                ValidationSeverity.Suggested,
-                "Apply Fix",
-                () =>
-                {
-                    try
-                    {
-                        LckSettings settings = LckSettings.Instance;
-                        settings.DisableIntervaledRendering = true;
-                        EditorUtility.SetDirty(settings);
-                        RefreshContent();
-                    }
-                    catch (System.Exception ex)
-                    {
-                        Debug.LogError($"[LckValidationPage] Error setting DisableIntervaledRendering: {ex.Message}");
-                    }
-                }));
-            }
-
             AddSpacer(_contentArea, "lg");
 
             // Summary
-            bool allPassed = apiLevelPassed && isArm64Enabled && isDepthPrepassAndDepthPrimingDisabled && hasLckTabletLayer && hasAudioListenerOrMarker && hasTrackingId && isIntervaledRenderingDisabledWhenVrikIsPresent;
+            bool allPassed = apiLevelPassed && isArm64Enabled && hasLckTabletLayer && hasAudioListenerOrMarker && hasTrackingId;
             bool requiredPassed = hasTrackingId && apiLevelPassed;
 
             if (allPassed)
@@ -546,6 +422,7 @@ namespace Liv.Lck
                 }).Every(stepDuration).Until(() => currentStep >= steps || currentY > 110f);
             }).StartingIn(delay);
         }
+
         #endregion
     }
 }

@@ -33,10 +33,5 @@ namespace Liv.Lck.Core
         {
             return LckCore.GetRemainingBackoffTimeSeconds();
         }
-
-        string ILckCore.GetLastStreamingError()
-        {
-            return LckCore.GetLastStreamingError();
-        }
     }
 }

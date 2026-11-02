@@ -15,7 +15,6 @@ namespace Liv.Lck.Core
         private static void Initialize()
         {
 #if UNITY_EDITOR
-            EditorApplication.playModeStateChanged -= HandlePlayModeStateChange;
             EditorApplication.playModeStateChanged += HandlePlayModeStateChange;
 #else
             InitializeInternal();

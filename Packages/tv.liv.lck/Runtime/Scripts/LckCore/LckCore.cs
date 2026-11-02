@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using AOT;
@@ -176,8 +175,6 @@ namespace Liv.Lck.Core
         LoginAttemptExpired = 7,
         /// <summary>The provided tracking ID is invalid.</summary>
         InvalidTrackingId = 8,
-        /// <summary>The streaming provider returned an error (e.g. YouTube account not enabled for streaming).</summary>
-        StreamingProviderError = 9,
     }
 
     /// <summary>
@@ -370,39 +367,11 @@ namespace Liv.Lck.Core
                     return (CoreError.UserNotLoggedIn, "User is not logged in.");
                 case ReturnCode.BackendUnavailable:
                     return (CoreError.ServiceUnavailable, "LIV backend service is unavailable.");
-                case ReturnCode.BackendClientError:
-                    return (CoreError.ServiceUnavailable, "Backend communication failed, retrying.");
                 case ReturnCode.RateLimiterBackoff:
                     return (CoreError.RateLimiterBackoff, "Client is in rate limiter backoff due to previous errors.");
-                case ReturnCode.LoginAttemptExpired:
-                    return (CoreError.LoginAttemptExpired, "Login attempt has expired.");
-                case ReturnCode.StreamingProviderError:
-                    var detail = GetLastStreamingError();
-                    var message = string.IsNullOrEmpty(detail)
-                        ? "Streaming provider returned an error."
-                        : detail;
-                    return (CoreError.StreamingProviderError, message);
                 default:
                     return (CoreError.InternalError, $"Operation failed with return code: {returnCode}");
             }
-        }
-
-        [DllImport("lck_core", EntryPoint = "get_last_streaming_error", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int get_last_streaming_error(byte[] outBuf, int bufLen);
-
-        /// <summary>
-        /// Retrieves the last streaming error message from the native SDK, if any.
-        /// Call this after receiving a <see cref="CoreError.StreamingProviderError"/> to get
-        /// a human-readable error message suitable for display to the user.
-        /// </summary>
-        /// <returns>The error message string, or null if no error is stored.</returns>
-        public static string GetLastStreamingError()
-        {
-            var buf = new byte[512];
-            var len = get_last_streaming_error(buf, buf.Length);
-            if (len <= 0)
-                return null;
-            return Encoding.UTF8.GetString(buf, 0, len);
         }
 
         public static async Task<Result<bool>> IsUserSubscribed()

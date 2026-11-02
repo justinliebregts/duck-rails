@@ -3,7 +3,6 @@ using System.Diagnostics;
 using Liv.Lck.Encoding;
 using UnityEngine.Scripting;
 using static Liv.Lck.LckEvents;
-using Liv.Lck.Settings;
 
 namespace Liv.Lck
 {
@@ -15,17 +14,17 @@ namespace Liv.Lck
         private readonly ILckEncoder _encoder;
         private readonly ILckEventBus _eventBus;
         private readonly Stopwatch _captureStopwatch = new Stopwatch();
-
-        private bool _captureFrame;
+        
+        private bool _frameHasBeenRendered;
         private double _captureTimeOverflow;
         private double _targetSecondsPerCapture;
-
-        private const string CaptureLoopCoroutineName = "LckVideoCapturer:CaptureLoopCoroutine";
+        
+        private const string CaptureLoopCoroutineName = "LckCaptureLooper:CaptureLoopCoroutine";
 
         [Preserve]
         public LckVideoCapturer(
-            ILckVideoTextureProvider videoTextureProvider,
-            ILckActiveCameraConfigurer activeCameraConfigurer,
+            ILckVideoTextureProvider videoTextureProvider, 
+            ILckActiveCameraConfigurer activeCameraConfigurer, 
             ILckPreviewer previewer,
             ILckEncoder encoder,
             ILckOutputConfigurer outputConfigurer,
@@ -36,10 +35,10 @@ namespace Liv.Lck
             _previewer = previewer;
             _encoder = encoder;
             _eventBus = eventBus;
-
+            
             var targetCaptureFramerate = outputConfigurer.GetActiveCameraTrackDescriptor().Result.Framerate;
             SetTargetCaptureFramerate(targetCaptureFramerate);
-
+            
             _eventBus.AddListener<CameraFramerateChangedEvent>(OnCameraFramerateChanged);
         }
 
@@ -59,7 +58,8 @@ namespace Liv.Lck
         public void StartCapturing()
         {
             IsCapturing = true;
-            LckMonoBehaviourMediator.StartCoroutine(CaptureLoopCoroutineName,
+            
+            LckMonoBehaviourMediator.StartCoroutine(CaptureLoopCoroutineName, 
                 CaptureLoopCoroutine());
         }
 
@@ -71,9 +71,9 @@ namespace Liv.Lck
 
         public bool HasCurrentFrameBeenCaptured()
         {
-            return _captureFrame;
+            return _frameHasBeenRendered;
         }
-
+        
         private void SetTargetCaptureFramerate(uint targetCaptureFramerate)
         {
             _targetSecondsPerCapture = 1.0 / targetCaptureFramerate;
@@ -83,7 +83,7 @@ namespace Liv.Lck
         {
             _captureStopwatch.Start();
             _captureTimeOverflow = 0;
-
+            
             while (IsCapturing)
             {
                 HandleCameraFrame();
@@ -95,16 +95,16 @@ namespace Liv.Lck
         {
             if (CaptureCanBeCulled())
             {
-                _captureFrame = false;
+                _frameHasBeenRendered = false;
                 camera.DeactivateCamera();
             }
             else
             {
-                _captureFrame = true;
+                _frameHasBeenRendered = true;
                 camera.ActivateCamera(_videoTextureProvider.CameraTrackTexture);
             }
         }
-
+        
         private void HandleCameraFrame(ILckCamera activeCamera)
         {
             var secondsSinceLastCapture = _captureStopwatch.Elapsed.TotalSeconds;
@@ -114,34 +114,29 @@ namespace Liv.Lck
                 var captureTimeDiffFromTarget = secondsSinceLastCapture - _targetSecondsPerCapture;
                 _captureTimeOverflow = (_captureTimeOverflow + captureTimeDiffFromTarget) % _targetSecondsPerCapture;
                 _captureStopwatch.Restart();
-
+                
                 PrepareCameraForCapture(activeCamera);
             }
             else
             {
-                // Keep the encoder capturing frames at fixed interval, but prevent camera from being disabled
-                // Fixes issues with VRIK and Animator camera culling.
-                _captureFrame = false;
-                if (!LckSettings.Instance.DisableIntervaledRendering)
-                {
-                    activeCamera.DeactivateCamera();
-                }
+                _frameHasBeenRendered = false;
+                activeCamera.DeactivateCamera();
             }
         }
-
+        
         private void HandleCameraFrame()
         {
             var getActiveCameraResult = _activeCameraConfigurer.GetActiveCamera();
             if (!getActiveCameraResult.Success)
                 return;
-
+            
             var activeCamera = getActiveCameraResult.Result;
             if (activeCamera == null)
                 return;
-
+            
             HandleCameraFrame(activeCamera);
         }
-
+        
         private bool CaptureCanBeCulled()
         {
             if (_encoder.IsActive())
@@ -149,15 +144,15 @@ namespace Liv.Lck
 
             if (_previewer.IsPreviewActive)
                 return false;
-
+            
             return true;
         }
-
+        
         public void Dispose()
         {
             if (IsCapturing)
                 StopCapturing();
-
+            
             _eventBus.RemoveListener<CameraFramerateChangedEvent>(OnCameraFramerateChanged);
         }
     }

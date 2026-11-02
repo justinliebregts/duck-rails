@@ -28,8 +28,6 @@ namespace Liv.Lck.Recorder
 
         private static readonly ProfilerMarker _copyOutputFileToNativeGalleryMarker = new ProfilerMarker("LckRecorder.CopyOutputFileToNativeGallery");
         
-        private const EncoderConsumer ConsumerName = EncoderConsumer.Recording;
-
         private MuxerConfig _muxerConfig;
         private float _recordingStartTime;
         private float _accumulatedRecordingDuration;
@@ -37,7 +35,6 @@ namespace Liv.Lck.Recorder
         private string _lastRecordingFilePath;
         private LckService.StopReason _stopReason;
         private CameraTrackDescriptor _currentRecordingDescriptor;
-        private LckEncodedPacketHandler _recordingPacketHandler;
         Dictionary<string, object> _recordingTelemetryContext = new Dictionary<string, object>();
         private bool _disposed;
 
@@ -228,15 +225,14 @@ namespace Liv.Lck.Recorder
                 _lastActiveSegmentStartTime = Time.time;
                 _storageWatcher.SetRecordingContext(_currentRecordingDescriptor, () => ActualRecordingDurationSeconds);
 
-                _recordingPacketHandler = new LckEncodedPacketHandler(this,
+                var muxPacketHandler = new LckEncodedPacketHandler(this,
                     _nativeRecordingService.GetMuxPacketCallback());
-
-                var acquireResult = _encoder.AcquireEncoder(ConsumerName, _currentRecordingDescriptor,
-                    new[] { _recordingPacketHandler });
-                if (!acquireResult.Success)
+                
+                var startEncodingResult = _encoder.StartEncoding(_currentRecordingDescriptor, new[] { muxPacketHandler });
+                if (!startEncodingResult.Success)
                 {
                     CurrentCaptureState = LckCaptureState.Idle;
-                    TriggerRecordingStartedEvent(acquireResult);
+                    TriggerRecordingStartedEvent(startEncodingResult);
                     return;
                 }
                 
@@ -246,11 +242,10 @@ namespace Liv.Lck.Recorder
             catch (Exception e)
             {
                 LckLog.LogError("LCK Start Recording Task failed: " + e.Message);
-
+                
                 if (_encoder.IsActive())
-                    await _encoder.ReleaseEncoderAsync(ConsumerName,
-                        new[] { _recordingPacketHandler });
-
+                    await _encoder.StopEncodingAsync();
+                
                 TriggerRecordingStartedEvent(LckResult.NewError(LckError.RecordingError, e.Message));
             }
         }
@@ -290,11 +285,10 @@ namespace Liv.Lck.Recorder
         {
             try
             {
-                var releaseResult = await _encoder.ReleaseEncoderAsync(ConsumerName,
-                    new[] { _recordingPacketHandler });
-                if (!releaseResult.Success)
+                var stopEncodingResult = await _encoder.StopEncodingAsync();
+                if (!stopEncodingResult.Success)
                 {
-                    TriggerRecordingStoppedEvent(releaseResult);
+                    TriggerRecordingStoppedEvent(stopEncodingResult);
                     return;
                 }
 

@@ -40,7 +40,7 @@ namespace Liv.Lck.UI
         private int _colorId;
         private bool _isDisabled;
 
-        private void Awake()
+        private void Start()
         {
             _propertyBlock = new MaterialPropertyBlock();
             _colorId = Shader.PropertyToID("_Color");

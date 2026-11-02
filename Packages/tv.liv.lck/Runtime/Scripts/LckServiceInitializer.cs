@@ -1,6 +1,5 @@
 using Liv.Lck.Core;
 using Liv.Lck.DependencyInjection;
-using Liv.Lck.Echo;
 using Liv.Lck.Encoding;
 using Liv.Lck.Recorder;
 using Liv.Lck.Streaming;
@@ -87,7 +86,6 @@ namespace Liv.Lck
             container.AddSingleton<ILckNativeRecordingService, LckNativeRecordingService>();
             container.AddSingleton<ILckRecorder, LckRecorder>();
             container.AddSingleton<ILckEncoder, LckEncoder>();
-            container.AddSingleton<ILckEcho, LckEcho>();
             container.AddSingleton<ILckPreviewer, LckPreviewer>();
             container.AddSingleton<ILckStorageWatcher, LckStorageWatcher>();
 

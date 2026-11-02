@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Liv.Lck.Recorder;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ namespace Liv.Lck
     /// A no-op <see cref="ILckService"/> used on platforms where LCK is not supported
     /// (currently the macOS Unity Editor, which has no native binaries deployed).
     ///
-    /// Capture actions (start recording/streaming, capture photo, enable/save echo) return an
+    /// Capture actions (start recording/streaming, capture photo) return an
     /// <see cref="LckError.UnsupportedPlatform"/> error so callers that check the result can react.
     /// Configuration setters, stops, and "is..." queries return benign successes so a game integrating
     /// LCK keeps running normally in the editor without throwing <see cref="DllNotFoundException"/>.
@@ -33,9 +32,6 @@ namespace Liv.Lck
         public event Action<LckResult<RecordingData>> OnRecordingSaved;
         public event Action<LckResult> OnPhotoSaved;
         public event Action<LckResult<ILckCamera>> OnActiveCameraSet;
-        public event Action<LckResult<RecordingData>> OnEchoSaved;
-        public event Action<LckResult> OnEchoEnabled;
-        public event Action<LckResult, EchoDisableReason> OnEchoDisabled;
 #pragma warning restore CS0067
 
         // Capture actions: report unsupported.
@@ -44,9 +40,6 @@ namespace Liv.Lck
         public LckResult ResumeRecording() => Disabled();
         public LckResult StartStreaming() => Disabled();
         public LckResult CapturePhoto() => Disabled();
-        public LckResult SetEchoEnabled(bool enabled) => Disabled();
-        public Task<LckResult> SetEchoEnabledAsync(bool enabled) => Task.FromResult(Disabled());
-        public LckResult TriggerEchoSave() => Disabled();
 
         // Stops are safe no-ops (nothing is running to stop).
         public LckResult StopRecording() => Success();
@@ -82,9 +75,6 @@ namespace Liv.Lck
         public LckResult<float> GetMicrophoneOutputLevel() => Success(0f);
         public LckResult<float> GetGameOutputLevel() => Success(0f);
         public LckResult<bool> IsGameAudioMute() => Success(true);
-        public LckResult<bool> IsEchoEnabled() => Success(false);
-        public LckResult<TimeSpan> GetEchoBufferDuration() => Success(TimeSpan.Zero);
-        public LckResult<TimeSpan> GetEchoMaxBufferDuration() => Success(TimeSpan.Zero);
         public LckResult<ILckCamera> GetActiveCamera() => Disabled<ILckCamera>();
         public LckResult<LckDescriptor> GetDescriptor() => Disabled<LckDescriptor>();
 

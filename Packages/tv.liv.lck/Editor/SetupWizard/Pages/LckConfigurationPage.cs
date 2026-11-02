@@ -55,9 +55,6 @@ namespace Liv.Lck
 
         protected override void BuildUI(VisualElement root)
         {
-            // Update serialize settings once per build, not once per field.
-            _serializedSettings.Update();
-
             var scrollView = CreateContentArea();
             var content = scrollView.Q<VisualElement>(className: "lck-content-area");
 
@@ -177,14 +174,14 @@ namespace Liv.Lck
 
             var card = CreateCompactCard();
 
+            AddPropertyField(card, "EnableStencilSupport", "Enable Stencil Support",
+                "Enable stencil buffer support for advanced rendering effects in recordings. Disable to optimize performance.");
+
             AddPropertyField(card, "TriggerEnterTag", "Tablet Collider Tag",
                 "Tag used for trigger detection with 'LCK Tablet Using Collider' prefab.");
 
             AddPropertyField(card, "ShowSetupWizard", "Show Setup on Startup",
                 "Show the setup wizard when Unity starts.");
-
-            AddPropertyField(card, "DisableIntervaledRendering", "Disable intervaled rendering",
-                "Intervaled rendering can cause flickering artifacts for some VRIK users. Disable intervaled rendering if you notice flickering in the LCK viewfinder.");
 
             parent.Add(card);
             AddSpacer(parent, "md");
@@ -230,6 +227,8 @@ namespace Liv.Lck
                 return;
             }
 
+            _serializedSettings.Update();
+
             var property = _serializedSettings.FindProperty(propertyName);
             if (property == null)
             {
@@ -252,6 +251,13 @@ namespace Liv.Lck
             PropertyField field = new PropertyField(property, "");
             field.BindProperty(property);
 
+            // Style the field
+            field.RegisterCallback<ChangeEvent<string>>(evt => SaveSettings());
+            field.RegisterCallback<ChangeEvent<bool>>(evt => SaveSettings());
+            field.RegisterCallback<ChangeEvent<int>>(evt => SaveSettings());
+            field.RegisterCallback<ChangeEvent<float>>(evt => SaveSettings());
+            field.RegisterCallback<ChangeEvent<System.Enum>>(evt => SaveSettings());
+
             // Apply input styling after the field is attached to the hierarchy
             field.RegisterCallback<GeometryChangedEvent>(evt =>
             {
@@ -269,6 +275,28 @@ namespace Liv.Lck
             }
 
             parent.Add(row);
+        }
+
+        private void SaveSettings()
+        {
+            try
+            {
+                if (_serializedSettings != null)
+                {
+                    _serializedSettings.ApplyModifiedProperties();
+                }
+
+                var settings = LckSettings.Instance;
+                if (settings != null)
+                {
+                    EditorUtility.SetDirty(settings);
+                    AssetDatabase.SaveAssetIfDirty(settings);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[LckConfigurationPage] Failed to save settings: {ex.Message}");
+            }
         }
     }
 }

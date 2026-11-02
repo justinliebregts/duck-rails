@@ -53,10 +53,6 @@ namespace Liv.Lck.Tablet
         UnknownStreamingError = 8,
         ServiceUnavailable = 9,
         RateLimiterBackoff = 10,
-        EchoInfo = 11,
-        EchoLowStorage = 12,
-        EchoError = 13,
-        HeadsetView = 14,
     }
     
     /// <summary>
@@ -151,8 +147,6 @@ namespace Liv.Lck.Tablet
             _lckService.OnRecordingStarted += OnCaptureStarted;
             _lckService.OnStreamingStarted += OnCaptureStarted;
             _lckService.OnRecordingSaved += OnRecordingSaved;
-            _lckService.OnEchoSaved += OnEchoSaved;
-            _lckService.OnEchoDisabled += OnEchoDisabled;
 
             if (_currentNotification != null)
             {
@@ -174,8 +168,6 @@ namespace Liv.Lck.Tablet
             _lckService.OnRecordingStarted -= OnCaptureStarted;
             _lckService.OnStreamingStarted -= OnCaptureStarted;
             _lckService.OnRecordingSaved -= OnRecordingSaved;
-            _lckService.OnEchoSaved -= OnEchoSaved;
-            _lckService.OnEchoDisabled -= OnEchoDisabled;
 
             if (_currentNotification != null)
             {
@@ -232,31 +224,6 @@ namespace Liv.Lck.Tablet
             else
             {
                 Debug.LogWarning($"Failed to show 'VideoSaved' notification. Error: {result.Error}, Message: {result.Message}");
-            }
-        }
-
-        private void OnEchoDisabled(LckResult result, EchoDisableReason reason)
-        {
-            switch (reason)
-            {
-                case EchoDisableReason.LowStorage:
-                    ShowNotification(NotificationType.EchoLowStorage);
-                    break;
-                case EchoDisableReason.Error:
-                    ShowNotification(NotificationType.EchoError);
-                    break;
-            }
-        }
-
-        private void OnEchoSaved(LckResult<RecordingData> result)
-        {
-            if (result.Success)
-            {
-                ShowNotification(NotificationType.VideoSaved);
-            }
-            else
-            {
-                Debug.LogWarning($"Failed to show 'VideoSaved' notification for echo save. Error: {result.Error}, Message: {result.Message}");
             }
         }
 

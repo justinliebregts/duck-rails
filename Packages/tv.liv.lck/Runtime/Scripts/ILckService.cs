@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Liv.Lck.Recorder;
 using UnityEngine;
 
@@ -220,7 +219,7 @@ namespace Liv.Lck
         LckResult<bool> IsStreaming();
         
         /// <summary>
-        /// Checks if the service is actively capturing video (recording, streaming, or echo).
+        /// Checks if the service is actively capturing video (recording or streaming).
         /// </summary>
         /// <returns>A <see cref="LckResult"/> object containing true if capturing, otherwise false.</returns>
         LckResult<bool> IsCapturing();
@@ -309,65 +308,6 @@ namespace Liv.Lck
         /// <returns>A <see cref="LckResult"/> object indicating whether the operation was successful.</returns>
         LckResult StopAllDiscreetAudio();
         
-        /// <summary>
-        /// Event fired when an echo (replay buffer) save has completed.
-        /// Includes data about the saved echo clip, see <see cref="RecordingData"/>.
-        /// </summary>
-        event Action<LckResult<RecordingData>> OnEchoSaved;
-
-        /// <summary>
-        /// Event fired when the echo (replay buffer) has been enabled and is buffering.
-        /// </summary>
-        event Action<LckResult> OnEchoEnabled;
-
-        /// <summary>
-        /// Event fired when the echo (replay buffer) has been disabled.
-        /// </summary>
-        event Action<LckResult, EchoDisableReason> OnEchoDisabled;
-
-        /// <summary>
-        /// Enables or disables the echo (replay buffer) feature.
-        /// When enabled, the last 30 seconds of encoded video/audio are continuously buffered.
-        /// Echo can coexist with normal recording.
-        /// </summary>
-        /// <param name="enabled">True to enable echo buffering, false to disable it.</param>
-        /// <returns>A <see cref="LckResult"/> object indicating whether the operation was successful.</returns>
-        LckResult SetEchoEnabled(bool enabled);
-
-        /// <summary>
-        /// Asynchronously enables or disables the echo (replay buffer) feature.
-        /// When disabling, awaits full encoder release before returning, making it
-        /// safe to immediately re-enable echo or change capture settings afterwards.
-        /// </summary>
-        /// <param name="enabled">True to enable echo buffering, false to disable it.</param>
-        /// <returns>A task containing a <see cref="LckResult"/> indicating whether the operation was successful.</returns>
-        Task<LckResult> SetEchoEnabledAsync(bool enabled);
-
-        /// <summary>
-        /// Checks if the echo (replay buffer) feature is currently enabled.
-        /// </summary>
-        /// <returns>A <see cref="LckResult"/> object containing true if echo is enabled, otherwise false.</returns>
-        LckResult<bool> IsEchoEnabled();
-
-        /// <summary>
-        /// Triggers saving the current echo buffer contents to an MP4 file.
-        /// The result is returned via the <see cref="OnEchoSaved"/> event.
-        /// </summary>
-        /// <returns>A <see cref="LckResult"/> object indicating whether the save was successfully initiated.</returns>
-        LckResult TriggerEchoSave();
-
-        /// <summary>
-        /// Gets the current duration of buffered echo data.
-        /// </summary>
-        /// <returns>A <see cref="LckResult"/> object containing the duration of echo data currently in the buffer.</returns>
-        LckResult<TimeSpan> GetEchoBufferDuration();
-
-        /// <summary>
-        /// Gets the maximum duration of the echo buffer as configured in the native library.
-        /// </summary>
-        /// <returns>A <see cref="LckResult"/> object containing the maximum buffer duration.</returns>
-        LckResult<TimeSpan> GetEchoMaxBufferDuration();
-
         /// <summary>
         /// Gets the full configuration descriptor for the currently active capture type.
         /// </summary>

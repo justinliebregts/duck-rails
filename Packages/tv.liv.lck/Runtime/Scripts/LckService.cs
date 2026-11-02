@@ -1,8 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using Liv.Lck.Core;
 using Liv.Lck.DependencyInjection;
-using Liv.Lck.Echo;
 using Liv.Lck.Encoding;
 using Liv.NGFX;
 using Liv.Lck.Recorder;
@@ -38,7 +36,6 @@ namespace Liv.Lck
         private ILckEncodeLooper _encodeLooper;
         private INativeAudioPlayer _nativeAudioPlayer;
         private ILckEncoder _encoder;
-        private ILckEcho _echo;
 
         private bool _disposed = false;
         private ILckRecorder _recorder;
@@ -63,11 +60,7 @@ namespace Liv.Lck
         public event Action<LckResult> OnLowStorageSpace;
         public event Action<LckResult<RecordingData>> OnRecordingSaved;
         public event Action<LckResult> OnPhotoSaved;
-        public event Action<LckResult<RecordingData>> OnEchoSaved;
-        public event Action<LckResult> OnEchoEnabled;
-        public event Action<LckResult, EchoDisableReason> OnEchoDisabled;
         public event Action<LckResult<ILckCamera>> OnActiveCameraSet;
-
                 
         /// <summary>
         /// Specifies the reason for a recording or streaming session stopping.
@@ -86,19 +79,18 @@ namespace Liv.Lck
 
         [Preserve]
         internal LckService(
-            ILckEncoder encoder,
-            ILckRecorder recorder,
-            ILckStreamer streamer,
-            ILckEcho echo,
-            ILckEncodeLooper encodeLooper,
-            ILckPhotoCapture photoCapture,
-            ILckStorageWatcher storageWatcher,
-            ILckVideoCapturer videoCapturer,
-            ILckVideoMixer videoMixer,
-            ILckAudioMixer audioMixer,
-            ILckOutputConfigurer outputConfigurer,
-            ILckPreviewer previewer,
-            INativeAudioPlayer nativeAudioPlayer,
+            ILckEncoder encoder, 
+            ILckRecorder recorder, 
+            ILckStreamer streamer, 
+            ILckEncodeLooper encodeLooper, 
+            ILckPhotoCapture photoCapture, 
+            ILckStorageWatcher storageWatcher, 
+            ILckVideoCapturer videoCapturer, 
+            ILckVideoMixer videoMixer, 
+            ILckAudioMixer audioMixer, 
+            ILckOutputConfigurer outputConfigurer, 
+            ILckPreviewer previewer, 
+            INativeAudioPlayer nativeAudioPlayer, 
             ILckEventBus eventBus,
             ILckTelemetryClient telemetryClient)
         {
@@ -107,7 +99,6 @@ namespace Liv.Lck
             _encoder = encoder;
             _recorder = recorder;
             _streamer = streamer;
-            _echo = echo;
             _photoCapture = photoCapture;
             _storageWatcher = storageWatcher;
             _videoMixer = videoMixer;
@@ -129,15 +120,9 @@ namespace Liv.Lck
             _eventBridge.Forward<PhotoCaptureSavedEvent, LckResult>(r => OnPhotoSaved?.Invoke(r));
             _eventBridge.Forward<LowStorageSpaceDetectedEvent, LckResult>(r => OnLowStorageSpace?.Invoke(r));
             _eventBridge.Forward<RecordingSavedEvent, LckResult<RecordingData>>(
-                evt => evt.SaveResult,
+                evt => evt.SaveResult, 
                 r => OnRecordingSaved?.Invoke(r)
-            );
-            _eventBridge.Forward<EchoSavedEvent, LckResult<RecordingData>>(
-                evt => evt.SaveResult,
-                r => OnEchoSaved?.Invoke(r)
-            );
-            _eventBridge.Forward<EchoEnabledEvent, LckResult>(r => OnEchoEnabled?.Invoke(r));
-            _eventBus.AddListener<EchoDisabledEvent>(e => OnEchoDisabled?.Invoke(e.Result, e.Reason));
+            );            
             _eventBridge.Forward<ActiveCameraChangedEvent, LckResult<ILckCamera>>(
                 evt => evt.CameraResult, 
                 r => OnActiveCameraSet?.Invoke(r)
@@ -581,61 +566,6 @@ namespace Liv.Lck
             return LckResult.NewSuccess();
         }
 
-        public LckResult SetEchoEnabled(bool enabled)
-        {
-            if (_disposed)
-                return LckResult.NewError(LckError.ServiceDisposed, "Service has been disposed");
-
-            _echo.SetEnabledAsync(enabled).ContinueWith(t =>
-            {
-                if (t.IsFaulted)
-                    LckLog.LogError($"SetEchoEnabled exception: {t.Exception}");
-                else if (!t.Result.Success)
-                    LckLog.LogError($"SetEchoEnabled failed: {t.Result.Message}");
-            });
-            return LckResult.NewSuccess();
-        }
-
-        public async Task<LckResult> SetEchoEnabledAsync(bool enabled)
-        {
-            if (_disposed)
-                return LckResult.NewError(LckError.ServiceDisposed, "Service has been disposed");
-
-            return await _echo.SetEnabledAsync(enabled);
-        }
-
-        public LckResult<bool> IsEchoEnabled()
-        {
-            if (_disposed)
-                return LckResult<bool>.NewError(LckError.ServiceDisposed, "Service has been disposed");
-
-            return LckResult<bool>.NewSuccess(_echo.IsEnabled);
-        }
-
-        public LckResult TriggerEchoSave()
-        {
-            if (_disposed)
-                return LckResult.NewError(LckError.ServiceDisposed, "Service has been disposed");
-
-            return _echo.TriggerSave();
-        }
-
-        public LckResult<TimeSpan> GetEchoBufferDuration()
-        {
-            if (_disposed)
-                return LckResult<TimeSpan>.NewError(LckError.ServiceDisposed, "Service has been disposed");
-
-            return LckResult<TimeSpan>.NewSuccess(_echo.GetBufferDuration());
-        }
-
-        public LckResult<TimeSpan> GetEchoMaxBufferDuration()
-        {
-            if (_disposed)
-                return LckResult<TimeSpan>.NewError(LckError.ServiceDisposed, "Service has been disposed");
-
-            return LckResult<TimeSpan>.NewSuccess(_echo.GetMaxBufferDuration());
-        }
-
         public LckResult<LckDescriptor> GetDescriptor()
         {
             if(_disposed)
@@ -726,9 +656,6 @@ namespace Liv.Lck
                     _recorder?.Dispose();
                     _recorder = null;
             
-                    _echo?.Dispose();
-                    _echo = null;
-
                     _streamer?.Dispose();
                     _streamer = null;
             

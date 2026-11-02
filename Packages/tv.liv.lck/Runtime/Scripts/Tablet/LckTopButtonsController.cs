@@ -20,14 +20,11 @@ namespace Liv.Lck.Tablet
         {
             Null,
             Camera,
-            Stream,
-            Echo
+            Stream
         }
 
         [SerializeField]
-        private GameObject _streamToggleGameObject;
-        [SerializeField]
-        private RectTransform _echoToggleRectTransform;
+        private GameObject _topButtonsControllerGameObject;
 
         [SerializeField]
         private LckNotificationController _notificationController;
@@ -37,15 +34,11 @@ namespace Liv.Lck.Tablet
         private List<GameObject> _cameraPageButtons = new List<GameObject>();
         [SerializeField]
         private List<GameObject> _streamPageButtons = new List<GameObject>();
-        [SerializeField]
-        private List<GameObject> _echoPageButtons = new List<GameObject>();
         [Header("Top Button Events")]
         [SerializeField]
         private UnityEvent _onCameraPageOpened = new UnityEvent();
         [SerializeField]
         private UnityEvent _onStreamPageOpened = new UnityEvent();
-        [SerializeField]
-        private UnityEvent _onEchoPageOpened = new UnityEvent();
 
         private ILckTopButtons _topButtonsHelper;
         private TopButtonPage _currentPage = TopButtonPage.Null;
@@ -55,17 +48,11 @@ namespace Liv.Lck.Tablet
 
         private void Start()
         {
-            // Streaming is not yet supported on Windows, so hide the Stream tab
-            // and slide the Echo tab into its place to avoid a gap.
             if (Application.platform != RuntimePlatform.Android && Application.isEditor == false)
             {
-                if (_streamToggleGameObject)
+                if (_topButtonsControllerGameObject)
                 {
-                    if (_echoToggleRectTransform && _streamToggleGameObject.TryGetComponent<RectTransform>(out var streamRect))
-                    {
-                        _echoToggleRectTransform.anchoredPosition = streamRect.anchoredPosition;
-                    }
-                    _streamToggleGameObject.SetActive(false);
+                    _topButtonsControllerGameObject.SetActive(false);
                 }
             }
 
@@ -115,8 +102,6 @@ namespace Liv.Lck.Tablet
         {
             if (_currentPage == TopButtonPage.Camera || state == false || _buttonsDisabled == true) return;
 
-            DisableEchoIfActive();
-
             _currentPage = TopButtonPage.Camera;
 
             _notificationController.HideNotifications();
@@ -132,11 +117,6 @@ namespace Liv.Lck.Tablet
                 button.SetActive(false);
             }
 
-            foreach (var button in _echoPageButtons)
-            {
-                button.SetActive(false);
-            }
-
             _lckService.SetActiveCaptureType(LckCaptureType.Recording);
             _onCameraPageOpened.Invoke();
         }
@@ -145,8 +125,6 @@ namespace Liv.Lck.Tablet
         public void ToggleStreamPage(bool state)
         {
             if (_currentPage == TopButtonPage.Stream || state == false || _buttonsDisabled == true) return;
-
-            DisableEchoIfActive();
 
             _currentPage = TopButtonPage.Stream;
 
@@ -161,60 +139,9 @@ namespace Liv.Lck.Tablet
             {
                 button.SetActive(false);
             }
-
-            foreach (var button in _echoPageButtons)
-            {
-                button.SetActive(false);
-            }
-
+            
             _lckService.SetActiveCaptureType(LckCaptureType.Streaming);
             _onStreamPageOpened.Invoke();
-        }
-
-        // called from Echo Toggle OnValueChanged unity event
-        public void ToggleEchoPage(bool state)
-        {
-            if (_currentPage == TopButtonPage.Echo || state == false || _buttonsDisabled == true) return;
-
-            _currentPage = TopButtonPage.Echo;
-
-            _notificationController.HideNotifications();
-            _photoModeController.StopAndResetSequence();
-
-            foreach (var button in _echoPageButtons)
-            {
-                button.SetActive(true);
-            }
-
-            foreach (var button in _cameraPageButtons)
-            {
-                button.SetActive(false);
-            }
-
-            foreach (var button in _streamPageButtons)
-            {
-                button.SetActive(false);
-            }
-
-            _lckService.SetActiveCaptureType(LckCaptureType.Recording);
-
-            var echoResult = _lckService.SetEchoEnabled(true);
-            if (!echoResult.Success)
-            {
-                LckLog.LogError($"Failed to enable echo: {echoResult.Message}");
-            }
-
-            _notificationController.ShowNotification(NotificationType.EchoInfo);
-            _onEchoPageOpened.Invoke();
-        }
-
-        private void DisableEchoIfActive()
-        {
-            var echoResult = _lckService.SetEchoEnabled(false);
-            if (!echoResult.Success)
-            {
-                LckLog.LogError($"Failed to disable echo: {echoResult.Message}");
-            }
         }
 
         public void SetCameraPageVisualsManually()

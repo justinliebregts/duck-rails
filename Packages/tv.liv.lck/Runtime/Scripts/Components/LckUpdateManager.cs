@@ -65,11 +65,6 @@ namespace Liv.Lck
         {
             var currentPlayerLoop = PlayerLoop.GetCurrentPlayerLoop();
 
-            // PlayerLoop persists across play sessions when domain reload is disabled,
-            // so strip any existing LCK subsystems from a previous session before re-adding
-            currentPlayerLoop = RemoveSystem<LckEarlyUpdate>(in currentPlayerLoop);
-            currentPlayerLoop = RemoveSystem<LckLateUpdate>(in currentPlayerLoop);
-
             var lckEarlyUpdate = new PlayerLoopSystem
             {
                 subSystemList = null,
@@ -112,31 +107,6 @@ namespace Liv.Lck
             }
 
             newPlayerLoop.subSystemList = newSubSystemList.ToArray();
-            return newPlayerLoop;
-        }
-
-        private static PlayerLoopSystem RemoveSystem<T>(in PlayerLoopSystem loopSystem)
-        {
-            var newPlayerLoop = new PlayerLoopSystem
-            {
-                loopConditionFunction = loopSystem.loopConditionFunction,
-                type = loopSystem.type,
-                updateDelegate = loopSystem.updateDelegate,
-                updateFunction = loopSystem.updateFunction
-            };
-
-            if (loopSystem.subSystemList == null)
-                return newPlayerLoop;
-
-            var targetType = typeof(T);
-            var filtered = new List<PlayerLoopSystem>();
-            foreach (var subSystem in loopSystem.subSystemList)
-            {
-                if (subSystem.type != targetType)
-                    filtered.Add(subSystem);
-            }
-
-            newPlayerLoop.subSystemList = filtered.ToArray();
             return newPlayerLoop;
         }
 

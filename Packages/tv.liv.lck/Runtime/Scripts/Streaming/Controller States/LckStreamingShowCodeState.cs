@@ -48,9 +48,6 @@ namespace Liv.Lck.Streaming
                             controller.LogError($"MissingTrackingId error please make sure Tracking ID is setup correctly in LCK Settings: {loginResult.Err} - {loginResult.Message}");
                             controller.SwitchState(controller.MissingTrackingIdState);
                             return;
-                        case CoreError.LoginAttemptExpired:
-                            LoginAttemptExpired(controller);
-                            return;
                         case CoreError.RateLimiterBackoff:
                             controller.LogError($"Too many requests sent to our backend error: {loginResult.Err} - {loginResult.Message}");
                             controller.SwitchState(controller.RateLimiterBackoffState);
@@ -59,9 +56,6 @@ namespace Liv.Lck.Streaming
                             controller.LogError($"Unable to reach our backend error: {loginResult.Err} - {loginResult.Message}");
                             controller.SwitchState(controller.ServiceUnavailableState);
                             return;
-                        case CoreError.StreamingProviderError:
-                            controller.Log($"Streaming provider reported a transient error during login start, will retry: {loginResult.Message}");
-                            break;
                         default:
                             controller.LogError("Tried to check an LCKCore Error missing from this switch statement");
                             await Task.Delay(5000, cancellationToken);
@@ -76,9 +70,7 @@ namespace Liv.Lck.Streaming
 
         private async Task WaitForUserToPairTablet(LckStreamingController controller, CancellationToken cancellationToken)
         {
-            const int maxConsecutiveInternalErrors = 3;
             DateTime startTime = DateTime.UtcNow;
-            int consecutiveInternalErrors = 0;
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -94,7 +86,6 @@ namespace Liv.Lck.Streaming
                 var loginResult = await controller.LckCore.CheckLoginCompletedAsync();
                 if (loginResult.IsOk)
                 {
-                    consecutiveInternalErrors = 0;
                     if (loginResult.Ok)
                     {
                         // Login completed, go check if configured
@@ -104,25 +95,15 @@ namespace Liv.Lck.Streaming
                 }
                 else
                 {
-                    if (loginResult.Err != CoreError.InternalError)
-                    {
-                        consecutiveInternalErrors = 0;
-                    }
-
                     switch (loginResult.Err)
                     {
                         case CoreError.UserNotLoggedIn:
                             // continue with next CheckLoginCompletedAsync
                             break;
                         case CoreError.InternalError:
-                            consecutiveInternalErrors++;
-                            controller.LogError($"Internal error while running CheckLoginCompletedAsync (attempt {consecutiveInternalErrors}/{maxConsecutiveInternalErrors}): {loginResult.Err} - {loginResult.Message}");
-                            if (consecutiveInternalErrors >= maxConsecutiveInternalErrors)
-                            {
-                                LoginAttemptExpired(controller);
-                                return;
-                            }
-                            break;
+                            controller.LogError($"Internal error while running CheckLoginCompletedAsync: {loginResult.Err} - {loginResult.Message}");
+                            controller.SwitchState(controller.InternalErrorState);
+                            return;
                         case CoreError.InvalidArgument:
                             controller.LogError($"Invalid Argument error while running CheckLoginCompletedAsync: {loginResult.Err} - {loginResult.Message}");
                             controller.SwitchState(controller.InvalidArgumentState);
@@ -142,9 +123,6 @@ namespace Liv.Lck.Streaming
                             controller.LogError($"Unable to reach our backend error: {loginResult.Err} - {loginResult.Message}");
                             controller.SwitchState(controller.ServiceUnavailableState);
                             return;
-                        case CoreError.StreamingProviderError:
-                            controller.Log($"Streaming provider reported a transient error during login check, will retry: {loginResult.Message}");
-                            break;
                         default:
                             controller.LogError("Tried to check an LCKCore Error missing from this switch statement");
                             await Task.Delay(5000, cancellationToken);

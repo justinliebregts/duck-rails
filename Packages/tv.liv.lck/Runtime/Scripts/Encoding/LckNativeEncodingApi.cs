@@ -6,7 +6,7 @@ namespace Liv.Lck.Encoding
 {
     internal static class LckNativeEncodingApi
     {
-        private const string EncodingLib = "lck_rs";
+        private const string EncodingLib = "qck";
         
         public enum TrackType : UInt32
         {

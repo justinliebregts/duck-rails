@@ -6,7 +6,7 @@ namespace Liv.Lck.Streaming
 {
     internal class LckNativeStreamingService : ILckNativeStreamingService
     {
-        private const string StreamingLib = "lck_streaming_rs";
+        private const string StreamingLib = "qck_streaming";
         
         private IntPtr _streamerContext = IntPtr.Zero;
         private NGFX.LogLevel _logLevel =  NGFX.LogLevel.Error;
@@ -31,7 +31,7 @@ namespace Liv.Lck.Streaming
         private static extern IntPtr GetStreamerCallbackFunction();
         
         [DllImport(StreamingLib)]
-        private static extern void SetPacketInterleaverEnabled(IntPtr streamerContext, bool enabled);
+        private static extern IntPtr SetPacketInterleaverEnabled(IntPtr streamerContext, bool enabled);
         #endregion
         
         public bool CreateNativeStreamer()

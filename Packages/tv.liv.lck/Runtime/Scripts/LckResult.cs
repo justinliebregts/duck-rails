@@ -55,8 +55,7 @@ namespace Liv.Lck
         StreamerNotImplemented = 19,
         StreamingError = 20,
         EncodingError = 21,
-        EchoError = 22,
-        UnknownError = 23
+        UnknownError = 22
     }
     
     /// <summary>

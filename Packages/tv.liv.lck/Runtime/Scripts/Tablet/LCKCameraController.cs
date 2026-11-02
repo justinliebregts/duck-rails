@@ -2,7 +2,6 @@ using Liv.Lck.Smoothing;
 using Liv.Lck.UI;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Liv.Lck.DependencyInjection;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -109,8 +108,6 @@ namespace Liv.Lck.Tablet
         private RectTransform _monitorTransform; // The UI panel that displays the camera's output. Used for flipping and resizing.
         [SerializeField]
         private LckQualitySelector _qualitySelector; // The UI component for changing video quality.
-        [SerializeField]
-        private LckNotificationController _notificationController;
 
         // --- UI Button References for each camera mode ---
         [Header("Button References")]
@@ -158,10 +155,6 @@ namespace Liv.Lck.Tablet
 
         [SerializeField]
         private LckStabilizer _thirdPersonStabilizer;
-
-        [Header("Headset")]
-        [SerializeField]
-        private LckHeadsetCamera _headsetCamera;
         
         // --- Internal State Variables ---
         private float _thirdPersonDistance = 1;
@@ -268,18 +261,13 @@ namespace Liv.Lck.Tablet
         /// Callback for when a new quality option is selected in the UI.
         /// It updates the track descriptors for both recording and streaming in the LCK service.
         /// </summary>
-        private async void OnQualityOptionSelected(QualityOption qualityOption)
+        private void OnQualityOptionSelected(QualityOption qualityOption)
         {
-            bool echoWasEnabled = await StopEchoIfActiveAsync();
-
             var recordingDescriptor = GetDescriptorForCurrentOrientation(qualityOption.RecordingCameraTrackDescriptor);
             _lckService.SetTrackDescriptor(LckCaptureType.Recording, recordingDescriptor);
-
+            
             var streamingDescriptor = GetDescriptorForCurrentOrientation(qualityOption.StreamingCameraTrackDescriptor);
             _lckService.SetTrackDescriptor(LckCaptureType.Streaming, streamingDescriptor);
-
-            if (echoWasEnabled)
-                RestartEcho();
         }
 
         /// <summary>
@@ -309,8 +297,7 @@ namespace Liv.Lck.Tablet
                     ProcessThirdCameraPosition();
                     break;
                 case CameraMode.Selfie:
-                case CameraMode.Headset:
-                    // No position updates needed.
+                    // Selfie camera is parented to the tablet, so it doesn't need continuous position updates here.
                     break;
             }
         }
@@ -534,9 +521,6 @@ namespace Liv.Lck.Tablet
                 case CameraMode.ThirdPerson:
                     _thirdPersonCamera.GetCameraComponent().fieldOfView = fov;
                     break;
-                case CameraMode.Headset:
-                    // Headset FOV is determined by the XR runtime, not configurable here.
-                    break;
             }
         }
 
@@ -586,35 +570,6 @@ namespace Liv.Lck.Tablet
                 _lckService.StartRecording();
             }
         }
-
-        /// <summary>
-        /// Saves a clip of recent gameplay providing the Echo feature is enabled.
-        /// </summary>
-        public void SaveEcho()
-        {
-            if (_lckService == null) return;
-
-            var echoEnabledResult = _lckService.IsEchoEnabled();
-            if (echoEnabledResult == null || !echoEnabledResult.Success)
-            {
-                var errorMsg = "Failed to get echo state from LCK service: " + 
-                    $"{(echoEnabledResult == null ? "No result returned" : echoEnabledResult.Message)}";
-                LckLog.LogError(errorMsg);
-                return;
-            }
-
-            if (!echoEnabledResult.Result)
-            {
-                LckLog.LogError("Echo is disabled - saving echo is not possible.");
-                return;
-            }
-
-            var result = _lckService.TriggerEchoSave();
-            if (!result.Success)
-            {
-                LckLog.LogError($"Failed to save echo clip: {result.Error}");
-            }
-        }
         
         /// <summary>
         /// Callback executed when a capture (recording or streaming) starts.
@@ -650,59 +605,26 @@ namespace Liv.Lck.Tablet
         }
         
         /// <summary>
-        /// If echo is currently enabled, stops it and awaits full encoder release so that
-        /// capture settings can be safely changed. The echo buffer is cleared.
-        /// After changing settings, call <see cref="RestartEcho"/> to start a fresh echo capture.
-        /// </summary>
-        private async Task<bool> StopEchoIfActiveAsync()
-        {
-            var echoEnabledResult = _lckService.IsEchoEnabled();
-            if (echoEnabledResult.Success && echoEnabledResult.Result)
-            {
-                await _lckService.SetEchoEnabledAsync(false);
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Restarts echo with a fresh buffer after capture settings have been changed.
-        /// </summary>
-        private void RestartEcho()
-        {
-            var result = _lckService.SetEchoEnabled(true);
-            if (!result.Success)
-            {
-                LckLog.LogError($"Failed to restart echo after settings change: {result.Message}");
-            }
-        }
-
-        /// <summary>
         /// Toggles the camera between Landscape and Portrait orientation.
         /// </summary>
-        public async void ToggleOrientation()
+        public void ToggleOrientation()
         {
-            bool echoWasEnabled = await StopEchoIfActiveAsync();
-
-            // Prevent orientation changes while capturing (but not if we just stopped echo).
-            if (!echoWasEnabled && _lckService.IsCapturing().Result) return;
+            // Prevent orientation changes while capturing.
+            if (_lckService.IsCapturing().Result) return;
 
             _currentCameraOrientation = _currentCameraOrientation == LckCameraOrientation.Landscape
                 ? LckCameraOrientation.Portrait : LckCameraOrientation.Landscape;
 
-            _lckService.SetCameraOrientation(_currentCameraOrientation);
-
+            _lckService.SetCameraOrientation(_currentCameraOrientation); 
+            
             // Resize the preview monitor to match the new aspect ratio.
             // These values are based on a scaled 16:9 aspect ratio.
             _monitorTransform.sizeDelta = _currentCameraOrientation == LckCameraOrientation.Landscape
                 ? new Vector2(1109, 624) // 16:9
                 : new Vector2(352, 624); // 9:16
-
+            
             // Recalculate the FOV for the new orientation.
             GetCurrentModeCamera().fieldOfView = CalculateCorrectFOV(GetCurrentModeFOV());
-
-            if (echoWasEnabled)
-                RestartEcho();
         }
 
         /// <summary>
@@ -715,7 +637,6 @@ namespace Liv.Lck.Tablet
                 case CameraMode.Selfie: return _selfieCamera.GetCameraComponent();
                 case CameraMode.FirstPerson: return _firstPersonCamera.GetCameraComponent();
                 case CameraMode.ThirdPerson: return _thirdPersonCamera.GetCameraComponent();
-                case CameraMode.Headset: return _headsetCamera.GetCameraComponent();
                 default: throw new System.Exception("Invalid Camera Mode");
             }
         }
@@ -759,7 +680,6 @@ namespace Liv.Lck.Tablet
                 case CameraMode.Selfie: return _selfieFOVDoubleButton.Value;
                 case CameraMode.FirstPerson: return _firstPersonFOVDoubleButton.Value;
                 case CameraMode.ThirdPerson: return _thirdPersonFOVDoubleButton.Value;
-                case CameraMode.Headset: return 0f; // FOV is determined by the XR runtime.
                 default: throw new System.Exception("Invalid Camera Mode");
             }
         }
@@ -797,13 +717,12 @@ namespace Liv.Lck.Tablet
                 case CameraMode.Selfie:
                     _monitorTransform.localScale = _isSelfieFront ? positive : negative;
                     break;
+                case CameraMode.FirstPerson:
+                    // First person is always "looking out", so it's mirrored on the tablet screen.
+                    _monitorTransform.localScale = negative;
+                    break;
                 case CameraMode.ThirdPerson:
                     _monitorTransform.localScale = _isThirdPersonFront ? positive : negative;
-                    break;
-                case CameraMode.FirstPerson:
-                case CameraMode.Headset:
-                    // First person / headset view are always "looking out", so it's mirrored on the tablet screen.
-                    _monitorTransform.localScale = negative; 
                     break;
             }
         }
@@ -823,22 +742,15 @@ namespace Liv.Lck.Tablet
         /// </summary>
         private void CameraModeChanged(CameraMode mode)
         {
-            // Hide headset mode notification if swapping away from that mode
-            if (_currentCameraMode == CameraMode.Headset && mode != CameraMode.Headset)
-            {
-                _notificationController.HideNotifications();
-            }
-
             _currentCameraMode = mode;
             _justTransitioned = true; // Flag that we need to snap the camera on the next LateUpdate.
 
             // Recalculate and apply the correct FOV for the new mode and current orientation.
-            // For Headset mode, SetFOV is a no-op since FOV is determined by the XR runtime.
             float adjustedFOV = CalculateCorrectFOV(GetCurrentModeFOV());
             SetFOV(_currentCameraMode, adjustedFOV);
 
             SetMonitorScale(mode); // Ensure the monitor preview is correctly oriented.
-
+            
             // Tell the LCK service which camera is now active.
             switch (mode)
             {
@@ -851,14 +763,6 @@ namespace Liv.Lck.Tablet
                 case CameraMode.ThirdPerson:
                     SetActiveLckCamera(_thirdPersonCamera.CameraId);
                     break;
-                case CameraMode.Headset:
-                    SetActiveLckCamera(_headsetCamera.CameraId);
-                    break;
-            }
-
-            if (mode == CameraMode.Headset)
-            {
-                _notificationController.ShowNotification(NotificationType.HeadsetView);
             }
 
             // Fire event to notify other systems (like the tablet follow script) of the mode change.

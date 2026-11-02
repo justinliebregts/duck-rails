@@ -99,11 +99,6 @@ namespace Liv.Lck.Streaming
         /// </summary>
         public CancellationTokenSource CancellationTokenSource { get; private set; } = new CancellationTokenSource();
 
-        // True while the user is on the streaming tab and we want background polling to be running.
-        // System pause / HMD idle temporarily cancel the token but must leave this set so polling
-        // can resume on wake; only navigating away from the tab clears it.
-        private bool _shouldBePolling = false;
-
         private void Start()
         {
             if (_lckService != null)
@@ -136,7 +131,7 @@ namespace Liv.Lck.Streaming
         private void OnSystemPaused()
         {
             Log("[LCK Streaming Controller] System paused - stopping any active polling");
-            CancelActivePolling();
+            StopCheckingStates();
 
             // Stop streaming if active to prevent encoder corruption during system pause
             // During system pause, the GPU resources and media codecs may become invalid
@@ -161,9 +156,10 @@ namespace Liv.Lck.Streaming
                 Log($"[LCK Streaming Controller] Post-resume streaming state: {isActuallyStreaming}");
             }
 
-            // Resume whatever the state machine was doing before the pause
-            if (_shouldBePolling)
+            // Refresh the current state to ensure UI reflects actual state
+            if (IsConfiguredCorrectly)
             {
+                // Re-check configuration state in case anything changed during pause
                 CheckCurrentState();
             }
         }
@@ -171,20 +167,19 @@ namespace Liv.Lck.Streaming
         private void OnHMDIdle()
         {
             Log("[LCK Streaming Controller] HMD idle detected - stopping polling but keeping stream active");
-            // Only stop polling, don't stop streaming since the encoder is still valid.
-            // Preserve _shouldBePolling so OnHMDActive knows to resume.
-            CancelActivePolling();
+            // Only stop polling, don't stop streaming since the encoder is still valid
+            StopCheckingStates();
         }
 
         private void OnHMDActive()
         {
             Log("[LCK Streaming Controller] HMD active again");
-            // Resume whatever the state machine was doing before idle (including mid-pairing polls).
-            if (_shouldBePolling)
+            // Resume polling if we were configured
+            if (IsConfiguredCorrectly)
             {
                 CheckCurrentState();
             }
-        }
+        }        
 
         /// <summary>
         /// Begins the user setup and streaming validation process.
@@ -193,33 +188,15 @@ namespace Liv.Lck.Streaming
         /// </summary>
         public void CheckCurrentState()
         {
-            _shouldBePolling = true;
-            if (CurrentState == GetCurrentState)
-            {
-                // Polling may have been cancelled (pause/idle) while already in this state;
-                // restart the loop rather than getting a no-op from SwitchState's same-state guard.
-                CancelActivePolling();
-                GetCurrentState.EnterState(this);
-            }
-            else
-            {
-                SwitchState(GetCurrentState);
-            }
+            SwitchState(GetCurrentState);
         }
 
         /// <summary>
         /// Cancels any ongoing polling or asynchronous checks within the current state.
         /// This is used for when the user navigates away from the streaming UI tab, ensuring that
-        /// background tasks are properly stopped. Pauses/HMD idles should use <see cref="CancelActivePolling"/>
-        /// instead so polling resumes on wake.
+        /// background tasks are properly stopped.
         /// </summary>
         public void StopCheckingStates()
-        {
-            _shouldBePolling = false;
-            CancelActivePolling();
-        }
-
-        private void CancelActivePolling()
         {
             CancellationTokenSource.Cancel();
             CancellationTokenSource.Dispose();

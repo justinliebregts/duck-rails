@@ -16,16 +16,11 @@ namespace Liv.NGFX
 
     public class NI
     {
-        [DllImport("ngfx_rs")] public static extern IntPtr GetPluginEventFunction();
-        [DllImport("ngfx_rs")] public static extern uint AllocResource(IntPtr resource_ctx);
-        [DllImport("ngfx_rs")] public static extern void SetGlobalLogLevel(LogLevel level, bool enableGLMessages);
-
-        // Rust-specific context management
-        [DllImport("ngfx_rs")] public static extern IntPtr ngfx_create_context();
-        [DllImport("ngfx_rs")] public static extern void ngfx_destroy_context(IntPtr ctx);
-        [DllImport("ngfx_rs")] public static extern int ngfx_get_graphics_api();
+        [DllImport("ngfx")] public static extern IntPtr GetPluginEventFunction();
+        [DllImport("ngfx")] public static extern uint AllocResource(IntPtr resource_ctx);
+        [DllImport("ngfx")] public static extern void SetGlobalLogLevel(LogLevel level, bool enableGLMessages);
     }
-
+    
     public enum EventType : int
     {
         GraphicsBufferCreate,
@@ -357,42 +352,6 @@ namespace Liv.NGFX
                 m_valid = false;
                 m_buffer.Dispose();
                 m_buffer = null;
-            }
-        }
-    }
-
-    /// <summary>
-    /// NGFX context wrapper for managing resource lifetime.
-    /// Create one per logical graphics context and dispose when done.
-    /// </summary>
-    public class Context : IDisposable
-    {
-        IntPtr m_context = IntPtr.Zero;
-        bool m_valid = false;
-
-        public Context()
-        {
-            m_context = NI.ngfx_create_context();
-            m_valid = m_context != IntPtr.Zero;
-        }
-
-        ~Context()
-        {
-            Dispose();
-        }
-
-        public IntPtr ptr { get { return m_context; } }
-        public bool valid { get { return m_valid; } }
-
-        public static implicit operator IntPtr(Context c) => c.m_context;
-
-        public void Dispose()
-        {
-            if (m_valid)
-            {
-                NI.ngfx_destroy_context(m_context);
-                m_context = IntPtr.Zero;
-                m_valid = false;
             }
         }
     }

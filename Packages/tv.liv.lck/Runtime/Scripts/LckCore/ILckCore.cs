@@ -58,13 +58,5 @@ namespace Liv.Lck.Core
         /// Asynchronously retrieves the remaining backoff time in seconds before the next backend request can be made.
         /// </summary>
         Task<Result<float>> GetRemainingBackoffTimeSeconds();
-
-        /// <summary>
-        /// Retrieves the last streaming error message from the native SDK.
-        /// Call this after receiving a <see cref="CoreError.StreamingProviderError"/> to get
-        /// a human-readable error message suitable for display to the user.
-        /// </summary>
-        /// <returns>The error message string, or null if no error is stored.</returns>
-        string GetLastStreamingError();
     }
 }

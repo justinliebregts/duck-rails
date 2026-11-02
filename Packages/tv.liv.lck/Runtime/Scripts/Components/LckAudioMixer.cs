@@ -327,12 +327,6 @@ namespace Liv.Lck
 
         private bool VerifyAudioCaptureComponent()
         {
-            if (_audioCaptureMarker != null && !_audioCaptureMarker.gameObject.activeInHierarchy)
-            {
-                _audioCaptureMarker = null;
-                _gameAudioSource = null;
-            }
-
             if (_audioCaptureMarker == null)
             {
                 var allListeners = LckMonoBehaviourMediator.FindObjectsOfType<AudioListener>(false);
@@ -375,11 +369,6 @@ namespace Liv.Lck
                         LckLog.LogError("LCK found more than one active AudioListener in the scene. This is not valid");
                     }
                 }
-            }
-
-            if (_audioCaptureMarker == null)
-            {
-                return false;
             }
 
             if (_gameAudioSource == null)

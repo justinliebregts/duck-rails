@@ -10,7 +10,6 @@ namespace Liv.Lck.Tablet
         Selfie = 0,
         FirstPerson = 1,
         ThirdPerson = 2,
-        Headset = 3,
     }
 
     /// <summary>
@@ -27,8 +26,6 @@ namespace Liv.Lck.Tablet
         private GameObject _firstPersonSettings;
         [SerializeField]
         private GameObject _thirdPersonSettings;
-        [SerializeField]
-        private GameObject _headsetViewSettings;
 
         [Header("Toggle References")]
         [SerializeField]
@@ -39,8 +36,6 @@ namespace Liv.Lck.Tablet
         private Toggle _firstPersonToggle;
         [SerializeField]
         private Toggle _thirdPersonToggle;
-        [SerializeField]
-        private Toggle _headsetViewToggle;
 
         private Dictionary<CameraMode, GameObject> _settingsDictionary;
 
@@ -50,8 +45,7 @@ namespace Liv.Lck.Tablet
             {
                 {CameraMode.Selfie, _selfieSettings},
                 {CameraMode.FirstPerson,_firstPersonSettings},
-                {CameraMode.ThirdPerson,_thirdPersonSettings},
-                {CameraMode.Headset, _headsetViewSettings}
+                {CameraMode.ThirdPerson,_thirdPersonSettings}
             };
         }
 
@@ -60,7 +54,6 @@ namespace Liv.Lck.Tablet
             _selfieToggle.group = _toggleGroup;
             _firstPersonToggle.group = _toggleGroup;
             _thirdPersonToggle.group = _toggleGroup;
-            _headsetViewToggle.group = _toggleGroup;
         }
 
         public void SwitchCameraModes(CameraMode mode)

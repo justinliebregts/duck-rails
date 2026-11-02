@@ -11,6 +11,8 @@ namespace Liv.Lck.Encoding
         /// Checks whether the encoder is currently active or not
         /// </summary>
         /// <returns><c>true</c> when the encoder is active, <c>false</c> otherwise</returns>
+        /// <seealso cref="StartEncoding"/>
+        /// <seealso cref="StopEncodingAsync"/>
         public bool IsActive();
 
         /// <summary>
@@ -20,25 +22,21 @@ namespace Liv.Lck.Encoding
         public bool IsPaused();
 
         /// <summary>
-        /// Acquire the encoder for a consumer. If the encoder is not yet running,
-        /// starts it with the given descriptor. Adds the consumer's packet handlers.
+        /// Start encoding with the given <see cref="LckEncodedPacketHandler"/>s
         /// </summary>
-        /// <param name="consumer">The consumer acquiring the encoder</param>
-        /// <param name="descriptor">Track descriptor for encoding configuration</param>
-        /// <param name="handlers">Packet handlers for this consumer</param>
+        /// <param name="cameraTrackDescriptor">The <see cref="CameraTrackDescriptor"/> to start encoding with</param>
+        /// <param name="encodedPacketHandlers">
+        /// The collection of <see cref="LckEncodedPacketHandler"/>s that will be used to process encoded packets
+        /// </param>
         /// <returns><see cref="LckResult"/> indicating success / failure</returns>
-        public LckResult AcquireEncoder(EncoderConsumer consumer, CameraTrackDescriptor descriptor,
-            IEnumerable<LckEncodedPacketHandler> handlers);
-
+        public LckResult StartEncoding(CameraTrackDescriptor cameraTrackDescriptor, 
+            IEnumerable<LckEncodedPacketHandler> encodedPacketHandlers);
+        
         /// <summary>
-        /// Release the encoder for a consumer. Removes the consumer's packet handlers.
-        /// If this is the last consumer, stops the encoder.
+        /// Stops encoding
         /// </summary>
-        /// <param name="consumer">The consumer releasing the encoder</param>
-        /// <param name="handlers">Packet handlers to remove for this consumer</param>
         /// <returns><see cref="LckResult"/> indicating success / failure</returns>
-        public Task<LckResult> ReleaseEncoderAsync(EncoderConsumer consumer,
-            IEnumerable<LckEncodedPacketHandler> handlers);
+        public Task<LckResult> StopEncodingAsync();
 
         /// <summary>
         /// Encode a frame
@@ -48,7 +46,7 @@ namespace Liv.Lck.Encoding
         /// <param name="encodeVideo">Whether to encode video data or not</param>
         /// <returns>A <c>bool</c> indicating success (<c>true</c>) / failure (<c>false</c>)</returns>
         public bool EncodeFrame(float videoTimeSeconds, AudioBuffer audioData, bool encodeVideo);
-
+        
         /// <summary>
         /// Set the encoder log level
         /// </summary>

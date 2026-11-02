@@ -33,8 +33,6 @@ namespace Liv.Lck.Core
         PhotoCaptureError,
         SdkError,
         Performance,
-        EchoEnabled,
-        EchoSaved,
     }
 
 
