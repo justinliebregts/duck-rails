@@ -258,7 +258,7 @@ public static class PickupRecoveryChecks
         var room = Setup(1);
         var go = new GameObject("pending contents"); go.SetActive(false);
         var bag = go.AddComponent<BagObject>(); Set(bag, "rb", go.GetComponent<Rigidbody>());
-        Set(bag, "cargo", new HelicopterCargo(bag, go.GetComponent<Rigidbody>()));
+        // Rails uses its separate RailCargo component, not Duckz HelicopterCargo.
         bag.photonView.ViewID = 715; bag.photonView.OwnerActorNr = 1; bag.photonView.ControllerActorNr = 1;
         var slotGo = new GameObject("slot"); slotGo.SetActive(false); slotGo.transform.SetParent(go.transform);
         var slot = slotGo.AddComponent<BagSlot>(); Set(slot, "itemKey", "ItemGoldBar");

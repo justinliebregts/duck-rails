@@ -369,13 +369,18 @@ public static class HelicopterSupportChecks
 
     static void RestingWallMovement()
     {
-        foreach (int fps in new[] { 30, 72, 120 }) RestingWallMovementAtRate(fps);
+        foreach (int fps in new[] { 30, 72, 120 }) { RestingWallMovementAtRate(fps); RestingWallMovementAtRate(fps, true); }
         Debug.Log("Resting wall movement PASS: real movement acquisition, sustained ascent, release at 30/72/120 FPS");
     }
 
-    static void RestingWallMovementAtRate(int fps)
+    static void RestingWallMovementAtRate(int fps, bool train = false)
     {
         using var f = new Fixture(false);
+        if (train) {
+            var rail = f.helicopter.gameObject.AddComponent<RailTrain>(); rail.cabin = f.helicopter;
+            typeof(RailTrain).GetProperty("Instance").SetValue(null, rail);
+            HelicopterManager.instance = null; // Exercise the actual train routing without a helicopter manager.
+        }
         var wall = Fixture.Box(f.helicopter.transform, "Wall", new Vector3(0, 4, 0), new Vector3(2, 2, 2));
         f.roof.enabled = false; // No floor below: releasing the wall must not become a roof hop.
         Set(f.helicopter, "supportCached", false);
