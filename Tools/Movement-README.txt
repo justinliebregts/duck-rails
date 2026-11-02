@@ -34,7 +34,8 @@ Cleanup
 Removed the recorder partial, recorder implementation, Trace hooks, A/B state and
 file reader, report tools and recorder-only tests. MovementTestRig is now a small
 Editor-only fixture. Useful movement/gameplay regression tests remain. The existing
-development joystick control is separate from the experiment and remains unchanged.
+development joystick control is separate from the experiment. Its development-only
+collision/smoothing update is documented in Tools/DevelopmentMovement-README.txt.
 
 Validation
 MovementProductionPlayChecks verifies automatic startup, disable/re-enable/pause,

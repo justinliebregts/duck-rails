@@ -95,17 +95,36 @@ public static class MovementProductionPlayChecks
                 string path = Path.Combine(folder, name);
                 Check(File.Exists(path), "Missing compiled build variant: " + path);
                 var assembly = Assembly.LoadFile(path); VerifyAssembly(assembly);
+                bool development = name.Contains("Development");
+                var variant = assembly.GetType("NewPlayer");
+                Check((variant.GetMethod("DevelopmentMovement", All) != null) == development, "Development motor build guard incorrect");
+                Check((variant.GetField("developmentVelocity", All) != null) == development, "Development state leaked into release");
                 foreach (string method in new[] { "Awake", "Movement", "Turn", "Warp", "InitializeValues", "ApplyPassengerDisplacement",
                     "InitializeMovementPresentation", "OnEnable", "OnDisable", "OnApplicationPause", "MovementAnchorPosition",
                     "ContactRenderPosition", "BeginPhysicalMovement", "EndPhysicalMovement", "QueueMovementPoseRestore",
                     "RestoreMovementPoses", "RestoreZeroStepRenderedPoses", "SyncTransformsPreservingMovementPose" })
-                    CompareMethods(typeof(NewPlayer), assembly.GetType("NewPlayer"), method);
+                {
+                    // Only guarded joystick reset/presentation hooks differ. Their release implementation
+                    // is compared to the pre-change release assembly below, rather than to Editor IL.
+                    if (!development && (method == "InitializeValues" || method == "OnDisable"
+                        || method == "OnApplicationPause" || method == "ContactRenderPosition")) continue;
+                    CompareMethods(typeof(NewPlayer), variant, method);
+                }
+                if (!development)
+                {
+                    string baseline = Path.Combine(folder, "DevelopmentMovementBaselineRelease.dll");
+                    Check(File.Exists(baseline), "Missing pre-change release baseline");
+                    var before = Assembly.LoadFile(baseline).GetType("NewPlayer");
+                    foreach (var method in before.GetMethods(All))
+                        if (method.DeclaringType == before) CompareMethods(before, variant, method.Name);
+                    Check(before.GetFields(All).Length == variant.GetFields(All).Length, "Release gained joystick state");
+                }
                 CompareMethods(typeof(GR.Player), assembly.GetType("GR.Player"), "HeadCenteredGameplayPosition");
                 CompareMethods(typeof(GR.Player), assembly.GetType("GR.Player"), "TryGetHeadPivotHeadPosition");
                 CompareMethods(typeof(ItemSounds), assembly.GetType("ItemSounds"), "LateUpdate");
                 CompareMethods(typeof(DuckzAnalytics), assembly.GetType("DuckzAnalytics"), "TryLocalHead");
             }
-            Debug.Log("MovementProductionPlayChecks PASS: " + checks + " assertions; automatic smoothing, disable/re-enable, pause, no recording APIs and identical movement IL in Editor/development/release.");
+            Debug.Log("MovementProductionPlayChecks PASS: " + checks + " assertions; lifecycle, shared movement parity, development motor exclusion and unchanged pre-change release movement IL.");
         }
         finally { GR.Player.instance = originalPlayer; NewPlayer.instance = originalVR; HelicopterManager.instance = originalHelicopter; }
     }

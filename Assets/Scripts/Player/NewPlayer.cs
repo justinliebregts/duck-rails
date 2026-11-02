@@ -191,6 +191,9 @@ public partial class NewPlayer : MonoBehaviour
 
         public void InitializeValues()
         {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            ResetDevelopmentMovement();
+#endif
             ClearPassengerHandContacts();
             movementRenderCount = 0;
             if (velocityHistory == null || velocityHistory.Length != velocityHistorySize)
@@ -515,7 +518,6 @@ public partial class NewPlayer : MonoBehaviour
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (controllerInput.rightThumbstickButton.wasPressed) {
             stickMove = !stickMove;
-            rotateMode = 0;
         }
 #endif
 
@@ -547,6 +549,10 @@ public partial class NewPlayer : MonoBehaviour
           Rotate();
           // Locomotion samples tracked poses once per rendered frame, not per physics step.
           float dTime = Time.deltaTime;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+          // Suspend powered input without discarding the last safe collision anchors during a launch.
+          if (disableMovement || dTime <= 0f) developmentVelocity = Vector3.zero;
+#endif
           // if (Player.instance != null && Player.instance.IsDead) {
           //   // do our own custom gravity value for when dead
           //   rb.useGravity = false;
@@ -559,12 +565,7 @@ public partial class NewPlayer : MonoBehaviour
           // hands touching the ground can't immediately damp/override the launch.
           if(!disableMovement && dTime > 0f) {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if(!stickMove || (controllerInput.simulation != null && controllerInput.simulation.IsSimulating)) {
-              Movement(dTime);
-            } else {
-              StoreVelocities(dTime);
-            }
-            StickMove(dTime);
+            if (!DevelopmentMovement(dTime)) Movement(dTime);
 #else
             Movement(dTime);
 #endif
@@ -607,86 +608,6 @@ public partial class NewPlayer : MonoBehaviour
         //   leftHandFollower.position = lastLeftHandPosition;
         //   rightHandFollower.position = lastRightHandPosition;
         // }
-
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-        void StickMove(float dTime) {
-          // The simulator already supplies room-scale pose motion.
-          if (controllerInput != null && controllerInput.simulation != null && controllerInput.simulation.IsSimulating) return;
-#if UNITY_EDITOR
-          if (controllerInput == null || controllerInput.simulation == null) {
-              Vector2 wasd = Vector2.zero;
-              if(Input.GetKey(KeyCode.W)) wasd.y += 1f;
-              if(Input.GetKey(KeyCode.A)) wasd.x -= 1f;
-              if(Input.GetKey(KeyCode.S)) wasd.y -= 1f;
-              if(Input.GetKey(KeyCode.D)) wasd.x += 1f;
-              float jetpack = 0f;
-              if(Input.GetKey(KeyCode.Space)) jetpack = 1f;
-              MoveFromStick(wasd, jetpack, dTime);
-          }
-#endif
-          if(stickMove) {
-            Vector2 moveAxis = controllerInput.leftThumbstickValue;
-            Vector2 jetpackAxis = controllerInput.rightThumbstickValue;
-            bool doMove = false;
-            Vector2 moveInput = Vector2.zero;
-            if(moveAxis.magnitude > moveDeadzone) {
-              doMove = true;
-              moveInput = moveAxis;
-            }
-
-            float jetpackVal = 0f;
-            if(jetpackAxis.magnitude > moveDeadzone) {
-              doMove = true;
-              jetpackVal = jetpackAxis.y;
-            }
-
-            float headEyeOffsetY = headCollider.transform.position.y - headEyeOffset.position.y;
-            Vector3 newBodyPos = headCollider.transform.position + (BodyForwardRot() * headBodyOffset);
-            newBodyPos.y += headEyeOffsetY;
-            bodyCollider.transform.position = newBodyPos;
-
-            if(doMove) {
-              MoveFromStick(moveInput, jetpackVal, dTime);
-            }
-
-            // leftHandFollower.SetPositionAndRotation(CurrentLeftHandPosition(), leftHandTransform.rotation);
-            // rightHandFollower.SetPositionAndRotation(CurrentRightHandPosition(), rightHandTransform.rotation);
-
-          }
-        }
-
-        void MoveFromStick(Vector2 leftStick, float throttle, float dTime) {
-          float wasdSpeed = 4.5f;
-          float jetpackSpeed = 3f;
-          float shiftSpeedMult = 2.5f;
-          Vector3 moveForward = headCollider.transform.forward;
-          moveForward.y = 0;
-          moveForward = moveForward.normalized;
-          Vector3 moveRight = Vector3.Cross(Vector3.up, moveForward);
-          Vector3 newMove = (moveForward * leftStick.y) + (moveRight * leftStick.x);
-          Vector3 jetpackMove = Vector3.zero;
-
-          newMove = (newMove.normalized * wasdSpeed) * dTime;
-          if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) newMove *= shiftSpeedMult;
-          bool reinit = false;
-          if(newMove.magnitude > 0f) {
-            rb.position = transform.position + newMove;
-            reinit = true;
-          }
-          if(throttle > 0f) {
-            // jetpackMove = Vector3.up * jetpackSpeed * throttle;
-            Vector3 tempVel = rb.linearVelocity;
-            tempVel.y = jetpackSpeed * throttle;
-            rb.linearVelocity = tempVel;
-            reinit = true;
-          }
-
-          if(reinit) {
-            InitializeValues();
-          }
-        }
-
-#endif
 
         Quaternion BodyForwardRot() {
           float forwardToUp = headCollider.transform.up.y - headCollider.transform.forward.y;

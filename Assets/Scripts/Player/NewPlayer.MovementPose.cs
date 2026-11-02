@@ -14,6 +14,9 @@ public partial class NewPlayer
 
     void OnDisable()
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        ResetDevelopmentMovement();
+#endif
         movementRenderCount = 0;
         movementPoseRenderCancelled = true;
         if ((movementPoseQueued || movementPoseAwaitingRender) && rb != null)
@@ -47,6 +50,9 @@ public partial class NewPlayer
     void OnApplicationPause(bool paused)
     {
         if (paused) movementRenderCount = 0;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (paused) ResetDevelopmentMovement();
+#endif
     }
 
     // A turn/carry can intentionally leave a rendered pose different from physics.
@@ -102,6 +108,9 @@ public partial class NewPlayer
         }
         movementRender0 = new MovementRenderSample {
             position = rb.position, time = now, contact = leftHandColliding || rightHandColliding
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                || developmentMoving
+#endif
         };
         if (movementRenderCount < 2) return nativePosition;
         double target = now - Time.fixedDeltaTime;
