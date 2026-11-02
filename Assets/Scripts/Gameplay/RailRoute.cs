@@ -34,7 +34,7 @@ public sealed class RailRoute : MonoBehaviour
         var rng = new System.Random(seed);
         var pool = choices.OrderBy(b => b.id, StringComparer.Ordinal).ToArray();
         for (int i = pool.Length - 1; i > 0; i--) { int j = rng.Next(i + 1); (pool[i], pool[j]) = (pool[j], pool[i]); }
-        var state = new RailRouteState { run = run, blocks = new string[5], variations = new int[5], placements = new Vector3[5] };
+        var state = new RailRouteState { run = run, enemySeed = seed, blocks = new string[5], variations = new int[5], placements = new Vector3[5] };
         float z = StartZ;
         for (int i = 0; i < 5; i++)
         {
@@ -77,12 +77,15 @@ public sealed class RailRoute : MonoBehaviour
         foreach (var block in Blocks) if (block != null) Destroy(block.gameObject);
         Blocks.Clear(); var coal = new List<Transform>(); var enemies = new List<Transform>(); var gold = new List<Transform>();
         var graphs = new List<Game.AI.CrawlGraph>(); var offsets = new List<Vector3>();
+        var enemyTypes = new List<int>();
+        var encounterRandom = new System.Random(state.enemySeed);
         float distance = StationDepartureLength;
         for (int i = 0; i < 5; i++)
         {
             var block = Instantiate(catalog.Single(b => b.id == state.blocks[i]), state.placements[i], Quaternion.identity, transform);
             Blocks.Add(block); distance += block.TrackLength;
-            coal.AddRange(block.variations[state.variations[i]].coal); enemies.AddRange(block.variations[state.variations[i]].enemies);
+            coal.AddRange(block.variations[state.variations[i]].coal);
+            RailEnemySpawns.Select(block.variations[state.variations[i]].enemies, encounterRandom, enemies, enemyTypes);
             gold.AddRange(block.variations[state.variations[i]].gold ?? Array.Empty<Transform>());
             graphs.Add(Game.AI.CrawlGraph.Load(block.graph)); offsets.Add(block.transform.position);
         }
@@ -91,9 +94,10 @@ public sealed class RailRoute : MonoBehaviour
         FinaleStart = distance;
         finaleRoot.position = new Vector3(0, 0, z);
         graphs.Add(Game.AI.CrawlGraph.Load(finale.graph)); offsets.Add(finaleRoot.position);
-        enemies.AddRange(finale.variations[0].enemies);
+        expedition.baseEnemyCount = enemies.Count;
+        RailEnemySpawns.Select(finale.variations[0].enemies, encounterRandom, enemies, enemyTypes);
+        expedition.enemyTypes = enemyTypes.ToArray();
         expedition.coalPoints = coal.ToArray(); expedition.enemyPoints = enemies.ToArray();
-        expedition.baseEnemyCount = enemies.Count - finale.variations[0].enemies.Length;
         expedition.bridgeZ = z + 80;
         var graph = RailGraphAssembly.Combine(graphs, offsets);
         graph.RestrictToBounds(Blocks.Select(b => new Bounds(b.transform.position + b.enemyBounds.center, b.enemyBounds.size))

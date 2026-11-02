@@ -519,8 +519,15 @@ namespace Game.AI
         {
             position = default;
             rotation = Quaternion.identity;
-            if (!SpawnAuthority || enemy == null || !enemy.HasAuthority ||
-                spawnPoints == null || spawnPoints.Length == 0) return false;
+            if (!SpawnAuthority || enemy == null || !enemy.HasAuthority) return false;
+            if (PhotonSession.IsRailsRoom)
+            {
+                var boundary = enemy.GetComponent<RailEnemyBounds>();
+                if (boundary == null || !boundary.TryRespawn(out position, out rotation)) return false;
+                enemy.Teleport(position, rotation);
+                return true;
+            }
+            if (spawnPoints == null || spawnPoints.Length == 0) return false;
             if (!TryGetGroundedSpawnPose(out position, out rotation, true)) return false;
             if (recoveryReason != null)
                 {

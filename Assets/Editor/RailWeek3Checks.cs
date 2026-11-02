@@ -21,7 +21,7 @@ public static class RailWeek3Checks
         {
             Check(b.transform.localScale == Vector3.one && b.entry.localPosition == Vector3.zero && b.exit.localPosition == new Vector3(0, 0, 160), b.id + " consistent entry/exit/pivot");
             Check(b.track.Length > 2 && b.track[0] == Vector3.zero && Vector3.Distance(b.track.Last(), Vector3.forward * 160) < .001f && b.TrackLength >= 160, b.id + " complete track");
-            Check(b.variations.Length == 3 && b.variations.All(v => v.coal.Length == 6 && v.enemies.Length == 2), b.id + " three authored supply/enemy variations");
+            Check(b.variations.Length == 3 && b.variations.All(v => v.coal.Length == 6 && v.enemies.Length == 6), b.id + " three authored supply/enemy variations");
             foreach (var variation in b.variations)
             {
                 Check(variation.coal.Count(p => p.position.x < -9) == 3 && variation.coal.Count(p => p.position.x > 9) == 3, b.id + " three coal spawns on each side");

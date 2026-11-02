@@ -4,9 +4,9 @@
 
 This phase implements the approved twelve-location gray-box catalogue, five distinct randomized stops plus the existing bridge finale, authored spawn variations, consistent prefab connections, internal bends, a separate Expedition scene, and renewable coal carriers. Lighting remains deferred. The original train controls, item interactions, revive flow and bridge ending are retained.
 
-Open `Assets/Scenes/Login.unity` and enter Play normally. Private staging and public boarding use Compound; departures load Expedition. Private runs keep the same Photon room/code across both scenes. Build settings contain Login, Compound and Expedition. Network protocol is `session-v6`; all clients must use this version.
+Open `Assets/Scenes/Login.unity` and enter Play normally. Private staging and public boarding use Compound; departures load Expedition. Private runs keep the same Photon room/code across both scenes. Build settings contain Login, Compound and Expedition. Network protocol is `session-v8`; all clients must use this version.
 
-`Assets/DuckRails/Blocks` contains Maintenance Depot, Convenience Store, Roadside Motel, Lumber Yard, Container Yard, Passenger Station, Farm Silos, Tunnel Works, Scrapyard, Lakeside Campground, Electrical Substation and Quarry. Each is an editable prefab, with a versioned stable ID, tags, graph asset, entry/exit/stop markers, three authored sets of six coal/two enemy markers, and sampled track. Four locations bend gently left/right before returning to the centerline.
+`Assets/DuckRails/Blocks` contains Maintenance Depot, Convenience Store, Roadside Motel, Lumber Yard, Container Yard, Passenger Station, Farm Silos, Tunnel Works, Scrapyard, Lakeside Campground, Electrical Substation and Quarry. Each is an editable prefab, with a versioned stable ID, tags, graph asset, entry/exit/stop markers, three authored sets of six coal/six enemy candidate markers, and sampled track. Four locations bend gently left/right before returning to the centerline.
 
 ## Authoring contract
 
@@ -76,3 +76,7 @@ The first sequence passed on all three desktop processes at 06:34 UTC October 30
 Later desktop evidence for public departure, two-person whole-crew matchmaking return and abrupt master transport loss is recorded in [multiplayer-stability.md](multiplayer-stability.md). Still unverified: a full public gameplay run, every individual location with human melee/scavenging, public capacity/contention and coordinator-loss cases, eight-client/headset behavior, and natural completion-time balance. Private success/failure/replay and the smaller public session fixtures do not substitute for those remaining gates.
 
 October 30 coal tuning: doubled authored coal to six per stop (30 across five stops), with paired markers 0.6 metres apart, and halved all furnace coal contributions to 2.5. Carrier drop count remains one per accepted hit. Updated builder, gauge and existing check expectations. Historical multiplayer evidence above predates this tuning. The subsequent [multiplayer stability pass](multiplayer-stability.md) compiled the current build, passed 432 Week 3 checks, and repeated the full private sequence on three authenticated desktop clients with 42 cargo. That pass also fixes duplicate-avatar creation at the Compound/Expedition boundary and checks avatar uniqueness through handoff, rejoin, return and replay. See the linked report for additional fault-injection results and remaining acceptance limits.
+
+## Mixed enemies — November 1
+
+Each stop selects 4–6 unique candidates and a shuffled mix including minion, bomber, smasher and spider. Bridge activation adds 4–6 defenders. The retained route seed preserves choices for late joining, host migration and exact-route presets. Protocol is now session-v8; update all clients together. See [mixed enemies](mixed-enemies.md).

@@ -17,6 +17,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     public GameObject[] supplies;
     public Transform[] supplyPoints, coalPoints, enemyPoints;
     public GameObject coalPrefab, enemyPrefab;
+    public int[] enemyTypes = Array.Empty<int>();
     public GameObject goldPrefab;
     public Transform[] goldPoints = Array.Empty<Transform>();
     public Transform furnace, bridgeButton, bridgeDeck;
@@ -49,6 +50,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     void Awake()
     {
         Instance = this;
+        RailEnemySpawns.Register();
         foreach (var prefab in supplies) PhotonPreparePool.Register(prefab);
         PhotonPreparePool.Register(goldPrefab); PhotonPreparePool.Register(coalPrefab); PhotonPreparePool.Register(enemyPrefab);
         reviveClip = RailControl.Tone("Revive", 330, 1);
@@ -399,7 +401,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         {
             string marker = "enemy-" + i;
             bool exists = HasMarker(PhotonSession.RunId, marker);
-            if (!exists) PhotonNetwork.InstantiateRoomObject(enemyPrefab.name, enemyPoints[i].position, enemyPoints[i].rotation, 0, new object[] { "rails", PhotonSession.RunId, marker });
+            if (!exists) PhotonNetwork.InstantiateRoomObject(i < enemyTypes.Length ? RailEnemySpawns.Prefab(enemyTypes[i]).name : enemyPrefab.name, enemyPoints[i].position, enemyPoints[i].rotation, 0, new object[] { "rails", PhotonSession.RunId, marker });
         }
     }
     static bool HasMarker(string run, string marker)
@@ -410,7 +412,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     }
     void UpdateCarriers(RailRunState next, double now)
     {
-        // One carrier per stop, plus both bridge defenders. Initial equipment is retained by marker.
+        // Roughly half the enemies carry coal, plus bridge defenders. Equipment is retained by marker.
         foreach (var enemy in Game.AI.Enemy.Active)
         {
             var carrier = enemy.GetComponent<RailCoalCarrier>(); string marker = carrier != null ? carrier.Marker : null;

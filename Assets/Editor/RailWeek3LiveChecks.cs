@@ -113,11 +113,11 @@ public static class RailWeek3LiveChecks
                 Require(route.Ready && route.Blocks.Count == 5 && route.Blocks.Select(b => b.id).SequenceEqual(route.Selection.blocks), "Exact five-block route loaded");
                 // WorldReady covers cargo reconstruction, while enemy spawn messages can
                 // arrive afterwards. Give each client a bounded replication settle window.
-                bool seeded = RailCargo.Active.Count == 40 && Game.AI.Enemy.Active.Count == 10;
+                bool seeded = RailCargo.Active.Count == 40 && Game.AI.Enemy.Active.Count == run.baseEnemyCount;
                 if (!seeded && EditorApplication.timeSinceStartup - worldReadySince < 15) return;
-                Require(seeded, "Expected 40 cargo and 10 enemies after settling; observed cargo=" + RailCargo.Active.Count + " enemies=" + Game.AI.Enemy.Active.Count);
+                Require(seeded, "Expected 40 cargo and " + run.baseEnemyCount + " enemies after settling; observed cargo=" + RailCargo.Active.Count + " enemies=" + Game.AI.Enemy.Active.Count);
                 firstRun = PhotonSession.RunId; firstRoute = PhotonSession.Get(RailRoute.StateKey, "");
-                if (!action) { Record("Five matching blocks/placements, 40 cargo, 10 enemies; separate Expedition scene"); Ack(); action = true; }
+                if (!action) { Record("Five matching blocks/placements, 40 cargo, " + run.baseEnemyCount + " enemies; separate Expedition scene"); Ack(); action = true; }
                 if (Host && AllAck) Stage(recovery ? 20 : 2);
             }
             else if (stage == 2 && age > 1)

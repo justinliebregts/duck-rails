@@ -47,6 +47,7 @@ public sealed class RailSpawnSet
 public sealed class RailRouteState
 {
     public string run;
+    public int enemySeed;
     public string[] blocks;
     public int[] variations;
     public Vector3[] placements;

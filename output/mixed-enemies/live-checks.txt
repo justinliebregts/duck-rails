@@ -1,0 +1,8 @@
+PASS roadside-motel-v1 live count=5 types=RailZombie(Clone),RailSmasher(Clone),RailSpider(Clone),RailZombie(Clone),RailBomber(Clone)
+PASS maintenance-depot-v1 live count=6 types=RailZombie(Clone),RailZombie(Clone),RailSmasher(Clone),RailBomber(Clone),RailSpider(Clone),RailBomber(Clone)
+PASS farm-silos-v1 live count=5 types=RailBomber(Clone),RailZombie(Clone),RailSpider(Clone),RailSmasher(Clone),RailSpider(Clone)
+PASS quarry-v1 live count=6 types=RailZombie(Clone),RailSpider(Clone),RailBomber(Clone),RailBomber(Clone),RailSmasher(Clone),RailBomber(Clone)
+PASS passenger-station-v1 live count=4 types=RailBomber(Clone),RailZombie(Clone),RailSmasher(Clone),RailSpider(Clone)
+PASS authoritative bomber explosion enters dormancy
+PASS bomber respawned in its original block after the ten-second delay
+PASS bridge spawn-path fixture added 4 defenders

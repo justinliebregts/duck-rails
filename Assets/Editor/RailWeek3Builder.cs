@@ -33,6 +33,7 @@ public static class RailWeek3Builder
         for (int i = 0; i < catalog.Length; i++) catalog[i] = BuildBlock(i);
         BuildScenes(catalog);
         AddCarrier();
+        RailEnemyAuthoring.Install();
         EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Login.unity", true), new EditorBuildSettingsScene("Assets/Scenes/Compound.unity", true), new EditorBuildSettingsScene("Assets/Scenes/Expedition.unity", true) };
         AssetDatabase.SaveAssets();
         EditorSceneManager.OpenScene("Assets/Scenes/Compound.unity");

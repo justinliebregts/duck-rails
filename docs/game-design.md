@@ -63,6 +63,8 @@ Authentication source inspection (October 28, 2026): the Unity copy is in `X:\Wo
 
 ## Train
 
+November 1 enemy expansion: each scavenging block has 4–6 enemies including minion, bomber, smasher and spider. A retained route seed randomizes counts, types and authored positions. Bridge activation adds 4–6 defenders; the starting station stays safe. See [mixed enemies](mixed-enemies.md).
+
 October 31 starting-station decision: every expedition begins at the midpoint of a fixed, editable train-station block before the five randomized scavenging blocks. The station is additional to the random block count and reserves space for a future store; store functionality is not part of this change.
 
 ### Confirmed
@@ -165,7 +167,7 @@ October 31 authoring update: coal placements use reusable, editor-visible CoalSp
 - Runtime placement must correctly transform graph data if block transforms vary.
 - Retain every selected block until the expedition ends; clear network objects at staging before another departure.
 
-Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets per location, six coal chunks and two enemies per selected stop. Encounter bounds occupy local Z 45–115, leaving 90 metres between adjacent encounters (22.5 seconds at 4 m/s). Four templates have gentle internal curves. Stable versioned IDs, placements and variation indices are retained in room properties. Navigation is baked in the editor and translated/reindexed at load without generating geometry, rebaking or connecting blocks. See [week3-session.md](week3-session.md) for setup and actual validation limits.
+Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets per location, six coal chunks and 4–6 randomized enemies per selected stop. Encounter bounds occupy local Z 45–115, leaving 90 metres between adjacent encounters (22.5 seconds at 4 m/s). Four templates have gentle internal curves. Stable versioned IDs, placements and variation indices are retained in room properties. Navigation is baked in the editor and translated/reindexed at load without generating geometry, rebaking or connecting blocks. See [week3-session.md](week3-session.md) for setup and actual validation limits.
 
 ## Compound, public departure, and private rooms
 

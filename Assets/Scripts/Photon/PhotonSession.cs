@@ -103,7 +103,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
-        settings.AppVersion = source.AppVersion + "-duck-rails-session-v7";
+        settings.AppVersion = source.AppVersion + "-duck-rails-session-v8";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;

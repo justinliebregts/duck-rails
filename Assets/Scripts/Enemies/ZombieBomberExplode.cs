@@ -100,6 +100,8 @@ public sealed class ZombieBomberExplode : MonoBehaviourPun
         // SetDead handles local ragdoll/respawn; PhotonPlayer replicates the death state.
         var player = GR.Player.instance;
         if (player == null || !player.isActiveAndEnabled || player.IsDead) return;
+        if (PhotonSession.IsRailsRoom && (RailExpedition.LocalDown ||
+            (RailTrain.Instance != null && RailTrain.Instance.Contains(player.transform.position)))) return;
         radius = Mathf.Max(0f, radius);
         if ((player.transform.position - position).sqrMagnitude <= radius * radius)
         {

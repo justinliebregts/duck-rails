@@ -8,6 +8,21 @@ public sealed class RailEnemyBounds : MonoBehaviour
     Game.AI.Enemy enemy;
     Bounds home; bool assigned;
     void Awake() => enemy = GetComponent<Game.AI.Enemy>();
+    public bool TryRespawn(out Vector3 position, out Quaternion rotation)
+    {
+        position = default; rotation = Quaternion.identity;
+        var route = RailRoute.Instance; var run = RailExpedition.Instance;
+        if (route == null || !route.Ready || run == null) return false;
+        var data = GetComponent<PhotonView>().InstantiationData;
+        string marker = data != null && data.Length >= 3 ? data[data.Length - 1] as string : null;
+        if (marker == null || !marker.StartsWith("enemy-") || !int.TryParse(marker.Substring(6), out int index)
+            || index < 0 || index >= run.enemyPoints.Length) return false;
+        home = route.EnemyBounds(run.enemyPoints[index].position); assigned = true;
+        var points = System.Array.FindAll(run.enemyPoints, p => p != null && home.Contains(p.position));
+        if (points.Length == 0) return false;
+        var point = points[Random.Range(0, points.Length)];
+        position = point.position; rotation = point.rotation; return true;
+    }
     void LateUpdate()
     {
         if (enemy == null || !enemy.HasAuthority || !PhotonSession.IsRailsRoom) return;

@@ -343,3 +343,5 @@ If mandatory systems still do not meet their acceptance tests, extend the schedu
 All checklist items are initially unverified. Update them only with concrete implementation and test evidence.
 
 Radio/horn follow-up (October 29): physical hold buttons implemented with release-to-stop station transmission and looped horn audio. Runtime/editor compilation passed; editor checks, Quest 3 feel, and two-client release/disconnect/late-join/audio acceptance remain pending. See week2-session.md.
+
+- [ ] November 1 mixed enemy acceptance: validate 4–6 minion/bomber/smasher/spider encounters across real clients, late joining, host migration, bomber respawn and headsets. See [mixed enemies](mixed-enemies.md).
