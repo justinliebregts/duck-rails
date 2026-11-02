@@ -131,6 +131,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
     bool keepLocalPhysics;
     double dropDeadline;
     bool pickupPending;
+    double pickupStartedAt;
     public bool PickupPending => pickupPending;
 
     public void OnOwnershipRequest(PhotonView targetView, Player requestingPlayer) { }
@@ -165,6 +166,9 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             remoteHeld = false;
             remoteHolderActorNumber = 0;
         }
+        // Room ownership -> master ownership may keep the same controller, so
+        // OnControllerChange does not run. Apply any deferred checkpoint now.
+        recovery?.Reconcile();
         TrackHeld();
         RecoveryChanged();
     }
@@ -279,6 +283,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             photonView.OwnerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
         {
             pickupPending = PhotonNetwork.InRoom;
+            pickupStartedAt = Time.realtimeSinceStartupAsDouble;
             photonView.TransferOwnership(PhotonNetwork.LocalPlayer);
         }
 
@@ -355,11 +360,31 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
 
     void LateUpdate()
     {
+        CheckPendingPickup();
         RecoverDetachedHand();
         UpdateItemPose();
         if (checkpointWhenSettled && photonView.IsMine && !IsHeldByAnyPlayer && rb.IsSleeping())
         { recovery?.Changed(); checkpointWhenSettled = false; }
         if (!destroyAfterOwnershipFallback) TickSwing();
+    }
+
+    void CheckPendingPickup()
+    {
+        if (!pickupPending || !PhotonNetwork.IsMessageQueueRunning) return;
+        if (Time.realtimeSinceStartupAsDouble - pickupStartedAt < 3) return;
+        if (photonView.IsMine)
+        {
+            // Ownership arrived even if the completion callback was missed.
+            OnOwnershipTransfered(photonView, photonView.Owner);
+            return;
+        }
+        // Never blindly reissue a takeover: another player may now be holding
+        // this item. Release only our unconfirmed prediction, allowing a fresh
+        // grab. A late grant can resume physics but must not reattach the hand.
+        if (DuckzLog.AllowWarning(out var notice, "PickupOwnershipTimeout"))
+            notice.Write($"Pickup ownership timed out: view={photonView.ViewID}, owner={photonView.OwnerActorNr}, controller={photonView.ControllerActorNr}.", this);
+        CancelLocalOwnership();
+        recovery?.Reconcile();
     }
 
     void UpdateItemPose()

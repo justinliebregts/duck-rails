@@ -161,7 +161,11 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
         if (candidate != null && candidate.IsLocal) RequestMaster(candidate);
     }
 
-    void LateUpdate() => RoomObjectRecovery.Flush();
+    void LateUpdate()
+    {
+        RoomObjectRecovery.Flush();
+        RoomObjectRecovery.Tick();
+    }
 
     public override void OnRoomPropertiesUpdate(Hashtable changes) => RoomObjectRecovery.PropertiesChanged(changes);
 

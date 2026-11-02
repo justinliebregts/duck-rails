@@ -676,6 +676,9 @@ public static class RoomObjectRecoveryChecks
         object[] previous = (object[])room.CustomProperties["recovery:s:200"];
         string identity = record.Identity;
         var winner = new object[] { identity, 2, 2, 2, previous[4], 0 };
+        // The takeover event precedes the new controller's checkpoint in PUN.
+        obj.GetComponent<PhotonView>().OwnerActorNr = 2;
+        obj.GetComponent<PhotonView>().ControllerActorNr = 2;
         room.SetCustomProperties(new Hashtable { ["recovery:s:200"] = winner, ["recovery:s:200:v"] = Stamp(2, 2) }, new Hashtable { ["recovery:s:200:v"] = Stamp(1, 1) });
         Check(obj.GetComponent<PhotonView>().OwnerActorNr == 2 && record.Revision == 2, "new owner checkpoint reconciles ownership");
         Check(!room.SetCustomProperties(new Hashtable { ["recovery:s:200"] = previous, ["recovery:s:200:v"] = Stamp(2, 1) }, new Hashtable { ["recovery:s:200:v"] = Stamp(1, 1) }),
@@ -684,9 +687,8 @@ public static class RoomObjectRecoveryChecks
         obj.transform.position = Vector3.one * 12;
         RoomObjectRecovery.OperationResponse(new OperationResponse { OperationCode = OperationCode.SetProperties, ReturnCode = ErrorCode.InvalidOperation });
         Check(obj.transform.position == Vector3.one * 12, "unrelated property failure does not replay acknowledged checkpoints");
-        typeof(RoomObjectRecovery).GetProperty("Revision").SetValue(record, 3);
         RoomObjectRecovery.OperationResponse(new OperationResponse { OperationCode = OperationCode.SetProperties, ReturnCode = ErrorCode.InvalidOperation });
-        Check(record.Revision == 2, "failed optimistic write adopts retained winner revision");
+        Check(record.Revision == 2, "ambiguous errors do not alter the confirmed winner revision");
         Switch(room, b); obj.GetComponent<PhotonView>().ControllerActorNr = 2;
         record.OnPreNetDestroy(obj.GetComponent<PhotonView>());
         Check(!RoomObjectRecovery.Exists(room.Name, identity), "permanent destruction removes retained record");
@@ -703,6 +705,8 @@ public static class RoomObjectRecoveryChecks
         Call(item, "RecoveryChanged"); RoomObjectRecovery.Flush(); // A queues 3, based on its own 2.
         room.QueueWrites = false;
         var winner = new object[] { initial[0], 2, 2, 2, initial[4], 0 };
+        item.GetComponent<PhotonView>().OwnerActorNr = 2;
+        item.GetComponent<PhotonView>().ControllerActorNr = 2;
         Check(room.Commit(new Hashtable { ["recovery:s:205"] = winner, ["recovery:s:205:v"] = Stamp(2, 2) },
             new Hashtable { ["recovery:s:205:v"] = Stamp(1, 1) }), "competing owner wins while previous writer has queued updates");
         Check(!room.Deliver(0), "previous writer's first queued update loses conflict");

@@ -13,7 +13,8 @@ public partial class BagObject
     {
         if (recovery != null || photonView.ViewID == 0) return;
         recovery = new RoomObjectRecovery(photonView, CaptureRecovery, ApplyRecovery,
-            () => state == BagState.Stowed ? holderActor : 0);
+            () => state == BagState.Stowed ? holderActor : 0,
+            () => (awaitingClaim && requester == LocalActor) || (holdingHand != null && CanControl));
         recovery.Reconcile();
     }
 

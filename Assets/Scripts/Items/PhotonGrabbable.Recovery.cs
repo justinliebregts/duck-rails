@@ -14,7 +14,8 @@ public partial class PhotonGrabbable
     {
         if (recovery != null || photonView == null || photonView.ViewID == 0) return;
         recovery = new RoomObjectRecovery(photonView, CaptureRecovery, ApplyRecovery,
-            () => headEquipment != null ? headEquipment.RecoveryWearer : 0);
+            () => headEquipment != null ? headEquipment.RecoveryWearer : 0,
+            () => pickupPending || (IsHeld && photonView.IsMine));
         recovery.Reconcile();
     }
 

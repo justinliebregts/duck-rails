@@ -12,17 +12,29 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
     static readonly Dictionary<string, RoomObjectRecovery> objects = new();
     static readonly HashSet<RoomObjectRecovery> dirty = new();
     static readonly List<RoomObjectRecovery> work = new();
+    static readonly HashSet<RoomObjectRecovery> pending = new();
+    static readonly List<RoomObjectRecovery> pendingWork = new();
+    static readonly HashSet<string> failedObjects = new();
+    const double AcknowledgementTimeout = 3;
+    const int MaxRetries = 3;
+    const int RetryBudgetPerTick = 4;
+    static int watchdogCursor;
+    static double nextWatchdog, failureWindow;
     readonly PhotonView view;
     readonly Func<object[]> capture;
     readonly Action<object[]> restore;
     readonly Func<int> wearer;
+    readonly Func<bool> localInteraction;
     readonly string key, revisionKey;
     readonly string spawnToken;
     Room room;
-    bool applying, disposed;
-    int confirmed, confirmedWriter, revision, revisionWriter;
+    bool applying, disposed, initialized, deferredRestore, awaitingCheckpoint, needsPublish;
+    int revision, revisionWriter, issuedRevision, issuedWriter, lastIssued, firstQueuedRevision, retries;
+    double pendingSince;
     public static readonly object ZeroRevision = 0;
     public object WireRevision { get; private set; } = ZeroRevision;
+    // Only room-property acknowledgements advance this value. Queued writes
+    // have a separate revision chain and cannot gate otherwise valid snapshots.
     public int Revision
     {
         get => revision;
@@ -37,10 +49,12 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
     public string Identity { get; private set; }
     public bool Applying => applying;
 
-    public RoomObjectRecovery(PhotonView view, Func<object[]> capture, Action<object[]> restore, Func<int> wearer = null)
+    public RoomObjectRecovery(PhotonView view, Func<object[]> capture, Action<object[]> restore, Func<int> wearer = null,
+        Func<bool> localInteraction = null)
     {
         this.view = view; this.capture = capture; this.restore = restore;
         this.wearer = wearer;
+        this.localInteraction = localInteraction;
         spawnToken = view.SpawnToken;
         // Separate scene objects and every spawned lifetime, including objects sharing a prefab/ID.
         key = Prefix + (spawnToken == null ? "s:" : "r:" + spawnToken + ":") + view.ViewID;
@@ -52,12 +66,18 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void Reset() { objects.Clear(); dirty.Clear(); work.Clear(); }
+    static void Reset()
+    {
+        objects.Clear(); dirty.Clear(); work.Clear(); pending.Clear(); pendingWork.Clear(); failedObjects.Clear();
+        nextWatchdog = failureWindow = 0;
+        watchdogCursor = 0;
+    }
 
     public void Changed()
     {
         if (applying || disposed || !PhotonNetwork.InRoom || room != PhotonNetwork.CurrentRoom || !view.IsMine) return;
         Identity ??= Guid.NewGuid().ToString("N");
+        needsPublish = true;
         dirty.Add(this);
     }
 
@@ -73,8 +93,19 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
     void Publish()
     {
         if (disposed || applying || view == null || !view.IsMine || !PhotonNetwork.InRoom || room != PhotonNetwork.CurrentRoom) return;
-        int previous = Revision;
-        int next = previous + 1;
+        // A standby flush may queue several transitions before an acknowledgement.
+        // Keep that chain separate from the confirmed revision used by snapshots.
+        int previous = awaitingCheckpoint ? issuedRevision : Revision;
+        int previousWriter = awaitingCheckpoint ? issuedWriter : revisionWriter;
+        if (previous == 0 && firstQueuedRevision != 0)
+        {
+            // Initial properties cannot use CAS on a nonexistent key. Once an
+            // initialization has been queued, never repeat it unconditionally:
+            // it may have succeeded while its acknowledgement is delayed.
+            previous = firstQueuedRevision;
+            previousWriter = PhotonNetwork.LocalPlayer.ActorNumber;
+        }
+        int next = Math.Max(previous, lastIssued) + 1;
         int writer = PhotonNetwork.LocalPlayer.ActorNumber;
         int wornBy = wearer != null ? wearer() : 0;
         var data = new object[] { Identity, next, writer,
@@ -84,8 +115,23 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
         // Initialization is written only by the first controlling client; subsequent changes compare revisions.
         // Include the writer: after A's revision 2 loses to B's revision 2, A's queued
         // revision 3 must not succeed just because the numeric revision is now 2.
-        var expected = previous == 0 ? null : new Hashtable { [revisionKey] = Stamp(previous, revisionWriter) };
-        if (room.SetCustomProperties(values, expected)) { Revision = next; revisionWriter = writer; }
+        var expected = previous == 0 ? null : new Hashtable { [revisionKey] = Stamp(previous, previousWriter) };
+        if (!awaitingCheckpoint) { pendingSince = Time.realtimeSinceStartupAsDouble; retries = 0; }
+        // Set these before sending: offline rooms and deterministic fixtures acknowledge synchronously.
+        awaitingCheckpoint = true;
+        issuedRevision = lastIssued = next; issuedWriter = writer;
+        needsPublish = false;
+        pending.Add(this);
+        bool initializing = previous == 0;
+        if (initializing) firstQueuedRevision = next;
+        if (!room.SetCustomProperties(values, expected))
+        {
+            // A failed enqueue did not create a new server revision. Retain the
+            // previous chain and retry the current state through the same watchdog.
+            issuedRevision = previous; issuedWriter = previousWriter;
+            needsPublish = true;
+            if (initializing) firstQueuedRevision = 0;
+        }
     }
 
     static long Stamp(int version, int writer) => ((long)version << 32) | (uint)writer;
@@ -96,14 +142,40 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
             !(room.CustomProperties[key] is object[] data) || data.Length != 6 ||
             !(data[0] is string identity) || !(data[1] is int revision) ||
             !(data[2] is int writer) || !(data[3] is int owner) || !(data[4] is object[] state)) return;
-        if (revision < confirmed || (revision == confirmed && writer == confirmedWriter && identity == Identity)) return;
-        confirmed = revision;
-        confirmedWriter = writer;
+        if (revision < Revision || (revision == Revision && writer == revisionWriter && identity == Identity && !deferredRestore)) return;
+        bool ownAcknowledgement = writer == PhotonNetwork.LocalPlayer?.ActorNumber && lastIssued >= revision;
+        bool newer = revision != Revision || writer != revisionWriter;
+        bool preserveLiveState = (initialized && owner != view.OwnerActorNr)
+            || (localInteraction != null && localInteraction())
+            || (view.IsMine && (awaitingCheckpoint || needsPublish));
         Identity = identity;
-        // Our optimistic state can be ahead of an earlier acknowledgement from the same reliable queue.
-        if (writer == PhotonNetwork.LocalPlayer?.ActorNumber && Revision >= revision) return;
         Revision = revision;
         revisionWriter = writer;
+        initialized = true;
+        if (ownAcknowledgement)
+        {
+            // An acknowledgement is not a command to replay an older pose, hold,
+            // or bag inventory. More local changes may already have happened.
+            if (revision >= issuedRevision && !needsPublish) ClearPending();
+            else if (newer) pendingSince = Time.realtimeSinceStartupAsDouble;
+            return;
+        }
+        if (preserveLiveState)
+        {
+            // Ownership events and current local interactions take precedence over
+            // a delayed previous controller's checkpoint. Revisit after a transfer.
+            deferredRestore = true;
+            if (view.IsMine && newer)
+            {
+                issuedRevision = Revision; issuedWriter = revisionWriter;
+                needsPublish = true;
+                dirty.Add(this);
+            }
+            return;
+        }
+        deferredRestore = false;
+        ClearPending();
+        needsPublish = false;
         dirty.Remove(this);
         applying = true;
         try
@@ -123,15 +195,79 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
 
     public static void OperationResponse(OperationResponse response)
     {
-        if (response.OperationCode != OperationCode.SetProperties || response.ReturnCode != ErrorCode.InvalidOperation) return;
-        foreach (var item in objects.Values)
+        // Photon supplies no item key/request identity in these errors. A skin,
+        // master-election, or other object's failure says nothing about our saves.
+        if (response.OperationCode != OperationCode.SetProperties || response.ReturnCode == 0 || pending.Count == 0) return;
+        if (DuckzLog.AllowWarning(out var notice, "CheckpointOperation"))
+            notice.Write($"Item checkpoint operation error {response.ReturnCode}: {response.DebugMessage}; pending={pending.Count}. Awaiting per-item acknowledgement; no pickup rollback.");
+    }
+
+    void ClearPending()
+    {
+        awaitingCheckpoint = false;
+        issuedRevision = Revision; issuedWriter = revisionWriter;
+        retries = 0;
+        pending.Remove(this);
+    }
+
+    // Only outstanding saves are visited, once per second. No idle object scan,
+    // ownership claims, inventory restoration, or respawning is performed here.
+    public static void Tick()
+    {
+        if (pending.Count == 0) return;
+        double now = Time.realtimeSinceStartupAsDouble;
+        if (!PhotonNetwork.InRoom || !PhotonNetwork.IsMessageQueueRunning || now < nextWatchdog) return;
+        nextWatchdog = now + 1;
+        pendingWork.Clear(); pendingWork.AddRange(pending);
+        int visited = 0, attempts = 0;
+        // Bound allocations/traffic during a room-wide stall. Rotate the start
+        // so early entries cannot consume every retry slot on subsequent ticks.
+        while (visited < pendingWork.Count && attempts < RetryBudgetPerTick)
         {
-            if (item.Revision <= item.confirmed || item.room != PhotonNetwork.CurrentRoom || item.room == null ||
-                !(item.room.CustomProperties[item.key] is object[] data) || data.Length != 6 ||
-                (int)data[2] == PhotonNetwork.LocalPlayer.ActorNumber) continue;
-            // A CAS loser adopts the winner, including an equal revision from a competing writer.
-            item.confirmed = 0;
-            item.Reconcile();
+            watchdogCursor %= pendingWork.Count;
+            var item = pendingWork[watchdogCursor++];
+            visited++;
+            if (item.CheckPending(now)) attempts++;
+        }
+        pendingWork.Clear();
+    }
+
+    bool CheckPending(double now)
+    {
+        if (disposed || view == null || room != PhotonNetwork.CurrentRoom || !view.IsMine)
+        { ClearPending(); return false; }
+        if (!awaitingCheckpoint || now - pendingSince < AcknowledgementTimeout) return false;
+        Reconcile();
+        if (!awaitingCheckpoint || !view.IsMine) return false;
+        RecordFailure(now);
+        if (retries >= MaxRetries)
+        {
+            // Stop automatic traffic. A subsequent explicit interaction can start
+            // a new save; a late acknowledgement is still accepted normally.
+            ClearPending(); needsPublish = false; dirty.Remove(this);
+            return false;
+        }
+        retries++;
+        pendingSince = now;
+        // Rebase on the confirmed cache. CAS still protects against a newer
+        // server value we have not received. Never reuse an issued revision:
+        // a late successful retry must not acknowledge a different payload.
+        if (Revision != 0) { issuedRevision = Revision; issuedWriter = revisionWriter; }
+        needsPublish = true;
+        dirty.Remove(this);
+        Publish();
+        return true;
+    }
+
+    void RecordFailure(double now)
+    {
+        if (DuckzLog.AllowWarning(out var notice, "CheckpointTimeout"))
+            notice.Write($"Item checkpoint stalled: view={view.ViewID}, owner={view.OwnerActorNr}, controller={view.ControllerActorNr}, confirmed={Revision}/{revisionWriter}, issued={issuedRevision}/{issuedWriter}, retry={retries}/{MaxRetries}.", view);
+        if (now >= failureWindow) { failedObjects.Clear(); failureWindow = now + 30; }
+        if (failedObjects.Count < 3 && failedObjects.Add(key) && failedObjects.Count == 3)
+        {
+            if (DuckzLog.AllowWarning(out var roomNotice, "CheckpointRoomFailures"))
+                roomNotice.Write("Item checkpoint failures affected at least three objects within 30 seconds. Local recovery is active; room state was not reset.");
         }
     }
 
@@ -153,12 +289,16 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
     {
         // Editor can enter Play in Main before joining. Its scene objects have already run Start.
         dirty.Clear();
+        failedObjects.Clear(); failureWindow = nextWatchdog = 0;
+        watchdogCursor = 0;
         foreach (var item in objects.Values)
         {
             if (item.room != PhotonNetwork.CurrentRoom)
             {
                 item.room = PhotonNetwork.CurrentRoom;
-                item.confirmed = item.confirmedWriter = item.revisionWriter = item.Revision = 0;
+                item.ClearPending();
+                item.revisionWriter = item.Revision = item.issuedRevision = item.issuedWriter = item.lastIssued = item.firstQueuedRevision = 0;
+                item.initialized = item.deferredRestore = item.needsPublish = false;
                 item.Identity = null;
             }
             item.Reconcile();
@@ -191,7 +331,7 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
     public void Dispose()
     {
         if (disposed) return;
-        disposed = true; dirty.Remove(this);
+        disposed = true; dirty.Remove(this); pending.Remove(this);
         if (objects.TryGetValue(key, out var current) && ReferenceEquals(current, this)) objects.Remove(key);
         view.RemoveCallbackTarget(this);
     }
