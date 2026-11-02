@@ -88,7 +88,7 @@ public static class HeldItemRecoveryChecks
         client.State = ClientState.Joined; client.LoadBalancingPeer.DebugOut = DebugLevel.OFF;
         try
         {
-            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); scene.name = PhotonSession.PlayScene;
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); scene.name = PhotonSession.RequiredScene;
             ItemDrops(local, remote);
             BagDrops(local, remote);
             Authority(room, local, remote);
@@ -223,6 +223,7 @@ public static class HeldItemRecoveryChecks
         Set(h, "focused", true); Set(h, "room", room); Call(h, "ResetObservation");
         var avatar = new GameObject("local avatar").AddComponent<PhotonPlayer>();
         if (avatar.photonView == null) avatar.gameObject.AddComponent<PhotonView>();
+        typeof(PhotonView).GetProperty("Owner").SetValue(avatar.photonView, local);
         typeof(PhotonView).GetProperty("IsMine").SetValue(avatar.photonView, true); PhotonPlayer.Active.Add(avatar);
         Beat(h, remote, true);
         var item = Item(remote.ActorNumber); HeldPacket(item, remote, 1);
@@ -338,6 +339,7 @@ public static class HeldItemRecoveryChecks
         var savedInstance = instance.GetValue(null);
         var avatar = new GameObject("wake review avatar").AddComponent<PhotonPlayer>();
         if (avatar.photonView == null) avatar.gameObject.AddComponent<PhotonView>();
+        typeof(PhotonView).GetProperty("Owner").SetValue(avatar.photonView, local);
         typeof(PhotonView).GetProperty("IsMine").SetValue(avatar.photonView, true); PhotonPlayer.Active.Add(avatar);
         var handlerGo = new GameObject("wake review handler"); handlerGo.SetActive(false);
         var handler = handlerGo.AddComponent<PhotonHandler>();

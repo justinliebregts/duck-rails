@@ -18,7 +18,7 @@ public static class HelicopterNetworkChecks
     static readonly FieldInfo NetworkTime = typeof(PhotonNetwork).GetField("frametime", BindingFlags.Static | BindingFlags.NonPublic);
     static int checks;
     static int cloudSequence;
-    sealed class Actor : Photon.Realtime.Player { public Actor(int id) : base("Cabin test " + id, id, false) { } }
+    sealed class Actor : Photon.Realtime.Player { public Actor(int id, bool local = false) : base("Cabin test " + id, id, local) { } }
     static void Set(object o, string n, object value) => o.GetType().GetField(n, P).SetValue(o, value);
     static T Get<T>(object o, string n) => (T)o.GetType().GetField(n, P).GetValue(o);
     static Action Bind(object o, string n) => (Action)Delegate.CreateDelegate(typeof(Action), o, o.GetType().GetMethod(n, P));
@@ -54,9 +54,11 @@ public static class HelicopterNetworkChecks
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Photon/PhotonPlayer.prefab");
             var go = Object.Instantiate(prefab); go.SetActive(false);
             avatar = go.GetComponent<PhotonPlayer>();
+
             avatar.photonView.OwnerActorNr = owner.ActorNumber;
             avatar.photonView.ControllerActorNr = owner.ActorNumber;
             typeof(PhotonView).GetProperty("IsMine").SetValue(avatar.photonView, local);
+            typeof(PhotonView).GetProperty("Owner").SetValue(avatar.photonView, new Actor(owner.ActorNumber, local));
             Set(avatar, "deathRagdollPrefab", null);
             foreach (var limb in go.GetComponentsInChildren<TwoBoneLimb>(true)) limb.CaptureRest();
             render = Bind(avatar, "LateUpdate");

@@ -33,7 +33,9 @@ public static class ControllerPalmInteractionChecks
             var body = driver.Body; body.InitializeIKPreview();
             var owner = ownerRoot.GetComponent<PhotonPlayer>(); var peer = peerRoot.GetComponent<PhotonPlayer>();
             Mine(owner.photonView, true); Mine(peer.photonView, false);
+
             owner.photonView.OwnerActorNr = peer.photonView.OwnerActorNr = PhotonNetwork.LocalPlayer.ActorNumber;
+            typeof(PhotonView).GetProperty("Owner").SetValue(owner.photonView, PhotonNetwork.LocalPlayer);
             PhotonPlayer.Active.Clear(); PhotonPlayer.Active.Add(owner);
             owner.BindSources(driver.HeadAnchor, driver.LeftPalmSource, driver.RightPalmSource, driver);
             var hands = new[] { player.leftPlayerHand, player.rightPlayerHand };

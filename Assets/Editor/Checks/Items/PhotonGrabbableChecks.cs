@@ -35,6 +35,12 @@ public static class PhotonGrabbableChecks
     }
     public static void Run()
     {
+        try { RunChecks(); EditorApplication.Exit(0); }
+        catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
+    }
+
+    public static void RunChecks()
+    {
         if (!Application.isBatchMode) throw new InvalidOperationException("Isolated batch only");
         try {
             EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -47,8 +53,8 @@ public static class PhotonGrabbableChecks
             Benchmark();
             EquipmentPersistenceChecks.Run();
             Debug.Log("PhotonGrabbableChecks: ALL PASSED");
-            EditorApplication.Exit(0);
-        } catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
+
+        } catch (Exception) { throw; }
     }
     static void Behavior()
     {

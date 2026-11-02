@@ -187,6 +187,7 @@ public static class EquipmentPersistenceChecks
             rig.AddComponent<PhotonView>();
             human = rig.AddComponent<PhotonPlayer>();
             SetMine(human.photonView, true);
+            typeof(PhotonView).GetProperty("Owner").SetValue(human.photonView, client.LocalPlayer);
             PhotonPlayer.Active.Add(human);
             var handoff = rig.AddComponent<PhotonMasterHandoff>();
             Call(handoff, "Awake");

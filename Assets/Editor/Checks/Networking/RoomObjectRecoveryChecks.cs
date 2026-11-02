@@ -149,7 +149,7 @@ public static class RoomObjectRecoveryChecks
         }
         HeldItemRecoveryChecks.Run();
         EquipmentPersistenceChecks.Run();
-        PhotonGrabbableChecks.Run();
+        PhotonGrabbableChecks.RunChecks();
         Debug.Log("RoomObjectRecoveryChecks REGRESSIONS PASSED");
     }
     static long Stamp(int revision, int writer) => ((long)revision << 32) | (uint)writer;

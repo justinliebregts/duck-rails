@@ -111,6 +111,10 @@ public static class RailWeek3LiveChecks
                 PhotonSession.Phase == RailPhase.Running && run.State.BridgeProgress(PhotonNetwork.Time) < 1);
             var bagView = PhotonView.Find(PhotonSession.Get("test.week3.bag", 0)); var bag = bagView != null ? bagView.GetComponent<BagObject>() : null;
             int second = PhotonNetwork.PlayerList.FirstOrDefault(p => p.CustomProperties["test.week3.second"] is bool yes && yes)?.ActorNumber ?? 0;
+            // Readiness/focus can transfer master authority during initial staging.
+            // Retry via the current master instead of relying on the main editor once.
+            if (stage == 1 && PhotonSession.Phase == RailPhase.Staging && PhotonNetwork.IsMasterClient && age > 1)
+                session.StartPrivateRun();
             if (stage == 1 && PhotonSession.Phase == RailPhase.Running && age > 3)
             {
                 Require(GameScenes.IsLoaded(GameScenes.Expedition) && !GameScenes.IsLoaded(GameScenes.Compound), "Expedition scene replaces Compound");
@@ -142,7 +146,7 @@ public static class RailWeek3LiveChecks
             {
                 Require(bag != null && bag.Keys().Contains("RailCoal") && train.Contains(bag.transform.position), "Loaded bag retained through curve");
                 Require(Vector3.Distance(bagLocal, train.transform.InverseTransformPoint(bag.transform.position)) < 1, "Cargo local pose stable through curve");
-                Require(train.Contains(GR.Player.instance.transform.position + Vector3.up), "Passenger carried through curve");
+                Require(train.Contains(GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position) + Vector3.up), "Passenger carried through curve");
                 Ack(); if (Host && AllAck) { session.SetTrainMoving(false); Record("Loaded loose bag and all three passengers rode curved track"); Stage(4); }
             }
             else if (stage == 4 && age > 3)

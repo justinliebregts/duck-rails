@@ -28,8 +28,8 @@ public static class RailAvatarChecks
             throw new Exception("Avatar for an actor outside the current room");
         var local = PhotonPlayer.Local;
         var driver = UnityEngine.Object.FindFirstObjectByType<Game.Animation.LocalBodyDriver>();
-        if (local == null || driver == null || local.HandSource(true) != driver.LeftHandAnchor
-            || local.HandSource(false) != driver.RightHandAnchor)
+        if (local == null || driver == null || local.HandSource(true) != driver.LeftPalmSource
+            || local.HandSource(false) != driver.RightPalmSource)
             throw new Exception("Local avatar is not bound to the current rig");
         return string.Join(",", avatars.OrderBy(p => p.photonView.OwnerActorNr)
             .Select(p => p.photonView.OwnerActorNr + ":" + p.photonView.ViewID));

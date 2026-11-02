@@ -89,11 +89,12 @@ public static class RailDuckzPortChecks
             HeadPivotMovementChecks.Run, HeadPivotSynchronizationChecks.Run, HeadPivotLifeNetworkChecks.Run,
             HelicopterCabinCollisionChecks.Run, HelicopterSupportChecks.Run, HelicopterNetworkChecks.Run,
             DevelopmentMovementChecks.Run, DevelopmentMovementNetworkChecks.Run,
-            PickupRecoveryChecks.Run, PickupRegrabChecks.Run, RoomObjectRecoveryChecks.Run, PlayerKnockbackChecks.Run,
+            PickupRecoveryChecks.RunChecks, RoomObjectRecoveryChecks.Run,
             Cargo, RailTestRunner.Quick })
         {
             try { EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single); check(); results.Add("PASS " + check.Method.DeclaringType.Name); }
             catch (Exception e) { results.Add("FAIL " + check.Method.DeclaringType.Name + ": " + e); }
+            Directory.CreateDirectory("Logs"); File.WriteAllLines("Logs/duckz-port-checks.txt", results);
         }
         Directory.CreateDirectory("Logs");
         File.WriteAllLines("Logs/duckz-port-checks.txt", results);

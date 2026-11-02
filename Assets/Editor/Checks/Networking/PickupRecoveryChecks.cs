@@ -48,6 +48,12 @@ public static class PickupRecoveryChecks
 
     public static void Run()
     {
+        try { RunChecks(); EditorApplication.Exit(0); }
+        catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
+    }
+
+    public static void RunChecks()
+    {
         if (!Application.isBatchMode) throw new Exception("Disposable batch only");
         var client = PhotonNetwork.NetworkingClient;
         var oldRoom = client.CurrentRoom; var oldLocal = client.LocalPlayer;
@@ -76,9 +82,8 @@ public static class PickupRecoveryChecks
             TestRoomDiagnosticsAndIdle();
             checks += PickupRegrabChecks.RunCases();
             Debug.Log("PickupRecoveryChecks ALL PASSED (" + checks + " assertions)");
-            EditorApplication.Exit(0);
+
         }
-        catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
         finally
         {
             client.CurrentRoom = oldRoom;
