@@ -411,9 +411,13 @@ MonoBehaviour:
   swayBobMeters: 0.2
   swayPeriod: 3
   passengerCabin: {fileID: 1338572862749598597}
+  useInteriorCarryBounds: 1
+  interiorCarryBounds:
+    m_Center: {x: 0, y: 1.879, z: 2.45}
+    m_Extent: {x: 1.565, y: 0.827534, z: 4.2}
   passengerJumpHeadroom: 1
-  supportHopHeight: 0.9
-  supportHopSeconds: 0.9
+  supportHopHeight: 1.2
+  supportHopSeconds: 1.2
 --- !u!1 &7100000000000000101
 GameObject:
   m_ObjectHideFlags: 0

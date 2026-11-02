@@ -791,7 +791,10 @@ public class NewPlayer : MonoBehaviour
 
             if (IterativeCollisionSphereCast(lastHeadPosition, headCollider.radius, headCollider.transform.position + rigidBodyMovement - lastHeadPosition, defaultPrecision, out finalPosition, false))
             {
-                rigidBodyMovement = finalPosition - lastHeadPosition;
+                // Tracked/physics movement is already reflected in the current head.
+                // Correct only the remaining error; using the previous head re-applies
+                // that movement and can trigger the full-frame anti-clipping rewind.
+                rigidBodyMovement = finalPosition - headCollider.transform.position;
                 //last check to make sure the head won't phase through geometry
                 if (Physics.Raycast(lastHeadPosition, headCollider.transform.position - lastHeadPosition + rigidBodyMovement, out hitInfo, (headCollider.transform.position - lastHeadPosition + rigidBodyMovement).magnitude + headCollider.radius * defaultPrecision * 0.999f, locomotionEnabledLayers.value, QueryTriggerInteraction.Ignore))
                 {

@@ -15,12 +15,15 @@ public class Helicopter : MonoBehaviour
     public float swayPeriod = 3f;
 
     [SerializeField] BoxCollider passengerCabin;
+    [Tooltip("Use geometry-only carry bounds in helicopter-local space, independently of the shop trigger.")]
+    [SerializeField] bool useInteriorCarryBounds;
+    [SerializeField] Bounds interiorCarryBounds;
     [Tooltip("Extra height above the cabin for an existing passenger's small jumps, in world meters.")]
     [SerializeField, Min(0f)] float passengerJumpHeadroom = 1f;
     [Tooltip("Maximum rise from exterior support during a small hop, in meters.")]
-    [SerializeField, Min(0f)] float supportHopHeight = 0.9f;
+    [SerializeField, Min(0f)] float supportHopHeight = 1.2f;
     [Tooltip("Maximum time without exterior body/hand contact during a small hop.")]
-    [SerializeField, Min(0f)] float supportHopSeconds = 0.9f;
+    [SerializeField, Min(0f)] float supportHopSeconds = 1.2f;
 
     readonly HashSet<Collider> supportColliders = new HashSet<Collider>();
     bool supportCached, hasSupportBounds;
@@ -260,12 +263,25 @@ public class Helicopter : MonoBehaviour
 
     bool ContainsPassenger(Vector3 anchor, bool alreadyAboard)
     {
-        if (passengerCabin == null || !passengerCabin.enabled || !passengerCabin.gameObject.activeInHierarchy)
-            return false;
-        Vector3 point = passengerCabin.transform.InverseTransformPoint(anchor) - passengerCabin.center;
-        Vector3 half = passengerCabin.size * 0.5f;
+        Transform cabinSpace;
+        Vector3 center, half;
+        if (useInteriorCarryBounds)
+        {
+            cabinSpace = transform;
+            center = interiorCarryBounds.center;
+            half = interiorCarryBounds.extents;
+        }
+        else
+        {
+            if (passengerCabin == null || !passengerCabin.enabled || !passengerCabin.gameObject.activeInHierarchy)
+                return false;
+            cabinSpace = passengerCabin.transform;
+            center = passengerCabin.center;
+            half = passengerCabin.size * 0.5f;
+        }
+        Vector3 point = cabinSpace.InverseTransformPoint(anchor) - center;
         float extraHeight = alreadyAboard
-            ? passengerJumpHeadroom / Mathf.Max(0.0001f, Mathf.Abs(passengerCabin.transform.lossyScale.y)) : 0f;
+            ? passengerJumpHeadroom / Mathf.Max(0.0001f, Mathf.Abs(cabinSpace.lossyScale.y)) : 0f;
         // No horizontal expansion: walking/jumping out of a door releases carry.
         return Mathf.Abs(point.x) <= half.x && Mathf.Abs(point.z) <= half.z
             && point.y >= -half.y && point.y <= half.y + extraHeight;

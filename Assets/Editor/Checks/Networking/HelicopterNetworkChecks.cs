@@ -164,6 +164,8 @@ public static class HelicopterNetworkChecks
                     Playback(owner, desktop, latency);
                     Playback(owner, desktop, latency, 1);
                     if (!desktop) Playback(owner, false, latency, 2);
+                    Playback(owner, desktop, latency, 3);
+                    Playback(owner, desktop, latency, 4);
                 }
             Codec();
             Debug.Log("HelicopterNetworkChecks: ALL PASSED (" + checks + " assertions; simulated peers, actual Photon stream and codec)");
@@ -176,18 +178,33 @@ public static class HelicopterNetworkChecks
         }
     }
 
-    // support: 0 = cabin volume, 1 = body on roof, 2 = one VR hand with body outside roof.
+    static float ConfigureInterior(Peer sender, Peer receiver, Rig rig, bool desktop, int support)
+    {
+        var authored = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Photon/PhotonHelicopter.prefab").GetComponent<Helicopter>();
+        Bounds bounds = Get<Bounds>(authored, "interiorCarryBounds");
+        foreach (var peer in new[] { sender, receiver })
+        {
+            Set(peer.cabin, "useInteriorCarryBounds", true);
+            Set(peer.cabin, "interiorCarryBounds", bounds);
+        }
+        Vector3 anchor = desktop ? rig.desktop.PassengerAnchor : rig.vr.bodyMidpoint.position;
+        rig.Move(new Vector3(0, 1.55f, support == 3 ? .9f : 5.85f) - anchor);
+        return rig.head.position.y;
+    }
+
+    // support: 0 = cabin, 1 = roof, 2 = hand, 3/4 = hops across former cabin end boundaries.
     static void Playback(Actor owner, bool desktop, double latency, int support = 0)
     {
         using var rig = new Rig(desktop);
         using var sender = new Peer(owner, true);
         using var receiver = new Peer(owner, false);
         float minimumHead = rig.headHeight;
-        if (support != 0)
+        if (support == 1 || support == 2)
         {
             rig.Move(new Vector3(support == 2 ? 2.2f : 0, desktop ? 3.01f : 3.51f, 0) - rig.player.transform.position);
             minimumHead = rig.head.position.y;
         }
+        if (support >= 3) minimumHead = ConfigureInterior(sender, receiver, rig, desktop, support);
         receiver.cabin.transform.position = Vector3.right * 100;
         Physics.SyncTransforms();
         Set(sender.avatar, "headSource", rig.head); Set(sender.avatar, "lHandSource", rig.left); Set(sender.avatar, "rHandSource", rig.right);
@@ -201,6 +218,7 @@ public static class HelicopterNetworkChecks
         double lastSent = 0;
         float worstDeficit = 0f;
         float previousJump = 0f;
+        float previousTravel = 0f;
         for (int step = 0; step <= 1200; step++)
         {
             double t = step / 120d, now = 100d + t;
@@ -213,10 +231,15 @@ public static class HelicopterNetworkChecks
                     rig.vr.wasLeftHandTouching ? sender.roof : null, rig.vr.wasRightHandTouching ? sender.roof : null);
             }
             sender.cabin.MoveCabin(new Vector3(0f, (float)t * 3f, 0f), Quaternion.Euler(2f * Mathf.Sin((float)t), 12f, 2f), true);
-            float hopDuration = support == 1 ? .85f : .6f;
-            float hopHeight = support == 1 ? .8f : .35f;
+            float hopDuration = support == 1 ? 1.1f : .6f;
+            float hopHeight = support == 1 ? 1.1f : .35f;
             float jump = support != 2 && t >= 2 && t <= 2 + hopDuration ? hopHeight * Mathf.Sin((float)(t - 2) / hopDuration * Mathf.PI) : 0f;
             rig.Move(Vector3.up * (jump - previousJump)); previousJump = jump;
+            if (support >= 3)
+            {
+                float travel = .45f * Mathf.Sin((float)t * 2f);
+                rig.Move(sender.cabin.transform.forward * (travel - previousTravel)); previousTravel = travel;
+            }
             sender.cabin.RefreshPassenger();
             if (step % 6 == 0)
             {
@@ -316,6 +339,11 @@ public static class HelicopterNetworkChecks
         Set(sender.cabin, "releasedFrame", -1);
         if (rig.vr != null) { rig.vr.wasLeftHandTouching = rig.vr.wasRightHandTouching = false; sender.cabin.ReportHandSupport(rig.player.transform, null, null); }
         rig.Move(sender.cabin.transform.position + Vector3.up * (desktop ? 0.05f : 0.6f) - rig.player.transform.position);
+        if (support >= 3)
+        {
+            Vector3 anchor = desktop ? rig.desktop.PassengerAnchor : rig.vr.bodyMidpoint.position;
+            rig.Move(sender.cabin.transform.TransformPoint(new Vector3(0, 1.55f, 3.473f)) - anchor);
+        }
         sender.cabin.MoveCabin(Vector3.up * 30f, Quaternion.identity, true);
         object[] boarded = Capture(sender.avatar);
         Check(((PosePacket)boarded[0]).CabinArrival == 1, "Reboarding restores passenger packet");
@@ -384,6 +412,7 @@ public static class HelicopterNetworkChecks
             PumpUntil(a, b, () => a.InRoom && b.InRoom && b.CurrentRoom.PlayerCount == 2, "join test peers");
             CloudPlayback(a, b, false);
             CloudPlayback(a, b, false, 2);
+            CloudPlayback(a, b, false, 3);
 
             // Real server master change, followed by rejoining with a new actor ID.
             a.Disconnect();
@@ -394,6 +423,7 @@ public static class HelicopterNetworkChecks
             PumpUntil(a, b, () => a.InRoom && b.CurrentRoom.PlayerCount == 2, "restore two peers");
             CloudPlayback(a, b, true);
             CloudPlayback(a, b, true, 1);
+            CloudPlayback(a, b, true, 4);
             Debug.Log("HelicopterNetworkChecks CLOUD: ALL PASSED (two live UDP clients, VR then desktop, real server host transfer/rejoin; production capture/codec/receive/render)");
         }
         finally
@@ -427,11 +457,12 @@ public static class HelicopterNetworkChecks
         using var sender = new Peer(owner, true);
         using var receiver = new Peer(owner, false);
         float minimumHead = rig.headHeight;
-        if (support != 0)
+        if (support == 1 || support == 2)
         {
             rig.Move(new Vector3(support == 2 ? 2.2f : 0, desktop ? 3.01f : 3.51f, 0) - rig.player.transform.position);
             minimumHead = rig.head.position.y;
         }
+        if (support >= 3) minimumHead = ConfigureInterior(sender, receiver, rig, desktop, support);
         receiver.cabin.transform.position = Vector3.right * 100;
         Physics.SyncTransforms();
         PhotonNetwork.NetworkingClient.CurrentRoom = b.CurrentRoom;
@@ -459,6 +490,7 @@ public static class HelicopterNetworkChecks
             var timer = System.Diagnostics.Stopwatch.StartNew();
             double nextSend = 0;
             float previousJump = 0;
+            float previousTravel = 0;
             while (timer.Elapsed.TotalSeconds < 7)
             {
                 float t = (float)timer.Elapsed.TotalSeconds;
@@ -469,8 +501,14 @@ public static class HelicopterNetworkChecks
                     sender.cabin.ReportHandSupport(rig.player.transform, sender.roof, null);
                 }
                 sender.cabin.MoveCabin(Vector3.up * (t * 3f), Quaternion.Euler(1f, 12f, 2f), true);
-                float jump = support == 1 && t >= 2 && t <= 2.85f ? .8f * Mathf.Sin((t - 2) / .85f * Mathf.PI) : 0;
+                float jump = support == 1 && t >= 2 && t <= 3.1f ? 1.1f * Mathf.Sin((t - 2) / 1.1f * Mathf.PI) : 0;
+                if (support >= 3 && t >= 2 && t <= 2.6f) jump = .35f * Mathf.Sin((t - 2) / .6f * Mathf.PI);
                 rig.Move(Vector3.up * (jump - previousJump)); previousJump = jump;
+                if (support >= 3)
+                {
+                    float travel = .45f * Mathf.Sin(t * 2);
+                    rig.Move(sender.cabin.transform.forward * (travel - previousTravel)); previousTravel = travel;
+                }
                 sender.cabin.RefreshPassenger();
                 if (t >= nextSend)
                 {

@@ -126,16 +126,20 @@ public static class HelicopterSupportChecks
         Set(f.helicopter, "lastSupportTime", Time.timeAsDouble - .8d);
         f.helicopter.RefreshPassenger();
         Check(f.helicopter.HasLocalPassenger, "Expanded allowance carries 0.85 m hop at 0.8 seconds");
-        Set(f.helicopter, "lastSupportTime", Time.timeAsDouble - .95d);
+        f.Move(Vector3.up * .25f);
+        Set(f.helicopter, "lastSupportTime", Time.timeAsDouble - 1.1d);
+        f.helicopter.RefreshPassenger();
+        Check(f.helicopter.HasLocalPassenger, "Expanded allowance carries 1.1 m hop at 1.1 seconds");
+        Set(f.helicopter, "lastSupportTime", Time.timeAsDouble - 1.25d);
         f.helicopter.RefreshPassenger();
         Check(!f.helicopter.HasLocalPassenger, "Hop timeout cannot attach indefinitely");
 
         f.Place(new Vector3(0, desktop ? 7.11f : 7.61f, 0));
         f.helicopter.RefreshPassenger();
-        f.Move(Vector3.up * 1.05f); f.helicopter.RefreshPassenger();
+        f.Move(Vector3.up * 1.35f); f.helicopter.RefreshPassenger();
         Check(!f.helicopter.HasLocalPassenger, "Large exterior jump releases");
         f.Place(new Vector3(0, desktop ? 7.11f : 7.61f, 0)); f.helicopter.RefreshPassenger();
-        f.Move(new Vector3(3f, .3f, 0)); f.helicopter.RefreshPassenger();
+        f.Move(new Vector3(3f, 1.1f, 0)); f.helicopter.RefreshPassenger();
         Check(!f.helicopter.HasLocalPassenger, "Leaving roof edge releases immediately even during hop");
         Vector3 outside = f.player.transform.position;
         f.helicopter.MoveCabin(Vector3.up * 4.2f, Quaternion.identity, true);
@@ -251,8 +255,8 @@ public static class HelicopterSupportChecks
         int surfaces = 0;
         try
         {
-            Check(Mathf.Approximately(Get<float>(helicopter, "supportHopHeight"), .9f)
-                && Mathf.Approximately(Get<float>(helicopter, "supportHopSeconds"), .9f), "Authored prefab uses 0.9 m / 0.9 second exterior allowance");
+            Check(Mathf.Approximately(Get<float>(helicopter, "supportHopHeight"), 1.2f)
+                && Mathf.Approximately(Get<float>(helicopter, "supportHopSeconds"), 1.2f), "Authored prefab uses 1.2 m / 1.2 second exterior allowance");
             Set(f.manager, "helicopter", helicopter);
             Physics.SyncTransforms();
             foreach (Collider collider in go.GetComponentsInChildren<Collider>())
