@@ -102,7 +102,8 @@ public sealed class DuckzAnalytics : MonoBehaviour
         int platform = settings.Platforms.IndexOf(Application.platform);
         if (platform < 0 || string.IsNullOrEmpty(settings.GetGameKey(platform)) || string.IsNullOrEmpty(settings.GetSecretKey(platform)))
         {
-            Debug.LogWarning("Duck Rails analytics disabled: configure GameAnalytics keys for " + Application.platform);
+            if (DuckzLog.AllowWarning(out var notice))
+                notice.Write("Duck Rails analytics disabled: configure GameAnalytics keys for " + Application.platform);
             return;
         }
         if (FindAnyObjectByType<GameAnalytics>() == null)
@@ -121,7 +122,9 @@ public sealed class DuckzAnalytics : MonoBehaviour
     static bool Preview(string message)
     {
         if (!Application.isEditor) return false;
+#if UNITY_EDITOR
         if (GameAnalytics.SettingsGA.InfoLogEditor) Debug.Log("[Duck Rails Analytics preview] " + message);
+#endif
         return true;
     }
 

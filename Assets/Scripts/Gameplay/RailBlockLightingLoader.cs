@@ -161,6 +161,7 @@ public sealed class RailBlockLightingLoader : MonoBehaviour
     {
         owner.Ready = false;
         owner.Failure = message;
-        Debug.LogError("Block lighting: " + message, owner);
+        if (DuckzLog.AllowError(out var notice, owner.lightingScene))
+            notice.Write("Block lighting: " + message, owner);
     }
 }

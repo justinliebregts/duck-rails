@@ -49,16 +49,10 @@ public class DuckzBuildWindow : EditorWindow
 {
     const string OutputFolderPref = "DuckzBuild.OutputFolder";
     const string DevelopmentPref = "DuckzBuild.Development";
-    // EditorPrefs live in this PC's registry, never in the project.
-    const string KeystorePasswordPref = "DuckzBuild.KeystorePassword";
-    const string Keystore = "user.keystore";
-    // The store listing was first uploaded with Unity's debug key, so every update must keep using it.
-    const string KeyAlias = "androiddebugkey";
 
     string version;
     string outputFolder;
     bool development;
-    string keystorePassword;
 
     [MenuItem("Tools/DuckZ/Build/Open Build Window")]
     static void Open() => GetWindow<DuckzBuildWindow>("DuckZ Build");
@@ -68,7 +62,6 @@ public class DuckzBuildWindow : EditorWindow
         version = PlayerSettings.bundleVersion;
         outputFolder = EditorPrefs.GetString(OutputFolderPref, @"X:\Work\builds\duckz");
         development = EditorPrefs.GetBool(DevelopmentPref, false);
-        keystorePassword = EditorPrefs.GetString(KeystorePasswordPref, "");
     }
 
     static bool IsAndroid => EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android;
@@ -97,20 +90,26 @@ public class DuckzBuildWindow : EditorWindow
             }
         }
         development = EditorGUILayout.Toggle("Development Build", development);
-        if (IsAndroid)
-            keystorePassword = EditorGUILayout.PasswordField("Keystore Password", keystorePassword);
         if (EditorGUI.EndChangeCheck())
         {
             EditorPrefs.SetString(OutputFolderPref, outputFolder);
             EditorPrefs.SetBool(DevelopmentPref, development);
-            EditorPrefs.SetString(KeystorePasswordPref, keystorePassword);
         }
 
-        bool signable = !IsAndroid || (File.Exists(Keystore) && !string.IsNullOrEmpty(keystorePassword));
-        if (IsAndroid && !File.Exists(Keystore))
-            EditorGUILayout.HelpBox($"{Keystore} is missing from the project folder.", MessageType.Error);
-        else if (!signable)
-            EditorGUILayout.HelpBox("Enter the keystore password (remembered on this PC only).", MessageType.Warning);
+        if (IsAndroid)
+        {
+            using (new EditorGUI.DisabledScope(true))
+            {
+                EditorGUILayout.TextField("Keystore", PlayerSettings.Android.keystoreName);
+                EditorGUILayout.TextField("Key Alias", PlayerSettings.Android.keyaliasName);
+            }
+            PlayerSettings.Android.keystorePass = EditorGUILayout.PasswordField("Keystore Password", PlayerSettings.Android.keystorePass);
+            PlayerSettings.Android.keyaliasPass = EditorGUILayout.PasswordField("Key Password", PlayerSettings.Android.keyaliasPass);
+        }
+        string signingError = IsAndroid ? GetSigningError() : null;
+        bool signable = signingError == null;
+        if (!signable)
+            EditorGUILayout.HelpBox(signingError, MessageType.Error);
 
         EditorGUILayout.Space();
         using (new EditorGUI.DisabledScope(!valid || !signable || string.IsNullOrWhiteSpace(outputFolder)))
@@ -120,8 +119,29 @@ public class DuckzBuildWindow : EditorWindow
         }
     }
 
+    public static string GetSigningError()
+    {
+        if (!PlayerSettings.Android.useCustomKeystore || string.IsNullOrWhiteSpace(PlayerSettings.Android.keystoreName))
+            return "Select a custom keystore in Player Settings > Android > Publishing Settings.";
+        string keystore = PlayerSettings.Android.keystoreName;
+        string path = Path.IsPathRooted(keystore) ? keystore : Path.Combine(Path.GetDirectoryName(Application.dataPath), keystore);
+        if (!File.Exists(path))
+            return $"Configured keystore is missing: {path}";
+        if (string.IsNullOrWhiteSpace(PlayerSettings.Android.keyaliasName))
+            return "Select a key alias in Player Settings > Android > Publishing Settings.";
+        if (string.IsNullOrEmpty(PlayerSettings.Android.keystorePass) || string.IsNullOrEmpty(PlayerSettings.Android.keyaliasPass))
+            return "Enter both signing passwords (kept for this Unity session only).";
+        return null;
+    }
+
     void Build(int major, int minor, int patch)
     {
+        string signingError = IsAndroid ? GetSigningError() : null;
+        if (signingError != null)
+        {
+            Debug.LogError("DuckZ Build: " + signingError);
+            return;
+        }
         // PackageCache copies of OVRCameraRig revert when packages refresh, so re-apply before building.
         // A fresh patch forces a recompile, which cannot finish in the middle of this build.
         if (MetaSdkCameraRigTrackingBypass.EnsurePatched())
@@ -135,14 +155,6 @@ public class DuckzBuildWindow : EditorWindow
         }
 
         PlayerSettings.bundleVersion = version.Trim();
-        if (IsAndroid)
-        {
-            PlayerSettings.Android.useCustomKeystore = true;
-            PlayerSettings.Android.keystoreName = Path.GetFullPath(Keystore);
-            PlayerSettings.Android.keyaliasName = KeyAlias;
-            PlayerSettings.Android.keystorePass = keystorePassword;
-            PlayerSettings.Android.keyaliasPass = keystorePassword;
-        }
         AssetDatabase.SaveAssets();
 
         string[] scenes = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();

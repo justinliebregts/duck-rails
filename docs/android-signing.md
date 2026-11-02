@@ -1,0 +1,33 @@
+# Android signing
+
+The local Duck Rails signing key is stored in `UserSettings/AndroidSigning/duck-rails.keystore`, with alias `duckrails`. The keystore and key share a generated password stored in `UserSettings/AndroidSigning/password.txt`. These files are excluded from Git. Keep a secure backup of both files; future updates signed with this identity require the same key.
+
+In Unity, open **Project Settings > Player > Android > Publishing Settings**, enable **Custom Keystore**, select that keystore, enter the password, select `duckrails`, and enter the same password for the key. Passwords must be entered again after restarting Unity.
+
+The inherited **Tools > DuckZ > Build > Open Build Window** now reads this configured keystore and alias instead of hard-coding `user.keystore` / `androiddebugkey`. Its two password fields update Unity's session-only signing credentials. It no longer reads or writes the old shared Duckz password preference, and building preserves the selected signing identity. Output folder and filename conventions are unchanged.
+
+The key was generated with Unity 6000.3.24f1's bundled OpenJDK keytool using JKS, RSA 2048, SHA256withRSA, and a 10,000-day validity period. This is a new Duck Rails signing identity; compatibility with any previously distributed APK's signature has not been established.
+
+Validated November 1, 2026: keytool inspected the certificate and successfully generated a certificate request using the private key and its password. Unity MCP confirmed the Duck Rails project, selected the new keystore and alias, and confirmed both passwords were loaded for the current editor session. Git ignore checks passed for the keystore and password file. A signed APK build has not been run as part of this setup.
+
+Build-window follow-up validation: Unity compiled the updated tool and executed its actual signing preflight. The configured key passed; a missing configured file and a missing key password were each blocked. Settings were restored and the open build window repainted. The required backend diagnostic query failed with DNS resolution unavailable; local report summaries were checked, and no reports were resolved for this change.
+
+## Runtime logging build gate — November 2, 2026
+
+The next build attempt reached `LoggingPolicyBuildCheck` and was blocked by three direct log calls. The analytics configuration warning now uses `DuckzLog.AllowWarning`, and block-lighting failures use `DuckzLog.AllowError` with the companion scene as a stable detail key. Severity, renderer context and failure state are preserved. Analytics preview logging is explicitly compiled only under `UNITY_EDITOR`, retaining the Info Log Editor toggle without including that log in player builds. The existing policy rules pass across all runtime scripts, including through Unity's actual prebuild check. A full APK build remains unverified. The backend diagnostic inbox was unavailable due to DNS resolution failure; local report summaries were checked and no reports were resolved.
+
+## Meta upload permissions — November 2, 2026
+
+Inspected `X:/Work/builds/duck-rails/duckz_0.0.1_1_dev.apk` with Unity's bundled `aapt dump permissions`, and traced its permissions through the Gradle launcher manifest-merger report. `READ_PHONE_STATE`, `WRITE_EXTERNAL_STORAGE` and `READ_EXTERNAL_STORAGE` are compatibility permissions implied because `com.meta.agenticxr` has no target SDK declaration (the merger reports targetSdkVersion < 4). They originate from Meta's `XrApiLayer_METAX_operator_unity_android.aar`, not Duck Rails gameplay. The same AAR explicitly adds `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_MEDIA_PROJECTION` for development screen capture.
+
+The installed SDK's `MetaXROperatorBuildProcessor` includes that AAR only for Development Builds and excludes it for release builds. Justin confirmed that development-only permissions may remain. Temporary removal rules used to validate the diagnosis were reverted; no permission suppression is committed to the project manifest. Turn off **Development Build** for the next upload, then inspect the new APK to confirm those five permissions are absent. A release APK and successful upload have not yet been verified.
+
+Other permissions in the inspected APK: `INTERNET` and `ACCESS_NETWORK_STATE` for online services, `RECORD_AUDIO` for voice, `MODIFY_AUDIO_SETTINGS` for the audio stack, legacy `BLUETOOTH` added by Unity's microphone support, and Meta `HAND_TRACKING` / `USE_ANCHOR_API` enabled by Oculus project settings. `MODIFY_AUDIO_SETTINGS` needs review justification under Meta's published policy; Bluetooth and spatial-anchor support are candidates for a separate necessity check, not established causes of this upload rejection. No camera, location, contacts or SMS permissions were requested. `BIND_JOB_SERVICE` appears as a service access restriction, not a requested app permission.
+
+References: [Android implicit manifest permissions](https://developer.android.com/build/manage-manifests), [Meta prohibited permissions](https://developers.meta.com/vr/resources/permissions-prohibited/), [Meta permissions requiring review](https://developers.meta.com/vr/resources/permissions-review-required/). The required diagnostic inbox query was unavailable due to DNS failure; local report summaries were checked and left unchanged.
+
+## Mixed-architecture upload warning — November 2, 2026
+
+The inspected development APK's executable libraries under `lib/` are all `arm64-v8a`; `aapt dump badging` reports only that native architecture, PlayerSettings targets ARM64, and both generated Gradle modules filter to `arm64-v8a`. However, the APK also contains 14 actual 32-bit ELF libraries under `assets/lib/armeabi-v7a/`. Checking the source AAR archives attributes 13 to Meta's `OVRPlugin.aar` and one (`libxplat_folly_logging_logging.so`) to the development-only Operator AAR. Together these add 1,634,884 bytes unpacked / 915,621 bytes compressed in the APK (about 1.56 / 0.87 MiB).
+
+Because these are ordinary assets rather than Android JNI library entries, the ARM64 ABI filter does not remove them. This explains Meta's size warning without implying that the Unity game was compiled for ARMv7. A release build should omit the Operator copy, but the 13 OVRPlugin assets are expected to remain. No architecture or SDK packaging changes were made; this is a size warning, separate from the prohibited-permission upload rejection. Any future exclusion should target the 32-bit asset directory only and be verified against a new APK and headset launch.
