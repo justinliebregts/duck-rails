@@ -5,7 +5,7 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 ## Art direction deliverables
 
 - [x] November 1: install the first Compound baked-lighting/probe sample with UV mesh copies, scene-owned lighting settings, subtle fog and a baked reflection probe. Existing geometry/binding checks pass; see `docs/subway-compound.md` for authoring limits.
-- [ ] Review Compound lighting and probe transitions on standalone Quest with twelve players; establish measured frame-time/memory budgets before extending the recipe to expedition blocks.
+- [ ] Review Compound lighting and probe transitions on standalone Quest with twelve players; establish measured frame-time/memory budgets before expanding lighting density. Small expedition-block samples are already implemented separately.
 
 - [x] November 1: create and install the modular subway compound blockout with rough pixel textures, open store, shallow fountain, sealed stairs and retained session controls. Editor geometry checks and solo DuckPlayer departure passed. See [subway compound](subway-compound.md).
 - [ ] Review subway layout/lighting in Quest 3 and with twelve compound players; complete finished art, ambience, commerce presentation and performance profiling. The blockout does not close these acceptance items.
@@ -201,6 +201,12 @@ Record device, client count, network conditions, and reproducible failures. Test
 
 ## Week 3 — full expedition and repeatable content workflow
 
+Lighting reference: [bake/export workflow, probes, fog, troubleshooting and validation](block-lighting.md). November 1 user review reports that the lighting works; target-headset performance remains a separate acceptance item.
+
+- [x] November 1 StartingStation baked-lighting workflow: dedicated bake scene, prefab renderer bindings, additive probe-only companion, translation and unload/reload proof in Play Mode. Updated Week 3 checks pass (463); see `docs/block-lighting.md`.
+- [x] November 1 full catalogue lighting samples: four baked lights on each of twelve scavenging blocks plus finale (52), exported lightmaps/probes, route-wide readiness and finale probe relocation. Three offline routes cover every block with binding/sample/teardown checks; authenticated single-editor Expedition also passes. See `docs/block-lighting.md`.
+- [ ] Profile complete-route lighting load/tessellation, texture memory and moving-subject quality on Quest; validate lighting during multi-client late join and repeat expeditions before increasing lighting density.
+
 - [x] October 31 fixed starting station: separate editable prefab, centered train spawn, five randomized stops retained, continuous station/route track and updated bridge distance. Unity compilation and 462 Week 3 checks passed, plus assembled-scene inspection. See `week3-session.md`.
 - [ ] Validate station departure, boarding and late joining across real clients and headsets. The solo sandbox launcher failed before entering gameplay; editor evidence does not close this acceptance item.
 
@@ -210,7 +216,7 @@ Record device, client count, network conditions, and reproducible failures. Test
 
 Deliverable: a complete start-to-finish run assembled from authored blocks.
 
-Confirmed scope: twelve gray-box locations, five distinct randomized stops plus the bridge finale, three authored spawn variations per location, roughly twenty seconds or more between encounter areas, and a ten-minute typical-run target. Separate Expedition scene; keep all selected blocks loaded, including collision/gameplay. Internal track bends return to the common connection. Lighting is deferred. See [week3-session.md](week3-session.md) for implementation and evidence; desktop checks do not close headset or unfamiliar-player acceptance.
+Confirmed scope: twelve gray-box locations, five distinct randomized stops plus the bridge finale, three authored spawn variations per location, roughly twenty seconds or more between encounter areas, and a ten-minute typical-run target. Separate Expedition scene; keep all selected blocks loaded, including collision/gameplay. Internal track bends return to the common connection. Small baked-lighting samples now cover the catalogue; final lighting remains pending. See [week3-session.md](week3-session.md) for implementation and evidence; desktop checks do not close headset or unfamiliar-player acceptance.
 
 - [x] Define a stable block format: geometry, graph, track anchors, stop marker, spawn candidates, identifiers, and route tags.
 - [x] Create a repeatable editor template, invoke existing bake tooling, and validate missing graph/markers and track alignment.

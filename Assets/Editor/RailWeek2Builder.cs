@@ -45,10 +45,10 @@ public static class RailWeek2Builder
         Box("Ravine", env, new Vector3(0, -12, 565), new Vector3(100, 1, 30), steel);
         foreach (float x in new[] { -1.5f, 1.5f })
         {
-            Box("Approach rail", env, new Vector3(x, .04f, 275), new Vector3(.15f, .08f, 550), steel);
-            Box("Exit rail", env, new Vector3(x, .04f, 680), new Vector3(.15f, .08f, 200), steel);
+            UnityEngine.Object.DestroyImmediate(Box("Approach rail", env, new Vector3(x, .04f, 275), new Vector3(.15f, .08f, 550), steel).GetComponent<Collider>());
+            UnityEngine.Object.DestroyImmediate(Box("Exit rail", env, new Vector3(x, .04f, 680), new Vector3(.15f, .08f, 200), steel).GetComponent<Collider>());
         }
-        for (int z = 70; z < 550; z += 8) Box("Sleeper", env, new Vector3(0, .02f, z), new Vector3(3.8f, .04f, .3f), steel);
+        for (int z = 70; z < 550; z += 8) UnityEngine.Object.DestroyImmediate(Box("Sleeper", env, new Vector3(0, .02f, z), new Vector3(3.8f, .04f, .3f), steel).GetComponent<Collider>());
         // One authored depot, with a continuous side service path to the bridge controls.
         Box("Depot floor", env, new Vector3(17, .1f, 180), new Vector3(24, .2f, 35), steel);
         Box("Depot back", env, new Vector3(28, 2, 180), new Vector3(.4f, 4, 35), ground);

@@ -66,7 +66,8 @@ public static class RailWeek3Checks
         Check(true, "All assembled cells and edges preserve indexing and disconnected components");
         foreach (var tuple in selected.Select((b, i) => (b, i)))
             Check(combined.FindNearestGroundNode(tuple.b.variations[0].enemies[0].position + offsets[tuple.i], 2) >= 0, tuple.b.id + " translated spawn resolves in assembled graph");
-        Check(EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => Path.GetFileNameWithoutExtension(s.path)).SequenceEqual(new[] { "Login", "Compound", "Expedition" }), "Separate Expedition included in build");
+        Check(EditorBuildSettings.scenes.Where(s => s.enabled).Take(3).Select(s => Path.GetFileNameWithoutExtension(s.path)).SequenceEqual(new[] { "Login", "Compound", "Expedition" }), "Gameplay scenes retain Login, Compound and Expedition build indices");
+        Check(EditorBuildSettings.scenes.Any(s => s.enabled && s.path == RailStationLightingAuthoring.PayloadScene), "StartingStation lighting companion included in build");
         RailSessionRules.EvaluateTrain(new object[] { 0d, 0f, 4f, 4f }, 2.5f, 40, out var distance, out var speed, out var fuel);
         Check(Mathf.Abs(distance - 54) < .001f && speed == 0 && fuel == 0, "One coal chunk buys 50 powered metres plus four metres of exhaustion coast");
         CheckStartingStation();

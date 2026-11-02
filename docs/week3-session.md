@@ -4,15 +4,19 @@ November 1 bridge change: continuous holding now advances lowering; release paus
 
 ## Scope and setup
 
-This phase implements the approved twelve-location gray-box catalogue, five distinct randomized stops plus the existing bridge finale, authored spawn variations, consistent prefab connections, internal bends, a separate Expedition scene, and renewable coal carriers. Lighting remains deferred. The original train controls, item interactions, revive flow and bridge ending are retained.
+This phase implements the approved twelve-location gray-box catalogue, five distinct randomized stops plus the existing bridge finale, authored spawn variations, consistent prefab connections, internal bends, a separate Expedition scene, and renewable coal carriers. Small baked-lighting/probe samples now cover the station and catalogue; final lighting remains pending. The original train controls, item interactions, revive flow and bridge ending are retained.
 
-Open `Assets/Scenes/Login.unity` and enter Play normally. Private staging and public boarding use Compound; departures load Expedition. Private runs keep the same Photon room/code across both scenes. Build settings contain Login, Compound and Expedition. Network protocol is `session-v9`; all clients must use this version.
+Open `Assets/Scenes/Login.unity` and enter Play normally. Private staging and public boarding use Compound; departures load Expedition. Private runs keep the same Photon room/code across both scenes. Build settings contain Login, Compound, Expedition and the additive lighting companions. Network protocol is `session-v9`; all clients must use this version.
 
 `Assets/DuckRails/Blocks` contains Maintenance Depot, Convenience Store, Roadside Motel, Lumber Yard, Container Yard, Passenger Station, Farm Silos, Tunnel Works, Scrapyard, Lakeside Campground, Electrical Substation and Quarry. Each is an editable prefab, with a versioned stable ID, tags, graph asset, entry/exit/stop markers, three authored sets of six coal/six enemy candidate markers, and sampled track. Four locations bend gently left/right before returning to the centerline.
 
 ## Authoring contract
 
+November 1 track collision update: removed rail/sleeper colliders from StartingStation, all twelve scavenging prefabs, the finale prefab and Expedition's separate finale geometry (2,544 prefab components plus 102 scene components). Track meshes and baked-lighting bindings are retained. Ground, platforms, bridge deck and safety barriers still collide. Week 1/2/3 and station builders now create rails/sleepers without colliders; the subway tracks already did. All DuckRails prefabs, gameplay scenes and lighting authoring scenes were inspected with no remaining track rail/sleeper colliders. Evidence: `output/track-collision/validation.txt`.
+
 ### Fixed starting station — October 31, 2026
+
+November 1 lighting follow-up: the station and all thirteen block prefabs now reference exported baked lightmap bindings and probe-only additive companion scenes. Four baked lights per catalogue block add 52 sample fixtures. Three offline route rounds cover all twelve scavenging blocks; a normal authenticated single-editor Expedition also passed readiness/binding checks for all seven loaded lighting owners. Route readiness waits for the complete selected set and translates finale probes with its placement. See [block lighting authoring and validation](block-lighting.md) for bake menus, evidence and builder-regeneration limits. The prior deferred-lighting notes below describe the initial gray-box baseline; Quest/multiplayer lighting acceptance remains open.
 
 Every expedition now includes `Assets/DuckRails/StartingStation.prefab` before the five randomized scavenging blocks and bridge. It is outside the twelve-location catalogue and adds no coal/enemy spawns. The 160-metre station spans world Z=-10 to 150; distance zero remains world (0,1,70), centered on its track with ground under both ends of the train. The first random block now starts at Z=150. Train distance includes the remaining 80 metres of station track before the random route; bridge approach shortcuts and the curved-travel fixture account for this distance. Fuel tuning is unchanged.
 

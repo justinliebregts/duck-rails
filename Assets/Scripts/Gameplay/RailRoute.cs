@@ -19,7 +19,13 @@ public sealed class RailRoute : MonoBehaviour
     public RailExpedition expedition;
     public Game.AI.EnemyManager manager;
     public readonly List<RailBlock> Blocks = new List<RailBlock>();
-    public bool Ready { get; private set; }
+    bool geometryReady;
+    public bool Ready => geometryReady && (!Application.isPlaying || LightingReady());
+    bool LightingReady()
+    {
+        bool Lit(RailBlock block) { var lighting = block != null ? block.GetComponent<RailBakedBlockLighting>() : null; return lighting == null || lighting.Ready; }
+        return Lit(startingStation) && Lit(finale) && Blocks.All(Lit);
+    }
     public string LoadedRun { get; private set; }
     public RailRouteState Selection { get; private set; }
     public float FinaleStart { get; private set; }
@@ -46,8 +52,12 @@ public sealed class RailRoute : MonoBehaviour
     public bool EnsureReady()
     {
         if (!PhotonSession.OnTrain) return false;
+        // StartingStation is already placed in Expedition. Its additive probe payload must
+        // be ready before the normal route-ready gate admits gameplay/late joiners.
+        var stationLighting = startingStation != null ? startingStation.GetComponent<RailBakedBlockLighting>() : null;
+        if (stationLighting != null && !stationLighting.Ready) return false;
         string run = PhotonSession.RunId;
-        if (Ready && LoadedRun == run) return true;
+        if (geometryReady && LoadedRun == run) return Ready;
         string json = PhotonSession.Get(StateKey, "");
         var state = string.IsNullOrEmpty(json) ? null : JsonUtility.FromJson<RailRouteState>(json);
         if (state == null || state.run != run)
@@ -73,7 +83,7 @@ public sealed class RailRoute : MonoBehaviour
                 throw new InvalidOperationException("Incompatible block placement/variation.");
             z += asset.length;
         }
-        Ready = false;
+        geometryReady = false;
         foreach (var block in Blocks) if (block != null) Destroy(block.gameObject);
         Blocks.Clear(); var coal = new List<Transform>(); var enemies = new List<Transform>(); var gold = new List<Transform>();
         var graphs = new List<Game.AI.CrawlGraph>(); var offsets = new List<Vector3>();
@@ -103,7 +113,7 @@ public sealed class RailRoute : MonoBehaviour
         graph.RestrictToBounds(Blocks.Select(b => new Bounds(b.transform.position + b.enemyBounds.center, b.enemyBounds.size))
             .Concat(new[] { new Bounds(finaleRoot.position + finale.enemyBounds.center, finale.enemyBounds.size) }).ToArray());
         manager.SetGraph(graph);
-        LoadedRun = state.run; Selection = state; Ready = true;
+        LoadedRun = state.run; Selection = state; geometryReady = true;
     }
     public void Sample(float distance, out Vector3 position, out Quaternion rotation)
     {

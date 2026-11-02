@@ -58,6 +58,8 @@ Re-run using **Duck Rails > Compound > Validate Subway Blockout** and **Render S
 
 ### Compound lighting sample — November 1
 
+For the current cross-project workflow, bake/export commands, troubleshooting and asset ownership, use the [lighting workflow guide](block-lighting.md). This section records Compound-specific settings and iteration history.
+
 The first baked-lighting sample is scene-owned in `Assets/Scenes/Compound.unity`. Existing fixture positions and intensities are retained; the nine environment lights are now Baked, with baked shadows. Flashlight objects remain realtime. This is an initial art/workflow sample, not Quest performance acceptance or final darkness tuning.
 
 - Low cool ambient fill: RGB 0.075 / 0.085 / 0.11. Exponential-squared fog density 0.018, dark blue-gray fog color; ordinary fog does not create light shafts.
@@ -68,7 +70,7 @@ The first baked-lighting sample is scene-owned in `Assets/Scenes/Compound.unity`
 
 Use **Duck Rails > Compound > Lighting > Bake Sample** after moving static geometry or fixtures, and **Capture Sample** for fixed review views in `output/compound-lighting`. The apply command refuses to duplicate an installed sample. The original in-memory scene, including unsaved user changes, was backed up under `tmp/compound-lighting` before setup.
 
-**Authoring limitation:** do not rebuild Compound using the scene builder to iterate this sample. Whole-scene rebuilds replace these overrides and lighting settings; reapply the sample and rebake after a rebuild. Normal scene/prefab editing is supported, but moved geometry invalidates the bake. This has not yet established baked-data loading for randomized expedition prefabs.
+**Authoring limitation:** do not rebuild Compound using the scene builder to iterate this sample. Whole-scene rebuilds replace these overrides and lighting settings; reapply the sample and rebake after a rebuild. Normal scene/prefab editing is supported, but moved geometry invalidates the bake. Randomized expedition prefab loading was subsequently proven with the separate [lighting companion workflow](block-lighting.md).
 
 The existing 55 subway geometry/binding checks passed after setup. The completed bake binds all 269 URP Lit environment renderers to one 1024 x 1024 lightmap, with 342 baked probes and an assigned reflection cubemap. Probe sampling shows warm illumination inside Station Info and low cool illumination at arrival. Forward, information-nook and 0.5 m eye-line captures were visually inspected; see `output/compound-lighting/after-forward.png`, `after-info.png`, `after-low-eye.png` and `validation.txt`. This remains darker and geometrically simpler than the concept render.
 

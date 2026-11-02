@@ -8,6 +8,7 @@ Open `Assets/Scenes/Login.unity` and press Play for the DesktopPlayer session pr
 
 - [Game design](docs/game-design.md)
 - [Execution plan](docs/execution-plan.md)
+- [Lighting workflow: baking, probes, fog and prefab companions](docs/block-lighting.md)
 - [Authentication setup](docs/authentication-setup.md)
 
 The source Duckz project remains separate. Week 1 multi-client and headset acceptance are not implied by compilation or local checks.

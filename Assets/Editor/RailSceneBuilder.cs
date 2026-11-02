@@ -119,7 +119,7 @@ public static class RailSceneBuilder
         world.expedition = new GameObject("Expedition test block — rail-yard-test-v1");
         root = world.expedition.transform;
         Box("Track bed", root, new Vector3(0, -.4f, 2000), new Vector3(70, .8f, 4200), ground);
-        foreach (float x in new[] { -1.5f, 1.5f }) Box("Track rail", root, new Vector3(x, .05f, 2000), new Vector3(.15f, .1f, 4200), metal);
+        foreach (float x in new[] { -1.5f, 1.5f }) UnityEngine.Object.DestroyImmediate(Box("Track rail", root, new Vector3(x, .05f, 2000), new Vector3(.15f, .1f, 4200), metal).GetComponent<Collider>());
         for (int z = 40; z < 1200; z += 40)
             Box("Yard marker", root, new Vector3(12, 2, z), new Vector3(1, 4, 1), teal);
         var carriage = new GameObject("Moving carriage"); carriage.transform.SetParent(root); carriage.transform.position = new Vector3(0, 1, 70);

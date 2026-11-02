@@ -1,0 +1,25 @@
+PASS Proof starts without baked probes
+PASS Lighting ready: StartingStation(Clone) 
+PASS All prefab renderer lightmap indices and UV transforms restored
+PASS Companion loads native baked probes without geometry duplication
+PASS Platform lighting differs from dark boundary
+PASS Lighting ready: StartingStation(Clone) 
+PASS All prefab renderer lightmap indices and UV transforms restored
+PASS All prefab renderer lightmap indices and UV transforms restored
+PASS Two block instances retain independent probe payloads
+PASS Translated probe coefficients match at sample 0
+PASS Translated probe coefficients match at sample 1
+PASS Translated probe coefficients match at sample 2
+PASS Cleanup restores probe/scene counts 367/1
+PASS All prefab renderer lightmap indices and UV transforms restored
+PASS Remaining instance survives first-instance unload
+PASS Cleanup restores probe/scene counts 0/0
+PASS Lightmap registrations return to baseline after unload
+PASS Lighting ready: StartingStation(Clone) 
+PASS All prefab renderer lightmap indices and UV transforms restored
+PASS Replay loads exactly one fresh probe payload
+PASS Gameplay placement changes sampled light entering the station
+PASS Moving duck visual receives conventional probes
+PASS Cleanup restores probe/scene counts 0/0
+PASS Cleanup restores probe/scene counts 0/0
+PASS Completed offline Play Mode lifecycle/translation proof. No networking or headset-performance claim.

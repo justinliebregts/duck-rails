@@ -23,11 +23,13 @@ public static class RailStartingStationBuilder
             {
                 var t = new GameObject(name).transform; t.SetParent(root.transform, false); t.localPosition = position; return t;
             }
-            GameObject Box(string name, Vector3 position, Vector3 size, string material)
+            GameObject Box(string name, Vector3 position, Vector3 size, string material, bool collision = true)
             {
                 var go = GameObject.CreatePrimitive(PrimitiveType.Cube); go.name = name; go.layer = 6;
                 go.transform.SetParent(root.transform, false); go.transform.localPosition = position; go.transform.localScale = size;
-                go.GetComponent<Renderer>().sharedMaterial = Mat(material); return go;
+                go.GetComponent<Renderer>().sharedMaterial = Mat(material);
+                if (!collision) Object.DestroyImmediate(go.GetComponent<Collider>());
+                return go;
             }
             var block = root.AddComponent<RailBlock>();
             block.id = "starting-station-v1"; block.displayName = "Departure Station";
@@ -39,9 +41,9 @@ public static class RailStartingStationBuilder
             block.variations = Array.Empty<RailSpawnSet>();
             Box("Station ground", new Vector3(0, -.5f, 80), new Vector3(96, 1, 160), "Ground");
             foreach (float x in new[] { -1.5f, 1.5f })
-                Box("Track rail", new Vector3(x, .06f, 80), new Vector3(.12f, .12f, 160), "Metal");
+                Box("Track rail", new Vector3(x, .06f, 80), new Vector3(.12f, .12f, 160), "Metal", false);
             for (int z = 2; z < 160; z += 4)
-                Box("Sleeper", new Vector3(0, .02f, z), new Vector3(3.8f, .04f, .35f), "Metal");
+                Box("Sleeper", new Vector3(0, .02f, z), new Vector3(3.8f, .04f, .35f), "Metal", false);
             foreach (float side in new[] { -1f, 1f })
             {
                 Box("Boarding platform", new Vector3(side * 7, .4f, 80), new Vector3(8, .8f, 40), "Station");

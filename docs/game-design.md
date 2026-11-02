@@ -20,6 +20,8 @@ October 30 validation update: the [multiplayer stability pass](multiplayer-stabi
 
 ## Experience and tone — confirmed
 
+- November 1 track collision decision: track rails and sleepers are visual-only, with no colliders. Ground, platforms, bridge decks and safety barriers retain their physical collision.
+
 - November 1 lighting workflow: trial baked fixture illumination, light probes for moving subjects, subtle fog and a baked reflection probe in Compound before establishing expedition darkness/flashlight tuning. The first scene sample is installed; its intensities, probe layout and headset performance are provisional. See [subway compound](subway-compound.md).
 
 - November 1 compound direction: bank the outdoor fortified station alternative and develop the approved abandoned-subway-terminal refuge as a walkable, roughly textured blockout. Retain station information, platforms access and open supplies space around a broken shallow fountain. Side tracks are inaccessible but intended to be audible; stairs behind the arrival view lead toward the surface and are completely blocked with makeshift crates/panels. Use salvaged partitions, pixel textures and retrofitted cold work lights. See [subway compound](subway-compound.md) for implementation and validation limits.
@@ -61,9 +63,11 @@ Proposed pacing: a 12–18 minute expedition, approximately three scavenging sto
 
 Authentication source inspection (October 28, 2026): the Unity copy is in `X:\Work\duck-rails`; the separately deployed backend copy is in `X:\Work\duck-rails-web`, based on Gun Raiders Classic's simplified backend. The API base is `https://duckrails.gunraidersapi.com/api/v1/`. `Assets/Scripts/Login/GameSessionClient.cs` uses Meta registration and `Assets/Scripts/Photon/PhotonSession.cs` uses PUN over Realtime; `PhotonVoiceChat.cs` uses Photon Voice's PUN integration. See `docs/authentication-setup.md` for the verified contracts and remaining deployment checks. Other reuse capabilities above remain unverified.
 
+November 1 enemy expansion: each scavenging block has 4–6 enemies including minion, bomber, smasher and spider. A retained route seed randomizes counts, types and authored positions. Bridge activation adds 4–6 defenders; the starting station stays safe. See [mixed enemies](mixed-enemies.md).
+
 ## Train
 
-November 1 enemy expansion: each scavenging block has 4–6 enemies including minion, bomber, smasher and spider. A retained route seed randomizes counts, types and authored positions. Bridge activation adds 4–6 defenders; the starting station stays safe. See [mixed enemies](mixed-enemies.md).
+November 1 lighting implementation: StartingStation and all twelve scavenging blocks plus the bridge finale now have dedicated bake scenes and additive lighting companions loaded alongside their geometry. Each catalogue block has four sample baked lights. Translation-only probe placement, atlas rebinding, complete-route readiness and unload/reload have offline and authenticated single-editor Play Mode evidence; this does not establish headset performance or final art. See [block lighting](block-lighting.md).
 
 October 31 starting-station decision: every expedition begins at the midpoint of a fixed, editable train-station block before the five randomized scavenging blocks. The station is additional to the random block count and reserves space for a future store; store functionality is not part of this change.
 
@@ -157,7 +161,7 @@ October 31 authoring update: coal placements use reusable, editor-visible CoalSp
 - Prefab root is the track entry at ground height, unit scale, forward +Z. Exit returns to the centerline with forward +Z. Internal curves may go left/right and return to that connection.
 - Load the five selected blocks and finale together for the whole run. Keep collision and gameplay active. Rendering-only culling can be added if profiling warrants it; unloading is not part of this phase.
 - Coal-carrying enemies release coal on accepted hits. A cooldown-based recovery opportunity prevents permanent fuel exhaustion; exact thresholds are implementation defaults to tune.
-- Lighting and lightmap workflow are deferred until this gray-box phase is playable.
+- Lighting was initially deferred until the gray-box phase was playable. November 1: baked-lightmap and conventional-probe samples now cover Compound, StartingStation and the full catalogue; the user reports that lighting works. Follow the [lighting workflow](block-lighting.md). Final art and Quest performance acceptance remain pending.
 
 ### Block contract
 - Geometry, baked crawlgraph, track entry/exit anchors, and stopping position.

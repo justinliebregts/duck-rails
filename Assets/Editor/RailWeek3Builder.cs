@@ -271,8 +271,8 @@ public static class RailWeek3Builder
             Vector3 d = points[i] - points[i - 1], centre = (points[i] + points[i - 1]) * .5f;
             Quaternion rotation = Quaternion.LookRotation(d);
             foreach (float x in new[] { -1.5f, 1.5f })
-            { var rail = Box(parent, "Track rail", centre + rotation * Vector3.right * x + Vector3.up * .06f, new Vector3(.12f, .12f, d.magnitude + .02f), steel); rail.transform.localRotation = rotation; }
-            if (i % 2 == 0) { var sleeper = Box(parent, "Sleeper", centre + Vector3.up * .02f, new Vector3(3.8f, .04f, .35f), steel); sleeper.transform.localRotation = rotation; }
+            { var rail = Box(parent, "Track rail", centre + rotation * Vector3.right * x + Vector3.up * .06f, new Vector3(.12f, .12f, d.magnitude + .02f), steel); rail.transform.localRotation = rotation; Object.DestroyImmediate(rail.GetComponent<Collider>()); }
+            if (i % 2 == 0) { var sleeper = Box(parent, "Sleeper", centre + Vector3.up * .02f, new Vector3(3.8f, .04f, .35f), steel); sleeper.transform.localRotation = rotation; Object.DestroyImmediate(sleeper.GetComponent<Collider>()); }
         }
     }
     static GameObject Box(Transform parent, string name, Vector3 position, Vector3 size, Material material)
