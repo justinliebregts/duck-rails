@@ -191,6 +191,7 @@ public partial class NewPlayer : MonoBehaviour
 
         public void InitializeValues()
         {
+            ClearPassengerHandContacts();
             movementRenderCount = 0;
             if (velocityHistory == null || velocityHistory.Length != velocityHistorySize)
             {
@@ -253,7 +254,7 @@ public partial class NewPlayer : MonoBehaviour
           Vector3 headOffset = headCollider.transform.position - transform.position;
           headOffset.y = 0f;
           pos -= headOffset;
-          if (HelicopterManager.instance != null) HelicopterManager.instance.ReleasePassenger();
+          if (PassengerCabin != null) PassengerCabin.ReleasePassenger();
           // print("Warp: " + pos);
           transform.position = pos;
           rb.position = pos;
@@ -295,11 +296,70 @@ public partial class NewPlayer : MonoBehaviour
         public float PassengerRadius => bodyCollider.radius
             * Mathf.Max(Mathf.Abs(bodyCollider.transform.lossyScale.x), Mathf.Abs(bodyCollider.transform.lossyScale.z));
 
+        Helicopter PassengerCabin => RailTrain.Instance != null ? RailTrain.Instance.cabin
+            : HelicopterManager.instance != null ? HelicopterManager.instance.PassengerCabin : null;
+
         Collider leftPassengerSupport, rightPassengerSupport;
-        void CapturePassengerHandSupport(bool rightHand, RaycastHit hit) {
-          if (HelicopterManager.instance == null || !HelicopterManager.instance.IsSupportCollider(hit.collider)) return;
+        struct PassengerHandContact {
+          public Collider collider;
+          public Vector3 normal;
+          public int sample, frame;
+        }
+        PassengerHandContact leftPassengerContact, rightPassengerContact;
+
+        public void ClearPassengerHandContacts() {
+          leftPassengerSupport = rightPassengerSupport = null;
+          leftPassengerContact = rightPassengerContact = default;
+        }
+
+        void CapturePassengerHandSupport(bool rightHand, RaycastHit hit, int sample = -1) {
+          if (PassengerCabin == null || !PassengerCabin.OwnsSupport(hit.collider)) return;
           if (rightHand) rightPassengerSupport = hit.collider;
           else leftPassengerSupport = hit.collider;
+          ref PassengerHandContact contact = ref (rightHand ? ref rightPassengerContact : ref leftPassengerContact);
+          contact.collider = hit.collider;
+          contact.normal = hit.collider.transform.InverseTransformDirection(hit.normal);
+          contact.sample = sample;
+          contact.frame = Time.frameCount;
+        }
+
+        Collider ResolvePassengerHandSupport(bool rightHand, bool allowed, bool colliding) {
+          ref PassengerHandContact contact = ref (rightHand ? ref rightPassengerContact : ref leftPassengerContact);
+          Collider reported = rightHand ? rightPassengerSupport : leftPassengerSupport;
+          var manager = PassengerCabin;
+          if (!allowed || manager == null || contact.frame < Time.frameCount - 1
+              || !manager.OwnsSupport(contact.collider)) {
+            contact = default;
+            return null;
+          }
+          if (colliding && reported != null) return reported;
+
+          // A stationary hand on a wall/underside may produce no sweep hit.
+          // Validate only its last surface, once in locomotion, without changing
+          // collision flags or jump history. Collider.Raycast also supports concave meshes.
+          Vector3 center;
+          float radius;
+          Vector3[] samples = rightHand ? currentRightLocoSamples : currentLeftLocoSamples;
+          bool shaped = TryGetHandLocomotionShape(rightHand, samples, out int count, out radius) && count > 0;
+          if (shaped && contact.sample >= 0 && contact.sample < count) center = samples[contact.sample];
+          else if (!shaped && contact.sample == -1) {
+            center = rightHand ? CurrentRightHandPosition() : CurrentLeftHandPosition();
+            radius = minimumRaycastDistance;
+          }
+          else { contact = default; return null; }
+
+          const float tolerance = .01f;
+          Vector3 normal = contact.collider.transform.TransformDirection(contact.normal);
+          float offset = radius + 2f * tolerance;
+          if (contact.collider.Raycast(new Ray(center + normal * offset, -normal), out RaycastHit hit,
+                  offset + radius + tolerance)
+              && hit.distance >= offset - tolerance && Vector3.Dot(hit.normal, normal) >= .5f) {
+            contact.normal = contact.collider.transform.InverseTransformDirection(hit.normal);
+            contact.frame = Time.frameCount;
+            return contact.collider;
+          }
+          contact = default;
+          return null;
         }
 
         private Vector3 CurrentLeftHandPosition()
@@ -531,7 +591,7 @@ public partial class NewPlayer : MonoBehaviour
             }
           }
           lastPos = transform.position;
-          if (HelicopterManager.instance != null) HelicopterManager.instance.RefreshPassenger();
+          if (PassengerCabin != null) PassengerCabin.RefreshPassenger();
         }
 
         Vector3 lastPos = Vector3.zero;
@@ -913,11 +973,11 @@ public partial class NewPlayer : MonoBehaviour
             wasRightHandTouching = rightHandColliding;
             wasHeadTouching = headColliding;
 
-            if (HelicopterManager.instance != null) {
+            if (PassengerCabin != null) {
                 bool handSupportAllowed = !glidering && !isHookPulling && !jetting && !disableMovement;
-                HelicopterManager.instance.ReportHandSupport(transform,
-                    handSupportAllowed && leftHandColliding ? leftPassengerSupport : null,
-                    handSupportAllowed && rightHandColliding ? rightPassengerSupport : null);
+                PassengerCabin.ReportHandSupport(transform,
+                    ResolvePassengerHandSupport(false, handSupportAllowed && AllowHandLocomotionCollision(false), leftHandColliding),
+                    ResolvePassengerHandSupport(true, handSupportAllowed && AllowHandLocomotionCollision(true), rightHandColliding));
             }
 
             lastBodyMidpoint = bodyMidpoint.position;
@@ -974,7 +1034,7 @@ public partial class NewPlayer : MonoBehaviour
                         continue;
 
                     bodySum += wasTouching ? last[i] - current[i] : finalPosition - current[i];
-                    CapturePassengerHandSupport(rightHand, hit);
+                    CapturePassengerHandSupport(rightHand, hit, i);
                     if (hitCount == 0)
                     {
                         reportHit = hit;
@@ -1050,7 +1110,7 @@ public partial class NewPlayer : MonoBehaviour
                     Vector3 distanceTraveled = current[i] - last[i];
                     if (IterativeCollisionSphereCast(last[i], radius, distanceTraveled, defaultPrecision, out Vector3 finalPosition, singleHand, out RaycastHit supportHit))
                     {
-                        CapturePassengerHandSupport(rightHand, supportHit);
+                        CapturePassengerHandSupport(rightHand, supportHit, i);
                         last[i] = finalPosition;
                         anyHit = true;
                     }
@@ -2244,11 +2304,11 @@ public partial class NewPlayer : MonoBehaviour
         }
 
         void ReportPassengerBodySupport(Collision collision) {
-          if (HelicopterManager.instance == null) return;
+          if (PassengerCabin == null) return;
           for (int i = 0; i < collision.contactCount; i++) {
             ContactPoint contact = collision.GetContact(i);
             if (contact.thisCollider != bodyCollider || contact.normal.y < 0.5f) continue;
-            HelicopterManager.instance.ReportBodySupport(transform, contact.otherCollider, contact.point, contact.normal);
+            PassengerCabin.ReportBodySupport(transform, contact.otherCollider, contact.point, contact.normal);
             break;
           }
         }

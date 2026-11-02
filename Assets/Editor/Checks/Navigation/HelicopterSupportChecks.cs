@@ -94,7 +94,7 @@ public static class HelicopterSupportChecks
         var oldPlayer = GR.Player.instance; var oldVR = NewPlayer.instance; var oldManager = HelicopterManager.instance;
         try
         {
-            BodyAndHop(false); BodyAndHop(true); Hands(); HandHop(); RealPrefab();
+            BodyAndHop(false); BodyAndHop(true); Hands(); HandHop(); FixedHandSurfaces(); RestingWallMovement(); ShapedHandContact(); RestingHandHandoff(); RealPrefab();
             Debug.Log("HelicopterSupportChecks: ALL PASSED (" + checks + " assertions; VR/desktop roof, single hand, alternating hands, hops, edges, ghost/warp, real mesh, allocation)");
         }
         finally { GR.Player.instance = oldPlayer; NewPlayer.instance = oldVR; HelicopterManager.instance = oldManager; }
@@ -244,6 +244,229 @@ public static class HelicopterSupportChecks
         f.helicopter.MoveCabin(Vector3.up * .1f, Quaternion.identity, true);
         Near(f.player.transform.position, airborne + Vector3.up * .1f, "Hand-generated airborne hop follows lift");
         Debug.Log("VR hand-generated hop PASS: real hand push, both hands released, airborne carry");
+    }
+
+    static void FixedHandSurfaces()
+    {
+        foreach (bool rightHand in new[] { false, true })
+        foreach (Vector3 normal in new[] { Vector3.up, Vector3.down, Vector3.left, Vector3.right, Vector3.forward, Vector3.back })
+        {
+            using var f = new Fixture(false);
+            Collider surface;
+            if (rightHand)
+            {
+                var meshSurface = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                meshSurface.transform.SetParent(f.helicopter.transform, false);
+                meshSurface.transform.localPosition = Vector3.up * 4;
+                meshSurface.transform.localScale = Vector3.one * 2;
+                meshSurface.layer = 6;
+                Object.DestroyImmediate(meshSurface.GetComponent<BoxCollider>());
+                var meshCollider = meshSurface.AddComponent<MeshCollider>();
+                meshCollider.sharedMesh = meshSurface.GetComponent<MeshFilter>().sharedMesh;
+                meshCollider.convex = false;
+                surface = meshCollider;
+            }
+            else surface = Fixture.Box(f.helicopter.transform, "Fixed surface", Vector3.up * 4, Vector3.one * 2);
+            Set(f.helicopter, "supportCached", false);
+            Vector3 point = Vector3.up * 4 + normal;
+            f.Place(point + normal * .65f);
+            f.helicopter.RefreshPassenger();
+            Transform hand = rightHand ? f.right : f.left;
+            hand.position = point + normal * .05f;
+            f.vr.InitializeValues();
+            var capture = (Action<bool, RaycastHit, int>)Delegate.CreateDelegate(typeof(Action<bool, RaycastHit, int>), f.vr,
+                typeof(NewPlayer).GetMethod("CapturePassengerHandSupport", P));
+            var resolve = (Func<bool, bool, bool, Collider>)Delegate.CreateDelegate(typeof(Func<bool, bool, bool, Collider>), f.vr,
+                typeof(NewPlayer).GetMethod("ResolvePassengerHandSupport", P));
+            void Seed()
+            {
+                Physics.SyncTransforms();
+                Vector3 n = surface.transform.TransformDirection(normal);
+                Check(surface.Raycast(new Ray(hand.position + n * .2f, -n), out RaycastHit hit, .3f), "Seed actual fixed-surface hit");
+                capture(rightHand, hit, -1);
+                Set(f.vr, "leftPassengerSupport", null); Set(f.vr, "rightPassengerSupport", null);
+            }
+            void Report()
+            {
+                Collider support = resolve(rightHand, true, false);
+                Set(f.helicopter, "lastSupportTime", Time.timeAsDouble - 10d);
+                f.helicopter.ReportHandSupport(f.player.transform, rightHand ? null : support, rightHand ? support : null);
+                f.helicopter.RefreshPassenger();
+            }
+            Seed(); Report();
+            Check(f.helicopter.HasLocalPassenger, "Resting single hand carries on face " + normal + ", right=" + rightHand);
+            Check(!f.vr.wasLeftHandTouching && !f.vr.wasRightHandTouching, "Fallback does not modify locomotion contact flags");
+            for (int i = 1; i <= 100; i++)
+            {
+                f.helicopter.MoveCabin(Vector3.up * (i * .04f), Quaternion.Euler(0, i * .02f, i * .01f), true);
+                Report();
+                Check(f.helicopter.HasLocalPassenger, "Resting hand follows ascent and rotation");
+            }
+            for (int i = 0; i < 100; i++) resolve(rightHand, true, false);
+            long allocated = GC.GetAllocatedBytesForCurrentThread();
+            for (int i = 0; i < 1000; i++) resolve(rightHand, true, false);
+            Check(GC.GetAllocatedBytesForCurrentThread() == allocated, "Resting contact fallback allocates zero bytes");
+
+            Set(f.player, "isDead", true); Report();
+            Check(f.helicopter.HasLocalPassenger, "Ghost retains resting contact");
+            Set(f.player, "isDead", false);
+            Vector3 held = hand.position;
+            hand.position += surface.transform.TransformDirection(normal) * .005f;
+            Check(resolve(rightHand, true, false) == surface, "5 mm tracking separation retains resting contact");
+            hand.position = held + surface.transform.TransformDirection(normal) * .02f;
+            Check(resolve(rightHand, true, false) == null, "2 cm separation exceeds resting contact tolerance");
+            hand.position = held; Seed();
+            string contactField = rightHand ? "rightPassengerContact" : "leftPassengerContact";
+            object contact = Get<object>(f.vr, contactField);
+            contact.GetType().GetField("frame").SetValue(contact, Time.frameCount - 1);
+            Set(f.vr, contactField, contact);
+            Check(resolve(rightHand, true, false) == surface, "Previous frame contact survives a slow frame");
+            contact = Get<object>(f.vr, contactField);
+            contact.GetType().GetField("frame").SetValue(contact, Time.frameCount - 2);
+            Set(f.vr, contactField, contact);
+            Check(resolve(rightHand, true, false) == null, "Missing locomotion frames invalidate stale contact");
+            Seed();
+            hand.position += surface.transform.TransformDirection(normal) * .1f;
+            Check(resolve(rightHand, true, false) == null, "Pulling hand 10 cm away releases");
+            hand.position = held;
+            Check(resolve(rightHand, true, false) == null, "Expired contact cannot reacquire without a new hit");
+            Seed();
+            hand.position += surface.transform.TransformDirection(Vector3.Cross(normal, Mathf.Abs(normal.y) > .5f ? Vector3.right : Vector3.up)) * 3f;
+            Check(resolve(rightHand, true, false) == null, "Sliding past finite surface edge releases");
+            hand.position = held; Seed();
+            surface.enabled = false;
+            Check(resolve(rightHand, true, false) == null, "Disabled collider clears resting contact");
+            surface.enabled = true; Seed();
+            // Unity only permits convex MeshColliders to become triggers/dynamic bodies.
+            if (surface is MeshCollider mesh) mesh.convex = true;
+            surface.isTrigger = true;
+            Check(resolve(rightHand, true, false) == null, "Trigger cannot retain resting contact");
+            surface.isTrigger = false; Seed();
+            var looseBody = surface.gameObject.AddComponent<Rigidbody>();
+            Check(resolve(rightHand, true, false) == null, "Loose Rigidbody cannot retain resting contact");
+            Object.DestroyImmediate(looseBody);
+            if (surface is MeshCollider restoredMesh) restoredMesh.convex = false;
+            Seed();
+            Check(resolve(rightHand, false, false) == null, "Disabled hand locomotion clears resting contact");
+            Seed(); surface.gameObject.SetActive(false);
+            Check(resolve(rightHand, true, false) == null, "Inactive surface clears resting contact");
+            surface.gameObject.SetActive(true); Seed();
+            surface.transform.SetParent(null, true);
+            Check(resolve(rightHand, true, false) == null, "Surface detached from helicopter cannot retain contact");
+            surface.transform.SetParent(f.helicopter.transform, true); Seed();
+            HelicopterManager.instance = null;
+            Check(resolve(rightHand, true, false) == null, "Missing manager clears cached contact");
+            HelicopterManager.instance = f.manager;
+            Seed(); f.helicopter.MoveCabin(f.helicopter.transform.position, f.helicopter.transform.rotation, false);
+            Check(resolve(rightHand, true, false) == null, "Discontinuous helicopter movement clears cached contact");
+            Seed(); f.helicopter.ReleasePassenger();
+            Check(resolve(rightHand, true, false) == null, "Explicit release clears cached hand surface");
+            Seed(); f.vr.Warp(new Vector3(30, 2, 0));
+            Check(resolve(rightHand, true, false) == null, "Warp clears resting hand contact");
+        }
+        Debug.Log("Fixed hand surfaces PASS: both hands, all six face directions, rotation/ascent, release/edges, ghost/warp, zero allocation");
+    }
+
+    static void RestingWallMovement()
+    {
+        foreach (int fps in new[] { 30, 72, 120 }) RestingWallMovementAtRate(fps);
+        Debug.Log("Resting wall movement PASS: real movement acquisition, sustained ascent, release at 30/72/120 FPS");
+    }
+
+    static void RestingWallMovementAtRate(int fps)
+    {
+        using var f = new Fixture(false);
+        var wall = Fixture.Box(f.helicopter.transform, "Wall", new Vector3(0, 4, 0), new Vector3(2, 2, 2));
+        f.roof.enabled = false; // No floor below: releasing the wall must not become a roof hop.
+        Set(f.helicopter, "supportCached", false);
+        f.Place(new Vector3(1.7f, 4, 0)); f.helicopter.RefreshPassenger();
+        f.left.position = new Vector3(1.12f, 4, 0); f.vr.InitializeValues();
+        f.left.position = new Vector3(1.04f, 4, 0);
+        f.movement(1f / fps); f.helicopter.RefreshPassenger();
+        Check(f.helicopter.HasLocalPassenger, "Actual movement acquires side wall hand contact");
+        for (int i = 1; i <= 200; i++)
+        {
+            f.helicopter.MoveCabin(Vector3.up * (i * .02f), Quaternion.identity, true);
+            f.movement(1f / fps); f.helicopter.RefreshPassenger();
+            Check(f.helicopter.HasLocalPassenger, "Actual stationary wall hand stays carried through lift");
+        }
+        f.left.localPosition += Vector3.right * .3f;
+        f.movement(1f / fps); f.helicopter.RefreshPassenger();
+        Check(!f.helicopter.HasLocalPassenger, "Actual wall hand release detaches hanging player");
+    }
+
+    sealed class HandShape : IHandLocomotionShape
+    {
+        public int count = 2;
+        public bool TryGetLocomotionSamples(PlayerHand hand, Vector3[] buffer, out int samples, out float radius)
+        {
+            samples = count; radius = .08f;
+            buffer[0] = hand.transform.position + Vector3.up * .2f;
+            buffer[1] = hand.transform.position;
+            return count > 0;
+        }
+    }
+
+    static void ShapedHandContact()
+    {
+        using var f = new Fixture(false);
+        var wall = Fixture.Box(f.helicopter.transform, "Shaped hand wall", new Vector3(0, 4, 0), new Vector3(2, 2, 2));
+        Set(f.helicopter, "supportCached", false);
+        f.Place(new Vector3(1.7f, 4, 0)); f.helicopter.RefreshPassenger();
+        f.left.position = new Vector3(1.08f, 4, 0);
+        var hand = f.left.gameObject.AddComponent<PlayerHand>(); f.player.leftPlayerHand = hand;
+        var shape = new HandShape(); Set(hand, "heldShape", shape);
+        f.vr.InitializeValues(); Physics.SyncTransforms();
+        Check(wall.Raycast(new Ray(f.left.position + Vector3.right * .2f, Vector3.left), out RaycastHit hit, .4f), "Shaped hand seeds real surface hit");
+        var capture = (Action<bool, RaycastHit, int>)Delegate.CreateDelegate(typeof(Action<bool, RaycastHit, int>), f.vr,
+            typeof(NewPlayer).GetMethod("CapturePassengerHandSupport", P));
+        var resolve = (Func<bool, bool, bool, Collider>)Delegate.CreateDelegate(typeof(Func<bool, bool, bool, Collider>), f.vr,
+            typeof(NewPlayer).GetMethod("ResolvePassengerHandSupport", P));
+        capture(false, hit, 1); Set(f.vr, "leftPassengerSupport", null);
+        Check(resolve(false, true, false) == wall, "Fallback uses actual shaped sample radius and position");
+        shape.count = 1;
+        Check(resolve(false, true, false) == null, "Changing shape invalidates missing contact sample");
+        shape.count = 2; capture(false, hit, 1); Set(f.vr, "leftPassengerSupport", null);
+        shape.count = 0;
+        Check(resolve(false, true, false) == null, "Dropping held locomotion shape clears cached support");
+        Debug.Log("Shaped hand fallback PASS: sample/radius, sample removal, drop");
+    }
+
+    static void RestingHandHandoff()
+    {
+        using var f = new Fixture(false);
+        var wall = Fixture.Box(f.helicopter.transform, "Handoff wall", new Vector3(0, 4, 0), new Vector3(2, 2, 2));
+        f.roof.enabled = false;
+        Set(f.helicopter, "supportCached", false);
+        f.Place(new Vector3(1.6f, 4, 1.6f)); f.helicopter.RefreshPassenger();
+        f.left.position = new Vector3(1.05f, 4, .9f);
+        f.right.position = new Vector3(.9f, 4, 1.05f);
+        f.vr.InitializeValues(); Physics.SyncTransforms();
+        var capture = (Action<bool, RaycastHit, int>)Delegate.CreateDelegate(typeof(Action<bool, RaycastHit, int>), f.vr,
+            typeof(NewPlayer).GetMethod("CapturePassengerHandSupport", P));
+        var resolve = (Func<bool, bool, bool, Collider>)Delegate.CreateDelegate(typeof(Func<bool, bool, bool, Collider>), f.vr,
+            typeof(NewPlayer).GetMethod("ResolvePassengerHandSupport", P));
+        Check(wall.Raycast(new Ray(f.left.position + Vector3.right * .2f, Vector3.left), out RaycastHit leftHit, .3f), "Left corner contact seeded");
+        Check(wall.Raycast(new Ray(f.right.position + Vector3.forward * .2f, Vector3.back), out RaycastHit rightHit, .3f), "Right corner contact seeded");
+        capture(false, leftHit, -1); capture(true, rightHit, -1);
+        Set(f.vr, "leftPassengerSupport", null); Set(f.vr, "rightPassengerSupport", null);
+        void Report()
+        {
+            f.helicopter.ReportHandSupport(f.player.transform, resolve(false, true, false), resolve(true, true, false));
+            f.helicopter.RefreshPassenger();
+        }
+        Report(); Check(f.helicopter.HasLocalPassenger, "Both resting hands carry across a corner");
+        f.left.position += Vector3.right * .2f;
+        Report(); Check(f.helicopter.HasLocalPassenger, "Losing left contact preserves independent right contact");
+        Vector3 before = f.player.transform.position;
+        f.helicopter.MoveCabin(Vector3.up * .2f, Quaternion.identity, true);
+        Near(f.player.transform.position, before + Vector3.up * .2f, "Remaining resting hand carries full lift");
+        f.right.position += Vector3.forward * .2f;
+        Report(); Check(!f.helicopter.HasLocalPassenger, "Releasing final resting hand off the side releases immediately");
+        Vector3 released = f.player.transform.position;
+        f.helicopter.MoveCabin(Vector3.up * .4f, Quaternion.identity, true);
+        Near(f.player.transform.position, released, "Released resting-hand rider is not dragged by next lift");
+        Debug.Log("Resting hand handoff PASS: independent faces, either hand, last-hand release, next lift");
     }
 
     static void RealPrefab()

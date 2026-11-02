@@ -163,10 +163,17 @@ public static class HelicopterNetworkChecks
                 {
                     Playback(owner, desktop, latency);
                     Playback(owner, desktop, latency, 1);
-                    if (!desktop) Playback(owner, false, latency, 2);
+                    if (!desktop)
+                    {
+                        Playback(owner, false, latency, 2);
+                        Playback(owner, false, latency, 5);
+                        Playback(owner, false, latency, 6);
+                    }
                     Playback(owner, desktop, latency, 3);
                     Playback(owner, desktop, latency, 4);
                 }
+            RestingHandNetworkRelease(owner, 5);
+            RestingHandNetworkRelease(owner, 6);
             Codec();
             Debug.Log("HelicopterNetworkChecks: ALL PASSED (" + checks + " assertions; simulated peers, actual Photon stream and codec)");
         }
@@ -192,7 +199,35 @@ public static class HelicopterNetworkChecks
         return rig.head.position.y;
     }
 
-    // support: 0 = cabin, 1 = roof, 2 = hand, 3/4 = hops across former cabin end boundaries.
+    static Vector3 RestingHandPosition(int support) => support == 5 ? new Vector3(2.05f, 2.9f, 0) : new Vector3(1.7f, 2.75f, 0);
+
+    static Func<bool, bool, bool, Collider> ConfigureRestingHand(Peer sender, Rig rig, int support)
+    {
+        GR.Player.instance = rig.player; HelicopterManager.instance = sender.manager;
+        rig.Move(new Vector3(support == 5 ? 2.65f : 2.2f, support == 5 ? 2.9f : 2.1f, 0) - rig.player.transform.position);
+        sender.cabin.RefreshPassenger();
+        rig.left.position = RestingHandPosition(support);
+        rig.vr.InitializeValues();
+        Physics.SyncTransforms();
+        Vector3 normal = support == 5 ? Vector3.right : Vector3.down;
+        Check(sender.roof.Raycast(new Ray(rig.left.position + normal * .2f, -normal), out RaycastHit hit, .3f), "Network resting hand acquires real surface");
+        var capture = (Action<bool, RaycastHit, int>)Delegate.CreateDelegate(typeof(Action<bool, RaycastHit, int>), rig.vr,
+            typeof(NewPlayer).GetMethod("CapturePassengerHandSupport", P));
+        capture(false, hit, -1);
+        Set(rig.vr, "leftPassengerSupport", null);
+        return (Func<bool, bool, bool, Collider>)Delegate.CreateDelegate(typeof(Func<bool, bool, bool, Collider>), rig.vr,
+            typeof(NewPlayer).GetMethod("ResolvePassengerHandSupport", P));
+    }
+
+    static void ReportRestingHand(Peer sender, Rig rig, int support, Func<bool, bool, bool, Collider> resolve)
+    {
+        rig.left.position = sender.cabin.transform.TransformPoint(RestingHandPosition(support));
+        Collider contact = resolve(false, true, false);
+        Check(contact == sender.roof, "Network resting hand remains on actual surface without locomotion hits");
+        sender.cabin.ReportHandSupport(rig.player.transform, contact, null);
+    }
+
+    // support: 0 = cabin, 1 = roof, 2 = hand, 3/4 = cabin ends, 5/6 = resting side/underside hand.
     static void Playback(Actor owner, bool desktop, double latency, int support = 0)
     {
         using var rig = new Rig(desktop);
@@ -204,7 +239,9 @@ public static class HelicopterNetworkChecks
             rig.Move(new Vector3(support == 2 ? 2.2f : 0, desktop ? 3.01f : 3.51f, 0) - rig.player.transform.position);
             minimumHead = rig.head.position.y;
         }
-        if (support >= 3) minimumHead = ConfigureInterior(sender, receiver, rig, desktop, support);
+        if (support == 3 || support == 4) minimumHead = ConfigureInterior(sender, receiver, rig, desktop, support);
+        var restingHand = support >= 5 ? ConfigureRestingHand(sender, rig, support) : null;
+        if (restingHand != null) minimumHead = rig.head.position.y;
         receiver.cabin.transform.position = Vector3.right * 100;
         Physics.SyncTransforms();
         Set(sender.avatar, "headSource", rig.head); Set(sender.avatar, "lHandSource", rig.left); Set(sender.avatar, "rHandSource", rig.right);
@@ -223,6 +260,7 @@ public static class HelicopterNetworkChecks
         {
             double t = step / 120d, now = 100d + t;
             GR.Player.instance = rig.player; HelicopterManager.instance = sender.manager;
+            if (restingHand != null) ReportRestingHand(sender, rig, support, restingHand);
             if (support == 2)
             {
                 rig.vr.wasLeftHandTouching = step % 120 < 60;
@@ -233,9 +271,9 @@ public static class HelicopterNetworkChecks
             sender.cabin.MoveCabin(new Vector3(0f, (float)t * 3f, 0f), Quaternion.Euler(2f * Mathf.Sin((float)t), 12f, 2f), true);
             float hopDuration = support == 1 ? 1.1f : .6f;
             float hopHeight = support == 1 ? 1.1f : .35f;
-            float jump = support != 2 && t >= 2 && t <= 2 + hopDuration ? hopHeight * Mathf.Sin((float)(t - 2) / hopDuration * Mathf.PI) : 0f;
+            float jump = support != 2 && support < 5 && t >= 2 && t <= 2 + hopDuration ? hopHeight * Mathf.Sin((float)(t - 2) / hopDuration * Mathf.PI) : 0f;
             rig.Move(Vector3.up * (jump - previousJump)); previousJump = jump;
-            if (support >= 3)
+            if (support == 3 || support == 4)
             {
                 float travel = .45f * Mathf.Sin((float)t * 2f);
                 rig.Move(sender.cabin.transform.forward * (travel - previousTravel)); previousTravel = travel;
@@ -339,7 +377,7 @@ public static class HelicopterNetworkChecks
         Set(sender.cabin, "releasedFrame", -1);
         if (rig.vr != null) { rig.vr.wasLeftHandTouching = rig.vr.wasRightHandTouching = false; sender.cabin.ReportHandSupport(rig.player.transform, null, null); }
         rig.Move(sender.cabin.transform.position + Vector3.up * (desktop ? 0.05f : 0.6f) - rig.player.transform.position);
-        if (support >= 3)
+        if (support == 3 || support == 4)
         {
             Vector3 anchor = desktop ? rig.desktop.PassengerAnchor : rig.vr.bodyMidpoint.position;
             rig.Move(sender.cabin.transform.TransformPoint(new Vector3(0, 1.55f, 3.473f)) - anchor);
@@ -361,6 +399,38 @@ public static class HelicopterNetworkChecks
         Clock(112.6); receiver.render();
         Near(Get<BodyPose>(receiver.avatar, "_lastPose").headPos, ((PosePacket)exited[0]).HeadPos, "Remote exited player is not dragged by next cabin movement");
         Debug.Log($"Carry network PASS: {(desktop ? "desktop" : "VR")}, support {support}, {latency * 1000:F0} ms latency, max head deficit {worstDeficit:F4} m; jitter/loss, late join, manager delay, host switch, ghost/respawn");
+    }
+
+    static void RestingHandNetworkRelease(Actor owner, int support)
+    {
+        using var rig = new Rig(false);
+        using var sender = new Peer(owner, true);
+        using var receiver = new Peer(owner, false);
+        receiver.cabin.transform.position = Vector3.right * 100;
+        var resolve = ConfigureRestingHand(sender, rig, support);
+        Set(sender.avatar, "headSource", rig.head); Set(sender.avatar, "lHandSource", rig.left); Set(sender.avatar, "rHandSource", rig.right);
+        ReportRestingHand(sender, rig, support, resolve); sender.cabin.RefreshPassenger();
+        var aboard = Capture(sender.avatar);
+        Check(((PosePacket)aboard[0]).CabinArrival == 1, "Resting wall/underside contact supplies passenger metadata");
+        GR.Player.instance = null; HelicopterManager.instance = receiver.manager;
+        for (int i = 0; i < 10; i++) { Deliver(receiver, owner, aboard, 200 + i * .05, 200.08 + i * .05); receiver.render(); }
+        Check(Get<int>(receiver.avatar, "_renderCabinArrival") == 1, "Remote observer sees resting hand carry");
+
+        GR.Player.instance = rig.player; HelicopterManager.instance = sender.manager;
+        rig.left.position += (support == 5 ? Vector3.right : Vector3.down) * .3f;
+        sender.cabin.ReportHandSupport(rig.player.transform, resolve(false, true, false), null);
+        sender.cabin.RefreshPassenger();
+        var released = Capture(sender.avatar);
+        Check(!sender.cabin.HasLocalPassenger && ((PosePacket)released[0]).CabinArrival == 0,
+            "Last-hand release immediately clears local carry and wire metadata");
+        GR.Player.instance = null; HelicopterManager.instance = receiver.manager;
+        for (int i = 0; i < 10; i++) { Deliver(receiver, owner, released, 201 + i * .05, 201.08 + i * .05); receiver.render(); }
+        Check(Get<int>(receiver.avatar, "_renderCabinArrival") == 0, "Observer leaves passenger frame after last-hand release");
+        receiver.cabin.MoveCabin(new Vector3(100, 3, 0), Quaternion.identity, true);
+        Clock(201.6); receiver.render();
+        Near(Get<BodyPose>(receiver.avatar, "_lastPose").headPos, ((PosePacket)released[0]).HeadPos,
+            "Released wall/underside rider is not dragged by remote helicopter");
+        Debug.Log("Resting hand network release PASS: support " + support + ", production capture/codec/render, no residual carry");
     }
 
     static void Codec()
@@ -413,6 +483,8 @@ public static class HelicopterNetworkChecks
             CloudPlayback(a, b, false);
             CloudPlayback(a, b, false, 2);
             CloudPlayback(a, b, false, 3);
+            CloudPlayback(a, b, false, 5);
+            CloudPlayback(a, b, false, 6);
 
             // Real server master change, followed by rejoining with a new actor ID.
             a.Disconnect();
@@ -462,7 +534,9 @@ public static class HelicopterNetworkChecks
             rig.Move(new Vector3(support == 2 ? 2.2f : 0, desktop ? 3.01f : 3.51f, 0) - rig.player.transform.position);
             minimumHead = rig.head.position.y;
         }
-        if (support >= 3) minimumHead = ConfigureInterior(sender, receiver, rig, desktop, support);
+        if (support == 3 || support == 4) minimumHead = ConfigureInterior(sender, receiver, rig, desktop, support);
+        var restingHand = support >= 5 ? ConfigureRestingHand(sender, rig, support) : null;
+        if (restingHand != null) minimumHead = rig.head.position.y;
         receiver.cabin.transform.position = Vector3.right * 100;
         Physics.SyncTransforms();
         PhotonNetwork.NetworkingClient.CurrentRoom = b.CurrentRoom;
@@ -495,6 +569,7 @@ public static class HelicopterNetworkChecks
             {
                 float t = (float)timer.Elapsed.TotalSeconds;
                 GR.Player.instance = rig.player; HelicopterManager.instance = sender.manager;
+                if (restingHand != null) ReportRestingHand(sender, rig, support, restingHand);
                 if (support == 2)
                 {
                     rig.vr.wasLeftHandTouching = true;
@@ -502,9 +577,9 @@ public static class HelicopterNetworkChecks
                 }
                 sender.cabin.MoveCabin(Vector3.up * (t * 3f), Quaternion.Euler(1f, 12f, 2f), true);
                 float jump = support == 1 && t >= 2 && t <= 3.1f ? 1.1f * Mathf.Sin((t - 2) / 1.1f * Mathf.PI) : 0;
-                if (support >= 3 && t >= 2 && t <= 2.6f) jump = .35f * Mathf.Sin((t - 2) / .6f * Mathf.PI);
+                if ((support == 3 || support == 4) && t >= 2 && t <= 2.6f) jump = .35f * Mathf.Sin((t - 2) / .6f * Mathf.PI);
                 rig.Move(Vector3.up * (jump - previousJump)); previousJump = jump;
-                if (support >= 3)
+                if (support == 3 || support == 4)
                 {
                     float travel = .45f * Mathf.Sin(t * 2);
                     rig.Move(sender.cabin.transform.forward * (travel - previousTravel)); previousTravel = travel;

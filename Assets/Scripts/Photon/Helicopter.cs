@@ -158,6 +158,7 @@ public class Helicopter : MonoBehaviour
     {
         CacheSupportColliders();
         return collider != null && collider.enabled && collider.gameObject.activeInHierarchy
+            && !collider.isTrigger
             && supportColliders.Contains(collider) && collider.transform.IsChildOf(transform)
             && collider.attachedRigidbody == null;
     }
@@ -170,7 +171,8 @@ public class Helicopter : MonoBehaviour
         {
             // Independently moving rotors and loose physics items cannot use the cabin frame.
             if (collider.isTrigger || collider.attachedRigidbody != null
-                || (propeller != null && collider.transform.IsChildOf(propeller))) continue;
+                || (propeller != null && collider.transform.IsChildOf(propeller))
+                || (tailRotor != null && collider.transform.IsChildOf(tailRotor))) continue;
             supportColliders.Add(collider);
             supportMask |= 1 << collider.gameObject.layer;
             Bounds bounds = collider.bounds;
@@ -192,8 +194,8 @@ public class Helicopter : MonoBehaviour
         if (vrPassenger != null && vrPassenger.isActiveAndEnabled && !vrPassenger.disableMovement
             // The previous locomotion frame is still valid across a slow frame.
             && handSupportFrame >= Time.frameCount - 1
-            && ((vrPassenger.wasLeftHandTouching && OwnsSupport(leftSupport))
-                || (vrPassenger.wasRightHandTouching && OwnsSupport(rightSupport))))
+            // Reports include confirmed resting contact, even without a locomotion sweep hit.
+            && (OwnsSupport(leftSupport) || OwnsSupport(rightSupport)))
             return RememberSupport(anchor, now);
 
         Vector3 foot;
@@ -255,6 +257,7 @@ public class Helicopter : MonoBehaviour
 
     void ClearSupport()
     {
+        if (vrPassenger != null) vrPassenger.ClearPassengerHandContacts();
         bodySupport = leftSupport = rightSupport = probeCollider = null;
         bodySupportTime = lastSupportTime = double.NegativeInfinity;
         handSupportFrame = -2;

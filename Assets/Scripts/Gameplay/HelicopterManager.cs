@@ -51,6 +51,8 @@ public class HelicopterManager : MonoBehaviourPunCallbacks, IPunObservable
     int cabinArrivalSerial;
     int cabinLandingIndex;
 
+    public Helicopter PassengerCabin => helicopter;
+
     public void ReleasePassenger()
     {
         if (helicopter != null) helicopter.ReleasePassenger();
