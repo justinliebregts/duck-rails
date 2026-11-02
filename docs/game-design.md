@@ -20,6 +20,8 @@ October 30 validation update: the [multiplayer stability pass](multiplayer-stabi
 
 ## Experience and tone — confirmed
 
+- November 1 lighting workflow: trial baked fixture illumination, light probes for moving subjects, subtle fog and a baked reflection probe in Compound before establishing expedition darkness/flashlight tuning. The first scene sample is installed; its intensities, probe layout and headset performance are provisional. See [subway compound](subway-compound.md).
+
 - November 1 compound direction: bank the outdoor fortified station alternative and develop the approved abandoned-subway-terminal refuge as a walkable, roughly textured blockout. Retain station information, platforms access and open supplies space around a broken shallow fountain. Side tracks are inaccessible but intended to be audible; stairs behind the arrival view lead toward the surface and are completely blocked with makeshift crates/panels. Use salvaged partitions, pixel textures and retrofitted cold work lights. See [subway compound](subway-compound.md) for implementation and validation limits.
 
 - October 30 art follow-up: the user endorsed the low-poly train concept's look and requested darker, spooky nighttime locations in the same style. Use deeper ambient shadows and localized lights while retaining nearby action/path readability; the generated night studies are visual explorations, not measured headset lighting targets. See [concept index](art-concepts.md).

@@ -4,6 +4,9 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 
 ## Art direction deliverables
 
+- [x] November 1: install the first Compound baked-lighting/probe sample with UV mesh copies, scene-owned lighting settings, subtle fog and a baked reflection probe. Existing geometry/binding checks pass; see `docs/subway-compound.md` for authoring limits.
+- [ ] Review Compound lighting and probe transitions on standalone Quest with twelve players; establish measured frame-time/memory budgets before extending the recipe to expedition blocks.
+
 - [x] November 1: create and install the modular subway compound blockout with rough pixel textures, open store, shallow fountain, sealed stairs and retained session controls. Editor geometry checks and solo DuckPlayer departure passed. See [subway compound](subway-compound.md).
 - [ ] Review subway layout/lighting in Quest 3 and with twelve compound players; complete finished art, ambience, commerce presentation and performance profiling. The blockout does not close these acceptance items.
 - [x] November 1: implement V2 concept-fidelity geometry: 18 m occupied floor, former side boarding edges with recessed tracks and improvised barriers, narrow viewing gaps, and 7 m original ceiling above low shelters. All 55 geometry checks and session rule checks pass; dimensions and actual Unity views are recorded in `docs/subway-compound.md`. V1 assets are preserved.

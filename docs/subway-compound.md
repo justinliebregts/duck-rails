@@ -56,6 +56,28 @@ Re-run using **Duck Rails > Compound > Validate Subway Blockout** and **Render S
 
 ## Remaining review
 
+### Compound lighting sample — November 1
+
+The first baked-lighting sample is scene-owned in `Assets/Scenes/Compound.unity`. Existing fixture positions and intensities are retained; the nine environment lights are now Baked, with baked shadows. Flashlight objects remain realtime. This is an initial art/workflow sample, not Quest performance acceptance or final darkness tuning.
+
+- Low cool ambient fill: RGB 0.075 / 0.085 / 0.11. Exponential-squared fog density 0.018, dark blue-gray fog color; ordinary fog does not create light shafts.
+- Progressive CPU bake, 12 texels/metre, maximum 1024 atlas size, non-directional lightmaps, 32 direct / 128 indirect samples. November 1 brightness follow-up increases indirect intensity to 1.5 and maximum bounces from two to four at the user's request. Realtime GI is disabled; direct fixture intensities, ambient fill and fog are unchanged by this follow-up.
+- Lightmap UV mesh copies and an emissive lens material live in `Assets/DuckRails/Compound/LightingSample`. Original SubwayV2 meshes/materials are unchanged. Scene prefab overrides reference the UV copies and bake flags.
+- 342 conventional probes cover the concourse and bays at 0.3, 1.2, 2.4 and 4.5 metres, rejecting positions overlapping Environment colliders. Thin decorative geometry and doorway interpolation still need visual/headset review. Duck_Body uses Blend Probes.
+- One 128-pixel baked, box-projected reflection probe covers the concourse. No realtime reflections or volumetric effects were added.
+
+Use **Duck Rails > Compound > Lighting > Bake Sample** after moving static geometry or fixtures, and **Capture Sample** for fixed review views in `output/compound-lighting`. The apply command refuses to duplicate an installed sample. The original in-memory scene, including unsaved user changes, was backed up under `tmp/compound-lighting` before setup.
+
+**Authoring limitation:** do not rebuild Compound using the scene builder to iterate this sample. Whole-scene rebuilds replace these overrides and lighting settings; reapply the sample and rebake after a rebuild. Normal scene/prefab editing is supported, but moved geometry invalidates the bake. This has not yet established baked-data loading for randomized expedition prefabs.
+
+The existing 55 subway geometry/binding checks passed after setup. The completed bake binds all 269 URP Lit environment renderers to one 1024 x 1024 lightmap, with 342 baked probes and an assigned reflection cubemap. Probe sampling shows warm illumination inside Station Info and low cool illumination at arrival. Forward, information-nook and 0.5 m eye-line captures were visually inspected; see `output/compound-lighting/after-forward.png`, `after-info.png`, `after-low-eye.png` and `validation.txt`. This remains darker and geometrically simpler than the concept render.
+
+Diagnostic backend lookup failed with DNS unavailable; six open local reports were inspected and left open. Compilation completed; the final Console query showed a Unity Connect token-exchange network error, not a lighting compile/bake error. Standalone Quest visual quality, twelve-player Compound performance, moving-player probe transitions and flashlight overlap remain unverified. No Play Mode or headset performance pass was performed for this art sample.
+
 Headset navigation, low-eye-line readability, fingertip reach, twelve-player crowding, and multiplayer transitions require review. Finished silhouettes, asymmetric repairs, map artwork, water treatment, texture refinement, lighting/shadows and performance remain pending. Side-track anchors and sealed geometry exist, but no new ambience clips or playback behavior were added. Store commerce integration is separate.
 
 Concepts: [forward](../output/imagegen/duck-rails-compound-subway-v1.png), [blocked stairway](../output/imagegen/duck-rails-compound-subway-reverse-v1.png), [banked outdoor alternative](../output/imagegen/duck-rails-compound-outdoor-approved-v1.png).
+
+November 1 bounce follow-up validation: rebake completed with indirect intensity 1.5 and maximum bounces 4; one lightmap and 342 baked probes remain. Saved matching views in output/compound-lighting/bounce-before-*.png and bounce-after-*.png. Visual comparison shows a modest lift near the lit areas; the remote corners remain dark. Current in-editor fixture placement was preserved. No headset performance validation was performed.
+
+November 1 architectural fill follow-up: the user found the bounce-only result too dark relative to the concept. Added eight scene-owned Baked spotlights under Compound baked lighting sample/Baked architectural fill spotlights: two cool concourse/pillar washes (65 intensity, 15 m range, 115 degree cone), two warm stall-front fills (50, 10 m, 110 degrees), two warm platform-entrance washes (45, 9 m, 105 degrees), and two cool upward structure fills (30, 13 m, 120 degrees). All use baked soft shadows. These are art-directed fill sources without new fixture meshes. Existing lights, geometry and ambient/fog values were retained. The bake completed with one lightmap and 342 probes; forward and info-nook captures were visually inspected and show substantially improved surface readability. Compare output/compound-lighting/fill-before-*.png and fill-after-*.png. The scene now has 17 baked environment lights; these additions do not add realtime light rendering. Headset performance/visual acceptance remains pending. Scene backup before this pass is in tmp/compound-lighting. Fill objects are saved in the scene; Apply Sample Setup does not recreate them after a scene rebuild.

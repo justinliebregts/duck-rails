@@ -29,3 +29,6 @@
 Tools/DuckVoiceSource/*.tsv text eol=lf
 *.ogg binary
 *.pdf binary
+*.exr binary
+# Unity bake data is binary even when scene/mesh assets use text serialization.
+**/LightingData.asset binary
