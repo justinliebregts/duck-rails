@@ -237,6 +237,7 @@ public class PlayerHand : MonoBehaviour
         if (item.Holder != this) return false;
 
         held = item;
+        input?.NotifyTrackedHandGrab(IsControllerLTouch);
         sampleFilled = 0;
         sampleWrite = 0;
 
@@ -264,6 +265,8 @@ public class PlayerHand : MonoBehaviour
         if (held == null) return;
 
         ComputeThrowVelocity(out Vector3 lin, out Vector3 ang);
+        if (input != null && input.SuppressTrackedHandThrow(IsControllerLTouch))
+            lin = ang = Vector3.zero;
         Grabbable item = held;
         held = null;
         sampleFilled = 0;
@@ -383,6 +386,7 @@ public class PlayerHand : MonoBehaviour
             return false;
 
         held = item;
+        input?.NotifyTrackedHandGrab(IsControllerLTouch);
         sampleFilled = 0;
         sampleWrite = 0;
 

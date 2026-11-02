@@ -351,24 +351,26 @@ namespace Game.Animation
             }  else if(controllerInput.rightThumbHover) {
                 rightThumbVal = 0.1f;
             }
-            // print("**: " + controllerInput.rightTriggerValue);
-            // print("***: " + rightThumbVal);
-
-            rightThumb?.Apply(rightThumbVal);
-            rightIndex?.Apply(controllerInput.rightTriggerValue);
-            rightPinky?.Apply(controllerInput.rightGripValue);
-            leftThumb?.Apply(leftThumbVal);
-            leftIndex?.Apply(controllerInput.leftTriggerValue);
-            leftPinky?.Apply(controllerInput.leftGripValue);
+            Vector3 leftCurl = new Vector3(leftThumbVal, controllerInput.leftTriggerValue, controllerInput.leftGripValue);
+            Vector3 rightCurl = new Vector3(rightThumbVal, controllerInput.rightTriggerValue, controllerInput.rightGripValue);
+            if (controllerInput.TryGetTrackedFingerCurls(true, out var trackedLeft)) leftCurl = trackedLeft;
+            if (controllerInput.TryGetTrackedFingerCurls(false, out var trackedRight)) rightCurl = trackedRight;
+            // The historical "Pinky" channel is bound to middle_01/02 on the duck rig.
+            rightThumb?.Apply(rightCurl.x);
+            rightIndex?.Apply(rightCurl.y);
+            rightPinky?.Apply(rightCurl.z);
+            leftThumb?.Apply(leftCurl.x);
+            leftIndex?.Apply(leftCurl.y);
+            leftPinky?.Apply(leftCurl.z);
 
             Curl = new FingerCurl
             {
-                rightThumb = rightThumbVal,
-                rightIndex = controllerInput.rightTriggerValue,
-                rightPinky = controllerInput.rightGripValue,
-                leftThumb = leftThumbVal,
-                leftIndex = controllerInput.leftTriggerValue,
-                leftPinky = controllerInput.leftGripValue,
+                rightThumb = rightCurl.x,
+                rightIndex = rightCurl.y,
+                rightPinky = rightCurl.z,
+                leftThumb = leftCurl.x,
+                leftIndex = leftCurl.y,
+                leftPinky = leftCurl.z,
             };
         }
     }

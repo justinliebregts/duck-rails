@@ -48,14 +48,16 @@ public partial class ControllerInput : MonoBehaviour
 
     private void Update() {
       if (simulation != null && simulation.IsSimulating) {
+        trackedLeft.Exit(); trackedRight.Exit();
+        suppressLeftThrow = suppressRightThrow = false;
         ApplySimulationButtons(simulation.Buttons);
         return;
       }
       if (mouseGrip) {
-        MouseGripInput();
+        UpdateDesktopInput();
         return;
       }
-      OculusControllerInput();
+      UpdateVrInput();
       if (requireNeutral) {
         if (!leftGripButton.down && !rightGripButton.down && !leftTriggerButton.down && !rightTriggerButton.down)
           requireNeutral = false;
