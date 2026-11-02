@@ -72,6 +72,7 @@ public class PlayerHand : MonoBehaviour
     Grabbable held;
     IHandLocomotionShape heldShape;
     Vector3[] posSamples;
+    Vector3[] carrySamples;
     Quaternion[] rotSamples;
     float[] timeSamples;
     int sampleWrite;
@@ -156,6 +157,7 @@ public class PlayerHand : MonoBehaviour
         int n = Mathf.Max(2, velocitySamples);
         velocitySamples = n;
         posSamples = new Vector3[n];
+        carrySamples = new Vector3[n];
         rotSamples = new Quaternion[n];
         timeSamples = new float[n];
     }
@@ -429,6 +431,7 @@ public class PlayerHand : MonoBehaviour
         Transform t = HoldPoint;
         int i = sampleWrite;
         posSamples[i] = t.position;
+        carrySamples[i] = RailCargo.PassengerCarryOffset;
         rotSamples[i] = t.rotation;
         timeSamples[i] = Time.time;
         sampleWrite = (sampleWrite + 1) % velocitySamples;
@@ -440,6 +443,8 @@ public class PlayerHand : MonoBehaviour
     {
         linear = Vector3.zero;
         angular = Vector3.zero;
+
+        bool relativeRelease = held != null && held.PrepareCargoRelease();
 
         if (sampleFilled < 2) return;
 
@@ -455,7 +460,9 @@ public class PlayerHand : MonoBehaviour
             float dt = timeSamples[curr] - timeSamples[prev];
             if (dt < MinSegmentDt) continue;
 
-            linSum += (posSamples[curr] - posSamples[prev]) / dt;
+            Vector3 displacement = posSamples[curr] - posSamples[prev];
+            if (relativeRelease) displacement -= carrySamples[curr] - carrySamples[prev];
+            linSum += displacement / dt;
 
             // World-space rotation delta from hand transform
             Quaternion delta = rotSamples[curr] * Quaternion.Inverse(rotSamples[prev]);

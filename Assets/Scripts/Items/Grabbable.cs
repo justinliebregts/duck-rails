@@ -337,6 +337,8 @@ public class Grabbable : MonoBehaviour
         OnGrabbed?.Invoke(hand);
     }
 
+    public bool PrepareCargoRelease() => GetComponent<RailCargo>()?.PrepareRelease() == true;
+
     public virtual void Release(Vector3 linearVelocity, Vector3 angularVelocity)
     {
         if (holder == null) return;
@@ -355,6 +357,10 @@ public class Grabbable : MonoBehaviour
         rb.useGravity = true;
         rb.interpolation = cachedInterpolation;
         rb.detectCollisions = cachedDetectCollisions;
+
+        rb.position = transform.position;
+        rb.rotation = transform.rotation;
+        GetComponent<RailCargo>()?.CompleteRelease();
 
         if (!rb.isKinematic)
         {

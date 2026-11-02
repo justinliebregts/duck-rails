@@ -279,6 +279,7 @@ public partial class NewPlayer : MonoBehaviour
 
         public void ApplyPassengerDisplacement(Vector3 delta) {
           if (delta.Equals(Vector3.zero)) return;
+          RailCargo.RecordPassengerCarry(delta);
           Vector3 position = transform.position + delta;
           // Apply carry to each pose, not the older displayed pose back into physics.
           Vector3 physicsPosition = rb.position + delta;

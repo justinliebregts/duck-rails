@@ -7,15 +7,21 @@ using UnityEngine;
 public sealed class RailCargo : MonoBehaviourPun, IPunObservable
 {
     public static readonly HashSet<RailCargo> Active = new HashSet<RailCargo>();
+    public static Vector3 PassengerCarryOffset { get; private set; }
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetCarryOffset() => PassengerCarryOffset = Vector3.zero;
+    public static void RecordPassengerCarry(Vector3 delta) => PassengerCarryOffset += delta;
     Rigidbody body;
     PhotonGrabbable item;
     BagObject bag;
     PhotonTransformView transformSync;
-    bool attached, received, previousLoose;
+    bool attached, received, previousLoose, preparedRelease;
     Vector3 localPose;
     Quaternion localRotation;
     string run;
     public bool StateReady => photonView.IsMine || received;
+    bool Predicting => item != null && item.PickupPending;
+    bool Simulates => photonView.IsMine || Predicting;
     bool Loose => item != null ? !item.IsHeldByAnyPlayer && !item.IsStashed : bag != null && bag.State == BagState.Dropped;
     void Awake()
     {
@@ -25,15 +31,41 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
     }
     void OnEnable() => Active.Add(this);
     void OnDisable() => Active.Remove(this);
+    // Match the throw sample's reference frame before the hand detaches. Prediction
+    // permits local motion only; Photon publication remains with the actual owner.
+    public bool PrepareRelease()
+    {
+        var train = RailTrain.Instance;
+        preparedRelease = train != null && train.Contains(transform.position);
+        return preparedRelease;
+    }
+    public void CompleteRelease()
+    {
+        if (!preparedRelease) return;
+        preparedRelease = false;
+        attached = true;
+        previousLoose = true; // Velocity was already made relative by the release sampler.
+        var train = RailTrain.Instance;
+        if (train == null) { attached = false; return; }
+        localPose = train.transform.InverseTransformPoint(transform.position);
+        localRotation = Quaternion.Inverse(train.transform.rotation) * transform.rotation;
+        run = PhotonSession.RunId;
+    }
+    public void CancelPrediction()
+    {
+        attached = received = preparedRelease = false;
+        previousLoose = Loose;
+        if (transformSync != null) transformSync.enabled = Loose;
+    }
     public void Carry(Vector3 delta)
     {
-        if (!photonView.IsMine || !attached || !Loose || body == null) return;
+        if (!Simulates || !attached || !Loose || body == null) return;
         body.position += delta;
         transform.position = body.position;
     }
     public void Carry(Vector3 previous, Quaternion oldRotation, Vector3 next, Quaternion rotation)
     {
-        if (!photonView.IsMine || !attached || !Loose || body == null) return;
+        if (!Simulates || !attached || !Loose || body == null) return;
         Quaternion turn = rotation * Quaternion.Inverse(oldRotation);
         body.position = next + turn * (body.position - previous);
         body.rotation = turn * body.rotation;
@@ -43,7 +75,7 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
     void LateUpdate()
     {
         var train = RailTrain.Instance;
-        if (photonView.IsMine)
+        if (Simulates)
         {
             bool wasAttached = attached;
             attached = train != null && Loose && train.Contains(transform.position);
@@ -65,7 +97,7 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
             transform.SetPositionAndRotation(train.transform.TransformPoint(localPose), train.transform.rotation * localRotation);
         }
         // Grabbable still owns held/stowed state and authority. Its stock world pose is consumed but suppressed aboard.
-        if (transformSync != null && Loose) transformSync.enabled = !attached;
+        if (transformSync != null && Loose) transformSync.enabled = !attached && !Predicting;
     }
     public object[] CaptureFrame()
     {
@@ -77,7 +109,7 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
     }
     public void RestoreFrame(object[] state)
     {
-        if (state == null || state.Length != 4) return;
+        if (Predicting || state == null || state.Length != 4) return;
         attached = (bool)state[0]; run = (string)state[1]; localPose = (Vector3)state[2]; localRotation = (Quaternion)state[3];
         received = true; previousLoose = Loose;
         var train = RailTrain.Instance;
@@ -97,7 +129,7 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
         {
             bool nextAttached = (bool)stream.ReceiveNext(); string nextRun = (string)stream.ReceiveNext();
             Vector3 nextPose = (Vector3)stream.ReceiveNext(); Quaternion nextRotation = (Quaternion)stream.ReceiveNext();
-            if (photonView.IsMine || info.Sender != photonView.Controller || (item != null && !item.AcceptRecoveryPacket)) return;
+            if (Simulates || info.Sender != photonView.Controller || (item != null && !item.AcceptRecoveryPacket)) return;
             attached = nextAttached; run = nextRun; localPose = nextPose; localRotation = nextRotation; received = true;
         }
     }

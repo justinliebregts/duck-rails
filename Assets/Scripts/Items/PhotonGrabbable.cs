@@ -175,6 +175,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
 
     void CancelLocalOwnership()
     {
+        if (pickupPending) GetComponent<RailCargo>()?.CancelPrediction();
         pickupPending = false;
         CancelLocalHold();
         if (headEquipment != null) headEquipment.CancelLocalEquipment();

@@ -434,7 +434,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
                 (backZone.Contains(hand.transform.position) || backZone.Contains(held.transform.position)))
                 Stow(held);
             else
-                held.DropLocal(held.Velocity);
+                held.DropLocal(held.GetReleaseVelocity());
             return true;
         }
 

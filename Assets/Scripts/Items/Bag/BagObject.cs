@@ -94,6 +94,7 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
     bool localBackAnchorIsChest;
     Vector3 prevPosition;
     Vector3 velocity;
+    Vector3 prevCarryOffset, carryVelocity;
 
     int grantedTo;
     bool orphaned;
@@ -114,6 +115,7 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
     public SoundEvent HoverSound => hoverOverride != null ? hoverOverride : hoverSound;
     public SoundEvent PutSound => putOverride != null ? putOverride : putSound;
     public Vector3 Velocity => velocity;
+    public Vector3 GetReleaseVelocity() => GetComponent<RailCargo>()?.PrepareRelease() == true ? velocity - carryVelocity : velocity;
     public bool AwaitingClaim => awaitingClaim;
     public bool IsCurrentLocalClaim => requester == LocalActor && requestLife == BagInventory.Life
         && ((requestedTarget != Target.LeftHand && requestedTarget != Target.RightHand) || requestHandEpoch == BagInventory.HandClaimEpoch);
@@ -249,6 +251,8 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
         transform.SetParent(hold, true);
         prevPosition = transform.position;
         velocity = Vector3.zero;
+        prevCarryOffset = RailCargo.PassengerCarryOffset;
+        carryVelocity = Vector3.zero;
         holdingHand = hand;
         if (impactSounds != null) impactSounds.ResetSwingState();
         hand.HoldShape(this);
@@ -297,6 +301,9 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
         ApplyPhysics();
         if (!rb.isKinematic)
         {
+            rb.position = transform.position;
+            rb.rotation = transform.rotation;
+            GetComponent<RailCargo>()?.CompleteRelease();
             rb.linearVelocity = throwVelocity;
             rb.angularVelocity = Vector3.zero;
         }
@@ -583,8 +590,12 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
             case BagState.Held:
                 float dt = Time.deltaTime;
                 if (dt > 1e-5f)
+                {
                     velocity = Vector3.Lerp(velocity, (transform.position - prevPosition) / dt, 0.5f);
+                    carryVelocity = Vector3.Lerp(carryVelocity, (RailCargo.PassengerCarryOffset - prevCarryOffset) / dt, 0.5f);
+                }
                 prevPosition = transform.position;
+                prevCarryOffset = RailCargo.PassengerCarryOffset;
                 break;
             case BagState.Stowed:
                 if (localBackAnchor != null)
