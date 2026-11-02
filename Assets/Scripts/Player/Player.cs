@@ -99,6 +99,32 @@ namespace GR {
 
         public void SetDeadFromDuck(DuckCompanion killer, int attempt) => SetDeadInternal(killer, attempt, "duck", Vector3.zero);
 
+        Vector3 DeathEffectOrigin() => HeadCenteredGameplayPosition(transform.position);
+
+        // Read-only gameplay location; this does not write any movement pose.
+        // Retain the caller's original height and the desktop fallback.
+        public Vector3 HeadCenteredGameplayPosition(Vector3 origin) {
+            // VR leaves the root off-centre after room-scale walking. Use the head's
+            // horizontal position on the caller's existing height plane, just as
+            // legacy recentering did. Keep desktop unchanged.
+            if (TryGetHeadPivotHeadPosition(out Vector3 head)) {
+                origin.x = head.x;
+                origin.z = head.z;
+            }
+            return origin;
+        }
+
+        public bool TryGetHeadPivotHeadPosition(out Vector3 head) {
+            var movement = NewPlayer.instance;
+            if (movement != null && movement.gameObject == gameObject
+                && movement.headCollider != null) {
+                head = movement.headCollider.transform.position;
+                return true;
+            }
+            head = default;
+            return false;
+        }
+
         void SetDeadInternal(DuckCompanion killer, int attempt, string cause, Vector3 impact, Vector3 rotation = default) {
             if (PhotonSession.IsRailsRoom) { RailExpedition.RequestDown(); return; }
             using var sample = DeathProfile.Local.Auto();
@@ -113,13 +139,14 @@ namespace GR {
             if (cause == "duck")
                 DuckzAnalytics.DuckKillSuccess();
             DuckzAnalytics.PlayerDied(cause, aliveSeconds, held);
-            Vector3 flarePosition = transform.position + Vector3.up * 0.35f;
+            Vector3 deathOrigin = DeathEffectOrigin();
+            Vector3 flarePosition = deathOrigin + Vector3.up * 0.35f;
             DeathFlare.SpawnAfterDeath(deathFlarePrefab, flarePosition);
             PhotonPlayer.BroadcastDeathFlare(flarePosition);
             playerHUD.EnableDeathEffect();
             StartCoroutine(Respawn(killer, attempt));
-            Vector3 decalSpawnPos = transform.position;
-            Vector3 rayOrigin = transform.position + Vector3.up * 0.2f;
+            Vector3 decalSpawnPos = deathOrigin;
+            Vector3 rayOrigin = deathOrigin + Vector3.up * 0.2f;
             if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 5f, LayerMask.GetMask("Environment"), QueryTriggerInteraction.Ignore)) {
                 decalSpawnPos = hit.point + hit.normal * 0.01f;
             }

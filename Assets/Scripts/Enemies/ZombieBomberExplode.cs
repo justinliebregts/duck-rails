@@ -8,7 +8,7 @@ using UnityEngine;
 public sealed class ZombieBomberExplode : MonoBehaviourPun
 {
     [SerializeField] GameObject gibPrefab;
-    [Tooltip("Lethal radius in meters, measured from the explosion to the local player root. Walls do not block the blast.")]
+    [Tooltip("Lethal radius in meters, measured to the local player at root height (head-centered horizontally in VR). Walls do not block the blast.")]
     [SerializeField, Min(0f)] float blastRadius = 6f;
     [SerializeField, Min(0f)] float respawnDelay = 10f;
     [SerializeField, Min(0.1f)] float effectLifetime = 10f;
@@ -100,12 +100,13 @@ public sealed class ZombieBomberExplode : MonoBehaviourPun
         // SetDead handles local ragdoll/respawn; PhotonPlayer replicates the death state.
         var player = GR.Player.instance;
         if (player == null || !player.isActiveAndEnabled || player.IsDead) return;
+        Vector3 victimPosition = player.HeadCenteredGameplayPosition(player.transform.position);
         if (PhotonSession.IsRailsRoom && (RailExpedition.LocalDown ||
-            (RailTrain.Instance != null && RailTrain.Instance.Contains(player.transform.position)))) return;
+            (RailTrain.Instance != null && RailTrain.Instance.Contains(victimPosition)))) return;
         radius = Mathf.Max(0f, radius);
-        if ((player.transform.position - position).sqrMagnitude <= radius * radius)
+        if ((victimPosition - position).sqrMagnitude <= radius * radius)
         {
-            Vector3 impact = enemy.PlayerDeathLaunch(player.transform.position, position);
+            Vector3 impact = enemy.PlayerDeathLaunch(victimPosition, position);
             player.SetDead("ZombieBomber", impact, enemy.PlayerDeathRotation(impact));
         }
     }

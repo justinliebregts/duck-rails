@@ -106,7 +106,7 @@ public class Helicopter : MonoBehaviour
         // Auto-sync stays off. Flush once, after moving both cabin and passenger,
         // only when the cabin moved; upcoming player casts must see the new floor.
         if (moved)
-            Physics.SyncTransforms();
+            NewPlayer.SyncTransformsPreservingMovementPose();
     }
 
     void CacheLocalPlayer()

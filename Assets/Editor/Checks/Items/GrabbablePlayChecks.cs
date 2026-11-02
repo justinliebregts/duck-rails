@@ -47,10 +47,13 @@ public static class GrabbablePlayChecks
         view.OwnerActorNr = PhotonNetwork.LocalPlayer.ActorNumber;
         var handGo = new GameObject("Moving hand"); var hand = handGo.AddComponent<PlayerHand>(); hand.enabled = false;
         item.transform.position = new Vector3(-1, .5f, 0); item.Grab(hand);
-        Check(item.IsHeld, "Actual grab"); item.enabled = false; // Drive only the method under test.
+        // OnDisable intentionally cancels the hold. Keep the real lifecycle active
+        // while checking idle/restarted sweeps; disabling here invalidates the grab.
+        Check(item.IsHeld, "Actual grab");
         var swing = (Action)Delegate.CreateDelegate(typeof(Action), item, typeof(PhotonGrabbable).GetMethod("TickSwing", P));
         swing(); PhotonGrabbable.ResetProfiling();
         for (int i = 0; i < 10; i++) { yield return null; swing(); }
+        Check(item.IsHeld && item.transform.IsChildOf(hand.HoldPoint), "Idle fixture must remain held");
         Check(PhotonGrabbable.IdleSkips > 0 && !enemy.SwingLocked, "Idle hand does not hit");
         yield return null;
         handGo.transform.position += Vector3.right * 2; Physics.SyncTransforms(); swing();

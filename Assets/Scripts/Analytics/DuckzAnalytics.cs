@@ -454,6 +454,8 @@ public sealed class DuckzAnalytics : MonoBehaviour
             return true;
         if (GR.Player.instance != null)
         {
+            if (GR.Player.instance.TryGetHeadPivotHeadPosition(out head))
+                return true;
             head = GR.Player.instance.transform.position;
             return true;
         }

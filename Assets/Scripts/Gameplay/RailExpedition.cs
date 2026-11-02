@@ -104,7 +104,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     public static bool Position(int actor, out Vector3 point)
     {
         if (PhotonNetwork.LocalPlayer != null && actor == PhotonNetwork.LocalPlayer.ActorNumber && GR.Player.instance != null)
-        { point = GR.Player.instance.transform.position + Vector3.up * .8f; return true; }
+        { point = GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position) + Vector3.up * .8f; return true; }
         var p = PhotonPlayer.ForActor(actor);
         if (p != null && p.TryGetHeadPosition(out point)) return true;
         point = default; return false;
@@ -393,8 +393,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             results.text = (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
                 string.Join("\n", State.players.Select(p => Safe(p.name) + " — " + (p.escaped ? "Escaped" : "Didn't make it") + "\n<size=65%>Coal " + p.coal + "   Revives " + p.revives + "   Downs " + p.downs + "   Honks " + p.horns + "  •  " + Award(p) + "</size>"));
             if (caughtRun != State.run)
-            { caughtRun = State.run; if (GR.Player.instance != null && !RailTrain.Instance.Contains(GR.Player.instance.transform.position + Vector3.up * .5f)) TeleportAboard(); }
-            if (GR.Player.instance != null && !RailTrain.Instance.Contains(GR.Player.instance.transform.position + Vector3.up))
+            { caughtRun = State.run; if (GR.Player.instance != null && !RailTrain.Instance.Contains(GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position) + Vector3.up * .5f)) TeleportAboard(); }
+            if (GR.Player.instance != null && !RailTrain.Instance.Contains(GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position) + Vector3.up))
             { if (fallAt <= 0) fallAt = now; if (now - fallAt > 2) TeleportAboard(); }
             else fallAt = 0;
             if (State.success && now - State.finishedAt > 14)

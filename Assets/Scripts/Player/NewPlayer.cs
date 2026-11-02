@@ -9,7 +9,7 @@ using UnityEngine.XR;
 // using Sirenix.OdinInspector;
 // using UnityEngine.Splines;
 
-public class NewPlayer : MonoBehaviour
+public partial class NewPlayer : MonoBehaviour
     {
         public static NewPlayer instance;
 
@@ -150,6 +150,7 @@ public class NewPlayer : MonoBehaviour
         {
           instance = this;
           _bodyDriver = GetComponent<LocalBodyDriver>();
+          InitializeMovementPresentation();
           InitializeValues();
           headBodyOffset = Quaternion.Inverse(headCollider.transform.rotation) * (bodyCollider.transform.position - headCollider.transform.position);
           envLayer = LayerMask.NameToLayer("Environment");
@@ -190,6 +191,7 @@ public class NewPlayer : MonoBehaviour
 
         public void InitializeValues()
         {
+            movementRenderCount = 0;
             if (velocityHistory == null || velocityHistory.Length != velocityHistorySize)
             {
                 velocityHistory = new Vector3[velocityHistorySize];
@@ -211,6 +213,8 @@ public class NewPlayer : MonoBehaviour
             denormalizedVelocityAverage = Vector3.zero;
             velocityIndex = 0;
             lastPosition = transform.position;
+            lastHeadPosition = MovementAnchorPosition(lastHeadPosition);
+            lastPosition = MovementAnchorPosition(lastPosition);
             SeedHandLocomotionSamples(false);
             SeedHandLocomotionSamples(true);
         }
@@ -243,6 +247,12 @@ public class NewPlayer : MonoBehaviour
         }
 
         public void Warp(Vector3 pos) {
+          // A warp between pose restoration and rendering must not be interpolated away.
+          movementPoseRenderCancelled = true;
+          // Warp destinations describe where the player stands, even after room-scale walking.
+          Vector3 headOffset = headCollider.transform.position - transform.position;
+          headOffset.y = 0f;
+          pos -= headOffset;
           if (HelicopterManager.instance != null) HelicopterManager.instance.ReleasePassenger();
           // print("Warp: " + pos);
           transform.position = pos;
@@ -260,9 +270,14 @@ public class NewPlayer : MonoBehaviour
         }
 
         public void ApplyPassengerDisplacement(Vector3 delta) {
+          if (delta.Equals(Vector3.zero)) return;
           Vector3 position = transform.position + delta;
+          // Apply carry to each pose, not the older displayed pose back into physics.
+          Vector3 physicsPosition = rb.position + delta;
           transform.position = position;
-          rb.position = position;
+          rb.position = physicsPosition;
+          ShiftMovementRenderHistory(delta);
+          QueueMovementPoseRestore();
           lastHeadPosition += delta;
           lastBodyMidpoint += delta;
           lastLeftHandPosition += delta;
@@ -272,7 +287,7 @@ public class NewPlayer : MonoBehaviour
           for (int i = 0; i < lastLeftLocoCount; i++) lastLeftLocoSamples[i] += delta;
           for (int i = 0; i < lastRightLocoCount; i++) lastRightLocoSamples[i] += delta;
           // Preserve real player velocity, contact state and jump history. Warp()
-          // resets those and allocates a new history, so it is not a carry operation.
+          // resets those, so it is not a carry operation.
         }
 
         public Vector3 PassengerFoot => bodyCollider.transform.TransformPoint(bodyCollider.center)
@@ -343,6 +358,8 @@ public class NewPlayer : MonoBehaviour
             {
                 for (int i = 0; i < count; i++)
                     last[i] = current[i];
+                for (int i = 0; i < count; i++)
+                    last[i] = MovementAnchorPosition(last[i]);
                 if (rightHand)
                 {
                     lastRightLocoCount = count;
@@ -360,11 +377,13 @@ public class NewPlayer : MonoBehaviour
                 {
                     lastRightLocoCount = 0;
                     lastRightHandPosition = CurrentRightHandPosition();
+                    lastRightHandPosition = MovementAnchorPosition(lastRightHandPosition);
                 }
                 else
                 {
                     lastLeftLocoCount = 0;
                     lastLeftHandPosition = CurrentLeftHandPosition();
+                    lastLeftHandPosition = MovementAnchorPosition(lastLeftHandPosition);
                 }
             }
         }
@@ -557,16 +576,10 @@ public class NewPlayer : MonoBehaviour
               jetpackVal = jetpackAxis.y;
             }
 
-            Vector3 diff = headCollider.transform.position - transform.position;
-            diff.y = 0f;
-            trackingSpace.position -= diff;
-            rb.position += diff;
-
             float headEyeOffsetY = headCollider.transform.position.y - headEyeOffset.position.y;
             Vector3 newBodyPos = headCollider.transform.position + (BodyForwardRot() * headBodyOffset);
             newBodyPos.y += headEyeOffsetY;
             bodyCollider.transform.position = newBodyPos;
-
 
             if(doMove) {
               MoveFromStick(moveInput, jetpackVal, dTime);
@@ -671,6 +684,8 @@ public class NewPlayer : MonoBehaviour
 
         Vector3 lastBodyMidpoint = Vector3.zero;
         void Movement(float dTime) {
+            bool separateMovementPose = BeginPhysicalMovement(out Pose displayedMovementPose, out Vector3 movementPhysicsStart);
+            bool bodyRenderCorrection = false;
             leftPassengerSupport = rightPassengerSupport = null;
             // Held items are parented to the duck hands. Pose them from the current anchors before the spherecasts.
             if (_bodyDriver != null)
@@ -707,11 +722,7 @@ public class NewPlayer : MonoBehaviour
             newBodyPos.y += headEyeOffsetY;
             bodyCollider.transform.position = newBodyPos;
 
-            //moving player so head is at origin so rotating is always around the head
-            Vector3 diff = headCollider.transform.position - transform.position;
-        		diff.y = 0f;
-            trackingSpace.position -= diff;
-        		rb.position += diff;
+
         		// trackingSpace.position = new Vector3(trackingSpace.position.x, transform.position.y + duckOffset.y, trackingSpace.position.z);
             //left hand
 
@@ -735,16 +746,23 @@ public class NewPlayer : MonoBehaviour
             //     }
             // }
 
-            rb.MovePosition(rb.position + hookVel + jetVel + wingVel);
+            // Don't submit a physics target when these movement sources are inactive.
+            if (hookVel != Vector3.zero || jetVel != Vector3.zero || wingVel != Vector3.zero)
+                rb.MovePosition(rb.position + hookVel + jetVel + wingVel);
             Vector3 bodyDiff = bodyMidpoint.position - lastBodyMidpoint;
             // print("bheight: " + bodyCollider.height + " : "+ bodyCollider.radius + " : " + bodyHalfHeight);
             if(Physics.Raycast(lastBodyMidpoint, bodyDiff, out RaycastHit hit, bodyDiff.magnitude, envMask, QueryTriggerInteraction.Ignore)) {
+              bodyRenderCorrection = true;
               // Debug.LogError("tunneled: ");
               // GRUtility.PrintHierarchyOfGameObject(hit.transform.gameObject);
               // Debug.DrawLine(lastBodyMidpoint, bodyMidpoint.position, Color.red, 5f);
               // Debug.DrawLine(bodyMidpoint.position, hit.point + (hit.normal * (bodyHalfHeight + 0.05f)), Color.green, 5f);
               // rb.position += hit.point + (hit.normal * (bodyCollider.radius + 0.05f)) - bodyMidpoint.position;
-              rb.position = hit.point + (hit.normal * (bodyHalfHeight + 0.05f));
+              // The sweep constrains the body midpoint, not an off-centre rig origin.
+              Vector3 safeMidpoint = hit.point + hit.normal * (bodyHalfHeight + 0.05f);
+              Vector3 safeRoot = transform.position + safeMidpoint - bodyMidpoint.position;
+              transform.position = safeRoot;
+              rb.position = safeRoot;
             }
 
             //TODO(Ken): enable check so head can't go through ground, similar to how body is done
@@ -786,7 +804,6 @@ public class NewPlayer : MonoBehaviour
             {
                 rigidBodyMovement = firstIterationLeftHand + firstIterationRightHand;
             }
-
             //check valid head movement
 
             if (IterativeCollisionSphereCast(lastHeadPosition, headCollider.radius, headCollider.transform.position + rigidBodyMovement - lastHeadPosition, defaultPrecision, out finalPosition, false))
@@ -806,6 +823,10 @@ public class NewPlayer : MonoBehaviour
             if (rigidBodyMovement != Vector3.zero && !isHookPulling && !jetting && !glidering)
             {
                 transform.position = transform.position + rigidBodyMovement;
+                // Interpolated bodies own the displayed Transform. Preserve the accepted
+                // collision correction in physics as well, or the next frame discards it.
+                if (rb.interpolation != RigidbodyInterpolation.None)
+                    rb.position = transform.position;
             }
 
             lastHeadPosition = headCollider.transform.position;
@@ -900,7 +921,7 @@ public class NewPlayer : MonoBehaviour
             }
 
             lastBodyMidpoint = bodyMidpoint.position;
-
+            if (separateMovementPose) EndPhysicalMovement(displayedMovementPose, movementPhysicsStart, bodyRenderCorrection || headColliding);
         }
 
         void SetLastLocoCount(bool rightHand, int count)
@@ -1220,9 +1241,27 @@ public class NewPlayer : MonoBehaviour
         // bool turned;
         public void Turn(float degrees)
         {
-          var euler = transform.rotation.eulerAngles;
-          euler.y += degrees;
-          rb.rotation = Quaternion.Euler(euler);
+          if (degrees == 0f) return;
+          Vector3 beforeTurn = transform.position;
+          Vector3 beforePhysicsTurn = rb.position;
+          Quaternion pivotRotation = Quaternion.AngleAxis(degrees, transform.up);
+          // Native interpolation can display an older pose. Rotate the physics pose
+          // around its own corresponding head position instead of overwriting it
+          // with that older displayed pose (which would discard coasting travel).
+          Vector3 physicsHeadOffset = rb.rotation * (Quaternion.Inverse(transform.rotation)
+              * (headCollider.transform.position - beforeTurn));
+          Vector3 turnedPhysicsPosition = rb.position + physicsHeadOffset - pivotRotation * physicsHeadOffset;
+          Quaternion turnedPhysicsRotation = pivotRotation * rb.rotation;
+          // Same pivot operation as Another-Axiom/GorillaLocomotion Player.Turn.
+          transform.RotateAround(headCollider.transform.position, transform.up, degrees);
+          rb.position = turnedPhysicsPosition;
+          rb.rotation = turnedPhysicsRotation;
+          ShiftMovementRenderHistory(turnedPhysicsPosition - beforePhysicsTurn);
+          QueueMovementPoseRestore();
+          // A change of pivot is not locomotion and must not become a launch impulse.
+          Vector3 pivotShift = transform.position - beforeTurn;
+          lastPosition += pivotShift;
+          lastPos += pivotShift;
           Quaternion turn = Quaternion.Euler(0f, degrees, 0f);
           denormalizedVelocityAverage = turn * denormalizedVelocityAverage;
 

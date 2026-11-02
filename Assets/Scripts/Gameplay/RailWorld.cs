@@ -193,7 +193,7 @@ public sealed class RailWorld : MonoBehaviour
         GUILayout.BeginArea(new Rect(20, 145, 370, 420), GUI.skin.box);
         GUILayout.Label("SESSION CONTROLS");
         GUI.enabled = session.WorldReady;
-        bool nearTerminal = privateTerminal != null && GR.Player.instance != null && Vector3.Distance(GR.Player.instance.transform.position, privateTerminal.position) < 4;
+        bool nearTerminal = privateTerminal != null && GR.Player.instance != null && Vector3.Distance(GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position), privateTerminal.position) < 4;
         if (!PhotonSession.OnTrain && nearTerminal)
         {
             GUILayout.Label("Five-digit code: create private or join any room");

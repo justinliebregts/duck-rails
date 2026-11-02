@@ -91,13 +91,19 @@ public class KillTrigger : MonoBehaviour
             if (CompanionKiller != null) GR.Player.instance.SetDeadFromDuck(CompanionKiller, CompanionAttack);
             else if (enemy != null)
             {
-                Vector3 impact = enemy.PlayerDeathLaunch(GR.Player.instance.transform.position,
+                Vector3 victimPosition = GR.Player.instance.transform.position;
+                victimPosition = GR.Player.instance.HeadCenteredGameplayPosition(victimPosition);
+                Vector3 impact = enemy.PlayerDeathLaunch(victimPosition,
                     enemy.Root != null ? enemy.Root.position : enemy.transform.position);
                 GR.Player.instance.SetDead(enemy.gameObject.name, impact, enemy.PlayerDeathRotation(impact));
             }
             else GR.Player.instance.SetDead("hazard");
             if (spider != null) spider.ObserveKillScar(scarPosition);
-            if (enemy != null) enemy.SubmitPlayerKill(other.attachedRigidbody.position);
+            if (enemy != null) {
+                Vector3 reportPosition = other.attachedRigidbody.position;
+                reportPosition = GR.Player.instance.HeadCenteredGameplayPosition(reportPosition);
+                enemy.SubmitPlayerKill(reportPosition);
+            }
             DeathProfile.Accepted++;
             using (DeathProfile.Listeners.Auto()) PlayerKilled?.Invoke();
             return true;

@@ -169,7 +169,7 @@ public class Ragdoll : MonoBehaviour
             bodies[i].position = bodyPositions[i];
             bodies[i].rotation = bodyRotations[i];
         }
-        Physics.SyncTransforms();
+        NewPlayer.SyncTransformsPreservingMovementPose();
         Vector3 bodyVelocity = Vector3.ClampMagnitude(launch.body, MaxLaunchSpeed);
         foreach (Rigidbody body in bodies)
         {

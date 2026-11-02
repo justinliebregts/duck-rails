@@ -45,7 +45,7 @@ public sealed class RailControl : MonoBehaviour
         if (action == Action.Drive) UpdateDrive();
         if (!PhotonSession.OnTrain || GR.Player.instance == null) return;
         var player = GR.Player.instance;
-        bool near = Vector3.Distance(player.transform.position, transform.position) < 3;
+        bool near = Vector3.Distance(player.HeadCenteredGameplayPosition(player.transform.position), transform.position) < 3;
         bool hand = (player.leftPlayerHand != null && Vector3.Distance(player.leftPlayerHand.transform.position, transform.position) < .3f) ||
             (player.rightPlayerHand != null && Vector3.Distance(player.rightPlayerHand.transform.position, transform.position) < .3f);
         bool desktopUse = false;

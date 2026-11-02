@@ -77,6 +77,7 @@ public class ItemSounds : MonoBehaviour
     Vector3 previousRigPosition;
     Quaternion previousRigRotation;
     Transform previousRig;
+    bool headCenteredSwingSample;
 
     public void ResetSwingState()
     {
@@ -103,6 +104,15 @@ public class ItemSounds : MonoBehaviour
         Vector3 position = swingSamplePoint != null ? swingSamplePoint.position :
             body != null ? transform.TransformPoint(body.centerOfMass) : transform.position;
         Vector3 rigPosition = rig != null ? rig.position : Vector3.zero;
+        Vector3 head = default;
+        bool headCentered = GR.Player.instance != null && GR.Player.instance.TryGetHeadPivotHeadPosition(out head);
+        if (headCentered) {
+            rigPosition.x = head.x;
+            rigPosition.z = head.z;
+        }
+        // Switching source (including headset loss/recovery) is not a hand swing.
+        if (headCentered != headCenteredSwingSample) hasSwingSample = false;
+        headCenteredSwingSample = headCentered;
         Quaternion rigRotation = rig != null ? rig.rotation : Quaternion.identity;
         Vector3 relative = Quaternion.Inverse(rigRotation) * (position - rigPosition);
         float dt = Time.deltaTime;

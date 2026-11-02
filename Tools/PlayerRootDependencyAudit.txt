@@ -1,0 +1,55 @@
+PLAYER ROOT DEPENDENCIES - production movement, 2026-10-30
+
+The earlier audit inspected 201 authored scripts, broader runtime references and
+239 prefab/scene assets. This update promotes the validated findings to all builds;
+it does not claim exhaustive proof of every scene/third-party behavior. Historical
+detail is in .utmp/movement-production/archived/Tools/PlayerRootDependencyAudit.txt.
+
+VR turns around the tracked head instead of continuously recentering the root.
+The root still drives physics and hierarchy, but room-scale walking can leave it
+away from the player's horizontal gameplay location. Desktop continues using its
+CharacterController root. Do not replace hierarchy/ownership references.
+
+Active corrections, present in release and development
+- Player.HeadCenteredGameplayPosition replaces only X/Z with the tracked head;
+  it preserves the caller's Y. The movement component must own the same GameObject
+  and have a valid head. Desktop, foreign singleton and missing-head cases retain
+  the caller's original position.
+- Death flare/blood fallback/raycast, bomber distance/launch and enemy contact
+  launch/report use that helper. Heights, radius rules, existing raycasts,
+  duplicate/dead/grace guards and network payloads are unchanged.
+- ItemSounds subtracts horizontal headset translation for held swings; root Y and
+  rotation, thresholds, cooldown and throw behavior are retained. Source changes
+  reset the prior sample. Analytics prefers the avatar head, then tracked VR head,
+  then existing root/camera fallback. No SDK/network behavior changes.
+Helpers read poses; they do not move roots, add queries or allocate in warmed paths.
+See Movement-README.txt for regression coverage.
+
+Existing roots/anchors retained
+- Enemy/companion targeting, gaze, collection, PvP distance and dialogue/navigation
+  already use appropriate head/chest/hand/watch anchors.
+- Avatar networking captures head/hand sources; active body drivers follow them.
+- Ragdoll container starts at root, then source hip/limb world poses place its body.
+  It detaches before warp; existing sync protects the VR physics pose.
+- Helicopter support uses body/desktop anchors and collider geometry. Carry moves
+  both physics/display poses. Root ownership checks remain valid.
+- Respawn uses Warp/DesktopTeleport. Menus/equipment/inventory use tracked anchors.
+  Player.bottom is under DuckPlayer's head-following body collider.
+
+Conditional/inactive findings for future changes
+- PlayerFootstepAudio root sampling is authored only on DesktopPlayer. Revisit if
+  attaching it to VR.
+- Root travel counters have no active achievement consumers in inspected code;
+  LaunchVelToReachPoint has only a commented caller and zipline search is unused.
+- LoginView/DesktopPlay place their separate login/editor setup rigs.
+- VoicePatrolManager warning positions use PhotonPlayer's spawn root, but authored
+  warning/toxic-speech sounds are nonspatial with no distance culling. Revisit
+  position/voice budgeting if making them spatial.
+- PlayerIK rootSource has no authored consumers found; it is not the active
+  LocalBodyDriver/RemotePlayerBody pipeline.
+- LCK follow defaults to HMD; no authored SetFollowTarget callers were found.
+  The legacy Gorilla Rig prefab is separate from DuckPlayer.
+
+Offline regressions cover gameplay decisions, missing/foreign-head fallback,
+desktop, death/respawn/effects, helicopter and network serialization. Final headset
+and live multiplayer play remain useful integration checks.
