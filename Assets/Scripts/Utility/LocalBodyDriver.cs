@@ -24,6 +24,14 @@ namespace Game.Animation
         public Transform LeftHandAnchor => leftHandAnchor;
         public Transform RightHandAnchor => rightHandAnchor;
 
+        // Local IK, Photon and death velocity sampling share this calibrated pose.
+        // Desktop/NPC drivers receive the original anchors.
+        public Transform LeftPalmSource => PalmCalibration.Source(true);
+        public Transform RightPalmSource => PalmCalibration.Source(false);
+        ControllerPalmCalibration _palmCalibration;
+        ControllerPalmCalibration PalmCalibration => _palmCalibration ??= new ControllerPalmCalibration(this);
+        void OnDestroy() => _palmCalibration?.Dispose();
+
         void OnEnable()
         {
             Active.Add(this);
@@ -203,8 +211,9 @@ namespace Game.Animation
             rightHandAnchor = rightHand;
             if (poseBody != null)
                 body = poseBody;
+            _palmCalibration?.Refresh();
             if (_velocity != null)
-                _velocity.Track(headAnchor, leftHandAnchor, rightHandAnchor);
+                _velocity.Track(headAnchor, LeftPalmSource, RightPalmSource);
         }
         [SerializeField] Renderer[] hiddenWhenLocal; // head/face/hair meshes
 
@@ -260,7 +269,7 @@ namespace Game.Animation
                     CreatorNametag.BindLocal(body.Chest);
             }
             _velocity = gameObject.AddComponent<VelocitySampler>();
-            _velocity.Track(headAnchor, leftHandAnchor, rightHandAnchor);
+            _velocity.Track(headAnchor, LeftPalmSource, RightPalmSource);
         }
 
         VelocitySampler _velocity;
@@ -315,10 +324,12 @@ namespace Game.Animation
             if (body.Chest != null)
                 CreatorNametag.BindLocal(body.Chest);
 
+            Transform leftPalm = LeftPalmSource;
+            Transform rightPalm = RightPalmSource;
             body.ApplyPose(new BodyPose {
                 headPos  = headAnchor.position,  headRot  = headAnchor.rotation,
-                lHandPos = leftHandAnchor.position,  lHandRot = leftHandAnchor.rotation,
-                rHandPos = rightHandAnchor.position, rHandRot = rightHandAnchor.rotation,
+                lHandPos = leftPalm.position,  lHandRot = leftPalm.rotation,
+                rHandPos = rightPalm.position, rHandRot = rightPalm.rotation,
             }, LookDownChestBack());
 
             if (controllerInput == null)

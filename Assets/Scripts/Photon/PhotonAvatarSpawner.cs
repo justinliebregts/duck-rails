@@ -53,7 +53,7 @@ public class PhotonAvatarSpawner : MonoBehaviour
 
         if (PhotonPlayer.Local != null)
         {
-            PhotonPlayer.Local.BindSources(driver.HeadAnchor, driver.LeftHandAnchor, driver.RightHandAnchor, driver);
+            PhotonPlayer.Local.BindSources(driver.HeadAnchor, driver.LeftPalmSource, driver.RightPalmSource, driver);
             _boundPlayer = PhotonPlayer.Local;
             return;
         }
@@ -66,7 +66,7 @@ public class PhotonAvatarSpawner : MonoBehaviour
         var head = driver.HeadAnchor;
         var avatar = PhotonNetwork.Instantiate(photonPlayerPrefab.name, head.position, head.rotation);
         var player = avatar.GetComponent<PhotonPlayer>();
-        player.BindSources(head, driver.LeftHandAnchor, driver.RightHandAnchor, driver);
+        player.BindSources(head, driver.LeftPalmSource, driver.RightPalmSource, driver);
         _boundPlayer = player;
         DuckzAnalytics.MarkAlive();
     }
