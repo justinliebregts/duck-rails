@@ -110,6 +110,7 @@ public static class ControllerPalmCalibrationChecks
                         corpse.Park(); remoteCorpse.Park();
                     }
                 }
+                CheckHandTrackingRotation(driver, remote, left, right);
                 driver.LeftHandAnchor.position = driver.HeadAnchor.position + Vector3.left * 3f;
                 driver.PoseNow();
                 Require(Vector3.Distance(body.LeftArm.RootPos, body.LeftHand.position) <= body.LeftArm.TotalReach + .0001f,
@@ -172,7 +173,61 @@ public static class ControllerPalmCalibrationChecks
         finally { EditorSceneManager.ClosePreviewScene(scene); }
         Directory.CreateDirectory(".utmp/ControllerCalibration");
         File.WriteAllText(".utmp/ControllerCalibration/result.txt", "PASS " + checks + " checks: permanent -2.8 cm Y, four skins, rotated/close/far targets, raw tracking unchanged, Photon serialization and held-item frames, ragdolls, desktop/NPC exclusions, reach/scale/rebinding/cleanup, zero allocation.\n");
-        Debug.Log("ControllerPalmCalibrationChecks PASS " + checks);
+        Debug.Log("ControllerPalmCalibrationChecks PASS " + checks + ": includes bare-hand orientation, tracking loss, input switching and Photon rotation parity");
+    }
+
+    static void CheckHandTrackingRotation(LocalBodyDriver driver, RemotePlayerBody remote, Transform left, Transform right)
+    {
+        var calibration = (ControllerPalmCalibration)typeof(LocalBodyDriver).GetField("_palmCalibration", Private).GetValue(driver);
+        var sample = typeof(ControllerPalmCalibration).GetMethod("Source", Private);
+        Transform Sample(bool isLeft, OVRInput.Controller active, bool tracked = true)
+            => (Transform)sample.Invoke(calibration, new object[] { isLeft, active, tracked });
+        var body = driver.Body;
+        foreach (var worldTurn in new[] { Quaternion.identity, Quaternion.Euler(25, 80, -40), Quaternion.Euler(180, -60, 30) })
+        {
+            driver.LeftHandAnchor.SetPositionAndRotation(new Vector3(-.22f, 2.23f, .3f), worldTurn);
+            driver.RightHandAnchor.SetPositionAndRotation(new Vector3(.22f, 2.23f, .3f), worldTurn);
+            Require(Sample(true, OVRInput.Controller.LHand) == left && Sample(false, OVRInput.Controller.RHand) == right,
+                "hand tracking retains bound source transforms");
+            driver.PoseNow();
+            // In the authored rig, -X/+X are the left/right palm normals, Y points toward the fingers,
+            // and Z points toward the thumb. Neutral tracked hands previously had inward palms/upward thumbs.
+            Near(body.LeftHand.rotation * Vector3.left, worldTurn * Vector3.down, "left tracked palm faces down");
+            Near(body.RightHand.rotation * Vector3.right, worldTurn * Vector3.down, "right tracked palm faces down");
+            Near(body.LeftHand.rotation * Vector3.forward, worldTurn * Vector3.right, "left tracked thumb points inward");
+            Near(body.RightHand.rotation * Vector3.forward, worldTurn * Vector3.left, "right tracked thumb points inward");
+            foreach (var hand in new[] { body.LeftHand, body.RightHand })
+                Near(hand.rotation * Vector3.up, worldTurn * Vector3.forward, "roll keeps finger direction");
+            Near(left.position, driver.LeftHandAnchor.position + worldTurn * ControllerPalmCalibration.ControllerLocalOffset, "orientation fix leaves left position mapping unchanged");
+            Near(right.position, driver.RightHandAnchor.position + worldTurn * ControllerPalmCalibration.ControllerLocalOffset, "orientation fix leaves right position mapping unchanged");
+            Require(Quaternion.Angle(driver.LeftHandAnchor.rotation, worldTurn) < .01f
+                && Quaternion.Angle(driver.RightHandAnchor.rotation, worldTurn) < .01f, "raw tracking rotations unchanged");
+            var packet = PosePacket.Capture(driver.HeadAnchor, left, right, default);
+            var decoded = (PosePacket)PosePacket.Deserialize((byte[])PosePacket.Serialize(packet));
+            remote.ApplyIKPreview(decoded.ToBodyPose());
+            Require(Quaternion.Angle(remote.LeftHand.rotation, body.LeftHand.rotation) < .05f
+                && Quaternion.Angle(remote.RightHand.rotation, body.RightHand.rotation) < .05f, "Photon applies hand correction exactly once");
+            Quaternion heldLeft = left.rotation, heldRight = right.rotation;
+            Sample(true, OVRInput.Controller.None, false);
+            Sample(false, OVRInput.Controller.RTouch, false);
+            Require(Quaternion.Angle(left.rotation, heldLeft) < .01f && Quaternion.Angle(right.rotation, heldRight) < .01f,
+                "tracking loss retains rotation until raw anchor updates");
+            Sample(true, OVRInput.Controller.LTouch);
+            Require(Quaternion.Angle(left.rotation, worldTurn) < .01f && Quaternion.Angle(right.rotation, heldRight) < .01f,
+                "mixed input changes only the controller hand");
+            Sample(false, OVRInput.Controller.RTouch);
+            driver.PoseNow();
+            Require(Quaternion.Angle(left.rotation, worldTurn) < .01f && Quaternion.Angle(right.rotation, worldTurn) < .01f,
+                "returning to controllers removes both corrections");
+            CheckArm(body.LeftArm, left, true); CheckArm(body.RightArm, right, true);
+        }
+        Sample(true, OVRInput.Controller.LHand); Sample(false, OVRInput.Controller.RHand);
+        driver.controllerInput.mouseGrip = true;
+        Require(driver.LeftPalmSource == left && driver.RightPalmSource == right, "desktop transition retains source identity");
+        Require(Quaternion.Angle(left.localRotation, Quaternion.identity) < .01f
+            && Quaternion.Angle(right.localRotation, Quaternion.identity) < .01f, "desktop clears hand-tracking correction");
+        driver.controllerInput.mouseGrip = false;
+        Sample(true, OVRInput.Controller.LTouch); Sample(false, OVRInput.Controller.RTouch);
     }
 
     static void BindCorpse(Ragdoll corpse, RemotePlayerBody body) { corpse.sourceHip = body.Chest; corpse.leftHandSource = body.LeftHand; corpse.rightHandSource = body.RightHand; corpse.Park(); }
