@@ -1,0 +1,8 @@
+PASS Unity runtime/editor compilation
+PASS completed callback does not wait
+PASS expired callback terminates
+PASS pending callback releases on completion
+PASS authenticated Manual sandbox with saved block order enabled: Motel, Depot, Campground
+PASS observed Ready with Expedition and route lighting loaded at runner elapsed 46 seconds
+LIMIT original indefinite hang not reproduced; no proven external failure cause
+LIMIT no forced backend timeout or headset/multi-client test

@@ -23,7 +23,7 @@ public static class MetaQuestAuth
         public Identity Identity;
     }
 
-    public static IEnumerator SignIn(Action<Result> completed)
+    public static IEnumerator SignIn(Action<Result> completed, Action<string> progress = null)
     {
 #if UNITY_EDITOR
         if (PlatformSettings.UseStandalonePlatform && !MppmStandaloneCredentials.TryApplyForCurrentPlayer(out string editorError))
@@ -42,6 +42,7 @@ public static class MetaQuestAuth
 
         if (!Core.IsInitialized())
         {
+            progress?.Invoke("Starting Meta platform...");
             yield return Initialize(value => result = value);
             if (result != null)
             {
@@ -50,6 +51,7 @@ public static class MetaQuestAuth
             }
         }
 
+        progress?.Invoke("Checking Meta entitlement...");
         yield return CheckEntitlement(value => result = value);
         if (result != null)
         {
@@ -58,6 +60,7 @@ public static class MetaQuestAuth
         }
 
         User user = null;
+        progress?.Invoke("Reading Meta account...");
         yield return GetLoggedInUser(
             value => user = value,
             value => result = value);
@@ -68,6 +71,7 @@ public static class MetaQuestAuth
         }
 
         string orgScopedId = null;
+        progress?.Invoke("Reading Meta organization identity...");
         yield return GetOrgScopedId(
             user.ID,
             value => orgScopedId = value,
@@ -83,6 +87,7 @@ public static class MetaQuestAuth
 #endif
 
         string nonce = null;
+        progress?.Invoke("Getting Meta sign-in proof...");
         yield return GetUserProof(
             value => nonce = value,
             value => result = value);
@@ -126,8 +131,12 @@ public static class MetaQuestAuth
             yield break;
         }
 
-        while (!finished)
-            yield return null;
+        yield return WaitForCallback(() => finished, "Initialize");
+        if (!finished)
+        {
+            failed(Retry("Meta Initialize timed out after 30 seconds."));
+            yield break;
+        }
 
         if (message == null || message.IsError || message.Data == null || message.Data.Result != PlatformInitializeResult.Success)
         {
@@ -157,8 +166,12 @@ public static class MetaQuestAuth
             yield break;
         }
 
-        while (!finished)
-            yield return null;
+        yield return WaitForCallback(() => finished, "CheckEntitlement");
+        if (!finished)
+        {
+            failed(Retry("Meta CheckEntitlement timed out after 30 seconds."));
+            yield break;
+        }
 
         if (message == null || message.IsError)
         {
@@ -190,8 +203,12 @@ public static class MetaQuestAuth
             yield break;
         }
 
-        while (!finished)
-            yield return null;
+        yield return WaitForCallback(() => finished, "GetLoggedInUser");
+        if (!finished)
+        {
+            failed(Retry("Meta GetLoggedInUser timed out after 30 seconds."));
+            yield break;
+        }
 
         if (message == null || message.IsError || message.Data == null || message.Data.ID == 0)
         {
@@ -225,8 +242,12 @@ public static class MetaQuestAuth
             yield break;
         }
 
-        while (!finished)
-            yield return null;
+        yield return WaitForCallback(() => finished, "GetOrgScopedId");
+        if (!finished)
+        {
+            failed(Retry("Meta GetOrgScopedId timed out after 30 seconds."));
+            yield break;
+        }
 
         string orgScopedId = message != null && !message.IsError && message.Data != null
             ? message.Data.ID.ToString()
@@ -261,8 +282,12 @@ public static class MetaQuestAuth
             yield break;
         }
 
-        while (!finished)
-            yield return null;
+        yield return WaitForCallback(() => finished, "GetUserProof");
+        if (!finished)
+        {
+            failed(Retry("Meta GetUserProof timed out after 30 seconds."));
+            yield break;
+        }
 
         string nonce = message != null && !message.IsError && message.Data != null
             ? message.Data.Value
@@ -305,8 +330,12 @@ public static class MetaQuestAuth
             finished = true;
         });
 
-        while (!finished)
-            yield return null;
+        yield return WaitForCallback(() => finished, "GetIntegrityToken");
+        if (!finished)
+        {
+            failed("Meta GetIntegrityToken timed out after 30 seconds.");
+            yield break;
+        }
 
         string token = message != null && !message.IsError ? message.Data : null;
         if (!string.IsNullOrEmpty(token) && token.Length >= 2 && token[0] == '"' && token[token.Length - 1] == '"')
@@ -319,6 +348,17 @@ public static class MetaQuestAuth
         }
 
         succeeded(token);
+    }
+
+    // Late callbacks update only the abandoned invocation's locals.
+    public static IEnumerator WaitForCallback(Func<bool> finished, string stage, float timeout = 30f)
+    {
+        double started = Time.realtimeSinceStartupAsDouble;
+        Debug.Log("[SignIn] Meta " + stage + " started");
+        while (!finished() && Time.realtimeSinceStartupAsDouble - started < timeout)
+            yield return null;
+        Debug.Log("[SignIn] Meta " + stage + (finished() ? " callback received after " : " timed out after ") +
+            (Time.realtimeSinceStartupAsDouble - started).ToString("F1") + "s");
     }
 
     static string ChallengeNonce()

@@ -27,7 +27,7 @@ public static class AccountSignIn
             Report(status, "Signing in...");
 
             MetaQuestAuth.Result auth = null;
-            yield return MetaQuestAuth.SignIn(value => auth = value);
+            yield return MetaQuestAuth.SignIn(value => auth = value, stage => Report(status, stage));
 
             if (auth.NotEntitled)
             {
@@ -39,19 +39,20 @@ public static class AccountSignIn
             if (!auth.Success)
             {
                 ReportFailure(status, auth.Message, "Sign-in failed. Retrying...", "meta-auth");
-                yield return new WaitForSeconds(retryDelaySeconds);
+                yield return new WaitForSecondsRealtime(retryDelaySeconds);
                 continue;
             }
 
             UpdateUserPlayerPrefsScope(auth.Identity);
 
+            Report(status, "Contacting Duck Rails account server...");
             GameSessionClient.Result account = null;
             yield return GameSessionClient.Register(config.backendBaseUrl, auth.Identity, value => account = value);
 
             if (account.Retry)
             {
                 ReportFailure(status, account.Message, "Sign-in unavailable. Retrying...", "backend-retry");
-                yield return new WaitForSeconds(retryDelaySeconds);
+                yield return new WaitForSecondsRealtime(retryDelaySeconds);
                 continue;
             }
 
@@ -113,7 +114,7 @@ public static class AccountSignIn
         if (string.IsNullOrEmpty(message))
             message = "Signing in...";
 
-        DuckzLog.Log(message);
+        Debug.Log("[SignIn] " + message);
         status?.Invoke(displayMessage ?? message);
     }
 }

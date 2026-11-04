@@ -71,18 +71,47 @@ public sealed class RailRoute : MonoBehaviour
     }
     public void Build(RailRouteState state)
     {
-        if (state.blocks == null || state.blocks.Length != 5 || state.blocks.Distinct().Count() != 5 ||
-            state.variations?.Length != 5 || state.placements?.Length != 5) throw new InvalidOperationException("Invalid retained route.");
+        Validate(state, catalog);
+        int count = state.blocks.Length;
+        float z = StartZ + state.blocks.Sum(id => catalog.Single(b => b.id == id).length);
+        BuildValidated(state, count, z);
+    }
+    public static RailRouteState ChooseOrdered(string run, RailBlock[] blocks, int seed)
+    {
+        if (blocks == null || blocks.Length == 0 || blocks.Any(b => b == null || b.variations == null || b.variations.Length == 0))
+            throw new ArgumentException("Select at least one scavenging block with spawn variations.");
+        var rng = new System.Random(seed);
+        var state = new RailRouteState { run = run, enemySeed = seed, blocks = blocks.Select(b => b.id).ToArray(),
+            variations = new int[blocks.Length], placements = new Vector3[blocks.Length] };
+        float z = StartZ;
+        for (int i = 0; i < blocks.Length; i++)
+        {
+            state.variations[i] = rng.Next(blocks[i].variations.Length);
+            state.placements[i] = Vector3.forward * z; z += blocks[i].length;
+        }
+        Validate(state, blocks);
+        return state;
+    }
+    public static void Validate(RailRouteState state, RailBlock[] catalog)
+    {
+        int count = state?.blocks?.Length ?? 0;
+        if (count == 0 || state.blocks.Distinct().Count() != count ||
+            state.variations?.Length != count || state.placements?.Length != count)
+            throw new InvalidOperationException("Select one or more different scavenging blocks (no duplicates).");
         // Validate everything before replacing the current presentation.
         float z = StartZ;
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < count; i++)
         {
             var asset = catalog.Single(b => b.id == state.blocks[i]);
-            if (state.variations[i] < 0 || state.variations[i] >= asset.variations.Length ||
+            if (asset.variations == null || state.variations[i] < 0 || state.variations[i] >= asset.variations.Length ||
+                !float.IsFinite(state.placements[i].sqrMagnitude) || !float.IsFinite(asset.length) || asset.length <= 0 ||
                 Vector3.Distance(state.placements[i], new Vector3(0, 0, z)) > .001f || asset.graph == null)
                 throw new InvalidOperationException("Incompatible block placement/variation.");
             z += asset.length;
         }
+    }
+    void BuildValidated(RailRouteState state, int count, float z)
+    {
         geometryReady = false;
         foreach (var block in Blocks) if (block != null) Destroy(block.gameObject);
         Blocks.Clear(); var coal = new List<Transform>(); var enemies = new List<Transform>(); var gold = new List<Transform>();
@@ -90,7 +119,7 @@ public sealed class RailRoute : MonoBehaviour
         var enemyTypes = new List<int>();
         var encounterRandom = new System.Random(state.enemySeed);
         float distance = StationDepartureLength;
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < count; i++)
         {
             var block = Instantiate(catalog.Single(b => b.id == state.blocks[i]), state.placements[i], Quaternion.identity, transform);
             Blocks.Add(block); distance += block.TrackLength;
@@ -99,7 +128,7 @@ public sealed class RailRoute : MonoBehaviour
             gold.AddRange(block.variations[state.variations[i]].gold ?? Array.Empty<Transform>());
             graphs.Add(Game.AI.CrawlGraph.Load(block.graph)); offsets.Add(block.transform.position);
         }
-        if (midpointShop != null) midpointShop.position = state.placements[2] + new Vector3(-16, 0, 148);
+        if (midpointShop != null) midpointShop.position = state.placements[count / 2] + new Vector3(-16, 0, 148);
         expedition.goldPoints = gold.ToArray();
         FinaleStart = distance;
         finaleRoot.position = new Vector3(0, 0, z);

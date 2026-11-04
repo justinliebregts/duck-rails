@@ -80,7 +80,12 @@ public static class GameSessionClient
 
             request.SetRequestHeader("Authorization", "Bearer " + attestationToken);
 #endif
+            request.timeout = 30;
+            double started = Time.realtimeSinceStartupAsDouble;
+            Debug.Log("[SignIn] Account registration started (30s timeout)");
             yield return request.SendWebRequest();
+            Debug.Log("[SignIn] Account registration finished: " + request.result + " HTTP " + request.responseCode +
+                " after " + (Time.realtimeSinceStartupAsDouble - started).ToString("F1") + "s");
 
             long code = request.responseCode;
             AccountResponse body = Parse(request.downloadHandler.text);

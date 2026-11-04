@@ -97,6 +97,7 @@ public class LoginFlow : MonoBehaviour
     void SetStatus(string message)
     {
         _requestedStatus = message;
+        PhotonSession.Instance?.SetEditorSignInStatus(message);
         RefreshStatus();
     }
 

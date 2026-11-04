@@ -40,6 +40,16 @@ The second account must also be entitled to the Duck Rails Meta app and permitte
 
 ## Verification and remaining work
 
+### Manual sandbox login progress — November 4, 2026
+
+Reported: Manual sandbox with Test Block Order enabled remained at "Signing in...". The reported run had already stopped when inspected. Source inspection found unbounded waits for Meta callbacks and no UnityWebRequest timeout on account registration; this is a recovery/visibility defect, not proof of which service stalled in that run.
+
+Login now displays each Meta stage and account registration separately, with the same status and elapsed time in Test Center. Console messages prefixed `[SignIn]` record callback start/completion/timeout and registration result, HTTP code and duration without adding credential/payload logging. Meta callback waits and account registration have 30-second limits; failed attempts use the existing retry flow with realtime retry delays. Authentication/entitlement checks remain mandatory. Late Meta callbacks only update locals belonging to their original attempt.
+
+Compilation and three callback-wait checks passed. An authenticated Manual sandbox run with the user's saved Motel → Depot → Campground order was observed ready in Expedition at runner elapsed 46 seconds, including route lighting. The indefinite stall was not reproduced and its original root cause remains unconfirmed. No forced backend-timeout, headset or multi-client validation is claimed. [Evidence](validation/login-progress/checks.txt).
+
+User follow-up: the user reports the startup issue appears fixed after these changes. The original stalled stage remains unconfirmed.
+
 On October 28, 2026, `go test ./middleware ./config ./handler -count=1` passed, including a new multipart Unity request/session-response test and existing valid/invalid Editor proof checks. `go build` passed. `dotnet build Assembly-CSharp.csproj` passed with 429 warnings and zero errors. These are source-level/local checks; Meta is stubbed in the backend contract test.
 
 Justin confirmed backend deployment and Photon authentication setup completed on October 28. The Week 1 implementation subsequently exercised real Meta/backend sign-in and authenticated Photon room entry with DesktopPlayer. Rejected credentials, session refresh, multiple concurrent accounts and headset behavior still require their own evidence. See `week1-session.md`; no multi-client acceptance is claimed from compilation or one desktop client.

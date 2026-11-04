@@ -301,3 +301,7 @@ Scope exclusions do not prevent reusing an already-working Duckz feature when it
 
 
 Confirmed October 30 coal tuning: twice the authored coal (six chunks per stop), half the furnace value (2.5 fuel per chunk), preserving total authored fuel per stop.
+
+November 4 testing convenience: user authorized an **Invincible from enemies** checkbox in Duck Rails Tests. It is a saved, local private-development override for enemy contacts and bomber blasts; normal enemy/downing rules remain the gameplay default. See [testing tools](testing-tools.md#enemy-invincibility-in-test-center).
+
+November 4 test workflow: the user authorized a saved, reorderable prefab list in Duck Rails Tests. Private editor-hosted development runs can use one or more distinct scavenging blocks in exact list order, with the station and finale added automatically. Normal gameplay retains five randomized distinct stops. See [Test Block Order](testing-tools.md#test-block-order--november-4-2026) for usage and validation limits.

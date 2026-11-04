@@ -99,7 +99,7 @@ public sealed class ZombieBomberExplode : MonoBehaviourPun
         // GR.Player is the local DuckPlayer or DesktopPlayer, not a remote Photon avatar.
         // SetDead handles local ragdoll/respawn; PhotonPlayer replicates the death state.
         var player = GR.Player.instance;
-        if (player == null || !player.isActiveAndEnabled || player.IsDead) return;
+        if (player == null || !player.isActiveAndEnabled || player.IsDead || RailTestTools.EnemyInvincible) return;
         Vector3 victimPosition = player.HeadCenteredGameplayPosition(player.transform.position);
         if (PhotonSession.IsRailsRoom && (RailExpedition.LocalDown ||
             (RailTrain.Instance != null && RailTrain.Instance.Contains(victimPosition)))) return;

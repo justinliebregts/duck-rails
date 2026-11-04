@@ -357,3 +357,9 @@ All checklist items are initially unverified. Update them only with concrete imp
 Radio/horn follow-up (October 29): physical hold buttons implemented with release-to-stop station transmission and looped horn audio. Runtime/editor compilation passed; editor checks, Quest 3 feel, and two-client release/disconnect/late-join/audio acceptance remain pending. See week2-session.md.
 
 - [ ] November 1 mixed enemy acceptance: validate 4–6 minion/bomber/smasher/spider encounters across real clients, late joining, host migration, bomber respawn and headsets. See [mixed enemies](mixed-enemies.md).
+
+- [x] November 4: add saved local **Invincible from enemies** Test Center checkbox. Compilation and authenticated solo checks cover enemy contacts, bomber explosion, runtime toggles, private-run gating and preserved Down self. See [evidence and limits](testing-tools.md#enemy-invincibility-in-test-center); headset/multiplayer acceptance remains separate.
+
+- [x] November 4: add saved Test Block Order prefab list to Duck Rails Tests; support variable-length private review routes. Compilation, 59 focused editor checks, 29 diagnostic checks and an authenticated solo three-block run passed. See [workflow and evidence](testing-tools.md#test-block-order--november-4-2026).
+
+- [ ] Verify variable-length test routes with real peers, late joining/host migration and target headsets; single-editor evidence does not close multiplayer acceptance.

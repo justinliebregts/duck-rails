@@ -80,6 +80,7 @@ public class KillTrigger : MonoBehaviour
             return killed;
         }
         if (other.attachedRigidbody != null && other.attachedRigidbody.CompareTag("Player") && GR.Player.instance != null && !GR.Player.instance.IsDead) {
+            if (enemy != null && RailTestTools.EnemyInvincible) return false;
             if (enemy != null && enemy.ProtectsLocalPlayer)
             {
                 deferredMeleeContacts.Add(other);

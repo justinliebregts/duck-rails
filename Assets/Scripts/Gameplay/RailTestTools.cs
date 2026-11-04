@@ -14,6 +14,10 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 /// <summary>Explicit development fixtures. Mutations require a private test room and its authority.</summary>
 public static class RailTestTools
 {
+    public static Func<string, RailRouteState> OrderedRoute;
+    public static Func<bool> EnemyInvincibilityRequested;
+    public static bool EnemyInvincible => Application.isPlaying && Allowed && PhotonSession.Phase == RailPhase.Running &&
+        EnemyInvincibilityRequested?.Invoke() == true;
     static RailTestPreset preset = new RailTestPreset();
     static int[] previousNetwork;
     static bool configured;
@@ -46,6 +50,11 @@ public static class RailTestTools
     {
         route = null;
         if (!RailDiagnostics.Development || !PhotonSession.IsPrivate || !PhotonNetwork.IsMasterClient) return false;
+        if (OrderedRoute != null)
+        {
+            route = OrderedRoute(run);
+            if (route != null) return true;
+        }
         if (!configured)
         {
             string path = Path.Combine(RailDiagnostics.Folder, "active-preset.txt");
@@ -57,18 +66,7 @@ public static class RailTestTools
             try
             {
                 route = JsonUtility.FromJson<RailRouteState>(preset.route);
-                if (route?.blocks?.Length != 5 || route.blocks.Distinct().Count() != 5 || route.variations?.Length != 5 || route.placements?.Length != 5)
-                    throw new ArgumentException("Invalid route layout");
-                float z = RailRoute.StartZ;
-                for (int i = 0; i < 5; i++)
-                {
-                    string blockId = route.blocks[i];
-                    var asset = RailRoute.Instance.catalog.FirstOrDefault(b => b.id == blockId);
-                    if (asset == null || route.variations[i] < 0 || route.variations[i] >= asset.variations.Length ||
-                        !float.IsFinite(route.placements[i].sqrMagnitude) || Vector3.Distance(route.placements[i], new Vector3(0, 0, z)) > .001f)
-                        throw new ArgumentException("Preset is incompatible with current blocks");
-                    z += asset.length;
-                }
+                RailRoute.Validate(route, RailRoute.Instance.catalog);
                 route.run = run; return true;
             }
             catch (Exception) { Status = "Saved route is incompatible; using normal random route"; route = null; return false; }

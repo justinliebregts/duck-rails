@@ -27,6 +27,7 @@ public sealed class RailTestCenter : EditorWindow
     public static void Open() => GetWindow<RailTestCenter>("Duck Rails Tests");
     void OnEnable() { local = RailDiagnostics.ReadReports(); nextInbox = 0; }
     void OnDisable() { request?.Abort(); request?.Dispose(); request = null; }
+    void OnInspectorUpdate() { if (RailTestRunner.Running) Repaint(); }
     void Update()
     {
         if (EditorApplication.timeSinceStartup > nextInbox && request == null)
@@ -80,6 +81,8 @@ public sealed class RailTestCenter : EditorWindow
         scroll = EditorGUILayout.BeginScrollView(scroll);
         GUILayout.Label("Duck Rails Test Center", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox("Automated desktop checks. VR feel, voice intelligibility and eight-player acceptance still need real playtests.", MessageType.Info);
+        RailTestBlockOrderPanel.DrawPlayerOptions();
+        RailTestBlockOrderPanel.Draw();
         using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode || RailTestRunner.Running || !CurrentPlayer.IsMainEditor))
         {
             if (GUILayout.Button("Quick regression — game rules and VR contact fixtures")) RailTestRunner.Quick();
@@ -102,7 +105,7 @@ public sealed class RailTestCenter : EditorWindow
             } catch (Exception e) { message = "Cannot load preset: " + e.Message; }
         }
         if (GUILayout.Button("Save current route preset") && EditorApplication.isPlaying) RailTestTools.SavePreset();
-        if (GUILayout.Button("Restore normal random routes")) RailTestTools.ClearPreset();
+        if (GUILayout.Button("Restore normal random routes")) { RailTestBlockOrderPanel.Disable(); RailTestTools.ClearPreset(); }
         GUILayout.Space(12); GUILayout.Label("Open diagnostic reports", EditorStyles.boldLabel);
         GUILayout.Label(message, EditorStyles.wordWrappedLabel);
         if (GUILayout.Button("Refresh inbox")) { local = RailDiagnostics.ReadReports(); FetchInbox(); }
@@ -137,6 +140,7 @@ public static class RailTestRunner
     static double nextTick;
     public static string Status { get; private set; } = "Ready";
     public static bool Running => run != null;
+    public static bool AutomatedRunning => run != null && run.suite != "sandbox";
     static RailTestRunner()
     {
         if (!CurrentPlayer.IsMainEditor) return;
@@ -150,7 +154,7 @@ public static class RailTestRunner
         var rows = new List<string>();
         foreach (var check in new Action[] { RailSessionChecks.Run, RailDesktopChecks.Run, RailQuickStartChecks.Run,
             RailWeek2Checks.Run, RailWeek3Checks.Run, RailDriveChecks.Run, RailButtonTouchChecks.Run, RailHoldControlChecks.Run, RailBridgeHoldChecks.Run,
-            RailCoalLiveChecks.CheckAvatarLookup, RailDiagnosticChecks.Run, RailRigChecks.Run, RailEconomyChecks.Run })
+            RailCoalLiveChecks.CheckAvatarLookup, RailDiagnosticChecks.Run, RailRigChecks.Run, RailEconomyChecks.Run, RailTestBlockOrderChecks.Run })
         {
             try { check(); rows.Add("PASS " + check.Method.DeclaringType.Name); }
             catch (Exception e) { rows.Add("FAIL " + check.Method.DeclaringType.Name + ": " + e.Message); }
@@ -229,7 +233,8 @@ public static class RailTestRunner
         {
             if (run.suite == "sandbox")
             {
-                Status = "Manual private sandbox — P opens the test panel. Stop here when finished.";
+                Status = "Manual private sandbox — " + (PhotonSession.Instance != null ? PhotonSession.Instance.Status : "Starting login scene...") +
+                    "\nElapsed: " + (DateTime.UtcNow - DateTime.Parse(run.started).ToUniversalTime()).TotalSeconds.ToString("F0") + "s. P opens the test panel once loaded.";
                 var session = PhotonSession.Instance;
                 if (run.state != "sandbox-ready" && session != null && session.WorldReady && !session.HasRoomRequest)
                 {
