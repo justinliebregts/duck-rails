@@ -30,6 +30,11 @@ public static class RailWeek3Checks
             }
             var g = CrawlGraph.Load(b.graph);
             Check(g != null && g.NodeCount > 100 && g.CellSize == 1, b.id + " prebaked graph");
+            var referenceGraph = CrawlGraph.Load(blocks[0].graph);
+            Vector3 chunkOffset = (g.Origin-referenceGraph.Origin)/(g.CellSize*g.ChunkCells);
+            Check(g.ChunkCells==referenceGraph.ChunkCells &&
+                (chunkOffset-(Vector3)Vector3Int.RoundToInt(chunkOffset)).sqrMagnitude<.000001f,
+                b.id + " baked origin aligns with catalogue chunks in every route slot");
             // Enemy navigation remains in the existing right-side encounter. Player-only
             // left-side scavenging uses physical ground/collision, not the enemy graph.
             foreach (var point in b.variations.SelectMany(v => v.enemies.Concat(v.coal.Where(p => p.position.x > 0))))
@@ -40,10 +45,14 @@ public static class RailWeek3Checks
             try
             {
                 var colliders = contents.GetComponentsInChildren<Collider>().Where(c => !c.isTrigger && c.gameObject.layer == 6).ToArray();
-                Check(contents.transform.Find("Left-side buildings").childCount == 2, b.id + " two left-side buildings");
+                var motel = contents.transform.Find(RailMotelGreybox.RootName);
+                Check(motel != null ? motel.Find("Office and garage") != null && motel.Find("Transformer yard") != null :
+                    contents.transform.Find("Left-side buildings") != null && contents.transform.Find("Left-side buildings").childCount == 2,
+                    b.id + " two left-side search areas");
                 Check(contents.GetComponent<RailBlock>().variations.SelectMany(v => v.coal).All(p =>
                     colliders.Any(c => c.Raycast(new Ray(p.position, Vector3.down), out _, 1)) &&
-                    colliders.All(c => !Physics.ComputePenetration(sphere,p.position+Vector3.up*.2f,Quaternion.identity,c,c.transform.position,c.transform.rotation,out _,out _))), b.id + " all coal positions supported and clear of geometry");
+                    colliders.All(c => !Physics.ComputePenetration(sphere,p.position+Vector3.up*.2f,Quaternion.identity,
+                        c,c.transform.position,c.transform.rotation,out _,out _))), b.id + " all coal positions supported and clear of geometry");
             }
             finally { UnityEngine.Object.DestroyImmediate(clearanceProbe);PrefabUtility.UnloadPrefabContents(contents); }
             Check(b.track.Skip(20).Take(40).All(p => p.x <= 4 && p.x >= -4), b.id + " rail stays outside enemy corridor");

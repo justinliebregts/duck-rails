@@ -1,0 +1,17 @@
+Successful coordinated motel validation, 2026-11-04T06:55:19Z.
+Unity Console Error/Exception query returned two startup entries:
+- MRUK Shared: Global context has already been created!
+  Meta.XR.MRUtilityKit.MRUK.InitializeSharedLibrary, MRUK.Shared.cs:83
+- Failed to create global context
+  Meta.XR.MRUtilityKit.MRUK.InitializeSharedLibrary, MRUK.Shared.cs:85
+The same run subsequently reached authenticated private Running/WorldReady.
+No new RailGraphAssembly chunk-alignment exception in this final query.
+These MRUK initialization errors are recorded separately, not claimed fixed.
+
+Initial motel bake used Z=42 for graph origin; route assembly required catalogue-aligned Z=32.
+Corrected RailMotelGreybox bake volume to 38 x 12 x 96 at (27,4,80).
+Rebaked graph origin is (8,-2,32).
+RailWeek3Checks now checks chunk-origin alignment for every catalogue block.
+176 motel physical/layout checks and 619 catalogue checks passed.
+Live validation evidence: live-check.txt.
+Report 23c2ef317421447ba4a6463ca3bdd7b0 resolved locally/backend with the above evidence.

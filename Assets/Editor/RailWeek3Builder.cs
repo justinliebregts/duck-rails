@@ -42,6 +42,13 @@ public static class RailWeek3Builder
     static Material Material(string name) => AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/Materials/" + name + ".mat");
     static RailBlock BuildBlock(int index)
     {
+        // Retain the authored motel when rebuilding the catalogue.
+        if (index == 2)
+        {
+            var authored = AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "/" + Id(index) + ".prefab");
+            if (authored != null && authored.transform.Find(RailMotelGreybox.RootName) != null)
+                return authored.GetComponent<RailBlock>();
+        }
         // Preserve authored campground geometry and lighting.
         if (index == 9)
         {

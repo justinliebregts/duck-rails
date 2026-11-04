@@ -375,3 +375,11 @@ Radio/horn follow-up (October 29): physical hold buttons implemented with releas
 - [x] November 4: add saved Test Block Order prefab list to Duck Rails Tests; support variable-length private review routes. Compilation, 59 focused editor checks, 29 diagnostic checks and an authenticated solo three-block run passed. See [workflow and evidence](testing-tools.md#test-block-order--november-4-2026).
 
 - [ ] Verify variable-length test routes with real peers, late joining/host migration and target headsets; single-editor evidence does not close multiplayer acceptance.
+
+- [x] November 4: apply motel Quackville rough materials and subtle perimeter banks as requested. Offline navigation/lighting rebuilt; surface, bank-support, layout and catalogue checks pass. See [material and elevation evidence](roadside-motel-layout.md#quackville-rough-materials-and-edge-elevation). Headset feel and Quest performance remain pending.
+
+- [x] Revise the motel whole-block drawing with the requested transformer yard, machine rows and broken chain-link perimeter. See [V3 layout](roadside-motel-layout.md#v3-transformer-yard-addition). Drawing deliverable only; greybox and traversal acceptance remain pending.
+
+- [x] November 4: prepare Roadside Motel scaled site, ground/upper floor and service-building plans following the user's selected layout direction. See [motel plans](roadside-motel-layout.md). This completes drawings only.
+- [x] Implement the user-approved motel greybox, west office/garage and transformer yard with broken fencing. Offline navigation/lighting exports, 176 physical/layout checks, 619 Week 3 checks and an authenticated solo private-run loading check pass. See [implementation and MRUK startup-error notes](roadside-motel-layout.md#installed-greybox).
+- [ ] Review motel stairs, balcony guards, ajar doors, room scale, transformer aisles and boarding in VR; complete multi-client and Quest performance acceptance.

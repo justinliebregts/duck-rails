@@ -86,3 +86,5 @@ October 30 coal tuning: doubled authored coal to six per stop (30 across five st
 ## Mixed enemies — November 1
 
 Each stop selects 4–6 unique candidates and a shuffled mix including minion, bomber, smasher and spider. Bridge activation adds 4–6 defenders. The retained route seed preserves choices for late joining, host migration and exact-route presets. Protocol is now session-v8; update all clients together. See [mixed enemies](mixed-enemies.md).
+
+November 4 motel: approved greybox installed in the actual roadside-motel prefab, including two-storey rooms, exterior stairs/balcony, ajar doors, office/garage and transformer yard. Offline graph and lighting exported; 176 geometry/layout checks and 619 Week 3 checks pass. A live attempt exposed an authoring graph-origin mismatch, now corrected with catalogue-wide origin assertions. See [motel implementation and live-validation status](roadside-motel-layout.md#installed-greybox). VR/multiplayer acceptance remains separate.
