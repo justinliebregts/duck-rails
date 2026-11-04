@@ -78,8 +78,11 @@ public static class RailCatalogLightingChecks
         {
             var root=AssetDatabase.LoadAssetAtPath<GameObject>(path);var l=root.GetComponent<RailBakedBlockLighting>();
             if(l==null||l.bindings.Length==0||l.bindings.Any(b=>b.renderer==null||b.color==null)||!EditorBuildSettings.scenes.Any(s=>s.enabled&&s.path==l.lightingScene))throw new InvalidOperationException("Incomplete export: "+path);
-            if(root.transform.Find("Baked block sample lights").GetComponentsInChildren<Light>().Count(light=>light.lightmapBakeType==LightmapBakeType.Baked)!=4)throw new InvalidOperationException("Expected four baked sample lights: "+path);
-            lines.Add("PASS "+root.name+": four lights; "+l.bindings.Length+" static receiver bindings; companion in build.");
+            bool campground = root.transform.Find(RailCampgroundGreybox.RootName) != null;
+            int expected = campground ? 11 : 4;
+            var fixtures = campground ? root.transform : root.transform.Find("Baked block sample lights");
+            if(fixtures == null || fixtures.GetComponentsInChildren<Light>().Count(light=>light.lightmapBakeType==LightmapBakeType.Baked)!=expected)throw new InvalidOperationException("Expected " + expected + " baked lights: "+path);
+            lines.Add("PASS "+root.name+": " + expected + " lights; "+l.bindings.Length+" static receiver bindings; companion in build.");
         }
         Directory.CreateDirectory("output/block-lighting");File.WriteAllLines("output/block-lighting/export-checks.txt",lines);Debug.Log(string.Join("\n",lines));
     }

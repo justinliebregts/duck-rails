@@ -42,6 +42,13 @@ public static class RailWeek3Builder
     static Material Material(string name) => AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/Materials/" + name + ".mat");
     static RailBlock BuildBlock(int index)
     {
+        // Preserve authored campground geometry and lighting.
+        if (index == 9)
+        {
+            var authored = AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "/" + Id(index) + ".prefab");
+            if (authored != null && authored.transform.Find(RailCampgroundGreybox.RootName) != null)
+                return authored.GetComponent<RailBlock>();
+        }
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
         var root = new GameObject(Names[index]); var block = root.AddComponent<RailBlock>();
         block.id = Id(index); block.displayName = Names[index]; block.tags = new[] { index % 2 == 0 ? "interior" : "yard", index % 3 == 0 ? "curved" : "straight" };

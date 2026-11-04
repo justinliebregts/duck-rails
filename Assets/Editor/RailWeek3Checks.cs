@@ -35,15 +35,17 @@ public static class RailWeek3Checks
             foreach (var point in b.variations.SelectMany(v => v.enemies.Concat(v.coal.Where(p => p.position.x > 0))))
                 Check(g.FindNearestGroundNode(point.position, 2) >= 0 && b.enemyBounds.Contains(point.position), b.id + "/" + point.parent.name + "/" + point.name + " usable navigation");
             var contents = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(b));
+            var clearanceProbe = new GameObject("Temporary spawn clearance probe");
+            var sphere = clearanceProbe.AddComponent<SphereCollider>();sphere.radius=.45f;
             try
             {
                 var colliders = contents.GetComponentsInChildren<Collider>().Where(c => !c.isTrigger && c.gameObject.layer == 6).ToArray();
                 Check(contents.transform.Find("Left-side buildings").childCount == 2, b.id + " two left-side buildings");
                 Check(contents.GetComponent<RailBlock>().variations.SelectMany(v => v.coal).All(p =>
                     colliders.Any(c => c.Raycast(new Ray(p.position, Vector3.down), out _, 1)) &&
-                    colliders.All(c => Vector3.Distance(c.ClosestPoint(p.position + Vector3.up * .2f), p.position + Vector3.up * .2f) >= .45f)), b.id + " all coal positions supported and clear of geometry");
+                    colliders.All(c => !Physics.ComputePenetration(sphere,p.position+Vector3.up*.2f,Quaternion.identity,c,c.transform.position,c.transform.rotation,out _,out _))), b.id + " all coal positions supported and clear of geometry");
             }
-            finally { PrefabUtility.UnloadPrefabContents(contents); }
+            finally { UnityEngine.Object.DestroyImmediate(clearanceProbe);PrefabUtility.UnloadPrefabContents(contents); }
             Check(b.track.Skip(20).Take(40).All(p => p.x <= 4 && p.x >= -4), b.id + " rail stays outside enemy corridor");
             b.Sample(0, out var entryPosition, out var entryRotation); b.Sample(b.TrackLength, out var exitPosition, out var exitRotation);
             Check(Vector3.Distance(entryPosition, b.entry.position) < .001f && Vector3.Distance(exitPosition, b.exit.position) < .001f && Quaternion.Angle(entryRotation, b.entry.rotation) < .01f && Quaternion.Angle(exitRotation, b.exit.rotation) < .01f, b.id + " sampled track connects with exact forward tangents");

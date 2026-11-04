@@ -9,6 +9,18 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 
 ## Art direction deliverables
 
+- [x] Draw expanded campground V2 with tree clusters and campsite/shore landmarks across the approach and departure areas, following the user's permission to use former empty buffers. See [expanded proposal](lakeside-campground-layout.md#expanded-layout-proposal--november-4). Implemented in V2 below.
+
+- [x] Implement user-approved expanded campground V2 with rough Quackville textures, relocated buildings, 73 trees, three campsite areas and shore/overlook/footbridge landmarks. Navigation/lighting rebuilt; 2,055 physical and 619 catalogue checks pass. See [V2 evidence](lakeside-campground-layout.md#installed-expanded-campground-v2).
+
+- [ ] Review expanded campground paths, lake/gully recovery, prop scale and full-width hand clearance on headset; profile the denser vegetation and complete multiplayer acceptance.
+
+- [x] November 4: prepare the selected campground layout with a lake, low terrain rises and flat perimeter connections. See [campground plan](lakeside-campground-layout.md). Drawing deliverable only.
+
+- [x] Install approved campground greybox and requested rough Quackville materials: irregular lake basin, raised cabin pads, graded paths, flat perimeter, preserved track/spawns, offline navigation and lighting; 1,052 physical and 619 catalogue checks pass. See [evidence](lakeside-campground-layout.md#editor-verification).
+
+- [ ] Review campground shoreline/item recovery, full-width path and low-eye traversal in VR; validate multi-client play and Quest performance. Bright editor captures do not establish final gameplay visibility.
+
 - [x] November 1: install the first Compound baked-lighting/probe sample with UV mesh copies, scene-owned lighting settings, subtle fog and a baked reflection probe. Existing geometry/binding checks pass; see `docs/subway-compound.md` for authoring limits.
 - [ ] Review Compound lighting and probe transitions on standalone Quest with twelve players; establish measured frame-time/memory budgets before expanding lighting density. Small expedition-block samples are already implemented separately.
 
