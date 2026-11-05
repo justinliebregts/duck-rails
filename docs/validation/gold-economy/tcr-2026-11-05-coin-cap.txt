@@ -1,0 +1,22 @@
+Raider coin cap publication — November 5, 2026
+
+Game commit: 936dbb996, pushed to origin/codex/coal-held-locomotion.
+Backend commit: 490cf3d, pushed to origin/main in duck-rails-web.
+Backend checkout was clean before the image build. Docker engine: linux.
+Validation: backend service/duckz, repository/duckz and router/duckz tests passed;
+Unity compiled and eight watch balance/status checks passed.
+
+Executed api/gofiber/cmd/tencent/tcr/pushToSilliconValley.bat from its directory.
+Build: linux/amd64; Go modules verified and application compiled successfully.
+TCR image:
+uswccr.ccs.tencentyun.com/gr-tcr/duckrails-api-golang:api-490cf3d
+Docker push confirmed digest:
+sha256:ca5f0f59bfc001e19fc50967f180dfad3f438097357a514ac708aa8b9e8f2f88
+Script exit code: 0.
+
+No admin image change. No SQL migration required for the wallet cap.
+TKE rollout was not performed. In Tencent console, select the existing Duck Rails
+API workload in namespace duckrails, record its previous image, set the image
+above, and verify replacement pods are Ready and the API responds.
+Live cap enforcement and headset/client acceptance remain pending that rollout
+and the matching Unity client build. TCR publication alone is not a live rollout.
