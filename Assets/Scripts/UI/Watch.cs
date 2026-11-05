@@ -23,6 +23,7 @@ public class Watch : MonoBehaviour
     Vector3 textScale = Vector3.one;
     Vector2 moneyRestPos;
     Vector2 moneyRestSize;
+    Color moneyRestColor = Color.white;
 
     public Transform CoinTarget => moneyText != null ? moneyText.transform : transform;
 
@@ -33,6 +34,7 @@ public class Watch : MonoBehaviour
             textScale = moneyText.transform.localScale;
             moneyRestPos = moneyText.rectTransform.anchoredPosition;
             moneyRestSize = moneyText.rectTransform.sizeDelta;
+            moneyRestColor = moneyText.color;
         }
     }
 
@@ -123,7 +125,11 @@ public class Watch : MonoBehaviour
     void Show()
     {
         if (moneyText != null)
-            moneyText.text = "$" + displayed;
+        {
+            moneyText.richText = true;
+            moneyText.color = displayed >= DuckzWallet.MaxCoins ? Color.yellow : moneyRestColor;
+            moneyText.text = "$" + displayed + "\n<size=50%><color=#909090>/" + DuckzWallet.MaxCoins + "</color></size>";
+        }
     }
 
     void LateUpdate()

@@ -2,12 +2,14 @@
 
 ## Confirmed rules
 
+- November 5 wallet limit: user confirmed a maximum of 2,000 coins. Rewards credit only available space; overflow is discarded. The watch shows a half-size grey `/2000` below the balance, with the balance yellow at maximum and its original color after spending.
+
 - Each account receives 100 coins once when its backend wallet is initialized. This is not a per-run allowance or a minimum balance.
 - Coins persist in the backend and buy only in-run equipment. Purchases remain spent after failure; shop earnings are credited immediately. There is no additional penalty to the existing wallet on failure.
 - Departure and midpoint shops each show one of every standard gear type: nail bat, frying pan, basic bag, helmet, flashlight, walkie-talkie and night vision. Bundle weapons, larger bags and cosmetics are excluded.
 - Reuse Duckz's exact `StoreWallItem` interaction: grab/pull, visible tether, server-authorized deduction and item handoff, snap-back on insufficient funds, then restocking. A display is not a one-purchase stock limit.
 - No gameplay equipment spawns on the train by default. Initial furnace fuel remains 10.
-- Depositing a bar at either shop grants the full bar value to every connected crew member, with Duckz coin particles flying to each recipient's own watch. New arrivals do not receive earlier shop sales.
+- Depositing a bar at either shop grants the bar value up to each connected crew member's wallet limit, with Duckz coin particles flying to each recipient's own watch. New arrivals do not receive earlier shop sales.
 - The train safe accepts bars irreversibly and shows its bar count. It gives no immediate money. Only its recorded deposits pay on successful extraction, and only to participants recorded as escaped. Downed passengers aboard qualify; people left behind do not. Catch-up teleports do not alter eligibility.
 - Bars held in a hand, in a backpack or loose on the train never cash out automatically. A failed run pays nothing from the safe.
 - Admin can inspect a wallet, grant/remove coins and inspect transactions, using the existing admin authorization.
@@ -61,3 +63,11 @@ Evidence: [validation/gold-economy](validation/gold-economy/).
 - The editor Console recorded Meta MRUK shared/global-context initialization errors at multiplayer startup. No claim of a clean XR runtime or headset acceptance is made. Existing diagnostic reports were inspected and none were marked resolved by this feature work.
 - No production migration, Git/image push or API/admin rollout was performed. Wallet loading remained unavailable against the currently deployed API; backend rollout and the acceptance list above remain required before this is playable end to end.
 - URL follow-up: removed the inherited game-name prefix from the Rails client, backend, admin and route documentation. `go test -p 2 ./router ./router/duckz` passed, including all ten economy endpoints rejecting anonymous requests, the old wallet path returning 404 and a later public route remaining accessible. Unity refreshed with no script compilation errors; the admin production build passed with its existing warnings. This route change has not been deployed.
+
+## Wallet cap — November 5, 2026
+
+Client: `DuckzWallet.MaxCoins = 2000` bounds all balance responses. `Watch` retains coin-arrival animation and mute/status support; the cap line remains grey even when the balance is yellow. `RailWalletCapChecks.Run()` passed eight prefab balance/status cases (0, 1999, 2000 and 1950, with and without mute text), checking two lines, no overflow, smaller grey cap text and color restoration after spending. Unity compiled successfully. Headset readability remains pending.
+
+Backend: `X:\Work\duck-rails-web\api\gofiber\service\duckz\economy.go` enforces the cap while holding the existing player-row transaction lock. Partial/full deposits store actual credited amounts, including zero-credit receipts so retries after spending cannot reclaim overflow. Admin grants obey the same cap. Existing balances over 2000 receive an auditable `wallet_cap` debit on wallet access or a successful balance operation; this removes excess rather than hiding it behind a display clamp. No database migration is required.
+
+`go test -p 2 ./service/duckz ./repository/duckz ./router/duckz` passed, including new partial/full/retry/spend/refill and old-wallet/admin tests. At implementation validation, no image publication, production balance change or TKE rollout was performed. Deploy the matching API and client before live acceptance; test concurrent real-client rewards and watch readability on headset. Until backend rollout, the client display clamp alone cannot enforce the persisted wallet cap.

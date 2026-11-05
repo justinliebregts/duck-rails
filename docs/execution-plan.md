@@ -391,3 +391,6 @@ Radio/horn follow-up (October 29): physical hold buttons implemented with releas
 
 - [x] November 5: install approved coal pickup art (44 triangles, 32x32 pixel texture), preserve existing pickup physics/network configuration and rebuild grab surface. Unity compile and 927 existing grab-surface assertions passed. See [coal art evidence](art-concepts.md#coal-pickup-art--november-5-2026).
 - [ ] Review new coal silhouette/readability in nighttime gameplay on headset and natural grabbing/ground-pushing with the retained simple collision envelope.
+
+- [x] November 5: implement 2,000-coin wallet cap in client/backend and small grey watch cap line with yellow balance at maximum. Unity prefab checks and backend service/repository/router tests pass; see [wallet cap](gold-economy.md#wallet-cap--november-5-2026).
+- [ ] Deploy matching wallet-cap API/client; verify persisted cap, concurrent rewards, retries after spending and headset watch readability against the live service.

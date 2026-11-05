@@ -321,3 +321,5 @@ November 4 motel greybox: the user approved implementation of the motel/transfor
 November 4 motel drawing history: the user selected a two-storey L-shaped motel, courtyard toward the train, two exterior stairs, connecting balcony and smaller west service building. The [motel drawing set](roadside-motel-layout.md) led to the approved greybox recorded above.
 
 November 5 coal art: user approved the fractured, near-black low-poly lump with coarse blue-grey pixel patches. Installed 44-triangle mesh and 32x32 texture on the shared pickup, retaining physics/network settings and rebaking hand-contact geometry. See [coal art](art-concepts.md#coal-pickup-art--november-5-2026). Headset/night readability acceptance remains pending.
+
+November 5 coin limit: user confirmed the implemented 2,000-coin maximum and that `/2000` always remains grey; only the balance turns yellow at the cap. The watch shows the smaller grey cap below the balance and a yellow balance at maximum. Backend rewards/admin grants cap at remaining capacity; overflow is discarded. See [wallet cap evidence and rollout limits](gold-economy.md#wallet-cap--november-5-2026).

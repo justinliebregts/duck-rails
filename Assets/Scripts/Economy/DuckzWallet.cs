@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class DuckzWallet : MonoBehaviour
 {
+    public const int MaxCoins = 2000;
     public enum BuyStatus { Bought, AlreadyOwned, InsufficientCoins, Failed }
 
     [Serializable] class WalletData { public int coins; public string[] entitlements; public string[] purchases; public string equipped_skin; public bool has_loadout; }
@@ -28,7 +29,8 @@ public class DuckzWallet : MonoBehaviour
     public static DuckzWallet Instance { get; private set; }
 
     [FoldoutGroup("Debug"), ShowInInspector, ReadOnly]
-    public int Coins { get; private set; }
+    public int Coins { get => coins; private set => coins = Mathf.Clamp(value, 0, MaxCoins); }
+    int coins;
     [FoldoutGroup("Debug"), ShowInInspector, ReadOnly]
     public bool Loaded { get; private set; }
     /// <summary>Equipped skin key saved on the server ("" = default duck), as of the last wallet load.</summary>
