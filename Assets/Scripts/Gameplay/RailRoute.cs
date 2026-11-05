@@ -143,6 +143,11 @@ public sealed class RailRoute : MonoBehaviour
             .Concat(new[] { new Bounds(finaleRoot.position + finale.enemyBounds.center, finale.enemyBounds.size) }).ToArray());
         manager.SetGraph(graph);
         LoadedRun = state.run; Selection = state; geometryReady = true;
+        if (Application.isPlaying)
+        {
+            var visibility = GetComponent<RailBlockVisibility>() ?? gameObject.AddComponent<RailBlockVisibility>();
+            visibility.Rebuild(this);
+        }
     }
     public void Sample(float distance, out Vector3 position, out Quaternion rotation)
     {
