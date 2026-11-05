@@ -42,6 +42,10 @@ public static class RailWeek3Builder
     static Material Material(string name) => AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/Materials/" + name + ".mat");
     static RailBlock BuildBlock(int index)
     {
+        if (index == 6) {
+            var farm = AssetDatabase.LoadAssetAtPath<GameObject>(RailFarmSilos.PrefabPath);
+            if (farm != null && farm.transform.Find(RailFarmSilos.RootName) != null) return farm.GetComponent<RailBlock>();
+        }
         // Retain the authored motel when rebuilding the catalogue.
         if (index == 2)
         {

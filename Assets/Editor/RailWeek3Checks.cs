@@ -46,7 +46,8 @@ public static class RailWeek3Checks
             {
                 var colliders = contents.GetComponentsInChildren<Collider>().Where(c => !c.isTrigger && c.gameObject.layer == 6).ToArray();
                 var motel = contents.transform.Find(RailMotelGreybox.RootName);
-                Check(motel != null ? motel.Find("Office and garage") != null && motel.Find("Transformer yard") != null :
+                var farm = contents.transform.Find(RailFarmSilos.RootName);
+                Check(farm != null ? contents.transform.Find("Left-side buildings/Feed barn") != null && contents.transform.Find("Left-side buildings/Farm workshop") != null : motel != null ? motel.Find("Office and garage") != null && motel.Find("Transformer yard") != null :
                     contents.transform.Find("Left-side buildings") != null && contents.transform.Find("Left-side buildings").childCount == 2,
                     b.id + " two left-side search areas");
                 Check(contents.GetComponent<RailBlock>().variations.SelectMany(v => v.coal).All(p =>

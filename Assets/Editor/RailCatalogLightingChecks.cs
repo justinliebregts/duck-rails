@@ -80,8 +80,9 @@ public static class RailCatalogLightingChecks
             if(l==null||l.bindings.Length==0||l.bindings.Any(b=>b.renderer==null||b.color==null)||!EditorBuildSettings.scenes.Any(s=>s.enabled&&s.path==l.lightingScene))throw new InvalidOperationException("Incomplete export: "+path);
             bool motel = root.transform.Find(RailMotelGreybox.RootName) != null;
             bool campground = root.transform.Find(RailCampgroundGreybox.RootName) != null;
-            int expected = motel ? 30 : campground ? 11 : 4;
-            var fixtures = campground ? root.transform : root.transform.Find(motel ? RailMotelGreybox.RootName : "Baked block sample lights");
+            bool farm = root.transform.Find(RailFarmSilos.RootName) != null;
+            int expected = farm ? RailFarmSilos.LightCount : motel ? 30 : campground ? 11 : 4;
+            var fixtures = farm || campground ? root.transform : root.transform.Find(motel ? RailMotelGreybox.RootName : "Baked block sample lights");
             if(fixtures == null || fixtures.GetComponentsInChildren<Light>().Count(light=>light.lightmapBakeType==LightmapBakeType.Baked)!=expected)throw new InvalidOperationException("Expected " + expected + " baked lights: "+path);
             lines.Add("PASS "+root.name+": " + expected + " lights; "+l.bindings.Length+" static receiver bindings; companion in build.");
         }
