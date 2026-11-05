@@ -1,5 +1,7 @@
 # Duck Rails rough art concepts
 
+November 2: [Maintenance Depot prototype study](maintenance-depot-prototype.md) adds rough arrival/interior renders and a labeled top-down diagram. Review the proposed layout before greyboxing, then make the first art pass after the greybox. The generated overhead failed twice; the supplied plan is a deterministic diagram.
+
 October 30, 2026. Concept explorations using the [art guide](art-guide.md), generated with the built-in image generation tool. These are visual proposals, not production meshes, measured plans, Unity captures or performance results. The user endorsed the low-poly train look and requested darker, spooky nighttime locations. Preserve existing DuckZ character identity in production.
 
 ## Compound alternatives — November 1, 2026
@@ -85,3 +87,13 @@ A courtyard, repeating room doors and a service passage offer a more exposed app
 Review silhouette, low-eye-line visibility, openness, atmosphere and the invitation to explore. Train details vary between the environment thumbnails and the dedicated sheet; the dedicated train study is the starting point for the next consistency pass. No depicted layout or decorative feature supersedes the confirmed gameplay and authored block contracts.
 
 The exact [generation prompts](../output/imagegen/duck-rails-concept-prompts-v1.json) are saved with the images for revision. No 3D or Unity work was performed for this deliverable.
+
+## Coal pickup art — November 5, 2026
+
+User approved the fractured charcoal concept and requested implementation. The shared `Assets/Resources/Rails/RailCoal.prefab` now uses the authored 44-triangle mesh and 32x32 point-filtered charcoal pixel texture in `Assets/DuckRails/Coal/`. Broad faces, an uneven crown and a chipped lower shoulder replace the grey cube. No emission; matte URP material. Mipmaps retained for distance stability, texture uncompressed.
+
+The existing 0.3 root scale, 0.6 kg rigidbody, box collider, held-locomotion collider reference and Photon components are retained. The visible lump is approximately 30 x 25.5 x 30 cm, with its bottom aligned to the existing collision box; the simple collision envelope remains slightly larger around the chipped corners. GrabSurfaceBaker regenerated coal's precise hand-contact surface from the new mesh. The Week 2 builder retains these art assets when regenerating coal.
+
+Rebuild with `Duck Rails/Art/Build Approved Coal` (`Assets/Editor/RailCoalArt.cs`). The editor-only authoring code generates saved assets; there is no runtime mesh or texture generation.
+
+Validation: Unity compilation passed; saved prefab inspected; existing GrabSurfaceChecks passed 927 assertions across 11 prefabs, including coal interior selection and contact geometry. Evidence: [editor checks](validation/coal-art/editor-checks.txt), [Unity asset preview](validation/coal-art/unity-preview.png), [approved concept](validation/coal-art/approved-concept.png). Preview is an isolated Unity render, not gameplay lighting. Headset/nighttime readability and natural interaction remain unverified; this art pass does not close multiplayer/headset milestones.

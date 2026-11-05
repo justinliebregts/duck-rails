@@ -167,6 +167,13 @@ public static class RailWeek2Builder
     {
         var go = GameObject.CreatePrimitive(PrimitiveType.Cube); go.name = "RailCoal"; go.layer = 8;
         go.transform.localScale = Vector3.one * .3f; go.GetComponent<Renderer>().sharedMaterial = coal;
+        var coalMesh = AssetDatabase.LoadAssetAtPath<Mesh>("Assets/DuckRails/Coal/Coal.asset");
+        var coalMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/Coal/Coal.mat");
+        if (coalMesh != null && coalMaterial != null)
+        {
+            go.GetComponent<MeshFilter>().sharedMesh = coalMesh;
+            go.GetComponent<Renderer>().sharedMaterial = coalMaterial;
+        }
         go.AddComponent<Rigidbody>().mass = .6f; var view = go.AddComponent<PhotonView>(); view.OwnershipTransfer = OwnershipOption.Takeover;
         var transformSync = go.AddComponent<PhotonTransformView>(); var item = go.AddComponent<PhotonGrabbable>(); var cargo = go.AddComponent<RailCargo>(); go.AddComponent<RailCoal>();
         var serializedItem = new SerializedObject(item);

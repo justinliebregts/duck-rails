@@ -388,3 +388,6 @@ Radio/horn follow-up (October 29): physical hold buttons implemented with releas
 - [x] November 4: prepare Roadside Motel scaled site, ground/upper floor and service-building plans following the user's selected layout direction. See [motel plans](roadside-motel-layout.md). This completes drawings only.
 - [x] Implement the user-approved motel greybox, west office/garage and transformer yard with broken fencing. Offline navigation/lighting exports, 176 physical/layout checks, 619 Week 3 checks and an authenticated solo private-run loading check pass. See [implementation and MRUK startup-error notes](roadside-motel-layout.md#installed-greybox).
 - [ ] Review motel stairs, balcony guards, ajar doors, room scale, transformer aisles and boarding in VR; complete multi-client and Quest performance acceptance.
+
+- [x] November 5: install approved coal pickup art (44 triangles, 32x32 pixel texture), preserve existing pickup physics/network configuration and rebuild grab surface. Unity compile and 927 existing grab-surface assertions passed. See [coal art evidence](art-concepts.md#coal-pickup-art--november-5-2026).
+- [ ] Review new coal silhouette/readability in nighttime gameplay on headset and natural grabbing/ground-pushing with the retained simple collision envelope.
