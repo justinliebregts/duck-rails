@@ -2,6 +2,9 @@
 
 Handoff date: October 28, 2026. Read `game-design.md` for decision status and scope.
 
+- [x] November 5: enable inherited held-coal locomotion in prefab and builder; verify imported configuration through Unity MCP.
+- [ ] Verify coal ground-pushing/vaulting feel on headset and behavior with real multiplayer clients.
+
 ## November 2 — Duckz fix ports
 
 - [x] Port the sixteen supplied Duckz revisions in focused commits, adapting movement, palm/hand input, train hand support, cargo releases and pickup recovery to Rails. Preserve Rails downing, shared rig and train cargo architecture. See [source mapping and validation](duckz-fix-ports.md).

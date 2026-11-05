@@ -1,5 +1,9 @@
 # Duck Rails — Week 1 session prototype
 
+## Coal held locomotion — November 5, 2026
+
+User requested coal support ground-pushing/vaulting like the bat and gold bars. Coal's prefab had `locomotionWhileHeld` disabled and no `locomotionCollider`. Enabled the inherited held-item locomotion path using its existing BoxCollider, and retained this configuration in `RailWeek2Builder.Coal()`. Unity MCP verified the Duck Rails project, refreshed assets, and confirmed the imported prefab flag/collider reference and compiled builder type. Source diff whitespace checks passed. Actual headset vaulting feel and multiplayer behavior remain unverified.
+
 October 30 input update: the historical DesktopPlayer controls/evidence below predate the [shared DuckPlayer rig](shared-rig.md). Current gameplay uses Keyboard or VR input on DuckPlayer, supports F2 switching during Play, Q/E reach, and right mouse grip on both hands. Rails live fixtures now warp the shared rig.
 
 ## Default editor launch from Compound — October 29

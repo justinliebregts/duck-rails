@@ -2,6 +2,8 @@
 
 Handoff date: October 28, 2026.
 
+November 5 confirmed interaction: held coal should support ground-pushing/vaulting through the inherited item locomotion system, like the bat and gold bars. Prefab and builder configuration are updated; headset feel remains pending. See `week1-session.md`.
+
 November 2 maintenance: port the sixteen user-selected Duckz fixes while preserving Rails session/downing rules and shared keyboard/VR rig. Train hand contact now uses the inherited cabin support system directly; cargo release and ownership fixes are adapted to RailCargo. See [fix provenance and validation limits](duckz-fix-ports.md). Inherited weapon tuning does not add new shop inventory.
 
 Art direction draft (October 30): [Art guide](art-guide.md) defines the proposed visual identity, palette, materials, lighting, train and environment treatment, and gameplay readability. It preserves the confirmed design below; its new art choices remain proposals pending review of the first finished train/depot slice.

@@ -169,6 +169,10 @@ public static class RailWeek2Builder
         go.transform.localScale = Vector3.one * .3f; go.GetComponent<Renderer>().sharedMaterial = coal;
         go.AddComponent<Rigidbody>().mass = .6f; var view = go.AddComponent<PhotonView>(); view.OwnershipTransfer = OwnershipOption.Takeover;
         var transformSync = go.AddComponent<PhotonTransformView>(); var item = go.AddComponent<PhotonGrabbable>(); var cargo = go.AddComponent<RailCargo>(); go.AddComponent<RailCoal>();
+        var serializedItem = new SerializedObject(item);
+        serializedItem.FindProperty("locomotionWhileHeld").boolValue = true;
+        serializedItem.FindProperty("locomotionCollider").objectReferenceValue = go.GetComponent<BoxCollider>();
+        serializedItem.ApplyModifiedPropertiesWithoutUndo();
         view.ObservedComponents = new List<Component> { transformSync, item, cargo }; view.Synchronization = ViewSynchronization.Unreliable;
         var result = PrefabUtility.SaveAsPrefabAsset(go, Folder + "RailCoal.prefab"); UnityEngine.Object.DestroyImmediate(go); return result;
     }
