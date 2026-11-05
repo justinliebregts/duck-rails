@@ -68,7 +68,7 @@ public static class RailCatalogLightingChecks
             seeds.Add(best);foreach(var id in RailRoute.Choose("proof",catalog,best).blocks)seen.Add(id);
         }
         proof.seeds=seeds.ToArray();EditorSceneManager.SaveScene(scene,Root+"/CatalogueProof.unity");
-        Debug.Log("Prepared "+seeds.Count+" route rounds covering all twelve blocks.");
+        Debug.Log("Prepared "+seeds.Count+" route rounds covering all "+catalog.Length+" blocks.");
     }
     [MenuItem("Duck Rails/Lighting/All Blocks/Validate Exported Catalogue")]
     public static void Validate()
@@ -78,11 +78,19 @@ public static class RailCatalogLightingChecks
         {
             var root=AssetDatabase.LoadAssetAtPath<GameObject>(path);var l=root.GetComponent<RailBakedBlockLighting>();
             if(l==null||l.bindings.Length==0||l.bindings.Any(b=>b.renderer==null||b.color==null)||!EditorBuildSettings.scenes.Any(s=>s.enabled&&s.path==l.lightingScene))throw new InvalidOperationException("Incomplete export: "+path);
+            bool depot = root.transform.Find(RailDepotGreybox.RootName) != null;
             bool motel = root.transform.Find(RailMotelGreybox.RootName) != null;
             bool campground = root.transform.Find(RailCampgroundGreybox.RootName) != null;
+            bool store = root.transform.Find(RailConvenienceStore.RootName) != null;
             bool farm = root.transform.Find(RailFarmSilos.RootName) != null;
-            int expected = farm ? RailFarmSilos.LightCount : motel ? 30 : campground ? 11 : 4;
-            var fixtures = farm || campground ? root.transform : root.transform.Find(motel ? RailMotelGreybox.RootName : "Baked block sample lights");
+            bool mine = root.transform.Find(RailQuarryMine.RootName) != null;
+            bool canyon = root.transform.Find(RailCanyon.RootName) != null;
+            bool station = root.transform.Find(RailAbandonedStation.RootName) != null;
+            bool skyscraper = root.transform.Find(RailSkyscraper.RootName) != null;
+            bool hospital = root.transform.Find(RailHospital.RootName) != null;
+            bool yard = root.transform.Find(RailContainerYard.RootName) != null;
+            int expected = yard ? RailContainerYard.LightCount : hospital ? RailHospital.LightCount : depot ? 39 : motel ? 30 : campground ? 11 : store ? RailConvenienceStore.LightCount : farm ? RailFarmSilos.LightCount : mine ? RailQuarryMine.LightCount : canyon ? RailCanyon.LightCount : station ? RailAbandonedStation.LightCount : skyscraper ? RailSkyscraper.LightCount : 4;
+            var fixtures = yard || hospital || campground || farm || mine || canyon || station || skyscraper ? root.transform : root.transform.Find(depot ? RailDepotGreybox.RootName : motel ? RailMotelGreybox.RootName : store ? RailConvenienceStore.RootName : "Baked block sample lights");
             if(fixtures == null || fixtures.GetComponentsInChildren<Light>().Count(light=>light.lightmapBakeType==LightmapBakeType.Baked)!=expected)throw new InvalidOperationException("Expected " + expected + " baked lights: "+path);
             lines.Add("PASS "+root.name+": " + expected + " lights; "+l.bindings.Length+" static receiver bindings; companion in build.");
         }

@@ -29,35 +29,47 @@ public static class RailWeek3Builder
         // Preserve the user-edited train and controls as the initial authoring source. Never rerun Week 1/2 builders here.
         if (!File.Exists(Source) && !AssetDatabase.CopyAsset("Assets/Scenes/Compound.unity", Source)) throw new IOException("Could not preserve baseline scene.");
         ground = Material("Ground"); steel = Material("Metal"); yellow = Material("Safety"); wall = Material("Station");
-        var catalog = new RailBlock[12];
+        var catalog = new RailBlock[Names.Length];
         for (int i = 0; i < catalog.Length; i++) catalog[i] = BuildBlock(i);
+        // Keep additional authored locations when rebuilding the original prototype catalogue.
+        var canyon = AssetDatabase.LoadAssetAtPath<GameObject>(RailCanyon.PrefabPath);
+        if (canyon != null) catalog = catalog.Concat(new[] { canyon.GetComponent<RailBlock>() }).ToArray();
+        var skyscraper = AssetDatabase.LoadAssetAtPath<GameObject>(RailSkyscraper.PrefabPath);
+        if (skyscraper != null) catalog = catalog.Concat(new[] { skyscraper.GetComponent<RailBlock>() }).ToArray();
+        var hospital = AssetDatabase.LoadAssetAtPath<GameObject>(RailHospital.PrefabPath);
+        if (hospital != null) catalog = catalog.Concat(new[] { hospital.GetComponent<RailBlock>() }).ToArray();
         BuildScenes(catalog);
         AddCarrier();
         RailEnemyAuthoring.Install();
-        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Login.unity", true), new EditorBuildSettingsScene("Assets/Scenes/Compound.unity", true), new EditorBuildSettingsScene("Assets/Scenes/Expedition.unity", true) };
+        var lightingScenes = EditorBuildSettings.scenes.Where(s => s.path.StartsWith("Assets/DuckRails/Lighting/")).ToArray();
+        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Login.unity", true), new EditorBuildSettingsScene("Assets/Scenes/Compound.unity", true), new EditorBuildSettingsScene("Assets/Scenes/Expedition.unity", true) }.Concat(lightingScenes).ToArray();
         AssetDatabase.SaveAssets();
         EditorSceneManager.OpenScene("Assets/Scenes/Compound.unity");
-        Debug.Log("Week 3 authored: twelve block prefabs, three variations each, baked graphs, Expedition scene, preserved train/finale.");
+        Debug.Log("Week 3 authored: " + catalog.Length + " block prefabs, three variations each, baked graphs, Expedition scene, preserved train/finale and lighting companions.");
     }
     static Material Material(string name) => AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/Materials/" + name + ".mat");
     static RailBlock BuildBlock(int index)
     {
-        if (index == 6) {
-            var farm = AssetDatabase.LoadAssetAtPath<GameObject>(RailFarmSilos.PrefabPath);
-            if (farm != null && farm.transform.Find(RailFarmSilos.RootName) != null) return farm.GetComponent<RailBlock>();
+        if (index == 4)
+        {
+            var yard = AssetDatabase.LoadAssetAtPath<GameObject>(RailContainerYard.PrefabPath);
+            if (yard != null && yard.transform.Find(RailContainerYard.RootName) != null) return yard.GetComponent<RailBlock>();
         }
-        // Retain the authored motel when rebuilding the catalogue.
-        if (index == 2)
+        if (index == 5)
+        {
+            var station = AssetDatabase.LoadAssetAtPath<GameObject>(RailAbandonedStation.PrefabPath);
+            if (station != null && station.transform.Find(RailAbandonedStation.RootName) != null) return station.GetComponent<RailBlock>();
+        }
+        if (index == 11)
+        {
+            var mine = AssetDatabase.LoadAssetAtPath<GameObject>(RailQuarryMine.PrefabPath);
+            if (mine != null && mine.transform.Find(RailQuarryMine.RootName) != null) return mine.GetComponent<RailBlock>();
+        }
+        // Reviewed blocks retain their authored geometry and lighting on catalogue rebuilds.
+        if (index == 0 || index == 1 || index == 2 || index == 6 || index == 9)
         {
             var authored = AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "/" + Id(index) + ".prefab");
-            if (authored != null && authored.transform.Find(RailMotelGreybox.RootName) != null)
-                return authored.GetComponent<RailBlock>();
-        }
-        // Preserve authored campground geometry and lighting.
-        if (index == 9)
-        {
-            var authored = AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "/" + Id(index) + ".prefab");
-            if (authored != null && authored.transform.Find(RailCampgroundGreybox.RootName) != null)
+            if (authored != null && authored.transform.Find(index == 0 ? RailDepotGreybox.RootName : index == 1 ? RailConvenienceStore.RootName : index == 2 ? RailMotelGreybox.RootName : index == 6 ? RailFarmSilos.RootName : RailCampgroundGreybox.RootName) != null)
                 return authored.GetComponent<RailBlock>();
         }
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);

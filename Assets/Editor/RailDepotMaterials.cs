@@ -20,6 +20,109 @@ public static class RailDepotMaterials
     static Material[] materials;
     static readonly Dictionary<string,Mesh> meshes=new Dictionary<string,Mesh>();
 
+    [MenuItem("Duck Rails/Authoring/Depot/Apply rough material pass")]
+    public static void Apply()
+    {
+        if(Application.dataPath!="X:/Work/duck-rails/Assets")throw new InvalidOperationException("Wrong project");
+        if(EditorApplication.isPlaying||Lightmapping.isRunning)throw new InvalidOperationException("Finish Play or baking first");
+        for(int i=0;i<SceneManager.sceneCount;i++)if(SceneManager.GetSceneAt(i).isDirty)throw new InvalidOperationException("Save scene edits first");
+        Directory.CreateDirectory(Folder+"/Meshes");AssetDatabase.Refresh();meshes.Clear();
+        materials=new Material[Names.Length];
+        for(int i=0;i<Names.Length;i++)
+        {
+            var path=Folder+"/"+Names[i]+".mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);
+            if(!m){m=new Material(Shader.Find("Universal Render Pipeline/Lit"));AssetDatabase.CreateAsset(m,path);}
+            string atlas=i==2||i==4||i==7?"Industrial":"Town";
+            m.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Models/Quackville/Quackville_"+atlas+"_Diffuse.jpg"));
+            m.SetColor("_BaseColor",Tints[i]);m.SetFloat("_Smoothness",.04f);m.SetFloat("_Metallic",0);EditorUtility.SetDirty(m);materials[i]=m;
+        }
+        var scene=EditorSceneManager.OpenScene(RailDepotGreybox.BakeScene);
+        var block=Object.FindFirstObjectByType<RailBlock>();var root=block.transform.Find(RailDepotGreybox.RootName);
+        if(!root)throw new InvalidOperationException("V3 depot required");
+        var colliders=block.GetComponentsInChildren<Collider>().Select(c=>c.GetInstanceID()).ToArray();
+        var track=block.track.ToArray();int count=0;
+        foreach(var r in root.GetComponentsInChildren<MeshRenderer>())
+        {
+            var text=r.GetComponent<TMPro.TMP_Text>();
+            if(text)
+            {
+                // TextMeshPro owns its mesh/material; it is not a building surface.
+                if(r.sharedMaterials.Any(m=>m&&AssetDatabase.GetAssetPath(m).StartsWith(Folder)))
+                {
+                    text.fontSharedMaterial=text.font.material;text.ForceMeshUpdate(true);
+                    var tf=r.GetComponent<MeshFilter>();tf.sharedMesh=text.mesh;
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(text);
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(tf);
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(r);
+                }
+                continue;
+            }
+            if(r.name=="Fixture")continue;
+            var f=r.GetComponent<MeshFilter>();if(!f||!f.sharedMesh)continue;
+            string n=r.name.ToLowerInvariant();string kind=n=="wall"?"wall":n.StartsWith("tread ")?"tread":
+                n.Contains("roof")?"roof":n.Contains("guard")||n.Contains("fence")||n.Contains("post")?"steel":
+                n.Contains("slab")||n.Contains("footprint")||n.Contains("path")?"concrete":
+                n.Contains("crates")||n.Contains("pallet")?"timber":"prop";
+            float baseY=0;var b=r.transform;
+            while(b&&b.parent!=root)b=b.parent;
+            if(kind=="wall")
+            {
+                float y=r.bounds.min.y;
+                float floor=b&&b.name=="Repair shed"?4:3.2f;
+                if(y>=floor-.01f)baseY=floor;
+            }
+            Map(f,r,kind,baseY);count++;
+        }
+        // The ground is shared by the three buildings; give its visible outdoor area asphalt.
+        foreach(var r in block.GetComponentsInChildren<MeshRenderer>())
+            if(!r.transform.IsChildOf(root)&&r.name.ToLowerInvariant().Contains("ground")&&r.GetComponent<BoxCollider>())
+            {Map(r.GetComponent<MeshFilter>(),r,"ground",0);count++;}
+        if(!track.SequenceEqual(block.track)||!colliders.SequenceEqual(block.GetComponentsInChildren<Collider>().Select(c=>c.GetInstanceID())))throw new InvalidOperationException("Geometry contract changed");
+        PrefabUtility.ApplyPrefabInstance(block.gameObject,InteractionMode.AutomatedAction);
+        EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
+        Directory.CreateDirectory("docs/validation/depot-materials");
+        File.WriteAllText("docs/validation/depot-materials/apply.txt",count+" renderers mapped; "+meshes.Count+" shared meshes; original collision and track retained.\nExisting Town/Industrial atlas files unchanged.\n");
+        RailCatalogLightingAuthoring.BakeOpen();Debug.Log("Depot material pass applied to "+count+" renderers; lighting bake queued.");
+    }
+    [MenuItem("Duck Rails/Authoring/Station/Apply Quackville rough materials")]
+    public static void ApplyStation()
+    {
+        if(Application.dataPath!="X:/Work/duck-rails/Assets"||EditorApplication.isPlaying||Lightmapping.isRunning)
+            throw new InvalidOperationException("Use Duck Rails Edit Mode with no bake running");
+        for(int i=0;i<SceneManager.sceneCount;i++)if(SceneManager.GetSceneAt(i).isDirty)throw new InvalidOperationException("Save scene edits first");
+        string meshFolder="Assets/DuckRails/StationMaterials/Meshes";
+        Directory.CreateDirectory(meshFolder);AssetDatabase.Refresh();meshes.Clear();
+        // Reuse the approved Quackville materials without retuning the depot or atlas import settings.
+        materials=Names.Select(n=>AssetDatabase.LoadAssetAtPath<Material>(Folder+"/"+n+".mat")).ToArray();
+        if(materials.Any(m=>!m))throw new InvalidOperationException("Missing Quackville rough-pass materials");
+        var scene=EditorSceneManager.OpenScene(RailStationLightingAuthoring.BakeScene);
+        var block=Object.FindFirstObjectByType<RailBlock>();
+        var root=block.transform.Find(RailUndergroundStation.RootName);
+        if(!root)throw new InvalidOperationException("Underground station greybox required");
+        var colliders=block.GetComponentsInChildren<Collider>().Select(c=>c.GetInstanceID()).ToArray();
+        var track=block.track.ToArray();int count=0;
+        foreach(var r in block.GetComponentsInChildren<MeshRenderer>())
+        {
+            if(r.GetComponent<TMPro.TMP_Text>())continue;
+            string n=r.name.ToLowerInvariant();
+            if(n.Contains("fixture")||(!r.transform.IsChildOf(root)&&n!="station ground"))continue;
+            var f=r.GetComponent<MeshFilter>();if(!f||!f.sharedMesh)continue;
+            string kind=n.Contains("mountain")||n=="station ground"?"ground":
+                n.Contains("safety edge")?"yellow":
+                n.Contains("wall")||n.Contains("partition")||n.Contains("lintel")||n.Contains("recess")?"wall":
+                n.Contains("ceiling")?"roof":n.Contains("guard")||n.Contains("shelving")||n.Contains("desk")?"steel":
+                n.Contains("bench")?"timber":"concrete";
+            Map(f,r,kind,n.Contains("tunnel")?0:1,meshFolder);count++;
+        }
+        if(!track.SequenceEqual(block.track)||!colliders.SequenceEqual(block.GetComponentsInChildren<Collider>().Select(c=>c.GetInstanceID())))
+            throw new InvalidOperationException("Station collision/track changed");
+        PrefabUtility.ApplyPrefabInstance(block.gameObject,InteractionMode.AutomatedAction);
+        EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
+        Directory.CreateDirectory("docs/validation/station-materials");
+        File.WriteAllText("docs/validation/station-materials/apply.txt",count+" surfaces; "+meshes.Count+" station UV meshes; original collision/track retained. Existing Town/Industrial atlas files and shared materials unchanged.\n");
+        RailStationLightingAuthoring.Bake();
+        Debug.Log("Station Quackville material pass applied; bake started.");
+    }
     internal static void BeginSharedPass(string meshFolder)
     {
         Directory.CreateDirectory(meshFolder);AssetDatabase.Refresh();meshes.Clear();
@@ -108,3 +211,4 @@ public static class RailDepotMaterials
     {var result=new List<float>{0};for(float f=step;f<length-.0001f;f+=step)result.Add(f);result.Add(length);return result;}
 }
 #endif
+

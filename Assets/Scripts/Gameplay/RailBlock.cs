@@ -10,6 +10,18 @@ public sealed class RailBlock : MonoBehaviour
     public Transform entry, exit, stop;
     public TextAsset graph;
     public Bounds enemyBounds = new Bounds(new Vector3(23, 4, 80), new Vector3(28, 12, 70));
+    // Optional above-ground rail exclusion for blocks whose navigation crosses below the track.
+    public Bounds enemySurfaceRailExclusion;
+
+    public Vector3 ConstrainEnemyPosition(Vector3 world)
+    {
+        if (enemySurfaceRailExclusion.size == Vector3.zero) return world;
+        var local = transform.InverseTransformPoint(world);
+        if (!enemySurfaceRailExclusion.Contains(local)) return world;
+        local.x = local.x < enemySurfaceRailExclusion.center.x
+            ? enemySurfaceRailExclusion.min.x - .05f : enemySurfaceRailExclusion.max.x + .05f;
+        return transform.TransformPoint(local);
+    }
     public RailSpawnSet[] variations;
     public Vector3[] track;
     public float TrackLength

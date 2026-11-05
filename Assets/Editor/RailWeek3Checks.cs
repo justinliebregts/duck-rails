@@ -16,7 +16,7 @@ public static class RailWeek3Checks
     {
         lines.Clear();
         var blocks = AssetDatabase.FindAssets("t:Prefab", new[] { RailWeek3Builder.Folder }).Select(g => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(g)).GetComponent<RailBlock>()).Where(b => b != null && b.id != "bridge-finale-v1").ToArray();
-        Check(blocks.Length == 12 && blocks.Select(b => b.id).Distinct().Count() == 12, "Twelve unique block assets");
+        Check(blocks.Length == 15 && blocks.Select(b => b.id).Distinct().Count() == 15 && blocks.Any(b => b.id == RailCanyon.Id) && blocks.Any(b => b.id == RailSkyscraper.Id) && blocks.Any(b => b.id == RailHospital.Id), "Fifteen unique block assets including Hospital District");
         foreach (var b in blocks)
         {
             Check(b.transform.localScale == Vector3.one && b.entry.localPosition == Vector3.zero && b.exit.localPosition == new Vector3(0, 0, 160), b.id + " consistent entry/exit/pivot");
@@ -45,9 +45,24 @@ public static class RailWeek3Checks
             try
             {
                 var colliders = contents.GetComponentsInChildren<Collider>().Where(c => !c.isTrigger && c.gameObject.layer == 6).ToArray();
+                var depot = contents.transform.Find(RailDepotGreybox.RootName);
                 var motel = contents.transform.Find(RailMotelGreybox.RootName);
+                var store = contents.transform.Find(RailConvenienceStore.RootName);
                 var farm = contents.transform.Find(RailFarmSilos.RootName);
-                Check(farm != null ? contents.transform.Find("Left-side buildings/Feed barn") != null && contents.transform.Find("Left-side buildings/Farm workshop") != null : motel != null ? motel.Find("Office and garage") != null && motel.Find("Transformer yard") != null :
+                var mine = contents.transform.Find(RailQuarryMine.RootName);
+                var canyon = contents.transform.Find(RailCanyon.RootName);
+                var station = contents.transform.Find(RailAbandonedStation.RootName);
+                var skyscraper = contents.transform.Find(RailSkyscraper.RootName);
+                var hospital = contents.transform.Find(RailHospital.RootName);
+                var yard = contents.transform.Find(RailContainerYard.RootName);
+                Check(yard != null ? yard.Find("West yard/Row 2") != null && yard.Find("West yard/Row 5") != null : hospital != null ? hospital.Find("Clinic") != null && hospital.Find("Pharmacy") != null : skyscraper != null ? skyscraper.Find("Tower A") != null && skyscraper.Find("Tower C") != null :
+                    station != null ? station.Find("West shops and staff corridor/Tickets") != null && station.Find("West shops and staff corridor/Mini mart") != null :
+                    canyon != null ? canyon.Find("Exploration landings") != null && canyon.Find("Terraced canyon and hollow caves") != null :
+                    mine != null ? mine.Find("West rim climbing ledges") != null && mine.Find("Underground office") != null :
+                    farm != null ? contents.transform.Find("Left-side buildings/Feed barn") != null && contents.transform.Find("Left-side buildings/Farm workshop") != null :
+                    store != null ? store.Find("Arcade") != null && store.Find("Rest stop") != null :
+                    motel != null ? motel.Find("Office and garage") != null && motel.Find("Transformer yard") != null :
+                    depot != null ? depot.Find("Parts store") != null && depot.Find("Workshop") != null :
                     contents.transform.Find("Left-side buildings") != null && contents.transform.Find("Left-side buildings").childCount == 2,
                     b.id + " two left-side search areas");
                 Check(contents.GetComponent<RailBlock>().variations.SelectMany(v => v.coal).All(p =>
