@@ -1,0 +1,44 @@
+using UnityEngine;using UnityEditor;using System;using System.IO;using System.Linq;using System.Collections.Generic;
+internal class CommandScript:IRunCommand{public void Execute(ExecutionResult r){
+var b=UnityEngine.Object.FindFirstObjectByType<RailBlock>();var lines=new List<string>();Action<bool,string> check=(v,n)=>lines.Add((v?"PASS ":"FAIL ")+n);
+var root=b.transform;var hinge=root.Find("Bridge hinge");var angle=hinge.localRotation;var span=hinge.Find("Authored steel drawbridge");var bank=root.Find(RailFinaleFort.RootName+"/River retaining walls and fortress recovery");
+check(span!=null,"Authored moving span exists");check(hinge.childCount==1,"Placeholder bridge visuals removed");
+check(bank.GetComponentsInChildren<Transform>().Count(t=>t.name.EndsWith("fortress recovery stairs"))==2,"Two recovery stairs on fortress side only");
+check(bank.GetComponentsInChildren<Transform>().Where(t=>t.name=="River recovery tread").All(t=>t.position.z<91),"No far-bank recovery stair or crossing");
+void Surface(Vector3 p,string label){
+ check(Physics.Raycast(p+Vector3.up*.08f,Vector3.down,out var hit,.14f,1<<6)&&Mathf.Abs(hit.point.y-p.y)<.035f,label+" supported");
+ check(!Physics.CheckCapsule(p+Vector3.up*.45f,p+Vector3.up*1.5f,.3f,1<<6),label+" player clearance");
+}
+foreach(float side in new[]{-1f,1f}){
+ for(int flight=0;flight<2;flight++)for(int i=0;i<29;i++){
+  float t=(i+.5f)/29f;float x=side*(flight==0?Mathf.Lerp(16,35.5f,t):Mathf.Lerp(35.5f,16,t));float y=(flight==0?-11.5f:-5.75f)+(i+1f)*5.75f/29;
+  Surface(new(x,y,flight==0?88.5f:83),"Recovery "+side+" flight "+flight+" tread "+i);
+ }
+ for(float z=83;z<=88.5f;z+=.5f)Surface(new(side*37,-5.75f,z),"Turn landing "+side+" "+z);
+ for(float z=77;z<=83;z+=.5f)Surface(new(side*14.25f,0,z),"Fortress exit "+side+" "+z);
+ for(float z=90;z<=108;z+=2)Surface(new(side*14,-11.5f,z),"River floor return "+side+" "+z);
+}
+foreach(var post in bank.GetComponentsInChildren<Transform>().Where(t=>t.name=="Recovery guard post")){
+ var foot=post.position-Vector3.up*post.localScale.y/2;
+ check(Physics.RaycastAll(foot+Vector3.up*.12f,Vector3.down,.2f,1<<6).Any(h=>h.collider.transform!=post&&Mathf.Abs(h.point.y-foot.y)<.035f),"Recovery post supported "+foot);
+}
+foreach(float y in new[]{-11f,-8f,-4f,-.5f})for(int x=-46;x<=46;x+=4){
+ check(Physics.Raycast(new Vector3(x,y,81),Vector3.back,3,1<<6),"Near bank closed "+x+" "+y);
+ check(Physics.Raycast(new Vector3(x,y,108),Vector3.forward,3,1<<6),"Far bank closed "+x+" "+y);
+}
+try{
+ hinge.localRotation=Quaternion.identity;Physics.SyncTransforms();
+ for(float z=79.5f;z<=110.5f;z+=.5f){
+  check(!Physics.CheckBox(new Vector3(0,3.2f,z),new Vector3(2.9f,3.1f,.2f),Quaternion.identity,1<<6),"Lowered bridge train clearance "+z);
+  check(Physics.Raycast(new Vector3(0,.2f,z),Vector3.down,out var hit,.25f,1<<6)&&Mathf.Abs(hit.point.y)<.025f,"Continuous bridge deck "+z);
+ }
+ foreach(float x in new[]{-2.7f,2.7f})for(int z=81;z<110;z++)Surface(new(x,0,z),"Bridge pedestrian shoulder "+x+" "+z);
+ var own=span.GetComponentsInChildren<Collider>();var fixedColliders=UnityEngine.Object.FindObjectsByType<Collider>(FindObjectsSortMode.None).Where(c=>!c.transform.IsChildOf(hinge)&&!c.isTrigger).ToArray();
+ for(int degrees=0;degrees<=80;degrees+=5){hinge.localRotation=Quaternion.Euler(-degrees,0,0);Physics.SyncTransforms();int contacts=0;string first="";
+  foreach(var c in own)foreach(var other in fixedColliders)if(c.bounds.Intersects(other.bounds)&&Physics.ComputePenetration(c,c.transform.position,c.transform.rotation,other,other.transform.position,other.transform.rotation,out var direction,out float distance)&&distance>.035f){contacts++;if(first=="")first=c.name+" / "+other.name+" depth "+distance;}
+  check(contacts==0,"Bridge sweep "+degrees+" degrees contacts="+contacts+" "+first);
+ }
+ foreach(var renderer in span.GetComponentsInChildren<MeshRenderer>())check(renderer.receiveGI==ReceiveGI.LightProbes&&(GameObjectUtility.GetStaticEditorFlags(renderer.gameObject)&StaticEditorFlags.ContributeGI)==0,"Moving art excluded from static GI "+renderer.name);
+}finally{hinge.localRotation=angle;Physics.SyncTransforms();}
+Directory.CreateDirectory("docs/validation/finale-fort");File.WriteAllLines("docs/validation/finale-fort/river-checks.txt",lines);r.Log(lines.Count+" checks / "+lines.Count(s=>s.StartsWith("FAIL"))+" failures");foreach(var s in lines.Where(s=>s.StartsWith("FAIL")).Take(30))r.Log(s);
+}}

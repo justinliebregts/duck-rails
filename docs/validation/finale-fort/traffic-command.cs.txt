@@ -1,0 +1,24 @@
+using UnityEngine;using UnityEditor;using System;using System.IO;using System.Linq;using System.Collections.Generic;using Game.AI;
+internal class CommandScript:IRunCommand{public void Execute(ExecutionResult r){
+var b=UnityEngine.Object.FindFirstObjectByType<RailBlock>();var lines=new List<string>();Action<bool,string> check=(v,n)=>lines.Add((v?"PASS ":"FAIL ")+n);
+var hinge=b.transform.Find("Bridge hinge");var angle=hinge.localRotation;hinge.localRotation=Quaternion.identity;Physics.SyncTransforms();
+for(int z=0;z<80;z++)check(!Physics.CheckBox(new Vector3(0,3.2f,z),new Vector3(2.9f,3.1f,.4f),Quaternion.identity,1<<6),"Train clearance "+z);
+for(int z=111;z<310;z++)check(!Physics.CheckBox(new Vector3(0,3.2f,z),new Vector3(2.9f,3.1f,.4f),Quaternion.identity,1<<6),"Exit clearance "+z);
+for(float x=-16;x<=16;x+=.5f)check(!Physics.CheckCapsule(new Vector3(x,8.4f,68),new Vector3(x,9.5f,68),.3f,1<<6),"Catwalk body "+x);
+var g=CrawlGraph.Load(b.graph);var ps=new[]{new Vector3(-22,.1f,32),new(22,.1f,32),new(-22,2.1f,42),new(22,2.1f,42),new(-22,4.1f,68),new(22,4.1f,68),new(-24,8.1f,74),new(24,8.1f,74),new(0,8.1f,70),new(-34,8.1f,74),new(34,8.1f,74)};
+var ns=ps.Select(p=>g.FindNearestGroundNode(p,2)).ToArray();for(int i=0;i<ns.Length;i++)check(ns[i]>=0,"Navigation sample "+ps[i]);
+var seen=new HashSet<int>();var q=new Queue<int>();if(ns[0]>=0){seen.Add(ns[0]);q.Enqueue(ns[0]);}while(q.Count>0){int n=q.Dequeue();for(int e=g.EdgeStart[n];e<g.EdgeStart[n+1];e++)if(seen.Add(g.EdgeTarget[e]))q.Enqueue(g.EdgeTarget[e]);}
+for(int i=0;i<ns.Length;i++)check(seen.Contains(ns[i]),"Connected sample "+ps[i]);
+check(b.length==300&&b.stop.localPosition.z==55,"Route contract");check(b.transform.Find("Lower bridge button").localPosition==new Vector3(0,9.05f,71.1f),"Button balcony");
+hinge.localRotation=angle;Physics.SyncTransforms();var root=b.transform.Find(RailFinaleFort.RootName);var ts=root.GetComponentsInChildren<Transform>();
+check(!ts.Any(t=>t.name=="North tower connecting walkway"),"Only button cross-track walkway");
+check(!ts.Any(t=>t.name.Contains("parapet")),"No wall parapets");
+check(!ts.Any(t=>t.name=="Approach supplies"),"Approach crates removed");
+check(!ts.Any(t=>t.name=="Tree trunk"&&t.position.z<30),"Approach trees removed");
+var vehicles=root.Find("Abandoned approach traffic jam");check(vehicles.childCount==38,"37 vehicles and one tank");
+foreach(Transform v in vehicles){check(v.GetComponentsInChildren<Rigidbody>().Length==0,"Static scenery "+v.name);check(Mathf.Abs(v.GetComponentsInChildren<Renderer>().Min(rr=>rr.bounds.min.y))<.02f,"Vehicle grounded "+v.name);}
+var ochre=AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/SkyscraperWorks/Crane ochre.mat");var steel=AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/SkyscraperWorks/Scaffold steel.mat");
+foreach(var t in ts.Where(t=>t.name=="Edge handrail"))check(t.GetComponent<Renderer>().sharedMaterial==ochre,"Exact skyscraper handrail material");
+foreach(var t in ts.Where(t=>t.name=="Guard post")){var baseP=t.position-Vector3.up*t.localScale.y/2;check(Physics.RaycastAll(baseP+Vector3.up*.15f,Vector3.down,.3f,1<<6).Any(h=>h.collider.transform!=t&&Mathf.Abs(h.point.y-baseP.y)<.06f),"Anchored railing post "+baseP);check(t.GetComponent<Renderer>().sharedMaterial==steel,"Exact skyscraper post material");}
+Directory.CreateDirectory("docs/validation/finale-fort");File.WriteAllLines("docs/validation/finale-fort/traffic-checks.txt",lines);r.Log(lines.Count+" checks / "+lines.Count(s=>s.StartsWith("FAIL"))+" failures");foreach(var s in lines.Where(s=>s.StartsWith("FAIL")).Take(20))r.Log(s);
+}}

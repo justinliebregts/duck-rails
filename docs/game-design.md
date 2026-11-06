@@ -1,5 +1,19 @@
 # Duck Rails — V1 game design
 
+November 6 finale river refinement: replace placeholder bridge art with a steel railway drawbridge, close both bank faces and river ends, and add paired recovery stairs on the fortress side only. Existing hold-to-lower behavior and victory route are retained. See [bridge and river implementation](final-escape-layout.md#steel-drawbridge-and-river-recovery--november-6); headset recovery and Quest performance acceptance remain pending.
+
+November 6 finale refinement: retain only the button cross-track walkway; replace parapets with open, posted Skyscraper Works railings using its ochre/steel materials. Approach trees/crates are replaced by a static traffic jam (37 cars/trucks, some overturned, plus a tank). See [single-walkway implementation](final-escape-layout.md#single-walkway-open-rails-and-traffic-jam--november-6). Earlier second-crossing and concrete-parapet choices are superseded.
+
+November 6 finale correction: user rejected the thin-post/timber-like appearance. Fortress architecture now uses solid concrete bastion/tower bases, bunker walls and openings, solid stairs, thick roofs and concrete parapets, with grey pixel concrete and muted teal trim. Retains approved platform routes, linked northern towers and button balcony. See [concrete correction](final-escape-layout.md#concrete-fortress-correction--november-6).
+
+November 6 finale refinement: requested northwest/northeast lookout towers and connecting walkway are installed at +8 m, with roofed observation decks, two-sided stair access and a second upper loop. The central button balcony remains. See [tower implementation](final-escape-layout.md#northern-lookout-towers--november-6); 724 geometry/navigation checks pass, headset/multiplayer acceptance pending.
+
+November 6 finale build: user approved full flow with detailed fortress encounter. [Rough fortress/Happy Land installed](final-escape-layout.md#installed-rough-fortress-and-happy-land--november-6), retaining 300 m route and existing hold/finish logic. Central off-path catwalk button, multi-level concrete platforms and enclosed victory valley are authored; graph/lighting, 364 geometry/navigation checks, 17 hold checks and 42 offline route-loader assertions pass. Headset/multiplayer/performance acceptance remains open; full catalogue check hits a separate Canyon marker assertion.
+
+November 6 finale landscape direction: user endorsed the full 300 m finale concept including the 140 m post-tunnel Happy Land stretch, and requires hills at its left, right and far end to hide ground-plane edges. Preserve the open valley/railway and existing victory ride; exact terrain and fortress geometry remain proposals. See [full finale layout](final-escape-layout.md#v5--full-300-m-finale-and-enclosed-happy-land-november-6).
+
+November 6 finale art direction: user requests a concrete containment-fortress arena with platforming and multiple levels inspired by Skyscraper Works, without full skyscrapers. The [V3 concept](final-escape-layout.md#v3--containment-fortress-arena-november-6) explores stepped bastions, undercrofts, stairs and lookout decks around the held bridge control. Exact layout/heights remain proposals; escape rules are unchanged.
+
 Handoff date: October 28, 2026.
 
 November 6 train cockpit: user approved integrated-dash concept 2 for 3D. Installed a low 25-degree driver-facing dash, larger fuel gauge with shared-value segment display, emissive accents while retaining the existing throttle/horn interactions. Decorative side handles were subsequently removed at user request. See [cockpit implementation and acceptance limits](yard-mule-train.md#integrated-cockpit--concept-2-installed).

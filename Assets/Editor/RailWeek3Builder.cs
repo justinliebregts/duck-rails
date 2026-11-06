@@ -247,6 +247,21 @@ public static class RailWeek3Builder
         RailModularTrainBuilder.InstallPrefab(world, run);
         world.expedition.SetActive(true);
         var env = world.expedition.transform.Find("Week 2 Environment");
+        RailBlock finalBlock;
+        var savedFinale = AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "/bridge-finale-v1.prefab");
+        if (savedFinale != null && savedFinale.transform.Find(RailFinaleFort.RootName) != null)
+        {
+            var parent = env.parent;
+            Object.DestroyImmediate(env.gameObject);
+            env = ((GameObject)PrefabUtility.InstantiatePrefab(savedFinale)).transform;
+            env.SetParent(parent, false);
+            finalBlock = env.GetComponent<RailBlock>();
+            run.bridgeButton = env.Find("Lower bridge button");
+            run.bridgeDeck = env.Find("Bridge hinge");
+            run.bridgeLabel = env.Find("LOWER BRIDGE").GetComponent<TMPro.TMP_Text>();
+        }
+        else
+        {
         var keep = new[] { "Far bank", "Ravine", "Exit rail", "Bridge control island", "Lower bridge button", "LOWER BRIDGE", "Bridge hinge", "Tunnel roof", "Tunnel wall", "DAWN", "BRIDGE AHEAD", "BRAKE NOW", "Warning post" };
         foreach (Transform child in env.Cast<Transform>().ToArray())
         {
@@ -257,13 +272,14 @@ public static class RailWeek3Builder
         env.name = "Bridge Finale"; env.position = Vector3.zero;
         Box(env, "Finale approach", new Vector3(0, -.5f, 40), new Vector3(96, 1, 80), ground);
         Track(env, Enumerable.Range(0, 41).Select(i => new Vector3(0, 0, i * 2)).ToArray());
-        var finalBlock = env.gameObject.AddComponent<RailBlock>(); finalBlock.id = "bridge-finale-v1"; finalBlock.displayName = "Bridge Finale"; finalBlock.length = 300;
+        finalBlock = env.gameObject.AddComponent<RailBlock>(); finalBlock.id = "bridge-finale-v1"; finalBlock.displayName = "Bridge Finale"; finalBlock.length = 300;
         finalBlock.entry = Point(env, "Track Entry", Vector3.zero); finalBlock.exit = Point(env, "Track Exit", Vector3.forward * 300); finalBlock.stop = Point(env, "Suggested Stop", Vector3.forward * 55);
         finalBlock.track = new[] { Vector3.zero, Vector3.forward * 300 };
         finalBlock.enemyBounds = new Bounds(new Vector3(23, 4, 57), new Vector3(28, 12, 40));
         finalBlock.variations = new[] { new RailSpawnSet { coal = Array.Empty<Transform>(), enemies = new[] { Point(env, "Bridge enemy A", new Vector3(25, .2f, 50)), Point(env, "Bridge enemy B", new Vector3(25, .2f, 70)) } } };
         Bake(finalBlock, "bridge-finale-v1");
         PrefabUtility.SaveAsPrefabAsset(env.gameObject, Folder + "/bridge-finale-v1.prefab");
+        }
         env.position = Vector3.forward * 870; run.bridgeZ = 950;
         var routeObject = new GameObject("Authored route"); var route = routeObject.AddComponent<RailRoute>(); var manager = routeObject.AddComponent<EnemyManager>();
         RailStartingStationBuilder.Install(route);

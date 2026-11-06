@@ -573,3 +573,18 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] November 6 both-side encounters: validate navigation/pursuit, mixed enemy counts, late joining/master handoff and headset balance across the expanded catalogue. Unity verification omitted at user request; see [implementation](mixed-enemies.md#enemies-on-both-rail-sides--november-6-2026).
 
 - [x] November 6: install both-side enemy markers and offline crawlgraphs in the 12 one-sided encounters, retain the other five bilateral layouts, update the scene finale and guarantee both-side seeded selection. Authoring completed; gameplay acceptance remains open above.
+
+- [ ] Review the finale containment-fortress arena concept and measured platform/stair/rail-clearance layout before blockout; see docs/final-escape-layout.md V3.
+
+
+- [x] November 6: install user-approved detailed finale fortress, central catwalk button balcony and enclosed Happy Land valley; bake navigation/lighting and pass 364 geometry checks, 17 hold checks and 42 offline route assertions. See docs/final-escape-layout.md.
+- [ ] Validate finale VR traversal/control reach, defense balance, multiplayer hold/escape, victory-view edge concealment and Quest performance. Catalogue regression currently stops at Canyon coal-marker assertion.
+
+- [x] November 6: add requested northeast/northwest fortress lookout towers and northern connecting walkway; preserve button balcony, rebake graph/lighting and pass 724 geometry/navigation checks. See docs/final-escape-layout.md.
+
+- [x] November 6: correct finale to solid concrete fortress construction after visual feedback: bunker/tower bases, solid stairs, thick roofs, concrete parapets and grey pixel materials; preserve routes and validate 724 geometry/navigation checks.
+
+- [x] November 6: remove non-button crossing, replace all fortress parapets with posted Skyscraper Works railings, and replace approach trees/crates with 37 static cars/trucks plus a tank. 717 geometry/navigation checks pass; see docs/final-escape-layout.md.
+
+- [x] November 6: replace placeholder finale bridge with steel railway art, close riverbank/end walls and add two fortress-only switchback recovery stairs. Rebuild graph/lighting and synchronize Expedition; 1,036 river/bridge checks, 791 fortress checks and 17 hold regressions pass. See docs/final-escape-layout.md.
+- [ ] Verify natural river recovery and revised moving bridge appearance/clearance in a headset, across real clients, and within Quest frame-time/memory targets.
