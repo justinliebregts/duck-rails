@@ -411,7 +411,10 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 var emission = ps.emission; emission.rateOverTime = 0; emission.SetBursts(new[] { new ParticleSystem.Burst(0, 90) });
                 ps.Play();
             }
-            results.text = (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
+            int returnSeconds = RailSessionRules.ReturnCountdown(PhotonSession.Phase,
+                PhotonSession.Get(RailSessionRules.Deadline, 0d), now);
+            results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
+                (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
                 string.Join("\n", State.players.Select(p => Safe(p.name) + " — " + (p.escaped ? "Escaped" : "Didn't make it") + "\n<size=65%>Coal " + p.coal + "   Revives " + p.revives + "   Downs " + p.downs + "   Honks " + p.horns + "  •  " + Award(p) + "</size>"));
             if (caughtRun != State.run)
             { caughtRun = State.run; if (GR.Player.instance != null && !RailTrain.Instance.Contains(GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position) + Vector3.up * .5f)) TeleportAboard(); }

@@ -647,7 +647,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
                 Commit(new Hashtable { [RailSessionRules.Phase] = (int)(WorldReady ? RailPhase.Running : RailPhase.Returning), [RailSessionRules.Deadline] = now + 2d });
         }
         else if (Phase == RailPhase.Ending && now >= Get(RailSessionRules.Deadline, 0d))
-            Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Returning, [RailSessionRules.Deadline] = now + 2d });
+            Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Returning, [RailSessionRules.Deadline] = now + RailSessionRules.ReturnDelaySeconds });
         else if (Phase == RailPhase.Returning && now >= Get(RailSessionRules.Deadline, 0d))
         {
             if (IsPrivate)

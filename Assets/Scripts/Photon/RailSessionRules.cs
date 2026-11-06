@@ -22,6 +22,11 @@ public static class RailSessionRules
         return leases;
     }
     public const double CountdownSeconds = 20;
+    public const double ReturnDelaySeconds = 2;
+    public static int ReturnCountdown(RailPhase phase, double deadline, double now) =>
+        phase == RailPhase.Ending || phase == RailPhase.Returning
+            ? (int)Math.Ceiling(Math.Max(0, deadline - now + (phase == RailPhase.Ending ? ReturnDelaySeconds : 0)))
+            : 0;
     public const string Schema = "rails.schema", Kind = "rails.kind", Phase = "rails.phase", Revision = "rails.revision";
     public const string Run = "rails.run", Deadline = "rails.deadline", Roster = "rails.roster", Destination = "rails.destination";
     public const string TransferUsers = "rails.users", TransferUntil = "rails.transferUntil", Ready = "rails.ready", Boarding = "rails.boarding";

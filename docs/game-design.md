@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 6 results UI: show the remaining compound-return delay above win/lose results using the existing text object and shared network deadline. Current normal delay is 32 seconds plus the two-second return stage. See [countdown implementation](week2-session.md#results-return-countdown--november-6-2026).
+
 November 6 encounter coverage: user requests enemy spawn candidates on both sides and at track level in every encounter block following train boarding support. Installed and checked across all 17 blocks and Expedition's finale, retaining 4–6 enemies, guaranteed bilateral selection and the safe starting station. Railway candidates participate in random selection. See [track-level spawn coverage](mixed-enemies.md#track-level-spawn-coverage--november-6-2026).
 
 November 6 finale river refinement: replace placeholder bridge art with a steel railway drawbridge, close both bank faces and river ends, and add paired recovery stairs on the fortress side only. Existing hold-to-lower behavior and victory route are retained. See [bridge and river implementation](final-escape-layout.md#steel-drawbridge-and-river-recovery--november-6); headset recovery and Quest performance acceptance remain pending.

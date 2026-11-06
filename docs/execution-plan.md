@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 6: implement shared-deadline results return countdown; Unity compilation, eight timing checks and existing session regressions pass. See docs/week2-session.md.
+- [ ] Validate countdown readability on headset and synchronized win/lose returns across real clients, including master handoff.
+
 - [x] November 6: add supported track-level enemy candidates across all 17 encounter blocks, retain both-side spawning and repair invalid existing markers. Saved catalogue/scene finale checks pass for 50 variations and 5,000 seeded selections; 154 mixed-enemy and 125 crossing assertions pass. See [spawn coverage](mixed-enemies.md#track-level-spawn-coverage--november-6-2026).
 - [ ] Validate revised railway spawn encounters during natural pursuit, incoming-train interactions, real-client play and headset balance. Edit Mode checks do not close gameplay acceptance.
 

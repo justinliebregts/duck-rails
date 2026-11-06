@@ -1,5 +1,11 @@
 # Week 2 and bridge finale
 
+## Results return countdown — November 6, 2026
+
+The existing train `Run support/RESULTS` text now shows a small countdown above SUCCESS/FAIL. It reads the replicated session deadline and Photon clock, including the existing two-second Returning stage: normal gameplay starts at 34 seconds (32 + 2). At zero it shows “Returning to compound…” while the private staging commit or public room transfer completes. Return timing and the results object's authored position are retained; no additional text object is created. `RailSessionRules.ReturnDelaySeconds` is shared by the display and return-stage transition.
+
+Validation: Unity MCP verified Duck Rails, loaded the compiled runtime, passed eight countdown boundary/phase checks and the existing session regression suite. Console error query was empty. Live multi-client countdown/transfer timing and headset text layout remain unverified.
+
 Implementation session: October 29, 2026. Scope is Week 2 plus the bridge finale, using DesktopPlayer and three configured authenticated accounts. Week 1 is the user-verified baseline. Quest 3 testing is Justin's follow-up; commerce, persistent escape counters, extra blocks, and player dragging are excluded.
 
 ## VR coal pickup investigation — October 30
