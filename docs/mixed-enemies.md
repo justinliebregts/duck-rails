@@ -1,5 +1,15 @@
 # Mixed enemies — November 1, 2026
 
+## Track-level spawn coverage — November 6, 2026
+
+All 17 encounter blocks (16 scavenging locations plus the finale) now have usable candidates on both sides and on the railway itself. Bilateral coverage was already installed, but most blocks lacked railway candidates; centerline markers in Quarry/Passenger Station were below the railway and did not count as track-level spawns.
+
+`RailTrackSpawnAuthoring` moves one existing candidate per variation onto supported railway geometry near the middle of the encounter. It distinguishes track height from underpasses, checks physical support/capsule clearance and existing baked ground navigation, and requires ground-edge connectivity to both sides. Six candidates and 4–6 selected enemies remain; both sides are guaranteed, while the railway candidate participates in the seeded shuffle and need not appear in every encounter. Elevated candidates are preferentially retained. Unsafe markers are repaired on their original side, including four finale markers outside bounds/off navigation, motel markers and two convenience-store markers. No geometry or graph rebake was needed. The spider-only override is unchanged.
+
+After a location rebuild, run **Duck Rails > Authoring > Enable Track Enemy Spawns**, then **Duck Rails > Tests > Enemy Spawns > All Blocks And Scene Finale**. Save scenes first. This operates on catalogue prefabs with stable prefab references and checks the actual Expedition finale too. StartingStation remains enemy-free.
+
+Verified through the Duck Rails Unity editor: saved/reopened catalogue plus Expedition finale passed 50 variation checks, each checking all six candidates and 100 deterministic selections (5,000 selections plus matching replays); existing mixed-enemy checks passed 154 assertions and track-crossing/train-avoidance checks passed 125. Evidence: [spawn coverage](validation/enemy-spawns/track-spawns.txt), `output/mixed-enemies/editor-checks.txt`, and [crossing regression](validation/track-crossing/graph-checks.txt). This pass used Edit Mode checks; natural pursuit, incoming-train interactions, multiplayer agreement and headset balance remain gameplay acceptance work. Start a fresh expedition with matching updated client assets to use the new marker positions.
+
 November 6 temporary boarding playtest: newly spawned encounters are **spiders only** (RailEnemySpawns.ForcedEnemyType = 3). Set the override to -1 to restore the normal mix described below. Minions and spiders can use the train rear and both side gaps; see [enemy boarding](enemy-boarding.md). Start a fresh expedition for the override to replace the population.
 
 Each scavenging block now starts with 4–6 enemies. Every encounter includes the existing minion, bomber, smasher and spider; any fifth/sixth enemy is randomly selected from those four. Six authored candidates per variation are shuffled without replacement. Bridge activation adds another 4–6 defenders within the finale approach. StartingStation has no enemies.
