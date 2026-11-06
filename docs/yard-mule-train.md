@@ -1,4 +1,14 @@
-# Yard Mule train art — November 5, 2026
+# Yard Mule train art — November 6, 2026
+
+## Integrated cockpit — concept 2 installed
+
+User approved [concept 2](validation/yard-mule/cockpit-concept-approved.png) for 3D. The existing `CockpitControls.prefab` now contains a 3.52 m wide shallow charcoal dash, yellow perimeter and central brow, and two small emissive markers. Both decorative side handles and all six handle colliders were subsequently removed at user request. The gauge/horn plane slopes 25 degrees down toward the driver. The larger numeric gauge retains its original assembly/expedition reference; a ten-segment bar reads the same shared fuel value, with 40 fuel as full capacity. Ending fuel above capacity clamps the bar to full. The throttle stays upright with its original motion/grip logic; the existing horn button tilts with its contact volume and press direction. Legacy tabletop/supports are disabled. Furnace, radio, deck, shell and equipment placements are retained.
+
+Added art is 264 triangles across three renderers sharing one material and two 256-square point-filtered atlases (albedo/emission). Square source texels remain 32/m, including the slopes; broad low-contrast texture patches match the shell. The moving emissive surfaces add no Light components and do not contribute baked GI. A convex housing collider provides the touchable dash surface; floor space and the 0.5 m forward eye line remain clear.
+
+`RailCockpitArt.Build()` / **Duck Rails > Art > Build Integrated Cockpit** edits the nested controls in place, retaining the gauge/control identities. `RailCockpitArtChecks.Run()` checks geometry, UVs, fuel bar boundary values and source-mesh isolation; `Preview()` captures the assembly. After collision changes, rebake train enemy navigation offline. The installed graph was rebaked to 2,146 nodes / 19,934 edges with all rear/side openings connected.
+
+Verified in Unity: live Expedition inherits the dash; 792 UV-edge checks pass (worst relative error 0.00002344), 45 modular-train checks pass, and 489 boarding graph/packet/authoring checks passed for the initial installation. After handle removal, cockpit checks and all three boarding-opening connectivity checks pass on the updated bake. Fuel-bar instance checks cover zero, partial, full, negative and over-capacity values. [Cockpit checks](validation/yard-mule/cockpit-checks.txt), [navigation](validation/yard-mule/cockpit-navigation.txt), [boarding regression](validation/yard-mule/cockpit-boarding-regression.txt), [interior render](validation/yard-mule/cockpit-integrated.png), [duck-eye render](validation/yard-mule/cockpit-eye.png). These are editor/asset checks; physical headset reach, moving hand contact, live multiplayer fuel presentation and device performance remain unverified.
 
 ## Continuous bumper stripes
 

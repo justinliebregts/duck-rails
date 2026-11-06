@@ -2,6 +2,8 @@
 
 Handoff date: October 28, 2026.
 
+November 6 train cockpit: user approved integrated-dash concept 2 for 3D. Installed a low 25-degree driver-facing dash, larger fuel gauge with shared-value segment display, emissive accents while retaining the existing throttle/horn interactions. Decorative side handles were subsequently removed at user request. See [cockpit implementation and acceptance limits](yard-mule-train.md#integrated-cockpit--concept-2-installed).
+
 November 6 confirmed track navigation: enemies may cross empty railway tracks to pursue players, including at the motel. Avoid the moving train locally instead of excluding the entire railway from navigation. See [track crossings](track-crossing.md).
 
 November 6 confirmed enemy direction: support enemies aboard the moving train, starting with the minion, with the subsequent spider rollout now also authorized. This supersedes the earlier blanket no-boarding rule. Use a separately baked train graph and explicit block/train transfers, without runtime rebaking. Use the open rear and both existing side railing gaps for minion and spider boarding and dismount; choose a physically clear opening toward the target. Transfers remain limited to stopped/creeping speed. See [enemy boarding](enemy-boarding.md) for evidence and remaining acceptance.

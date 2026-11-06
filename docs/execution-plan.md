@@ -2,6 +2,12 @@
 
 Handoff date: October 28, 2026. Read `game-design.md` for decision status and scope.
 
+## November 6 — integrated train cockpit
+
+- [x] Build approved concept 2 in the existing controls prefab: angled larger gauge, shallow integrated housing and emissive accents; retain throttle/horn identities and bindings. Removed the decorative side handles and their six colliders at user request; refreshed cockpit checks and navigation.
+- [x] Verify square UVs, fuel-bar boundary values, eye-line clearance, live prefab inheritance and 45 modular checks. Rebake train navigation and pass 489 graph/packet/authoring checks. See [cockpit evidence](yard-mule-train.md#integrated-cockpit--concept-2-installed).
+- [ ] Review physical reach/readability and moving hand contact on headset, live multiplayer fuel presentation and Quest performance.
+
 ## November 6 — spider train boarding
 
 - [x] Opt the spider into rear/left/right boarding and dismount using its climbing mover and collision radius; preserve world crawl behavior and minion boarding.
