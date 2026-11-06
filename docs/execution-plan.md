@@ -1,5 +1,11 @@
 # Duck Rails — execution plan
 
+## November 6 — CutePixel typography
+
+- [x] Replace 170 serialized Liberation TMP font assignments and associated material references, update three custom sign materials, override 63 inherited camera-tablet labels, and set CutePixel SDF as the TMP default. Record the font standard in AGENTS.md.
+- [x] Unity asset audit: 729 TMP components across project prefabs and scenes use CutePixel with matching atlas materials; newly created TMP text defaults to CutePixel.
+- [ ] Headset visual review of text fit/readability after the font change.
+
 - [x] November 6: implement shared-deadline results return countdown; Unity compilation, eight timing checks and existing session regressions pass. See docs/week2-session.md.
 - [ ] Validate countdown readability on headset and synchronized win/lose returns across real clients, including master handoff.
 
