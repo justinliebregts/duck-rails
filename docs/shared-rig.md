@@ -7,14 +7,14 @@ October 30, 2026. Justin requested one gameplay rig for Quest Link/headset use a
 - Choose **Keyboard** or **VR** in the Scene view before Play. Both use the authored DuckPlayer prefab.
 - Connect Quest Link before pressing Play if headset use is needed. XR initialization stays enabled even when starting in Keyboard mode.
 - **F2** switches between simulated and tracked inputs during Play. The Scene view Keyboard/VR buttons also switch the running rig. A switch to VR requires an available tracked headset pose; otherwise Keyboard mode remains active.
-- Hold **T** for throttle **GO**, release for **STOP**, in either Keyboard or VR mode on the editor/desktop client. No hand reach or grip is needed. The shortcut uses the lever's shared ownership lease and cannot take it from another holder. Keyboard mode requires the captured game cursor; VR mode does not. Focus loss, input blocking, downing, or switching modes releases it; release T before pressing again after a switch or focus loss.
+- Press **T** once for throttle **GO**, then again for **STOP**, in either Keyboard or VR mode on the editor/desktop client (November 6). Releasing the key keeps the selected state. No hand reach or grip is needed. The shortcut uses the lever's shared ownership lease and cannot take it from another holder. Keyboard mode requires the captured game cursor; VR mode does not. Focus loss, input blocking, downing, or switching modes clears the toggle; release T before pressing again after a switch or focus loss.
 - **WASD** moves; mouse looks; **Space** jumps when supported; **C** lowers the simulated head.
 - Hold **Q** to reach left, **E** to reach right, or both together. Release to bring the corresponding hand back. Aim with the mouse; the hands reach through space, without raycast acquisition.
 - Hold **right mouse** for both grips. Hold **left mouse** for both triggers. Releasing releases the corresponding button on both hands.
 - Mouse wheel adjusts forward reach (0.25–1.1 metres). **Z/X** rolls both wrists. **1/2** supply left controller X/Y; **3/4** supply right A/B.
 - **P** opens the forearm diagnostic panel. Touch its buttons with the other hand. **Tab** retains the session/testing tools. **Esc** frees the cursor; click to recapture without pressing a trigger. **F1** displays controls.
 
-For the train lever, hold T as the keyboard shortcut in either input mode. Physical control also remains available: reach the handle, grip with right mouse, then increase forward reach with the wheel; release right mouse to brake. Horn, radio and keypad buttons use the actual fingertip colliders, just as in VR. Keyboard mode does not use the old E-to-toggle or mouse-to-click world control paths.
+For the train lever, T toggles the keyboard shortcut in either input mode. Physical control also remains available: reach the handle, grip with right mouse, then increase forward reach with the wheel; release right mouse to brake. Horn, radio and keypad buttons use the actual fingertip colliders, just as in VR. Keyboard mode does not use the old E-to-toggle or mouse-to-click world control paths.
 
 ## Implementation boundaries
 
@@ -27,6 +27,11 @@ The OVR camera rig and manager stay alive. Simulated poses are reapplied through
 The retired DesktopPlayer asset/class remain for historical non-Rails fixtures; they are not a supported gameplay launch path. New features and Rails tests must use DuckPlayer. Rails live fixtures now warp `NewPlayer`, and the shared-rig interaction check uses grip edges and actual candidate selection. Existing furnace/network fixtures that use ForceGrab remain network tests, not evidence of natural reach/grab acceptance.
 
 ## Validation
+
+### Toggle-T shortcut — November 6
+
+Unity compiled the update and shared-rig, quick-start and drive checks passed. The shared-rig fixture verifies GO on first press, no repeat while held, continued GO after release, STOP on the next press, and focus-loss/mode-switch reset with neutral-input gating. Keyboard T uses the same toggle in tracked-input mode; the physical hand lever retains hold-to-run. Actual keyboard-event and headset playtesting remain separate from these injected-input checks. The earlier hold-T evidence below records historical behavior.
+
 
 ### Keyboard public-platform countdown — October 31
 

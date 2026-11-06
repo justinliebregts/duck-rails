@@ -87,7 +87,7 @@ public sealed class RailTestCenter : EditorWindow
         {
             if (GUILayout.Button("Quick regression — game rules and VR contact fixtures")) RailTestRunner.Quick();
             if (GUILayout.Button("Manual sandbox — one private client, P opens test panel")) RailTestRunner.Start("sandbox");
-            if (GUILayout.Button("Two clients — coal grab/release and master handoff")) RailTestRunner.Start("coal");
+            if (GUILayout.Button("Two clients — launch expedition")) RailTestRunner.Start("two-clients");
             if (GUILayout.Button("Three clients — public sessions and network recovery")) RailTestRunner.Start("stability");
             if (GUILayout.Button("Three clients — expedition, shared bag and replay")) RailTestRunner.Start("expedition");
         }
@@ -140,7 +140,8 @@ public static class RailTestRunner
     static double nextTick;
     public static string Status { get; private set; } = "Ready";
     public static bool Running => run != null;
-    public static bool AutomatedRunning => run != null && run.suite != "sandbox";
+    static bool IsManual(string suite) => suite == "sandbox" || suite == "two-clients";
+    public static bool AutomatedRunning => run != null && !IsManual(run.suite);
     static RailTestRunner()
     {
         if (!CurrentPlayer.IsMainEditor) return;
@@ -190,7 +191,7 @@ public static class RailTestRunner
         if (Running || EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode || !CurrentPlayer.IsMainEditor) return;
         try
         {
-            if (suite != "sandbox" && (!MppmStandaloneCredentials.TryGet("Player2", out _) || suite != "coal" && !MppmStandaloneCredentials.TryGet("Player3", out _)))
+            if (suite != "sandbox" && (!MppmStandaloneCredentials.TryGet("Player2", out _) || suite != "two-clients" && !MppmStandaloneCredentials.TryGet("Player3", out _)))
                 throw new InvalidOperationException("Configure distinct Player2/Player3 accounts in the existing account window first");
             string selected = AssetDatabase.GetAssetPath(Selected());
             run = new Run { suite = suite, scenario = selected, quick = RailEditorQuickStart.Enabled,
@@ -198,7 +199,7 @@ public static class RailTestRunner
             string presetPath = Path.Combine(RailDiagnostics.Folder, "active-preset.txt");
             run.hadPreset = File.Exists(presetPath); run.previousPreset = run.hadPreset ? File.ReadAllText(presetPath) : null;
             Directory.CreateDirectory(run.folder); Directory.CreateDirectory(Path.GetDirectoryName(StatePath)); Save();
-            if (suite != "sandbox") RailTestTools.ClearPreset();
+            if (!IsManual(suite)) RailTestTools.ClearPreset();
             if (suite == "expedition")
             {
                 var catalog = Directory.GetFiles("Assets/DuckRails/Blocks", "*.prefab").Where(p => !p.Contains("bridge-finale"))
@@ -208,19 +209,19 @@ public static class RailTestRunner
                 RailTestTools.LoadPreset(new RailTestPreset { seed = seed, scenario = "Three-client expedition", roles = "main, Player2, Player3" });
             }
             Disarm();
-            Select(suite == "sandbox" ? "Assets/Settings/PlayMode/5 Diagnostic Solo.asset" : suite == "coal" ? "Assets/Settings/PlayMode/4 Diagnostic Two Client.asset" : "Assets/Settings/PlayMode/3 Week 2 Test.asset");
-            RailEditorQuickStart.Enabled = suite == "coal";
+            RailTestBlockOrderPanel.PublishPlayerOptions();
+            Select(suite == "sandbox" ? "Assets/Settings/PlayMode/5 Diagnostic Solo.asset" : suite == "two-clients" ? "Assets/Settings/PlayMode/4 Diagnostic Two Client.asset" : "Assets/Settings/PlayMode/3 Week 2 Test.asset");
+            RailEditorQuickStart.Enabled = suite == "two-clients";
             foreach (string path in Sources(suite)) if (File.Exists(path)) File.Copy(path, Path.Combine(run.folder, "previous-" + Path.GetFileName(path)), true);
             foreach (string path in Sources(suite)) if (File.Exists(path)) File.WriteAllText(path, "");
-            if (suite == "coal") RailCoalLiveChecks.Arm();
-            else if (suite == "stability") RailStabilityLiveChecks.Arm();
+            if (suite == "stability") RailStabilityLiveChecks.Arm();
             else if (suite == "expedition") RailWeek3LiveChecks.Arm();
             Status = "Launching " + suite;
             PlayCommand("Start");
         }
         catch (Exception e) { Status = "Could not start: " + e.Message; if (run != null) Stop(Status); }
     }
-    static string[] Sources(string suite) => suite == "sandbox" ? Array.Empty<string>() : suite == "coal" ? new[] { Root + "/Temp/rails-coal-main.txt", Root + "/Temp/rails-coal-remote.txt" } :
+    static string[] Sources(string suite) => IsManual(suite) ? Array.Empty<string>() :
         suite == "stability" ? new[] { Root + "/Temp/rails-stability/main.txt", Root + "/Temp/rails-stability/player2.txt", Root + "/Temp/rails-stability/player3.txt" } :
         new[] { Root + "/Temp/rails-week3-main.txt", Root + "/Temp/rails-week3-player2.txt", Root + "/Temp/rails-week3-player3.txt" };
     static void Save() => File.WriteAllText(StatePath, JsonUtility.ToJson(run));
@@ -231,6 +232,12 @@ public static class RailTestRunner
         if (run.state == "stopping") { FinishStop(); return; }
         try
         {
+            if (run.suite == "two-clients")
+            {
+                Status = "Manual two-client expedition — " + (PhotonSession.Instance != null ? PhotonSession.Instance.Status : "Starting login scenes...") +
+                    "\nP opens the test panel. Stop when finished.";
+                return;
+            }
             if (run.suite == "sandbox")
             {
                 Status = "Manual private sandbox — " + (PhotonSession.Instance != null ? PhotonSession.Instance.Status : "Starting login scene...") +
@@ -246,7 +253,7 @@ public static class RailTestRunner
             }
             var sources = Sources(run.suite); var texts = sources.Select(p => File.Exists(p) ? File.ReadAllText(p) : "").ToArray();
             for (int i = 0; i < sources.Length; i++) File.WriteAllText(Path.Combine(run.folder, Path.GetFileName(sources[i])), texts[i]);
-            string success = run.suite == "coal" ? "PASS stopped, moving" : run.suite == "stability" ? "PASS: four public" : "PASS: route, curve";
+            string success = run.suite == "stability" ? "PASS: four public" : "PASS: route, curve";
             Status = run.suite + "\n" + string.Join("\n", texts.Select((t,i) => Path.GetFileName(sources[i]) + ": " + (t.Split('\n').LastOrDefault(s => !string.IsNullOrWhiteSpace(s)) ?? "Waiting for client")));
             if (texts.Any(t => t.Contains("FAIL ") || t.Contains("FAIL:")))
             {
@@ -284,9 +291,9 @@ public static class RailTestRunner
     {
         if (run == null) return;
         if (ScenarioState != "NotRunning" || EditorApplication.isPlayingOrWillChangePlaymode) return;
-        if (run.state != "stopping") File.WriteAllText(Path.Combine(run.folder, "result.txt"), "CANCELLED — Play Mode ended before all clients passed");
+        if (run.state != "stopping") File.WriteAllText(Path.Combine(run.folder, "result.txt"), IsManual(run.suite) ? "Manual session ended" : "CANCELLED — Play Mode ended before all clients passed");
         Disarm(); RailEditorQuickStart.Enabled = run.quick;
-        if (run.suite != "sandbox")
+        if (!IsManual(run.suite))
         {
             RailTestTools.ClearPreset();
             if (run.hadPreset) File.WriteAllText(Path.Combine(RailDiagnostics.Folder, "active-preset.txt"), run.previousPreset);

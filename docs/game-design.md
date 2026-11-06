@@ -2,6 +2,8 @@
 
 Handoff date: October 28, 2026.
 
+November 6 testing convenience: **Invincible from enemies** applies to every expedition test launched from Duck Rails Tests, including two-client quick-start and automated public/private suites. The main editor's saved setting applies to all its local test clients and can be toggled during play. This supersedes the November 4 private/manual-only restriction; normal enemy/downing rules remain the gameplay default. See [testing tools](testing-tools.md#enemy-invincibility-in-test-center).
+
 November 6 confirmed economy presentation: the midpoint crate must show every player gold flying to all credited crew members. Both shops use the shared receiver: local coins fly to the watch, remote coins to the recipient's body. Effects follow successful wallet credits and respect the wallet cap. Real-client visual acceptance remains pending; see `gold-economy.md`.
 
 November 5 confirmed interaction: held coal should support ground-pushing/vaulting through the inherited item locomotion system, like the bat and gold bars. Prefab and builder configuration are updated; headset feel remains pending. See `week1-session.md`.
@@ -87,7 +89,7 @@ October 31 starting-station decision: every expedition begins at the midpoint of
 - Reuse moving-platform technology for a real moving train.
 - October 30 art direction: keep the train mostly open air; a small, lightly enclosed front is optional. Windows must extend low enough for the user-reported typical eye line of approximately 0.5 metres above the local ground/deck during gorilla movement. Design around that view, keeping sills and front bodywork from blocking the track and nearby hazards. Exact enclosure and window dimensions require in-rig validation; 0.5 metres is a design reference, not a measured fixed rig height.
 - Large physical STOP/GO lever: accelerate or stop. Exact acceleration curve is tuning.
-- Driving is hold-to-run: grip the OFF lever, push the hand forward until it snaps to GO, and keep gripping. Pulling back while gripping snaps to OFF; pushing forward again resumes GO. Releasing also springs it back to OFF and brakes the train. Only one player/hand controls it at a time. October 31 shortcut: holding T engages GO and releasing T returns to STOP in either Keyboard or VR mode on the editor/desktop client, using the same shared ownership. Physical hand control remains available.
+- Physical driving is hold-to-run: grip the OFF lever, push the hand forward until it snaps to GO, and keep gripping. Pulling back while gripping snaps to OFF; pushing forward again resumes GO. Releasing also springs it back to OFF and brakes the train. Only one player/hand controls it at a time. November 6 keyboard shortcut: press T to toggle GO, then press again for STOP in either Keyboard or VR mode on the editor/desktop client, using the same shared ownership. This supersedes the October 31 hold-T shortcut. Focus loss, blocked input, downing and input-mode changes clear the keyboard toggle.
 - Train horn uses a physical hold button: loop the horn while a hand presses it; stop on release. Simulated hands use the same fingertip contact.
 - Coal fuels the train; furnace and readable fuel feedback are needed.
 - October 31: when fuel runs out, coast smoothly to a stop instead of stopping instantly. Current implementation tuning is 2 m/s² deceleration (two seconds from cruise); headset feel remains to be reviewed.

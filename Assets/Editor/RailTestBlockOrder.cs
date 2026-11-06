@@ -1,9 +1,11 @@
 #if UNITY_EDITOR
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
+using Unity.Multiplayer.PlayMode;
 using UnityEngine;
 
 [FilePath("UserSettings/RailTestBlockOrder.asset", FilePathAttribute.Location.ProjectFolder)]
@@ -19,21 +21,75 @@ public sealed class RailTestBlockOrder : ScriptableSingleton<RailTestBlockOrder>
 public static class RailTestBlockOrderPanel
 {
     static ReorderableList list;
+    static bool sharedInvincibility;
+    static bool? publishedInvincibility;
+    static double nextPlayerOptionsRead;
+    static string PlayerOptionsPath
+    {
+        get
+        {
+            string assets = Application.dataPath.Replace('\\', '/');
+            int virtualRoot = assets.IndexOf("/Library/VP/", StringComparison.OrdinalIgnoreCase);
+            string root = virtualRoot >= 0 ? assets.Substring(0, virtualRoot) : Path.GetDirectoryName(assets);
+            return Path.Combine(root, "Temp", "rails-player-invincibility.txt");
+        }
+    }
+    public static bool InvincibilityRequested => CurrentPlayer.IsMainEditor
+        ? RailTestBlockOrder.instance.invincibleFromEnemies : sharedInvincibility;
     static RailTestBlockOrderPanel()
     {
         RailTestTools.OrderedRoute = Select;
-        RailTestTools.EnemyInvincibilityRequested = () => RailTestBlockOrder.instance.invincibleFromEnemies && !RailTestRunner.AutomatedRunning;
+        RailTestTools.EnemyInvincibilityRequested = () => InvincibilityRequested;
+        if (CurrentPlayer.IsMainEditor)
+        {
+            PublishPlayerOptions();
+            EditorApplication.update += PublishPlayerOptions;
+            EditorApplication.playModeStateChanged += _ => PublishPlayerOptions();
+        }
+        else
+        {
+            ReadPlayerOptions();
+            EditorApplication.update += ReadPlayerOptions;
+        }
+    }
+    public static void PublishPlayerOptions()
+    {
+        if (!CurrentPlayer.IsMainEditor) return;
+        bool enabled = RailTestBlockOrder.instance.invincibleFromEnemies;
+        if (publishedInvincibility == enabled) return;
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(PlayerOptionsPath));
+            File.WriteAllText(PlayerOptionsPath, enabled.ToString());
+            publishedInvincibility = enabled;
+        }
+        catch (IOException) { } // Retry next update if a virtual editor is reading.
+    }
+    static void ReadPlayerOptions()
+    {
+        if (EditorApplication.timeSinceStartup < nextPlayerOptionsRead) return;
+        nextPlayerOptionsRead = EditorApplication.timeSinceStartup + .25;
+        // EditorPrefs can cache values per process. Poll the shared project file
+        // so already-running virtual editors see the main editor's live toggle.
+        try
+        {
+            if (bool.TryParse(File.ReadAllText(PlayerOptionsPath), out bool enabled)) sharedInvincibility = enabled;
+        }
+        catch (IOException) { } // Retry if the main editor is currently writing.
     }
     public static void DrawPlayerOptions()
     {
         var settings = RailTestBlockOrder.instance;
-        EditorGUI.BeginChangeCheck();
-        settings.invincibleFromEnemies = EditorGUILayout.Toggle(new GUIContent("Invincible from enemies",
-            "Protect this local player from enemy contact attacks and bomber explosions in private development runs. Applies immediately; saved between editor sessions. Automated suites ignore it."), settings.invincibleFromEnemies);
-        if (EditorGUI.EndChangeCheck()) settings.Persist();
-        if (settings.invincibleFromEnemies)
-            GUILayout.Label(RailTestTools.EnemyInvincible ? "Enemy invincibility active — local player" :
-                "Enemy invincibility selected — active in private manual runs", EditorStyles.wordWrappedLabel);
+        using (new EditorGUI.DisabledScope(!CurrentPlayer.IsMainEditor))
+        {
+            EditorGUI.BeginChangeCheck();
+            bool enabled = EditorGUILayout.Toggle(new GUIContent("Invincible from enemies",
+                "Protect all local test clients from enemy contact attacks and bomber explosions in every test expedition, including automated suites. Change this in the main editor; saved between sessions."), InvincibilityRequested);
+            if (EditorGUI.EndChangeCheck()) { settings.invincibleFromEnemies = enabled; settings.Persist(); PublishPlayerOptions(); }
+        }
+        if (InvincibilityRequested)
+            GUILayout.Label(RailTestTools.EnemyInvincible ? "Enemy invincibility active — shared by test clients" :
+                "Enemy invincibility selected — active in all test expeditions", EditorStyles.wordWrappedLabel);
     }
     public static RailRouteState Select(string run)
     {

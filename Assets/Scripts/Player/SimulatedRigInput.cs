@@ -51,6 +51,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
     float yaw, pitch, reach = .65f, handRoll;
     float standingHeight = 1.55f;
     bool started, awaitNeutral = true, focused = true, showHelp;
+    bool throttleKeyWasHeld, awaitThrottleNeutral = true;
     int cursorFrame = -1;
 #if UNITY_EDITOR
     DesktopLobbySimulator lobby;
@@ -111,7 +112,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
     void ReleaseInput()
     {
         Buttons = default;
-        ThrottleHeld = false;
+        ResetThrottle();
         awaitNeutral = true;
         if (input != null) input.ApplySimulationButtons(default);
         var owner = GetComponent<GR.Player>();
@@ -119,6 +120,21 @@ public sealed class SimulatedRigInput : MonoBehaviour
             PhotonHeldItems.DropLocalHands();
         owner?.leftPlayerHand?.Release();
         owner?.rightPlayerHand?.Release();
+    }
+
+    void ResetThrottle()
+    {
+        ThrottleHeld = false;
+        throttleKeyWasHeld = false;
+        awaitThrottleNeutral = true;
+    }
+
+    void SampleThrottle(bool held, bool blocked)
+    {
+        if (blocked) { ResetThrottle(); return; }
+        if (!held) awaitThrottleNeutral = false;
+        if (!awaitThrottleNeutral && held && !throttleKeyWasHeld) ThrottleHeld = !ThrottleHeld;
+        throttleKeyWasHeld = held;
     }
 
     void OnTrackedAnchors(OVRCameraRig rig)
@@ -205,9 +221,8 @@ public sealed class SimulatedRigInput : MonoBehaviour
             // The keyboard throttle is also available while Quest Link supplies
             // tracked poses. VR does not capture the desktop cursor.
             bool held = UseInjectedInput ? InjectedInput.throttle : Input.GetKey(KeyCode.T);
-            if (!focused || DuckCompanionDebug.IsTyping || RailWorld.InputBlocked) awaitNeutral = true;
-            else if (!held) awaitNeutral = false;
-            ThrottleHeld = !awaitNeutral && held;
+            SampleThrottle(held, !focused || DuckCompanionDebug.IsTyping || RailWorld.InputBlocked ||
+                RailDiagnosticPanel.BlocksDesktopInput || RailExpedition.LocalDown);
             return;
         }
         Frame frame = UseInjectedInput ? InjectedInput : ReadKeyboard();
@@ -232,7 +247,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
             !DesktopPlayer.SuppressCursorCapture && !DuckCompanionDebug.IsHovered && !DuckCompanionDebug.IsTyping)
             CaptureCursor();
         if (!focused || Cursor.lockState != CursorLockMode.Locked || DuckCompanionDebug.IsTyping || Time.frameCount == cursorFrame)
-            return default;
+        { ResetThrottle(); return default; }
         if (RailWorld.InputBlocked) awaitNeutral = true;
         if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1) && !Input.GetKey(KeyCode.T)) awaitNeutral = false;
         return new Frame {
@@ -258,7 +273,8 @@ public sealed class SimulatedRigInput : MonoBehaviour
         // Hands/head remain positionable for the diagnostic panel while loading.
         // Gameplay acquisition is still gated by the shared PlayerHand/control code.
         Buttons = blocked ? default : frame;
-        ThrottleHeld = !blocked && frame.throttle;
+        SampleThrottle(frame.throttle, blocked || !focused || DuckCompanionDebug.IsTyping ||
+            RailDiagnosticPanel.BlocksDesktopInput || RailExpedition.LocalDown);
         yaw += frame.look.x;
         pitch = Mathf.Clamp(pitch - frame.look.y, -80, 80);
         headRotation = Quaternion.Euler(pitch, yaw, 0);
@@ -300,8 +316,8 @@ public sealed class SimulatedRigInput : MonoBehaviour
     void OnGUI()
     {
         if (!IsSimulating) return;
-        GUI.Label(new Rect(12, Screen.height - 30, 1000, 24), "Q / E reach · Right mouse grip · Left mouse trigger · Wheel reach · Hold T throttle · F1 help · F2 Quest Link");
+        GUI.Label(new Rect(12, Screen.height - 30, 1000, 24), "Q / E reach · Right mouse grip · Left mouse trigger · Wheel reach · T toggle throttle · F1 help · F2 Quest Link");
         if (showHelp)
-            GUI.Box(new Rect(12, Screen.height - 210, 570, 175), "SHARED DUCK RIG\nWASD move · Mouse look · Space jump · C crouch\nHold Q / E to extend left / right hand; release to bring it back\nRight mouse grips both hands · Left mouse triggers both hands\nWheel adjusts reach · Z / X rolls wrists · 1–4 controller face buttons\nHold T for throttle GO; release for STOP\nP diagnostic panel · Tab session tools · Esc release cursor\nF2 switches input without restarting Play\n" + Status);
+            GUI.Box(new Rect(12, Screen.height - 210, 570, 175), "SHARED DUCK RIG\nWASD move · Mouse look · Space jump · C crouch\nHold Q / E to extend left / right hand; release to bring it back\nRight mouse grips both hands · Left mouse triggers both hands\nWheel adjusts reach · Z / X rolls wrists · 1–4 controller face buttons\nPress T for throttle GO; press again for STOP\nP diagnostic panel · Tab session tools · Esc release cursor\nF2 switches input without restarting Play\n" + Status);
     }
 }

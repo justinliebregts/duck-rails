@@ -2,6 +2,14 @@
 
 Handoff date: October 28, 2026. Read `game-design.md` for decision status and scope.
 
+## November 6 — manual two-client launch and keyboard throttle
+
+- [x] Apply saved enemy invincibility to all editor test expeditions, including public quick-start and automated suites; synchronize the main editor's toggle to its additional clients. Two authenticated clients passed ON/OFF/ON and rejected 24 enemy contacts each. Full automated-suite and headset reruns remain separate. See [invincibility evidence](testing-tools.md#enemy-invincibility-in-test-center).
+- [x] Replace the Test Center coal/handoff button with a manual two-client expedition launch using the existing scenario and quick-start routing; no fixture or automatic timeout. Both authenticated editor clients reached the same running expedition with readiness published; stopping restored Edit Mode and cleared the runner. See [testing tools](testing-tools.md).
+- [x] Make keyboard T toggle GO/STOP, retaining shared drive ownership and clearing the toggle on focus loss, blocked input, downing and input-source changes. Unity compilation and shared-rig, drive and quick-start checks passed. Physical lever behavior is unchanged. See [shared rig](shared-rig.md#toggle-t-shortcut--november-6).
+- [ ] Retest physical keyboard presses and headset interaction; injected toggle checks and a real two-client launch do not establish full multiplayer driving acceptance.
+
+
 - [x] November 6: broadcast confirmed gold reward coin effects to other clients, using local watch and remote body targets; Unity compilation and existing economy checks pass.
 - [ ] Verify on real clients that midpoint deposits show streams to every credited recipient for every observer, including simultaneous deposits, capped wallets and headset performance.
 

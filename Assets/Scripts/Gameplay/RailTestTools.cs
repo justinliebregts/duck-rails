@@ -16,7 +16,11 @@ public static class RailTestTools
 {
     public static Func<string, RailRouteState> OrderedRoute;
     public static Func<bool> EnemyInvincibilityRequested;
-    public static bool EnemyInvincible => Application.isPlaying && Allowed && PhotonSession.Phase == RailPhase.Running &&
+    // The editor's player preference applies to every test expedition, including
+    // public quick-start/stability rooms. Other test mutations stay private-only.
+    public static bool EnemyInvincible => Application.isPlaying && RailDiagnostics.Development && PhotonSession.IsRailsRoom &&
+        PhotonSession.Instance != null && PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest &&
+        PhotonSession.Phase == RailPhase.Running &&
         EnemyInvincibilityRequested?.Invoke() == true;
     static RailTestPreset preset = new RailTestPreset();
     static int[] previousNetwork;
