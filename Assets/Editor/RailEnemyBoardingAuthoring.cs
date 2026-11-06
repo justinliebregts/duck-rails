@@ -48,14 +48,22 @@ public static class RailEnemyBoardingAuthoring
             Debug.Log("TRAIN BOARDING BAKE: " + graph.NodeCount + " nodes, " + graph.EdgeCount + " edges");
         }
         finally { EditorSceneManager.RestoreSceneManagerSetup(setup); }
-        string enemyPath = "Assets/Resources/Rails/RailZombie.prefab";
-        var enemy = PrefabUtility.LoadPrefabContents(enemyPath);
-        try
+        InstallBoarders();
+        AssetDatabase.SaveAssets();
+    }
+    public static void InstallBoarders()
+    {
+        foreach (string name in new[] { "RailZombie", "RailSpider" })
         {
-            if (enemy.GetComponent<RailEnemyBoarding>() == null) enemy.AddComponent<RailEnemyBoarding>();
-            PrefabUtility.SaveAsPrefabAsset(enemy, enemyPath);
+            string enemyPath = "Assets/Resources/Rails/" + name + ".prefab";
+            var enemy = PrefabUtility.LoadPrefabContents(enemyPath);
+            try
+            {
+                if (enemy.GetComponent<RailEnemyBoarding>() == null) enemy.AddComponent<RailEnemyBoarding>();
+                PrefabUtility.SaveAsPrefabAsset(enemy, enemyPath);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(enemy); }
         }
-        finally { PrefabUtility.UnloadPrefabContents(enemy); }
         AssetDatabase.SaveAssets();
     }
 }

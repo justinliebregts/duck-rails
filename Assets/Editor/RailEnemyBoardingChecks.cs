@@ -64,9 +64,10 @@ public static class RailEnemyBoardingChecks
             }
             var minion = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/RailZombie.prefab");
             Require(minion.GetComponent<RailEnemyBoarding>() != null, "Minion opts in");
-            foreach (string name in new[] { "RailBomber", "RailSmasher", "RailSpider" })
+            foreach (string name in new[] { "RailBomber", "RailSmasher" })
                 Require(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/" + name + ".prefab").GetComponent<RailEnemyBoarding>() == null,
-                    name + " remains unchanged in minion-first rollout");
+                    name + " retains block-only navigation");
+            Require(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/RailSpider.prefab").GetComponent<RailEnemyBoarding>() != null, "Spider opts in");
         }
         finally { Object.DestroyImmediate(frame); }
         string message = "TRAIN BOARDING: " + checks + " graph/packet/authoring checks passed";

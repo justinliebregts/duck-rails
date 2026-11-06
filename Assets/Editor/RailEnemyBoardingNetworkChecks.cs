@@ -17,15 +17,15 @@ public static class RailEnemyBoardingNetworkChecks
     const string RunKey = "Rails.Boarding.Network";
     static string Root { get { string p = Application.dataPath.Replace('\\', '/'); int i = p.IndexOf("/Library/VP/", StringComparison.OrdinalIgnoreCase); return i < 0 ? Path.GetDirectoryName(p) : p.Substring(0, i); } }
     static string ArmPath => Root + "/Temp/rails-boarding-arm.txt";
-    static string LogPath => Root + "/docs/validation/enemy-boarding/network-" + (CurrentPlayer.IsMainEditor ? "main" : "remote") + ".txt";
+    static string LogPath => Root + "/docs/validation/enemy-boarding/" + (RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "") + "network-" + (CurrentPlayer.IsMainEditor ? "main" : "remote") + ".txt";
     static string token, room;
-    static int stage = -1;
+    static int stage = -1, pendingStage = -1;
     static double entered, started, nextTick;
     static bool action, done, rejoining;
     static float initialDistance;
     static Vector3 reference;
     static int preparedEnemy;
-    static bool routeInstalled, sawExit;
+    static bool routeInstalled, sawExit, rendezvousAttempted, sawMelee;
     static Func<string, RailRouteState> previousRoute;
     static RailRouteState FixtureRoute(string run)
     {
@@ -45,8 +45,8 @@ public static class RailEnemyBoardingNetworkChecks
         SessionState.SetBool(RunKey + ".quick", RailEditorQuickStart.Enabled);
         SessionState.SetBool(RunKey, true);
         Directory.CreateDirectory(Root + "/docs/validation/enemy-boarding");
-        File.WriteAllText(Root + "/docs/validation/enemy-boarding/network-main.txt", "");
-        File.WriteAllText(Root + "/docs/validation/enemy-boarding/network-remote.txt", "");
+        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + (RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "") + "network-main.txt", "");
+        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + (RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "") + "network-remote.txt", "");
         foreach (string fixture in new[] { "rails-coal-arm.txt", "rails-week2-arm.txt", "rails-week3-arm.txt", "rails-stability-arm.txt", "rails-cleanup-arm.txt" })
         {
             string path = Root + "/Temp/" + fixture;
@@ -69,7 +69,7 @@ public static class RailEnemyBoardingNetworkChecks
     static void Record(string message)
     { File.AppendAllText(LogPath, DateTime.UtcNow.ToString("O") + " " + message + "\n"); Debug.Log("BOARDING NETWORK: " + message); }
     static void Require(bool condition, string message) { if (!condition) throw new Exception(message); }
-    static void Stage(int value) { action = true; PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { [Key] = value }); }
+    static void Stage(int value) { pendingStage = value; action = true; PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { [Key] = value }); }
     static void Ack()
     {
         if (PhotonNetwork.LocalPlayer.CustomProperties[AckKey] is int value && value == stage) return;
@@ -77,6 +77,11 @@ public static class RailEnemyBoardingNetworkChecks
         Record("ACK " + stage + " actor=" + PhotonNetwork.LocalPlayer.ActorNumber + " master=" + PhotonNetwork.IsMasterClient);
     }
     static bool AllAck => PhotonNetwork.PlayerList.Length == 2 && PhotonNetwork.PlayerList.All(p => p.CustomProperties[AckKey] is int value && value == stage);
+    public static void UpdateDormancy(Enemy enemy)
+    {
+        int freezeStage = pendingStage >= 0 ? pendingStage : stage;
+        if (enemy != null) enemy.IsDormant = enemy.HasAuthority && freezeStage != 4 && freezeStage < 7;
+    }
     static void Tick()
     {
         if (EditorApplication.timeSinceStartup < nextTick) return;
@@ -97,7 +102,7 @@ public static class RailEnemyBoardingNetworkChecks
         if (!File.Exists(ArmPath)) return;
         string arm = File.ReadAllText(ArmPath);
         if (!DateTime.TryParse(arm, out var until) || DateTime.UtcNow > until.ToUniversalTime()) return;
-        if (arm != token) { token = arm; stage = -1; preparedEnemy = 0; done = rejoining = false; started = EditorApplication.timeSinceStartup; Record("Started real-client network proof"); }
+        if (arm != token) { token = arm; stage = pendingStage = -1; preparedEnemy = 0; done = rejoining = rendezvousAttempted = false; started = EditorApplication.timeSinceStartup; Record("Started real-client network proof"); }
         if (!routeInstalled)
         {
             previousRoute = RailTestTools.OrderedRoute;
@@ -112,12 +117,26 @@ public static class RailEnemyBoardingNetworkChecks
             if (session == null || !session.WorldReady || session.HasRoomRequest) return;
             if (rejoining && PhotonNetwork.CurrentRoom?.Name != room)
             { session.RequestJoinCode(room); return; }
+            // A stale MPPM main tag can bypass quick start during authentication.
+            // The armed fixture explicitly retries the same authenticated allocation
+            // path once on both clients; leave/rejoin phases keep their normal path.
+            if (!rejoining && !rendezvousAttempted && PhotonSession.Phase == RailPhase.Compound)
+            {
+                rendezvousAttempted = true;
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var begin = typeof(PhotonSession).GetMethod("Begin", flags);
+                var request = Enum.Parse(begin.GetParameters()[0].ParameterType, "EditorQuickStart");
+                begin.Invoke(session, new object[] { request, RailEditorQuickStart.RoomCode });
+                typeof(PhotonSession).GetField("allocation", flags).SetValue(session, "editor-quick-start-" + RailEditorQuickStart.RoomCode);
+                Record("Retrying authenticated test-room rendezvous after Compound startup");
+                return;
+            }
             if (PhotonSession.Phase != RailPhase.Running || RailTrain.Instance == null || !RailRoute.Instance.Ready) return;
             room = PhotonNetwork.CurrentRoom.Name;
             int current = PhotonSession.Get(Key, 0);
             if (current != stage)
             {
-                stage = current; entered = EditorApplication.timeSinceStartup; action = false; sawExit = false;
+                stage = current; pendingStage = -1; entered = EditorApplication.timeSinceStartup; action = false; sawExit = sawMelee = false;
                 initialDistance = RailTrain.Instance.Distance;
                 Record("Stage=" + stage + " room=" + room);
             }
@@ -131,24 +150,30 @@ public static class RailEnemyBoardingNetworkChecks
             if (enemy != null && preparedEnemy != enemy.GetInstanceID())
             {
                 preparedEnemy = enemy.GetInstanceID();
+                if (enemy.GetComponent<RailBoardingFixtureFreeze>() == null) enemy.gameObject.AddComponent<RailBoardingFixtureFreeze>();
                 // Transport/melee fixture only: prevent incidental crew wipes and
                 // hold the walking pose while the non-owner waits for replication.
                 // The hit/retreat/fall code and all network messages remain active.
                 foreach (var trigger in enemy.GetComponentsInChildren<KillTrigger>()) trigger.enabled = false;
-                using (var mover = new SerializedObject(enemy.GetComponent<GroundLocomotion>()))
+                using (var mover = new SerializedObject((MonoBehaviour)enemy.Locomotion))
                 {
                     mover.FindProperty("walkSpeed").floatValue = 0;
                     mover.FindProperty("chaseSpeed").floatValue = 0;
                     mover.ApplyModifiedPropertiesWithoutUndo();
                 }
             }
-            if (enemy != null) enemy.IsDormant = enemy.HasAuthority && stage != 4 && stage < 7;
+            UpdateDormancy(enemy);
             // A connected peer may still be loading its world. Its AI can become
             // authoritative before this fixture can freeze it, so wait for both
             // ready fixture acknowledgments before setting the reference pose.
             if (stage == 0) Ack();
             if (stage == 0 && AllAck && age > 4 && PhotonNetwork.IsMasterClient && !action)
             {
+                if (RailEnemySpawns.ForcedEnemyType == 3 && Enemy.Active.Any(e => e.HasAuthority))
+                {
+                    Require(Enemy.Active.Where(e => e.HasAuthority).All(e => e.GetComponent<ClimbLocomotion>() != null), "Spider-only expedition spawns");
+                    Record("PASS spider-only encounter spawns");
+                }
                 enemy = Enemy.Active.FirstOrDefault(e => e.Boarding != null && e.HasAuthority);
                 if (enemy == null) return;
                 session.SetTrainMoving(false);
@@ -199,6 +224,18 @@ public static class RailEnemyBoardingNetworkChecks
             {
                 if (!PhotonNetwork.IsMasterClient && age > 1.5 && !action)
                 { enemy.SubmitSwing(-train.transform.forward * 10, 1, enemy.Root.position); action = true; Record("Submitted non-owner melee RPC"); }
+                if (enemy.HasAuthority && enemy.HitMovementActive && !sawMelee)
+                { sawMelee = true; Record("PASS authority observed non-owner melee reaction"); }
+                // A climbing spider can retain the rear face after a shove.
+                // Check support-loss replication independently of that valid adhesion.
+                if (age > 5 && enemy.HasAuthority && enemy.Locomotion is ClimbLocomotion && sawMelee && !action)
+                {
+                    action = true;
+                    enemy.SetRootPose(train.transform.TransformPoint(new Vector3(0, .2f, -7)), train.transform.rotation);
+                    enemy.Locomotion.Interrupt();
+                    enemy.Boarding.BeforeTick(EnemyManager.Instance, .02f);
+                    Record("Spider support-loss fixture applied after confirmed melee reaction");
+                }
                 if (age > 5 && !enemy.Boarding.IsAboard)
                 {
                     Ack();
@@ -211,7 +248,7 @@ public static class RailEnemyBoardingNetworkChecks
             }
             else if (stage == 5 && age > 3)
             {
-                Require(enemy.Boarding.IsAboard, "Reattached fixture ready for late join");
+                Require(enemy.Boarding.IsAboard && Vector3.Distance(train.transform.InverseTransformPoint(enemy.Root.position), new Vector3(0, .03f, -3)) < .15f, "Reattached reference pose stable before late join");
                 if (!PhotonNetwork.IsMasterClient && !action)
                 { action = true; rejoining = true; Record("Leaving for late re-entry"); session.LeaveCurrentRoom(); }
                 if (PhotonNetwork.IsMasterClient && PhotonNetwork.PlayerList.Length == 1)
@@ -242,10 +279,10 @@ public static class RailEnemyBoardingNetworkChecks
                     NewPlayer.instance.Warp(train.transform.TransformPoint(targetLocal), train.transform.rotation);
                 if (!action && age > 1)
                 {
-                    using (var so = new SerializedObject(enemy.GetComponent<GroundLocomotion>()))
+                    using (var so = new SerializedObject((MonoBehaviour)enemy.Locomotion))
                     {
-                        so.FindProperty("walkSpeed").floatValue = 1.8f;
-                        so.FindProperty("chaseSpeed").floatValue = 3.2f;
+                        so.FindProperty("walkSpeed").floatValue = enemy.Locomotion is ClimbLocomotion ? .7f : 1.8f;
+                        so.FindProperty("chaseSpeed").floatValue = enemy.Locomotion is ClimbLocomotion ? 1.8f : 3.2f;
                         so.ApplyModifiedPropertiesWithoutUndo();
                     }
                     if (enemy.HasAuthority) enemy.SetRootPose(enemy.Root.position,
@@ -268,9 +305,19 @@ public static class RailEnemyBoardingNetworkChecks
                 }
             }
             else if (stage == 10)
-            { Record("PASS actual two-client carry, moving host migration, non-owner knock-off, leave/rejoin, left exit/reboard, right exit and diagnostic snapshot"); done = true; }
+            { Record("PASS actual two-client carry, moving host migration, non-owner hit/support-loss detachment, leave/rejoin, left exit/reboard, right exit and diagnostic snapshot"); done = true; }
         }
         catch (Exception e) { Record("FAIL " + e.Message); done = true; }
     }
+}
+// Transport assertions require no AI step between ownership change and the
+// editor's next polling tick. Proxies remain awake for normal interpolation.
+public sealed class RailBoardingFixtureFreeze : MonoBehaviour, IOnPhotonViewControllerChange
+{
+    PhotonView view;
+    void OnEnable() { view = GetComponent<PhotonView>(); view.AddCallback<IOnPhotonViewControllerChange>(this); }
+    void OnDisable() { if (view != null) view.RemoveCallback<IOnPhotonViewControllerChange>(this); }
+    public void OnControllerChange(Photon.Realtime.Player current, Photon.Realtime.Player previous)
+        => RailEnemyBoardingNetworkChecks.UpdateDormancy(GetComponent<Enemy>());
 }
 #endif

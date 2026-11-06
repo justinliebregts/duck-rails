@@ -2,7 +2,7 @@ using Game.AI;
 using UnityEngine;
 
 /// <summary>
-/// Opt-in minion transfer: authored block <-> checked rear/side openings <-> train bake.
+/// Opt-in minion/spider transfer: authored block <-> checked rear/side openings <-> train bake.
 /// This component owns only the transfer and reference frame; the existing brain,
 /// ground mover, melee reactions and budgeted pathfinder continue to run aboard.
 /// </summary>
@@ -14,6 +14,8 @@ public sealed class RailEnemyBoarding : MonoBehaviour
     enum Transfer { None, Approach, Lift, Across, ExitAcross, ExitDrop, ExitWalk }
     Enemy enemy;
     GroundLocomotion ground;
+    ClimbLocomotion climb;
+    IEnemyLocomotion locomotion;
     RailTrainNavigation navigation;
     Transform frame;
     Matrix4x4 previousWorldToLocal;
@@ -33,9 +35,9 @@ public sealed class RailEnemyBoarding : MonoBehaviour
     public string DiagnosticState => "aboard=" + IsAboard + " transfer=" + transfer + " exitPlan=" + exitPlan
         + " opening=" + RailTrainNavigation.OpeningName(selectedOpening) + " anchor=" + anchorNode + " displaced=" + displaced
         + " speed=" + (RailTrain.Instance != null ? RailTrain.Instance.Speed.ToString("F2") : "-");
-    void Trace(string action) => RailDiagnostics.Instance?.Event("Minion transfer " + action + " " + DiagnosticState);
+    void Trace(string action) => RailDiagnostics.Instance?.Event("Enemy transfer " + action + " " + DiagnosticState);
 
-    void Awake() { enemy = GetComponent<Enemy>(); ground = GetComponent<GroundLocomotion>(); }
+    void Awake() { enemy = GetComponent<Enemy>(); ground = GetComponent<GroundLocomotion>(); climb = GetComponent<ClimbLocomotion>(); locomotion = (IEnemyLocomotion)ground ?? climb; }
     void OnDisable() => ResetFrame();
     public void ResetFrame()
     { attached = displaced = exitPlan = false; selectedOpening = -1; transfer = Transfer.None; anchorNode = -1; frame = null; navigation = null; }
@@ -57,7 +59,7 @@ public sealed class RailEnemyBoarding : MonoBehaviour
         frame = train.transform;
         attached = true; displaced = exitPlan = false; transfer = Transfer.None; anchorNode = -1;
         previousWorldToLocal = frame.worldToLocalMatrix; previousRotation = frame.rotation;
-        if (interrupt) { ground.Interrupt(); Trace("boarded"); }
+        if (interrupt) { locomotion.Interrupt(); Trace("boarded"); }
         return true;
     }
 
@@ -75,11 +77,11 @@ public sealed class RailEnemyBoarding : MonoBehaviour
     public void BeforeTick(EnemyManager manager, float dt)
     {
         Carry();
-        if (IsAboard && !SupportedByTrain(enemy.Root.position, manager.SurfaceMask))
+        if (IsAboard && !SupportedByNavigationFrame(enemy.Root.position, manager.SurfaceMask))
         {
             attached = false; frame = null; displaced = true; retryAt = Time.time + 3f;
             GetComponent<RailEnemyBounds>()?.AdoptPosition(enemy.Root.position);
-            ground.Interrupt(); enemy.FallFromTrain();
+            locomotion.Interrupt(); enemy.FallFromTrain();
         }
         if (Crossing && enemy.HitMovementActive) Abort();
         if (displaced && !IsAboard && !Crossing && !enemy.HitMovementActive)
@@ -103,13 +105,30 @@ public sealed class RailEnemyBoarding : MonoBehaviour
                     if (ClearApproach(enemy.Root.position, destination, manager.SurfaceMask))
                     {
                         Vector3 delta = Vector3.ClampMagnitude(destination - enemy.Root.position, dt * 1.8f);
-                        enemy.SetRootPose(ground.Displace(enemy.Root.position, delta, manager.SurfaceMask), enemy.Root.rotation);
+                        enemy.SetRootPose((ground != null ? ground.Displace(enemy.Root.position, delta, manager.SurfaceMask) : climb.Displace(enemy.Root.position, delta, manager.SurfaceMask)), enemy.Root.rotation);
                     }
                 }
             }
         }
     }
 
+    bool Pursuing => enemy.CurrentState == Enemy.State.Chase || enemy.CurrentState == Enemy.State.Search
+        || (climb != null && GetComponent<ZombieSpiderStalk>()?.IsStalking == true);
+    void GetTransferSize(out float radius, out float height)
+    {
+        if (ground != null) { ground.GetCapsuleSize(out radius, out height); return; }
+        radius = climb.BodyRadius; height = radius * 2f;
+    }
+    bool SupportedByNavigationFrame(Vector3 position, LayerMask mask)
+    {
+        if (climb == null) return SupportedByTrain(position, mask);
+        var train = RailTrain.Instance;
+        Vector3 normal = climb.SurfaceNormal;
+        float radius = climb.BodyRadius;
+        return train != null && Physics.SphereCast(position + normal * (radius + .02f), radius, -normal,
+            out var hit, .4f, mask, QueryTriggerInteraction.Ignore) && hit.collider.transform.IsChildOf(train.transform)
+            && Vector3.Dot(hit.normal, normal) > .7f;
+    }
     public static bool SupportedByTrain(Vector3 position, LayerMask mask)
     {
         var train = RailTrain.Instance;
@@ -133,7 +152,8 @@ public sealed class RailEnemyBoarding : MonoBehaviour
             navigation = train.GetComponent<RailTrainNavigation>();
             var graph = manager.WorldGraph;
             if (navigation?.Graph == null || graph == null) return target;
-            int current = graph.FindNearestGroundNode(exiting ? target : enemy.Root.position, exiting ? 3f : 1.5f);
+            int current = climb != null && !exiting ? graph.FindNearestNode(enemy.Root.position, 1.5f)
+                : graph.FindNearestGroundNode(exiting ? target : enemy.Root.position, exiting ? 3f : 1.5f);
             if (current < 0) return target;
             int previousOpening = selectedOpening;
             selectedOpening = -1;
@@ -208,7 +228,7 @@ public sealed class RailEnemyBoarding : MonoBehaviour
 
     bool ClearSweep(Vector3 from, Vector3 to, LayerMask mask)
     {
-        ground.GetCapsuleSize(out float radius, out float height);
+        GetTransferSize(out float radius, out float height);
         Vector3 a = from + Vector3.up * (radius + .03f);
         Vector3 b = a + Vector3.up * (height - radius * 2f);
         Vector3 delta = to - from;
@@ -219,14 +239,14 @@ public sealed class RailEnemyBoarding : MonoBehaviour
 
     public bool TickTraversal(EnemyManager manager, float dt)
     {
-        if (ground == null || enemy.HitMovementActive) return false;
+        if (locomotion == null || enemy.HitMovementActive) return false;
         var train = RailTrain.Instance;
         if (train == null || train.Speed > MaxBoardingSpeed)
         { if (Crossing) Abort(); else anchorNode = -1; return false; }
         if ((int)transfer >= (int)Transfer.ExitAcross) return TickExit(manager, dt);
         if (IsAboard)
         {
-            if (!exitPlan || anchorNode < 0 || (enemy.CurrentState != Enemy.State.Chase && enemy.CurrentState != Enemy.State.Search)
+            if (!exitPlan || anchorNode < 0 || !Pursuing
                 || (enemy.Root.position - train.transform.TransformPoint(landing)).sqrMagnitude > .65f * .65f) return false;
             Vector3 exitRaised = new Vector3(approach.x, train.transform.TransformPoint(landing).y + .08f, approach.z);
             if (!ClearSweep(enemy.Root.position, exitRaised, manager.SurfaceMask)
@@ -236,16 +256,16 @@ public sealed class RailEnemyBoarding : MonoBehaviour
             // Commit in world space so departure cannot carry an airborne enemy.
             attached = false; frame = null; displaced = true;
             landing = exitRaised; transfer = Transfer.ExitAcross; transferAge = 0;
-            exitPlan = false; ground.Interrupt(); Trace("exit started");
+            exitPlan = false; locomotion.Interrupt(); Trace("exit started");
             return TickExit(manager, dt);
         }
         if (!Crossing)
         {
-            if (anchorNode < 0 || enemy.CurrentState != Enemy.State.Chase
+            if (anchorNode < 0 || !Pursuing
                 || (enemy.Root.position - anchor).sqrMagnitude > .65f * .65f) return false;
             if (!ClearApproach(enemy.Root.position, approach, manager.SurfaceMask))
             { anchorNode = -1; retryAt = Time.time + 1; return false; }
-            transfer = Transfer.Approach; transferAge = 0; ground.Interrupt();
+            transfer = Transfer.Approach; transferAge = 0; locomotion.Interrupt();
         }
         transferAge += dt;
         if (transferAge > 10f) { Abort(); return false; }
@@ -261,7 +281,7 @@ public sealed class RailEnemyBoarding : MonoBehaviour
         if ((next - goal).sqrMagnitude > .0025f) return true;
         if (transfer == Transfer.Approach) transfer = Transfer.Lift;
         else if (transfer == Transfer.Lift) transfer = Transfer.Across;
-        else if (SupportedByTrain(next, manager.SurfaceMask)) Attach(true);
+        else if (SupportedByNavigationFrame(next, manager.SurfaceMask)) Attach(true);
         else Abort();
         return true;
     }
@@ -284,7 +304,7 @@ public sealed class RailEnemyBoarding : MonoBehaviour
         else
         {
             transfer = Transfer.None; anchorNode = -1; displaced = false; retryAt = Time.time + 1;
-            ground.Interrupt();
+            locomotion.Interrupt();
             GetComponent<RailEnemyBounds>()?.AdoptPosition(next);
             Trace("exit completed");
         }
@@ -296,7 +316,7 @@ public sealed class RailEnemyBoarding : MonoBehaviour
         bool falling = transfer == Transfer.Lift || transfer == Transfer.Across || transfer == Transfer.ExitAcross || transfer == Transfer.ExitDrop;
         Trace("aborted"); exitPlan = false;
         transfer = Transfer.None; anchorNode = -1; displaced = true; retryAt = Time.time + 2;
-        ground?.Interrupt();
+        locomotion?.Interrupt();
         if (falling && !enemy.HitMovementActive) enemy.FallFromTrain();
     }
 }

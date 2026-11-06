@@ -84,6 +84,28 @@ namespace Game.Animation
         bool _init;
         float _pitch, _roll;
 
+        // Carry cached world contacts before gait measures locomotion velocity.
+        public void CarryFrame(Matrix4x4 motion, Quaternion rotation)
+        {
+            if (!_init) return;
+            _bodyPos = motion.MultiplyPoint3x4(_bodyPos);
+            _lastRootPos = motion.MultiplyPoint3x4(_lastRootPos);
+            _vel = rotation * _vel; _prevVel = rotation * _prevVel; _accel = rotation * _accel;
+            _up = rotation * _up;
+            foreach (var leg in legs)
+            {
+                if (leg == null) continue;
+                leg.home = motion.MultiplyPoint3x4(leg.home);
+                leg.planted = motion.MultiplyPoint3x4(leg.planted);
+                leg.swingFrom = motion.MultiplyPoint3x4(leg.swingFrom);
+                leg.swingTo = motion.MultiplyPoint3x4(leg.swingTo);
+                leg.homeNormal = rotation * leg.homeNormal;
+                leg.plantedNormal = rotation * leg.plantedNormal;
+                leg.swingFromNormal = rotation * leg.swingFromNormal;
+                leg.swingToNormal = rotation * leg.swingToNormal;
+            }
+        }
+
         public bool ExternalTick { get => externalTick; set => externalTick = value; }
 
         void Awake()

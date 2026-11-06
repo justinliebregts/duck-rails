@@ -404,6 +404,7 @@ namespace Game.AI
 
         public void TickAuthority(EnemyManager m, float dt, bool perceive)
         {
+            if (!_hadAuthority && _climb != null) _climb.SyncUpFromRoot(root);
             Boarding?.BeforeTick(m, dt);
             using var graphScope = m.UseGraph(Boarding != null ? Boarding.NavigationGraph : null);
             if (IsDormant) { ResetFallRecovery(); return; }
@@ -555,6 +556,8 @@ namespace Game.AI
         {
             SetRootPose(motion.MultiplyPoint3x4(root.position), rotation * root.rotation);
             _ground?.CarryFrame(motion, rotation);
+            _climb?.CarryFrame(motion, rotation);
+            if (_gait is SpiderGait spider) spider.CarryFrame(motion, rotation);
             _lastSeenPos = motion.MultiplyPoint3x4(_lastSeenPos);
             _pathRequestGoal = motion.MultiplyPoint3x4(_pathRequestGoal);
             _hitSafePosition = motion.MultiplyPoint3x4(_hitSafePosition);

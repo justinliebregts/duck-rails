@@ -1,0 +1,7 @@
+2026-11-06T05:10:02.2162611Z PASS physical obstacle rejects approach
+2026-11-06T05:10:02.2182700Z Actual roadside-motel-v1 + actual train + actual minion; start=(0.00, 1.03, 80.00) target=(-7.00, 1.00, 80.00)
+2026-11-06T05:10:06.2757312Z PASS stage=100 natural exit + continued ground pursuit opening=Left
+2026-11-06T05:10:10.3494962Z PASS stage=101 natural boarding opening=Left
+2026-11-06T05:10:13.6172256Z PASS stage=102 natural exit + continued ground pursuit opening=Right
+2026-11-06T05:10:16.5101874Z PASS stage=103 natural boarding opening=Right
+2026-11-06T05:10:51.5145374Z FAIL Side timeout stage=104 aboard=False transfer=None exitPlan=False opening=Right anchor=-1 displaced=False speed=0.00 local=(10.52, -1.00, 15.23) state=Wander

@@ -17,7 +17,7 @@
 - Retain the existing Photon Realtime networking stack. Fusion migration is out of V1 scope. Verify whether the source uses direct Realtime APIs, PUN, or a mixture before implementation.
 - One Photon region. Public compound departures and separate private code-based expeditions. Late joining aboard the train is required.
 - Reliable networked loose-item motion is a launch requirement. Physical holders do not substitute for it.
-- Authored blocks with prebaked crawlgraphs; no runtime navigation baking. November 6: minion train boarding is authorized first, with spider boarding desired next. Other enemies retain block boundaries. See `docs/enemy-boarding.md` for implementation and acceptance evidence.
+- Authored blocks with prebaked crawlgraphs; no runtime navigation baking. November 6: minion and spider boarding through the rear and both side gaps is authorized. Other enemies retain block boundaries. See `docs/enemy-boarding.md` for implementation and acceptance evidence.
 - Existing Duckz capabilities described in the design are user-reported, not findings from a code audit.
 
 ## Working approach

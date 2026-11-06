@@ -1,0 +1,43 @@
+2026-11-06T05:07:00.3845472Z Started real-client network proof
+2026-11-06T05:07:09.0879123Z Stage=0 room=11111
+2026-11-06T05:07:09.0884178Z ACK 0 actor=2 master=False
+2026-11-06T05:07:09.1929794Z ACK 0 actor=2 master=False
+2026-11-06T05:07:13.3201811Z Stage=1 room=11111
+2026-11-06T05:07:17.3332463Z POSE owner=False local=(0.00, 0.03, -3.00) frame=True sample=True trainSample=True net=(0.00, 0.03, -3.00)
+2026-11-06T05:07:17.3332463Z ACK 1 actor=2 master=False
+2026-11-06T05:07:17.4360896Z POSE owner=False local=(0.00, 0.03, -3.00) frame=True sample=True trainSample=True net=(0.00, 0.03, -3.00)
+2026-11-06T05:07:17.4360896Z ACK 1 actor=2 master=False
+2026-11-06T05:07:17.5370771Z POSE owner=False local=(0.00, 0.03, -3.00) frame=True sample=True trainSample=True net=(0.00, 0.03, -3.00)
+2026-11-06T05:07:17.6414313Z POSE owner=False local=(0.00, 0.03, -3.00) frame=True sample=True trainSample=True net=(0.00, 0.03, -3.00)
+2026-11-06T05:07:17.7512592Z Stage=2 room=11111
+2026-11-06T05:07:23.7619562Z ACK 2 actor=2 master=False
+2026-11-06T05:07:23.8691383Z ACK 2 actor=2 master=False
+2026-11-06T05:07:24.5198828Z Stage=3 room=11111
+2026-11-06T05:07:29.6280256Z ACK 3 actor=2 master=True
+2026-11-06T05:07:29.7360539Z ACK 3 actor=2 master=True
+2026-11-06T05:07:30.0388674Z Stage=4 room=11111
+2026-11-06T05:07:31.8482715Z PASS authority observed non-owner melee reaction
+2026-11-06T05:07:35.1339501Z Spider support-loss fixture applied after confirmed melee reaction
+2026-11-06T05:07:35.1353655Z ACK 4 actor=2 master=True
+2026-11-06T05:07:35.2370292Z ACK 4 actor=2 master=True
+2026-11-06T05:07:35.5596139Z Stage=5 room=11111
+2026-11-06T05:07:38.9885183Z Stage=6 room=11111
+2026-11-06T05:07:43.1038179Z ACK 6 actor=2 master=True
+2026-11-06T05:07:43.2086113Z ACK 6 actor=2 master=True
+2026-11-06T05:07:52.7280956Z Stage=7 room=11111
+2026-11-06T05:07:53.7867532Z Ordinary pursuit enabled: exit Left
+2026-11-06T05:07:57.5227870Z Observed committed exit through Left
+2026-11-06T05:07:59.6456283Z ACK 7 actor=2 master=True
+2026-11-06T05:07:59.7559428Z ACK 7 actor=2 master=True
+2026-11-06T05:08:00.0715198Z Stage=8 room=11111
+2026-11-06T05:08:01.1299865Z Ordinary pursuit enabled: board Left
+2026-11-06T05:08:02.0901285Z Observed committed boarding through Left
+2026-11-06T05:08:05.1047569Z ACK 8 actor=2 master=True
+2026-11-06T05:08:05.2169569Z ACK 8 actor=2 master=True
+2026-11-06T05:08:05.5355169Z Stage=9 room=11111
+2026-11-06T05:08:06.5862611Z Ordinary pursuit enabled: exit Right
+2026-11-06T05:08:07.2307572Z Observed committed exit through Right
+2026-11-06T05:08:10.6046629Z ACK 9 actor=2 master=True
+2026-11-06T05:08:10.7171259Z ACK 9 actor=2 master=True
+2026-11-06T05:08:11.0393346Z Stage=10 room=11111
+2026-11-06T05:08:11.0398486Z PASS actual two-client carry, moving host migration, non-owner hit/support-loss detachment, leave/rejoin, left exit/reboard, right exit and diagnostic snapshot

@@ -1,5 +1,7 @@
 # Mixed enemies — November 1, 2026
 
+November 6 temporary boarding playtest: newly spawned encounters are **spiders only** (RailEnemySpawns.ForcedEnemyType = 3). Set the override to -1 to restore the normal mix described below. Minions and spiders can use the train rear and both side gaps; see [enemy boarding](enemy-boarding.md). Start a fresh expedition for the override to replace the population.
+
 Each scavenging block now starts with 4–6 enemies. Every encounter includes the existing minion, bomber, smasher and spider; any fifth/sixth enemy is randomly selected from those four. Six authored candidates per variation are shuffled without replacement. Bridge activation adds another 4–6 defenders within the finale approach. StartingStation has no enemies.
 
 The existing right-side encounter bounds and editor-baked graphs are retained. This change does not add left-side navigation. Counts/types/positions derive from an integer seed retained in the route snapshot, independently of route selection. Late joining, replacement spawning, authority changes and exact-route presets reconstruct the same choices. Photon room objects remain master-spawned and retain their existing identity markers. Protocol is session-v8: restart/update all clients together.

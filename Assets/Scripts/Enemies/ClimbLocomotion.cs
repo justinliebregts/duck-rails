@@ -49,6 +49,26 @@ namespace Game.AI
         float _bestNodeDistance, _nodeProgressTimer;
 
         public Vector3 SurfaceNormal => _surfaceUp;
+        public float BodyRadius => WorldRadius();
+
+        public void CarryFrame(Matrix4x4 motion, Quaternion rotation)
+        {
+            _up = rotation * _up; _surfaceUp = rotation * _surfaceUp;
+            _stuckPos = motion.MultiplyPoint3x4(_stuckPos);
+            _escapeTarget = motion.MultiplyPoint3x4(_escapeTarget);
+            _escapeNormal = rotation * _escapeNormal;
+            _travelHeading = rotation * _travelHeading;
+            _pendingHeading = rotation * _pendingHeading;
+            _edgeDirection = rotation * _edgeDirection; _edgeNormal = rotation * _edgeNormal;
+            _webOrigin = motion.MultiplyPoint3x4(_webOrigin);
+        }
+
+        bool TrainBlocks(Vector3 from, Vector3 to)
+        {
+            var boarding = GetComponent<RailEnemyBoarding>();
+            return !(boarding != null && (boarding.IsAboard || boarding.Crossing))
+                && RailTrainObstacle.BlocksSegment(from, to);
+        }
 
         SpiderWeb _web;
         bool _webDeparture, _webContact;
@@ -315,12 +335,16 @@ namespace Game.AI
 
         public void RequestPathToWorld(EnemyManager m, Vector3 worldPoint)
         {
+            var boarding = GetComponent<RailEnemyBoarding>();
+            if (boarding != null) worldPoint = boarding.NavigationGoal(m, worldPoint);
             int goal = m.ResolveNode(worldPoint, true);
             if (goal >= 0 && (goal != _goalNode || PathDone)) RequestPath(goal);
         }
 
         public void ForcePathToWorld(EnemyManager m, Vector3 worldPoint)
         {
+            var boarding = GetComponent<RailEnemyBoarding>();
+            if (boarding != null) worldPoint = boarding.NavigationGoal(m, worldPoint);
             int goal = m.ResolveNode(worldPoint, true);
             if (goal >= 0) RequestPath(goal);
         }
@@ -412,6 +436,8 @@ namespace Game.AI
                 && Mathf.Abs(Vector3.Dot(g.GetPosition(chaseNode) - pos, _surfaceUp)) < arriveRadius;
             bool direct = enemy.CurrentState == Enemy.State.Chase && enemy.Seen
                 && nearbyTarget && sameSurface
+                && !(enemy.Boarding != null && enemy.Boarding.HasBoardingPlan)
+                && !TrainBlocks(pos, enemy.LastSeenPos)
                 && !SweepSurface(pos, Vector3.ProjectOnPlane(toSeen, _surfaceUp), mask, out _);
 
             if (direct)
@@ -464,6 +490,10 @@ namespace Game.AI
                 return;
             }
 
+            if (TrainBlocks(pos, target))
+            {
+                ClearPath(); RequestPathToWorld(m, enemy.LastSeenPos); return;
+            }
             Vector3 delta = target - pos;
             float dist = delta.magnitude;
             if (dist < 1e-5f) return;
@@ -474,7 +504,7 @@ namespace Game.AI
             Vector3 next;
             if (!TryStepUp(pos, target, speed * dt, mask, g, out next))
                 next = MoveOnSurface(pos, target, targetUp, speed * dt, mask);
-            if (!g.ContainsCrawlSegment(pos, next))
+            if (TrainBlocks(pos, next) || !g.ContainsCrawlSegment(pos, next))
             {
                 _surfaceUp = previousSurfaceUp;
                 ClearPath();
@@ -504,7 +534,7 @@ namespace Game.AI
         void ApplyMovementPose(Enemy enemy, Vector3 next, Vector3 previousNormal, float dt, float turnLimit)
         {
             Transform root = enemy.Root;
-            if (!enemy.AllowsFlareMovement(root.position, next))
+            if (TrainBlocks(root.position, next) || !enemy.AllowsFlareMovement(root.position, next))
             {
                 _surfaceUp = previousNormal;
                 _stuckTimer = 0f;

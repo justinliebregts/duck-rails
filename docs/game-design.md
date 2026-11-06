@@ -4,7 +4,7 @@ Handoff date: October 28, 2026.
 
 November 6 confirmed track navigation: enemies may cross empty railway tracks to pursue players, including at the motel. Avoid the moving train locally instead of excluding the entire railway from navigation. See [track crossings](track-crossing.md).
 
-November 6 confirmed enemy direction: support enemies aboard the moving train, starting with the minion and extending to the spider later. This supersedes the earlier blanket no-boarding rule. Use a separately baked train graph and explicit block/train transfers, without runtime rebaking. Use the open rear and both existing side railing gaps for minion boarding and dismount; choose a physically clear opening toward the target. Transfers remain limited to stopped/creeping speed. See [enemy boarding](enemy-boarding.md) for evidence and remaining acceptance.
+November 6 confirmed enemy direction: support enemies aboard the moving train, starting with the minion, with the subsequent spider rollout now also authorized. This supersedes the earlier blanket no-boarding rule. Use a separately baked train graph and explicit block/train transfers, without runtime rebaking. Use the open rear and both existing side railing gaps for minion and spider boarding and dismount; choose a physically clear opening toward the target. Transfers remain limited to stopped/creeping speed. See [enemy boarding](enemy-boarding.md) for evidence and remaining acceptance.
 
 November 6 confirmed economy presentation: the midpoint crate must show every player gold flying to all credited crew members. Both shops use the shared receiver: local coins fly to the watch, remote coins to the recipient's body. Effects follow successful wallet credits and respect the wallet cap. Real-client visual acceptance remains pending; see `gold-economy.md`.
 
@@ -225,8 +225,8 @@ Optional emergency fuel was discussed: wooden bats could burn for much less fuel
 ### Confirmed direction
 - Reuse enemies that can be repelled/stunned rather than killed.
 - No health pool: one hit downs the player. There is no dead state or bleed-out. Players remain downed indefinitely until another player revives them or they quit; elapsed time does not recover or eliminate them.
-- Ordinary enemies stay within their authored scavenging block. The November 6 minion boarding exception can travel with the train; spider boarding is the desired follow-up.
-- Minion boarding uses a separately baked train crawlgraph. Its pose and movement follow the train while aboard; defensive hits can knock it off. Other enemy types retain their existing restrictions until separately implemented and verified.
+- Ordinary enemies stay within their authored scavenging block. The November 6 minion and spider boarding exceptions can travel with the train.
+- Minion and spider boarding use a separately baked train crawlgraph. Its pose and movement follow the train while aboard; defensive hits can knock it off. Other enemy types retain their existing restrictions until separately implemented and verified.
 - A down immediately launches Duckz's flare, with no intentional delay: temporary illumination and deterrence for susceptible enemies.
 - While downed, the local player sees Duckz's existing red vision overlay. It clears on revival or return to the compound.
 - Revive by holding a hand near a downed player for approximately three seconds. A rising-pitch sound marks progress; completion revives the player. No item or extra button.
@@ -242,7 +242,7 @@ Optional emergency fuel was discussed: wooden bats could burn for much less fuel
 ### Week 2 implementation defaults — October 29
 The user authorized sensible defaults: 0.65 m/s crawling, three-second continuous proximity rescue with interruption reset, three-second post-revive protection, a 45-second repeat-flare cooldown, and team failure after all connected crew remain down for five seconds. No player dragging. Two existing zombie minions inhabit the depot and two more join the bridge defense. Enemies cannot enter the carriage corridor. These values need gameplay tuning across crew sizes; they do not establish headset acceptance. See [week2-session.md](week2-session.md).
 
-November 6 supersedes the deferral of minion boarding and navigation aboard a moving train. Spider boarding remains a follow-up; moving-train pounces and ranged threats remain deferred.
+November 6 supersedes the deferral of minion/spider boarding and navigation aboard a moving train; moving-train pounces and ranged threats remain deferred.
 
 ## Authored level blocks and crawlgraphs
 

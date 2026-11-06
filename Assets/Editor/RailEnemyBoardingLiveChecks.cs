@@ -12,7 +12,8 @@ using Object = UnityEngine.Object;
 public static class RailEnemyBoardingLiveChecks
 {
     const string Armed = "Rails.Boarding.Offline";
-    static string LogPath => "docs/validation/enemy-boarding/" + (SessionState.GetBool(Armed + ".sides", false) ? "side-play.txt" : (SessionState.GetBool(Armed + ".motel", false) ? "motel-play.txt" : "offline-play.txt"));
+    static bool Spider => SessionState.GetBool(Armed + ".spider", false);
+    static string LogPath => "docs/validation/enemy-boarding/" + (SessionState.GetBool(Armed + ".surface", false) ? "spider-surface-" : Spider ? "spider-" : "") + (SessionState.GetBool(Armed + ".sides", false) ? "side-play.txt" : (SessionState.GetBool(Armed + ".motel", false) ? "motel-play.txt" : "offline-play.txt"));
     [Serializable] class Setup { public SceneSetup[] scenes; }
     static Enemy enemy;
     static RailTrain train;
@@ -32,12 +33,20 @@ public static class RailEnemyBoardingLiveChecks
     public static void RunMotel() => Start(true);
     [MenuItem("Duck Rails/Tests/Enemy Boarding/Run Side Openings Loop")]
     public static void RunSides() => Start(true, true);
-    static void Start(bool motel, bool sides = false)
+    [MenuItem("Duck Rails/Tests/Enemy Boarding/Run Spider Rear Loop")]
+    public static void RunSpiderRear() => Start(true, false, true);
+    [MenuItem("Duck Rails/Tests/Enemy Boarding/Run Spider Surface Carry Loop")]
+    public static void RunSpiderSurface() => Start(true, false, true, true);
+    [MenuItem("Duck Rails/Tests/Enemy Boarding/Run Spider Side Loop")]
+    public static void RunSpiderSides() => Start(true, true, true);
+    static void Start(bool motel, bool sides = false, bool spider = false, bool surface = false)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new Exception("Exit current Play Mode first");
         foreach (var scene in EditorSceneManager.GetSceneManagerSetup())
             if (scene.isLoaded && UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scene.path).isDirty)
                 throw new Exception("Save scene edits before isolated boarding test");
+        SessionState.SetBool(Armed + ".surface", surface);
+        SessionState.SetBool(Armed + ".spider", spider);
         SessionState.SetBool(Armed + ".motel", motel);
         SessionState.SetBool(Armed + ".sides", sides);
         Directory.CreateDirectory(Path.GetDirectoryName(LogPath)); File.WriteAllText(LogPath, "");
@@ -91,7 +100,7 @@ public static class RailEnemyBoardingLiveChecks
         var graph = manager.Graph;
         int node = graph.FindNearestGroundNode(new Vector3(7, 0, 70), 5);
         if (node < 0) throw new Exception("No approach node in real depot bake");
-        enemy = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/RailZombie.prefab")).GetComponent<Enemy>();
+        enemy = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Spider ? "Assets/Resources/Rails/RailSpider.prefab" : "Assets/Resources/Rails/RailZombie.prefab")).GetComponent<Enemy>();
         enemy.Teleport(graph.GetPosition(node) + Vector3.up * .02f, Quaternion.LookRotation(target.position - graph.GetPosition(node)));
         Physics.SyncTransforms();
         spawn = enemy.Root.position;
@@ -110,17 +119,66 @@ public static class RailEnemyBoardingLiveChecks
         if (SessionState.GetBool(Armed + ".sides", false))
         {
             SetSpeed(0);
-            // Test navigation with target knowledge independent of cargo occlusion.
+            // Isolate route selection from sight occlusion/FOV while the transfer
+            // turns away from the target. The passive-stalk case resets these below.
             using (var so = new SerializedObject(manager)) { so.FindProperty("visionMask").intValue = 0; so.ApplyModifiedPropertiesWithoutUndo(); }
+            using (var so = new SerializedObject(enemy))
+            {
+                so.FindProperty("visionRange").floatValue = 30;
+                so.FindProperty("nearSenseRadius").floatValue = 30;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
             enemy.Teleport(train.transform.TransformPoint(new Vector3(0, .03f, 0)), train.transform.rotation);
             enemy.Boarding.SetRemoteFrame(true, false);
             stage = 100; SideTarget(false, -1);
         }
-        Log("Actual " + block.id + " + actual train + actual minion; start=" + enemy.Root.position + " target=" + target.position);
+        if (SessionState.GetBool(Armed + ".surface", false)) { SetSpeed(0); stage = 200; }
+        Log("Actual " + block.id + " + actual train + actual " + (Spider ? "spider" : "minion") + "; start=" + enemy.Root.position + " target=" + target.position);
         var eye = new SerializedObject(enemy).FindProperty("eye").objectReferenceValue as Transform;
         if (eye != null && Physics.Raycast(eye.position, (target.position-eye.position).normalized, out var obstruction,
             Vector3.Distance(eye.position,target.position), 1<<6, QueryTriggerInteraction.Ignore))
             Log("Initial sight obstruction=" + obstruction.collider.name + " point=" + obstruction.point);
+    }
+    static void CheckSpiderSurfaceCarry()
+    {
+        manager.enabled = false;
+        var graph = train.GetComponent<RailTrainNavigation>().Graph;
+        var climb = enemy.GetComponent<ClimbLocomotion>();
+        int selected = -1;
+        for (int i = 0; i < graph.NodeCount; i++)
+        {
+            Vector3 normal = graph.GetNormal(i), point = graph.GetPosition(i) + normal * .02f;
+            if (Mathf.Abs(normal.y) > .1f || point.y < train.transform.position.y + .5f) continue;
+            if (climb.IsRecoveryPoseValid(point, normal, manager.SurfaceMask, out _)) { selected = i; break; }
+        }
+        if (selected < 0) throw new Exception("No physically supported train wall node");
+        Vector3 initialNormal = graph.GetNormal(selected);
+        enemy.Teleport(graph.GetPosition(selected) + initialNormal * .02f, Quaternion.LookRotation(Vector3.up, initialNormal));
+        enemy.Boarding.SetRemoteFrame(true, false);
+        enemy.Gait.Tick(.02f);
+        Vector3 local = train.transform.InverseTransformPoint(enemy.Root.position);
+        Vector3 localNormal = train.transform.InverseTransformDirection(climb.SurfaceNormal);
+        var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var gait = enemy.GetComponent<Game.Animation.SpiderGait>();
+        var legs = (Game.Animation.SpiderGait.LegSlot[])gait.GetType().GetField("legs", flags).GetValue(gait);
+        var feet = Array.ConvertAll(legs, leg => train.transform.InverseTransformPoint(leg.planted));
+        var origin = train.transform.position;
+        for (int i = 0; i < 32; i++)
+        {
+            train.transform.SetPositionAndRotation(origin + new Vector3(i * .1f, Mathf.Sin(i) * .2f, i * .2f),
+                Quaternion.Euler(Mathf.Sin(i) * 8, i * 3, 0));
+            Physics.SyncTransforms();
+            enemy.Boarding.BeforeTick(manager, .02f);
+            if (!enemy.Boarding.IsAboard || Vector3.Distance(train.transform.InverseTransformPoint(enemy.Root.position), local) > .002f)
+                throw new Exception("Spider lost wall support or drifted at pose " + i);
+            if (Vector3.Dot(climb.SurfaceNormal, train.transform.TransformDirection(localNormal)) < .999f)
+                throw new Exception("Spider wall normal did not rotate with train");
+            for (int leg = 0; leg < legs.Length; leg++)
+                if (Vector3.Distance(train.transform.InverseTransformPoint(legs[leg].planted), feet[leg]) > .002f)
+                    throw new Exception("Spider planted foot drifted with train");
+            if (enemy.GetComponent<SpiderWeb>().WebActive) throw new Exception("Moving train retained a world-anchored web");
+        }
+        Log("PASS supported wall node=" + selected + " local=" + local + " normal=" + localNormal);
     }
     static void BlockOpenings(bool all)
     {
@@ -168,15 +226,33 @@ public static class RailEnemyBoardingLiveChecks
             Object.DestroyImmediate(exitBarrier); Physics.SyncTransforms();
             stage = 107; SideTarget(false, -1); return;
         }
-        bool boarding = stage == 101 || stage == 103 || stage == 105;
+        bool boarding = stage == 101 || stage == 103 || stage == 105 || stage == 108;
         bool complete = boarding ? enemy.Boarding.IsAboard : !enemy.Boarding.IsAboard && !enemy.Boarding.Crossing
             && Vector3.Distance(enemy.Root.position, target.position - Vector3.up) < 1.3f;
         if (!complete || !sawSideCrossing) return;
-        int expected = stage <= 101 || stage == 107 ? 1 : stage <= 103 ? 2 : -1;
+        int expected = stage <= 101 || stage == 107 || stage == 108 ? 1 : stage <= 103 ? 2 : -1;
         if (expected >= 0 && sideOpening != expected) throw new Exception("Wrong opening stage=" + stage + " got=" + sideOpening);
         if (stage == 104 && sideOpening == 1) throw new Exception("Used obstructed left opening");
         Log("PASS stage=" + stage + " natural " + (boarding ? "boarding" : "exit + continued ground pursuit")
             + " opening=" + RailTrainNavigation.OpeningName(sideOpening));
+        if (stage == 107 && Spider)
+        {
+            int node = manager.WorldGraph.FindNearestGroundNode(train.transform.position + new Vector3(-4.5f, -1, .5f), 2);
+            if (node < 0) throw new Exception("No stalking approach node");
+            enemy.Teleport(manager.WorldGraph.GetPosition(node) + Vector3.up * .02f, train.transform.rotation);
+            using (var so = new SerializedObject(enemy))
+            {
+                so.FindProperty("visionRange").floatValue = 0;
+                so.FindProperty("nearSenseRadius").floatValue = 0;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+            stage = 108; SideTarget(true, -1); return;
+        }
+        if (stage == 108)
+        {
+            if (enemy.CurrentState != Enemy.State.Wander) throw new Exception("Stalking case acquired combat target");
+            Finish("PASS spider passive stalking boards through left gap; side and obstruction loop complete"); return;
+        }
         if (stage == 107) { Finish("PASS both side openings in both directions, blocked-nearest fallback, all-blocked hold and retry after clearing"); return; }
         stage++;
         if (stage == 104) BlockOpenings(false);
@@ -199,6 +275,7 @@ public static class RailEnemyBoardingLiveChecks
         try
         {
             double age = EditorApplication.timeSinceStartup - entered;
+            if (stage == 200) { CheckSpiderSurfaceCarry(); Finish("PASS spider wall support, contact normals and planted feet carried through 32 poses"); return; }
             if (stage >= 100) { TickSides(age); return; }
             if (age > 35) throw new Exception("Timeout stage=" + stage + " position=" + enemy.Root.position + " state=" + enemy.CurrentState + " plan=" + enemy.Boarding.HasBoardingPlan + " crossing=" + enemy.Boarding.Crossing);
             if (stage == -2 && age > 4)
@@ -231,6 +308,8 @@ public static class RailEnemyBoardingLiveChecks
                 train.transform.SetPositionAndRotation(new Vector3(Mathf.Sin(t) * .75f, 1 + Mathf.Sin(t) * .2f, 80 + t * t * .8f), Quaternion.Euler(Mathf.Sin(t) * 8, t * 2, 0));
                 Physics.SyncTransforms(); enemy.Boarding.Carry();
                 float error = Vector3.Distance(train.transform.InverseTransformPoint(enemy.Root.position), startLocal);
+                if (Spider && Vector3.Dot(enemy.GetComponent<ClimbLocomotion>().SurfaceNormal, train.transform.up) < .999f)
+                    throw new Exception("Spider contact normal did not follow train pitch/yaw");
                 if (error > .002f) throw new Exception("Carry drift=" + error);
                 if (age > 5)
                 {

@@ -24,7 +24,8 @@ namespace Game.AI
 
         bool Authority => !PhotonNetwork.InRoom || photonView.IsMine;
         bool Interrupted => _enemy == null || _enemy.Root == null || _enemy.IsDormant
-            || _enemy.IsKnocked || _enemy.IsStunned || _enemy.RagdollActive;
+            || _enemy.IsKnocked || _enemy.IsStunned || _enemy.RagdollActive
+            || (_enemy.Boarding != null && (_enemy.Boarding.IsAboard || _enemy.Boarding.Crossing));
         public bool WebActive => _active;
 
         void Awake()

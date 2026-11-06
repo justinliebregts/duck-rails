@@ -2,6 +2,15 @@
 
 Handoff date: October 28, 2026. Read `game-design.md` for decision status and scope.
 
+## November 6 — spider train boarding
+
+- [x] Opt the spider into rear/left/right boarding and dismount using its climbing mover and collision radius; preserve world crawl behavior and minion boarding.
+- [x] Switch temporary encounter spawning to spiders only. ForcedEnemyType = -1 restores the normal mix.
+- [x] Actual spider/motel Play Mode: both side exits/reboarding, blocked-opening fallback, all-blocked hold/retry, rear boarding, speed/abort gates, moving carry, deck pursuit, voluntary exit/reboarding and melee knock-off.
+- [x] Carry surface normals and gait contacts with the train; actual wall attachment and planted feet stay stable through 32 translated/yawed/pitched poses. Existing graph/navigation, roof-lip and web safety regressions pass.
+- [x] Passive stalking boards without a combat target. Two authenticated clients pass spider-only spawns, moving carry/host handoff, confirmed non-owner hit plus separate support-loss detachment, moving leave/rejoin, left exit/reboard and right exit. See [evidence and fixture limits](enemy-boarding.md).
+- [ ] Headset review, multiple spiders, crowded openings and Quest performance. Existing bake excludes ceilings; moving-train web behavior is not added.
+
 ## November 6 — manual two-client launch and keyboard throttle
 
 - [x] Apply saved enemy invincibility to all editor test expeditions, including public quick-start and automated suites; synchronize the main editor's toggle to its additional clients. Two authenticated clients passed ON/OFF/ON and rejected 24 enemy contacts each. Full automated-suite and headset reruns remain separate. See [invincibility evidence](testing-tools.md#enemy-invincibility-in-test-center).
@@ -39,7 +48,7 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 - [x] Isolated Play Mode: physical obstacle rejects approach, fast train rejects boarding, departure interrupts active transfer. Graph/packet/authoring suite: 390 checks; existing navigation regression passed.
 - [ ] Validate hostile contact/revival aboard, multiple minions, natural two-client boarding, repeated runs, recovery in another block and adverse network conditions.
 - [ ] Review boarding animation/readability, rescue balance, natural bat interactions and performance on target headsets. Desktop tests do not close this acceptance.
-- [ ] Extend the proven moving-graph approach to spider wall/ceiling movement and stalking; minion-first implementation is authorized.
+- [x] Extend boarding to spiders through rear/side openings; see the spider rollout above for validation and remaining limits.
 
 - [x] November 6: broadcast confirmed gold reward coin effects to other clients, using local watch and remote body targets; Unity compilation and existing economy checks pass.
 - [ ] Verify on real clients that midpoint deposits show streams to every credited recipient for every observer, including simultaneous deposits, capped wallets and headset performance.

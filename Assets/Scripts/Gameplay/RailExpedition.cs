@@ -465,7 +465,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         {
             string marker = "enemy-" + i;
             bool exists = HasMarker(PhotonSession.RunId, marker);
-            if (!exists) PhotonNetwork.InstantiateRoomObject(RailEnemySpawns.MinionsOnly ? RailEnemySpawns.Prefab(0).name : i < enemyTypes.Length ? RailEnemySpawns.Prefab(enemyTypes[i]).name : enemyPrefab.name, enemyPoints[i].position, enemyPoints[i].rotation, 0, new object[] { "rails", PhotonSession.RunId, marker });
+            if (!exists) PhotonNetwork.InstantiateRoomObject(RailEnemySpawns.ForcedEnemyType >= 0 ? RailEnemySpawns.Prefab(RailEnemySpawns.ForcedEnemyType).name : i < enemyTypes.Length ? RailEnemySpawns.Prefab(enemyTypes[i]).name : enemyPrefab.name, enemyPoints[i].position, enemyPoints[i].rotation, 0, new object[] { "rails", PhotonSession.RunId, marker });
         }
     }
     static bool HasMarker(string run, string marker)
