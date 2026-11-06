@@ -146,6 +146,9 @@ MonoBehaviour:
   horizontalThrowMultiplier: 1
   locomotionWhileHeld: 1
   locomotionCollider: {fileID: 4210583910027311004}
+  locomotionBoxes: []
+  locomotionSampleOffsets: []
+  locomotionSampleRadius: 0.05
   drawLocomotionGizmos: 1
   locomotionGizmoColor: {r: 0.2, g: 0.85, b: 1, a: 0.35}
   knockbackScale: 1
@@ -234,8 +237,8 @@ Light:
   serializedVersion: 12
   m_Type: 0
   m_Color: {r: 1, g: 0.9490196, b: 0.8509804, a: 1}
-  m_Intensity: 3
-  m_Range: 16
+  m_Intensity: 4
+  m_Range: 20
   m_SpotAngle: 30
   m_InnerSpotAngle: 25
   m_CookieSize2D: {x: 0.5, y: 0.5}

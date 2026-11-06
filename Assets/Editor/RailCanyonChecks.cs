@@ -53,7 +53,7 @@ public static class RailCanyonChecks
             Check(nodes.All(n=>n>=0),"Every plateau has a ground graph node");
             if(nodes.All(n=>n>=0))
             {var seen=new HashSet<int>{nodes[0]};var queue=new Queue<int>();queue.Enqueue(nodes[0]);while(queue.Count>0){int n=queue.Dequeue();for(int e=g.EdgeStart[n];e<g.EdgeStart[n+1];e++){int next=g.EdgeTarget[e];if(g.GetNormal(next).y>.5f&&seen.Add(next))queue.Enqueue(next);}}Check(nodes.All(seen.Contains),"Ground-only navigation connects all six plateaus via descents and canyon floor");}
-            Check(Enumerable.Range(0,g.NodeCount).All(n=>!b.enemySurfaceRailExclusion.Contains(g.GetPosition(n))),"Navigation excludes train deck and upper railway corridor");
+            Check(b.enemySurfaceRailExclusion.size == Vector3.zero,"No permanent railway navigation exclusion");
             foreach(var f in root.GetComponentsInChildren<MeshFilter>())Check(f.sharedMesh.uv.Length==f.sharedMesh.vertexCount&&f.sharedMesh.uv2.Length==f.sharedMesh.vertexCount,"Texture/lightmap UVs "+f.name);
             var failures=lines.Where(s=>s.StartsWith("FAIL")).ToArray();if(failures.Length>0)throw new Exception(failures.Length+" Canyon failures:\n"+string.Join("\n",failures.Take(35)));
             Debug.Log("CANYON CHECKS: "+lines.Count+" passed");

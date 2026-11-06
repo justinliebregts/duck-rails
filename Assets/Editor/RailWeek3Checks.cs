@@ -16,7 +16,7 @@ public static class RailWeek3Checks
     {
         lines.Clear();
         var blocks = AssetDatabase.FindAssets("t:Prefab", new[] { RailWeek3Builder.Folder }).Select(g => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(g)).GetComponent<RailBlock>()).Where(b => b != null && b.id != "bridge-finale-v1").ToArray();
-        Check(blocks.Length == 15 && blocks.Select(b => b.id).Distinct().Count() == 15 && blocks.Any(b => b.id == RailCanyon.Id) && blocks.Any(b => b.id == RailSkyscraper.Id) && blocks.Any(b => b.id == RailHospital.Id), "Fifteen unique block assets including Hospital District");
+        Check(blocks.Length == 16 && blocks.Select(b => b.id).Distinct().Count() == 16 && blocks.Any(b => b.id == RailCanyon.Id) && blocks.Any(b => b.id == RailSkyscraper.Id) && blocks.Any(b => b.id == RailHospital.Id) && blocks.Any(b=>b.id==RailNuclearPlant.Id), "Sixteen unique block assets including Nuclear Power Plant");
         foreach (var b in blocks)
         {
             Check(b.transform.localScale == Vector3.one && b.entry.localPosition == Vector3.zero && b.exit.localPosition == new Vector3(0, 0, 160), b.id + " consistent entry/exit/pivot");
@@ -35,8 +35,7 @@ public static class RailWeek3Checks
             Check(g.ChunkCells==referenceGraph.ChunkCells &&
                 (chunkOffset-(Vector3)Vector3Int.RoundToInt(chunkOffset)).sqrMagnitude<.000001f,
                 b.id + " baked origin aligns with catalogue chunks in every route slot");
-            // Enemy navigation remains in the existing right-side encounter. Player-only
-            // left-side scavenging uses physical ground/collision, not the enemy graph.
+            // All enemy markers require navigation; legacy right-side coal coverage is retained.
             foreach (var point in b.variations.SelectMany(v => v.enemies.Concat(v.coal.Where(p => p.position.x > 0))))
                 Check(g.FindNearestGroundNode(point.position, 2) >= 0 && b.enemyBounds.Contains(point.position), b.id + "/" + point.parent.name + "/" + point.name + " usable navigation");
             var contents = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(b));
@@ -55,7 +54,8 @@ public static class RailWeek3Checks
                 var skyscraper = contents.transform.Find(RailSkyscraper.RootName);
                 var hospital = contents.transform.Find(RailHospital.RootName);
                 var yard = contents.transform.Find(RailContainerYard.RootName);
-                Check(yard != null ? yard.Find("West yard/Row 2") != null && yard.Find("West yard/Row 5") != null : hospital != null ? hospital.Find("Clinic") != null && hospital.Find("Pharmacy") != null : skyscraper != null ? skyscraper.Find("Tower A") != null && skyscraper.Find("Tower C") != null :
+                var plant = contents.transform.Find(RailNuclearPlant.RootName);
+                Check(plant != null ? plant.Find("Tower A damp") != null && plant.Find("Tower B drained") != null : yard != null ? yard.Find("West yard/Row 2") != null && yard.Find("West yard/Row 5") != null : hospital != null ? hospital.Find("Clinic") != null && hospital.Find("Pharmacy") != null : skyscraper != null ? skyscraper.Find("Tower A") != null && skyscraper.Find("Tower C") != null :
                     station != null ? station.Find("West shops and staff corridor/Tickets") != null && station.Find("West shops and staff corridor/Mini mart") != null :
                     canyon != null ? canyon.Find("Exploration landings") != null && canyon.Find("Terraced canyon and hollow caves") != null :
                     mine != null ? mine.Find("West rim climbing ledges") != null && mine.Find("Underground office") != null :

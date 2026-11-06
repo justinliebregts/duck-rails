@@ -33,6 +33,24 @@ public static class ResumablePathChecks
         EditorApplication.Exit(0);
     }
 
+    [MenuItem("Duck Rails/Tests/Enemy Boarding/Navigation Regression")]
+    public static void RunInEditor()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode) throw new InvalidOperationException("Exit Play Mode first");
+        var setup = EditorSceneManager.GetSceneManagerSetup();
+        foreach (var scene in setup)
+            if (scene.isLoaded && UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scene.path).isDirty)
+                throw new InvalidOperationException("Save scene edits first");
+        try
+        {
+            SearchCases(); MoverCases(false); MoverCases(true); SchedulerCases();
+            string message = "PASS resumable search, ground/climb replacement and cancellation, shared scheduler budgets";
+            System.IO.File.WriteAllText("docs/validation/enemy-boarding/navigation-regression.txt", DateTime.UtcNow.ToString("O") + " " + message);
+            Debug.Log(message);
+        }
+        finally { EditorSceneManager.RestoreSceneManagerSetup(setup); }
+    }
+
     static CrawlGraph Line(int n, int clusterSize = 8)
     {
         int clusters = (n + clusterSize - 1) / clusterSize;
@@ -158,7 +176,7 @@ public static class ResumablePathChecks
         var managerObject = new GameObject("Path manager"); managerObject.SetActive(false);
         var manager = managerObject.AddComponent<EnemyManager>();
         var graph = Line(100);
-        Set(manager, "<Graph>k__BackingField", graph);
+        Set(manager, "worldGraph", graph); Set(manager, "pathGraph", graph);
         Set(manager, "<Pathfinder>k__BackingField", new CrawlPathfinder(graph) { DirectSearchDistance = float.MaxValue });
         var actor = new GameObject("Path mover");
         IEnemyLocomotion mover = climbing ? actor.AddComponent<ClimbLocomotion>() : actor.AddComponent<GroundLocomotion>();
@@ -205,7 +223,7 @@ public static class ResumablePathChecks
         var managerObject = new GameObject("Queue manager"); managerObject.SetActive(false);
         var manager = managerObject.AddComponent<EnemyManager>();
         var graph = Line(20000);
-        Set(manager, "<Graph>k__BackingField", graph);
+        Set(manager, "worldGraph", graph); Set(manager, "pathGraph", graph);
         Set(manager, "<Pathfinder>k__BackingField", new CrawlPathfinder(graph, 19000) { DirectSearchDistance = float.MaxValue });
         Set(manager, "pathBudgetMilliseconds", .1f);
         Set(manager, "maxPathRequestFrames", 3);

@@ -4,11 +4,14 @@ October 30, 2026. Justin requested one gameplay rig for Quest Link/headset use a
 
 ## Controls
 
+- **Page Down** skips toward the finish by the current block's authored length and adds 1 metre to your height, preserving sideways position and facing. Available in ready private expeditions in the Editor/Development Builds, in Keyboard or VR mode with the Game view focused. Keyboard mode requires the captured cursor; close typing/test panels first. Only your player moves. The starting station counts as a block; jumps beyond the finale and jumps from the finale are refused. This applies a relative height offset, not a terrain/roof clearance search.
+
 - Choose **Keyboard** or **VR** in the Scene view before Play. Both use the authored DuckPlayer prefab.
 - Connect Quest Link before pressing Play if headset use is needed. XR initialization stays enabled even when starting in Keyboard mode.
 - **F2** switches between simulated and tracked inputs during Play. The Scene view Keyboard/VR buttons also switch the running rig. A switch to VR requires an available tracked headset pose; otherwise Keyboard mode remains active.
 - Press **T** once for throttle **GO**, then again for **STOP**, in either Keyboard or VR mode on the editor/desktop client (November 6). Releasing the key keeps the selected state. No hand reach or grip is needed. The shortcut uses the lever's shared ownership lease and cannot take it from another holder. Keyboard mode requires the captured game cursor; VR mode does not. Focus loss, input blocking, downing, or switching modes clears the toggle; release T before pressing again after a switch or focus loss.
-- **WASD** moves; mouse looks; **Space** jumps when supported; **C** lowers the simulated head.
+- **WASD** moves at 9 m/s (doubled from 4.5 m/s on November 2 for art testing); mouse looks; **Space** jumps when supported; **C** lowers the simulated head. Downed movement remains 0.65 m/s.
+- In VR, **R3** (click the right thumbstick) toggles the inherited development movement in the Editor and Development Builds. The left stick moves horizontally at up to 4.5 m/s; right-stick up/down raises/lowers you at up to 3 m/s. Click R3 again to return to normal locomotion. This shortcut is excluded from non-development builds and is bypassed in Keyboard mode.
 - Hold **Q** to reach left, **E** to reach right, or both together. Release to bring the corresponding hand back. Aim with the mouse; the hands reach through space, without raycast acquisition.
 - Hold **right mouse** for both grips. Hold **left mouse** for both triggers. Releasing releases the corresponding button on both hands.
 - Mouse wheel adjusts forward reach (0.25–1.1 metres). **Z/X** rolls both wrists. **1/2** supply left controller X/Y; **3/4** supply right A/B.
@@ -17,6 +20,8 @@ October 30, 2026. Justin requested one gameplay rig for Quest Link/headset use a
 For the train lever, T toggles the keyboard shortcut in either input mode. Physical control also remains available: reach the handle, grip with right mouse, then increase forward reach with the wheel; release right mouse to brake. Horn, radio and keypad buttons use the actual fingertip colliders, just as in VR. Keyboard mode does not use the old E-to-toggle or mouse-to-click world control paths.
 
 ## Implementation boundaries
+
+November 3 block-skip validation: Unity compilation and seven Edit Mode destination checks passed (station, unequal block lengths, exact seams, preserved X/+1 Y, finish and outside-route rejection). Uses the existing `NewPlayer.Warp` path to release cabin attachment and reset motion/contact history. Actual keypress, headset and multiplayer playtesting remain unverified.
 
 `DesktopPlay` now selects inputs and attaches `SimulatedRigInput` to the existing DuckPlayer. It no longer disables DuckPlayer, disables XR, or spawns the DesktopPlayer prefab. `SimulatedRigInput` provides poses to the same head/hand anchors consumed by `NewPlayer` and `LocalBodyDriver`, and button states through the existing `ControllerInput`. Both authored PlayerHands, skin/fingers, bag inventory, HUD, rigidbody, moving-platform support and Photon pose output remain in use.
 
@@ -30,8 +35,7 @@ The retired DesktopPlayer asset/class remain for historical non-Rails fixtures; 
 
 ### Toggle-T shortcut — November 6
 
-Unity compiled the update and shared-rig, quick-start and drive checks passed. The shared-rig fixture verifies GO on first press, no repeat while held, continued GO after release, STOP on the next press, and focus-loss/mode-switch reset with neutral-input gating. Keyboard T uses the same toggle in tracked-input mode; the physical hand lever retains hold-to-run. Actual keyboard-event and headset playtesting remain separate from these injected-input checks. The earlier hold-T evidence below records historical behavior.
-
+Unity compiled the update and shared-rig, quick-start and drive checks passed. The shared-rig fixture verifies GO on first press, no repeat while held, continued GO after release, STOP on the next press, and focus-loss/mode-switch reset with neutral-input gating. Keyboard T uses the same toggle in tracked-input mode; the physical hand lever retains hold-to-run. The fixture's stale movement expectation was updated to the existing 9 m/s art-testing speed; this change does not alter movement speed. Actual keyboard-event and headset playtesting remain separate from these injected-input checks. The earlier hold-T evidence below records historical behavior.
 
 ### Keyboard public-platform countdown — October 31
 

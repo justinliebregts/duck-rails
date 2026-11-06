@@ -108,6 +108,23 @@ public static class RailTestTools
         Commit(new Hashtable { [RailSessionRules.Fuel] = 20f,
             [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, RailRoute.Instance.FinaleStart + 45, 0f, 0f } }, "Train moved to bridge approach");
     }
+    public static void SkipBlock()
+    {
+        var player = NewPlayer.instance;
+        var route = RailRoute.Instance;
+        if (!Allowed || PhotonSession.Phase != RailPhase.Running || route == null || !route.Ready ||
+            player == null || player.disableMovement || RailExpedition.LocalDown)
+        { Status = "Block skip requires a ready private expedition and an active player"; return; }
+        // Warp takes head-aligned X/Z and rig-root Y, accounting for room-scale offset itself.
+        Vector3 position = player.headCollider.transform.position;
+        position.y = player.transform.position.y;
+        if (!route.TryBlockSkip(position, out var destination))
+        { Status = "No block ahead to skip to"; return; }
+        player.Warp(destination);
+        Status = "Skipped one block toward the finish (+1 m up)";
+        RailDiagnostics.Instance?.Event(Status);
+    }
+
     public static void Board()
     {
         if (!Allowed || RailTrain.Instance == null || GR.Player.instance == null) return;
@@ -125,6 +142,21 @@ public static class RailTestTools
         var bag = go.GetComponent<BagObject>();
         bag.Put(bag.FirstEmptySlot(), "RailCoal", go.transform.position, .3f);
         Status = "Spawned shared bag containing coal"; RailDiagnostics.Instance?.Event(Status);
+    }
+    public static void SpawnFlashlight()
+    {
+        if (!CanMutate) { Status = "Requires master in a private run"; return; }
+        var eye = Camera.main != null ? Camera.main.transform : null;
+        if (eye == null) { Status = "Player camera is not ready"; return; }
+        // Keep the drop above ground even when the player looks down.
+        Vector3 forward = Vector3.ProjectOnPlane(eye.forward, Vector3.up);
+        if (forward.sqrMagnitude < .001f)
+            forward = Vector3.ProjectOnPlane(eye.up, Vector3.up);
+        forward.Normalize();
+        PhotonNetwork.InstantiateRoomObject("Rails/RailFlashlight", eye.position + forward * .75f,
+            Quaternion.LookRotation(forward, Vector3.up));
+        Status = "Spawned shared flashlight in front of you";
+        RailDiagnostics.Instance?.Event(Status);
     }
     public static void DownSelf()
     {

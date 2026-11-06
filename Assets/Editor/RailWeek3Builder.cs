@@ -38,9 +38,12 @@ public static class RailWeek3Builder
         if (skyscraper != null) catalog = catalog.Concat(new[] { skyscraper.GetComponent<RailBlock>() }).ToArray();
         var hospital = AssetDatabase.LoadAssetAtPath<GameObject>(RailHospital.PrefabPath);
         if (hospital != null) catalog = catalog.Concat(new[] { hospital.GetComponent<RailBlock>() }).ToArray();
+        var plant = AssetDatabase.LoadAssetAtPath<GameObject>(RailNuclearPlant.PrefabPath);
+        if (plant != null) catalog = catalog.Concat(new[] { plant.GetComponent<RailBlock>() }).ToArray();
         BuildScenes(catalog);
         AddCarrier();
         RailEnemyAuthoring.Install();
+        RailBothSidesAuthoring.Run();
         var lightingScenes = EditorBuildSettings.scenes.Where(s => s.path.StartsWith("Assets/DuckRails/Lighting/")).ToArray();
         EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Login.unity", true), new EditorBuildSettingsScene("Assets/Scenes/Compound.unity", true), new EditorBuildSettingsScene("Assets/Scenes/Expedition.unity", true) }.Concat(lightingScenes).ToArray();
         AssetDatabase.SaveAssets();

@@ -210,8 +210,7 @@ public static class RailQuarryMine
             if(t.name==RootName||t.name=="Block ground"||t.name=="Quarry rim"||t.name=="Lower terrace"||t.name=="Access ramp"||t.name.StartsWith("Conveyor")||t.name=="QUARRY"||t.name.StartsWith("STOP ")||t.name=="Left-side buildings"||t.name=="Baked block sample lights")Object.DestroyImmediate(t.gameObject);
         var root=Group(b.transform,RootName);Terrain(root);WestClimb(root);Interior(root);Outer(root);
         b.enemyBounds=new Bounds(new Vector3(0,-1,80),new Vector3(80,12,70));
-        b.enemySurfaceRailExclusion=new Bounds(new Vector3(0,8,80),new Vector3(14,20,160));
-        var blocker=Group(root,"Surface railway navigation exclusion").gameObject.AddComponent<CrawlGraphBlocker>();var bx=blocker.GetComponent<BoxCollider>();bx.isTrigger=true;bx.center=b.enemySurfaceRailExclusion.center;bx.size=b.enemySurfaceRailExclusion.size;
+        b.enemySurfaceRailExclusion = default;
         for(int v=0;v<b.variations.Length;v++)
         {
             float dx=(v-1)*.4f;var coal=new[]{new Vector3(-25,-5.5f,83),new(-25,-5.5f,99),new(-13,-5.5f,106),new(26,-5.5f,52),new(26,-5.5f,74),new(26,-5.5f,104)};

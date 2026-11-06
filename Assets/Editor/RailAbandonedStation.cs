@@ -255,8 +255,7 @@ public static class RailAbandonedStation
         var root=Group(b.transform,RootName);GroundAndTrack(root,b);Shell(root);PublicAndStaff(root);Wreck(root);
         b.displayName="Abandoned Underground Station";b.tags=new[]{"interior","underground","graded"};
         b.enemyBounds=new Bounds(new(0,-1,80),new(88,16,70));
-        b.enemySurfaceRailExclusion=new Bounds(new(0,-1,80),new(7,7,160));
-        var blocker=Group(root,"Operating railway navigation exclusion").gameObject.AddComponent<CrawlGraphBlocker>();var bc=blocker.GetComponent<BoxCollider>();bc.isTrigger=true;bc.center=b.enemySurfaceRailExclusion.center;bc.size=b.enemySurfaceRailExclusion.size;
+        b.enemySurfaceRailExclusion = default;
         for(int v=0;v<b.variations.Length;v++)
         {
             var coal=new[]{new Vector3(-29,-2.5f,67),new(-28,-2.5f,83),new(-28,-2.5f,107),new(34,-2.5f,67),new(34,-2.5f,83),new(26,-2.5f,96)};

@@ -135,6 +135,9 @@ namespace Game.AI
         public Transform Root => root;
         public IGaitDriver Gait => _gait;
         public IEnemyLocomotion Locomotion => _loco;
+        public RailEnemyBoarding Boarding { get; private set; }
+        public bool HitMovementActive => _flying || _shoveActive || _dropActive || _retreatActive || _stunned;
+        public bool CanTargetPosition(Vector3 point) => Boarding != null || RailTrain.Instance == null || !RailTrain.Instance.Contains(point);
         public bool HasAuthority => _net == null || _net.HasAuthority;
         // Dormant enemies still reserve their manager slot while waiting to respawn.
         public bool IsDormant { get; set; }
@@ -263,6 +266,7 @@ namespace Game.AI
             _legs = GetComponentsInChildren<SpiderLeg>(true);
             _vocal = GetComponent<IEnemyHitVocal>();
             _loco = GetComponent<IEnemyLocomotion>();
+            Boarding = GetComponent<RailEnemyBoarding>();
             _climb = _loco as ClimbLocomotion;
             _ground = _loco as GroundLocomotion;
             _jump = GetComponent<ZombieSmasherJump>();
@@ -348,6 +352,7 @@ namespace Game.AI
 
         public void Teleport(Vector3 position, Quaternion rotation)
         {
+            Boarding?.ResetFrame();
             if (_flying) AbortFlight();
             SetRootPose(position, rotation);
             // Teleports must be visible to AI/gait and network serialization immediately,
@@ -399,6 +404,8 @@ namespace Game.AI
 
         public void TickAuthority(EnemyManager m, float dt, bool perceive)
         {
+            Boarding?.BeforeTick(m, dt);
+            using var graphScope = m.UseGraph(Boarding != null ? Boarding.NavigationGraph : null);
             if (IsDormant) { ResetFallRecovery(); return; }
             if (!_hadAuthority) { _hadAuthority = true; ResetBrain(); }
             if (!_flying && !IsJumping && (_shoveActive || _retreatActive || _dropActive))
@@ -466,6 +473,7 @@ namespace Game.AI
             _chaseCooldownRemaining = Mathf.Max(0f, _chaseCooldownRemaining - dt);
             if (perceive) Perceive(m);
             Think(m, dt);
+            if (Boarding != null && Boarding.TickTraversal(m, dt)) return;
             if (_jump != null && _jump.isActiveAndEnabled && _jump.TickJump(this, m, dt))
             {
                 SetAirbornePose(IsJumping);
@@ -539,8 +547,28 @@ namespace Game.AI
 
         public void RunPathRequest(EnemyManager m)
         {
+            using var graphScope = m.UseGraph(Boarding != null ? Boarding.NavigationGraph : null);
             if (_loco != null) _loco.RunPathRequest(m);
         }
+
+        public void CarryNavigationFrame(Matrix4x4 motion, Quaternion rotation)
+        {
+            SetRootPose(motion.MultiplyPoint3x4(root.position), rotation * root.rotation);
+            _ground?.CarryFrame(motion, rotation);
+            _lastSeenPos = motion.MultiplyPoint3x4(_lastSeenPos);
+            _pathRequestGoal = motion.MultiplyPoint3x4(_pathRequestGoal);
+            _hitSafePosition = motion.MultiplyPoint3x4(_hitSafePosition);
+            _hitSafeRotation = rotation * _hitSafeRotation;
+            _hitSafeUp = rotation * _hitSafeUp;
+            _fallPreviousPosition = motion.MultiplyPoint3x4(_fallPreviousPosition);
+            _retreatProgressPosition = motion.MultiplyPoint3x4(_retreatProgressPosition);
+            _dropStallOrigin = motion.MultiplyPoint3x4(_dropStallOrigin);
+            _meleeShoveDir = rotation * _meleeShoveDir;
+            _retreatDir = rotation * _retreatDir;
+            _shoveDir = rotation * _shoveDir;
+        }
+
+        public void FallFromTrain() { _loco?.Interrupt(); BeginDrop(true); }
 
         void Perceive(EnemyManager m)
         {
@@ -555,6 +583,7 @@ namespace Game.AI
             for (int s = 0; s < EnemyManager.MaxTargets; s++)
             {
                 if (!m.TryGetTarget(s, out Vector3 headPos)) continue;
+                if (!CanTargetPosition(headPos)) continue;
                 if (IsFlareProtected(headPos)) continue;
                 Vector3 d = headPos - eyePos;
                 float sq = d.sqrMagnitude;
@@ -594,7 +623,8 @@ namespace Game.AI
         void Think(EnemyManager m, float dt)
         {
             if (_loco == null) return;
-            if (_target >= 0 && !m.TryGetTarget(_target, out Vector3 _)) { _target = -1; _seen = false; }
+            if (_target >= 0 && (!m.TryGetTarget(_target, out Vector3 currentTarget) || !CanTargetPosition(currentTarget)))
+            { _target = -1; _seen = false; }
 
             switch (CurrentState)
             {

@@ -27,7 +27,8 @@ public static class RailModularTrainChecks
             var a = root.GetComponent<RailTrainAssembly>(); var t = root.GetComponent<RailTrain>();
             Check(a != null && t != null && t.cabin != null, "Assembly preserves RailTrain and passenger carrier");
             var cabin = new SerializedObject(t.cabin).FindProperty("passengerCabin").objectReferenceValue as BoxCollider;
-            Check(cabin != null && cabin.isTrigger && cabin.size == new Vector3(5, 2.8f, 10), "Original passenger volume retained");
+            bool narrow=root.transform.Find("Yard Mule shell/Single wood deck")!=null;
+            Check(cabin != null && cabin.isTrigger && cabin.size == new Vector3(narrow?4:5, 2.8f, 10), "Passenger volume matches deck footprint");
             Check(root.GetComponentsInChildren<RailFurnaceModule>(true).Length == 1, "Exactly one furnace");
             foreach (var module in new[] { a.chair, a.controls, a.radio, a.furnace.transform })
                 Check(PrefabUtility.IsAnyPrefabInstanceRoot(module.gameObject), module.name + " is a nested prefab");
@@ -77,7 +78,17 @@ public static class RailModularTrainChecks
             Check(f.smoke.transform.localPosition.y > 3.5f && f.smoke.main.maxParticles == 24, "Tall stack smoke emitter has bounded particle count");
             RailFurnaceModule.SetEmission(f.smoke, true); Check(f.smoke.emission.enabled, "Smoke emission starts");
             RailFurnaceModule.SetEmission(f.smoke, false); Check(!f.smoke.emission.enabled, "Smoke emission stops");
-            Check(root.GetComponentsInChildren<Light>(true).Length == 3, "One headlight and two side lamps; no hanging light");
+            var yardMule = root.transform.Find("Yard Mule shell");
+            if (yardMule)
+            {
+                var activeLights = root.GetComponentsInChildren<Light>().Where(l => l.enabled).ToArray();
+                Check(activeLights.Length == 1 && activeLights[0].type == LightType.Spot && activeLights[0].shadows == LightShadows.None,
+                    "Yard Mule uses one active shadowless spotlight; legacy lighting disabled");
+                Check(!a.chair.gameObject.activeSelf, "Yard Mule chair hidden without breaking module reference");
+                Check(activeLights[0].transform.localPosition.y > 1.8f && activeLights[0].transform.forward.y < 0,
+                    "Roof spotlight is above canopy and aims downward");
+            }
+            else Check(root.GetComponentsInChildren<Light>(true).Length == 3, "Legacy blockout has one headlight and two side lamps");
             Check(root.GetComponentsInChildren<Rigidbody>(true).Length == 0, "Modules do not introduce independent moving rigidbodies");
             Check(root.GetComponentsInChildren<Transform>(true).All(x => GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(x.gameObject) == 0), "No missing scripts in assembly");
             var world = Object.FindFirstObjectByType<RailWorld>();

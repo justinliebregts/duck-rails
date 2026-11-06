@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using Photon.Pun;
@@ -62,6 +63,7 @@ public class DuckzBuildWindow : EditorWindow
         version = PlayerSettings.bundleVersion;
         outputFolder = EditorPrefs.GetString(OutputFolderPref, @"X:\Work\builds\duckz");
         development = EditorPrefs.GetBool(DevelopmentPref, false);
+        DuckzSigningPasswords.RestoreEmptySessionPasswords();
     }
 
     static bool IsAndroid => EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android;
@@ -103,8 +105,16 @@ public class DuckzBuildWindow : EditorWindow
                 EditorGUILayout.TextField("Keystore", PlayerSettings.Android.keystoreName);
                 EditorGUILayout.TextField("Key Alias", PlayerSettings.Android.keyaliasName);
             }
-            PlayerSettings.Android.keystorePass = EditorGUILayout.PasswordField("Keystore Password", PlayerSettings.Android.keystorePass);
-            PlayerSettings.Android.keyaliasPass = EditorGUILayout.PasswordField("Key Password", PlayerSettings.Android.keyaliasPass);
+            EditorGUI.BeginChangeCheck();
+            string keystorePass = EditorGUILayout.PasswordField("Keystore Password", PlayerSettings.Android.keystorePass);
+            string keyaliasPass = EditorGUILayout.PasswordField("Key Password", PlayerSettings.Android.keyaliasPass);
+            if (EditorGUI.EndChangeCheck())
+            {
+                PlayerSettings.Android.keystorePass = keystorePass;
+                PlayerSettings.Android.keyaliasPass = keyaliasPass;
+                DuckzSigningPasswords.Save(keystorePass, keyaliasPass);
+            }
+            EditorGUILayout.HelpBox("Signing passwords are remembered on this computer for this project and are not committed.", MessageType.Info);
         }
         string signingError = IsAndroid ? GetSigningError() : null;
         bool signable = signingError == null;
@@ -130,7 +140,7 @@ public class DuckzBuildWindow : EditorWindow
         if (string.IsNullOrWhiteSpace(PlayerSettings.Android.keyaliasName))
             return "Select a key alias in Player Settings > Android > Publishing Settings.";
         if (string.IsNullOrEmpty(PlayerSettings.Android.keystorePass) || string.IsNullOrEmpty(PlayerSettings.Android.keyaliasPass))
-            return "Enter both signing passwords (kept for this Unity session only).";
+            return "Enter both signing passwords.";
         return null;
     }
 
@@ -186,5 +196,129 @@ public class DuckzBuildWindow : EditorWindow
         {
             Debug.LogError($"DuckZ Build: {report.summary.result} with {report.summary.totalErrors} error(s).");
         }
+    }
+}
+
+/// <summary>
+/// Remembers Android signing passwords in gitignored UserSettings. Unity clears the session fields on restart.
+/// The old shared Duckz EditorPrefs password is not used.
+/// </summary>
+static class DuckzSigningPasswords
+{
+    const string StoreFileName = "build-window-passwords.json";
+    const string LegacyFileName = "password.txt";
+
+    [Serializable]
+    class Store
+    {
+        public string keystorePass;
+        public string keyaliasPass;
+    }
+
+    [InitializeOnLoadMethod]
+    static void RestoreOnLoad()
+    {
+        try
+        {
+            RestoreEmptySessionPasswords();
+        }
+        catch (Exception)
+        {
+            Debug.LogWarning("DuckZ Build: could not restore the signing passwords.");
+        }
+    }
+
+    public static void RestoreEmptySessionPasswords()
+    {
+        bool needKeystore = string.IsNullOrEmpty(PlayerSettings.Android.keystorePass);
+        bool needAlias = string.IsNullOrEmpty(PlayerSettings.Android.keyaliasPass);
+        if (!needKeystore && !needAlias)
+            return;
+
+        string directory = SigningDirectory();
+        string storePath = Path.Combine(directory, StoreFileName);
+        if (File.Exists(storePath))
+        {
+            ApplyStore(storePath, needKeystore, needAlias);
+            return;
+        }
+
+        string legacyPath = Path.Combine(directory, LegacyFileName);
+        if (!File.Exists(legacyPath))
+            return;
+        string shared = ReadFirstPassword(legacyPath);
+        if (string.IsNullOrEmpty(shared))
+            return;
+        if (needKeystore)
+            PlayerSettings.Android.keystorePass = shared;
+        if (needAlias)
+            PlayerSettings.Android.keyaliasPass = shared;
+    }
+
+    public static void Save(string keystorePass, string keyaliasPass)
+    {
+        try
+        {
+            string directory = SigningDirectory();
+            Directory.CreateDirectory(directory);
+            var store = new Store
+            {
+                keystorePass = keystorePass ?? "",
+                keyaliasPass = keyaliasPass ?? "",
+            };
+            File.WriteAllText(Path.Combine(directory, StoreFileName), JsonUtility.ToJson(store));
+        }
+        catch (Exception)
+        {
+            Debug.LogWarning("DuckZ Build: could not save the signing passwords on this computer.");
+        }
+    }
+
+    static void ApplyStore(string path, bool needKeystore, bool needAlias)
+    {
+        Store store;
+        try
+        {
+            store = JsonUtility.FromJson<Store>(File.ReadAllText(path));
+        }
+        catch (Exception)
+        {
+            Debug.LogWarning("DuckZ Build: could not read the saved signing passwords.");
+            return;
+        }
+        if (store == null)
+            return;
+        if (needKeystore)
+            PlayerSettings.Android.keystorePass = store.keystorePass ?? "";
+        if (needAlias)
+            PlayerSettings.Android.keyaliasPass = store.keyaliasPass ?? "";
+    }
+
+    /// <summary>password.txt is the key backup. Use its first password and never write the file.</summary>
+    static string ReadFirstPassword(string path)
+    {
+        try
+        {
+            using (var reader = new StreamReader(path))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string trimmed = line.Trim();
+                    if (trimmed.Length > 0)
+                        return trimmed;
+                }
+            }
+        }
+        catch (Exception)
+        {
+            Debug.LogWarning("DuckZ Build: could not read the local signing password backup.");
+        }
+        return "";
+    }
+
+    static string SigningDirectory()
+    {
+        return Path.Combine(Path.GetDirectoryName(Application.dataPath), "UserSettings", "AndroidSigning");
     }
 }

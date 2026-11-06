@@ -298,6 +298,9 @@ public sealed class EnemyPosePacket
     public const byte AimFlag = 4;
     public const byte JumpFlag = 8;
     public const byte KnockFlag = 16;
+    public const byte TrainFlag = 32;
+    public const byte DisplacedFlag = 64;
+    public const byte HeartbeatFlag = 128;
 
     const float DegPerShort = 180f / 32767f;
 

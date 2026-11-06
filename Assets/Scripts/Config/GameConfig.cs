@@ -20,7 +20,7 @@ public class GameConfig : ScriptableObject
     public string backendBaseUrl = "https://duckrails.gunraidersapi.com/api/v1/";
 
     [Tooltip("Must match NONCE_SECRET on the Duckz backend deployment. Signs X-Signature for coin/store/IAP requests.")]
-    public string requestSigningSecret = "GunRaiders@RaiderLegends@2026-05-20";
+    public string requestSigningSecret = "Rpbmcgb24gdGhlIHNob3V";
 
     [Tooltip("Static store contents. Coin prices are replaced by GET /store, which reads duckz_economy.json.")]
     public StoreCatalog storeCatalog;

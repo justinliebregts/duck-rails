@@ -83,9 +83,9 @@ public static class RailQuarryMineChecks
                 var seen=new HashSet<int>{nodes[0]};var queue=new Queue<int>();queue.Enqueue(nodes[0]);while(queue.Count>0){int n=queue.Dequeue();for(int e=graph.EdgeStart[n];e<graph.EdgeStart[n+1];e++){int next=graph.EdgeTarget[e];if(graph.GetNormal(next).y>.5f&&seen.Add(next))queue.Enqueue(next);}}
                 Check(nodes.All(seen.Contains),"Ground-only graph connects all three branches and both pits");
             }
-            Check(Enumerable.Range(0,graph.NodeCount).All(n=>!b.enemySurfaceRailExclusion.Contains(graph.GetPosition(n))),"Graph excludes surface railway");
+            Check(b.enemySurfaceRailExclusion.size == Vector3.zero,"No permanent railway navigation exclusion");
             foreach(float z in new[]{63f,82f,101f}){Walk(new Vector3(0,-6,z),"Under-track crossing "+z);Check(Physics.Raycast(new Vector3(0,-4,z),Vector3.up,out var hit,2,1<<6)&&Mathf.Abs(hit.point.y+3)<.05f,"Tunnel roof below intact railway "+z);}
-            var old=b.transform.position;b.transform.position=new Vector3(0,0,390);foreach(float x in new[]{-2f,2f}){var p=new Vector3(x,.5f,470);Check(Mathf.Abs(b.ConstrainEnemyPosition(p).x)>7,"Translated surface exclusion "+x);var q=new Vector3(x,-5.5f,470);Check(b.ConstrainEnemyPosition(q)==q,"Translated underground remains allowed "+x);}b.transform.position=old;Physics.SyncTransforms();
+            var old=b.transform.position;b.transform.position=new Vector3(0,0,390);foreach(float x in new[]{-2f,2f}){var p=new Vector3(x,.5f,470);Check(b.ConstrainEnemyPosition(p)==p,"Translated surface crossing remains allowed "+x);var q=new Vector3(x,-5.5f,470);Check(b.ConstrainEnemyPosition(q)==q,"Translated underground remains allowed "+x);}b.transform.position=old;Physics.SyncTransforms();
             foreach(var f in root.GetComponentsInChildren<MeshFilter>())Check(f.sharedMesh.uv.Length==f.sharedMesh.vertexCount&&f.sharedMesh.uv2.Length==f.sharedMesh.vertexCount,"Texture/lightmap UVs "+f.name);
             if(lines.Any(l=>l.StartsWith("FAIL")))throw new Exception(string.Join("\n",lines.Where(l=>l.StartsWith("FAIL")).Take(30)));
             Debug.Log("MINE CHECKS: "+lines.Count+" passed");

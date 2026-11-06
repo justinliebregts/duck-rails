@@ -211,6 +211,15 @@ public sealed class SimulatedRigInput : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F2) && !DuckCompanionDebug.IsTyping) SetSimulating(!IsSimulating);
         if (Input.GetKeyDown(KeyCode.F1)) showHelp = !showHelp;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (!UseInjectedInput && focused && !DuckCompanionDebug.IsTyping && !RailWorld.InputBlocked &&
+            !RailDiagnosticPanel.BlocksDesktopInput && (!IsSimulating || Cursor.lockState == CursorLockMode.Locked) &&
+            Input.GetKeyDown(KeyCode.PageDown))
+        {
+            RailTestTools.SkipBlock();
+            Status = RailTestTools.Status;
+        }
+#endif
         if (IsSimulating && RailDiagnosticPanel.BlocksDesktopInput)
         {
             Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
@@ -294,7 +303,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
             // Simulated room-scale translation enters the existing head/body/hand
             // collision solver in NewPlayer.Update, including moving-platform carry.
             Vector2 move = Vector2.ClampMagnitude(frame.move, 1);
-            Vector3 displacement = yawRotation * new Vector3(move.x, 0, move.y) * (RailExpedition.LocalDown ? .65f : 4.5f) * dt;
+            Vector3 displacement = yawRotation * new Vector3(move.x, 0, move.y) * (RailExpedition.LocalDown ? .65f : 9f) * dt;
             player.trackingSpace.position += transform.TransformDirection(displacement);
             if (frame.jump && !RailExpedition.LocalDown && (player.IsGrounded() || HasBodySupport))
                 player.rb.linearVelocity = new Vector3(player.rb.linearVelocity.x, 5, player.rb.linearVelocity.z);
@@ -318,6 +327,6 @@ public sealed class SimulatedRigInput : MonoBehaviour
         if (!IsSimulating) return;
         GUI.Label(new Rect(12, Screen.height - 30, 1000, 24), "Q / E reach · Right mouse grip · Left mouse trigger · Wheel reach · T toggle throttle · F1 help · F2 Quest Link");
         if (showHelp)
-            GUI.Box(new Rect(12, Screen.height - 210, 570, 175), "SHARED DUCK RIG\nWASD move · Mouse look · Space jump · C crouch\nHold Q / E to extend left / right hand; release to bring it back\nRight mouse grips both hands · Left mouse triggers both hands\nWheel adjusts reach · Z / X rolls wrists · 1–4 controller face buttons\nPress T for throttle GO; press again for STOP\nP diagnostic panel · Tab session tools · Esc release cursor\nF2 switches input without restarting Play\n" + Status);
+            GUI.Box(new Rect(12, Screen.height - 230, 570, 195), "SHARED DUCK RIG\nWASD move · Mouse look · Space jump · C crouch\nHold Q / E to extend left / right hand; release to bring it back\nRight mouse grips both hands · Left mouse triggers both hands\nWheel adjusts reach · Z / X rolls wrists · 1–4 controller face buttons\nPress T for throttle GO; press again for STOP\nPage Down skips one block (private development expedition)\nP diagnostic panel · Tab session tools · Esc release cursor\nF2 switches input without restarting Play\n" + Status);
     }
 }

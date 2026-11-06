@@ -91,9 +91,9 @@ public static class MeleeGraceChecks
         Check(Hold(), "unconfirmed hit holds off stale movement");
         var view = actor.GetComponent<Photon.Pun.PhotonView>();
         var confirmation = new Photon.Pun.PhotonMessageInfo(view.Controller, 200, view);
-        Call(sync, "RpcHitConfirmed", 1, Vector3.zero, Quaternion.identity, confirmation);
+        Call(sync, "RpcHitConfirmed", 1, Vector3.zero, Quaternion.identity, false, confirmation);
         Check(!(bool)typeof(EnemyNetSync).GetField("_hitConfirmed", Private).GetValue(sync), "previous hit acknowledgment cannot confirm repeated hit");
-        Call(sync, "RpcHitConfirmed", 2, Vector3.right * 10, Quaternion.identity, confirmation);
+        Call(sync, "RpcHitConfirmed", 2, Vector3.right * 10, Quaternion.identity, false, confirmation);
         Check(!Hold() && sync.ProtectsLocalHitter, "confirmation snapshot releases stationary zombie without waiting for another pose");
         Set(enemy, "root", actor.transform);
         Set(sync, "_protectUntil", Time.time - 1f);
@@ -140,7 +140,7 @@ public static class MeleeGraceChecks
         Check(sync.ProtectsLocalHitter, "timeout retains protection against stale contact");
         Set(sync, "_sampleTime", 300);
         Set(sync, "_netPos", Vector3.right * 20);
-        Call(sync, "RpcHitConfirmed", 3, Vector3.zero, Quaternion.identity, confirmation);
+        Call(sync, "RpcHitConfirmed", 3, Vector3.zero, Quaternion.identity, false, confirmation);
         Check(!Hold(), "late confirmation is still accepted after timeout");
         Check((Vector3)typeof(EnemyNetSync).GetField("_netPos", Private).GetValue(sync) == Vector3.right * 20,
             "late confirmation cannot overwrite a newer movement sample");

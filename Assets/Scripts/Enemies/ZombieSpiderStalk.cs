@@ -82,6 +82,7 @@ namespace Game.AI
             for (int slot = 0; slot < EnemyManager.MaxTargets; slot++)
             {
                 if (!manager.TryGetTarget(slot, out Vector3 point)) continue;
+                if (!enemy.CanTargetPosition(point)) continue;
                 if (enemy.IsFlareProtected(point)) continue;
                 float sq = (point - enemy.Root.position).sqrMagnitude;
                 if (sq >= nearestSq) continue;

@@ -1,8 +1,14 @@
 # Week 3 — authored expedition blocks
 
+November 4 motel: approved greybox installed in the actual roadside-motel prefab, including two-storey rooms, exterior stairs/balcony, ajar doors, office/garage and transformer yard. Offline graph and lighting exported; 176 geometry/layout checks and 619 Week 3 checks pass. A live attempt exposed an authoring graph-origin mismatch, now corrected with catalogue-wide origin assertions. See [motel implementation and live-validation status](roadside-motel-layout.md#installed-greybox). VR/multiplayer acceptance remains separate.
+
+November 3/4 depot follow-up: the user approved the V3 blueprints for implementation. The actual maintenance-depot prefab now has enlarged buildings, two-floor rooms and prop blocks, six stairs and guarded galleries. Offline navigation and lighting were rebaked; 268 physical geometry checks, 607 Week 3 checks, lighting export validation and an authenticated solo gameplay loading check passed. VR traversal/scale and first art pass remain pending. See [V3 depot](maintenance-depot-prototype.md#v3-greybox-implementation).
+
 November 1 bridge change: continuous holding now advances lowering; release pauses with progress retained. The initial duration is 30 seconds of accumulated holding. Protocol is `session-v9`; restart all clients together. Earlier timer-based validation below is historical. See [bridge hold](bridge-hold.md) for current evidence and remaining solo/headset acceptance.
 
 ## Scope and setup
+
+November 2: Maintenance Depot now uses the user-authorized scaled greybox: three simple shells, flush paths, yard/loading/service fences and six baked fixtures on the existing curved-track block. Its graph and lighting companion are rebaked; the full builder preserves this authored prefab. Compilation, 607 Week 3 checks, geometric/export checks and a solo authenticated depot-first expedition load pass. See [depot authoring, review route and evidence](maintenance-depot-prototype.md). Worn-headset scale/feel and multiplayer acceptance remain pending. Older catalogue descriptions below describe the original placeholders.
 
 This phase implements the approved twelve-location gray-box catalogue, five distinct randomized stops plus the existing bridge finale, authored spawn variations, consistent prefab connections, internal bends, a separate Expedition scene, and renewable coal carriers. Small baked-lighting/probe samples now cover the station and catalogue; final lighting remains pending. The original train controls, item interactions, revive flow and bridge ending are retained.
 
@@ -87,4 +93,4 @@ October 30 coal tuning: doubled authored coal to six per stop (30 across five st
 
 Each stop selects 4–6 unique candidates and a shuffled mix including minion, bomber, smasher and spider. Bridge activation adds 4–6 defenders. The retained route seed preserves choices for late joining, host migration and exact-route presets. Protocol is now session-v8; update all clients together. See [mixed enemies](mixed-enemies.md).
 
-November 4 motel: approved greybox installed in the actual roadside-motel prefab, including two-storey rooms, exterior stairs/balcony, ajar doors, office/garage and transformer yard. Offline graph and lighting exported; 176 geometry/layout checks and 619 Week 3 checks pass. A live attempt exposed an authoring graph-origin mismatch, now corrected with catalogue-wide origin assertions. See [motel implementation and live-validation status](roadside-motel-layout.md#installed-greybox). VR/multiplayer acceptance remains separate.
+November 6: the user's both-side enemy request supersedes this document's historical right-side-only coverage. See [both-side authoring and session-v11](mixed-enemies.md#enemies-on-both-rail-sides--november-6-2026).

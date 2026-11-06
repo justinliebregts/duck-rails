@@ -116,9 +116,9 @@ namespace Game.AI
             if (blockedNodes != null)
                 foreach (int node in blockedNodes)
                     if (node >= 0 && node < _blocked.Length) _blocked[node] = _search;
-            _hTarget = _g.GetPosition(goal);
+            _hTarget = _g.GetLocalPosition(goal);
             if ((blockedNodes == null || blockedNodes.Count == 0) && startCluster != _goalCluster &&
-                (_g.GetPosition(start) - _hTarget).sqrMagnitude > DirectSearchDistance * DirectSearchDistance)
+                (_g.GetLocalPosition(start) - _hTarget).sqrMagnitude > DirectSearchDistance * DirectSearchDistance)
             {
                 _cSearch++;
                 _cHeap.Clear();
@@ -139,7 +139,7 @@ namespace Game.AI
             _parent[_start] = -1;
             _heap.Push(_start, 0f);
             _best = _start;
-            _bestH = (_g.GetPosition(_start) - _hTarget).sqrMagnitude;
+            _bestH = (_g.GetLocalPosition(_start) - _hTarget).sqrMagnitude;
             _stage = Stage.FinePop;
         }
 
@@ -206,10 +206,10 @@ namespace Game.AI
                     if (_edge >= g.ClusterEdgeStart[_active + 1]) { _stage = Stage.CoarsePop; return; }
                     int c = g.ClusterEdgeTarget[_edge++];
                     if (_cClosed[c] == _cSearch || (_groundOnly && !HasGroundConnection(_active, c))) return;
-                    float cg = _cgScore[_active] + Vector3.Distance(g.GetClusterCenter(_active), g.GetClusterCenter(c));
+                    float cg = _cgScore[_active] + Vector3.Distance(g.GetLocalClusterCenter(_active), g.GetLocalClusterCenter(c));
                     if (_cStamp[c] == _cSearch && cg >= _cgScore[c]) return;
                     _cStamp[c] = _cSearch; _cgScore[c] = cg; _cParent[c] = _active;
-                    _cHeap.Push(c, cg + Vector3.Distance(g.GetClusterCenter(c), g.GetClusterCenter(_goalCluster)));
+                    _cHeap.Push(c, cg + Vector3.Distance(g.GetLocalClusterCenter(c), g.GetLocalClusterCenter(_goalCluster)));
                     return;
                 case Stage.CoarseTrace:
                     if (_trace >= 0)
@@ -227,7 +227,7 @@ namespace Game.AI
                     if (last < _corridorCount - 1)
                     {
                         _targetCluster = _corridor[_corridorCount - 1 - last];
-                        _hTarget = g.GetClusterCenter(_corridor[_corridorCount - 2 - last]);
+                        _hTarget = g.GetLocalClusterCenter(_corridor[_corridorCount - 2 - last]);
                     }
                     BeginFine(); return;
                 case Stage.FinePop:
@@ -238,7 +238,7 @@ namespace Game.AI
                     if (_active == _goal || (_targetCluster >= 0 && g.NodeCluster[_active] == _targetCluster))
                     { BeginTrace(_active, _active == _goal); return; }
                     if (++LastExpanded > MaxExpansions) { BeginTrace(_best, false); return; }
-                    float h = (g.GetPosition(_active) - _hTarget).sqrMagnitude;
+                    float h = (g.GetLocalPosition(_active) - _hTarget).sqrMagnitude;
                     if (h < _bestH) { _bestH = h; _best = _active; }
                     _edge = g.EdgeStart[_active]; _stage = Stage.FineEdges;
                     return;
@@ -247,8 +247,8 @@ namespace Game.AI
                     int t = g.EdgeTarget[_edge++];
                     if (_closed[t] == _search || _blocked[t] == _search ||
                         (_groundOnly && !g.IsGroundNode(t)) || (_restrict && _allowed[g.NodeCluster[t]] != _search)) return;
-                    Vector3 pt = g.GetPosition(t);
-                    float ng = _gScore[_active] + Vector3.Distance(g.GetPosition(_active), pt) * _surfaceCost[g.NodeSurface[t]];
+                    Vector3 pt = g.GetLocalPosition(t);
+                    float ng = _gScore[_active] + Vector3.Distance(g.GetLocalPosition(_active), pt) * _surfaceCost[g.NodeSurface[t]];
                     if (_stamp[t] == _search && ng >= _gScore[t]) return;
                     _stamp[t] = _search; _gScore[t] = ng; _parent[t] = _active;
                     _heap.Push(t, ng + HeuristicWeight * Vector3.Distance(pt, _hTarget));

@@ -166,9 +166,8 @@ public static class RailCanyon
         sand=Mat("Canyon sand","gravel",new(.8f,.65f,.43f));rock=Mat("Layered sandstone","concrete",new(.72f,.43f,.26f));wood=Mat("Weathered bridge timber","timber",new(.55f,.39f,.23f));steel=Mat("Bridge iron","weathered paint",new(.3f,.34f,.33f));green=Mat("Cactus","foliage",new(.34f,.48f,.24f));water=Mat("Shallow creek","lake water",new(.23f,.52f,.54f));
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);var go=new GameObject("Canyon");var b=go.AddComponent<RailBlock>();b.id=Id;b.displayName="Canyon";b.tags=new[]{"canyon","vertical","bridge","straight"};b.length=160;
         b.entry=Group(go.transform,"Track Entry");b.exit=Group(go.transform,"Track Exit");b.exit.localPosition=new(0,0,160);b.stop=Group(go.transform,"Suggested Stop");b.stop.localPosition=new(0,0,80);b.track=Enumerable.Range(0,81).Select(i=>new Vector3(0,0,i*2)).ToArray();
-        b.enemyBounds=new Bounds(new(0,-5,80),new(80,16,70));b.enemySurfaceRailExclusion=new Bounds(new(0,6,80),new(16,20,160));
+        b.enemyBounds=new Bounds(new(0,-5,80),new(80,16,70));b.enemySurfaceRailExclusion = default;
         var root=Group(go.transform,RootName);Terrain(root);Railway(root);Footbridge(root);Dressing(root);
-        var blocker=Group(root,"Railway navigation exclusion").gameObject.AddComponent<CrawlGraphBlocker>();var bx=blocker.GetComponent<BoxCollider>();bx.isTrigger=true;bx.center=b.enemySurfaceRailExclusion.center;bx.size=b.enemySurfaceRailExclusion.size;
         b.variations=new RailSpawnSet[3];
         var coal=new[]{new Vector3(-34,-7.5f,62),new(-34,-7.5f,98),new(-27,-15.5f,113),new(34,-3.5f,54),new(34,-11.5f,90),new(34,-3.5f,106)};
         for(int v=0;v<3;v++)

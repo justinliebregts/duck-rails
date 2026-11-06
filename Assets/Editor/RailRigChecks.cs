@@ -62,7 +62,7 @@ public static class RailRigChecks
             Check(body.LeftHandAnchor.localPosition.z > leftRest.z + .3f && Vector3.Distance(body.RightHandAnchor.localPosition, rightRest) < .001f, "Q reaches only left hand and right returns");
             var beforeMove = body.HeadAnchor.position;
             simulator.ApplyFrame(new SimulatedRigInput.Frame { move = Vector2.right }, .02f);
-            Check(Mathf.Abs(Vector3.Distance(beforeMove, body.HeadAnchor.position) - .09f) < .001f, "Keyboard movement enters tracked space at bounded speed");
+            Check(Mathf.Abs(Vector3.Distance(beforeMove, body.HeadAnchor.position) - .18f) < .001f, "Keyboard movement enters tracked space at 9 m/s");
 
             // Synthetic tracked poses exercise the actual transition implementation;
             // they do not claim headset tracking or bypass the public availability check.

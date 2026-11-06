@@ -27,7 +27,7 @@ public static class EnemyStairChecks
         var managerObject = new GameObject("Chase routing manager");
         managerObject.SetActive(false);
         var manager = managerObject.AddComponent<EnemyManager>();
-        Set(manager, "<Graph>k__BackingField", graph);
+        Set(manager, "worldGraph", graph);
         Set(manager, "surfaceMask", (LayerMask)Mask);
         foreach (string name in new[] { "ZombieMinion", "ZombieBomber", "ZombieSmasher" })
         {

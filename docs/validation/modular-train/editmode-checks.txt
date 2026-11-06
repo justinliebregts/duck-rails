@@ -1,7 +1,7 @@
-2026-10-31T01:30:16.3150212Z
+2026-11-05T20:54:45.5373273Z
 PASS Assembly prefab exists
 PASS Assembly preserves RailTrain and passenger carrier
-PASS Original passenger volume retained
+PASS Passenger volume matches deck footprint
 PASS Exactly one furnace
 PASS CockpitChair is a nested prefab
 PASS CockpitControls is a nested prefab
@@ -36,7 +36,9 @@ PASS Both effects travel with furnace
 PASS Tall stack smoke emitter has bounded particle count
 PASS Smoke emission starts
 PASS Smoke emission stops
-PASS One headlight and two side lamps; no hanging light
+PASS Yard Mule uses one active shadowless spotlight; legacy lighting disabled
+PASS Yard Mule chair hidden without breaking module reference
+PASS Roof spotlight is above canopy and aims downward
 PASS Modules do not introduce independent moving rigidbodies
 PASS No missing scripts in assembly
 PASS Active scene uses assembly prefab

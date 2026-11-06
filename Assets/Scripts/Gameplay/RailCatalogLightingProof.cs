@@ -19,7 +19,8 @@ public sealed class RailCatalogLightingProof : MonoBehaviour
     public float[] expectedRedL0;
     public string Result { get; private set; } = "Running";
     readonly StringBuilder log = new StringBuilder();
-    const string Output="output/block-lighting";
+    public string outputDirectory="output/block-lighting";
+    string Output => outputDirectory;
     void Check(bool ok,string message)
     {
         log.AppendLine((ok?"PASS ":"FAIL ")+message);File.WriteAllText(Output+"/runtime-proof.txt",log.ToString());
@@ -78,7 +79,7 @@ public sealed class RailCatalogLightingProof : MonoBehaviour
             Check(route.Ready,"Finale placement restored");
             log.AppendLine("INFO round "+round+": maps="+LightmapSettings.lightmaps.Length+", probes="+ProbeCount+", seed="+seeds[round]);
         }
-        Check(seen.Count==12,"All twelve scavenging blocks covered across assembled routes");
+        Check(seen.Count==catalog.Length,"All "+catalog.Length+" scavenging blocks covered across assembled routes");
         Destroy(routeObject);Destroy(station.gameObject);Destroy(finale.gameObject);Destroy(data);
         float cleanup=Time.realtimeSinceStartup+120;
         do{yield return null;}while((PayloadCount!=0||ProbeCount!=0)&&Time.realtimeSinceStartup<cleanup);

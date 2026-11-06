@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Game.AI
 {
@@ -131,6 +131,19 @@ namespace Game.AI
             _wanderRequest = false;
         }
 
+        public void CarryFrame(Matrix4x4 motion, Quaternion rotation)
+        {
+            _safePosition = motion.MultiplyPoint3x4(_safePosition);
+            _safeRotation = rotation * _safeRotation;
+            _previousBottom = motion.MultiplyPoint3x4(_previousBottom);
+            _stuckPos = motion.MultiplyPoint3x4(_stuckPos);
+            _lastProgressPos = motion.MultiplyPoint3x4(_lastProgressPos);
+            _stallOrigin = motion.MultiplyPoint3x4(_stallOrigin);
+            _escapeTarget = motion.MultiplyPoint3x4(_escapeTarget);
+            _supportPosition = motion.MultiplyPoint3x4(_supportPosition);
+            _supportNormal = rotation * _supportNormal;
+        }
+
         public void Interrupt()
         {
             ClearPath();
@@ -209,6 +222,8 @@ namespace Game.AI
         public void RequestPathToWorld(EnemyManager m, Vector3 worldPoint)
         {
             if (_escapeTimer > 0f) return;
+            var boarding = GetComponent<RailEnemyBoarding>();
+            if (boarding != null) worldPoint = boarding.NavigationGoal(m, worldPoint);
             int goal = m.ResolveGroundNode(worldPoint, true);
             if (goal >= 0 && (goal != _goalNode || PathDone)) RequestPath(goal);
         }
@@ -216,6 +231,8 @@ namespace Game.AI
         public void ForcePathToWorld(EnemyManager m, Vector3 worldPoint)
         {
             if (_escapeTimer > 0f) return;
+            var boarding = GetComponent<RailEnemyBoarding>();
+            if (boarding != null) worldPoint = boarding.NavigationGoal(m, worldPoint);
             int goal = m.ResolveGroundNode(worldPoint, true);
             if (goal >= 0) RequestPath(goal);
         }
@@ -308,6 +325,8 @@ namespace Game.AI
             Vector3 toSeen = enemy.LastSeenPos - pos;
             Vector3 flatSeen = Vector3.ProjectOnPlane(toSeen, up);
             bool direct = enemy.CurrentState == Enemy.State.Chase && enemy.Seen
+                && !(enemy.Boarding != null && enemy.Boarding.HasBoardingPlan)
+                && !TrainBlocks(pos, enemy.LastSeenPos)
                 && GoalOnWalkingLevel(g, pos)
                 && (!AvoidingRoute || flatSeen.sqrMagnitude < enemy.StopDistance * enemy.StopDistance)
                 && flatSeen.sqrMagnitude < enemy.DirectChaseDistance * enemy.DirectChaseDistance
@@ -348,6 +367,12 @@ namespace Game.AI
                 return;
             }
 
+            if (TrainBlocks(pos, target))
+            {
+                if (!_wantsPath && _goalNode >= 0) RequestPath(_goalNode);
+                UpdateStuck(enemy, m, dt, pos);
+                return;
+            }
             Vector3 delta = target - pos;
             float dist = delta.magnitude;
             if (dist < 1e-5f) { UpdateStuck(enemy, m, dt, pos); return; }
@@ -361,12 +386,20 @@ namespace Game.AI
 
         // Root poses are written directly to a kinematic rigidbody, so collision
         // response must happen here, before committing the position.
+        bool TrainBlocks(Vector3 from, Vector3 to)
+        {
+            var boarding = GetComponent<RailEnemyBoarding>();
+            return !(boarding != null && (boarding.IsAboard || boarding.Crossing))
+                && RailTrainObstacle.BlocksSegment(from, to);
+        }
+
         Vector3 MoveWithWalls(Vector3 pos, Vector3 remaining, LayerMask mask)
         {
             // Shape/scale cannot change during these synchronous physics queries.
             // Snapshot dimensions for this call only, including nested contact
             // repair. All sweeps/support checks still query the current world.
             GetCapsuleSize(out float radius, out float height);
+            if (TrainBlocks(pos, pos + remaining)) return pos;
             bool previousSnapshot = _hasMoveCapsule;
             float previousRadius = _moveRadius, previousHeight = _moveHeight;
             _hasMoveCapsule = true; _moveRadius = radius; _moveHeight = height;
@@ -888,7 +921,7 @@ namespace Game.AI
             if (furthest == _pathIndex) return;
 
             Vector3 delta = Vector3.ProjectOnPlane(g.GetPosition(_path[furthest]) - pos, Vector3.up);
-            if (!CastWall(pos, delta, mask, out _))
+            if (!TrainBlocks(pos, pos + delta) && !CastWall(pos, delta, mask, out _))
                 _pathIndex = furthest;
         }
 
@@ -1105,6 +1138,8 @@ namespace Game.AI
             }
             if (EnemyManager.Instance == null || EnemyManager.Instance.Graph == null) return;
             CrawlGraph g = EnemyManager.Instance.Graph;
+            var boarding = GetComponent<RailEnemyBoarding>();
+            if (boarding != null && boarding.NavigationGraph != null) g = boarding.NavigationGraph;
             Gizmos.color = Color.green;
             for (int i = Mathf.Max(1, _pathIndex); i < _pathCount; i++)
                 Gizmos.DrawLine(g.GetPosition(_path[i - 1]), g.GetPosition(_path[i]));

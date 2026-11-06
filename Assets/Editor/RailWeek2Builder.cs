@@ -110,7 +110,7 @@ public static class RailWeek2Builder
         run.enemyPoints = new[] { Point(env, "Depot enemy A", new Vector3(24, .3f, 165)), Point(env, "Depot enemy B", new Vector3(24, .3f, 190)),
             Point(env, "Bridge enemy A", new Vector3(25, .2f, 515)), Point(env, "Bridge enemy B", new Vector3(25, .2f, 540)) };
         var enemy = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Enemies/ZombieMinion.prefab"));
-        enemy.name = "RailZombie"; enemy.AddComponent<RailEnemyBounds>();
+        enemy.name = "RailZombie"; enemy.AddComponent<RailEnemyBounds>(); enemy.AddComponent<RailEnemyBoarding>();
         run.enemyPrefab = PrefabUtility.SaveAsPrefabAsset(enemy, Folder + "RailZombie.prefab"); UnityEngine.Object.DestroyImmediate(enemy);
         run.flarePrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Effects/DeathFlare.prefab").GetComponent<DeathFlare>();
         var baker = new GameObject("Depot crawlgraph bake").AddComponent<CrawlGraphBaker>(); baker.transform.SetParent(env); baker.transform.position = new Vector3(18, 2, 342.5f);
@@ -180,7 +180,8 @@ public static class RailWeek2Builder
         serializedItem.FindProperty("locomotionWhileHeld").boolValue = true;
         serializedItem.FindProperty("locomotionCollider").objectReferenceValue = go.GetComponent<BoxCollider>();
         serializedItem.ApplyModifiedPropertiesWithoutUndo();
-        view.ObservedComponents = new List<Component> { transformSync, item, cargo }; view.Synchronization = ViewSynchronization.Unreliable;
+        view.observableSearch = PhotonView.ObservableSearch.Manual;
+        view.ObservedComponents = new List<Component> { item, transformSync, cargo }; view.Synchronization = ViewSynchronization.Unreliable;
         var result = PrefabUtility.SaveAsPrefabAsset(go, Folder + "RailCoal.prefab"); UnityEngine.Object.DestroyImmediate(go); return result;
     }
 }

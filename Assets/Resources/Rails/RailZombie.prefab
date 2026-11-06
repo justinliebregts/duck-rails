@@ -337,6 +337,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 9096797306439749801, guid: 83d94a41e190466a8f294c415a92cb4b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1040752247948162319}
+    - targetCorrespondingSourceObject: {fileID: 9096797306439749801, guid: 83d94a41e190466a8f294c415a92cb4b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8704349578619957443}
   m_SourcePrefab: {fileID: 100100000, guid: 83d94a41e190466a8f294c415a92cb4b, type: 3}
 --- !u!4 &1159383901213682762 stripped
 Transform:
@@ -373,3 +376,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RailCoalCarrier
   display: {fileID: 6822415263279762334}
+--- !u!114 &8704349578619957443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8004392001833856099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb53ea1aa0e564447a3ef08f45361e1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RailEnemyBoarding

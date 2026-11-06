@@ -53,6 +53,10 @@ public static class RailEnemyAuthoring
 
     static void AddCandidates(RailBlock block)
     {
+        if (RailBothSidesAuthoring.HasBothSides(block)) return;
+        // Canyon's reviewed encounters occupy several cliff heights. The generic y=0
+        // allocator must not replace those authored plateau markers on a catalogue rebuild.
+        if (block.id == RailCanyon.Id && block.transform.Find(RailCanyon.RootName) != null) return;
         var graph = CrawlGraph.Load(block.graph);
         var colliders = block.GetComponentsInChildren<Collider>().Where(c => !c.isTrigger && c.gameObject.layer == 6).ToArray();
         var available = Enumerable.Range(0, graph.NodeCount).Select(graph.GetPosition).Where(p =>

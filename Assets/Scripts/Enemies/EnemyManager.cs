@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Game.Animation;
 using Photon.Pun;
 using UnityEngine;
@@ -47,8 +47,23 @@ namespace Game.AI
         [SerializeField] Transform[] spawnPoints;
         [SerializeField, Range(0, 20)] int maxEnemies = 5;
 
-        public CrawlGraph Graph { get; private set; }
+        CrawlGraph worldGraph, activeGraph;
+        public CrawlGraph Graph { get => activeGraph ?? worldGraph; private set => worldGraph = value; }
+        public CrawlGraph WorldGraph => worldGraph;
         public CrawlPathfinder Pathfinder { get; private set; }
+        CrawlGraph pathGraph;
+        readonly HashSet<int> trainBlockedNodes = new HashSet<int>();
+        readonly Dictionary<CrawlGraph, CrawlPathfinder> graphFinders = new Dictionary<CrawlGraph, CrawlPathfinder>();
+        // Scoped per enemy, never replace the world graph for other enemies or companions.
+        public GraphScope UseGraph(CrawlGraph graph) => new GraphScope(this, graph);
+        public readonly struct GraphScope : System.IDisposable
+        {
+            readonly EnemyManager manager;
+            readonly CrawlGraph previous;
+            public GraphScope(EnemyManager manager, CrawlGraph graph)
+            { this.manager = manager; previous = manager.activeGraph; manager.activeGraph = graph; }
+            public void Dispose() => manager.activeGraph = previous;
+        }
         public float PathBudgetMilliseconds => pathBudgetMilliseconds;
         // Independent mutable search state; the baked graph itself is shared.
         public CrawlPathfinder CreateCompanionPathfinder()
@@ -114,6 +129,7 @@ namespace Game.AI
                 ApplyCrawlBoundaries();
                 Pathfinder = new CrawlPathfinder(Graph, maxExpansions) { CorridorClusters = corridorClusters };
                 Pathfinder.SetSurfaceCosts(floorCost, wallCost, ceilingCost);
+                pathGraph = Graph; graphFinders[Graph] = Pathfinder;
 #if !UNITY_EDITOR
                 Resources.UnloadAsset(graphAsset);
 #endif
@@ -129,8 +145,10 @@ namespace Game.AI
         public void SetGraph(CrawlGraph graph)
         {
             CancelPathRequest(); Graph = graph;
+            graphFinders.Clear(); pathGraph = graph;
             Pathfinder = new CrawlPathfinder(Graph, maxExpansions) { CorridorClusters = corridorClusters };
             Pathfinder.SetSurfaceCosts(floorCost, wallCost, ceilingCost);
+            graphFinders[graph] = Pathfinder;
         }
 
         void OnDestroy()
@@ -268,7 +286,8 @@ namespace Game.AI
             _pathServiceFrames = 0;
         }
 
-        public bool HasPathRequest(object owner, int version) => ReferenceEquals(_pathOwner, owner) && _pathVersion == version;
+        public bool HasPathRequest(object owner, int version) => ReferenceEquals(_pathOwner, owner)
+            && _pathVersion == version && pathGraph == Graph;
 
         public enum PathStatus { Pending, Found, Failed }
 
@@ -278,9 +297,24 @@ namespace Game.AI
             count = 0; complete = false;
             if (!HasPathRequest(owner, version))
             {
+                if (pathGraph != Graph)
+                {
+                    Pathfinder?.Cancel();
+                    pathGraph = Graph;
+                    if (!graphFinders.TryGetValue(Graph, out var finder))
+                    {
+                        finder = new CrawlPathfinder(Graph, maxExpansions) { CorridorClusters = corridorClusters };
+                        finder.SetSurfaceCosts(floorCost, wallCost, ceilingCost);
+                        graphFinders.Add(Graph, finder);
+                    }
+                    Pathfinder = finder;
+                }
                 _pathOwner = owner; _pathVersion = version; _pathFrames = 0;
                 QueueFrames = Mathf.Max(0, Time.frameCount - queuedFrame);
-                Pathfinder.BeginSearch(start, goal, groundOnly, blocked);
+                trainBlockedNodes.Clear();
+                if (blocked != null) trainBlockedNodes.UnionWith(blocked);
+                RailTrainObstacle.AddBlockedNodes(Graph, trainBlockedNodes);
+                Pathfinder.BeginSearch(start, goal, groundOnly, trainBlockedNodes);
             }
             _pathFrames++;
             if (Mathf.Max(_pathFrames, _pathServiceFrames) >= Mathf.Max(1, maxPathRequestFrames)) Pathfinder.FinishPartial();
@@ -520,6 +554,8 @@ namespace Game.AI
             position = default;
             rotation = Quaternion.identity;
             if (!SpawnAuthority || enemy == null || !enemy.HasAuthority) return false;
+            // A transported enemy must never recover at its original spawn block.
+            if (enemy.Boarding != null && enemy.Boarding.IsAboard) return false;
             if (PhotonSession.IsRailsRoom)
             {
                 var boundary = enemy.GetComponent<RailEnemyBounds>();

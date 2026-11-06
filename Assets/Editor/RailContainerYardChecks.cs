@@ -27,7 +27,7 @@ public static class RailContainerYardChecks
             var b=Object.FindFirstObjectByType<RailBlock>();var root=b.transform.Find(RailContainerYard.RootName);
             Check(b.id==RailContainerYard.Id&&b.length==160&&b.track.Length==81,"Original identity and block length");
             Check(b.track.Select((p,i)=>p==new Vector3(0,0,i*2)).All(v=>v)&&b.stop.localPosition==new Vector3(0,0,80),"Original straight track and stop");
-            Check(b.enemyBounds==new Bounds(new Vector3(23,4,80),new Vector3(28,12,70)),"Existing east-only enemy bounds retained");
+            Check(b.enemyBounds==new Bounds(new Vector3(0,4,80),new Vector3(74,12,70)),"Both-side enemy bounds retain encounter spacing");
             Check(root.GetComponentsInChildren<Light>().Length==RailContainerYard.LightCount&&root.GetComponentsInChildren<Light>().All(l=>l.lightmapBakeType==LightmapBakeType.Baked),"16 baked lights only");
             var containers=root.GetComponentsInChildren<Transform>().Where(t=>t.Find("Corrugated steel shell")!=null).ToArray();
             Check(containers.Count(t=>t.name=="Open passage")==4&&containers.Count(t=>t.name=="Open search container")==2,"Six hollow ground containers");

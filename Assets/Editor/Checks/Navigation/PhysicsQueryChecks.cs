@@ -63,7 +63,7 @@ public static class PhysicsQueryChecks
             var managerGo = new GameObject("query manager"); managerGo.SetActive(false);
             var manager = managerGo.AddComponent<EnemyManager>();
             var graph = (CrawlGraph)typeof(ResumablePathChecks).GetMethod("Line", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { 100, 100 });
-            typeof(EnemyManager).GetField("<Graph>k__BackingField", Private).SetValue(manager, graph);
+            typeof(EnemyManager).GetField("worldGraph", Private).SetValue(manager, graph);
             typeof(EnemyManager).GetField("surfaceMask", Private).SetValue(manager, (LayerMask)mask);
             AIQueryProfile.Reset();
             int fresh = manager.ResolveNode(origin);

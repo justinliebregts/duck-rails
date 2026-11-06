@@ -81,6 +81,12 @@ public sealed class RailTestCenter : EditorWindow
         scroll = EditorGUILayout.BeginScrollView(scroll);
         GUILayout.Label("Duck Rails Test Center", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox("Automated desktop checks. VR feel, voice intelligibility and eight-player acceptance still need real playtests.", MessageType.Info);
+        GUILayout.Label("Test lighting", EditorStyles.boldLabel);
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Bright Lighting")) RailTestLighting.Bright();
+        if (GUILayout.Button("Gameplay Lighting")) RailTestLighting.Gameplay();
+        GUILayout.EndHorizontal();
+        GUILayout.Label(RailTestLighting.Status, EditorStyles.wordWrappedLabel);
         RailTestBlockOrderPanel.DrawPlayerOptions();
         RailTestBlockOrderPanel.Draw();
         using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode || RailTestRunner.Running || !CurrentPlayer.IsMainEditor))

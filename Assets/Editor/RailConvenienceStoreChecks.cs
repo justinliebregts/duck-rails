@@ -29,7 +29,7 @@ public static class RailConvenienceStoreChecks
         {
             Check(b.id=="convenience-store-v1"&&b.length==160&&b.track.Length==81&&b.track.Select((p,i)=>p==new Vector3(0,0,i*2)).All(v=>v),"Original identity and straight 160 m track");
             Check(b.stop.localPosition==new Vector3(0,0,80),"Stop retained");
-            Check(b.enemyBounds==new Bounds(new Vector3(26,4,85),new Vector3(34,12,80)),"Expanded northward east-only enemy bounds");
+            Check(b.enemyBounds==new Bounds(new Vector3(0,4,85),new Vector3(86,12,80)),"Both-side enemy bounds retain restaurant coverage");
             Check(root.Find("Store").Cast<Transform>().Count(t=>t.name.StartsWith("Shelf run"))==3,"Three shelf runs");
             Check(root.Find("Arcade").Cast<Transform>().Count(t=>t.name.StartsWith("Arcade cabinet"))==8,"Eight arcade cabinets");
             Check(root.GetComponentsInChildren<Light>().Length==RailConvenienceStore.LightCount&&root.GetComponentsInChildren<Light>().All(l=>l.lightmapBakeType==LightmapBakeType.Baked),"Thirty baked-only fixtures");

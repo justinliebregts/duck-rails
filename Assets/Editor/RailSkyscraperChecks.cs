@@ -45,7 +45,7 @@ public static class RailSkyscraperChecks
    }
    var g=CrawlGraph.Load(b.graph);Check(g!=null&&g.NodeCount>100,"Prebaked graph");
    foreach(var v in b.variations){Check(v.coal.Length==6&&v.enemies.Length==6&&v.gold.Length==2,"Spawn counts");foreach(var p in v.coal.Concat(v.enemies).Concat(v.gold)){Check(Physics.Raycast(p.position,Vector3.down,1.1f,1<<6,QueryTriggerInteraction.Ignore),"Spawn supported "+p.name);Check(!Physics.CheckSphere(p.position+Vector3.up*.3f,.35f,1<<6,QueryTriggerInteraction.Ignore),"Spawn clear "+p.name);Check(g.FindNearestGroundNode(p.position,2)>=0,"Spawn navigation "+p.name);}}
-   Check(Enumerable.Range(0,g.NodeCount).All(n=>!b.enemySurfaceRailExclusion.Contains(g.GetPosition(n))),"Enemy graph excludes lower train corridor");
+   Check(b.enemySurfaceRailExclusion.size == Vector3.zero,"No permanent railway navigation exclusion");
    var nodes=RailSkyscraper.Towers.SelectMany(t=>Enumerable.Range(0,5).Select(f=>g.FindNearestGroundNode(t+new Vector3(14,f*4+.2f,12),2))).ToArray();Check(nodes.All(n=>n>=0),"All 20 levels navigable");
    if(nodes.All(n=>n>=0)){var seen=new HashSet<int>{nodes[0]};var queue=new Queue<int>();queue.Enqueue(nodes[0]);while(queue.Count>0){int n=queue.Dequeue();for(int e=g.EdgeStart[n];e<g.EdgeStart[n+1];e++){int next=g.EdgeTarget[e];if(seen.Add(next))queue.Enqueue(next);}}Check(nodes.All(seen.Contains),"All 20 levels connected in baked graph");}
    Check(root.GetComponentsInChildren<Light>().Length==RailSkyscraper.LightCount,"24 baked worklights");

@@ -110,6 +110,17 @@ public sealed class RailDiagnostics : MonoBehaviour
     public static RailDiagnosticSample Snapshot()
     {
         var objects = new List<string>();
+        // Reserve a bounded part of each sample for transfer state. This uses
+        // the existing active list and report history, not per-frame Console logs.
+        foreach (var enemy in Game.AI.Enemy.Active)
+        {
+            if (enemy == null || enemy.Boarding == null || enemy.Root == null) continue;
+            var view = enemy.GetComponent<PhotonView>();
+            objects.Add("enemy=" + (view != null ? view.ViewID : 0) + " state=" + enemy.CurrentState
+                + " authority=" + enemy.HasAuthority + " position=" + enemy.Root.position.ToString("F2")
+                + " target=" + enemy.LastSeenPos.ToString("F2") + " " + enemy.Boarding.DiagnosticState);
+            if (objects.Count >= 32) break;
+        }
         foreach (var view in PhotonNetwork.PhotonViewCollection)
         {
             if (view == null) continue;

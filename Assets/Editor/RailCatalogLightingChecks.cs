@@ -89,8 +89,9 @@ public static class RailCatalogLightingChecks
             bool skyscraper = root.transform.Find(RailSkyscraper.RootName) != null;
             bool hospital = root.transform.Find(RailHospital.RootName) != null;
             bool yard = root.transform.Find(RailContainerYard.RootName) != null;
-            int expected = yard ? RailContainerYard.LightCount : hospital ? RailHospital.LightCount : depot ? 39 : motel ? 30 : campground ? 11 : store ? RailConvenienceStore.LightCount : farm ? RailFarmSilos.LightCount : mine ? RailQuarryMine.LightCount : canyon ? RailCanyon.LightCount : station ? RailAbandonedStation.LightCount : skyscraper ? RailSkyscraper.LightCount : 4;
-            var fixtures = yard || hospital || campground || farm || mine || canyon || station || skyscraper ? root.transform : root.transform.Find(depot ? RailDepotGreybox.RootName : motel ? RailMotelGreybox.RootName : store ? RailConvenienceStore.RootName : "Baked block sample lights");
+            bool plant = root.transform.Find(RailNuclearPlant.RootName) != null;
+            int expected = plant ? RailNuclearPlant.LightCount : yard ? RailContainerYard.LightCount : hospital ? RailHospital.LightCount : depot ? 39 : motel ? 30 : campground ? 11 : store ? RailConvenienceStore.LightCount : farm ? RailFarmSilos.LightCount : mine ? RailQuarryMine.LightCount : canyon ? RailCanyon.LightCount : station ? RailAbandonedStation.LightCount : skyscraper ? RailSkyscraper.LightCount : 4;
+            var fixtures = plant || yard || hospital || campground || farm || mine || canyon || station || skyscraper ? root.transform : root.transform.Find(depot ? RailDepotGreybox.RootName : motel ? RailMotelGreybox.RootName : store ? RailConvenienceStore.RootName : "Baked block sample lights");
             if(fixtures == null || fixtures.GetComponentsInChildren<Light>().Count(light=>light.lightmapBakeType==LightmapBakeType.Baked)!=expected)throw new InvalidOperationException("Expected " + expected + " baked lights: "+path);
             lines.Add("PASS "+root.name+": " + expected + " lights; "+l.bindings.Length+" static receiver bindings; companion in build.");
         }

@@ -9,6 +9,37 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 - [x] Make keyboard T toggle GO/STOP, retaining shared drive ownership and clearing the toggle on focus loss, blocked input, downing and input-source changes. Unity compilation and shared-rig, drive and quick-start checks passed. Physical lever behavior is unchanged. See [shared rig](shared-rig.md#toggle-t-shortcut--november-6).
 - [ ] Retest physical keyboard presses and headset interaction; injected toggle checks and a real two-client launch do not establish full multiplayer driving acceptance.
 
+## November 6 — minion side openings
+
+- [x] Use the rear and both existing side railing gaps for bidirectional minion transfers, with connected ground landings, capsule clearance and target-aware route selection.
+- [x] Actual motel Play Mode: both side exits/reboarding, blocked-nearest alternate route, all-openings-blocked hold, retry after clearing; rear/carry/speed/knock-off regression also passed. Expanded graph/packet suite: 489 checks, plus 125 track-crossing checks and navigation regression.
+- [x] Two authenticated Photon clients: left exit/natural reboarding and right exit, plus moving carry, host migration, non-owner knock-off and moving leave/rejoin. See [enemy boarding](enemy-boarding.md).
+- [ ] Target-headset review of side transfer presentation, crowded gaps and performance.
+
+## November 6 — enemy track crossings
+
+- [x] Remove permanent railway exclusions and rebake all 17 block graphs offline; preserve outer block boundaries.
+- [x] Verify ground connections between both rail sides in every block and motel crossing paths; add train-relative occupied-node filtering and movement/shortcut checks.
+- [x] Actual motel/minion Play Mode: natural empty-track pursuit, parked-train detour, reverse pursuit after departure, and a stale path replanning around newly occupied track. 125 graph/avoidance checks and existing boarding/navigation regressions pass. See [track crossings](track-crossing.md).
+- [ ] Gameplay acceptance for incoming-train timing, multiple enemies, real-client cross-track pursuit and target-headset performance.
+
+## November 6 — stopped-train dismount (report 4d54)
+
+- [x] Add the missing train-to-block rear transfer, including clearance/ground checks, continued pursuit and reboarding.
+- [x] Actual motel Play Mode: voluntary exit, renewed ground chase, reboarding, blocked-exit rejection, fast-train rejection and melee knock-off. Existing navigation, graph/packet and diagnostic regressions pass.
+- [x] Add bounded per-enemy transfer state and transition events to future diagnostic reports.
+- [x] Two authenticated clients on the reported motel route: committed voluntary exit, replicated block-graph pose, and diagnostic snapshot fields. Backend and local report 4d54 resolved with evidence; broader canyon transport tolerance failure is recorded separately in enemy-boarding.md.
+- [ ] Headset review of dismount presentation and pursuit around crowded/obstructed exits.
+
+## November 6 — minion train boarding
+
+- [x] Author a separate train-local crawlgraph and opt the minion into collision-checked rear boarding; retain offline baking.
+- [x] Prove natural approach/boarding, train-relative carry through acceleration/yaw/slope, deck pursuit and real melee knock-off in isolated Play Mode. See [enemy boarding](enemy-boarding.md).
+- [x] Two real Photon clients: stationary/moving train-relative synchronization, moving host migration, non-owner melee knock-off and moving leave/rejoin. Transport fixture places minion aboard; natural two-client boarding remains acceptance work.
+- [x] Isolated Play Mode: physical obstacle rejects approach, fast train rejects boarding, departure interrupts active transfer. Graph/packet/authoring suite: 390 checks; existing navigation regression passed.
+- [ ] Validate hostile contact/revival aboard, multiple minions, natural two-client boarding, repeated runs, recovery in another block and adverse network conditions.
+- [ ] Review boarding animation/readability, rescue balance, natural bat interactions and performance on target headsets. Desktop tests do not close this acceptance.
+- [ ] Extend the proven moving-graph approach to spider wall/ceiling movement and stalking; minion-first implementation is authorized.
 
 - [x] November 6: broadcast confirmed gold reward coin effects to other clients, using local watch and remote body targets; Unity compilation and existing economy checks pass.
 - [ ] Verify on real clients that midpoint deposits show streams to every credited recipient for every observer, including simultaneous deposits, capped wallets and headset performance.
@@ -16,24 +47,140 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 - [x] November 5: enable inherited held-coal locomotion in prefab and builder; verify imported configuration through Unity MCP.
 - [ ] Verify coal ground-pushing/vaulting feel on headset and behavior with real multiplayer clients.
 
+- [x] Prepare [nuclear power plant concept](nuclear-power-plant-layout.md) with a whole-site layout and nighttime atmosphere illustration. Concept deliverable only.
+- [x] Draw [plant V2 floor plan](nuclear-power-plant-layout.md#v2--enterable-cooling-towers-and-waste-drum-yard): enterable cooling towers, hall/gallery and requested waste drums with a spilled truck load. Scaled drawing only; no implementation acceptance.
+- [x] User approved plant V2 for 3D, adding tighter barrel groups and stacks. Install two enterable towers, turbine hall/gallery, utility yards and 130 drums with rough Quackville materials; bake navigation/lighting and register the sixteenth location. 3,185 geometry/navigation/UV checks, 803 catalogue checks, lighting export and two-seed offline route workflow pass. See [plant evidence](nuclear-power-plant-layout.md#installed-rough-blockout--november-5).
+- [ ] Review plant tower/gallery traversal, low-eye lighting, loose-item recovery, enemy pursuit/rescue and real-client behavior on target headsets; measure Quest performance. Editor and offline checks do not close this acceptance.
+
+- [x] Record user's rejection of rigid/widely spaced V5 container rows and prepare [V6 playground revision](container-yard-layout.md#v6--denser-playground-revision): double-depth clusters, offset stacks, tighter lanes and roof landings.
+- [x] User approved V6 with the crane on the south side. [Rebuilt the yard](container-yard-layout.md#installed-v6-playground), repositioned loot/enemy markers and rebaked offline navigation/lighting. 2,215 geometry assertions, 757 catalogue checks, lighting export validation and 42 assertions across two route-loader Play Mode rounds pass. V6 evidence is separate from historical V5 evidence; headset/multiplayer acceptance remains below.
+
+- [x] Produce [simplified Container Yard V3](container-yard-layout.md#v3--simplified-alternative-current-review-proposal) following user concern about build complexity: repeated modules, six ground interiors, two fallen containers, low roof routes and four-high backdrops. Drawing only; review before implementation.
+
+- [x] Prepare the [Container Yard maze drawing](container-yard-layout.md), recording requested open/closed/fallen containers, climbable interiors and tall stacks. Drawing only; module dimensions and four-to-five-high heights remain proposals.
+- [x] User approved Container Yard V5 for 3D; install wider six-row-per-side rough Quackville maze, hollow/fallen containers, low roof climbs, static gantry and reach stacker. Offline graph/lighting, 1,660 geometry/navigation/UV checks, 757 catalogue checks and 42 assertions across two route-loader Play Mode rounds pass. See [installed yard](container-yard-layout.md#installed-rough-blockout).
+- [ ] Review container-yard natural hand climbing/descent, rescue and loose-item recovery, low-eye lighting, enemy pursuit, real-client behavior and Quest performance. Offline geometry and route proof do not close headset/multiplayer acceptance.
+
+- [x] Prepare the [hospital district top-down concept](hospital-district-layout.md), including ground-floor rooms and supporting scenery across all three thirds. Drawing only.
+- [x] User approved hospital district V2 site layout and specified two storeys plus accessible roof with ventilation, water tanks and HVAC.
+- [x] Record hospital V4 direction: south ER, glowing hospital sign, crashed/overturned ambulances in ER parking and surgery-room replacements; retain two-storey/roof arrangement.
+- [x] User approved hospital V4 for 3D; install rough Quackville hospital district, ground/upper/roof routes, surgery rooms, south ER, glowing sign and ambulance wrecks. Bake graph/lighting and register catalogue: 2,479 geometry/navigation/UV checks, 757 catalogue checks and 42 assertions across two offline Play Mode route rounds pass. See [hospital evidence](hospital-district-layout.md#validation-and-limits).
+- [ ] Validate hospital natural stairs/hand traversal, roof/courtyard recovery, low-eye lighting, enemy pursuit, real-client behavior and Quest performance. Offline checks do not close these acceptance items.
+
+- [x] Record separate skyscraper and hospital districts, with skyscraper first; deliver the [four-tower top-down layout and height section](skyscraper-layout.md). Drawing delivery only.
+- [x] Revise the skyscraper drawing with requested elevator shafts, mostly open concrete floors, pillars and construction supplies; V2 is a drawing proposal, not implementation approval.
+- [x] User approved skyscraper V2 for 3D; install four open towers, shafts, skybridges, static crane crossing and construction supplies with rough Quackville materials, offline graph/lighting and catalogue registration. 7,085 physical checks, 711 catalogue checks and 42 offline route Play Mode assertions pass. See [installed skyscraper](skyscraper-layout.md#installed-rough-blockout--november-4-2026).
+- [ ] Review skyscraper stairs/shafts/crane in VR, rescue and loose-item recovery, real-client train clearance and enemy behavior, low-eye lighting and Quest performance. Offline evidence does not close these acceptance items.
+- [x] Develop the separate hospital site layout; V2 approved, vertical detail study recorded above.
+
+- [x] User approved the [underground station V1](underground-station-layout.md) for 3D with rough Quackville materials: descending tunnel, two-sided public halls, upper concourse, second-track walk-through wreck and connecting staff areas.
+- [x] Install approved underground station rough Quackville blockout, graded railway, connected public/staff spaces and static wreck; bake navigation/lighting. 6,141 physical/navigation checks, 665 catalogue checks and two offline route rounds pass. See [evidence](underground-station-layout.md#verification).
+- [ ] Review station traversal/boarding and low-eye lighting in VR; verify moving players/cargo on slopes, real-client late joining/authority changes, enemy pursuit and Quest performance.
+
+November 4 compound art: approved the Quackville/depot material concept for implementation on the existing subway geometry. See [material pass](subway-compound.md#material-concept--november-4-2026) for authoring and evidence; this does not complete headset or multiplayer acceptance.
+
+- [x] Apply compound Quackville/depot surface treatment and rebake: 253 surfaces, saved prefab appearance, atlas/UV/lightmap checks, 55 subway checks and session checks passed. Actual forward/low-eye/reverse captures are recorded in the compound guide.
+- [ ] Review the compound material pass and retained lighting on the target headset; measure performance and twelve-player visibility/crowding.
+
+November 3 art-test utility: implemented Page Down block skip using the existing player warp. Compilation and seven destination checks passed; live input/headset validation remains pending. See [shared rig](shared-rig.md).
+
 ## November 2 — Duckz fix ports
+
+- [x] Correct coal interior selection in the shared grab path and align coal's Photon observation order with standard items; compile and pass focused editor checks. See [coal pickup maintenance](week1-session.md#coal-pickup-maintenance--november-2-2026).
+- [x] Two authenticated desktop clients pass non-master interior selection, release and exactly-once furnace consumption stopped, moving and after master handoff. Evidence: `docs/validation/coal-pickup/`.
+- [ ] Verify natural coal pickup on target headsets, including two non-masters with an active master and after master standby. Synthetic desktop selection does not close this acceptance.
 
 - [x] Port the sixteen supplied Duckz revisions in focused commits, adapting movement, palm/hand input, train hand support, cargo releases and pickup recovery to Rails. Preserve Rails downing, shared rig and train cargo architecture. See [source mapping and validation](duckz-fix-ports.md).
 - [ ] Complete target-headset acceptance for smoothed movement, calibrated controller/bare-hand interaction, hanging from the moving train, natural cargo throws/regrabs and LIV recording. Editor and synthetic transport checks do not complete this acceptance.
 
 ## Art direction deliverables
 
-- [x] Draw expanded campground V2 with tree clusters and campsite/shore landmarks across the approach and departure areas, following the user's permission to use former empty buffers. See [expanded proposal](lakeside-campground-layout.md#expanded-layout-proposal--november-4). Implemented in V2 below.
+- [x] Install approved 20%-narrower Yard Mule with 4 × 10 m deck, matching collision/passenger bounds, one-quad textured floor and uniform square texels. Validate 6,720 triangle-edge UV metrics and 45 modular-train checks; see [evidence](yard-mule-train.md).
 
+- [x] Build the approved [Yard Mule train shell](yard-mule-train.md), with pixel atlases, emissive markers and one roof spotlight; retain modular gameplay links and pass 45 modular-train editor checks.
+- [ ] Review Yard Mule appearance, marker visibility, roof spotlight reach, natural boarding/hand contact, moving cargo and performance on headsets and real clients.
+
+- [x] Revise convenience-store drawing to [V5 arcade and streetlights](convenience-store-layout.md#v5-arcade-revision--current-review-plan) following user selection; include arcade interior and road-lamp positions.
+- [x] User approved V5 for 3D. Install rail-facing store/arcade, gas canopy, car wash, restaurant strip, glowing signs, road streetlights and outer scenery with rough Quackville materials. Offline graph/lighting, 1,328 geometry assertions, 757 catalogue checks and 42 assertions across two offline route-loader Play Mode rounds pass. See [implementation evidence](convenience-store-layout.md#v5-implementation--november-5).
+- [ ] Review convenience-store V5 natural traversal, low-eye lighting/readability, enemy pursuit, loose-item recovery, real-client behavior and Quest performance. Offline checks do not complete these acceptance items.
+
+- [x] Draw the [V4 convenience-store site and interior plan](convenience-store-layout.md#v4-top-down-revision--november-5) from the endorsed wide concept, including both railway sides, track-facing doors, gas canopy, garage/wreck yard, car wash, rest stop and outer scenery.
+- [x] V4 footprint review superseded by approved V5 above; reconcile restaurants with east-side navigation bounds, retain spawn counts, rebake offline navigation/lighting and repeat physical/runtime validation.
+
+- [x] November 5: deliver two [convenience-store revision concepts](convenience-store-layout.md#november-5-revision--rail-facing-storefront-and-glowing-signs), exploring the requested rail-facing frontage and glowing signs, plus proposed gas forecourt and supporting details. Generated studies only.
+- [x] Select convenience-store additions and review revised top-down layout; V5 approved and installed above.
+
+- [x] User approved Canyon V3 for 3D, adding multiple descending plateaus for exploration and enemy encounters. See [approved direction](canyon-layout.md#approved-3d-work--november-4-2026).
+- [x] Install Canyon rough Quackville block, six connected landings, both bridges and shaft cave; register catalogue and bake offline graph/lighting. 3,699 physical/navigation/UV checks, 665 catalogue checks and 42 offline Play Mode assertions passed. See [evidence](canyon-layout.md#installed-rough-block-and-validation).
+- [ ] Review Canyon natural hand locomotion, falls/cave recovery, narrow bridge/catwalk traversal, enemy encounters, real-client behavior and Quest performance. Rope reuse remains separate.
+
+- [x] Approve and install Canyon V3 with the east pedestrian suspension crossing; physical deck/landing checks passed. Natural hand traversal/recovery remains in the headset acceptance item above. See [Canyon block](canyon-layout.md).
+
+- [x] Install approved [mine V5 rough blockout](quarry-layout.md#installed-rough-blockout): staggered twin pits, long east excavation, raised west climb, three underground branches, office, crane and machinery; revise navigation/exclusion by height and rebake offline lighting. 1,798 geometry/navigation and 619 catalogue checks pass.
+- [ ] Review mine hand-climbing, slopes, item recovery and low-eye lighting in VR; validate enemy pursuit/knockback, real-client late joining and Quest performance. Offline editor/route evidence does not close these acceptance items.
+
+- [x] Carry Canyon V2 shaft/cave route into the approved V3 blockout and validate physical support, headroom and walk-out connection. Natural fall/rescue/item recovery remains pending; see [shaft proposal](canyon-layout.md#v2-shaft-route-proposal).
+
+- [x] Prepare [mine V5 drawing](quarry-layout.md#v5--much-longer-right-quarry) with a much longer right excavation (proposed 110 m), extended haul ramp and repositioned crane/equipment. Geometry and validation remain pending.
+
+- [x] Revise mine drawing to [V4 staggered pits and crane](quarry-layout.md#v4--staggered-pits-and-crane), retaining three branching underground connections and lit office. User endorsed V3's concept; V4 exact offsets/crane placement remain drawing proposals.
+
+- [x] Review and build the approved [Canyon rough block](canyon-layout.md) with bridges, wall paths, worker routes, caves and creek. Catalogue, navigation and lighting checks passed. Raider Legends rope reuse, real-client/headset traversal and performance remain pending.
+
+- [x] User approved Farm Silos V3 for 3D with apple trees. Install rough Quackville farm, four-level farmhouse and nine apple trees; preserve rail/loot/enemy contracts and bake offline navigation/lighting. See [implementation and validation](farm-silos-layout.md#installed-rough-blockout).
+- [ ] Review farm stairs, basement recovery, attic headroom, hay-to-roof climbing/descent, corn visibility and apple-tree scale on headset; complete real-client and Quest performance acceptance.
+
+- [x] Prepare the [expanded quarry site plan and terrain section](quarry-layout.md), with two pit exits and supporting scenery across the block. Drawing deliverable only.
+- [x] Revise quarry to the requested [twin-mine V3 drawing](quarry-layout.md#v3--twin-pits-and-underground-branches): raised climb-over rim, three under-track tunnel branches, lit underground office and surface machinery/gravel. Drawing only.
+- V3 was superseded by the approved V5 implementation above; headset/multiplayer acceptance remains separate.
+
+- [x] Revise the [farm proposal to V3](farm-silos-layout.md#v3-farmhouse-revision), replacing northeast corn with a two-storey farmhouse plus basement/attic and a schematic section.
+- [x] Apply approved farmhouse footprint and author rooms, stairs, basement excavation and attic headroom. Physical editor checks are separate from headset traversal acceptance.
+
+- [x] Prepare the revised [Farm Silos top-down layout and hay-climb study](farm-silos-layout.md) with corn, water tower and full-block supporting scenery. Drawing only.
+- [x] Obtain farm layout approval and build rough Quackville geometry with offline navigation/lighting. Headset/multiplayer/performance acceptance remains open above.
+
+- [x] Prepare revised [convenience-store top-down site/interior proposal](convenience-store-layout.md), including outer-third scenery following the user's density direction.
+- [x] User confirmed the expanded convenience-store layout; install rough Quackville blockout, store/restaurant interiors, road/crossing and outer-third scenery. Offline navigation/lighting, 1,087 physical/layout/UV checks, 619 catalogue checks and lighting exports pass. See [implementation](convenience-store-layout.md#installed-blockout).
+- [ ] Review convenience-store scale, hand locomotion, loose-item recovery, atmosphere and performance on headset; complete multiplayer acceptance.
+- All future block upgrades follow top-down drawing, user confirmation, then rough Quackville blockout. Populate supporting areas toward block edges; avoid empty outer thirds while retaining flat seams and clear railway passage.
+
+- [x] November 4: add saved local **Invincible from enemies** Test Center checkbox. Compilation and authenticated solo checks cover enemy contacts, bomber explosion, runtime toggles, private-run gating and preserved Down self. See [evidence and limits](testing-tools.md#enemy-invincibility-in-test-center); headset/multiplayer acceptance remains separate.
+
+- [x] November 4: add saved Test Block Order prefab list to Duck Rails Tests; support variable-length private review routes. Compilation, 59 focused editor checks, 29 diagnostic checks and an authenticated solo three-block run passed. See [workflow and evidence](testing-tools.md#test-block-order--november-4-2026).
+- [ ] Verify variable-length test routes with real peers, late joining/host migration and target headsets; single-editor evidence does not close multiplayer acceptance.
+
+- [x] Draw expanded campground V2 with tree clusters and campsite/shore landmarks across the approach and departure areas, following the user's permission to use former empty buffers. See [expanded proposal](lakeside-campground-layout.md#expanded-layout-proposal--november-4). Drawing only; installed greybox remains V1.
 - [x] Implement user-approved expanded campground V2 with rough Quackville textures, relocated buildings, 73 trees, three campsite areas and shore/overlook/footbridge landmarks. Navigation/lighting rebuilt; 2,055 physical and 619 catalogue checks pass. See [V2 evidence](lakeside-campground-layout.md#installed-expanded-campground-v2).
-
 - [ ] Review expanded campground paths, lake/gully recovery, prop scale and full-width hand clearance on headset; profile the denser vegetation and complete multiplayer acceptance.
 
+- [x] November 4: apply motel Quackville rough materials and subtle perimeter banks as requested. Offline navigation/lighting rebuilt; surface, bank-support, layout and catalogue checks pass. See [material and elevation evidence](roadside-motel-layout.md#quackville-rough-materials-and-edge-elevation). Headset feel and Quest performance remain pending.
+
+- [x] November 4: prepare [nine remaining scavenging-block top-down studies](remaining-block-layouts.md), including proposed hills, berms and quarry benches following the user's elevation request. Drawing deliverable only.
+- [ ] Review these block proposals before greyboxing; measure graded paths, maintain level track/flat seams, rebake navigation and lighting, and verify low-eye visibility, loose-item recovery and headset traversal.
+
 - [x] November 4: prepare the selected campground layout with a lake, low terrain rises and flat perimeter connections. See [campground plan](lakeside-campground-layout.md). Drawing deliverable only.
-
 - [x] Install approved campground greybox and requested rough Quackville materials: irregular lake basin, raised cabin pads, graded paths, flat perimeter, preserved track/spawns, offline navigation and lighting; 1,052 physical and 619 catalogue checks pass. See [evidence](lakeside-campground-layout.md#editor-verification).
-
 - [ ] Review campground shoreline/item recovery, full-width path and low-eye traversal in VR; validate multi-client play and Quest performance. Bright editor captures do not establish final gameplay visibility.
+
+- [x] Revise the motel whole-block drawing with the requested transformer yard, machine rows and broken chain-link perimeter. See [V3 layout](roadside-motel-layout.md#v3-transformer-yard-addition). Drawing deliverable only; greybox and traversal acceptance remain pending.
+
+- [x] November 4: prepare Roadside Motel scaled site, ground/upper floor and service-building plans following the user's selected layout direction. See [motel plans](roadside-motel-layout.md). This completes drawings only.
+- [x] Implement the user-approved motel greybox, west office/garage and transformer yard with broken fencing. Offline navigation/lighting exports, 176 physical/layout checks, 619 Week 3 checks and an authenticated solo private-run loading check pass. See [implementation and MRUK startup-error notes](roadside-motel-layout.md#installed-greybox).
+- [ ] Review motel stairs, balcony guards, ajar doors, room scale, transformer aisles and boarding in VR; complete multi-client and Quest performance acceptance.
+
+- [x] Apply the user-approved depot rough material direction to existing V3 geometry using the Quackville Town/Industrial atlases. Preserve collision, track and gameplay layout; rebake lighting for the new surfaces. Further model work and final atmosphere tuning remain separate.
+- [ ] Review depot material texel scale, repetition, dark-surface readability and performance on the target headset before final art.
+
+- [x] Validate Bright Lighting / Gameplay Lighting test controls: editor preselection, live panel button events, rendered fog/brightness changes, exact fog/ambient restoration and unchanged baked textures passed in an authenticated private depot run. Headset readability/reach remains separate. See [lighting preview](testing-tools.md#lighting-preview).
+
+- [x] November 3: deliver v3 depot site and two-floor blueprint studies following the user's scale feedback, including proposed enlarged footprints, rooms, props and aligned stairs. Drawings only; see [review set](maintenance-depot-prototype.md#november-3-review-v3-drawings-only).
+- [x] User approved the V3 blueprints for greyboxing. Implement enlarged footprints/heights, both-floor rooms, six stairs, galleries, guards and placeholder props on the actual depot prefab; rebake navigation and lighting. Physical stair/headroom, ground-only mezzanine connectivity, doorway/yard access, 607 Week 3 checks and lighting export checks pass. See [V3 evidence](maintenance-depot-prototype.md#v3-greybox-implementation).
+- [ ] Review V3 stairs, upper-floor loops, room visibility and hand clearance in VR before the first art pass.
+
+- [x] November 2: select Maintenance Depot for the first location prototype and establish the requested sequence: rough renders and labeled overhead layout, layout review, Unity greybox, then first art pass. See [depot prototype](maintenance-depot-prototype.md). Layout details remain proposals; this does not complete greybox or art acceptance.
+- [x] Install the authorized scaled depot greybox on its actual block prefab: exact building/area footprints, simple collision shells, flush paths, fencing, preserved track curve, rebaked navigation and lighting. Compilation, 607 Week 3 checks and geometric/export checks pass; see [depot evidence](maintenance-depot-prototype.md).
+- [ ] Review depot distances, heights, door clearance and locomotion in VR; revise the greybox before the first art pass. Editor checks do not complete this acceptance.
 
 - [x] November 1: install the first Compound baked-lighting/probe sample with UV mesh copies, scene-owned lighting settings, subtle fog and a baked reflection probe. Existing geometry/binding checks pass; see `docs/subway-compound.md` for authoring limits.
 - [ ] Review Compound lighting and probe transitions on standalone Quest with twelve players; establish measured frame-time/memory budgets before expanding lighting density. Small expedition-block samples are already implemented separately.
@@ -386,22 +533,28 @@ Radio/horn follow-up (October 29): physical hold buttons implemented with releas
 
 - [ ] November 1 mixed enemy acceptance: validate 4–6 minion/bomber/smasher/spider encounters across real clients, late joining, host migration, bomber respawn and headsets. See [mixed enemies](mixed-enemies.md).
 
-- [x] November 4: add saved local **Invincible from enemies** Test Center checkbox. Compilation and authenticated solo checks cover enemy contacts, bomber explosion, runtime toggles, private-run gating and preserved Down self. See [evidence and limits](testing-tools.md#enemy-invincibility-in-test-center); headset/multiplayer acceptance remains separate.
+November 4 atmosphere follow-up: removed hardcoded night ambient/fog resets; saved the user's current Expedition settings. Unity compilation and six direct editor atmosphere comparisons passed. Full-run/headset appearance remains unverified; validation limitations are recorded in docs/block-lighting.md.
 
-- [x] November 4: add saved Test Block Order prefab list to Duck Rails Tests; support variable-length private review routes. Compilation, 59 focused editor checks, 29 diagnostic checks and an authenticated solo three-block run passed. See [workflow and evidence](testing-tools.md#test-block-order--november-4-2026).
+Starting-station art planning: split-platform direction selected; detailed platform/bridge plans and tunnel/clearance section prepared from existing block and train measurements. Drawing review complete; greybox implementation and VR traversal/boarding acceptance remain pending. See [station layout](starting-station-layout.md).
 
-- [ ] Verify variable-length test routes with real peers, late joining/host migration and target headsets; single-editor evidence does not close multiplayer acceptance.
+- [x] Install the approved underground split-platform station greybox on StartingStation; rebake/export lighting and fit the existing departure shop. 326 physical/track/lighting checks and Week 3 checks pass. See [station evidence](starting-station-layout.md#installed-greybox).
+- [ ] Review station stair traversal, bridge scale, both-side boarding and shop use in VR; moving-player clearance and final mountain art remain pending.
 
-- [x] November 4: apply motel Quackville rough materials and subtle perimeter banks as requested. Offline navigation/lighting rebuilt; surface, bank-support, layout and catalogue checks pass. See [material and elevation evidence](roadside-motel-layout.md#quackville-rough-materials-and-edge-elevation). Headset feel and Quest performance remain pending.
+- [x] Apply the requested Quackville rough station material pass: 215 surfaces, 57 atlas-UV meshes, rebaked/exported lighting and 326 passing physical/track/lighting checks. See [station materials](starting-station-layout.md#quackville-rough-material-pass).
+- [ ] Review station material texel scale, repetition, dark readability and performance in VR.
 
-- [x] Revise the motel whole-block drawing with the requested transformer yard, machine rows and broken chain-link perimeter. See [V3 layout](roadside-motel-layout.md#v3-transformer-yard-addition). Drawing deliverable only; greybox and traversal acceptance remain pending.
+- [x] November 5: install approved farm V5 west farmhouse/orchard, extensive dense corn, no perimeter lanes and elevation/details; rebake offline graph and lighting, pass geometry/catalogue/export checks.
+- [ ] Farm V5: validate dense-corn rendering cost and navigation/readability on target headsets, alongside existing farm traversal and multiplayer acceptance.
 
-- [x] November 4: prepare Roadside Motel scaled site, ground/upper floor and service-building plans following the user's selected layout direction. See [motel plans](roadside-motel-layout.md). This completes drawings only.
-- [x] Implement the user-approved motel greybox, west office/garage and transformer yard with broken fencing. Offline navigation/lighting exports, 176 physical/layout checks, 619 Week 3 checks and an authenticated solo private-run loading check pass. See [implementation and MRUK startup-error notes](roadside-motel-layout.md#installed-greybox).
-- [ ] Review motel stairs, balcony guards, ajar doors, room scale, transformer aisles and boarding in VR; complete multi-client and Quest performance acceptance.
+- [x] Simplify farm corn geometry by 36.4%, disable corn shadow casting, preserve dense field layout; verify saved prefab and geometry/catalogue/lighting checks.
+- [ ] Measure optimized corn GPU time on target headset in gameplay fog; decide whether distance culling or LODs offer worthwhile savings.
 
 - [x] November 5: install approved coal pickup art (44 triangles, 32x32 pixel texture), preserve existing pickup physics/network configuration and rebuild grab surface. Unity compile and 927 existing grab-surface assertions passed. See [coal art evidence](art-concepts.md#coal-pickup-art--november-5-2026).
 - [ ] Review new coal silhouette/readability in nighttime gameplay on headset and natural grabbing/ground-pushing with the retained simple collision envelope.
 
 - [x] November 5: implement 2,000-coin wallet cap in client/backend and small grey watch cap line with yellow balance at maximum. Unity prefab checks and backend service/repository/router tests pass; see [wallet cap](gold-economy.md#wallet-cap--november-5-2026).
 - [ ] Deploy matching wallet-cap API/client; verify persisted cap, concurrent rewards, retries after spending and headset watch readability against the live service.
+
+- [ ] November 6 both-side encounters: validate navigation/pursuit, mixed enemy counts, late joining/master handoff and headset balance across the expanded catalogue. Unity verification omitted at user request; see [implementation](mixed-enemies.md#enemies-on-both-rail-sides--november-6-2026).
+
+- [x] November 6: install both-side enemy markers and offline crawlgraphs in the 12 one-sided encounters, retain the other five bilateral layouts, update the scene finale and guarantee both-side seeded selection. Authoring completed; gameplay acceptance remains open above.

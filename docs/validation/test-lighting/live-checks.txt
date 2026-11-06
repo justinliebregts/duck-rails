@@ -1,0 +1,5 @@
+PASS editor Bright preselection survives Play startup and route loading
+PASS both VR panel lighting button events present
+PASS panel events switch rendered fog/brightness: 0.1843555 -> 0.7761937 -> 0.1843555
+PASS baked textures and lighting readiness unchanged
+PASS newer atmosphere state preserved across switching

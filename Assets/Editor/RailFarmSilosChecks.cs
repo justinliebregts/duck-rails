@@ -27,7 +27,7 @@ public static class RailFarmSilosChecks
         {
             Check(b.id==RailFarmSilos.Id&&b.length==160&&b.track.Length==81,"Identity and length");
             Check(b.track.Select((p,i)=>Vector3.Distance(p,new Vector3(-4*Mathf.Pow(Mathf.Sin(Mathf.PI*i/80),2),0,i*2))<.001f).All(v=>v),"Original sampled rail curve");
-            Check(b.stop.localPosition==new Vector3(-4,0,80),"Original stop");Check(b.enemyBounds==new Bounds(new Vector3(23,4,80),new Vector3(28,12,70)),"Enemy bounds unchanged");
+            Check(b.stop.localPosition==new Vector3(-4,0,80),"Original stop");Check(b.enemyBounds==new Bounds(new Vector3(0,4,80),new Vector3(74,12,70)),"Both-side enemy bounds retain encounter spacing");
             Check(house.Find("Basement")&&house.Find("Ground floor")&&house.Find("Upper floor")&&house.Find("Attic"),"Four accessible house levels authored");
             Check(root.GetComponentsInChildren<Transform>().Count(t=>t.name=="Apple tree")==9,"Nine apple trees");
             Check(root.GetComponentsInChildren<Transform>().Count(t=>t.name=="Apple")==81,"Visible apples on all trees");

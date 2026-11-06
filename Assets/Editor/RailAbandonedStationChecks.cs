@@ -86,7 +86,7 @@ public static class RailAbandonedStationChecks
             while(queue.Count>0){int n=queue.Dequeue();for(int e=graph.EdgeStart[n];e<graph.EdgeStart[n+1];e++){int next=graph.EdgeTarget[e];if(graph.GetNormal(next).y>.5f&&seen.Add(next))queue.Enqueue(next);}}
             Check(nodes.All(seen.Contains),"Ground-only paths connect halls, wreck, upper and lower crossings");
         }
-        Check(Enumerable.Range(0,graph.NodeCount).All(n=>!b.enemySurfaceRailExclusion.Contains(graph.GetPosition(n))),"Navigation excludes operating railway");
+        Check(b.enemySurfaceRailExclusion.size == Vector3.zero,"No permanent railway navigation exclusion");
         foreach(var f in root.GetComponentsInChildren<MeshFilter>().Where(f=>f.GetComponent<TMPro.TextMeshPro>()==null))Check(f.sharedMesh.uv.Length==f.sharedMesh.vertexCount&&f.sharedMesh.uv2.Length==f.sharedMesh.vertexCount,"Texture/lightmap UV "+f.name);
         File.WriteAllLines(Evidence+"/geometry-checks.txt",lines);int failures=lines.Count(l=>l.StartsWith("FAIL"));Debug.Log("STATION CHECKS "+(lines.Count-failures)+" passed, "+failures+" failed. "+Evidence);
         if(failures>0)throw new Exception(string.Join("\n",lines.Where(l=>l.StartsWith("FAIL")).Take(25)));

@@ -14,6 +14,16 @@ November 6 follow-up: removed the private-room and automated-suite exclusions. U
 
 November 4 validation: compilation and authenticated solo Play Mode checks passed: saved selection survived startup, public Compound/Edit Mode remained unprotected, actual enemy contact triggers rejected hits, and a triggered bomber explosion beside the player left zero downs. Off/on toggles applied immediately; explicit Down self then committed exactly one down. [Evidence](validation/test-invincibility/live-checks.txt). These are injected-hit desktop checks, not multiplayer/headset acceptance. Console contained the existing Meta XR `ErrorFormFactorUnavailable` startup error; no invincibility exception was observed.
 
+### Lighting preview
+
+**Bright Lighting** and **Gameplay Lighting** are available in the editor **Duck Rails > Test Center** and the in-game panel's **Test Tools** page (keyboard and VR). Choose either mode before launching Manual sandbox, or switch during a private test run. The editor remembers the selection for this editor session; development players start with Gameplay Lighting.
+
+Bright Lighting is a local visibility aid: fog is disabled while rendering the game camera, ambient fill is increased, and temporary shadowless directional/near-camera lights illuminate dark spaces. It only applies in a ready private development room. Gameplay Lighting removes the override immediately and uses the real scene fog, moonlight, baked fixtures and current night/dawn state. Scene settings are restored after each camera render, so a lighting switch cannot restore stale atmosphere from an earlier scene or time of day. Baked data and other clients are unchanged. Bright mode is not representative of gameplay lighting or headset performance.
+
+For the depot: select **Authoring > Depot > Load depot-first review route**, choose lighting in Test Center, then launch **Manual sandbox**. Use **P > Show test tools** on desktop or the left-controller menu's **TEST TOOLS** page in VR to switch in place. The taller VR tools page is raised 10 cm to retain wrist clearance; worn-headset reach remains to be reviewed.
+
+November 4 validation: compilation and 29 diagnostic regression checks passed. An authenticated private depot run verified Bright preselection through Play startup, both built VR button events, fog disabled during bright rendering, restored scene settings after each render, unchanged native lightmap textures/readiness, and preservation of a newer atmosphere state across toggles. Matching images measured mean brightness 0.1844 → 0.7762 → 0.1844 for Gameplay → Bright → Gameplay. [Evidence](validation/test-lighting/live-checks.txt), [bright view](../output/test-lighting/bright.png), [gameplay view](../output/test-lighting/gameplay.png). This verifies local rendering and event wiring; physical headset button presses and comfort remain unverified.
+
 In the Editor or a **Development Build**, press the left controller's existing game-menu input (`ButtonName.Start`, mapped to `OVRInput.RawButton.Start`) to show/hide the panel. In VR it follows the left forearm, with its center 32 cm above the wrist in the viewing direction's up axis and 10 cm toward the eyes, and faces the head. This moves the lower edge clear of the wrist instead of placing the panel across the arm. DuckPlayer's actual fingertip colliders press the buttons; no controller ray or grip is required. Headset comfort and reach still need validation.
 
 In **Keyboard mode**, **P** opens a centered, scrollable screen GUI with mouse buttons for reporting, status, network simulation and test shortcuts. Mouse look, movement, grabbing and throttle input are suppressed while it is open. **P**, **Esc** or **Close** hides it; click back into the game to resume mouse look. F2 switching chooses the corresponding screen or wrist interface. The GUI detects the real DuckPlayer's `SimulatedRigInput`, as well as the legacy desktop fixture. Diagnostic controls remain usable while downed or while world loading blocks ordinary gameplay input; the multiplayer simulation is not paused.
@@ -25,6 +35,8 @@ In **Keyboard mode**, **P** opens a centered, scrollable screen GUI with mouse b
 - **Simulate Lag** applies 120 ms each way, 25 ms jitter and 3% packet loss on this client. **Normal Network** restores the previous settings. Leaving the allowed private context, destroying the panel or ending a dashboard test also restores owned simulation settings. An existing simulator is never overwritten.
 
 ## Automatic reports and visibility
+
+November 4, 2026: **Test Tools > Spawn flashlight** (VR: **FLASHLIGHT**) spawns the existing shared `RailFlashlight` 0.75 m horizontally ahead of the local camera at eye height. Its loose rigidbody uses gravity, so it drops without being equipped. Like Loaded Bag, this requires the master of a ready private running expedition in the Editor or a Development Build. The VR tools page has an extra row, leaving 4 cm of lower-edge wrist clearance. Source reviewed only; Unity compilation, runtime and multiplayer validation were intentionally skipped at the user's request.
 
 Development clients detect persistent duplicate/missing avatars, held-item owner inconsistencies, cargo that blocks staging cleanup, retained-route disagreement between diagnostic clients, Unity errors and world-loading stalls. Settled checks wait eight seconds after phase/master changes and require five continuous seconds of failure; loading stalls use 90 seconds. These checks are intentionally narrower than complete detection of all networking bugs. Ordinary physics differences are not treated as divergence without time-aligned evidence.
 
@@ -67,7 +79,7 @@ November 6 launch validation: Unity compiled the changes; shared-rig, drive and 
 
 ### Test Block Order — November 4, 2026
 
-Open **Duck Rails > Test Center** (the **Duck Rails Tests** window). Enable **Use Test Block Order**, drag scavenging prefabs from `Assets/DuckRails/Blocks` onto the drop area or individual slots, and drag rows to reorder them. The + and - buttons add/remove slots. Launch **Manual sandbox** to play the list from top to bottom. One block is sufficient; the starting station and bridge finale are included automatically.
+Open **Duck Rails > Test Center** (the **Duck Rails Tests** window). Enable **Use Test Block Order**, drag scavenging prefabs from `Assets/DuckRails/Blocks` onto the drop area or individual slots, and drag rows to reorder them. The + and - buttons add/remove slots. Launch **Manual sandbox** to play the list from top to bottom. One block is sufficient; the starting station and bridge finale are included automatically. Page Down advances through blocks in a private expedition.
 
 The list and checkbox save automatically to local `UserSettings/RailTestBlockOrder.asset`, surviving Play Mode and editor restarts. Edits affect the next run hosted by this editor, not the route already loaded. Only private development runs use the override; automated suites ignore it. Enabled order takes precedence over reproduction presets. Disable the checkbox to resume preset/random selection, or **Restore normal random routes** to disable it and clear the active preset while keeping the prefab list.
 
@@ -90,7 +102,9 @@ The backend implementation is in the separate `X:\Work\duck-rails-web` repositor
 
 Admin API: `GET /diagnostics/admin/reports?status=open&offset=0` returns up to 100 summaries and the total; `GET /diagnostics/admin/reports/<id>` downloads evidence; `POST /diagnostics/admin/reports/<id>/status` takes `status` (`open`/`resolved`) and a required resolution note when resolving. All admin routes require existing admin authorization. Client retries cannot overwrite evidence or reopen a resolved report. The upload endpoint enforces a 1 MiB limit, validates IDs/counts and limits upload request rate.
 
-From the Unity project:
+Check diagnostic reports only when the user explicitly asks; inbox queries and local report inspection are not routine prerequisites for bug investigations, tests, or art work.
+
+When requested, run from the Unity project:
 
 ```powershell
 ./Tools/diagnostic-reports.ps1
@@ -112,3 +126,11 @@ From the Unity project:
 - Quest menu mapping, forearm placement/readability, actual fingertip feel, notification comfort and headset performance require a Development Build playtest. Prefab fingertip checks are not a substitute for headset acceptance.
 
 Login startup now displays individual Meta/account-server stages and elapsed time in Test Center. See [login progress](authentication-setup.md#manual-sandbox-login-progress--november-4-2026).
+
+## Minion train boarding loop (November 6)
+
+Use **Duck Rails > Tests > Enemy Boarding** for the isolated Play Mode loop, graph/packet checks, navigation regression, and actual two-client transport loop. **Stop Network Loop** stops and disarms the two-client fixture and restores the previous scenario/quick-start settings. Save scene edits before isolated checks. Train-only baking is under **Duck Rails > Authoring > Bake Train Enemy Navigation**. See [enemy boarding](enemy-boarding.md) for exact coverage, evidence paths and remaining headset acceptance. These fixtures do not read diagnostic reports.
+
+Track crossings: **Duck Rails > Tests > Track Crossings > Graph And Train Avoidance / Motel Play Loop** verifies cross-rail ground connectivity, train detours, departure and stale-path replanning. Offline rebaking is under **Authoring > Track Crossings**. See [track-crossing.md](track-crossing.md).
+
+November 6 dismount follow-up: the boarding loop now tests voluntary dismount and reboarding; **Run Motel Dismount Loop** also checks blocked exits and the speed gate. The two-client boarding loop temporarily uses the motel/depot/campground route, waits for both ready clients, and verifies a committed voluntary exit. It restores the prior route callback/scenario/quick-start setting. Diagnostic snapshots now include bounded enemy transfer state. Report 4d54ba3766a44180a9169831d4a3ce3c was resolved after motel and two-client evidence; see [enemy boarding](enemy-boarding.md).

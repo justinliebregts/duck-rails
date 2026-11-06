@@ -79,7 +79,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (target != null && anchor != target) { anchor = target; panel.transform.SetParent(anchor, false); }
         if (!desktop && hand != null && anchor != null)
         {
-            if (Camera.main != null) panel.transform.position = WristPanelPosition(hand.position, Camera.main.transform.position, Camera.main.transform.up);
+            if (Camera.main != null) panel.transform.position = WristPanelPosition(hand.position, Camera.main.transform.position, Camera.main.transform.up) + (tools ? Camera.main.transform.up * .10f : Vector3.zero);
             panel.transform.localScale = new Vector3(1 / anchor.lossyScale.x, 1 / anchor.lossyScale.y, 1 / anchor.lossyScale.z);
             if (Camera.main != null) panel.transform.rotation = Quaternion.LookRotation(panel.transform.position - Camera.main.transform.position, Camera.main.transform.up);
         }
@@ -89,6 +89,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
             "Room " + (PhotonNetwork.CurrentRoom?.Name ?? "—") + " · " + PhotonSession.Phase + "\n" +
             "Frame " + (RailDiagnostics.Instance?.FrameMs ?? 0).ToString("F1") + " ms · Ping " + PhotonNetwork.GetPing() + " ms\n" +
             "Master " + (PhotonNetwork.MasterClient?.ActorNumber ?? 0) + " · Fuel " + PhotonSession.CurrentFuel.ToString("F1") + "\n" +
+            RailTestLighting.Status + "\n" +
             Held("L", GR.Player.instance.leftPlayerHand) + "  " + Held("R", GR.Player.instance.rightPlayerHand) + "\n" +
             (RailDiagnostics.Instance?.Notice ?? "") + "\n" + (string.IsNullOrEmpty(notice) ?
                 (RailTestTools.Allowed && RailTestTools.Status == "Test tools require a private room" ? "Private test room ready" : RailTestTools.Status) : notice);
@@ -120,7 +121,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (panel != null) Destroy(panel);
         panel = new GameObject("Left arm diagnostics"); panel.SetActive(false);
         var bg = GameObject.CreatePrimitive(PrimitiveType.Cube); bg.name = "Panel"; bg.transform.SetParent(panel.transform, false);
-        bg.transform.localScale = new Vector3(.40f, .44f, .008f); bg.transform.localPosition = new Vector3(0, 0, .016f);
+        bg.transform.localScale = new Vector3(.40f, tools ? .56f : .44f, .008f); bg.transform.localPosition = new Vector3(0, tools ? -.06f : 0, .016f);
         Destroy(bg.GetComponent<Collider>());
         if (panelMaterial == null)
         {
@@ -138,6 +139,8 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
             Button("BRIDGE", -.095f, -.065f, RailTestTools.Bridge); Button("BOARD TRAIN", .095f, -.065f, RailTestTools.Board);
             Button("FUEL 20", -.095f, -.125f, () => RailTestTools.SetFuel(20)); Button("LOADED BAG", .095f, -.125f, RailTestTools.SpawnBag);
             Button("DOWN ME", -.095f, -.185f, RailTestTools.DownSelf); Button("REPEAT ROUTE", .095f, -.185f, RailTestTools.RepeatRoute);
+            Button("BRIGHT LIGHTING", -.095f, -.245f, RailTestLighting.Bright); Button("GAMEPLAY LIGHTING", .095f, -.245f, RailTestLighting.Gameplay);
+            Button("FLASHLIGHT", -.095f, -.305f, RailTestTools.SpawnFlashlight);
         }
         else
         {
@@ -148,7 +151,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         }
     }
     void Rebuild() { anchor = null; leftMarker = rightMarker = null; Build(); panel.SetActive(true); }
-    // The 44 cm panel's lower edge clears the wrist by 10 cm in the viewing plane.
+    // The taller tools page is raised a further 10 cm to retain wrist clearance.
     public static Vector3 WristPanelPosition(Vector3 wrist, Vector3 eye, Vector3 viewUp) =>
         wrist + viewUp.normalized * .32f + (eye - wrist).normalized * .10f;
     public void Close()
@@ -181,9 +184,11 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (GUILayout.Button("Report bug", button)) RailDiagnostics.Instance?.ReportBug();
         if (GUILayout.Button(tools ? "Show status controls" : "Show test tools", button)) tools = !tools;
         if (tools) {
+            GuiPair("Bright Lighting", RailTestLighting.Bright, "Gameplay Lighting", RailTestLighting.Gameplay, button);
             GuiPair("Bridge", RailTestTools.Bridge, "Board train", RailTestTools.Board, button);
             GuiPair("Fuel 20", () => RailTestTools.SetFuel(20), "Loaded bag", RailTestTools.SpawnBag, button);
             GuiPair("Down me", RailTestTools.DownSelf, "Repeat route", RailTestTools.RepeatRoute, button);
+            if (GUILayout.Button("Spawn flashlight", button)) RailTestTools.SpawnFlashlight();
         } else {
             GuiPair("Simulate lag", () => RailTestTools.ApplyNetwork(true), "Normal network", RailTestTools.RestoreNetwork, button);
             GuiPair("Save preset", RailTestTools.SavePreset, "Game menu", () => { FindFirstObjectByType<PauseMenu>()?.OpenFromDiagnostics(); Close(); }, button);

@@ -35,6 +35,7 @@ public static class GrabSurfaceChecks
             if (prefab.GetComponent<PhotonGrabbable>() != null) prefabs.Add(prefab);
         }
         Check(prefabs.Count >= 10, "All current items, including Gorilla, discovered without catalog membership");
+        prefabs.Add(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/RailCoal.prefab"));
         Scene scene = EditorSceneManager.NewPreviewScene();
         var root = new GameObject("Surface grab validation");
         SceneManager.MoveGameObjectToScene(root, scene);
@@ -42,6 +43,7 @@ public static class GrabSurfaceChecks
         {
             foreach (GameObject prefab in prefabs) VerifyPrefab(prefab, root.transform);
             VerifySelectionAndAttachment(root.transform);
+            VerifyCoalInterior(root.transform);
             VerifyGeometry();
             VerifyAllocations(prefabs, root.transform);
         }
@@ -53,6 +55,59 @@ public static class GrabSurfaceChecks
             EditorSceneManager.ClosePreviewScene(scene);
         }
         Debug.Log($"GrabSurfaceChecks PASS: {assertions} assertions; {prefabs.Count} prefabs, free contacts, 6 cm reach, growth, lifecycle and allocation checks.");
+    }
+
+    static void VerifyCoalInterior(Transform parent)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/RailCoal.prefab");
+        var view = prefab.GetComponent<Photon.Pun.PhotonView>();
+        Check(view.observableSearch == Photon.Pun.PhotonView.ObservableSearch.Manual &&
+            view.ObservedComponents[0] == prefab.GetComponent<PhotonGrabbable>() &&
+            view.ObservedComponents[1] == prefab.GetComponent<Photon.Pun.PhotonTransformView>(),
+            "Coal reads recovery/held state before transform");
+        var item = Fixture(parent, prefab.GetComponent<Grabbable>().GrabSurface, Origin);
+        item.transform.localScale = prefab.transform.localScale;
+        var box = item.gameObject.AddComponent<BoxCollider>();
+        var handGo = new GameObject("Coal interior hand");
+        handGo.transform.SetParent(parent, false);
+        var hand = handGo.AddComponent<PlayerHand>();
+        typeof(PlayerHand).GetMethod("Awake", Private).Invoke(hand, null);
+        try
+        {
+            foreach (var rotation in new[] { Quaternion.identity, Quaternion.Euler(19, 43, 12) })
+            {
+                item.transform.SetPositionAndRotation(Origin, rotation);
+                foreach (var local in new[] { Vector3.zero, Vector3.one * .2f, Vector3.right * .49f })
+                {
+                    hand.transform.position += item.transform.TransformPoint(local) - hand.HoldPoint.position;
+                    Physics.SyncTransforms();
+                    Check(hand.FindGrabCandidate() == item, "Coal interior selects on first attempt");
+                    Check(hand.TryGrab(hand.FindGrabCandidate()), "Coal interior attaches on first attempt");
+                    Check(item.TryGetSurfacePoint(hand.HoldPoint.position, out var contact), "Coal contact available");
+                    Near(contact, hand.HoldPoint.position, "Interior pickup still attaches at baked surface");
+                    hand.Release();
+                    item.transform.SetPositionAndRotation(Origin, rotation);
+                }
+            }
+            item.transform.rotation = Quaternion.identity;
+            hand.transform.position += Origin + Vector3.right * .211f - hand.HoldPoint.position;
+            Physics.SyncTransforms();
+            Check(hand.FindGrabCandidate() == null, "Coal outside 6 cm remains out of reach");
+            box.size = Vector3.one * 2;
+            hand.transform.position += Origin - hand.HoldPoint.position;
+            box.isTrigger = true;
+            Physics.SyncTransforms();
+            Check(hand.FindGrabCandidate() == null, "Trigger cannot supply interior pickup");
+            box.isTrigger = false;
+            item.Stash(parent);
+            Physics.SyncTransforms();
+            Check(hand.FindGrabCandidate() == null, "Stashed coal cannot be selected through collider");
+        }
+        finally
+        {
+            hand.Release(); Call(item, "OnDisable");
+            Object.DestroyImmediate(item.gameObject); Object.DestroyImmediate(handGo);
+        }
     }
 
     static void VerifyPrefab(GameObject prefab, Transform parent)

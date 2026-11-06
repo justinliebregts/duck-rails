@@ -35,6 +35,10 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     string pendingRequestJson;
     double pendingRequestAt;
     bool wasDown;
+    bool dawnApplied;
+    UnityEngine.SceneManagement.Scene dawnScene;
+    UnityEngine.Rendering.AmbientMode nightAmbientMode;
+    Color nightAmbient, nightFog;
     double nextTick, nextDownRequest, fallAt;
     AudioSource reviveAudio;
     AudioClip reviveClip;
@@ -57,14 +61,15 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         reviveAudio = gameObject.AddComponent<AudioSource>(); reviveAudio.clip = reviveClip; reviveAudio.loop = true; reviveAudio.volume = .12f;
     }
     void OnEnable() => PhotonNetwork.AddCallbackTarget(this);
-    void OnDisable() { PhotonNetwork.RemoveCallbackTarget(this); requests.Clear(); if (reviveAudio != null) reviveAudio.Stop(); }
+    void OnDisable() { RestoreNightAtmosphere(); PhotonNetwork.RemoveCallbackTarget(this); requests.Clear(); if (reviveAudio != null) reviveAudio.Stop(); }
     void OnDestroy() { if (Instance == this) Instance = null; if (reviveClip != null) Destroy(reviveClip); }
     public static bool CanTarget(PhotonPlayer player)
     {
         if (!PhotonSession.IsRailsRoom || Instance == null) return true;
         if (PhotonSession.Phase != RailPhase.Running || ActorDown(player.photonView.OwnerActorNr)) return false;
-        return player.TryGetHeadPosition(out var head) && RailTrain.Instance != null && !RailTrain.Instance.Contains(head) &&
-            (RailRoute.Instance != null ? RailRoute.Instance.Ready && RailRoute.Instance.IsEncounter(head) : head.x > 4 && head.z >= 140 && head.z <= 550);
+        return player.TryGetHeadPosition(out var head) && RailTrain.Instance != null &&
+            (RailTrain.Instance.Contains(head) ||
+            (RailRoute.Instance != null ? RailRoute.Instance.Ready && RailRoute.Instance.IsEncounter(head) : head.x > 4 && head.z >= 140 && head.z <= 550));
     }
     public static void RequestDown()
     {
@@ -72,6 +77,14 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (instance == null || PhotonNetwork.Time < instance.nextDownRequest || LocalDown) return;
         instance.nextDownRequest = PhotonNetwork.Time + .3;
         instance.Request("down");
+    }
+    public static void RequestEnemyDown(Game.AI.Enemy enemy)
+    {
+        var instance = Instance;
+        if (instance == null || enemy == null || PhotonNetwork.Time < instance.nextDownRequest || LocalDown) return;
+        instance.nextDownRequest = PhotonNetwork.Time + .3;
+        var view = enemy.GetComponent<PhotonView>();
+        instance.Request("enemy-down", view != null ? view.ViewID : 0);
     }
     public void Request(string action, int target = 0)
     {
@@ -167,7 +180,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (localRun != PhotonSession.RunId)
         {
             localRun = PhotonSession.RunId; caughtRun = null; shownFlares.Clear(); wasDown = false; requests.Clear(); pendingRequestJson = null;
-            RenderSettings.ambientLight = new Color(.36f, .42f, .5f); RenderSettings.fogColor = new Color(.07f, .11f, .17f);
+            RestoreNightAtmosphere();
             if (explosion != null) Destroy(explosion);
         }
         Present();
@@ -294,9 +307,17 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             return;
         }
 #endif
-        if (action == "down")
+        if (action == "down" || action == "enemy-down")
         {
-            if (p.down || now < p.protectedUntil || RailTrain.Instance.Contains(position)) return;
+            if (PhotonSession.Phase != RailPhase.Running) return;
+            if (p.down || now < p.protectedUntil) return;
+            if (RailTrain.Instance.Contains(position))
+            {
+                var attacker = action == "enemy-down" ? PhotonView.Find(target)?.GetComponent<Game.AI.Enemy>() : null;
+                if (attacker == null || attacker.Boarding == null || !attacker.Boarding.IsAboard || attacker.IsDormant
+                    || attacker.IsKnocked || attacker.IsStunned || attacker.Root == null
+                    || Vector3.Distance(attacker.Root.position, position) >= 2f) return;
+            }
             p.down = true; p.downs++;
             if (p.flareAt <= 0 || now - p.flareAt >= RailRunState.FlareCooldown) { p.flareAt = now; p.flarePosition = position; }
             return;
@@ -398,10 +419,33 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             { if (fallAt <= 0) fallAt = now; if (now - fallAt > 2) TeleportAboard(); }
             else fallAt = 0;
             if (State.success && now - State.finishedAt > 14)
-            { RenderSettings.ambientLight = new Color(.7f, .65f, .5f); RenderSettings.fogColor = new Color(.65f, .73f, .78f); }
+                ApplyDawnAtmosphere();
         }
         if (Camera.main != null) Camera.main.backgroundColor = RenderSettings.fogColor;
         if (runningLabels != null) foreach (var label in runningLabels) if (label != null) label.gameObject.SetActive(!State.finished);
+    }
+    void ApplyDawnAtmosphere()
+    {
+        if (dawnApplied) return;
+        // Capture at the transition, not startup: live Lighting-window edits are authoritative.
+        dawnScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        nightAmbientMode = RenderSettings.ambientMode;
+        nightAmbient = RenderSettings.ambientLight;
+        nightFog = RenderSettings.fogColor;
+        dawnApplied = true;
+        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
+        RenderSettings.ambientLight = new Color(.7f, .65f, .5f);
+        RenderSettings.fogColor = new Color(.65f, .73f, .78f);
+    }
+    void RestoreNightAtmosphere()
+    {
+        if (!dawnApplied) return;
+        dawnApplied = false;
+        // A newly loaded scene owns its environment; never copy Expedition settings into Compound.
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene() != dawnScene) return;
+        RenderSettings.ambientMode = nightAmbientMode;
+        RenderSettings.ambientLight = nightAmbient;
+        RenderSettings.fogColor = nightFog;
     }
     public void SeedCargo()
     {
@@ -421,7 +465,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         {
             string marker = "enemy-" + i;
             bool exists = HasMarker(PhotonSession.RunId, marker);
-            if (!exists) PhotonNetwork.InstantiateRoomObject(i < enemyTypes.Length ? RailEnemySpawns.Prefab(enemyTypes[i]).name : enemyPrefab.name, enemyPoints[i].position, enemyPoints[i].rotation, 0, new object[] { "rails", PhotonSession.RunId, marker });
+            if (!exists) PhotonNetwork.InstantiateRoomObject(RailEnemySpawns.MinionsOnly ? RailEnemySpawns.Prefab(0).name : i < enemyTypes.Length ? RailEnemySpawns.Prefab(enemyTypes[i]).name : enemyPrefab.name, enemyPoints[i].position, enemyPoints[i].rotation, 0, new object[] { "rails", PhotonSession.RunId, marker });
         }
     }
     static bool HasMarker(string run, string marker)

@@ -21,6 +21,8 @@ namespace Game.AI
         Vector3 _netPos;
         Quaternion _netRot = Quaternion.identity;
         bool _hasSample;
+        bool _trainSample, _netHasAim;
+        Vector3 _netAim;
         const float PredictionTimeout = 2f;
         const float HandoffGrace = 0.35f;
         // Above the current fastest ground chase (6.5 m/s), so a moving
@@ -75,6 +77,8 @@ namespace Game.AI
 
         public void ResetRemotePose(Vector3 position, Quaternion rotation)
         {
+            _trainSample = _netHasAim = false;
+            _enemy?.Boarding?.ResetFrame();
             _netPos = position;
             _netRot = rotation;
             _hasSample = false;
@@ -97,10 +101,20 @@ namespace Game.AI
                 bool aim = _enemy.TryGetAimPoint(out Vector3 aimPoint);
                 float yaw = 0f;
                 float pitch = 0f;
-                if (aim) EnemyPosePacket.AimAngles(root.position, aimPoint, out yaw, out pitch);
-                _write.Set(root.position, root.rotation, (byte)_enemy.CurrentState, aim, yaw, pitch);
+                Transform frame = _enemy.Boarding != null ? _enemy.Boarding.Frame : null;
+                Vector3 position = frame != null ? frame.InverseTransformPoint(root.position) : root.position;
+                Quaternion rotation = frame != null ? Quaternion.Inverse(frame.rotation) * root.rotation : root.rotation;
+                if (aim) EnemyPosePacket.AimAngles(position, frame != null ? frame.InverseTransformPoint(aimPoint) : aimPoint, out yaw, out pitch);
+                _write.Set(position, rotation, (byte)_enemy.CurrentState, aim, yaw, pitch);
+                if (frame != null) _write.Flags |= EnemyPosePacket.TrainFlag;
+                if (_enemy.Boarding != null && _enemy.Boarding.OwnsBoundary) _write.Flags |= EnemyPosePacket.DisplacedFlag;
                 if (_enemy.IsJumping) _write.Flags |= EnemyPosePacket.JumpFlag;
                 if (_enemy.IsKnocked) _write.Flags |= EnemyPosePacket.KnockFlag;
+                // Train-local poses can remain identical while travelling. Refresh
+                // the complete snapshot twice a second even with UnreliableOnChange,
+                // so a lost transition or a late join cannot strand an observer.
+                if (_enemy.Boarding != null && ((long)(PhotonNetwork.Time * 2d) & 1) != 0)
+                    _write.Flags |= EnemyPosePacket.HeartbeatFlag;
                 stream.SendNext(_write);
                 EnemyPosePacket swap = _write;
                 _write = _sent;
@@ -119,13 +133,13 @@ namespace Game.AI
             _sampleController = photonView.ControllerActorNr;
             _netPos = packet.Position;
             _netRot = packet.Rotation;
+            _trainSample = (packet.Flags & EnemyPosePacket.TrainFlag) != 0;
+            _enemy.Boarding?.SetRemoteFrame(_trainSample, (packet.Flags & EnemyPosePacket.DisplacedFlag) != 0);
             _enemy.SetRemoteState((Enemy.State)packet.State);
             _enemy.SetAirbornePose((packet.Flags & EnemyPosePacket.JumpFlag) != 0);
             _enemy.SetRemoteKnocked(packet.Knocked);
-            if (packet.HasAim)
-                _enemy.SetRemoteAim(true, packet.AimPoint(_netPos));
-            else
-                _enemy.SetRemoteAim(false, default);
+            _netHasAim = packet.HasAim;
+            _netAim = packet.AimPoint(_netPos);
             EnemyPosePacket.Return(packet);
             _hasSample = true;
         }
@@ -169,7 +183,10 @@ namespace Game.AI
             {
                 if (_enemy == null || _enemy.Root == null || _enemy.IsDormant) return;
                 _enemy.ReceiveTrustedHit(velocity, hitPosition);
-                photonView.RPC(nameof(RpcHitConfirmed), info.Sender, sequence, _enemy.Root.position, _enemy.Root.rotation);
+                Transform frame = _enemy.Boarding != null ? _enemy.Boarding.Frame : null;
+                photonView.RPC(nameof(RpcHitConfirmed), info.Sender, sequence,
+                    frame != null ? frame.InverseTransformPoint(_enemy.Root.position) : _enemy.Root.position,
+                    frame != null ? Quaternion.Inverse(frame.rotation) * _enemy.Root.rotation : _enemy.Root.rotation, frame != null);
             }
             else _enemy.ReceiveRemoteHitEffect(velocity, hitPosition);
         }
@@ -199,7 +216,7 @@ namespace Game.AI
         }
 
         [PunRPC]
-        void RpcHitConfirmed(int sequence, Vector3 position, Quaternion rotation, PhotonMessageInfo info)
+        void RpcHitConfirmed(int sequence, Vector3 position, Quaternion rotation, bool aboard, PhotonMessageInfo info)
         {
             if (_pendingHit == 0 || info.Sender != photonView.Controller || sequence != _pendingHit) return;
             _hitConfirmed = true;
@@ -211,6 +228,8 @@ namespace Game.AI
             {
                 _netPos = position;
                 _netRot = rotation;
+                _trainSample = aboard;
+                _enemy.Boarding?.SetRemoteFrame(aboard, true);
                 _sampleTime = _confirmedTime;
                 _sampleController = photonView.ControllerActorNr;
                 _hasSample = true;
@@ -238,6 +257,7 @@ namespace Game.AI
         public void Apply(Transform root, float dt)
         {
             if (HasAuthority) { ClearPrediction(); return; }
+            _enemy.Boarding?.Carry();
             int controller = photonView.ControllerActorNr;
             if ((_pendingHit != 0 || _reconciling) && _predictionController != controller)
             {
@@ -257,26 +277,34 @@ namespace Game.AI
         void ApplySample(Transform root, float dt)
         {
             if (!_hasSample || _enemy == null || root == null) return;
+            Transform frame = _trainSample && RailTrain.Instance != null ? RailTrain.Instance.transform : null;
+            if (_trainSample && frame == null) return;
+            // A pose may arrive before the train navigation component is ready.
+            if (_trainSample && _enemy.Boarding != null && !_enemy.Boarding.IsAboard)
+                _enemy.Boarding.SetRemoteFrame(true, false);
+            Vector3 targetPosition = frame != null ? frame.TransformPoint(_netPos) : _netPos;
+            Quaternion targetRotation = frame != null ? frame.rotation * _netRot : _netRot;
+            _enemy.SetRemoteAim(_netHasAim, frame != null ? frame.TransformPoint(_netAim) : _netAim);
             bool protectedHit = ProtectsLocalHitter;
-            if (!protectedHit && (root.position - _netPos).sqrMagnitude > snapDistance * snapDistance)
+            if (!protectedHit && (root.position - targetPosition).sqrMagnitude > snapDistance * snapDistance)
             {
-                _enemy.SetRootPose(_netPos, _netRot);
+                _enemy.SetRootPose(targetPosition, targetRotation);
                 return;
             }
 
             float positionRate = protectedHit ? Mathf.Max(positionSmooth, ReconcileSmoothing) : positionSmooth;
             float positionT = 1f - Mathf.Exp(-positionRate * dt);
             float rotationT = 1f - Mathf.Exp(-rotationSmooth * dt);
-            Vector3 pos = Vector3.Lerp(root.position, _netPos, positionT);
+            Vector3 pos = Vector3.Lerp(root.position, targetPosition, positionT);
             // ApplySample runs after local shove prediction. Also cover a timed
             // out pending hit and the final grace period; never cap the shove.
             if (protectedHit)
                 pos = Vector3.MoveTowards(root.position, pos, ReconcileSpeed * Mathf.Max(0f, dt));
-            Quaternion rot = Quaternion.Slerp(root.rotation, _netRot, rotationT);
+            Quaternion rot = Quaternion.Slerp(root.rotation, targetRotation, rotationT);
             _enemy.SetRootPose(pos, rot);
             // Allow normal interpolation lag for a moving target; a large
             // accumulated prediction error must settle before contact is lethal.
-            if (_reconciling && (pos - _netPos).sqrMagnitude <= 0.25f)
+            if (_reconciling && (pos - targetPosition).sqrMagnitude <= 0.25f)
             {
                 _reconciling = false;
                 _protectUntil = Time.time + HandoffGrace;

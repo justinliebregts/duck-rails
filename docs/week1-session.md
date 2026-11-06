@@ -4,6 +4,19 @@
 
 User requested coal support ground-pushing/vaulting like the bat and gold bars. Coal's prefab had `locomotionWhileHeld` disabled and no `locomotionCollider`. Enabled the inherited held-item locomotion path using its existing BoxCollider, and retained this configuration in `RailWeek2Builder.Coal()`. Unity MCP verified the Duck Rails project, refreshed assets, and confirmed the imported prefab flag/collider reference and compiled builder type. Source diff whitespace checks passed. Actual headset vaulting feel and multiplayer behavior remain unverified.
 
+## Coal pickup maintenance — November 2, 2026
+
+Coal already uses `PhotonGrabbable`, takeover ownership, and an editor-baked `GrabSurfaceData` mesh. It shares the normal surface attachment, release, bag and recovery paths; `RailCoal` adds furnace consumption only. Two discrepancies were corrected:
+
+- The shared surface selector rejected palms deep inside the 30 cm coal cube because every surface was more than the 6 cm reach tolerance away. It now accepts an enabled, non-trigger solid collider's interior while retaining the baked mesh for attachment and outside reach. Stashed, remotely held and otherwise unselectable items retain their normal gates. Non-convex mesh colliders are excluded from the interior query.
+- Coal's auto-discovered Photon observation order put transform data before the grabbable's recovery/held-state header. Its prefab and builder now use explicit grabbable → transform → cargo order, matching the standard item contract. The connection partition is now `-duck-rails-session-v10` because the serialized field order changed. Rebuild/restart every participating client; old builds cannot join these rooms.
+
+Unity compilation, `GrabSurfaceChecks.Run()` (including coal interior selection, rotated contacts, baked attachment, outside reach and stash/trigger rejection) and `RailWeek2Checks.Run()` passed. The coal multiplayer fixture now uses `FindGrabCandidate`/`TryGrab` with a deliberately positioned palm instead of bypassing selection with `ForceGrab`; it also respects the updated head-centered warp contract. This remains synthetic desktop setup, not headset reach/feel acceptance.
+
+Two authenticated editor clients passed at 2026-11-03 00:40:59 UTC (November 2 Vancouver): non-master first-attempt interior selection and ownership, release/consumption while stopped and moving, and repeat after master handoff; exactly-once fuel/removal agreed on both peers. [Main evidence](validation/coal-pickup/main.txt), [remote evidence](validation/coal-pickup/remote.txt), [runner result](validation/coal-pickup/result.txt). The runner stopped Play and restored its prior settings. An earlier attempt was stopped because the fixture's palm-positioning loop did not converge; that incomplete result remains in `Logs/Diagnostics/test-20261103-003718/`. Startup produced an XR form-factor warning/error and a transient sign-in retry, but both clients subsequently connected and completed the suite.
+
+The reported two non-masters blocked until master standby is not yet reproduced as that exact three-headset scenario. Do not treat these corrections as proof of its root cause or close that acceptance item. The diagnostic backend query succeeded with ten open reports after retrying outside the network-restricted sandbox; none was resolved by this investigation.
+
 October 30 input update: the historical DesktopPlayer controls/evidence below predate the [shared DuckPlayer rig](shared-rig.md). Current gameplay uses Keyboard or VR input on DuckPlayer, supports F2 switching during Play, Q/E reach, and right mouse grip on both hands. Rails live fixtures now warp the shared rig.
 
 ## Default editor launch from Compound — October 29

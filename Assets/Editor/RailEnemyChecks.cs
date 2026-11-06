@@ -30,6 +30,7 @@ public static class RailEnemyChecks
             var graph = CrawlGraph.Load(b.graph);
             foreach (var set in b.variations)
             {
+                Check(set.enemies.Any(p => RailEnemySpawns.Side(p) < 0) && set.enemies.Any(p => RailEnemySpawns.Side(p) > 0), b.id + " candidates on both rail sides");
                 Check(set.enemies.Length == 6 && set.enemies.All(p => b.enemyBounds.Contains(p.position) && graph.FindNearestGroundNode(p.position, 1) >= 0), b.id + " six bounded baked-navigation candidates");
                 var signatures = new HashSet<string>(); var counts = new HashSet<int>();
                 for (int seed = 0; seed < 100; seed++)
@@ -39,6 +40,7 @@ public static class RailEnemyChecks
                     var state = JsonUtility.FromJson<RailRouteState>(JsonUtility.ToJson(new RailRouteState { enemySeed = seed }));
                     RailEnemySpawns.Select(set.enemies, new System.Random(seed), points, types);
                     RailEnemySpawns.Select(set.enemies, new System.Random(state.enemySeed), copyPoints, copyTypes);
+                    if (!points.Any(p => RailEnemySpawns.Side(p) < 0) || !points.Any(p => RailEnemySpawns.Side(p) > 0)) throw new Exception("One-sided encounter: " + b.id + " seed " + seed);
                     if (points.Count < 4 || points.Count > 6 || points.Distinct().Count() != points.Count || types.Distinct().Count() != 4 || !points.SequenceEqual(copyPoints) || !types.SequenceEqual(copyTypes)) throw new Exception("Invalid/re-rolled encounter: " + b.id);
                     counts.Add(points.Count); signatures.Add(string.Join(",", points.Select(p => p.name)) + string.Join(",", types));
                 }

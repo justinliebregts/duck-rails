@@ -10,6 +10,7 @@ public class Grabbable : MonoBehaviour
     [SerializeField, HideInInspector] GrabSurfaceData grabSurface;
     HeadEquipment grabEquipment;
     bool surfaceRegistered;
+    readonly List<Collider> interiorGrabColliders = new List<Collider>(8);
     const float GripContactTolerance = 0.001f;
     public GrabSurfaceData GrabSurface => grabSurface;
     public virtual bool CanSelectSurface => CanBeGrabbed && (grabEquipment == null || !grabEquipment.IsEquipped);
@@ -42,6 +43,18 @@ public class Grabbable : MonoBehaviour
         if (!grabSurface.WithinReach(matrix, query, maxDistanceSquared) ||
             !grabSurface.TryClosestPoint(matrix, query, out Vector3 closest)) return false;
         distanceSquared = (closest - query).sqrMagnitude;
+        // Thick items can surround the palm farther than the reach tolerance from
+        // every surface. Accept their solid interior, but keep external reach and
+        // the eventual hand attachment based on the baked visible mesh.
+        GetComponentsInChildren(interiorGrabColliders);
+        foreach (var col in interiorGrabColliders)
+        {
+            if (!col.enabled || col.isTrigger || col.GetComponentInParent<Grabbable>() != this) continue;
+            if (col is MeshCollider mesh && !mesh.convex) continue;
+            if ((col.ClosestPoint(query) - query).sqrMagnitude > 1e-10f) continue;
+            distanceSquared = 0f;
+            break;
+        }
         return distanceSquared <= maxDistanceSquared;
     }
 

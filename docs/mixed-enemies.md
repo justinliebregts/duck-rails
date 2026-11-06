@@ -19,3 +19,17 @@ Use **Duck Rails > Authoring > Install Mixed Enemies** to install missing varian
 - The backend diagnostic inbox was unavailable due to DNS failure. Existing local reports were inspected and left open; this work does not resolve them.
 
 Still required: real-client type/count agreement through late joining and master loss, networked bomber lifecycle, natural melee/smasher/spider encounters, crew-size balance, and Quest CPU/rendering/network performance at the higher population. Single-editor smoke tests do not close those acceptance gates.
+
+## Enemies on both rail sides — November 6, 2026
+
+User requested enemy spawning on both sides in every block. The audit found 12 of 17 encounter prefabs had only right-side candidates (including the bridge finale). Eleven also restricted encounter bounds to the right; Hospital already had bilateral bounds/navigation but only eastern markers. Canyon, Quarry, Passenger Station, Skyscraper Works and Nuclear Power Plant already had both-side candidates.
+
+`RailBothSidesAuthoring` expands the one-sided bounds horizontally, retains encounter Z spacing, adds railway navigation exclusions, bakes both sides offline and moves three of six candidates west in each affected variation. Existing two-sided authored layouts are retained. The scene-owned Expedition finale receives the matching bounds, graph and marker positions. StartingStation remains enemy-free. No lighting or scenery rebuild is required.
+
+Selection still produces 4–6 enemies and all four enemy types, but guarantees at least one spawn per rail side, including the asymmetric Canyon and underground candidates. It preserves the seeded RNG stream and exact replay. The session partition is now `session-v11`; rebuild/restart all clients together because old assets/selection produce different enemy positions. The mixed-enemy installer preserves already bilateral candidate layouts; the full Week 3 builder runs the bilateral migration after installation.
+
+Use **Duck Rails > Authoring > Enable Enemies On Both Sides** after rebuilding a location with a legacy one-sided builder. Save/close Prefab Mode before running this scene-changing authoring command. Existing location art notes about east-only navigation are historical and superseded by this request.
+
+Unity playtesting/verification was omitted at the user's request. Updated regression assertions are provided for subsequent runs; no multiplayer or headset acceptance is claimed.
+
+Installation result: the authoring command completed successfully and saved all 12 affected prefabs and crawlgraphs plus the scene-owned finale. The five already bilateral encounter prefabs were retained. Source whitespace checks passed. Regression suites and gameplay validation were not run.

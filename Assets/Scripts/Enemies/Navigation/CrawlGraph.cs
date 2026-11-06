@@ -56,6 +56,10 @@ namespace Game.AI
         public int[] ChunkStart;         // ChunkCount + 1
 
         public int ClusterCount;
+        // Runtime placement of a separately baked moving surface. Serialized data and
+        // cell keys stay local; all public position queries remain world-space.
+        public Transform Frame { get; set; }
+        Vector3 ToWorld(Vector3 point) => Frame != null ? Frame.TransformPoint(point) : point;
         public float[] ClusterCenter;    // xyz interleaved
         public int[] ClusterComponent;
         public int[] ClusterNode;        // representative node (closest to centre)
@@ -151,12 +155,16 @@ namespace Game.AI
         // ------------------------------------------------------------------ node accessors
 
         public Vector3 GetPosition(int node)
+            => ToWorld(GetLocalPosition(node));
+
+        public Vector3 GetLocalPosition(int node)
         {
             int i = node * 3;
             return new Vector3(NodePos[i], NodePos[i + 1], NodePos[i + 2]);
         }
 
-        public Vector3 GetNormal(int node) => UnpackNormal(NodeNormal[node]);
+        public Vector3 GetNormal(int node) => Frame != null
+            ? Frame.TransformDirection(UnpackNormal(NodeNormal[node])) : UnpackNormal(NodeNormal[node]);
 
         public CrawlSurface GetSurface(int node) => (CrawlSurface)NodeSurface[node];
 
@@ -172,6 +180,9 @@ namespace Game.AI
         public int GetComponent(int node) => ClusterComponent[NodeCluster[node]];
 
         public Vector3 GetClusterCenter(int cluster)
+            => ToWorld(GetLocalClusterCenter(cluster));
+
+        public Vector3 GetLocalClusterCenter(int cluster)
         {
             int i = cluster * 3;
             return new Vector3(ClusterCenter[i], ClusterCenter[i + 1], ClusterCenter[i + 2]);
@@ -213,13 +224,14 @@ namespace Game.AI
 
         public void CellOf(Vector3 p, out int x, out int y, out int z)
         {
+            if (Frame != null) p = Frame.InverseTransformPoint(p);
             Vector3 l = (p - Origin) / CellSize;
             x = Mathf.FloorToInt(l.x);
             y = Mathf.FloorToInt(l.y);
             z = Mathf.FloorToInt(l.z);
         }
 
-        public Vector3 CellCenter(int x, int y, int z) => Origin + new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) * CellSize;
+        public Vector3 CellCenter(int x, int y, int z) => ToWorld(Origin + new Vector3(x + 0.5f, y + 0.5f, z + 0.5f) * CellSize);
 
         public int ChunkOfCell(int x, int y, int z) =>
             x / ChunkCells + ChunksX * (y / ChunkCells + ChunksY * (z / ChunkCells));

@@ -1,0 +1,16 @@
+2026-11-03T00:40:20.9568038Z stage=0 actor=2 master=False
+2026-11-03T00:40:23.4342758Z stage=1 actor=2 master=False
+2026-11-03T00:40:26.4549491Z Interior selection pickup accepted actor=2
+2026-11-03T00:40:26.7569062Z Released actual held coal at offset=(0.00, 0.30, 0.00) owner=2
+2026-11-03T00:40:28.5195543Z PASS stage=1 consumed=21 fuel=12.5 expected=12.5 removed=true
+2026-11-03T00:40:32.7722194Z stage=2 actor=2 master=False
+2026-11-03T00:40:37.0137088Z stage=3 actor=2 master=False
+2026-11-03T00:40:40.0222228Z Interior selection pickup accepted actor=2
+2026-11-03T00:40:40.3275906Z Released actual held coal at offset=(0.00, 0.30, 0.00) owner=2
+2026-11-03T00:40:42.0903661Z PASS stage=3 consumed=36 fuel=14.1498 expected=14.1498 removed=true
+2026-11-03T00:40:46.3611846Z stage=4 actor=2 master=False
+2026-11-03T00:40:50.5341246Z stage=5 actor=2 master=True
+2026-11-03T00:40:55.5569743Z PASS stage=5 consumed=33 fuel=14.7968 expected=14.7968 removed=true
+2026-11-03T00:40:59.8225850Z stage=6 actor=2 master=True
+2026-11-03T00:40:59.8261205Z Unique avatars after handoff 1:1001,2:2001
+2026-11-03T00:40:59.8271433Z PASS stopped, moving, and after master handoff; exactly-once fuel/removal agreed on two clients

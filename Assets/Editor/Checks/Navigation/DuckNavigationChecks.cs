@@ -127,7 +127,7 @@ public static class DuckNavigationChecks
         var manager = managerGo.AddComponent<EnemyManager>();
         var graph = (CrawlGraph)typeof(ResumablePathChecks).GetMethod("Line", Static).Invoke(null, new object[] { 100, 100 });
         var enemyFinder = new CrawlPathfinder(graph) { DirectSearchDistance = float.MaxValue };
-        Set(manager, "<Graph>k__BackingField", graph); Set(manager, "<Pathfinder>k__BackingField", enemyFinder);
+        Set(manager, "worldGraph", graph); Set(manager, "<Pathfinder>k__BackingField", enemyFinder);
         typeof(EnemyManager).GetField("<Instance>k__BackingField", Static).SetValue(null, manager);
         Call(duck, "PrepareNavigation");
         var ownFinder = (CrawlPathfinder)Get(duck, "companionPathfinder");

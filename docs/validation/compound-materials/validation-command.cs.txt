@@ -1,0 +1,35 @@
+using System; using System.IO; using System.Linq; using System.Text; using UnityEngine; using UnityEditor; using UnityEditor.SceneManagement;
+internal class CommandScript : IRunCommand {
+ public void Execute(ExecutionResult result) {
+ if(Application.dataPath!="X:/Work/duck-rails/Assets" || Lightmapping.isRunning)throw new Exception("Wrong project or bake still running");
+ var root=GameObject.Find("Compound Geometry/SubwayCompound"); var log=new StringBuilder(); int count=0,vertices=0,slots=0;
+ var names=new[]{"Stained plaster","Faded olive paint","Exposed brick","Worn concrete","Oxidized steel","Dark roofing","Old timber","Worn yellow","Ground asphalt"};
+ var tiles=new[]{new Rect(0,64,64,64),new Rect(0,192,64,64),new Rect(64,0,32,32),new Rect(128,128,64,64),new Rect(32,64,64,32),new Rect(128,64,64,64),new Rect(192,64,64,64),new Rect(0,32,32,32),new Rect(128,0,64,64)};
+ foreach(var r in root.GetComponentsInChildren<MeshRenderer>()) {
+ var f=r.GetComponent<MeshFilter>(); if(!f || !AssetDatabase.GetAssetPath(f.sharedMesh).StartsWith(RailCompoundMaterials.Folder))continue;
+ var m=f.sharedMesh; if(m.uv2.Length!=m.vertexCount || m.subMeshCount!=r.sharedMaterials.Length)throw new Exception("UV2/material mismatch "+r.name);
+ var uv=m.uv;
+ for(int s=0;s<m.subMeshCount;s++){var mat=r.sharedMaterials[s];int index=Array.IndexOf(names,mat.name);if(index<0)throw new Exception("Unexpected material");var t=mat.mainTexture;var rect=tiles[index];
+ foreach(var i in m.GetTriangles(s)){float x=uv[i].x*t.width,y=(1-uv[i].y)*t.height;if(x<rect.x+.49f||x>rect.xMax-.49f||y<rect.y+.49f||y>rect.yMax-.49f)throw new Exception("Atlas bleed "+r.name);}
+ }
+ if(r.lightmapIndex<0 || r.lightmapIndex>=LightmapSettings.lightmaps.Length)throw new Exception("Missing baked receiver "+r.name);
+ count++;vertices+=m.vertexCount;slots+=m.subMeshCount;
+ }
+ log.AppendLine("PASS "+count+" mapped surfaces: atlas UVs inside correct Town/Industrial tiles, complete UV2, matching materials and valid lightmap indices.");
+ log.AppendLine("Mapped instance vertices: "+vertices+"; material slots: "+slots);
+ log.AppendLine("Lightmaps: "+LightmapSettings.lightmaps.Length+"; baked probes: "+(LightmapSettings.lightProbes?LightmapSettings.lightProbes.count:0));
+ var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Compound/SubwayV2/SubwayCompound.prefab");
+ int persisted=prefab.GetComponentsInChildren<MeshFilter>().Count(f=>AssetDatabase.GetAssetPath(f.sharedMesh).StartsWith(RailCompoundMaterials.Folder));
+ if(persisted!=count)throw new Exception("Prefab appearance persistence mismatch "+persisted);
+ log.AppendLine("PASS matching "+persisted+" prefab mesh references.");
+ Directory.CreateDirectory("docs/validation/compound-materials");
+ RailSubwayCompoundChecks.Validate();
+ File.Copy("docs/validation/subway-compound-v2/editmode-checks.txt","docs/validation/compound-materials/subway-checks.txt",true);
+ RailSessionChecks.Run();
+ log.AppendLine("PASS subway geometry/binding checks and session checks.");
+ EditorSceneManager.SaveScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene());AssetDatabase.SaveAssets();
+ RailCompoundLightingPass.Capture("materials-after");
+ File.WriteAllText("docs/validation/compound-materials/checks.txt",log.ToString());
+ result.Log(log.ToString());
+ }
+}

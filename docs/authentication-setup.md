@@ -50,6 +50,16 @@ Compilation and three callback-wait checks passed. An authenticated Manual sandb
 
 User follow-up: the user reports the startup issue appears fixed after these changes. The original stalled stage remains unconfirmed.
 
+### Quest user identity unavailable — November 2, 2026
+
+Justin's installed APK reports Meta error 2002, `Logged-in user id is unavailable`, from `Users.GetLoggedInUser`. The current sign-in sequence reaches this call only after initialization and entitlement succeed; it has not yet called the Duck Rails registration backend. The configured mobile App ID remains `28912202281742343` and Android package is `com.gunraiders.duckrails`. The installed APK's settings and headset account state have not been independently verified.
+
+Check that the first APK has successfully reached a release channel for this app/package, and that the active headset account has access. Meta documents that the first channel upload establishes the package-name/App-ID mapping: https://developers.meta.com/vr/documentation/unity/ps-entitlement-check/. Installing through that channel provides a useful comparison with the sideloaded build. If mapping and access are already established, check the headset's active Meta profile and retry after a headset restart. These are diagnostic next steps, not a verified fix.
+
+Do not identify this error as proof of a missing Data Use Checkup grant: Meta's current API access reference says `users.get_logged_in_user` reads a device ContentProvider and is not DUC-gated. User ID grants still matter for subsequent organization-scoped identity retrieval. Reference: https://github.com/meta-quest/agentic-tools/blob/main/skills/hz-psdk-integration/references/data-use-checkup.md.
+
+Investigation verified the Duck Rails Unity MCP project and checked local report summaries. The sandbox-restricted inbox query failed name resolution; retry with authorized network access succeeded and returned ten open WindowsEditor reports. No reports were resolved and no runtime authentication changes were made. Headset recovery remains unverified.
+
 On October 28, 2026, `go test ./middleware ./config ./handler -count=1` passed, including a new multipart Unity request/session-response test and existing valid/invalid Editor proof checks. `go build` passed. `dotnet build Assembly-CSharp.csproj` passed with 429 warnings and zero errors. These are source-level/local checks; Meta is stubbed in the backend contract test.
 
 Justin confirmed backend deployment and Photon authentication setup completed on October 28. The Week 1 implementation subsequently exercised real Meta/backend sign-in and authenticated Photon room entry with DesktopPlayer. Rejected credentials, session refresh, multiple concurrent accounts and headset behavior still require their own evidence. See `week1-session.md`; no multi-client acceptance is claimed from compilation or one desktop client.

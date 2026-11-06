@@ -116,10 +116,27 @@ public static class RailCoalLiveChecks
             {
                 if (!grabbed)
                 {
-                    var coal = UnityEngine.Object.FindObjectsByType<RailCoal>(FindObjectsSortMode.None).First(c => !c.GetComponent<PhotonGrabbable>().IsHeldByAnyPlayer);
-                    coalId = coal.GetComponent<PhotonView>().ViewID;
-                    Teleport(coal.transform.position + Vector3.left);
-                    GR.Player.instance.rightPlayerHand.ForceGrab(coal.GetComponent<PhotonGrabbable>());
+                    if (coalId == 0)
+                    {
+                        var coal = UnityEngine.Object.FindObjectsByType<RailCoal>(FindObjectsSortMode.None).First(c => !c.GetComponent<PhotonGrabbable>().IsHeldByAnyPlayer);
+                        coalId = coal.GetComponent<PhotonView>().ViewID;
+                    }
+                    var selected = PhotonView.Find(coalId).GetComponent<PhotonGrabbable>();
+                    var hand = GR.Player.instance.rightPlayerHand;
+                    Teleport(selected.transform.position + Vector3.left);
+                    // Fixture placement only: put the palm inside the real network
+                    // item, then exercise the same candidate selector as a grip edge.
+                    // Restore its authored local pose before the next animated frame.
+                    var savedPalm = hand.HoldPoint.localPosition;
+                    try
+                    {
+                        hand.HoldPoint.position = selected.transform.position;
+                        Physics.SyncTransforms();
+                        Require(hand.FindGrabCandidate() == selected, "Non-master selects coal with palm inside on first grip");
+                        Require(hand.TryGrab(hand.FindGrabCandidate()), "Non-master coal pickup attaches on first attempt");
+                    }
+                    finally { hand.HoldPoint.localPosition = savedPalm; }
+                    Log("Interior selection pickup accepted actor=" + PhotonNetwork.LocalPlayer.ActorNumber);
                     grabbed = true;
                     PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { ["test.coal.id"] = coalId });
                 }
@@ -128,7 +145,13 @@ public static class RailCoalLiveChecks
                 {
                     var target = run.furnace.position + Vector3.up * .35f;
                     var delta = target - view.transform.position;
-                    if (delta.magnitude > .06f) Teleport(GR.Player.instance.transform.position + delta);
+                    if (delta.magnitude > .06f)
+                    {
+                        var player = NewPlayer.instance;
+                        var origin = player.headCollider.transform.position;
+                        origin.y = player.transform.position.y;
+                        Teleport(origin + delta);
+                    }
                     else
                     {
                         beforeFuel = PhotonSession.CurrentFuel; beforeDistance = RailTrain.Instance.Distance;

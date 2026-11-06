@@ -164,6 +164,22 @@ public sealed class RailRoute : MonoBehaviour
         }
         position = finaleRoot.position + new Vector3(0, 1, distance); rotation = Quaternion.identity;
     }
+    // Authored blocks run along world +Z; use their footprint length, not curved track distance.
+    public bool TryBlockSkip(Vector3 position, out Vector3 destination)
+    {
+        destination = position;
+        RailBlock current = null;
+        bool Contains(RailBlock block) => block != null && position.z >= block.transform.position.z &&
+            position.z < block.transform.position.z + block.length;
+        if (Contains(startingStation)) current = startingStation;
+        else foreach (var block in Blocks) if (Contains(block)) { current = block; break; }
+        if (current == null || finale == null || current.length <= 0) return false;
+        var target = position + new Vector3(0, 1, current.length);
+        if (target.z >= finale.transform.position.z + finale.length) return false;
+        destination = target;
+        return true;
+    }
+
     public Bounds EnemyBounds(Vector3 position)
     {
         foreach (var block in Blocks)

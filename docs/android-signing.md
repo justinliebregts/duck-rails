@@ -2,15 +2,17 @@
 
 The local Duck Rails signing key is stored in `UserSettings/AndroidSigning/duck-rails.keystore`, with alias `duckrails`. The keystore and key share a generated password stored in `UserSettings/AndroidSigning/password.txt`. These files are excluded from Git. Keep a secure backup of both files; future updates signed with this identity require the same key.
 
-In Unity, open **Project Settings > Player > Android > Publishing Settings**, enable **Custom Keystore**, select that keystore, enter the password, select `duckrails`, and enter the same password for the key. Passwords must be entered again after restarting Unity.
+In Unity, open **Project Settings > Player > Android > Publishing Settings**, enable **Custom Keystore**, select that keystore, enter the password, select `duckrails`, and enter the same password for the key. The DuckZ build window restores those passwords after an editor restart.
 
-The inherited **Tools > DuckZ > Build > Open Build Window** now reads this configured keystore and alias instead of hard-coding `user.keystore` / `androiddebugkey`. Its two password fields update Unity's session-only signing credentials. It no longer reads or writes the old shared Duckz password preference, and building preserves the selected signing identity. Output folder and filename conventions are unchanged.
+The inherited **Tools > DuckZ > Build > Open Build Window** reads this configured keystore and alias instead of hard-coding `user.keystore` / `androiddebugkey`. Its two password fields update Unity's signing credentials and are saved in `UserSettings/AndroidSigning/build-window-passwords.json`, which is excluded from Git. On editor startup, empty session passwords are restored from that file. If it does not exist yet, both fields are filled from `password.txt`. Editing a password updates only the json file and leaves `password.txt` unchanged. The window does not read or write the old shared Duckz password preference, and building preserves the selected signing identity. Output folder and filename conventions are unchanged.
 
 The key was generated with Unity 6000.3.24f1's bundled OpenJDK keytool using JKS, RSA 2048, SHA256withRSA, and a 10,000-day validity period. This is a new Duck Rails signing identity; compatibility with any previously distributed APK's signature has not been established.
 
 Validated November 1, 2026: keytool inspected the certificate and successfully generated a certificate request using the private key and its password. Unity MCP confirmed the Duck Rails project, selected the new keystore and alias, and confirmed both passwords were loaded for the current editor session. Git ignore checks passed for the keystore and password file. A signed APK build has not been run as part of this setup.
 
 Build-window follow-up validation: Unity compiled the updated tool and executed its actual signing preflight. The configured key passed; a missing configured file and a missing key password were each blocked. Settings were restored and the open build window repainted. The required backend diagnostic query failed with DNS resolution unavailable; local report summaries were checked, and no reports were resolved for this change.
+
+November 2, 2026: empty session passwords are restored on editor startup from gitignored `UserSettings/AndroidSigning/build-window-passwords.json` when that file exists, and otherwise from `password.txt`. Editing a password writes only the json file. Git ignore checks passed for the json path, `password.txt`, and the keystore. Both the password file and keystore are present locally; the json file is created only after a password field is edited. Unity MCP is not connected, so a restarted-editor preflight was not run. The backend inbox listed 10 open reports (Unity errors, expedition test failures, and manual reports); none were resolved for this change.
 
 ## Runtime logging build gate — November 2, 2026
 
