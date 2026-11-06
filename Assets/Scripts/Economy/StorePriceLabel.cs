@@ -16,13 +16,15 @@ public class StorePriceLabel : MonoBehaviour
             return;
 
         var go = new GameObject(host.name + " Price");
+        // Configure before OnEnable subscribes to store updates.
+        go.SetActive(false);
         Transform parent = host.transform.parent != null ? host.transform.parent : host.transform;
         go.transform.SetParent(parent, false);
 
         Collider col = host.GetComponent<Collider>();
         Vector3 world = col != null
-            ? col.bounds.center + Vector3.up * (col.bounds.extents.y + 0.12f)
-            : host.transform.position + Vector3.up * 0.4f;
+            ? col.bounds.center - Vector3.up * (col.bounds.extents.y + 0.12f)
+            : host.transform.position - Vector3.up * 0.3f;
         go.transform.position = world;
         go.transform.localScale = Vector3.one * 0.08f;
 
@@ -39,7 +41,7 @@ public class StorePriceLabel : MonoBehaviour
         view.label.enableWordWrapping = false;
         view.label.overflowMode = TextOverflowModes.Overflow;
         view.label.raycastTarget = false;
-        view.Refresh();
+        go.SetActive(true);
     }
 
     void OnEnable()
@@ -68,7 +70,7 @@ public class StorePriceLabel : MonoBehaviour
             return;
         Vector3 toCamera = cam.transform.position - transform.position;
         if (toCamera.sqrMagnitude > 0.0001f)
-            transform.rotation = Quaternion.LookRotation(toCamera);
+            transform.rotation = Quaternion.LookRotation(-toCamera);
     }
 
     void Refresh()

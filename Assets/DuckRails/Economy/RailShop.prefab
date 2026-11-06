@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 180653375114278302}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0.0000005662441}
-  m_LocalPosition: {x: 2.9, y: 1.1, z: 0}
+  m_LocalPosition: {x: 2.9, y: 0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -107,7 +107,7 @@ MonoBehaviour:
   locomotionGizmoColor: {r: 0.2, g: 0.85, b: 1, a: 0.35}
   store: {fileID: 6862306483149543786}
   itemKey: item_walkie_talkie
-  label: {fileID: 4244277061392735507, guid: e96fa7866ff7e154f8532cde3d3d50be, type: 3}
+  label: {fileID: 0}
   pullDistance: 0.3
   pendingPullResistance: 0.02
   line: {fileID: 0}
@@ -176,7 +176,7 @@ Transform:
   m_GameObject: {fileID: 532918899061012841}
   serializedVersion: 2
   m_LocalRotation: {x: -0.09342526, y: 0.5291285, z: -0.05368747, w: 0.8416724}
-  m_LocalPosition: {x: -4.3500004, y: 1.1, z: 0}
+  m_LocalPosition: {x: -4.3500004, y: 0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -255,7 +255,7 @@ MonoBehaviour:
   locomotionGizmoColor: {r: 0.2, g: 0.85, b: 1, a: 0.35}
   store: {fileID: 6862306483149543786}
   itemKey: weapon_nail_bat
-  label: {fileID: 4244277061392735508, guid: e96fa7866ff7e154f8532cde3d3d50be, type: 3}
+  label: {fileID: 0}
   pullDistance: 0.3
   pendingPullResistance: 0.02
   line: {fileID: 0}
@@ -1336,7 +1336,7 @@ Transform:
   m_GameObject: {fileID: 3193371198859303073}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.70710653, z: -0, w: -0.70710707}
-  m_LocalPosition: {x: -1.45, y: 1.1, z: 0}
+  m_LocalPosition: {x: -1.45, y: 0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1415,7 +1415,7 @@ MonoBehaviour:
   locomotionGizmoColor: {r: 0.2, g: 0.85, b: 1, a: 0.35}
   store: {fileID: 6862306483149543786}
   itemKey: bag_basic
-  label: {fileID: 4244277061392735516, guid: e96fa7866ff7e154f8532cde3d3d50be, type: 3}
+  label: {fileID: 0}
   pullDistance: 0.3
   pendingPullResistance: 0.02
   line: {fileID: 0}
@@ -1484,7 +1484,7 @@ Transform:
   m_GameObject: {fileID: 3587476254663991663}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 4.3500004, y: 1.1, z: 0}
+  m_LocalPosition: {x: 4.3500004, y: 0.75, z: 0}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1563,7 +1563,7 @@ MonoBehaviour:
   locomotionGizmoColor: {r: 0.2, g: 0.85, b: 1, a: 0.35}
   store: {fileID: 6862306483149543786}
   itemKey: item_night_vision_goggles
-  label: {fileID: 4244277061392735511, guid: e96fa7866ff7e154f8532cde3d3d50be, type: 3}
+  label: {fileID: 0}
   pullDistance: 0.3
   pendingPullResistance: 0.02
   line: {fileID: 0}
@@ -1812,7 +1812,7 @@ Transform:
   m_GameObject: {fileID: 4951459632483633612}
   serializedVersion: 2
   m_LocalRotation: {x: -0.0978, y: -0.70031, z: 0.0978, w: 0.70031}
-  m_LocalPosition: {x: -2.9, y: 1.1, z: 0}
+  m_LocalPosition: {x: -2.9, y: 0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1891,7 +1891,7 @@ MonoBehaviour:
   locomotionGizmoColor: {r: 0.2, g: 0.85, b: 1, a: 0.35}
   store: {fileID: 6862306483149543786}
   itemKey: weapon_fry_pan
-  label: {fileID: 4244277061392735515, guid: e96fa7866ff7e154f8532cde3d3d50be, type: 3}
+  label: {fileID: 0}
   pullDistance: 0.3
   pendingPullResistance: 0.02
   line: {fileID: 0}
@@ -2050,7 +2050,7 @@ Transform:
   m_GameObject: {fileID: 5555919020559159276}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.8302092, z: -0, w: 0.5574521}
-  m_LocalPosition: {x: 1.45, y: 1.1, z: 0}
+  m_LocalPosition: {x: 1.45, y: 0.75, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2129,7 +2129,7 @@ MonoBehaviour:
   locomotionGizmoColor: {r: 0.2, g: 0.85, b: 1, a: 0.35}
   store: {fileID: 6862306483149543786}
   itemKey: item_flashlight
-  label: {fileID: 4244277061392735512, guid: e96fa7866ff7e154f8532cde3d3d50be, type: 3}
+  label: {fileID: 0}
   pullDistance: 0.3
   pendingPullResistance: 0.02
   line: {fileID: 0}
@@ -2198,7 +2198,7 @@ Transform:
   m_GameObject: {fileID: 5735935419837700538}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 1.1, z: 0}
+  m_LocalPosition: {x: 0, y: 0.75, z: 0}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2277,7 +2277,7 @@ MonoBehaviour:
   locomotionGizmoColor: {r: 0.2, g: 0.85, b: 1, a: 0.35}
   store: {fileID: 6862306483149543786}
   itemKey: item_helmet
-  label: {fileID: 4244277061392735514, guid: e96fa7866ff7e154f8532cde3d3d50be, type: 3}
+  label: {fileID: 0}
   pullDistance: 0.3
   pendingPullResistance: 0.02
   line: {fileID: 0}

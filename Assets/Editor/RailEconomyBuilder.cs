@@ -109,8 +109,11 @@ public static class RailEconomyBuilder
             {
                 var original = walls.Single(w => new SerializedObject(w).FindProperty("itemKey").stringValue == Keys[i]);
                 var display = Object.Instantiate(original.gameObject, root.transform).GetComponent<StoreWallItem>();
-                display.transform.localPosition = new Vector3((i - 3) * 1.45f, 1.1f, 0);
+                display.transform.localPosition = new Vector3((i - 3) * 1.45f, .75f, 0);
                 Reference(display, "store", store);
+                // The source label is a sibling in Store.prefab, not part of the cloned display.
+                // Let StoreWallItem create a local shelf label at its actual placement.
+                Reference(display, "label", null);
                 foreach (var price in display.GetComponentsInChildren<StorePriceLabel>(true))
                 { var so = new SerializedObject(price); var prop = so.FindProperty("store"); if (prop != null) { prop.objectReferenceValue = store; so.ApplyModifiedPropertiesWithoutUndo(); } }
             }
