@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 043945a2fbbb3534ab4a178975448188, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RailTrainNavigation
   bakedGraph: {fileID: 4900000, guid: 5b66666c67256e646819ebf05f0e5f6a, type: 3}
   rearLanding: {x: 0, y: 0.03, z: -4.1}
@@ -1063,7 +1063,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7192014864544387685
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1080,7 +1080,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 4}
+  m_AnchoredPosition: {x: 0, y: 2.012}
   m_SizeDelta: {x: 5, y: 4.5}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &8143076495990649528
@@ -1108,7 +1108,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: -4538995406451132549, guid: 2a9e4b84460fc644e86fff0c9e6b1da0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1152,10 +1152,24 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: RESULTS
+  m_text: 'RESULTS
+
+
+    Usually look
+
+    like this
+
+    and this
+
+
+    and this
+
+    and
+
+    this'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2a9e4b84460fc644e86fff0c9e6b1da0, type: 2}
+  m_sharedMaterial: {fileID: -4538995406451132549, guid: 2a9e4b84460fc644e86fff0c9e6b1da0, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1174,13 +1188,13 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 1.5
-  m_fontSizeBase: 1.5
+  m_fontSize: 2
+  m_fontSizeBase: 2
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -7073,6 +7087,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2804191352567082739, guid: a8dbd05f6b5fbdd4fa25e46eaa8014ea, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4287420927
+      objectReference: {fileID: 0}
+    - target: {fileID: 2804191352567082739, guid: a8dbd05f6b5fbdd4fa25e46eaa8014ea, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
     - target: {fileID: 4218099192314120203, guid: a8dbd05f6b5fbdd4fa25e46eaa8014ea, type: 3}
       propertyPath: m_Name
       value: RadioTable
@@ -7211,6 +7233,22 @@ PrefabInstance:
     - target: {fileID: 3606514378513265069, guid: 3c8bc3d9847c76644b45640abdcbfaf5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5427948261572032964, guid: 3c8bc3d9847c76644b45640abdcbfaf5, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4287420927
+      objectReference: {fileID: 0}
+    - target: {fileID: 5427948261572032964, guid: 3c8bc3d9847c76644b45640abdcbfaf5, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 7334165556217342602, guid: 3c8bc3d9847c76644b45640abdcbfaf5, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4287420927
+      objectReference: {fileID: 0}
+    - target: {fileID: 7334165556217342602, guid: 3c8bc3d9847c76644b45640abdcbfaf5, type: 3}
+      propertyPath: m_TextStyleHashCode
+      value: -1183493901
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
