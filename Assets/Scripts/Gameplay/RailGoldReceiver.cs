@@ -10,8 +10,9 @@ using TMPro;
 using UnityEngine;
 
 /// <summary>One-way gold intake. The expedition snapshot commits consumption and reward eligibility together.</summary>
-public sealed class RailGoldReceiver : MonoBehaviour
+public sealed class RailGoldReceiver : MonoBehaviour, IOnEventCallback
 {
+    const byte RewardEffectEvent = 109;
     public int receiverId; // 0 safe, 1 departure shop, 2 midpoint shop
     public bool isSafe;
     public BoxCollider intake;
@@ -21,12 +22,18 @@ public sealed class RailGoldReceiver : MonoBehaviour
     readonly Dictionary<string, double> nextRequest = new Dictionary<string, double>();
     readonly HashSet<string> rewards = new HashSet<string>();
     readonly HashSet<string> queuedBars = new HashSet<string>();
+    readonly HashSet<string> shownRewards = new HashSet<string>();
     DuckzWallet wallet;
 
-    void OnEnable() => receivers.Add(this);
+    void OnEnable()
+    {
+        receivers.Add(this);
+        PhotonNetwork.AddCallbackTarget(this);
+    }
     void OnDisable()
     {
         receivers.Remove(this);
+        PhotonNetwork.RemoveCallbackTarget(this);
         if (wallet != null) wallet.OnRewardCredited -= RewardCredited;
         wallet = null;
     }
@@ -102,8 +109,29 @@ public sealed class RailGoldReceiver : MonoBehaviour
     }
     void RewardCredited(string receipt, int amount)
     {
-        if (!rewards.Contains(receipt)) return;
+        if (!rewards.Contains(receipt) || amount <= 0 || !shownRewards.Add(receipt)) return;
         // Runs before the wallet's OnChanged event so the watch counts up as coins land.
         if (coins != null) coins.Play(amount);
+        // Each recipient announces their own confirmed credit. Observers render every
+        // recipient's stream, without touching their wallet or local watch count.
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.RaiseEvent(RewardEffectEvent,
+                new object[] { PhotonSession.RunId, receiverId, receipt, amount },
+                new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
+    }
+
+    public void OnEvent(EventData ev)
+    {
+        if (ev.Code != RewardEffectEvent || !PhotonSession.IsRailsRoom ||
+            !(ev.CustomData is object[] data) || data.Length != 4 ||
+            !(data[0] is string run) || run != PhotonSession.RunId ||
+            !(data[1] is int receiver) || receiver != receiverId ||
+            !(data[2] is string receipt) || receipt.Length != 64 ||
+            !(data[3] is int amount) || amount <= 0 || amount > DuckzWallet.MaxCoins ||
+            ev.Sender == PhotonNetwork.LocalPlayer?.ActorNumber) return;
+        var player = PhotonPlayer.ForActor(ev.Sender);
+        if (player == null || coins == null || !shownRewards.Add(receipt)) return;
+        // This transient, uncached event is presentation only: never award money here.
+        coins.PlayTo(amount, player);
     }
 }

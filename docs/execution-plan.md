@@ -2,6 +2,9 @@
 
 Handoff date: October 28, 2026. Read `game-design.md` for decision status and scope.
 
+- [x] November 6: broadcast confirmed gold reward coin effects to other clients, using local watch and remote body targets; Unity compilation and existing economy checks pass.
+- [ ] Verify on real clients that midpoint deposits show streams to every credited recipient for every observer, including simultaneous deposits, capped wallets and headset performance.
+
 - [x] November 5: enable inherited held-coal locomotion in prefab and builder; verify imported configuration through Unity MCP.
 - [ ] Verify coal ground-pushing/vaulting feel on headset and behavior with real multiplayer clients.
 

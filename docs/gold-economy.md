@@ -9,12 +9,14 @@
 - Departure and midpoint shops each show one of every standard gear type: nail bat, frying pan, basic bag, helmet, flashlight, walkie-talkie and night vision. Bundle weapons, larger bags and cosmetics are excluded.
 - Reuse Duckz's exact `StoreWallItem` interaction: grab/pull, visible tether, server-authorized deduction and item handoff, snap-back on insufficient funds, then restocking. A display is not a one-purchase stock limit.
 - No gameplay equipment spawns on the train by default. Initial furnace fuel remains 10.
-- Depositing a bar at either shop grants the bar value up to each connected crew member's wallet limit, with Duckz coin particles flying to each recipient's own watch. New arrivals do not receive earlier shop sales.
+- Depositing a bar at either shop grants the bar value up to each connected crew member's wallet limit. Every player sees coin streams to all credited recipients: their own stream lands in their watch, and other streams land at the recipients' bodies. New arrivals do not receive earlier shop sales.
 - The train safe accepts bars irreversibly and shows its bar count. It gives no immediate money. Only its recorded deposits pay on successful extraction, and only to participants recorded as escaped. Downed passengers aboard qualify; people left behind do not. Catch-up teleports do not alter eligibility.
 - Bars held in a hand, in a backpack or loose on the train never cash out automatically. A failed run pays nothing from the safe.
 - Admin can inspect a wallet, grant/remove coins and inspect transactions, using the existing admin authorization.
 
 ## Initial tuning, not balance acceptance
+
+November 6 shared coin presentation: previously `RailGoldReceiver` played only the local wallet's coin shower. Each confirmed positive credit now also sends reliable, uncached Photon event 109 to the other clients, identifying the run, receiver and receipt. Observers render that stream toward the sender's avatar with `CoinShower.PlayTo`; receipt deduplication prevents repeated effects. The event never changes wallet balances or another player's watch. Zero-credit capped rewards produce no stream. This shared path covers both shops and safe payout. Unity compiled and the existing `RailEconomyChecks.Run()` passed. Real-client all-recipient visibility, simultaneous deposits and headset performance remain unverified.
 
 Reuse Duckz's 100 coins per bar and standard prices: flashlight 25, radio 50, helmet 75, basic bag 100, frying pan 175, nail bat 275, night vision 300. The starting 100 coins are not enough for every item. Each of the five chosen scavenging blocks has two gold spawns, selected with the existing authored variation (ten bars per expedition). These values require natural-run playtesting.
 
