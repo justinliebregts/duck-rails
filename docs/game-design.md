@@ -443,3 +443,5 @@ November 5 coal art: user approved the fractured, near-black low-poly lump with 
 November 5 coin limit: user confirmed the implemented 2,000-coin maximum and that `/2000` always remains grey; only the balance turns yellow at the cap. The watch shows the smaller grey cap below the balance and a yellow balance at maximum. Backend rewards/admin grants cap at remaining capacity; overflow is discarded. See [wallet cap evidence and rollout limits](gold-economy.md#wallet-cap--november-5-2026).
 
 November 6 confirmed encounter change: enemies must spawn on both rail sides in every scavenging block and the bridge finale, retaining 4–6 total enemies, encounter spacing and the safe starting station. This supersedes prior east-only coverage notes. See [both-side implementation](mixed-enemies.md#enemies-on-both-rail-sides--november-6-2026).
+
+November 6 logo art: user approved the low-poly extruded ivory/red logo with pixel textures and Escape from Quackville subtitle. Reusable model and isolated preview authored; gameplay placement and headset review remain pending. See [logo model](logo-model.md).

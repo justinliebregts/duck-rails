@@ -169,7 +169,7 @@ public static class RailYardMuleArt
         go.AddComponent<MeshRenderer>().sharedMaterial=name=="Hazard bumper"?hazardMaterial:material;
         // Non-static moving renderers do not contribute to baked GI. Match touchable outer surfaces.
         GameObjectUtility.SetStaticEditorFlags(go,0);
-        if(name=="Faceted canopy" || name=="Nose and bumper" || name=="Large roof spotlight")
+        if(name=="Faceted canopy" || name.StartsWith("Nose ") || name=="Large roof spotlight")
         {
             var c=go.AddComponent<MeshCollider>();c.sharedMesh=go.GetComponent<MeshFilter>().sharedMesh;c.convex=true;
         }
@@ -291,24 +291,28 @@ public static class RailYardMuleArt
             foreach(float z in new[]{2.878f,5.128f})foreach(float x in new[]{-1.75f,-.95f,.95f,1.75f})marks.Box(new Vector3(x,1.65f,z),new Vector3(.44f,.06f,.012f),5);
             Part(root,"Faceted canopy",g);
             g=new Geometry();
-            // Low sloped nose remains below the existing .5m duck eye line.
-            const float noseX=2.55f;
-            var a=new[]{new Vector3(-noseX,-.3f,5.25f),new Vector3(noseX,-.3f,5.25f),new Vector3(noseX,.2f,4.98f),new Vector3(-noseX,.2f,4.98f)};
-            g.Face(a,0,Vector3.forward);
-            // One closed wedge, no overlapping backing-box side faces; sides clear the deck edge.
-            g.Face(new[]{new Vector3(-noseX,-.3f,4.88f),new Vector3(noseX,-.3f,4.88f),new Vector3(noseX,.2f,4.88f),new Vector3(-noseX,.2f,4.88f)},0,Vector3.back);
-            foreach(float y in new[]{-.3f,.2f})g.Face(new[]{new Vector3(-noseX,y,4.88f),new Vector3(noseX,y,4.88f),new Vector3(noseX,y,y<0?5.25f:4.98f),new Vector3(-noseX,y,y<0?5.25f:4.98f)},0,y<0?Vector3.down:Vector3.up);
-            foreach(float x in new[]{-noseX,noseX})g.Face(new[]{new Vector3(x,-.3f,4.88f),new Vector3(x,-.3f,5.25f),new Vector3(x,.2f,4.98f),new Vector3(x,.2f,4.88f)},0,Vector3.right*Mathf.Sign(x));
-            // Center the grille in the visible yellow panel above the bumper, following its slope.
-            for(int i=0;i<3;i++)
+            // Separate convex cheeks leave a real opening; one combined convex hull would seal it.
+            foreach(float sign in new[]{-1f,1f})
             {
-                float y=-.12f+i*.105f;
-                float z=5.25f-(y+.3f)*.54f+.02f;
-                g.Box(new Vector3(0,y,z),new Vector3(3.2f,.07f,.06f),1,Quaternion.Euler(-28,0,0));
+                g=new Geometry();
+                float x0=sign*1.35f,x1=sign*2.55f;
+                var front=new[]{new Vector3(x0,-.29f,5.85f),new Vector3(x1,-.29f,5.85f),new Vector3(x1,.43f,5.52f),new Vector3(x0,.43f,5.52f)};
+                var back=front.Select(p=>new Vector3(p.x,p.y,4.88f)).ToArray();
+                g.Face(front,0,Vector3.forward);g.Face(back,0,Vector3.back);
+                g.Face(new[]{front[0],front[1],back[1],back[0]},0,Vector3.down);
+                g.Face(new[]{front[3],front[2],back[2],back[3]},0,Vector3.up);
+                foreach(int j in new[]{0,1})g.Face(new[]{front[j],back[j],back[3-j],front[3-j]},0,Vector3.right*(j==0?-sign:sign));
+                for(int i=0;i<3;i++)
+                {
+                    float y=-.09f+i*.14f,z=5.85f-(y+.29f)*(.33f/.72f)+.02f;
+                    g.Box(new Vector3(sign*1.95f,y,z),new Vector3(.8f,.065f,.04f),1,Quaternion.Euler(-24.6f,0,0));
+                }
+                g.Box(new Vector3(sign*2.5f,-.4f,5.82f),new Vector3(.22f,.28f,.3f),1);
+                Part(root,sign<0?"Nose left":"Nose right",g);
+                marks.Box(new Vector3(sign*2.5f,-.39f,5.977f),new Vector3(.06f,.16f,.012f),5);
             }
-            var bumper=new Geometry();bumper.Box(new Vector3(0,-.35f,5.22f),new Vector3(5.18f,.24f,.26f),3);Part(root,"Hazard bumper",bumper);
-            foreach(float x in new[]{-2.5f,2.5f}){g.Box(new Vector3(x,-.35f,5.23f),new Vector3(.22f,.28f,.3f),1);marks.Box(new Vector3(x,-.34f,5.387f),new Vector3(.06f,.16f,.012f),5);}
-            Part(root,"Nose and bumper",g);Part(root,"Emissive safety markers",marks);
+            var bumper=new Geometry();bumper.Box(new Vector3(0,-.41f,5.82f),new Vector3(5.18f,.24f,.26f),3);Part(root,"Hazard bumper",bumper);
+            Part(root,"Emissive safety markers",marks);
             g=new Geometry();
             var angle=Quaternion.Euler(12,0,0);var lamp=new Vector3(0,1.99f,5.08f);
             g.Box(new Vector3(0,1.79f,5.1f),new Vector3(1.05f,.12f,.4f),1);
@@ -339,7 +343,9 @@ public static class RailYardMuleArt
             var cabin=(BoxCollider)new SerializedObject(train.GetComponent<RailTrain>().cabin).FindProperty("passengerCabin").objectReferenceValue;
             cabin.size=new Vector3(4,cabin.size.y,cabin.size.z);
             // Full-size modules fit inside the narrowed rails; their interaction anchors move together.
-            var p=assembly.furnace.transform.localPosition;p.x=-1.05f;assembly.furnace.transform.localPosition=p;
+            var p=assembly.furnace.transform.localPosition;
+            p=assembly.furnace.transform.Find("Front firebox art")?new Vector3(0,0,5.08f):new Vector3(-1.05f,p.y,p.z);
+            assembly.furnace.transform.localPosition=p;
             p=assembly.radio.localPosition;p.x=1.55f;assembly.radio.localPosition=p;
             var safe=train.transform.Find("TrainSafe");if(safe){p=safe.localPosition;p.x=1.25f;safe.localPosition=p;}
             foreach(var point in assembly.supplyPoints){p=point.localPosition;p.x=Mathf.Clamp(p.x,-1.55f,1.55f);point.localPosition=p;}

@@ -1,4 +1,4 @@
-2026-11-06T08:57:00.5881201Z
+2026-11-06T19:53:40.0578621Z
 PASS Assembly prefab exists
 PASS Assembly preserves RailTrain and passenger carrier
 PASS Passenger volume matches deck footprint
@@ -8,7 +8,7 @@ PASS CockpitControls is a nested prefab
 PASS RadioTable is a nested prefab
 PASS Furnace is a nested prefab
 PASS Chair and controls centered
-PASS Furnace left, radio right
+PASS Front-only furnace beyond deck, radio right
 PASS All twelve functional supply spawn references retained
 PASS Results UI retained and initially hidden
 PASS Exactly one Drive control
@@ -33,7 +33,7 @@ PASS Rear boarding approach clear at X=1
 PASS Mid-deck side opening clear on -1
 PASS Mid-deck side opening clear on 1
 PASS Both effects travel with furnace
-PASS Tall stack smoke emitter has bounded particle count
+PASS Smoke emitter clears stack and has bounded particle count
 PASS Smoke emission starts
 PASS Smoke emission stops
 PASS Yard Mule uses one active shadowless spotlight; legacy lighting disabled

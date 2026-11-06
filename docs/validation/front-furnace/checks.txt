@@ -1,0 +1,33 @@
+PASS Exactly one front furnace
+PASS Firebox beyond front deck edge
+PASS Former onboard fueling position rejects coal
+PASS Reject outside chamber (0.00, 0.25, 0.00)
+PASS Reject outside chamber (0.80, 0.00, 0.00)
+PASS Reject outside chamber (0.00, 0.00, -0.40)
+PASS Reject outside chamber (0.00, 0.00, 0.40)
+PASS Interior network samples accepted
+PASS Acceptance follows translated/rotated train pose 0
+PASS Acceptance follows translated/rotated train pose 1
+PASS Acceptance follows translated/rotated train pose 2
+PASS Acceptance follows translated/rotated train pose 3
+PASS Acceptance follows translated/rotated train pose 4
+PASS Acceptance follows translated/rotated train pose 5
+PASS Acceptance follows translated/rotated train pose 6
+PASS Acceptance follows translated/rotated train pose 7
+PASS Open front ray reaches back wall at X=-0.8
+PASS Forward 0.5 m eye line clear at X=-0.8
+PASS Open front ray reaches back wall at X=0
+PASS Forward 0.5 m eye line clear at X=0
+PASS Open front ray reaches back wall at X=0.8
+PASS Forward 0.5 m eye line clear at X=0.8
+PASS Onboard route is physically closed before acceptance volume
+PASS Full coal collider physically enters mouth, X=-0.55, rotation=(0.00, 0.00, 0.00)
+PASS Full coal collider physically enters mouth, X=0, rotation=(0.00, 0.00, 0.00)
+PASS Full coal collider physically enters mouth, X=0.55, rotation=(0.00, 0.00, 0.00)
+PASS Full coal collider physically enters mouth, X=-0.55, rotation=(35.00, 45.00, 25.00)
+PASS Full coal collider physically enters mouth, X=0, rotation=(35.00, 45.00, 25.00)
+PASS Full coal collider physically enters mouth, X=0.55, rotation=(35.00, 45.00, 25.00)
+PASS Gravity-driven coal throw enters the real acceptance volume
+PASS Existing bounded particle budgets retained
+PASS Fire emitter is recessed inside nose
+PASS 1008 furnace mesh edges retain square 32 texels/metre UVs

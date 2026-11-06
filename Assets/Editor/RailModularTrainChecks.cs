@@ -33,7 +33,9 @@ public static class RailModularTrainChecks
             foreach (var module in new[] { a.chair, a.controls, a.radio, a.furnace.transform })
                 Check(PrefabUtility.IsAnyPrefabInstanceRoot(module.gameObject), module.name + " is a nested prefab");
             Check(Mathf.Abs(a.chair.localPosition.x) < .001f && Mathf.Abs(a.controls.localPosition.x) < .001f, "Chair and controls centered");
-            Check(a.furnace.transform.localPosition.x < 0 && a.radio.localPosition.x > 0, "Furnace left, radio right");
+            bool frontFurnace=a.furnace.transform.Find("Front firebox art")!=null;
+            Check((frontFurnace ? Mathf.Abs(a.furnace.transform.localPosition.x)<.001f && a.furnace.transform.localPosition.z>5 : a.furnace.transform.localPosition.x<0) && a.radio.localPosition.x>0,
+                frontFurnace?"Front-only furnace beyond deck, radio right":"Furnace left, radio right");
             Check(a.supplyPoints.Length == 12 && a.supplyPoints.All(x => x != null && x.IsChildOf(root.transform)), "All twelve functional supply spawn references retained");
             Check(a.results != null && !a.results.gameObject.activeSelf, "Results UI retained and initially hidden");
             var controls = root.GetComponentsInChildren<RailControl>(true);
@@ -58,10 +60,10 @@ public static class RailModularTrainChecks
             f.transform.localPosition = original; f.transform.localRotation = orientation;
             Physics.SyncTransforms();
             var solids = root.GetComponentsInChildren<Collider>(true).Where(c => !c.isTrigger).ToArray();
-            var mouthRay = new Ray(f.transform.TransformPoint(new Vector3(1.2f, .7f, 0)), -f.transform.right);
+            var mouthRay = frontFurnace ? new Ray(f.transform.TransformPoint(new Vector3(0,.07f,1.2f)),-f.transform.forward) : new Ray(f.transform.TransformPoint(new Vector3(1.2f, .7f, 0)), -f.transform.right);
             float nearest = float.MaxValue;
             foreach (var c in f.GetComponentsInChildren<Collider>()) if (c.Raycast(mouthRay, out var hit, 4)) nearest = Mathf.Min(nearest, hit.distance);
-            Check(nearest > 1.7f && nearest < 2, "Open mouth ray passes through cavity and hits rear wall");
+            Check(frontFurnace ? nearest>1.1f&&nearest<1.2f : nearest>1.7f&&nearest<2, "Open mouth ray passes through cavity and hits rear wall");
             var sight = new Ray(root.transform.TransformPoint(new Vector3(0, .5f, 3.65f)), root.transform.forward);
             Check(!solids.Any(c => c.Raycast(sight, out _, 2)), "0.5m centered cockpit sightline clears solid geometry");
             foreach (float x in new[] { -1f, 0, 1f })
@@ -75,7 +77,7 @@ public static class RailModularTrainChecks
                 Check(!solids.Any(c => c.Raycast(ray, out _, 1)), "Mid-deck side opening clear on " + sign);
             }
             Check(f.fire != null && f.smoke != null && f.fire.transform.IsChildOf(f.transform) && f.smoke.transform.IsChildOf(f.transform), "Both effects travel with furnace");
-            Check(f.smoke.transform.localPosition.y > 3.5f && f.smoke.main.maxParticles == 24, "Tall stack smoke emitter has bounded particle count");
+            Check(f.smoke.transform.localPosition.y > (frontFurnace?2.5f:3.5f) && f.smoke.main.maxParticles == 24, "Smoke emitter clears stack and has bounded particle count");
             RailFurnaceModule.SetEmission(f.smoke, true); Check(f.smoke.emission.enabled, "Smoke emission starts");
             RailFurnaceModule.SetEmission(f.smoke, false); Check(!f.smoke.emission.enabled, "Smoke emission stops");
             var yardMule = root.transform.Find("Yard Mule shell");

@@ -600,3 +600,6 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] November 6: replace placeholder finale bridge with steel railway art, close riverbank/end walls and add two fortress-only switchback recovery stairs. Rebuild graph/lighting and synchronize Expedition; 1,036 river/bridge checks, 791 fortress checks and 17 hold regressions pass. See docs/final-escape-layout.md.
 - [ ] Verify natural river recovery and revised moving bridge appearance/clearance in a headset, across real clients, and within Quest frame-time/memory targets.
+
+- [x] November 6: build reusable low-poly logo asset with pixel atlas, custom title meshes and CutePixel subtitle; provide editable Blender source, FBX and Unity prefab. See [logo model](logo-model.md).
+- [ ] Choose logo placement and validate baked lighting, headset readability and target-device cost.
