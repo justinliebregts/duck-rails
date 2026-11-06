@@ -1,5 +1,12 @@
 # Duck Rails — execution plan
 
+## November 6 — front-only furnace playtest
+
+- [x] Install the user-selected exterior nose intake as the only furnace opening, with a real recessed chamber, fire particles, split nose collision and unchanged low cockpit controls.
+- [x] Isolated Play Mode: six full-size coal-collider entries, a gravity-driven throw, rejection outside the chamber/former onboard location, and eight transformed acceptance poses pass. Three 0.5 m forward sightlines remain clear; 1,008 furnace UV edges retain square texels. See [evidence](validation/front-furnace/checks.txt).
+- [x] Existing 45 modular-train checks, cockpit checks and shell UV checks pass. Rebuilt train graph: 1,929 nodes / 17,490 edges; 489 boarding graph/packet/authoring checks pass.
+- [ ] User playtest of front-only refueling, headset aiming/reach and nighttime visibility; real-client consumption while stopped/moving and after handoff; target-device performance. Local collider tests do not establish multiplayer or ergonomic acceptance.
+
 ## November 6 — CutePixel typography
 
 - [x] Replace 170 serialized Liberation TMP font assignments and associated material references, update three custom sign materials, override 63 inherited camera-tablet labels, and set CutePixel SDF as the TMP default. Record the font standard in AGENTS.md.
