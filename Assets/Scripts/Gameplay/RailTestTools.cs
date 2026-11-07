@@ -30,6 +30,25 @@ public static class RailTestTools
         PhotonSession.Instance != null && PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest;
     public static bool Authority => Allowed && PhotonNetwork.IsMasterClient;
     public static bool CanMutate => Authority && PhotonSession.Phase == RailPhase.Running;
+    const string FastTrainRunKey = "rails.test.fastTrainRun";
+    public static bool FastTrainEnabled => RailDiagnostics.Development && PhotonSession.IsPrivate &&
+        PhotonSession.IsRailsRoom && PhotonSession.Phase == RailPhase.Running &&
+        !string.IsNullOrEmpty(PhotonSession.RunId) && PhotonSession.Get(FastTrainRunKey, "") == PhotonSession.RunId;
+    public static float TrainCruiseSpeed => FastTrainEnabled ? 20f : 4f;
+    public static void ToggleTrainSpeed()
+    {
+        if (!CanMutate) { Status = "Train speed requires the master of a ready private run"; return; }
+        bool fast = !FastTrainEnabled;
+        double now = PhotonNetwork.Time;
+        var command = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
+        RailSessionRules.EvaluateTrain(command, PhotonSession.Get(RailSessionRules.Fuel, 100f), now,
+            out float distance, out float speed, out float fuel);
+        // Rebase motion and fuel together: no teleport, fuel reset or restart of a stopped train.
+        float target = (float)command[3] > 0 && fuel > 0 ? (fast ? 20f : 4f) : 0f;
+        Commit(new Hashtable { [FastTrainRunKey] = fast ? PhotonSession.RunId : "",
+            [RailSessionRules.Motion] = new object[] { now, distance, speed, target },
+            [RailSessionRules.Fuel] = fuel }, fast ? "Train speed 5x enabled" : "Train speed restored to 1x");
+    }
     public static RailTestPreset CurrentPreset()
     {
         var peer = PhotonNetwork.NetworkingClient.LoadBalancingPeer;
@@ -107,6 +126,35 @@ public static class RailTestTools
         if (!CanMutate || RailRoute.Instance == null || !RailRoute.Instance.Ready) { Status = "Requires master in a ready private run"; return; }
         Commit(new Hashtable { [RailSessionRules.Fuel] = 20f,
             [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, RailRoute.Instance.FinaleStart + 45, 0f, 0f } }, "Train moved to bridge approach");
+    }
+    public static void SimulateSuccess()
+    {
+        if (!CanMutate || RailRoute.Instance == null || !RailRoute.Instance.Ready || RailExpedition.Instance == null)
+        { Status = "Success preview requires the master of a ready private run"; return; }
+        var state = JsonUtility.FromJson<RailRunState>(PhotonSession.Get(RailExpedition.StateKey, ""));
+        if (state == null || state.run != PhotonSession.RunId || state.finished)
+        { Status = "Wait for a running expedition before previewing success"; return; }
+        foreach (var player in PhotonNetwork.PlayerList.Where(p => !p.IsInactive))
+        {
+            var participant = state.Player(player.UserId);
+            if (participant == null)
+            { participant = new RailParticipant { id = player.UserId }; state.players.Add(participant); }
+            participant.actor = player.ActorNumber; participant.name = player.NickName;
+        }
+        double now = PhotonNetwork.Time;
+        state.bridgeElapsed = RailRunState.BridgeSeconds; state.bridgeHeldAt = state.bridgeHoldUntil = 0;
+        state.Finish(now, "Test success preview", PhotonNetwork.PlayerList.Where(p => !p.IsInactive).Select(p => p.UserId));
+        if (!state.success) { Status = "No connected participants to preview success"; return; }
+        // Use the same ending state as a bridge crossing. Normal presentation catches
+        // everyone aboard, shows results, runs the tunnel/dawn ride and returns the crew.
+        Commit(new Hashtable {
+            [RailExpedition.StateKey] = JsonUtility.ToJson(state),
+            [RailSessionRules.Motion] = new object[] { now, RailRoute.Instance.FinaleStart + 75, 4f, 4f },
+            [RailSessionRules.Fuel] = 100f,
+            [RailSessionRules.Phase] = (int)RailPhase.Ending,
+            [RailSessionRules.Deadline] = now + 32,
+            ["rails.success"] = true
+        }, "Success preview started: bridge, tunnel and dawn ride");
     }
     public static void SkipBlock()
     {

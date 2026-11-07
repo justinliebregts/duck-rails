@@ -1,5 +1,16 @@
 # Duck Rails — execution plan
 
+- [x] November 7: add editor Game-view test-panel toggle and halve dawn fog endpoint to 0.0125. Unity compilation and fog interpolation checks pass; live overlay click and longer-distance visual review remain pending.
+
+- [x] November 7: apply requested #060603 pre-dawn fog, double shared-rig keyboard jump launch velocity, and add keyboard/VR test success action for the bridge/tunnel/dawn ending. Unity compilation, shared-rig/Week 2 checks, exact fog-color and disallowed-context checks passed.
+- [ ] Playtest success shortcut, stronger keyboard jump and expanded VR test-panel reach; multiplayer/headset acceptance remains open. See [test preview](testing-tools.md#success-lighting-preview--november-7).
+
+- [x] November 7: add keyboard/VR test-panel 1x/5x train-speed toggle using retained room motion, per-run reset and unchanged victory-ride speed. Unity compilation and drive/session checks pass; see [test tools](testing-tools.md#train-speed-toggle--november-7).
+- [ ] Validate 5x test-speed toggle with real peers and headset passengers/cargo; this convenience tool is not high-speed physics acceptance.
+
+- [x] November 7: install built-in procedural Expedition sky, near-black night, gradual bridge pre-dawn and successful tunnel-to-dawn transition with coordinated fog. Unity compilation, 27 editor checks and three rendered stage previews passed; see [atmosphere](block-lighting.md#procedural-night-to-dawn--november-7).
+- [ ] Validate new atmosphere in a full run on headsets and real clients: night readability, dawn horizon/fog continuity, tunnel timing, late joining/master handoff, replay, visibility/culling seams and Quest frame time. Editor previews do not establish baked-lighting or device acceptance.
+
 - [x] Prepare requested [underground station V2 low-poly concepts](underground-station-layout.md#v2-horror-metro-concept-revision--november-6-2026): low ceilings, narrow bays, obstructed through-view and hidden second platform/wreck.
 - [x] User approved V2 top-down revision with stairs to a lower crashed-train platform and authorized the 3D build.
 - [x] Install V2 rough metro; 1,313 physical/navigation checks pass, offline graph and 52-fixture lighting rebuilt. See [V2 evidence](underground-station-layout.md#v2-installed-rough-metro).

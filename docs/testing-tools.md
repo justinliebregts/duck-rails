@@ -6,6 +6,24 @@ Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, w
 
 ## In-game panel
 
+November 7 editor overlay: during Play Mode, **Open test panel / Close test panel** appears at the Game view's top right as an alternative to P. It uses the existing toggle, opening the desktop panel in keyboard mode and the wrist panel in VR mode. If mouse-look has locked the cursor, press Esc to release it before clicking. Hovering the button blocks desktop gameplay input so its click does not recapture the cursor. The button is editor-only. Unity compilation passed; live mouse-click validation remains pending.
+
+### Success lighting preview — November 7
+
+**P > Show test tools > Test success - bridge and dawn ride** (VR: **TEST SUCCESS**) starts the actual shared ending without physically holding the bridge button. Requires the master of a ready private development run. It completes bridge lowering, marks connected participants as test finishers, moves the train to finale distance +75 m, and commits the normal success/results/4 m/s automatic ride/32-second return state together. Normal catch-up puts the crew aboard. The tunnel transition runs 12–20 seconds into that ride. Select **Gameplay Lighting** to see the actual dawn rather than the bright test override. This ends the current run; it is not just a visual sky preview. The VR page adds one row and rises another 6 cm to preserve its lower-edge wrist clearance.
+
+The shared-rig keyboard Space jump now launches at 10 m/s instead of 5 m/s (double vertical launch velocity, not a guarantee of double jump height). Ground-support, downed and blocked-input gates are retained; tracked VR locomotion and the legacy DesktopPlayer fixture are unchanged.
+
+Unity compiled these changes. Shared-rig and Week 2 checks passed, the fog color round-tripped to exactly `060603`, and the success shortcut rejected invocation outside a permitted run. Actual success-button Play Mode flow, jump feel, multiplayer and headset panel reach remain unverified.
+
+### Train speed toggle — November 7
+
+In **P > Show test tools**, click **Train speed: 1x (click for 5x)**; click again to return to normal. The VR tools page has **TRAIN 5X: OFF/ON** beside FLASHLIGHT. Requires the master of a ready private development expedition, like the existing fuel/bridge shortcuts.
+
+The toggle changes normal driving from 4 to 20 m/s using the existing shared motion command and two-second speed ramp. It preserves distance, current speed and remaining fuel when switching; a stopped train stays stopped until driven. Fuel still costs the same per metre. Braking, bridge collisions and player/cargo physics remain active, so brake earlier at 5x. The setting is scoped to the current run, survives master handoff via room state, and starts OFF on the next run. Successful victory travel remains 4 m/s to preserve the tunnel/dawn timing. No global time-scale change.
+
+Unity compilation and existing drive/session checks passed. Direct motion checks verified 4-to-20 and 20-to-4 m/s ramps, fuel continuity, braking and rejection outside a permitted run. The private sandbox launcher did not enter Play Mode; its launch was stopped. Live panel events, real-client/headset comfort and high-speed cargo behavior remain unverified.
+
 ### Enemy invincibility in Test Center
 
 **Duck Rails > Test Center > Invincible from enemies** protects all local editor test clients from enemy contact attacks (including spiders) and bomber blasts in every ready running expedition, including the two-client quick-start and automated public/private tests. Set it in the main editor: its saved checkbox in `UserSettings/RailTestBlockOrder.asset` is mirrored through `Temp/rails-player-invincibility.txt` to Player2/Player3, including live on/off changes (polled every quarter-second). Additional editors display the main editor's selection read-only. Enemies still target and attack normally. This does not revive an already downed player, protect unrelated remote players, block environment hazards or bridge failure, or disable the explicit **Down self** test action. It is an editor testing preference, not a production-player option. Other test tools retain their existing private-room restrictions.

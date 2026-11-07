@@ -11,14 +11,28 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
     public bool IsOpen => desktopOpen || (panel != null && panel.activeSelf);
     public static bool KeyboardMode => (SimulatedRigInput.Instance != null && SimulatedRigInput.Instance.IsSimulating) ||
         (GR.Player.instance != null && GR.Player.instance.GetComponent<DesktopPlayer>() != null);
-    public static bool BlocksDesktopInput => Instance != null && (Instance.desktopOpen || Time.frameCount <= Instance.closedFrame);
+    public static bool BlocksDesktopInput => Instance != null && (Instance.desktopOpen || Time.frameCount <= Instance.closedFrame || EditorToggleHovered);
+    static Rect EditorToggleRect => new Rect(Mathf.Max(8, Screen.width - 198), 12, 186, 36);
+    static bool EditorToggleHovered
+    {
+        get
+        {
+#if UNITY_EDITOR
+            return Application.isPlaying && RailDiagnostics.Development && GR.Player.instance != null &&
+                Cursor.lockState != CursorLockMode.Locked &&
+                EditorToggleRect.Contains(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y));
+#else
+            return false;
+#endif
+        }
+    }
     bool desktopOpen;
     int closedFrame = -1;
     Vector2 desktopScroll;
     string statusText = "";
     string desktopToast = "";
     GameObject panel;
-    TMP_Text readout;
+    TMP_Text readout, trainSpeedLabel;
     Transform anchor;
     float refresh;
     bool tools, markers;
@@ -79,12 +93,13 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (target != null && anchor != target) { anchor = target; panel.transform.SetParent(anchor, false); }
         if (!desktop && hand != null && anchor != null)
         {
-            if (Camera.main != null) panel.transform.position = WristPanelPosition(hand.position, Camera.main.transform.position, Camera.main.transform.up) + (tools ? Camera.main.transform.up * .10f : Vector3.zero);
+            if (Camera.main != null) panel.transform.position = WristPanelPosition(hand.position, Camera.main.transform.position, Camera.main.transform.up) + (tools ? Camera.main.transform.up * .16f : Vector3.zero);
             panel.transform.localScale = new Vector3(1 / anchor.lossyScale.x, 1 / anchor.lossyScale.y, 1 / anchor.lossyScale.z);
             if (Camera.main != null) panel.transform.rotation = Quaternion.LookRotation(panel.transform.position - Camera.main.transform.position, Camera.main.transform.up);
         }
         if (Time.unscaledTime < refresh) return;
         refresh = Time.unscaledTime + .25f;
+        if (trainSpeedLabel != null) trainSpeedLabel.text = RailTestTools.FastTrainEnabled ? "TRAIN 5X: ON" : "TRAIN 5X: OFF";
         statusText = "DUCK RAILS · TEST PANEL\n" +
             "Room " + (PhotonNetwork.CurrentRoom?.Name ?? "—") + " · " + PhotonSession.Phase + "\n" +
             "Frame " + (RailDiagnostics.Instance?.FrameMs ?? 0).ToString("F1") + " ms · Ping " + PhotonNetwork.GetPing() + " ms\n" +
@@ -121,7 +136,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (panel != null) Destroy(panel);
         panel = new GameObject("Left arm diagnostics"); panel.SetActive(false);
         var bg = GameObject.CreatePrimitive(PrimitiveType.Cube); bg.name = "Panel"; bg.transform.SetParent(panel.transform, false);
-        bg.transform.localScale = new Vector3(.40f, tools ? .56f : .44f, .008f); bg.transform.localPosition = new Vector3(0, tools ? -.06f : 0, .016f);
+        bg.transform.localScale = new Vector3(.40f, tools ? .62f : .44f, .008f); bg.transform.localPosition = new Vector3(0, tools ? -.09f : 0, .016f);
         Destroy(bg.GetComponent<Collider>());
         if (panelMaterial == null)
         {
@@ -141,6 +156,8 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
             Button("DOWN ME", -.095f, -.185f, RailTestTools.DownSelf); Button("REPEAT ROUTE", .095f, -.185f, RailTestTools.RepeatRoute);
             Button("BRIGHT LIGHTING", -.095f, -.245f, RailTestLighting.Bright); Button("GAMEPLAY LIGHTING", .095f, -.245f, RailTestLighting.Gameplay);
             Button("FLASHLIGHT", -.095f, -.305f, RailTestTools.SpawnFlashlight);
+            trainSpeedLabel = Button("TRAIN 5X: OFF", .095f, -.305f, RailTestTools.ToggleTrainSpeed);
+            Button("TEST SUCCESS", -.095f, -.365f, RailTestTools.SimulateSuccess);
         }
         else
         {
@@ -151,7 +168,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         }
     }
     void Rebuild() { anchor = null; leftMarker = rightMarker = null; Build(); panel.SetActive(true); }
-    // The taller tools page is raised a further 10 cm to retain wrist clearance.
+    // The taller tools page is raised a further 16 cm to retain wrist clearance.
     public static Vector3 WristPanelPosition(Vector3 wrist, Vector3 eye, Vector3 viewUp) =>
         wrist + viewUp.normalized * .32f + (eye - wrist).normalized * .10f;
     public void Close()
@@ -162,6 +179,18 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
     }
     void OnGUI()
     {
+#if UNITY_EDITOR
+        if (Application.isPlaying && RailDiagnostics.Development && GR.Player.instance != null)
+        {
+            int overlayDepth = GUI.depth; GUI.depth = -200;
+            var overlayStyle = new GUIStyle(GUI.skin.button) { fontSize = 17 };
+            if (TMP_Settings.defaultFontAsset != null)
+                overlayStyle.font = TMP_Settings.defaultFontAsset.sourceFontFile;
+            if (GUI.Button(EditorToggleRect, IsOpen ? "Close test panel" : "Open test panel", overlayStyle))
+                Toggle();
+            GUI.depth = overlayDepth;
+        }
+#endif
         if (!RailDiagnostics.Development || !KeyboardMode) return;
         if (!desktopOpen) {
             if (Time.unscaledTime < toastUntil) GUI.Box(new Rect(20, 20, Mathf.Min(500, Screen.width - 40), 55), desktopToast);
@@ -189,6 +218,8 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
             GuiPair("Fuel 20", () => RailTestTools.SetFuel(20), "Loaded bag", RailTestTools.SpawnBag, button);
             GuiPair("Down me", RailTestTools.DownSelf, "Repeat route", RailTestTools.RepeatRoute, button);
             if (GUILayout.Button("Spawn flashlight", button)) RailTestTools.SpawnFlashlight();
+            if (GUILayout.Button("Test success - bridge and dawn ride", button)) RailTestTools.SimulateSuccess();
+            if (GUILayout.Button(RailTestTools.FastTrainEnabled ? "Train speed: 5x (click for 1x)" : "Train speed: 1x (click for 5x)", button)) RailTestTools.ToggleTrainSpeed();
         } else {
             GuiPair("Simulate lag", () => RailTestTools.ApplyNetwork(true), "Normal network", RailTestTools.RestoreNetwork, button);
             GuiPair("Save preset", RailTestTools.SavePreset, "Game menu", () => { FindFirstObjectByType<PauseMenu>()?.OpenFromDiagnostics(); Close(); }, button);
@@ -205,7 +236,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (GUILayout.Button(second, style)) b();
         GUILayout.EndHorizontal();
     }
-    void Button(string label, float x, float y, UnityEngine.Events.UnityAction action)
+    TMP_Text Button(string label, float x, float y, UnityEngine.Events.UnityAction action)
     {
         var go = new GameObject(label); go.transform.SetParent(panel.transform, false); go.transform.localPosition = new Vector3(x, y, -.008f);
         var collider = go.AddComponent<BoxCollider>(); collider.size = new Vector3(.18f, .048f, .025f); collider.isTrigger = true;
@@ -223,5 +254,6 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         labelGo.transform.localScale = new Vector3(1/.175f, 1/.044f, 1/.012f); labelGo.transform.localPosition = new Vector3(0, 0, -.6f);
         var tmp = labelGo.AddComponent<TextMeshPro>(); tmp.fontSize = .13f; tmp.color = Color.black;
         tmp.alignment = TextAlignmentOptions.Center; tmp.rectTransform.sizeDelta = new Vector2(.17f, .04f); tmp.text = label;
+        return tmp;
     }
 }

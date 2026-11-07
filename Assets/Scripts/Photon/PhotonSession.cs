@@ -569,7 +569,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         // be in flight, including an earlier GO followed immediately by STOP.
         if (!WorldReady || (pendingRevision >= 0 && Time.realtimeSinceStartupAsDouble - lastCommit < 1)) return;
         double now = PhotonNetwork.Time;
-        float target = requestedTrainMoving.Value && CurrentFuel > 0f ? 4f : 0f;
+        float target = requestedTrainMoving.Value && CurrentFuel > 0f ? RailTestTools.TrainCruiseSpeed : 0f;
         var command = Get(RailSessionRules.Motion, new object[] { PhotonNetwork.Time, 0f, 0f, 0f });
         if (command.Length == 4 && command[3] is float currentTarget && currentTarget == target && (!driveLeaseDirty || DriveGripMatches()))
         {

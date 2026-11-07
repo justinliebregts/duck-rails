@@ -35,10 +35,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     string pendingRequestJson;
     double pendingRequestAt;
     bool wasDown;
-    bool dawnApplied;
-    UnityEngine.SceneManagement.Scene dawnScene;
-    UnityEngine.Rendering.AmbientMode nightAmbientMode;
-    Color nightAmbient, nightFog;
+    readonly RailAtmosphere atmosphere = new RailAtmosphere();
     double nextTick, nextDownRequest, fallAt;
     AudioSource reviveAudio;
     AudioClip reviveClip;
@@ -183,6 +180,9 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             RestoreNightAtmosphere();
             if (explosion != null) Destroy(explosion);
         }
+        float intoFinale = RailRoute.Instance != null && RailTrain.Instance != null
+            ? RailTrain.Instance.Distance - RailRoute.Instance.FinaleStart : -1;
+        atmosphere.Apply(RailAtmosphere.Progress(intoFinale, State.finished && State.success, PhotonNetwork.Time - State.finishedAt));
         Present();
         ConsumeCommittedCoal();
         RailGoldReceiver.PresentRewards(this);
@@ -421,35 +421,11 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             if (GR.Player.instance != null && !RailTrain.Instance.Contains(GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position) + Vector3.up))
             { if (fallAt <= 0) fallAt = now; if (now - fallAt > 2) TeleportAboard(); }
             else fallAt = 0;
-            if (State.success && now - State.finishedAt > 14)
-                ApplyDawnAtmosphere();
         }
         if (Camera.main != null) Camera.main.backgroundColor = RenderSettings.fogColor;
         if (runningLabels != null) foreach (var label in runningLabels) if (label != null) label.gameObject.SetActive(!State.finished);
     }
-    void ApplyDawnAtmosphere()
-    {
-        if (dawnApplied) return;
-        // Capture at the transition, not startup: live Lighting-window edits are authoritative.
-        dawnScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-        nightAmbientMode = RenderSettings.ambientMode;
-        nightAmbient = RenderSettings.ambientLight;
-        nightFog = RenderSettings.fogColor;
-        dawnApplied = true;
-        RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
-        RenderSettings.ambientLight = new Color(.7f, .65f, .5f);
-        RenderSettings.fogColor = new Color(.65f, .73f, .78f);
-    }
-    void RestoreNightAtmosphere()
-    {
-        if (!dawnApplied) return;
-        dawnApplied = false;
-        // A newly loaded scene owns its environment; never copy Expedition settings into Compound.
-        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene() != dawnScene) return;
-        RenderSettings.ambientMode = nightAmbientMode;
-        RenderSettings.ambientLight = nightAmbient;
-        RenderSettings.fogColor = nightFog;
-    }
+    void RestoreNightAtmosphere() => atmosphere.Restore();
     public void SeedCargo()
     {
         string run = PhotonSession.RunId;

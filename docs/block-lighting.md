@@ -110,7 +110,25 @@ No Quest GPU/frame-time/memory budget, eight-player acceptance, adverse-network 
 
 The diagnostic inbox query failed with DNS resolution unavailable; six pre-existing open local reports were inspected and left open. No diagnostic report was resolved by this work.
 
-## Authored gameplay atmosphere — November 4
+## Procedural night to dawn — November 7
+
+User-approved direction: almost-black night, slightly brighter but still-dark pre-dawn upon entering the final bridge block, and muted dawn after successful escape. No daytime, plugins, volumetric effects or visible sun disk. This supersedes the November 4 atmosphere ownership notes above and below.
+
+`Assets/DuckRails/ExpeditionSky.mat` uses Unity `Skybox/Procedural` with Sun None and is referenced by Expedition, retaining the shader variant in builds. `RailAtmosphere` clones it once per run, changes values only when stage progress changes, and restores/destroys the clone on reset/disable. It also restores fog, ambient mode/color and the existing directional light. No runtime GI updates, reflection captures, new lights or lightmap changes.
+
+Initial tuning (implementation defaults, subject to headset review):
+
+- Night: sky exposure 0.012; exponential-squared fog density 0.1; nearly black horizon/fog. The saved scene already uses this night setup before gameplay starts.
+- Pre-dawn: exposure 0.08; fog density 0.065. Smooth progression over the first 25 metres of the finale, driven by shared train route distance (`RailRoute.FinaleStart`), rather than a local timer or local player's position.
+- Successful dawn: exposure 0.3; fog density **0.0125** (November 7 user follow-up: halve the previous 0.025 endpoint). Smooth fade from pre-dawn density 0.065 over 12 to 20 seconds after the shared successful finish timestamp. At the existing 4 m/s victory speed, this covers approximately finale Z123–155 inside the Z120–160 tunnel. Failures never advance to dawn. Unity checks verified unchanged pre-dawn, midpoint 0.03875 and endpoint 0.0125; existing stage screenshots predate this reduction.
+- Night/dawn fog colors match rendered procedural horizon samples along the forward railway (+Z): night (0.008, 0.008, 0.004), dawn (0.439, 0.463, 0.392). November 7 follow-up: the user explicitly selected pre-dawn fog **#060603**, replacing the sampled (0.173, 0.153, 0.075). Sky settings and fog density are unchanged. The sky varies with viewing direction, so uniform distance fog is an approximation; transitions blend these endpoint colors. Earlier `stage-1.png` captures show the original sampled fog, not this override.
+- About 98% fog coverage occurs around 20 m / 30 m / 158 m respectively (not hard camera clipping distances). Ambient fill and the existing directional light transition together; lightmaps and baked probes retain their authored illumination.
+
+Verified: Unity compilation; **Duck Rails > Lighting > Check Expedition Atmosphere** passed 27 assertions covering stage boundaries, failure exclusion, late-time reconstruction, isolated material mutation, restore and repeat cycles. Three editor captures were visually inspected, and all three rig eye cameras use Skybox clear mode. Evidence: `output/atmosphere/checks.txt` and `stage-0.png` through `stage-2.png`. Captures use the authored finale without the runtime additive lighting companions and are atmosphere previews, not full gameplay-lighting acceptance. Existing CutePixel missing bullet/em-dash warnings occurred during capture; the assertions completed successfully.
+
+Still pending: full-run Play Mode, real-client late join/master change/replay, headset darkness/readability, dawn destination with loaded baked lighting, culling/seam exposure with thinner fog and Quest GPU performance. The dedicated Duck Rails relay was verified against this repository; sandboxed discovery returned no tools, while authorized access worked. No diagnostic reports were queried.
+
+## Authored gameplay atmosphere — November 4 (superseded)
 
 Expedition gameplay now follows the Environment settings saved in Assets/Scenes/Expedition.unity. RailExpedition no longer forces night ambient/fog colors at run start. The user's current scene settings were saved: Skybox ambient intensity 1.3; black Exponential Squared fog, density 0.1. Tune the Expedition Lighting window and save outside Play Mode. Select Gameplay Lighting in Test Center; isolated block bake scenes do not define runtime fog.
 

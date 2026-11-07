@@ -306,7 +306,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
             Vector3 displacement = yawRotation * new Vector3(move.x, 0, move.y) * (RailExpedition.LocalDown ? .65f : 9f) * dt;
             player.trackingSpace.position += transform.TransformDirection(displacement);
             if (frame.jump && !RailExpedition.LocalDown && (player.IsGrounded() || HasBodySupport))
-                player.rb.linearVelocity = new Vector3(player.rb.linearVelocity.x, 5, player.rb.linearVelocity.z);
+                player.rb.linearVelocity = new Vector3(player.rb.linearVelocity.x, 10, player.rb.linearVelocity.z);
         }
     }
 

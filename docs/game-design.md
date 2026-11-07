@@ -1,5 +1,13 @@
 # Duck Rails — V1 game design
 
+November 7 follow-up: add an editor Game-view overlay button to open/close the test panel, and halve successful-dawn fog density from 0.025 to 0.0125 through the existing smooth transition. Night/pre-dawn density and transition timing remain unchanged.
+
+November 7 follow-up: user selects **#060603** for pre-dawn fog, doubles keyboard jump launch strength, and requests a test-panel success shortcut to preview the ending without holding the bridge button. Shared-rig keyboard jump is now 5 → 10 m/s; normal tracked VR locomotion is unchanged. The private-host **Test success** action enters the shared bridge/tunnel/dawn ending. See [testing tools](testing-tools.md#success-lighting-preview--november-7).
+
+November 7 test convenience: user requested an in-game test-panel 5x train-speed toggle for reaching lighting transitions quickly. This is a private development-run tool; normal gameplay speed and the successful dawn ride remain unchanged. See [test speed toggle](testing-tools.md#train-speed-toggle--november-7).
+
+November 7 confirmed atmosphere: use Unity's built-in procedural sky without plugins or a visible sun disk. Expedition starts almost pitch black; entering the final bridge block introduces a subtle pre-dawn lift while remaining dark. Successful escape transitions to muted dawn, never daytime. Match fog to the sky horizon and reduce density toward the ending. This supersedes November 4 scene-only atmosphere ownership and the abrupt ambient-only ending. See [atmosphere implementation](block-lighting.md#procedural-night-to-dawn--november-7).
+
 November 6 underground station revision: user approved the low-ceiling horror metro and lower-floor crashed-train layout for 3D. V2 rough Quackville geometry is installed: 2.13 m pedestrian ceilings, curved offset railway, enclosed stairs/stopped escalator, lower wreck platform and maintenance loops. See [implementation and validation](underground-station-layout.md#v2-installed-rough-metro). Headset/multiplayer acceptance remains pending.
 
 November 6 furnace decision: user selected the **front exterior fuel hole only** for a playtest. Replace the onboard side furnace with a recessed nose firebox facing forward, retain the low cockpit controls and clear forward view, and provide no onboard/secondary intake. Coal is thrown from outside into the real cavity with visible fire particles. This supersedes the earlier side-furnace placement and tall-stack proportions; fueling is not explicitly speed-gated. See [front furnace](yard-mule-train.md#front-only-furnace--november-6).
