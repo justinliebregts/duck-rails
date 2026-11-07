@@ -61,7 +61,7 @@ public sealed class RailBlockVisibilityProof : MonoBehaviour
 
         for (int round = 0; round < 3; round++)
         {
-            var chosen = round == 0 ? route.catalog : round == 1 ? route.catalog.Reverse().ToArray() : route.catalog.Take(1).ToArray();
+            var chosen = round == 0 ? route.catalog : round == 1 ? Enumerable.Reverse(route.catalog).ToArray() : route.catalog.Take(1).ToArray();
             camera.transform.position = new Vector3(0, 2, 70);
             route.Build(RailRoute.ChooseOrdered("visibility-" + round, chosen, 456));
             var visibility = route.GetComponent<RailBlockVisibility>();

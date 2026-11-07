@@ -22,8 +22,10 @@ public static class DuckzVersion
 
     public static int BundleCode(int major, int minor, int patch) => major * 10000 + minor * 100 + patch;
 
-    /// <summary>Patches share a Photon version, so 0.1.2 and 0.1.3 can play together.</summary>
-    public static string PhotonVersion(int major, int minor) => $"{major}.{minor}";
+    public const string PhotonSuffix = "_dra";
+
+    /// <summary>Patches share a Photon version, so 0.1.2 and 0.1.3 can play together. The suffix keeps Duck Rails out of DuckZ rooms.</summary>
+    public static string PhotonVersion(int major, int minor) => $"{major}.{minor}{PhotonSuffix}";
 }
 
 // Runs for every build, not just ones started from the window.

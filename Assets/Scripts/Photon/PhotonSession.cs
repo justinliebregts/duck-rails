@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Photon.Pun;
 using Photon.Realtime;
@@ -103,7 +104,6 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
-        settings.AppVersion = source.AppVersion + "-duck-rails-session-v12";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;
@@ -120,6 +120,9 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             PhotonNetwork.AuthValues.AddAuthParameter("usr", account.PlayerId);
             PhotonNetwork.AuthValues.AddAuthParameter("pla", account.Platform);
             PhotonNetwork.AuthValues.AddAuthParameter("tkn", token);
+            PhotonNetwork.AuthValues.AddAuthParameter("app", "dra");
+            // The shared secret is supplied by the Photon dashboard, never the client.
+            Debug.Log("[PhotonAuth] Realtime authentication sent for " + account.PlayerId + ". app=dra is included.");
         }
     }
     void SetStatus(string text)
@@ -206,8 +209,22 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             SetStatus(LastError);
         }
     }
+    public override void OnCustomAuthenticationResponse(Dictionary<string, object> data)
+    {
+        object auth = null;
+        if (data != null)
+            data.TryGetValue("auth", out auth);
+        Debug.Log("[PhotonAuth] Realtime webhook accepted auth=" + auth + ".");
+    }
+
+    public override void OnCustomAuthenticationFailed(string debugMessage)
+    {
+        Debug.LogError("[PhotonAuth] Realtime authentication rejected.");
+    }
+
     public override void OnConnectedToMaster()
     {
+        Debug.Log("[PhotonAuth] Realtime connected.");
         operationPending = false;
         if (!quitting && request != Request.None) ExecuteRequest();
     }

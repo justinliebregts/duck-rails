@@ -1,8 +1,35 @@
+using System;
+using System.Collections.Generic;
+using Photon.Realtime;
 using Photon.Voice.PUN;
 using Photon.Voice.Unity;
 using Photon.Voice.Unity.UtilityScripts;
 using UnityEngine;
 using UnityEngine.Audio;
+
+sealed class PhotonAuthLog : IConnectionCallbacks
+{
+    public string Channel;
+
+    public void OnConnected() { }
+
+    public void OnConnectedToMaster() => Debug.Log("[PhotonAuth] " + Channel + " connected.");
+
+    public void OnDisconnected(DisconnectCause cause) { }
+
+    public void OnRegionListReceived(RegionHandler regionHandler) { }
+
+    public void OnCustomAuthenticationResponse(Dictionary<string, object> data)
+    {
+        object auth = null;
+        if (data != null)
+            data.TryGetValue("auth", out auth);
+        Debug.Log("[PhotonAuth] " + Channel + " webhook accepted auth=" + auth + ".");
+    }
+
+    public void OnCustomAuthenticationFailed(string debugMessage) =>
+        Debug.LogError("[PhotonAuth] " + Channel + " authentication rejected.");
+}
 
 /// <summary>
 /// Open-mic Photon Voice. Remote speech plays from that duck's head and is silent past 30m.
@@ -22,6 +49,7 @@ public class PhotonVoiceChat : MonoBehaviour
 
     PunVoiceClient _client;
     Recorder _recorder;
+    readonly PhotonAuthLog _authLog = new PhotonAuthLog { Channel = "Voice" };
     static bool punishmentMuted;
 
     public static bool PunishmentMuted => punishmentMuted;
@@ -46,6 +74,8 @@ public class PhotonVoiceChat : MonoBehaviour
         _client.UsePunAppSettings = true;
         _client.UsePunAuthValues = true;
         _client.AutoConnectAndJoin = true;
+        _client.Client.AddCallbackTarget(_authLog);
+        _client.Client.StateChanged += OnVoiceState;
 
         _recorder = gameObject.AddComponent<Recorder>();
         _recorder.TransmitEnabled = true;
@@ -67,6 +97,37 @@ public class PhotonVoiceChat : MonoBehaviour
     void OnDestroy()
     {
         UserPlayerPrefs.UserReady -= OnUserPrefsReady;
+        if (_client == null || _client.Client == null)
+            return;
+        _client.Client.RemoveCallbackTarget(_authLog);
+        _client.Client.StateChanged -= OnVoiceState;
+    }
+
+    void OnVoiceState(ClientState previous, ClientState next)
+    {
+        if (next != ClientState.ConnectingToNameServer || previous == ClientState.ConnectingToNameServer)
+            return;
+        var auth = _client.Client.AuthValues;
+        string query = auth != null ? auth.AuthGetParameters : null;
+        string id = auth != null ? auth.UserId : "";
+        bool dra = AuthParameterEquals(query, "app", "dra");
+        Debug.Log("[PhotonAuth] Voice authentication sent for " + id + ". " + (dra ? "app=dra is included." : "app is omitted."));
+    }
+
+    static bool AuthParameterEquals(string query, string key, string value)
+    {
+        if (string.IsNullOrEmpty(query))
+            return false;
+        foreach (string part in query.Split('&'))
+        {
+            int eq = part.IndexOf('=');
+            if (eq <= 0)
+                continue;
+            if (Uri.UnescapeDataString(part.Substring(0, eq)) == key &&
+                Uri.UnescapeDataString(part.Substring(eq + 1)) == value)
+                return true;
+        }
+        return false;
     }
 
     void OnUserPrefsReady()
