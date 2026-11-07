@@ -1,0 +1,44 @@
+PASS Clean initial lighting registry
+PASS Route waits for all new lighting loads, round 0
+PASS All seven lighting owners ready, round 0
+PASS Exactly seven payloads after route replacement, round 0
+PASS Atlas bindings valid for scrapyard-v1(Clone)
+PASS Atlas bindings valid for tunnel-works-v1(Clone)
+PASS Atlas bindings valid for lumber-yard-v1(Clone)
+PASS Atlas bindings valid for electrical-substation-v1(Clone)
+PASS Atlas bindings valid for passenger-station-v1(Clone)
+PASS Atlas bindings valid for StartingStation(Clone)
+PASS Atlas bindings valid for bridge-finale-v1(Clone)
+PASS Translated baked sample matches authoring data: scrapyard-v1
+PASS Translated baked sample matches authoring data: tunnel-works-v1
+PASS Translated baked sample matches authoring data: lumber-yard-v1
+PASS Translated baked sample matches authoring data: electrical-substation-v1
+PASS Translated baked sample matches authoring data: passenger-station-v1
+PASS Moving bridge excluded from static lightmaps
+PASS Finale translation temporarily closes readiness gate
+PASS Finale native probes follow translated placement
+PASS Finale placement restored
+INFO round 0: maps=13, probes=3029, seed=11
+PASS Route waits for all new lighting loads, round 1
+PASS All seven lighting owners ready, round 1
+PASS Exactly seven payloads after route replacement, round 1
+PASS Atlas bindings valid for tunnel-works-v1(Clone)
+PASS Atlas bindings valid for scrapyard-v1(Clone)
+PASS Atlas bindings valid for passenger-station-v1(Clone)
+PASS Atlas bindings valid for lumber-yard-v1(Clone)
+PASS Atlas bindings valid for electrical-substation-v1(Clone)
+PASS Atlas bindings valid for StartingStation(Clone)
+PASS Atlas bindings valid for bridge-finale-v1(Clone)
+PASS Translated baked sample matches authoring data: tunnel-works-v1
+PASS Translated baked sample matches authoring data: scrapyard-v1
+PASS Translated baked sample matches authoring data: passenger-station-v1
+PASS Translated baked sample matches authoring data: lumber-yard-v1
+PASS Translated baked sample matches authoring data: electrical-substation-v1
+PASS Moving bridge excluded from static lightmaps
+PASS Finale translation temporarily closes readiness gate
+PASS Finale native probes follow translated placement
+PASS Finale placement restored
+INFO round 1: maps=13, probes=3029, seed=43
+PASS All 5 scavenging blocks covered across assembled routes
+PASS Final teardown restores scenes, probes and lightmaps to baseline
+PASS Full catalogue offline Play Mode workflow. No multiplayer/headset acceptance claimed.

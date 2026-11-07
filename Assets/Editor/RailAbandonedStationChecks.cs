@@ -25,7 +25,7 @@ public static class RailAbandonedStationChecks
         for(int i=0;i<=count;i++)Walk(Vector3.Lerp(a,b,i/(float)count),name+" "+i);
         Check(!Physics.SphereCast(a+Vector3.up*.8f,.3f,(b-a).normalized,out var hit,Vector3.Distance(a,b),1<<6,QueryTriggerInteraction.Ignore),"Continuous route "+name+(hit.collider?" blocked by "+hit.collider.name:""));
     }
-    [MenuItem("Duck Rails/Authoring/Abandoned Station/Validate geometry")]
+
     public static void Run()
     {
         if(EditorApplication.isPlaying||Lightmapping.isRunning)throw new Exception("Finish play/bake first");
@@ -91,7 +91,7 @@ public static class RailAbandonedStationChecks
         File.WriteAllLines(Evidence+"/geometry-checks.txt",lines);int failures=lines.Count(l=>l.StartsWith("FAIL"));Debug.Log("STATION CHECKS "+(lines.Count-failures)+" passed, "+failures+" failed. "+Evidence);
         if(failures>0)throw new Exception(string.Join("\n",lines.Where(l=>l.StartsWith("FAIL")).Take(25)));
     }
-    [MenuItem("Duck Rails/Authoring/Abandoned Station/Capture review")]
+
     public static void Capture()
     {
         if(EditorApplication.isPlaying||Lightmapping.isRunning)throw new Exception("Finish first");

@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 6 underground station revision: user approved the low-ceiling horror metro and lower-floor crashed-train layout for 3D. V2 rough Quackville geometry is installed: 2.13 m pedestrian ceilings, curved offset railway, enclosed stairs/stopped escalator, lower wreck platform and maintenance loops. See [implementation and validation](underground-station-layout.md#v2-installed-rough-metro). Headset/multiplayer acceptance remains pending.
+
 November 6 furnace decision: user selected the **front exterior fuel hole only** for a playtest. Replace the onboard side furnace with a recessed nose firebox facing forward, retain the low cockpit controls and clear forward view, and provide no onboard/secondary intake. Coal is thrown from outside into the real cavity with visible fire particles. This supersedes the earlier side-furnace placement and tall-stack proportions; fueling is not explicitly speed-gated. See [front furnace](yard-mule-train.md#front-only-furnace--november-6).
 
 November 6 typography: CutePixel SDF is the required font for all game text, including UI, world signs, runtime labels and camera-tablet text. TMP Settings uses it as the default. Preserve custom sign colors with CutePixel-compatible atlas materials.

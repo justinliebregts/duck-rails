@@ -14,15 +14,15 @@ using UnityEngine.SceneManagement;
 using Object=UnityEngine.Object;
 
 /// <summary>Approved abandoned Passenger Station. Explicit editor authoring only.</summary>
-public static class RailAbandonedStation
+public static partial class RailAbandonedStation
 {
-    public const string Id="passenger-station-v1", RootName="Abandoned underground station v1";
+    public const string Id="passenger-station-v1", RootName="Abandoned underground station v2";
     public const string Folder="Assets/DuckRails/AbandonedStation", PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab";
     public const string BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/Bake.unity";
     static Mesh cube;
     static Material concrete,paint,steel,roof,wood,yellow,gravel,grass;
     static readonly Dictionary<string,Mesh> meshes=new();
-    public static int LightCount => 42;
+    public static int LightCount => 52;
     public static float RailHeight(float z)
     {
         float t=Mathf.Clamp01((Mathf.Min(z,160-z)-6)/39);
@@ -68,7 +68,7 @@ public static class RailAbandonedStation
         float width=Mathf.Clamp(text.Length*.28f,4,12);
         Box(t,"Sign backing",new(0,0,.05f),new(width,1,.12f),steel,false);
         var label=Group(t,"Lettering").gameObject.AddComponent<TextMeshPro>();label.transform.localPosition=new(0,0,-.025f);
-        label.text=text;label.fontSize=3;label.enableAutoSizing=true;label.fontSizeMin=1.5f;label.fontSizeMax=3;
+        label.font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/CutePixel SDF.asset");label.text=text;label.fontSize=3;label.enableAutoSizing=true;label.fontSizeMin=1.5f;label.fontSizeMax=3;
         label.alignment=TextAlignmentOptions.Center;label.rectTransform.sizeDelta=new(width-.3f,.8f);label.color=new(.85f,.83f,.67f);
     }
     static void Lamp(Transform p,Vector3 pos,bool warm=false,float range=20)
@@ -252,17 +252,18 @@ public static class RailAbandonedStation
         var keep=new HashSet<Transform>{b.entry,b.exit,b.stop,b.GetComponentInChildren<CrawlGraphBaker>().transform};
         foreach(var v in b.variations)foreach(var marker in v.coal.Concat(v.enemies).Concat(v.gold)) {var t=marker;while(t.parent!=b.transform)t=t.parent;keep.Add(t);}
         foreach(Transform t in b.transform.Cast<Transform>().ToArray())if(!keep.Contains(t))Object.DestroyImmediate(t.gameObject);
-        var root=Group(b.transform,RootName);GroundAndTrack(root,b);Shell(root);PublicAndStaff(root);Wreck(root);
+        var root=Group(b.transform,RootName);BuildMetro(root,b);
         b.displayName="Abandoned Underground Station";b.tags=new[]{"interior","underground","graded"};
-        b.enemyBounds=new Bounds(new(0,-1,80),new(88,16,70));
+        b.enemyBounds=new Bounds(new(0,-4,80),new(88,22,112));
         b.enemySurfaceRailExclusion = default;
         for(int v=0;v<b.variations.Length;v++)
         {
-            var coal=new[]{new Vector3(-29,-2.5f,67),new(-28,-2.5f,83),new(-28,-2.5f,107),new(34,-2.5f,67),new(34,-2.5f,83),new(26,-2.5f,96)};
-            var enemy=new[]{new Vector3(-39,-2.8f,68),new(-8,-2.8f,76),new(0,-6.8f,46),new(27,-2.8f,68),new(41,-2.8f,85),new(7,3.4f,105)};
+            var coal=new[]{new Vector3(-7,-2.5f,67),new(-12,-2.5f,76),new(-7,-2.5f,98),new(16,-7.5f,67),new(16,-7.5f,83),new(21.5f,-7.5f,92)};
+            var enemy=new[]{new Vector3(-7,-2.8f,68),new(-7,-2.8f,90),new(0,-3.8f,80),new(7,-2.8f,68),new(16,-7.8f,85),new(21.5f,-7.8f,92)};
             for(int i=0;i<6;i++){Set(b.variations[v].coal[i],coal[i]+Vector3.forward*((v-1)*.4f));Set(b.variations[v].enemies[i],enemy[i]+Vector3.forward*((v-1)*.3f));}
-            Set(b.variations[v].gold[0],new(-31,3.7f,107+(v-1)*.2f));Set(b.variations[v].gold[1],new(21.5f,-2.5f,90+(v-1)*.3f));
+            Set(b.variations[v].gold[0],new(-12,-2.5f,88+(v-1)*.2f));Set(b.variations[v].gold[1],new(21.5f,-7.5f,90+(v-1)*.3f));
         }
+        foreach(var variation in b.variations)foreach(var marker in variation.coal.Concat(variation.enemies).Concat(variation.gold)) Set(marker,marker.localPosition+Vector3.left*12);
         // Carve the alcove entry out of tunnel wall segments and terrain instead of hiding a blocked door.
         foreach(var t in root.GetComponentsInChildren<Transform>().ToArray())
         {
@@ -275,7 +276,7 @@ public static class RailAbandonedStation
         var lighting=b.GetComponent<RailBakedBlockLighting>();lighting.bindings=Array.Empty<RailBakedBlockLighting.Binding>();PrefabUtility.RecordPrefabInstancePropertyModifications(lighting);
         PrefabUtility.ApplyPrefabInstance(b.gameObject,InteractionMode.AutomatedAction);
         var probes=Object.FindFirstObjectByType<LightProbeGroup>();var points=new List<Vector3>();
-        for(int z=8;z<154;z+=6)foreach(float x in new[]{-40f,-28f,-16f,-7f,0f,7f,16f,22f,28f,35f,41f})foreach(float y in new[]{-6.4f,-2.4f,-1f,1f,3.8f,5f,7f})
+        for(int z=8;z<154;z+=6)foreach(float x in new[]{-40f,-28f,-16f,-7f,0f,7f,16f,22f,28f,35f,41f})foreach(float y in new[]{-7.4f,-6.5f,-2.4f,-1.5f,1f,3.8f})
         {if((z<44||z>116)&&(Mathf.Abs(x)>5||y<RailHeight(z)))continue;var q=new Vector3(x,y,z);if(!Physics.CheckSphere(q,.22f,1<<6,QueryTriggerInteraction.Ignore))points.Add(q);}
         foreach(float z in new[]{0f,159f})foreach(float x in new[]{-4f,0f,4f})points.Add(new(x,2,z));probes.probePositions=points.ToArray();
         EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();

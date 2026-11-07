@@ -1,5 +1,10 @@
 # Duck Rails — execution plan
 
+- [x] Prepare requested [underground station V2 low-poly concepts](underground-station-layout.md#v2-horror-metro-concept-revision--november-6-2026): low ceilings, narrow bays, obstructed through-view and hidden second platform/wreck.
+- [x] User approved V2 top-down revision with stairs to a lower crashed-train platform and authorized the 3D build.
+- [x] Install V2 rough metro; 1,313 physical/navigation checks pass, offline graph and 52-fixture lighting rebuilt. See [V2 evidence](underground-station-layout.md#v2-installed-rough-metro).
+- [ ] V2 headset navigation/comfort, multiplayer slope/cargo behavior and Quest performance acceptance.
+
 ## November 6 — front-only furnace playtest
 
 - [x] Install the user-selected exterior nose intake as the only furnace opening, with a real recessed chamber, fire particles, split nose collision and unchanged low cockpit controls.
