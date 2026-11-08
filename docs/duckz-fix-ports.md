@@ -38,3 +38,7 @@ Unity MCP verified `X:/Work/duck-rails/Assets` before operating the editor and a
 ## Repeating checks
 
 Run `RailTestRunner.Quick()` in Edit Mode for the Rails suites. `RailDuckzPortChecks.Cargo()` runs the focused cargo fixture. Run the imported isolated fixtures in a disposable copy with the same Assets, Packages and ProjectSettings, using Unity 6000.3.24f1 and `-batchmode -executeMethod RailDuckzPortChecks.RunBatch`. Real multiplayer uses Test Center's three-client expedition suite with three configured authenticated accounts; final PASS from every client is required.
+
+## Individual follow-up ports — November 8, 2026
+
+- Source `5ad1aadf762b686dcc649ec32f90838db0649d53`: applied the exact three-line change moving DeadEffect and NightVisionEffect from 0.22 m to 0.05 m and changing the legacy DesktopPlayer near clip from 0.08 m to 0.04 m. The active shared DuckPlayer rig already has all three cameras at 0.04 m; no adaptation was needed. Unity MCP verified the Duck Rails project in Edit Mode, refreshed assets, confirmed successful script compilation and both imported overlay depths, and checked all three shared-rig camera near planes. Git diff whitespace checks passed. In-game/headset visual review remains unverified. The corresponding Rails commit records the full source SHA in its message.

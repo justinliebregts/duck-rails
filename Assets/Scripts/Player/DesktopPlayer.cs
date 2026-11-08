@@ -153,7 +153,7 @@ public class DesktopPlayer : MonoBehaviour
         cameraObject.tag = "MainCamera";
         cameraObject.transform.SetParent(_pitch, false);
         var camera = cameraObject.AddComponent<Camera>();
-        camera.nearClipPlane = 0.08f;
+        camera.nearClipPlane = 0.04f;
         cameraObject.AddComponent<AudioListener>();
         _camera = cameraObject.transform;
 
