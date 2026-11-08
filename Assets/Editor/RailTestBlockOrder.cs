@@ -106,7 +106,7 @@ public static class RailTestBlockOrderPanel
         {
             RailTestTools.Status = "Test Block Order invalid: " + e.Message + " Using normal random route.";
             // Do not silently select a stale reproduction preset instead.
-            return RailRoute.Choose(run, RailRoute.Instance.catalog, UnityEngine.Random.Range(0, int.MaxValue));
+            return RailRoute.ChooseNormal(run, RailRoute.Instance.catalog, UnityEngine.Random.Range(0, int.MaxValue));
         }
     }
     public static void Disable()

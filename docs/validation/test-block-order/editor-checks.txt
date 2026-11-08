@@ -19,6 +19,13 @@ PASS 3 bridge follows last block
 PASS 3 midpoint shop placement
 PASS 3 train route distance
 PASS 3 supplies and encounters scale with route
+PASS 4 blocks preserve input order
+PASS 4 blocks survive retained-state serialization
+PASS 4 actual prefab instances in order
+PASS 4 bridge follows last block
+PASS 4 midpoint shop placement
+PASS 4 train route distance
+PASS 4 supplies and encounters scale with route
 PASS 5 blocks preserve input order
 PASS 5 blocks survive retained-state serialization
 PASS 5 actual prefab instances in order
@@ -37,23 +44,306 @@ PASS Empty list rejected
 PASS Missing prefab rejected
 PASS Duplicate blocks rejected
 PASS Nonfinite placement rejected
-PASS Normal route still five unique blocks, seed 0
-PASS Normal route still five unique blocks, seed 1
-PASS Normal route still five unique blocks, seed 2
-PASS Normal route still five unique blocks, seed 3
-PASS Normal route still five unique blocks, seed 4
-PASS Normal route still five unique blocks, seed 5
-PASS Normal route still five unique blocks, seed 6
-PASS Normal route still five unique blocks, seed 7
-PASS Normal route still five unique blocks, seed 8
-PASS Normal route still five unique blocks, seed 9
-PASS Normal route still five unique blocks, seed 10
-PASS Normal route still five unique blocks, seed 11
-PASS Normal route still five unique blocks, seed 12
-PASS Normal route still five unique blocks, seed 13
-PASS Normal route still five unique blocks, seed 14
-PASS Normal route still five unique blocks, seed 15
-PASS Normal route still five unique blocks, seed 16
-PASS Normal route still five unique blocks, seed 17
-PASS Normal route still five unique blocks, seed 18
-PASS Normal route still five unique blocks, seed 19
+PASS Only the four playtest prefabs enabled
+PASS Four allowed blocks exactly once, seed 0
+PASS Deterministic despite catalogue ordering, seed 0
+PASS Retained normal route round trip, seed 0
+PASS Four allowed blocks exactly once, seed 1
+PASS Deterministic despite catalogue ordering, seed 1
+PASS Retained normal route round trip, seed 1
+PASS Four allowed blocks exactly once, seed 2
+PASS Deterministic despite catalogue ordering, seed 2
+PASS Retained normal route round trip, seed 2
+PASS Four allowed blocks exactly once, seed 3
+PASS Deterministic despite catalogue ordering, seed 3
+PASS Retained normal route round trip, seed 3
+PASS Four allowed blocks exactly once, seed 4
+PASS Deterministic despite catalogue ordering, seed 4
+PASS Retained normal route round trip, seed 4
+PASS Four allowed blocks exactly once, seed 5
+PASS Deterministic despite catalogue ordering, seed 5
+PASS Retained normal route round trip, seed 5
+PASS Four allowed blocks exactly once, seed 6
+PASS Deterministic despite catalogue ordering, seed 6
+PASS Retained normal route round trip, seed 6
+PASS Four allowed blocks exactly once, seed 7
+PASS Deterministic despite catalogue ordering, seed 7
+PASS Retained normal route round trip, seed 7
+PASS Four allowed blocks exactly once, seed 8
+PASS Deterministic despite catalogue ordering, seed 8
+PASS Retained normal route round trip, seed 8
+PASS Four allowed blocks exactly once, seed 9
+PASS Deterministic despite catalogue ordering, seed 9
+PASS Retained normal route round trip, seed 9
+PASS Four allowed blocks exactly once, seed 10
+PASS Deterministic despite catalogue ordering, seed 10
+PASS Retained normal route round trip, seed 10
+PASS Four allowed blocks exactly once, seed 11
+PASS Deterministic despite catalogue ordering, seed 11
+PASS Retained normal route round trip, seed 11
+PASS Four allowed blocks exactly once, seed 12
+PASS Deterministic despite catalogue ordering, seed 12
+PASS Retained normal route round trip, seed 12
+PASS Four allowed blocks exactly once, seed 13
+PASS Deterministic despite catalogue ordering, seed 13
+PASS Retained normal route round trip, seed 13
+PASS Four allowed blocks exactly once, seed 14
+PASS Deterministic despite catalogue ordering, seed 14
+PASS Retained normal route round trip, seed 14
+PASS Four allowed blocks exactly once, seed 15
+PASS Deterministic despite catalogue ordering, seed 15
+PASS Retained normal route round trip, seed 15
+PASS Four allowed blocks exactly once, seed 16
+PASS Deterministic despite catalogue ordering, seed 16
+PASS Retained normal route round trip, seed 16
+PASS Four allowed blocks exactly once, seed 17
+PASS Deterministic despite catalogue ordering, seed 17
+PASS Retained normal route round trip, seed 17
+PASS Four allowed blocks exactly once, seed 18
+PASS Deterministic despite catalogue ordering, seed 18
+PASS Retained normal route round trip, seed 18
+PASS Four allowed blocks exactly once, seed 19
+PASS Deterministic despite catalogue ordering, seed 19
+PASS Retained normal route round trip, seed 19
+PASS Four allowed blocks exactly once, seed 20
+PASS Deterministic despite catalogue ordering, seed 20
+PASS Retained normal route round trip, seed 20
+PASS Four allowed blocks exactly once, seed 21
+PASS Deterministic despite catalogue ordering, seed 21
+PASS Retained normal route round trip, seed 21
+PASS Four allowed blocks exactly once, seed 22
+PASS Deterministic despite catalogue ordering, seed 22
+PASS Retained normal route round trip, seed 22
+PASS Four allowed blocks exactly once, seed 23
+PASS Deterministic despite catalogue ordering, seed 23
+PASS Retained normal route round trip, seed 23
+PASS Four allowed blocks exactly once, seed 24
+PASS Deterministic despite catalogue ordering, seed 24
+PASS Retained normal route round trip, seed 24
+PASS Four allowed blocks exactly once, seed 25
+PASS Deterministic despite catalogue ordering, seed 25
+PASS Retained normal route round trip, seed 25
+PASS Four allowed blocks exactly once, seed 26
+PASS Deterministic despite catalogue ordering, seed 26
+PASS Retained normal route round trip, seed 26
+PASS Four allowed blocks exactly once, seed 27
+PASS Deterministic despite catalogue ordering, seed 27
+PASS Retained normal route round trip, seed 27
+PASS Four allowed blocks exactly once, seed 28
+PASS Deterministic despite catalogue ordering, seed 28
+PASS Retained normal route round trip, seed 28
+PASS Four allowed blocks exactly once, seed 29
+PASS Deterministic despite catalogue ordering, seed 29
+PASS Retained normal route round trip, seed 29
+PASS Four allowed blocks exactly once, seed 30
+PASS Deterministic despite catalogue ordering, seed 30
+PASS Retained normal route round trip, seed 30
+PASS Four allowed blocks exactly once, seed 31
+PASS Deterministic despite catalogue ordering, seed 31
+PASS Retained normal route round trip, seed 31
+PASS Four allowed blocks exactly once, seed 32
+PASS Deterministic despite catalogue ordering, seed 32
+PASS Retained normal route round trip, seed 32
+PASS Four allowed blocks exactly once, seed 33
+PASS Deterministic despite catalogue ordering, seed 33
+PASS Retained normal route round trip, seed 33
+PASS Four allowed blocks exactly once, seed 34
+PASS Deterministic despite catalogue ordering, seed 34
+PASS Retained normal route round trip, seed 34
+PASS Four allowed blocks exactly once, seed 35
+PASS Deterministic despite catalogue ordering, seed 35
+PASS Retained normal route round trip, seed 35
+PASS Four allowed blocks exactly once, seed 36
+PASS Deterministic despite catalogue ordering, seed 36
+PASS Retained normal route round trip, seed 36
+PASS Four allowed blocks exactly once, seed 37
+PASS Deterministic despite catalogue ordering, seed 37
+PASS Retained normal route round trip, seed 37
+PASS Four allowed blocks exactly once, seed 38
+PASS Deterministic despite catalogue ordering, seed 38
+PASS Retained normal route round trip, seed 38
+PASS Four allowed blocks exactly once, seed 39
+PASS Deterministic despite catalogue ordering, seed 39
+PASS Retained normal route round trip, seed 39
+PASS Four allowed blocks exactly once, seed 40
+PASS Deterministic despite catalogue ordering, seed 40
+PASS Retained normal route round trip, seed 40
+PASS Four allowed blocks exactly once, seed 41
+PASS Deterministic despite catalogue ordering, seed 41
+PASS Retained normal route round trip, seed 41
+PASS Four allowed blocks exactly once, seed 42
+PASS Deterministic despite catalogue ordering, seed 42
+PASS Retained normal route round trip, seed 42
+PASS Four allowed blocks exactly once, seed 43
+PASS Deterministic despite catalogue ordering, seed 43
+PASS Retained normal route round trip, seed 43
+PASS Four allowed blocks exactly once, seed 44
+PASS Deterministic despite catalogue ordering, seed 44
+PASS Retained normal route round trip, seed 44
+PASS Four allowed blocks exactly once, seed 45
+PASS Deterministic despite catalogue ordering, seed 45
+PASS Retained normal route round trip, seed 45
+PASS Four allowed blocks exactly once, seed 46
+PASS Deterministic despite catalogue ordering, seed 46
+PASS Retained normal route round trip, seed 46
+PASS Four allowed blocks exactly once, seed 47
+PASS Deterministic despite catalogue ordering, seed 47
+PASS Retained normal route round trip, seed 47
+PASS Four allowed blocks exactly once, seed 48
+PASS Deterministic despite catalogue ordering, seed 48
+PASS Retained normal route round trip, seed 48
+PASS Four allowed blocks exactly once, seed 49
+PASS Deterministic despite catalogue ordering, seed 49
+PASS Retained normal route round trip, seed 49
+PASS Four allowed blocks exactly once, seed 50
+PASS Deterministic despite catalogue ordering, seed 50
+PASS Retained normal route round trip, seed 50
+PASS Four allowed blocks exactly once, seed 51
+PASS Deterministic despite catalogue ordering, seed 51
+PASS Retained normal route round trip, seed 51
+PASS Four allowed blocks exactly once, seed 52
+PASS Deterministic despite catalogue ordering, seed 52
+PASS Retained normal route round trip, seed 52
+PASS Four allowed blocks exactly once, seed 53
+PASS Deterministic despite catalogue ordering, seed 53
+PASS Retained normal route round trip, seed 53
+PASS Four allowed blocks exactly once, seed 54
+PASS Deterministic despite catalogue ordering, seed 54
+PASS Retained normal route round trip, seed 54
+PASS Four allowed blocks exactly once, seed 55
+PASS Deterministic despite catalogue ordering, seed 55
+PASS Retained normal route round trip, seed 55
+PASS Four allowed blocks exactly once, seed 56
+PASS Deterministic despite catalogue ordering, seed 56
+PASS Retained normal route round trip, seed 56
+PASS Four allowed blocks exactly once, seed 57
+PASS Deterministic despite catalogue ordering, seed 57
+PASS Retained normal route round trip, seed 57
+PASS Four allowed blocks exactly once, seed 58
+PASS Deterministic despite catalogue ordering, seed 58
+PASS Retained normal route round trip, seed 58
+PASS Four allowed blocks exactly once, seed 59
+PASS Deterministic despite catalogue ordering, seed 59
+PASS Retained normal route round trip, seed 59
+PASS Four allowed blocks exactly once, seed 60
+PASS Deterministic despite catalogue ordering, seed 60
+PASS Retained normal route round trip, seed 60
+PASS Four allowed blocks exactly once, seed 61
+PASS Deterministic despite catalogue ordering, seed 61
+PASS Retained normal route round trip, seed 61
+PASS Four allowed blocks exactly once, seed 62
+PASS Deterministic despite catalogue ordering, seed 62
+PASS Retained normal route round trip, seed 62
+PASS Four allowed blocks exactly once, seed 63
+PASS Deterministic despite catalogue ordering, seed 63
+PASS Retained normal route round trip, seed 63
+PASS Four allowed blocks exactly once, seed 64
+PASS Deterministic despite catalogue ordering, seed 64
+PASS Retained normal route round trip, seed 64
+PASS Four allowed blocks exactly once, seed 65
+PASS Deterministic despite catalogue ordering, seed 65
+PASS Retained normal route round trip, seed 65
+PASS Four allowed blocks exactly once, seed 66
+PASS Deterministic despite catalogue ordering, seed 66
+PASS Retained normal route round trip, seed 66
+PASS Four allowed blocks exactly once, seed 67
+PASS Deterministic despite catalogue ordering, seed 67
+PASS Retained normal route round trip, seed 67
+PASS Four allowed blocks exactly once, seed 68
+PASS Deterministic despite catalogue ordering, seed 68
+PASS Retained normal route round trip, seed 68
+PASS Four allowed blocks exactly once, seed 69
+PASS Deterministic despite catalogue ordering, seed 69
+PASS Retained normal route round trip, seed 69
+PASS Four allowed blocks exactly once, seed 70
+PASS Deterministic despite catalogue ordering, seed 70
+PASS Retained normal route round trip, seed 70
+PASS Four allowed blocks exactly once, seed 71
+PASS Deterministic despite catalogue ordering, seed 71
+PASS Retained normal route round trip, seed 71
+PASS Four allowed blocks exactly once, seed 72
+PASS Deterministic despite catalogue ordering, seed 72
+PASS Retained normal route round trip, seed 72
+PASS Four allowed blocks exactly once, seed 73
+PASS Deterministic despite catalogue ordering, seed 73
+PASS Retained normal route round trip, seed 73
+PASS Four allowed blocks exactly once, seed 74
+PASS Deterministic despite catalogue ordering, seed 74
+PASS Retained normal route round trip, seed 74
+PASS Four allowed blocks exactly once, seed 75
+PASS Deterministic despite catalogue ordering, seed 75
+PASS Retained normal route round trip, seed 75
+PASS Four allowed blocks exactly once, seed 76
+PASS Deterministic despite catalogue ordering, seed 76
+PASS Retained normal route round trip, seed 76
+PASS Four allowed blocks exactly once, seed 77
+PASS Deterministic despite catalogue ordering, seed 77
+PASS Retained normal route round trip, seed 77
+PASS Four allowed blocks exactly once, seed 78
+PASS Deterministic despite catalogue ordering, seed 78
+PASS Retained normal route round trip, seed 78
+PASS Four allowed blocks exactly once, seed 79
+PASS Deterministic despite catalogue ordering, seed 79
+PASS Retained normal route round trip, seed 79
+PASS Four allowed blocks exactly once, seed 80
+PASS Deterministic despite catalogue ordering, seed 80
+PASS Retained normal route round trip, seed 80
+PASS Four allowed blocks exactly once, seed 81
+PASS Deterministic despite catalogue ordering, seed 81
+PASS Retained normal route round trip, seed 81
+PASS Four allowed blocks exactly once, seed 82
+PASS Deterministic despite catalogue ordering, seed 82
+PASS Retained normal route round trip, seed 82
+PASS Four allowed blocks exactly once, seed 83
+PASS Deterministic despite catalogue ordering, seed 83
+PASS Retained normal route round trip, seed 83
+PASS Four allowed blocks exactly once, seed 84
+PASS Deterministic despite catalogue ordering, seed 84
+PASS Retained normal route round trip, seed 84
+PASS Four allowed blocks exactly once, seed 85
+PASS Deterministic despite catalogue ordering, seed 85
+PASS Retained normal route round trip, seed 85
+PASS Four allowed blocks exactly once, seed 86
+PASS Deterministic despite catalogue ordering, seed 86
+PASS Retained normal route round trip, seed 86
+PASS Four allowed blocks exactly once, seed 87
+PASS Deterministic despite catalogue ordering, seed 87
+PASS Retained normal route round trip, seed 87
+PASS Four allowed blocks exactly once, seed 88
+PASS Deterministic despite catalogue ordering, seed 88
+PASS Retained normal route round trip, seed 88
+PASS Four allowed blocks exactly once, seed 89
+PASS Deterministic despite catalogue ordering, seed 89
+PASS Retained normal route round trip, seed 89
+PASS Four allowed blocks exactly once, seed 90
+PASS Deterministic despite catalogue ordering, seed 90
+PASS Retained normal route round trip, seed 90
+PASS Four allowed blocks exactly once, seed 91
+PASS Deterministic despite catalogue ordering, seed 91
+PASS Retained normal route round trip, seed 91
+PASS Four allowed blocks exactly once, seed 92
+PASS Deterministic despite catalogue ordering, seed 92
+PASS Retained normal route round trip, seed 92
+PASS Four allowed blocks exactly once, seed 93
+PASS Deterministic despite catalogue ordering, seed 93
+PASS Retained normal route round trip, seed 93
+PASS Four allowed blocks exactly once, seed 94
+PASS Deterministic despite catalogue ordering, seed 94
+PASS Retained normal route round trip, seed 94
+PASS Four allowed blocks exactly once, seed 95
+PASS Deterministic despite catalogue ordering, seed 95
+PASS Retained normal route round trip, seed 95
+PASS Four allowed blocks exactly once, seed 96
+PASS Deterministic despite catalogue ordering, seed 96
+PASS Retained normal route round trip, seed 96
+PASS Four allowed blocks exactly once, seed 97
+PASS Deterministic despite catalogue ordering, seed 97
+PASS Retained normal route round trip, seed 97
+PASS Four allowed blocks exactly once, seed 98
+PASS Deterministic despite catalogue ordering, seed 98
+PASS Retained normal route round trip, seed 98
+PASS Four allowed blocks exactly once, seed 99
+PASS Deterministic despite catalogue ordering, seed 99
+PASS Retained normal route round trip, seed 99
+PASS All 24 possible orders reached
+PASS Insufficient enabled pool rejected without disabled fallback

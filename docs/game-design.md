@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 8 playtest route: normal expeditions now select four distinct enabled prefabs at departure, shuffle them once, and retain that order for the run. Only Skyscraper Works, Container Yard, Farm Silos and Convenience Store are enabled initially. Flow: starting station → two scavenging blocks → existing midpoint shop → two scavenging blocks → finale. The shop occupies the second block's quiet departure stretch. This supersedes the five-stop normal-run scope below. See [route configuration](testing-tools.md#normal-playtest-block-pool--november-8).
+
 November 7 follow-up: add an editor Game-view overlay button to open/close the test panel, and halve successful-dawn fog density from 0.025 to 0.0125 through the existing smooth transition. Night/pre-dawn density and transition timing remain unchanged.
 
 November 7 follow-up: user selects **#060603** for pre-dawn fog, doubles keyboard jump launch strength, and requests a test-panel success shortcut to preview the ending without holding the bridge button. Shared-rig keyboard jump is now 5 → 10 m/s; normal tracked VR locomotion is unchanged. The private-host **Test success** action enters the shared bridge/tunnel/dawn ending. See [testing tools](testing-tools.md#success-lighting-preview--november-7).

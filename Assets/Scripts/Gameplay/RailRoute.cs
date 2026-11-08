@@ -35,14 +35,25 @@ public sealed class RailRoute : MonoBehaviour
     void Awake() { Instance = this; }
     void OnDestroy() { if (Instance == this) Instance = null; }
 
-    public static RailRouteState Choose(string run, RailBlock[] choices, int seed)
+    public const int NormalBlockCount = 4;
+    public static int MidpointBlockIndex(int count) => (count - 1) / 2;
+
+    public static RailRouteState ChooseNormal(string run, RailBlock[] catalog, int seed)
+        => Choose(run, catalog.Where(b => b != null && b.allowedInNormalRuns).ToArray(), seed, NormalBlockCount);
+
+    // Unfiltered selection remains available for explicit catalogue/coverage fixtures.
+    public static RailRouteState Choose(string run, RailBlock[] choices, int seed, int count = 5)
     {
+        if (choices == null || choices.Length < count || count < 1 ||
+            choices.Any(b => b == null || b.variations == null || b.variations.Length == 0) ||
+            choices.Select(b => b.id).Distinct().Count() != choices.Length)
+            throw new InvalidOperationException("Enable at least " + count + " distinct blocks with spawn variations for this route.");
         var rng = new System.Random(seed);
         var pool = choices.OrderBy(b => b.id, StringComparer.Ordinal).ToArray();
         for (int i = pool.Length - 1; i > 0; i--) { int j = rng.Next(i + 1); (pool[i], pool[j]) = (pool[j], pool[i]); }
-        var state = new RailRouteState { run = run, enemySeed = seed, blocks = new string[5], variations = new int[5], placements = new Vector3[5] };
+        var state = new RailRouteState { run = run, enemySeed = seed, blocks = new string[count], variations = new int[count], placements = new Vector3[count] };
         float z = StartZ;
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < count; i++)
         {
             state.blocks[i] = pool[i].id; state.variations[i] = rng.Next(pool[i].variations.Length);
             state.placements[i] = new Vector3(0, 0, z); z += pool[i].length;
@@ -64,7 +75,7 @@ public sealed class RailRoute : MonoBehaviour
         {
             if (PhotonNetwork.IsMasterClient)
                 PhotonSession.Instance.Commit(new Hashtable { [StateKey] = JsonUtility.ToJson(
-                    RailTestTools.TryRoute(run, out var repeat) ? repeat : Choose(run, catalog, UnityEngine.Random.Range(0, int.MaxValue))) });
+                    RailTestTools.TryRoute(run, out var repeat) ? repeat : ChooseNormal(run, catalog, UnityEngine.Random.Range(0, int.MaxValue))) });
             return false;
         }
         Build(state); return Ready;
@@ -128,7 +139,7 @@ public sealed class RailRoute : MonoBehaviour
             gold.AddRange(block.variations[state.variations[i]].gold ?? Array.Empty<Transform>());
             graphs.Add(Game.AI.CrawlGraph.Load(block.graph)); offsets.Add(block.transform.position);
         }
-        if (midpointShop != null) midpointShop.position = state.placements[count / 2] + new Vector3(-16, 0, 148);
+        if (midpointShop != null) midpointShop.position = state.placements[MidpointBlockIndex(count)] + new Vector3(-16, 0, 148);
         expedition.goldPoints = gold.ToArray();
         FinaleStart = distance;
         finaleRoot.position = new Vector3(0, 0, z);

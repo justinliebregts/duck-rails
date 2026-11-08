@@ -94,7 +94,7 @@ public static class RailTestTools
             }
             catch (Exception) { Status = "Saved route is incompatible; using normal random route"; route = null; return false; }
         }
-        route = RailRoute.Choose(run, RailRoute.Instance.catalog, preset.seed); return true;
+        route = RailRoute.ChooseNormal(run, RailRoute.Instance.catalog, preset.seed); return true;
     }
     public static void SavePreset()
     {

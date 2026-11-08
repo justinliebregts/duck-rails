@@ -5,6 +5,8 @@ using UnityEngine;
 public sealed class RailBlock : MonoBehaviour
 {
     public string id, displayName;
+    [Tooltip("Allow this prefab in the four-block normal expedition pool. Explicit test routes can still use disabled blocks.")]
+    public bool allowedInNormalRuns;
     public string[] tags;
     public float length = 160;
     public Transform entry, exit, stop;

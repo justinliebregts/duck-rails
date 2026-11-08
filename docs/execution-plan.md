@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 8: configure four-block normal runs with per-prefab eligibility, enabling only Skyscraper Works, Container Yard, Farm Silos and Convenience Store. Move the midpoint shop and its visibility group after encounter two. Unity compilation and route-selection/assembly checks pass, including 100 seeds, all 24 orders, retained-state serialization and insufficient-pool rejection. See [configuration and evidence](testing-tools.md#normal-playtest-block-pool--november-8).
+- [ ] Playtest the shortened run, midpoint shopping, pacing/fuel, late joining and host handoff on real clients/headsets. Editor checks do not establish this acceptance. The earlier five-stop milestone records below are historical.
+
 - [x] November 7: add editor Game-view test-panel toggle and halve dawn fog endpoint to 0.0125. Unity compilation and fog interpolation checks pass; live overlay click and longer-distance visual review remain pending.
 
 - [x] November 7: apply requested #060603 pre-dawn fog, double shared-rig keyboard jump launch velocity, and add keyboard/VR test success action for the bridge/tunnel/dawn ending. Unity compilation, shared-rig/Week 2 checks, exact fog-color and disallowed-context checks passed.

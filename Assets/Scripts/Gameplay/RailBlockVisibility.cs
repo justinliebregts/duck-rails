@@ -60,7 +60,7 @@ public sealed class RailBlockVisibility : MonoBehaviour
         }
         AddBlock(route.startingStation);
         for (int i = 0; i < route.Blocks.Count; i++)
-            AddBlock(route.Blocks[i], i == route.Blocks.Count / 2 ? route.midpointShop : null);
+            AddBlock(route.Blocks[i], i == RailRoute.MidpointBlockIndex(route.Blocks.Count) ? route.midpointShop : null);
         AddBlock(route.finale, route.finaleRoot);
     }
 

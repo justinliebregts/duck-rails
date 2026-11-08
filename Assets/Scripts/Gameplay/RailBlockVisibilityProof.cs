@@ -76,7 +76,7 @@ public sealed class RailBlockVisibilityProof : MonoBehaviour
             var colliders = blocks.SelectMany(b => b.GetComponentsInChildren<Collider>(true)).ToDictionary(c => c, c => (c.enabled, c.gameObject.activeSelf));
             var behaviours = blocks.SelectMany(b => b.GetComponentsInChildren<MonoBehaviour>(true)).ToDictionary(b => b, b => b.enabled);
             var enabled = renderers.SelectMany(r => r).ToDictionary(r => r, r => r.enabled);
-            int midpoint = 1 + chosen.Length / 2;
+            int midpoint = 1 + RailRoute.MidpointBlockIndex(chosen.Length);
             void Verify(int index, string label)
             {
                 bool correct = true;

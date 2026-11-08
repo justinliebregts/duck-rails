@@ -19,7 +19,7 @@ November 6 shared coin presentation: previously `RailGoldReceiver` played only t
 
 Reuse Duckz's 100 coins per bar and standard prices: flashlight 25, radio 50, helmet 75, basic bag 100, frying pan 175, nail bat 275, night vision 300. The starting 100 coins are not enough for every item. Each of the five chosen scavenging blocks has two gold spawns, selected with the existing authored variation (ten bars per expedition). These values require natural-run playtesting.
 
-The midpoint shop sits in the quiet stretch after the third scavenging encounter, before the fourth. It does not replace one of the five blocks or change the track distances. The starting shop occupies the station's reserved store area. Both shops and the safe are basic editable blockouts.
+November 8: normal runs now contain four scavenging blocks (eight authored gold bars). The midpoint shop sits in the quiet stretch after the second encounter, before the third. It does not replace a scavenging block or add track distance. This supersedes the five-block/ten-bar budget above. The starting shop occupies the station's reserved store area. Both shops and the safe are basic editable blockouts.
 
 ## Implementation and authoring
 
