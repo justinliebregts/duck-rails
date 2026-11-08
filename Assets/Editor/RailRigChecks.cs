@@ -11,7 +11,7 @@ public static class RailRigChecks
     static void Invoke(object target, string method, params object[] args) => target.GetType().GetMethod(method, Private).Invoke(target, args);
     static void Set(object target, string field, object value) => target.GetType().GetField(field, Private).SetValue(target, value);
 
-    [MenuItem("Duck Rails/Run Shared Rig Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Shared Rig Checks")]
     public static void Run()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Run shared rig checks in Edit Mode");

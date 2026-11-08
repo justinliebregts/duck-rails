@@ -13,7 +13,7 @@ public static class RailSessionChecks
         if (!pass) throw new Exception("Duck Rails check failed: " + message);
         checks++; Debug.Log("RAILS PASS: " + message);
     }
-    [MenuItem("Duck Rails/Run Session Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Session Checks")]
     public static void Run()
     {
         checks = 0;

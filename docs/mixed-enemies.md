@@ -25,7 +25,7 @@ Use **Duck Rails > Authoring > Install Mixed Enemies** to install missing varian
 ## Validation
 
 - Unity compiled the runtime/editor changes. **Run Mixed Enemy Checks** passed 81 checks, including 100 seeds for every variation across all 13 encounter blocks: bounded candidate navigation, counts 4/5/6, unique positions, all four types and exact reconstruction after seed serialization.
-- The updated **Run Week 3 Checks** passed 607 checks, including route/graph/marker and starting-station regressions.
+- The updated **Duck Rails > Legacy > Run Week 3 Checks** passed 607 checks, including route/graph/marker and starting-station regressions.
 - One authenticated editor expedition reached Running/world-ready with 26 network room enemies: five stops had 5, 6, 5, 6 and 4, all with all four types. A test-triggered bomber explosion entered dormancy and subsequently respawned inside its original block. A bridge spawn-path fixture added four defenders. This fixture directly exercised the spawn path; it did not exercise the physical bridge button. Sandbox was stopped afterward.
 - Console error/exception query was empty during the live run. Evidence is in output/mixed-enemies/editor-checks.txt, week3-checks.txt and live-checks.txt.
 - The backend diagnostic inbox was unavailable due to DNS failure. Existing local reports were inspected and left open; this work does not resolve them.

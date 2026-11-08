@@ -10,7 +10,7 @@ using UnityEngine;
 
 public static class RailEconomyChecks
 {
-    [MenuItem("Duck Rails/Run Economy Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Economy Checks")]
     public static void Run()
     {
         var lines = new List<string>();

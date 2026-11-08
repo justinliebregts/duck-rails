@@ -37,7 +37,7 @@ public static class RailHoldControlBuilder
         }
         finally { EditorSceneManager.RestoreSceneManagerSetup(setup); }
     }
-    [MenuItem("Duck Rails/Build Radio and Horn Hold Buttons")]
+    [MenuItem("Duck Rails/Legacy/Build Radio and Horn Hold Buttons")]
     public static void Build()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");

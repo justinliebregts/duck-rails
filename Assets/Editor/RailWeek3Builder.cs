@@ -20,7 +20,7 @@ public static class RailWeek3Builder
     public static readonly string[] Names = { "Maintenance Depot", "Convenience Store", "Roadside Motel", "Lumber Yard", "Container Yard", "Passenger Station", "Farm Silos", "Tunnel Works", "Scrapyard", "Lakeside Campground", "Electrical Substation", "Quarry" };
     static string Id(int i) => Names[i].ToLowerInvariant().Replace(' ', '-') + "-v1";
 
-    [MenuItem("Duck Rails/Build Week 3 Expedition")]
+    [MenuItem("Duck Rails/Legacy/Build Week 3 Expedition")]
     public static void Build()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode before authoring.");

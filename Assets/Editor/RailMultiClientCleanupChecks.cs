@@ -35,13 +35,13 @@ public static class RailMultiClientCleanupChecks
 
     static RailMultiClientCleanupChecks() => EditorApplication.update += Tick;
 
-    [MenuItem("Duck Rails/Arm Two Client Cleanup Test")]
+    [MenuItem("Duck Rails/Legacy/Arm Two Client Cleanup Test")]
     public static void Arm()
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode || !Host)
             throw new InvalidOperationException("Arm in the main editor before launching a main + Player2 scenario.");
         if (RailEditorQuickStart.Enabled)
-            throw new InvalidOperationException("Disable Two Ducks Quick Start for this private replay check.");
+            throw new InvalidOperationException("Disable Duck Rails > Legacy > Two Ducks Quick Start for this private replay check.");
         if (!MppmStandaloneCredentials.TryGet("Player2", out _))
             throw new InvalidOperationException("Save a distinct authenticated Player2 account first.");
         // EditorPrefs reads can be cached per process. Only the pre-launch arm
@@ -53,7 +53,7 @@ public static class RailMultiClientCleanupChecks
         Debug.Log("RAILS TWO CLIENT CLEANUP: armed for ten minutes; launch main + Player2 from the scenario toolbar.");
     }
 
-    [MenuItem("Duck Rails/Disarm Two Client Cleanup Test")]
+    [MenuItem("Duck Rails/Legacy/Disarm Two Client Cleanup Test")]
     public static void Disarm() => EditorPrefs.DeleteKey(Key);
 
     static void Require(bool ok, string error) { if (!ok) throw new Exception(error); }

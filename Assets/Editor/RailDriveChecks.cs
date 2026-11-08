@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class RailDriveChecks
 {
-    [MenuItem("Duck Rails/Run VR Drive Checks")]
+    [MenuItem("Duck Rails/Legacy/Run VR Drive Checks")]
     public static void Run()
     {
         var lease = new RailDriveLease();

@@ -17,7 +17,7 @@ public static class RailLiveSmokeChecks
     static int[] cargoIds;
     static readonly System.Collections.Generic.List<string> passed = new();
     static double Now => EditorApplication.timeSinceStartup;
-    [MenuItem("Duck Rails/Run Live Desktop Smoke Test")]
+    [MenuItem("Duck Rails/Legacy/Run Live Desktop Smoke Test")]
     public static void Run()
     {
         if (!EditorApplication.isPlaying || !PhotonSession.IsRailsRoom || !PhotonSession.Instance.WorldReady || PhotonSession.Kind != RailSessionRules.CompoundKind)

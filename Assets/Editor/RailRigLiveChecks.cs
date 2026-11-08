@@ -27,7 +27,7 @@ public static class RailRigLiveChecks
     static int tracedFrame;
     static RailRigLiveChecks() => EditorApplication.update += Tick;
 
-    [MenuItem("Duck Rails/Run Live Shared Rig Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Live Shared Rig Checks")]
     public static void Run()
     {
         if (!EditorApplication.isPlaying || !PhotonSession.IsPrivate || Photon.Pun.PhotonNetwork.CurrentRoom.PlayerCount != 1 ||

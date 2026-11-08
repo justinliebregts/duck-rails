@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class RailQuickStartChecks
 {
-    [MenuItem("Duck Rails/Run Quick Start Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Quick Start Checks")]
     public static void Run()
     {
         Require(RailEditorQuickStart.ShouldQuickStart(true, true, Array.Empty<string>(), "RailsQuickStart"),

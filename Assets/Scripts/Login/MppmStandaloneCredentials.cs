@@ -41,7 +41,7 @@ public static class MppmStandaloneCredentials
     public static bool TrySelectUser(IReadOnlyList<string> tags, User[] users, out User selected, out string error)
     {
         selected = null;
-        error = "No saved Meta user matches this editor's tags. Open Duck Rails > Multiplayer Play Mode Users in the main editor, save Player2, and assign that tag in the scenario.";
+        error = "No saved Meta user matches this editor's tags. Open Duck Rails > Legacy > Multiplayer Play Mode Users in the main editor, save Player2, and assign that tag in the scenario.";
         if (tags == null || users == null) return false;
         for (int i = 0; i < tags.Count; i++)
         {

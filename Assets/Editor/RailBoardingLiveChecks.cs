@@ -16,7 +16,7 @@ public static class RailBoardingLiveChecks
     static float platformEntry, platformCenter, platformX;
     public static string Status { get; private set; } = "Not run";
 
-    [MenuItem("Duck Rails/Run Live Keyboard Boarding Check")]
+    [MenuItem("Duck Rails/Legacy/Run Live Keyboard Boarding Check")]
     public static void Run()
     {
         if (!EditorApplication.isPlaying || PhotonSession.Phase != RailPhase.Compound ||

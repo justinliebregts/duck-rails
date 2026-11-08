@@ -7,7 +7,7 @@ using UnityEngine;
 
 public static class RailDesktopChecks
 {
-    [MenuItem("Duck Rails/Run Desktop Regression Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Desktop Regression Checks")]
     public static void Run()
     {
         var second = new MppmStandaloneCredentials.User { tag = "Player2", token = "test-only-token" };

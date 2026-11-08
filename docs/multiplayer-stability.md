@@ -50,9 +50,9 @@ The final two-client furnace sequence passed at 10:19 UTC. Non-masters used actu
 
 ## Reproduction and limitations
 
-- Private sequence: select `3 Week 2 Test`, choose `Duck Rails > Arm Three Client Week 3 Test`, then press the toolbar Play button. Disarm after testing.
-- Coal exhaustion/recovery: use `Duck Rails > Arm Three Client Week 3 Coal Recovery Test` with the same scenario.
-- Public lifecycle/network faults: use `Duck Rails > Arm Three Client Stability Test`. This is an opt-in fixture with a 40-minute arm expiry and 150-second per-stage timeout. It writes coordination and per-process logs under `Temp/rails-stability`. It restores Photon simulation settings on completion, failure, disarm, and Play Mode exit.
+- Private sequence: select `3 Week 2 Test`, choose `Duck Rails > Legacy > Arm Three Client Week 3 Test`, then press the toolbar Play button. Disarm after testing.
+- Coal exhaustion/recovery: use `Duck Rails > Legacy > Arm Three Client Week 3 Coal Recovery Test` with the same scenario.
+- Public lifecycle/network faults: use `Duck Rails > Legacy > Arm Three Client Stability Test`. This is an opt-in fixture with a 40-minute arm expiry and 150-second per-stage timeout. It writes coordination and per-process logs under `Temp/rails-stability`. It restores Photon simulation settings on completion, failure, disarm, and Play Mode exit.
 - These fixtures teleport players/train and inject accepted gameplay actions to exercise session state. They do not establish human melee/scavenging feel or unfamiliar-player completion time.
 - Three desktop processes do not establish eight-player capacity, Quest performance, VR interaction feel, or intelligible human voice. Voice-room checks establish routing only. Public return capacity contention and coordinator loss during return require separate scenarios.
 

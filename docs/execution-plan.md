@@ -353,7 +353,7 @@ See `week1-session.md` for source paths, controls, validation results and pendin
 
 ### Work
 
-- Editor testing convenience implemented: **Two Ducks Quick Start** routes the Two Ducks editors directly into one hidden expedition after normal authentication. Main-editor selection now reads the active scenario configuration rather than its unreliable runtime tags. Six regression checks and the runtime/editor build passed; live main-editor quick-start entry is verified. Justin confirmed the combined two-client launch works. Live disabled-toggle behavior still requires verification. This does not change production boarding requirements or satisfy the acceptance scenarios below.
+- Editor testing convenience implemented: **Duck Rails > Legacy > Two Ducks Quick Start** routes the Two Ducks editors directly into one hidden expedition after normal authentication. Main-editor selection now reads the active scenario configuration rather than its unreliable runtime tags. Six regression checks and the runtime/editor build passed; live main-editor quick-start entry is verified. Justin confirmed the combined two-client launch works. Live disabled-toggle behavior still requires verification. This does not change production boarding requirements or satisfy the acceptance scenarios below.
 - [ ] Define session phases: compound/staging, departing, running, ending, returning. Define valid transitions and who can request/commit them.
 - [ ] Give each expedition a run identifier so completion and transfers can be deduplicated.
 - [ ] Build a gray-box public compound and occupancy/countdown platform.

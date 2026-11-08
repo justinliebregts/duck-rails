@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 
 public class MppmStandaloneUsersWindow : EditorWindow
 {
-    const string MenuPath = "Duck Rails/Multiplayer Play Mode Users";
+    const string MenuPath = "Duck Rails/Legacy/Multiplayer Play Mode Users";
     const string MetaGraph = "https://meta.graph.meta.com";
     const string OculusGraph = "https://graph.oculus.com";
 

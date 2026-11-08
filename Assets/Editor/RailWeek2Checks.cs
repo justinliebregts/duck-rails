@@ -6,7 +6,7 @@ using UnityEngine;
 
 public static class RailWeek2Checks
 {
-    [MenuItem("Duck Rails/Run Week 2 Rules Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Week 2 Rules Checks")]
     public static void Run()
     {
         var state = new RailRunState { run = "test" };

@@ -10,7 +10,7 @@ using UnityEngine;
 
 public static class RailEnemyChecks
 {
-    [MenuItem("Duck Rails/Run Mixed Enemy Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Mixed Enemy Checks")]
     public static void Run()
     {
         var log = new List<string>();

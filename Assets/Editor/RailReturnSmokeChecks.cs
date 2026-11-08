@@ -13,7 +13,7 @@ public static class RailReturnSmokeChecks
     static double entered;
     static string expedition;
     static readonly List<string> passed = new List<string>();
-    [MenuItem("Duck Rails/Run Public Return Smoke Test")]
+    [MenuItem("Duck Rails/Legacy/Run Public Return Smoke Test")]
     public static void Run()
     {
         if (!EditorApplication.isPlaying || PhotonSession.Kind != RailSessionRules.CompoundKind ||

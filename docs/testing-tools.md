@@ -2,7 +2,7 @@
 
 Implemented October 30, 2026. These are development tools, not milestone acceptance for headsets or eight-player play.
 
-Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, with F2 switching during Play. See [shared-rig.md](shared-rig.md) for Q/E reach, simultaneous grip and physical panel controls. Quick regression includes the shared-rig checks. After starting the manual sandbox, **Duck Rails > Run Live Shared Rig Checks** exercises actual proximity grabs, fingertip buttons and the physical drive lever. Existing network fixtures use the shared rig but still retain their documented setup shortcuts.
+Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, with F2 switching during Play. See [shared-rig.md](shared-rig.md) for Q/E reach, simultaneous grip and physical panel controls. Quick regression includes the shared-rig checks. After starting the manual sandbox, **Duck Rails > Legacy > Run Live Shared Rig Checks** exercises actual proximity grabs, fingertip buttons and the physical drive lever. Existing network fixtures use the shared rig but still retain their documented setup shortcuts.
 
 ## In-game panel
 

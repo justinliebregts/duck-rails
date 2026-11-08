@@ -9,7 +9,7 @@ using UnityEngine;
 public static class RailPrivateTerminalBuilder
 {
     const string PrefabPath = "Assets/DuckRails/PressableButton.prefab";
-    [MenuItem("Duck Rails/Build Private Keypad")]
+    [MenuItem("Duck Rails/Legacy/Build Private Keypad")]
     public static void Build()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");

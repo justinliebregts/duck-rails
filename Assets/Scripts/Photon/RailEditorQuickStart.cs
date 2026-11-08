@@ -9,7 +9,7 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class RailEditorQuickStart
 {
-    const string MenuPath = "Duck Rails/Two Ducks Quick Start";
+    const string MenuPath = "Duck Rails/Legacy/Two Ducks Quick Start";
     const string HostTag = "RailsQuickStart";
     public const string RoomCode = "11111";
     static string Key => MppmStandaloneCredentials.PrefsKeyForAssets(Application.dataPath) + ".QuickStart";

@@ -47,7 +47,7 @@ public static class RailStabilityLiveChecks
         EditorApplication.update += Tick;
         EditorApplication.playModeStateChanged += s => { if (s == PlayModeStateChange.ExitingPlayMode) RestoreSimulation(); };
     }
-    [MenuItem("Duck Rails/Arm Three Client Stability Test")]
+    [MenuItem("Duck Rails/Legacy/Arm Three Client Stability Test")]
     public static void Arm()
     {
         if (EditorApplication.isPlaying) throw new Exception("Arm before Play");
@@ -61,7 +61,7 @@ public static class RailStabilityLiveChecks
         var c = new Control { token = Guid.NewGuid().ToString("N"), expires = DateTime.UtcNow.AddMinutes(40).ToString("O") };
         File.WriteAllText(ControlPath, JsonUtility.ToJson(c));
     }
-    [MenuItem("Duck Rails/Disarm Three Client Stability Test")]
+    [MenuItem("Duck Rails/Legacy/Disarm Three Client Stability Test")]
     public static void Disarm()
     {
         if (File.Exists(ControlPath)) File.WriteAllText(ControlPath, "");

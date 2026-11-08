@@ -16,7 +16,7 @@ public static class RailReplaySmokeChecks
     static string room, previousRun;
     static readonly List<string> passed = new List<string>();
 
-    [MenuItem("Duck Rails/Run Private Replay Smoke Test")]
+    [MenuItem("Duck Rails/Legacy/Run Private Replay Smoke Test")]
     public static void Run()
     {
         if (!EditorApplication.isPlaying || !PhotonSession.IsRailsRoom || !PhotonSession.Instance.WorldReady ||

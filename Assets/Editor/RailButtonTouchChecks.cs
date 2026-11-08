@@ -6,7 +6,7 @@ using UnityEngine;
 
 public static class RailButtonTouchChecks
 {
-    [MenuItem("Duck Rails/Run VR Button Touch Checks")]
+    [MenuItem("Duck Rails/Legacy/Run VR Button Touch Checks")]
     public static void Run()
     {
         var rig = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Player/DuckPlayer.prefab"));

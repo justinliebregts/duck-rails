@@ -11,7 +11,7 @@ public static class RailWeek3Checks
 {
     static readonly List<string> lines = new List<string>();
     static void Check(bool value, string name) { if (!value) throw new Exception(name); lines.Add("PASS " + name); }
-    [MenuItem("Duck Rails/Run Week 3 Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Week 3 Checks")]
     public static void Run()
     {
         lines.Clear();

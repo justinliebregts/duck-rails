@@ -34,7 +34,7 @@ public static class RailWeek2LiveChecks
     static double bridgeStart;
     static readonly List<string> evidence = new List<string>();
     static RailWeek2LiveChecks() => EditorApplication.update += Tick;
-    [MenuItem("Duck Rails/Arm Three Client Week 2 Test")]
+    [MenuItem("Duck Rails/Legacy/Arm Three Client Week 2 Test")]
     public static void Arm()
     {
         if (EditorApplication.isPlaying) throw new Exception("Arm before Play.");
@@ -45,9 +45,9 @@ public static class RailWeek2LiveChecks
         File.WriteAllText(RecoveryPath, "false");
         Debug.Log("Three-client Week 2 test armed. Launch the three-client scenario.");
     }
-    [MenuItem("Duck Rails/Arm Three Client Week 2 Recovery Test")]
+    [MenuItem("Duck Rails/Legacy/Arm Three Client Week 2 Recovery Test")]
     public static void ArmRecovery() { Arm(); File.WriteAllText(RecoveryPath, "true"); }
-    [MenuItem("Duck Rails/Disarm Three Client Week 2 Test")]
+    [MenuItem("Duck Rails/Legacy/Disarm Three Client Week 2 Test")]
     public static void Disarm() { RailBridgeHoldFixture.SetHeld(false); File.WriteAllText(ArmPath, ""); RailEditorQuickStart.Enabled = true; }
     static void Record(string value)
     {

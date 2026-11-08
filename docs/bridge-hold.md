@@ -8,7 +8,7 @@ The physical `HOLD / LOWER` button uses DuckPlayer fingertip contact in both Key
 
 The master validates run-scoped, expiring player holds against connected, standing participants, body distance, hand proximity and being off the train. The retained expedition snapshot contains accumulated work and a bounded active segment; late joiners and replacement masters reconstruct that state. Holds renew every 0.25 seconds and expire after one second, bounding progress after a lost release or disconnect. Normal release pauses when received by authority. No elapsed time after lease expiry is added during recovery. Finishing the run stops further movement. New runs start raised.
 
-Protocol is `session-v9`: restart/update every client together. `Duck Rails > Authoring > Install Bridge Hold Button` installs the control in Expedition, the preserved Week 2 authoring baseline and the finale prefab without rebuilding geometry, graphs or lighting. Week 2/3 builders retain it. `Duck Rails > Run Bridge Hold Checks` is included in Test Center quick regression.
+Protocol is `session-v9`: restart/update every client together. `Duck Rails > Authoring > Install Bridge Hold Button` installs the control in Expedition, the preserved Week 2 authoring baseline and the finale prefab without rebuilding geometry, graphs or lighting. Week 2/3 builders retain it. `Duck Rails > Legacy > Run Bridge Hold Checks` is included in Test Center quick regression.
 
 ## Validation
 

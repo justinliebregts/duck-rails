@@ -13,7 +13,7 @@ public static class RailSceneBuilder
 {
     const string Root = "Assets/DuckRails";
     static Material ground, teal, yellow, metal;
-    [MenuItem("Duck Rails/Build Week 1 Scenes")]
+    [MenuItem("Duck Rails/Legacy/Build Week 1 Scenes")]
     public static void Build()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode first.");

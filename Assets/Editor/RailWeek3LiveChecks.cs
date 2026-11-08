@@ -30,7 +30,7 @@ public static class RailWeek3LiveChecks
     static double pausedBridgeWork;
     static bool bridgePauseChecked;
     static RailWeek3LiveChecks() => EditorApplication.update += Tick;
-    [MenuItem("Duck Rails/Arm Three Client Week 3 Test")]
+    [MenuItem("Duck Rails/Legacy/Arm Three Client Week 3 Test")]
     public static void Arm()
     {
         if (EditorApplication.isPlaying) throw new Exception("Arm before Play.");
@@ -41,9 +41,9 @@ public static class RailWeek3LiveChecks
         File.WriteAllText(RecoveryPath, "false");
         EditorPrefs.SetBool("Rails.Week3.PreviousQuickStart", RailEditorQuickStart.Enabled); RailEditorQuickStart.Enabled = false;
     }
-    [MenuItem("Duck Rails/Arm Three Client Week 3 Coal Recovery Test")]
+    [MenuItem("Duck Rails/Legacy/Arm Three Client Week 3 Coal Recovery Test")]
     public static void ArmRecovery() { Arm(); File.WriteAllText(RecoveryPath, "true"); }
-    [MenuItem("Duck Rails/Disarm Three Client Week 3 Test")]
+    [MenuItem("Duck Rails/Legacy/Disarm Three Client Week 3 Test")]
     public static void Disarm() { RailBridgeHoldFixture.SetHeld(false); File.WriteAllText(ArmPath, ""); RailEditorQuickStart.Enabled = EditorPrefs.GetBool("Rails.Week3.PreviousQuickStart", true); }
     static void Record(string message)
     {

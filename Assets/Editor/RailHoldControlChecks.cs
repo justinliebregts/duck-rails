@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class RailHoldControlChecks
 {
-    [MenuItem("Duck Rails/Run Hold Button Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Hold Button Checks")]
     public static void Run()
     {
         Check(RailHoldControl.IsLive(new object[] { "run", 10.8d }, "run", 10), "Live hold");

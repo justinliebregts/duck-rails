@@ -26,7 +26,7 @@ public static class RailDiagnosticChecks
         if (button != null) button.Release();
         return "PASS report button saved " + report.id + " history=" + report.history.Length + " objects=" + report.snapshot.objects.Length;
     }
-    [MenuItem("Duck Rails/Run Diagnostic Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Diagnostic Checks")]
     public static void Run()
     {
         int checks = 0;

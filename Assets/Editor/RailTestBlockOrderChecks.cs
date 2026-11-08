@@ -9,7 +9,7 @@ using UnityEngine;
 
 public static class RailTestBlockOrderChecks
 {
-    [MenuItem("Duck Rails/Run Test Block Order Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Test Block Order Checks")]
     public static void Run()
     {
         if (Application.isPlaying) throw new Exception("Stop Play before running editor checks");

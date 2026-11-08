@@ -15,7 +15,7 @@ public static class RailWeek2Builder
 {
     const string Folder = "Assets/Resources/Rails/";
     static Material steel, safety, ground, coal, red;
-    [MenuItem("Duck Rails/Build Week 2 Encounter")]
+    [MenuItem("Duck Rails/Legacy/Build Week 2 Encounter")]
     public static void Build()
     {
         if (EditorApplication.isPlaying) throw new InvalidOperationException("Exit Play Mode before authoring.");

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class RailBridgeHoldChecks
 {
-    [MenuItem("Duck Rails/Run Bridge Hold Checks")]
+    [MenuItem("Duck Rails/Legacy/Run Bridge Hold Checks")]
     public static void Run()
     {
         int count = 0;
