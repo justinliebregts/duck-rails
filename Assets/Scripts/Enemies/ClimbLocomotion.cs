@@ -172,31 +172,38 @@ namespace Game.AI
             Vector3 center = BodyCenter(position, radius);
             if (!Physics.CheckSphere(center, radius, mask, QueryTriggerInteraction.Ignore)) return true;
             EnsureQuerySphere(radius);
-            Vector3 start = center;
-            bool clear = false;
-            for (int iteration = 0; iteration < 8; iteration++)
+            // ComputePenetration requires an enabled shape. The trigger cannot
+            // become recovery geometry and is disabled before simulation resumes.
+            _querySphere.enabled = true;
+            try
             {
-                int count = Physics.OverlapSphereNonAlloc(center, radius, _overlaps, mask, QueryTriggerInteraction.Ignore);
-                if (count == 0) { clear = true; break; }
-                if (count == _overlaps.Length) break;
-                bool moved = false;
-                for (int i = 0; i < count; i++)
+                Vector3 start = center;
+                bool clear = false;
+                for (int iteration = 0; iteration < 8; iteration++)
                 {
-                    Collider other = _overlaps[i];
-                    if (other == null) continue;
-                    if (!Physics.ComputePenetration(_querySphere, center, Quaternion.identity,
-                        other, other.transform.position, other.transform.rotation, out Vector3 direction, out float distance))
-                        continue;
-                    center += direction * (distance + CollisionSkin);
-                    moved = true;
+                    int count = Physics.OverlapSphereNonAlloc(center, radius, _overlaps, mask, QueryTriggerInteraction.Ignore);
+                    if (count == 0) { clear = true; break; }
+                    if (count == _overlaps.Length) break;
+                    bool moved = false;
+                    for (int i = 0; i < count; i++)
+                    {
+                        Collider other = _overlaps[i];
+                        if (other == null) continue;
+                        if (!Physics.ComputePenetration(_querySphere, center, Quaternion.identity,
+                            other, other.transform.position, other.transform.rotation, out Vector3 direction, out float distance))
+                            continue;
+                        center += direction * (distance + CollisionSkin);
+                        moved = true;
+                    }
+                    if (!moved || Vector3.Distance(start, center) > Mathf.Max(1f, radius * 2f)) break;
                 }
-                if (!moved || Vector3.Distance(start, center) > Mathf.Max(1f, radius * 2f)) break;
+                if (!clear)
+                    clear = !Physics.CheckSphere(center, radius, mask, QueryTriggerInteraction.Ignore);
+                if (!clear || Vector3.Distance(start, center) > Mathf.Max(1f, radius * 2f)) return false;
+                position = center - _surfaceUp * clearance;
+                return true;
             }
-            if (!clear)
-                clear = !Physics.CheckSphere(center, radius, mask, QueryTriggerInteraction.Ignore);
-            if (!clear || Vector3.Distance(start, center) > Mathf.Max(1f, radius * 2f)) return false;
-            position = center - _surfaceUp * clearance;
-            return true;
+            finally { _querySphere.enabled = false; }
         }
 
         /// <summary>One kinematic drop. A hit reattaches the body to that surface.</summary>
@@ -240,6 +247,7 @@ namespace Game.AI
                 GameObject helper = new GameObject("Enemy sphere query");
                 helper.hideFlags = HideFlags.HideAndDontSave;
                 _querySphere = helper.AddComponent<SphereCollider>();
+                _querySphere.isTrigger = true;
                 _querySphere.enabled = false;
             }
             _querySphere.radius = radius;

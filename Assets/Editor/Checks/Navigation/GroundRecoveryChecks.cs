@@ -26,7 +26,81 @@ public static class GroundRecoveryChecks
         HitRecovery();
         SpiderSurfaceRecovery();
         foreach (float angle in new[] { 20f, 40f, 60f }) RampSeam(angle);
+        ConvexSlopeSupport();
         Debug.Log("GroundRecoveryChecks: ALL PASSED");
+    }
+
+    // The river shoulder changes from a 0.6 grade to a 1.2 grade. A clear
+    // capsule can intersect the second triangle's infinite plane at this crest.
+    public static void ConvexSlopeSupport()
+    {
+        if (!Application.isBatchMode) throw new InvalidOperationException("Batch mode only.");
+        EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        var mesh = new Mesh();
+        float[] zs = { 0, 2, 4, 6, 8 }, ys = { 0, 0, -1.2f, -3.6f, -3.6f };
+        var vertices = new Vector3[zs.Length * 2];
+        var triangles = new int[(zs.Length - 1) * 6];
+        for (int i = 0; i < zs.Length; i++)
+        {
+            vertices[i * 2] = new Vector3(-4, ys[i], zs[i]);
+            vertices[i * 2 + 1] = new Vector3(4, ys[i], zs[i]);
+            if (i == zs.Length - 1) continue;
+            int v = i * 2, t = i * 6;
+            triangles[t] = v; triangles[t + 1] = v + 2; triangles[t + 2] = v + 1;
+            triangles[t + 3] = v + 1; triangles[t + 4] = v + 2; triangles[t + 5] = v + 3;
+        }
+        mesh.vertices = vertices; mesh.triangles = triangles;
+        mesh.RecalculateBounds(); mesh.RecalculateNormals();
+        var terrain = new GameObject("Convex riverbank") { layer = 6 };
+        terrain.AddComponent<MeshCollider>().sharedMesh = mesh;
+        var actor = new GameObject("Riverbank capsule"); actor.transform.localScale = Vector3.one * 1.2f;
+        var ground = actor.AddComponent<GroundLocomotion>();
+        Physics.SyncTransforms();
+        try
+        {
+            ground.GetCapsuleSize(out float radius, out _);
+            float clearance = radius + GroundLocomotion.CapsuleSkin;
+            float shoulderY = new Vector3(0, 1, .6f).normalized.y;
+            Vector3 bottom = new Vector3(0, -.6f * (4.06f - 2) + clearance / shoulderY, 4.06f);
+            Vector3 original = bottom;
+            Check(!ground.Overlaps(ground.RootFromCapsuleBottom(bottom), 1 << 6), "Crest fixture must be clear of the finite triangles");
+            Check(!ground.TryRepairGroundContact(ref bottom, 1 << 6) && bottom == original,
+                "A clear crest contact must not be lifted to the next triangle's infinite plane");
+
+            bottom = ground.SupportedCapsuleBottom(new Vector3(0, -.05f, 1), 1 << 6);
+            Check(ground.TryRepairGroundContact(ref bottom, 1 << 6)
+                && !ground.Overlaps(ground.RootFromCapsuleBottom(bottom), 1 << 6),
+                "Actual shallow penetration must still be repaired");
+
+            foreach (float speed in new[] { .66f, 2.2f, 4.2f, 6.6f })
+            foreach (int hz in new[] { 30, 72, 90, 144 })
+            foreach (bool down in new[] { true, false })
+            {
+                Vector3 start = down ? new Vector3(0, 0, 1) : new Vector3(0, -3.6f, 7);
+                Vector3 goal = down ? new Vector3(0, -3.6f, 7) : new Vector3(0, 0, 1);
+                actor.transform.position = start; ground.Reset();
+                Vector3 position = start;
+                int ticks = Mathf.CeilToInt(20f / speed * hz);
+                for (int tick = 0; tick < ticks && Vector3.Distance(position, goal) > .1f; tick++)
+                {
+                    Vector3 delta = Vector3.ClampMagnitude(goal - position, speed / hz);
+                    Vector3 next = ground.Displace(position, delta, 1 << 6);
+                    Check(Vector3.Distance(position, next) <= delta.magnitude + .05f,
+                        $"Convex transition position spike: speed={speed}, hz={hz}, down={down}");
+                    Check(!ground.Overlaps(next, 1 << 6), "Convex transition embedded the capsule");
+                    position = next; actor.transform.position = position;
+                }
+                Check(Vector3.Distance(position, goal) <= .1f,
+                    $"Convex transition stalled: speed={speed}, hz={hz}, down={down}, position={position}");
+            }
+            Debug.Log("ConvexSlopeSupport: ALL PASSED (32 traversals plus clear/embedded contact checks)");
+        }
+        finally
+        {
+            UnityEngine.Object.DestroyImmediate(actor);
+            UnityEngine.Object.DestroyImmediate(terrain);
+            UnityEngine.Object.DestroyImmediate(mesh);
+        }
     }
 
     public static void SpiderSurfaceRecovery()
@@ -328,6 +402,12 @@ public static class GroundRecoveryChecks
         enemy.SetRemoteState(Enemy.State.Chase);
         Set(enemy, "_lastSeenPos", actor.transform.position);
         Set(enemy, "_seen", true);
+        // Attack-range stopping also requires a planned goal on this floor.
+        Vector3 at = actor.transform.position;
+        Set(manager, "worldGraph", new CrawlGraph {
+            NodeCount = 1, NodePos = new[] { at.x, at.y, at.z }
+        });
+        Set(ground, "_goalNode", 0);
         Set(ground, "_stalled", true);
         Check(!(bool)Call(ground, "TickStallRecovery", enemy, manager, 30f)
             && !(bool)Get(ground, "_stalled"), "Attack-range stop does not relocate");

@@ -642,6 +642,11 @@ namespace Game.AI
                 || !CrawlGraph.IsWalkableGround(hit.normal)) return false;
             float lift = (radius + CollisionSkin - Vector3.Dot(bottom - hit.point, hit.normal)) / hit.normal.y;
             if (lift <= 0.0001f || lift > maxCorrection) return false;
+            // At a convex slope transition the ray can see a steeper triangle
+            // whose infinite plane intersects the capsule, although the finite
+            // triangle does not. Lifting a clear capsule to that plane fights
+            // the support snap and can undo every small downhill step.
+            if (!CapsuleOverlaps(bottom, mask)) return false;
             Vector3 repaired = bottom + Vector3.up * lift;
             if (CapsuleOverlaps(repaired, mask)) return false;
             bottom = repaired;
@@ -856,31 +861,39 @@ namespace Game.AI
             {
                 var helper = new GameObject("Enemy capsule query") { hideFlags = HideFlags.HideAndDontSave };
                 _queryCapsule = helper.AddComponent<CapsuleCollider>();
-                _queryCapsule.enabled = false; // Used only by ComputePenetration, never by simulation.
+                _queryCapsule.isTrigger = true; // Excluded from the recovery queries, including all-layer masks.
+                _queryCapsule.enabled = false;
             }
             _queryCapsule.radius = radius; _queryCapsule.height = height;
             _queryCapsule.center = Vector3.up * (height * .5f - radius);
-            Vector3 start = bottom;
-            for (int iteration = 0; iteration < 8; iteration++)
+            // Unity needs an enabled shape for ComputePenetration. Enable only
+            // during this synchronous recovery; never leave it in simulation.
+            _queryCapsule.enabled = true;
+            try
             {
-                int count = Physics.OverlapCapsuleNonAlloc(bottom, bottom + Vector3.up * (height - 2f * radius),
-                    radius, _overlaps, mask, QueryTriggerInteraction.Ignore);
-                if (count == 0) return true;
-                if (count == _overlaps.Length) return false;
-                bool moved = false;
-                for (int i = 0; i < count; i++)
+                Vector3 start = bottom;
+                for (int iteration = 0; iteration < 8; iteration++)
                 {
-                    Collider other = _overlaps[i];
-                    if (Physics.ComputePenetration(_queryCapsule, bottom, Quaternion.identity,
-                        other, other.transform.position, other.transform.rotation, out Vector3 direction, out float distance))
+                    int count = Physics.OverlapCapsuleNonAlloc(bottom, bottom + Vector3.up * (height - 2f * radius),
+                        radius, _overlaps, mask, QueryTriggerInteraction.Ignore);
+                    if (count == 0) return true;
+                    if (count == _overlaps.Length) return false;
+                    bool moved = false;
+                    for (int i = 0; i < count; i++)
                     {
-                        bottom += direction * (distance + CapsuleSkin);
-                        moved = true;
+                        Collider other = _overlaps[i];
+                        if (Physics.ComputePenetration(_queryCapsule, bottom, Quaternion.identity,
+                            other, other.transform.position, other.transform.rotation, out Vector3 direction, out float distance))
+                        {
+                            bottom += direction * (distance + CapsuleSkin);
+                            moved = true;
+                        }
                     }
+                    if (!moved || Vector3.Distance(start, bottom) > Mathf.Max(1f, radius * 2f)) return false;
                 }
-                if (!moved || Vector3.Distance(start, bottom) > Mathf.Max(1f, radius * 2f)) return false;
+                return !CapsuleOverlaps(bottom, mask);
             }
-            return !CapsuleOverlaps(bottom, mask);
+            finally { _queryCapsule.enabled = false; }
         }
 
         void OnDestroy()

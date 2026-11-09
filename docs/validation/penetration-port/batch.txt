@@ -1,0 +1,54 @@
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    com.unity.performance.profile-analyzer@1.4.2 (location: X:\Work\duck-rails\tmp\duckz-port-validation\Library\PackageCache\com.unity.performance.profile-analyzer@5491650411cd)
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.24f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.24f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aEDbg.dag" --continue-on-failure --dagfilejson="Library\Bee\1900b0aEDbg.dag.json" --profile="Library/Bee/backend2.traceevents" ScriptAssemblies
+RECOVERY COST Bomber recovery check: 1000 repairs, 0 managed bytes, 12.195 us/repair (Editor CPU)
+RECOVERY COST Smasher recovery check: 1000 repairs, 0 managed bytes, 12.095 us/repair (Editor CPU)
+RECOVERY COST Minion recovery check: 1000 repairs, 0 managed bytes, 15.351 us/repair (Editor CPU)
+RECOVERY COST Spider recovery check: 1000 repairs, 0 managed bytes, 2.661 us/repair (Editor CPU)
+EnemyPenetrationChecks: ALL PASSED (216 slope/scale/depth/seam cases; 1112 assertions)
+SharedFallRecovery: ALL PASSED
+HitRecovery: ALL PASSED
+SpiderSurfaceRecovery: ALL PASSED
+ConvexSlopeSupport: ALL PASSED (32 traversals plus clear/embedded contact checks)
+GroundRecoveryChecks: ALL PASSED
+WANDER EXPLORATION PASS: TieredArcs
+WANDER EXPLORATION PASS: TieredRevalidation
+TIER CONTINUATION PROFILE services=400 allocated=0 mean=0.108ms
+WANDER EXPLORATION PASS: TierContinuation
+RETREAT TIER PROFILE scans=200 allocated=0 mean=0.045ms
+SmasherWanderExplorationChecks:RetreatTierProfile () (at Assets/Editor/Checks/Enemies/SmasherWanderExplorationChecks.cs:290)
+WANDER EXPLORATION PASS: RetreatTierProfile
+WANDER EXPLORATION PASS: SelectionBalance
+WANDER EXPLORATION PASS: UpwardExploration
+WANDER EXPLORATION PASS: ReturnSafetyAndMemory
+WANDER EXPLORATION PASS: BroadAndSmallRoofs
+WANDER EXPLORATION PASS: StagedDescent
+WANDER EXPLORATION PASS: WalkingPreference
+WANDER EXPLORATION PASS: CancellationAndRevalidation
+WANDER EXPLORATION PROFILE cycles=20 allocated=0 worstService=0.079ms
+WANDER EXPLORATION PASS: BackoffAndAllocations
+WANDER EXPLORATION PASS: CrowdScheduling
+WANDER EXPLORATION PASS: Network
+WANDER EXPLORATION PASS: PoliceRoofs
+TALL ROOF PROFILE checks=200 allocated=0 mean=0.148ms
+TALL ROOF NETWORK PASS: 10Hz wire round-trip, remote motion, landing, stale/foreign packets, authority handoff
+ZombieSmasherTraversalChecks: ALL PASSED
+HitRetreatPoseHistory: ALL PASSED
+ZombieSmasherJumpChecks: ALL PASSED
+SmasherRetreatJumpChecks: ALL PASSED
+STAIR COST PASS: flat movement zero allocations, zero step attempts
+SpiderRoofLipChecks: ALL PASSED
+SpiderSurfaceRecovery: ALL PASSED
+EnemyStairChecks: ALL PASSED
+SharedFallRecovery: ALL PASSED
+HitRecovery: ALL PASSED
+SmasherTallBuildingChecks: ALL PASSED
+WANDER EXPLORATION PASS: Run
+SmasherWanderExplorationChecks: ALL PASSED
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1794183543454,"processId":175444,"allocatedMemory":29218279,"memoryLabels":[{"Default":29313},{"Permanent":15236},{"NewDelete":68467},{"Thread":4237960},{"Manager":40413},{"VertexData":8},{"Geometry":816},{"Texture":160},{"Shader":79381},{"Material":24},{"GfxDevice":57928},{"Animation":392},{"Audio":3040},{"FreeType":8},{"FontEngine":736},{"Physics":1970},{"Physics2D":16},{"Serialization":592},{"Input":14984},{"JobScheduler":33024},{"TextLib":280},{"Mono":32},{"MonoCode":64},{"ScriptingNativeRuntime":155060},{"BaseObject":1620272},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":3941},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":24660},{"DynamicArray":246770},{"HashMap":292251},{"Utility":2662998},{"Curl":2696},{"PoolAlloc":2152},{"AI":80},{"TypeTree":13861},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":8920},{"WebRequest":552},{"VR":48138},{"SceneManager":504},{"Video":64},{"LazyScriptCache":32},{"Camera":17},{"Secure":2377},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":192},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"NativePlugin":8},{"Analytics":464},{"Hierarchy":608},{"CoreStats":13112},{"Identifiers":6480},{"Gui":96},{"EditorUtility":216789},{"VersionControl":4},{"Undo":947},{"AssetDatabase":18877165},{"EditorGi":328},{"UnityConnect":29208},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"ChannelService":384},{"LocalIPC":212},{"ProfilerEditor":9746},{"CoreBusinessMetrics":3500},{"Licensing":696},{"AssetReference":32},{"IPCStream":32}]}
