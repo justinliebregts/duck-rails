@@ -5,6 +5,7 @@ using UnityEngine;
 /// <summary>Gets first refusal on grip presses/releases (e.g. the bag). Return true to consume the event.</summary>
 public interface IHandGripHandler
 {
+    bool IsHolding(PlayerHand hand);
     bool OnGripPressed(PlayerHand hand);
     bool OnGripReleased(PlayerHand hand);
 }
@@ -213,6 +214,8 @@ public class PlayerHand : MonoBehaviour
             if (!driveControl.HeldBy(this)) driveControl = null;
             else { if (!grip.down) { driveControl.ReleaseDrive(); driveControl = null; } return; }
         }
+        if (held != null || (GripHandler != null && GripHandler.IsHolding(this)))
+            grip.wasReleased = input.WasHeldGripReleased(IsControllerLTouch);
         if (held == null)
         {
             if (grip.wasPressed && (GripHandler == null || !GripHandler.OnGripPressed(this)))

@@ -15,6 +15,8 @@ public sealed class TrackedHandInput
     public bool Active { get; private set; }
     public Curls Visual { get; private set; }
     public ButtonStatus Grip { get; private set; }
+    // Only existing object holds consume this channel. UI and new grabs use Grip.
+    public ButtonStatus HeldGrip { get; private set; }
     public ButtonStatus Trigger { get; private set; }
     public float TriggerValue => triggerArmed ? Visual.index : 0f;
     public bool SuppressThrow { get; private set; }
@@ -24,7 +26,7 @@ public sealed class TrackedHandInput
     public void Enter(bool gripHeld)
     {
         Active = true;
-        Grip = new ButtonStatus { down = gripHeld };
+        HeldGrip = Grip = new ButtonStatus { down = gripHeld };
         Trigger = default;
         gripArmed = gripHeld;
         triggerArmed = hasPose = false;
@@ -35,7 +37,7 @@ public sealed class TrackedHandInput
     public void Exit()
     {
         Active = false;
-        Grip = Trigger = default;
+        HeldGrip = Grip = Trigger = default;
         Visual = default;
         gripArmed = triggerArmed = hasPose = false;
         missingTime = validTime = 0f;
@@ -54,12 +56,16 @@ public sealed class TrackedHandInput
         if (!Active) return;
         dt = Mathf.Max(0f, dt);
         Grip = Edge(Grip, Grip.down);
+        HeldGrip = Edge(HeldGrip, HeldGrip.down);
         Trigger = Edge(Trigger, Trigger.down);
         if (!valid || !focused)
         {
             validTime = 0f;
             missingTime += dt;
             SuppressThrow = true;
+            // Losing finger tracking is not evidence that a held object was released.
+            // Focus/availability cleanup still releases normally.
+            if (!focused) HeldGrip = Edge(HeldGrip, false);
             if (!focused || missingTime >= TrackingGrace)
             {
                 Grip = Edge(Grip, false);
@@ -84,6 +90,7 @@ public sealed class TrackedHandInput
         if (sample.Grip <= ReleaseThreshold) gripArmed = true;
         if (sample.index <= ReleaseThreshold) triggerArmed = true;
         Grip = Edge(Grip, gripArmed && Held(sample.Grip, Grip.down));
+        HeldGrip = Edge(HeldGrip, Grip.down || (HeldGrip.down && Held(sample.Grip, true)));
         Trigger = Edge(Trigger, triggerArmed && Held(sample.index, Trigger.down));
     }
 

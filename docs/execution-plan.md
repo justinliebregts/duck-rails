@@ -636,3 +636,12 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] Port raised spider reach while preserving train boarding; Unity compilation, 9,135 source/Rails assertions, 489 boarding and 125 crossing checks passed. See [port evidence](duckz-fix-ports.md#raised-spider-attacks--november-8-2026).
 - [ ] Verify raised attacks aboard moving trains with actual peers and headsets, including late join/master migration and Quest performance. Synthetic transport does not close this acceptance.
+
+## Hand tracking hold retention — November 8, 2026
+
+- [x] Port Duckz 00ee3e71 with Rails drive/simulator adaptations; Unity compilation,
+  363 tracked-hand assertions, 17 drive checks and shared-rig regressions passed.
+  See [port evidence](duckz-ports.md#00ee3e71dd2c70d33f69059bc3caee32eef6bbbd--holds-survive-hand-tracking-loss).
+- [ ] Run expanded disposable held-object/transport suites and validate loaded bags,
+  weapons, tracking occlusion/recovery, availability cleanup and moving cargo across
+  real clients/headsets; profile Quest performance.

@@ -7,6 +7,7 @@ public partial class ControllerInput
     readonly OvrHandCurlSource leftCurls = new OvrHandCurlSource();
     readonly OvrHandCurlSource rightCurls = new OvrHandCurlSource();
     bool suppressLeftThrow, suppressRightThrow;
+    bool releaseLeftHoldOnSwitch, releaseRightHoldOnSwitch;
 
     void UpdateVrInput()
     {
@@ -42,9 +43,11 @@ public partial class ControllerInput
         bool focused, ButtonStatus oldGrip, ButtonStatus oldTrigger)
     {
         var input = left ? trackedLeft : trackedRight;
+        if (left) releaseLeftHoldOnSwitch = false; else releaseRightHoldOnSwitch = false;
         if (!bare)
         {
             if (!input.Active) return; // Controller-only input stays exactly as OVRInput supplied it.
+            bool heldGripDown = input.HeldGrip.down;
             input.Exit();
             // Switching modes must still release a held item if the new controller grip is up.
             if (left)
@@ -52,12 +55,16 @@ public partial class ControllerInput
                 leftGripButton = Transition(oldGrip, leftGripButton.down);
                 leftTriggerButton = Transition(oldTrigger, leftTriggerButton.down);
                 suppressLeftThrow = leftGripButton.wasReleased;
+                releaseLeftHoldOnSwitch = heldGripDown && !leftGripButton.down;
+                suppressLeftThrow |= releaseLeftHoldOnSwitch;
             }
             else
             {
                 rightGripButton = Transition(oldGrip, rightGripButton.down);
                 rightTriggerButton = Transition(oldTrigger, rightTriggerButton.down);
                 suppressRightThrow = rightGripButton.wasReleased;
+                releaseRightHoldOnSwitch = heldGripDown && !rightGripButton.down;
+                suppressRightThrow |= releaseRightHoldOnSwitch;
             }
             return;
         }
@@ -86,6 +93,8 @@ public partial class ControllerInput
 
     void UpdateDesktopInput()
     {
+        bool leftHeld = trackedLeft.Active && trackedLeft.HeldGrip.down;
+        bool rightHeld = trackedRight.Active && trackedRight.HeldGrip.down;
         suppressLeftThrow = trackedLeft.Active;
         suppressRightThrow = trackedRight.Active;
         trackedLeft.Exit(); trackedRight.Exit();
@@ -94,6 +103,8 @@ public partial class ControllerInput
         rightTriggerButton = Transition(rightTriggerButton, false);
         leftGripValue = leftTriggerValue = rightTriggerValue = 0f;
         MouseGripInput();
+        releaseLeftHoldOnSwitch = leftHeld && !leftGripButton.down;
+        releaseRightHoldOnSwitch = rightHeld && !rightGripButton.down;
     }
 
     public bool TryGetTrackedFingerCurls(bool left, out Vector3 curls)
@@ -105,6 +116,15 @@ public partial class ControllerInput
     }
 
     public bool SuppressTrackedHandThrow(bool left) => left ? suppressLeftThrow : suppressRightThrow;
+
+    // Only PlayerHand's already-held item/bag path uses the retained release edge.
+    public bool WasHeldGripReleased(bool left)
+    {
+        var tracked = left ? trackedLeft : trackedRight;
+        if (!mouseGrip && tracked.Active) return tracked.HeldGrip.wasReleased;
+        return left ? leftGripButton.wasReleased || releaseLeftHoldOnSwitch
+            : rightGripButton.wasReleased || releaseRightHoldOnSwitch;
+    }
 
     public void NotifyTrackedHandGrab(bool left)
     {

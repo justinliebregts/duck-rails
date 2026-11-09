@@ -8,7 +8,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public static class TrackedHandInputChecks
+public static partial class TrackedHandInputChecks
 {
     const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     static int checks;
@@ -75,13 +75,20 @@ public static class TrackedHandInputChecks
         h.Tick(default, false, .1f);
         Check(h.Trigger.down && h.Grip.down && !h.Trigger.wasPressed && h.SuppressThrow, "brief loss holds state without edges");
         h.Tick(default, false, .3f);
-        Check(h.Trigger.wasReleased && h.Grip.wasReleased && h.SuppressThrow, "long loss releases without throwing");
+        Check(h.Trigger.wasReleased && h.Grip.wasReleased && h.SuppressThrow, "long loss preserves existing UI/trigger release");
+        Check(h.HeldGrip.down && !h.HeldGrip.wasReleased, "existing object hold survives long loss");
+        for (int i = 0; i < 1000; i++) h.Tick(default, false, 1f);
+        Check(h.HeldGrip.down && !h.HeldGrip.wasReleased, "object hold has no tracking-loss timeout");
         h.Tick(Fist, true, .02f);
         Check(!h.Trigger.down && !h.Grip.down, "reacquired fist cannot reactivate");
-        h.Tick(default, true, .1f); h.Tick(Fist, true, .1f);
+        Check(h.HeldGrip.down && !h.HeldGrip.wasPressed, "closed recovery retains only existing holds");
+        h.Tick(default, true, .1f);
+        Check(h.HeldGrip.wasReleased, "valid open hand releases retained hold");
+        h.Tick(Fist, true, .1f);
         Check(h.Grip.wasPressed && h.Trigger.wasPressed && !h.SuppressThrow, "opening rearms after recovery");
         h.Tick(Fist, true, .02f, false);
         Check(h.Grip.wasReleased && h.Trigger.wasReleased && h.SuppressThrow, "focus loss releases immediately");
+        Check(h.HeldGrip.wasReleased, "focus loss also releases retained hold");
         h.Exit(); h.Enter(true); h.Tick(Fist, true, .02f);
         Check(h.Grip.down && !h.Grip.wasPressed && !h.Trigger.down, "controller hold can transition without a new grab");
         h.Tick(default, true, .02f);
@@ -90,6 +97,12 @@ public static class TrackedHandInputChecks
         long before = GC.GetAllocatedBytesForCurrentThread();
         for (int i = 0; i < 1000; i++) h.Tick(default, true, .02f);
         Check(GC.GetAllocatedBytesForCurrentThread() == before, "steady gesture sampling allocates no managed memory");
+        h.Tick(Fist, true, .02f);
+        for (int i = 0; i < 20; i++) { h.Tick(default, false, 1f); h.Tick(Fist, true, .02f); }
+        before = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 10000; i++) { h.Tick(default, false, 1f); h.Tick(Fist, true, .02f); }
+        Check(GC.GetAllocatedBytesForCurrentThread() == before && h.HeldGrip.down,
+            "tracking loss and closed recovery retain holds with zero recurring allocations");
     }
 
     static void Geometry()
@@ -215,25 +228,35 @@ public static class TrackedHandInputChecks
                 var decoded = (PosePacket)PosePacket.Deserialize(PosePacket.Serialize(packet));
                 Check(Mathf.Abs((left ? decoded.Fingers.leftPinky : decoded.Fingers.rightPinky) - curls.z) <= 1f / 7f,
                     "existing network packet carries tracked middle curl");
-                Sample(input, left, Fist); // Preserve held object until a loss-driven release.
+                Sample(input, left, Fist);
                 Set(hand, "posSamples", new[] { Vector3.zero, Vector3.one * 10, Vector3.zero, Vector3.zero, Vector3.zero });
                 Set(hand, "rotSamples", new[] { Quaternion.identity, Quaternion.Euler(60, 0, 0), Quaternion.identity, Quaternion.identity, Quaternion.identity });
                 Set(hand, "timeSamples", new[] { 0f, .01f, 0f, 0f, 0f });
                 Set(hand, "sampleFilled", 2); Set(hand, "sampleWrite", 2);
                 Sample(input, left, default, false, .4f);
                 Call(hand, "LateUpdate");
-                Check(!hand.IsHolding && item.Holder == null, "tracking loss releases through existing grip handler");
+                Check(hand.IsHolding && item.Holder == hand, "tracking loss preserves existing item hold");
                 Sync(item, replica);
-                Check(!replica.IsHeldByAnyPlayer, "tracking-loss drop reaches remote item");
+                Check(replica.IsHeldByAnyPlayer, "retained hold reaches remote item through existing packet");
+                Sample(input, left, Fist); Call(hand, "LateUpdate");
+                Check(hand.IsHolding && !hand.WasUsePressed, "closed recovery keeps item without firing a use event");
+                Sample(input, left, default, false, 1000f); Call(hand, "LateUpdate");
+                Check(hand.IsHolding, "long repeated loss cannot time out the hold");
+                Sample(input, left, default, true, .02f); Call(hand, "LateUpdate");
+                Check(!hand.IsHolding && item.Holder == null, "valid open recovery releases through existing handler");
+                Sync(item, replica);
+                Check(!replica.IsHeldByAnyPlayer, "intentional release reaches remote item");
                 Check(item.GetComponent<Rigidbody>().linearVelocity == Vector3.zero && item.GetComponent<Rigidbody>().angularVelocity == Vector3.zero,
-                    "loss-driven release discards stale throw velocity");
+                    "open recovery discards stale throw velocity");
                 Sample(input, left, default); Sample(input, left, Fist);
                 Check(hand.ForceGrab(item) && !hand.IsTriggerHeld, "ForceGrab also applies trigger guard");
-                hand.Release();
+                Sample(input, left, default, false, 1f); Call(hand, "LateUpdate");
                 // Simulate the already-polled controller inputs and make sure hand mode clears cleanly.
                 if (left) { input.leftGripButton = default; input.leftTriggerButton = default; input.leftTriggerValue = .23f; }
                 else { input.rightGripButton = default; input.rightTriggerButton = default; input.rightTriggerValue = .23f; }
                 Apply(input, left, false, default, false, .02f, true, new ButtonStatus { down = true }, default);
+                Call(hand, "LateUpdate");
+                Check(!hand.IsHolding, "switch to released controller clears retained object hold");
                 Check(!input.TryGetTrackedFingerCurls(left, out _), "controller switch restores controller animation");
                 Near(left ? input.leftTriggerValue : input.rightTriggerValue, .23f, "controller analog value preserved");
                 var controllerButton = new ButtonStatus { down = true, wasPressed = true };

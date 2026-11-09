@@ -465,3 +465,11 @@ November 6 logo art: user approved the low-poly extruded ivory/red logo with pix
 ## Raised spider reach — November 8, 2026
 
 Port Duckz `eb52afd5e8a5502338e2af4d183c6784ed658259`: supported floor spiders raise toward nearby elevated chase targets, with bounded leg reach and a head-following contact trigger. Train boarding remains enabled; lift uses a separate packet byte alongside the existing train/displaced/heartbeat flags. See [port evidence and limits](duckz-fix-ports.md#raised-spider-attacks--november-8-2026).
+
+## Hand tracking hold retention — November 8, 2026
+
+Port Duckz `00ee3e71dd2c70d33f69059bc3caee32eef6bbbd`: existing held items,
+weapons and bags stay attached during missing bare-hand tracking until a valid open
+release or existing focus/availability/mode-switch cleanup. UI/new grabs and the
+train lever retain their prior input behavior. See [port evidence and remaining
+acceptance](duckz-ports.md#00ee3e71dd2c70d33f69059bc3caee32eef6bbbd--holds-survive-hand-tracking-loss).

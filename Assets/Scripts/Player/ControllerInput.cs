@@ -49,6 +49,7 @@ public partial class ControllerInput : MonoBehaviour
     private void Update() {
       if (simulation != null && simulation.IsSimulating) {
         trackedLeft.Exit(); trackedRight.Exit();
+        releaseLeftHoldOnSwitch = releaseRightHoldOnSwitch = false;
         suppressLeftThrow = suppressRightThrow = false;
         ApplySimulationButtons(simulation.Buttons);
         return;

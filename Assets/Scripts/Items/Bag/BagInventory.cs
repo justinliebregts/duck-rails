@@ -374,6 +374,8 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
 
     // ---------- Grip handling ----------
 
+    bool IHandGripHandler.IsHolding(PlayerHand hand) => HandBag(hand) != null;
+
     // Keep equipped-helmet removal out of the bag's reach zones.
     public bool BlocksHelmetGrab(PlayerHand hand)
     {
