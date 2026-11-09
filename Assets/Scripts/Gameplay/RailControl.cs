@@ -49,7 +49,7 @@ public sealed class RailControl : MonoBehaviour
         bool hand = (player.leftPlayerHand != null && Vector3.Distance(player.leftPlayerHand.transform.position, transform.position) < .3f) ||
             (player.rightPlayerHand != null && Vector3.Distance(player.rightPlayerHand.transform.position, transform.position) < .3f);
         bool desktopUse = false;
-        if (near && !RailWorld.InputBlocked && Input.GetKeyDown(KeyCode.E) && Camera.main != null &&
+        if (near && !RailWorld.InputBlocked && RailDesktopInput.GetKeyDown(KeyCode.E) && Camera.main != null &&
             Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out var hit, 3, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Collide))
             desktopUse = hit.collider.GetComponentInParent<RailControl>() == this;
         bool desktop = player.GetComponentInChildren<DesktopPlayer>() != null ||

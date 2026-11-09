@@ -50,13 +50,13 @@ public partial class NewPlayer
         float speed = DevelopmentSpeed;
 #if UNITY_EDITOR
         if (controllerInput == null || controllerInput.simulation == null) {
-        Vector2 keyboard = new Vector2((Input.GetKey(KeyCode.D) ? 1 : 0) - (Input.GetKey(KeyCode.A) ? 1 : 0),
-            (Input.GetKey(KeyCode.W) ? 1 : 0) - (Input.GetKey(KeyCode.S) ? 1 : 0));
-        bool space = Input.GetKey(KeyCode.Space);
+        Vector2 keyboard = new Vector2((RailDesktopInput.GetKey(KeyCode.D) ? 1 : 0) - (RailDesktopInput.GetKey(KeyCode.A) ? 1 : 0),
+            (RailDesktopInput.GetKey(KeyCode.W) ? 1 : 0) - (RailDesktopInput.GetKey(KeyCode.S) ? 1 : 0));
+        bool space = RailDesktopInput.GetKey(KeyCode.Space);
         input = Vector2.ClampMagnitude(input + keyboard, 1f);
         if (space) lift = 1f;
         active |= keyboard != Vector2.zero || space || (developmentMoving && !developmentWasStick && developmentVelocity.sqrMagnitude > .000001f);
-        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) speed *= 2.5f;
+        if (RailDesktopInput.GetKey(KeyCode.LeftShift) || RailDesktopInput.GetKey(KeyCode.RightShift)) speed *= 2.5f;
         }
 #endif
         if (!active)

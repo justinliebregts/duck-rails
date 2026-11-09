@@ -93,8 +93,8 @@ public partial class ControllerInput : MonoBehaviour
       bool locked = Cursor.lockState == CursorLockMode.Locked && !DesktopPlayer.SuppressMouseGrip && !RailWorld.InputBlocked;
       // The click that recaptures the cursor is not a grab.
       bool down = rightGripButton.down
-        ? locked && Input.GetMouseButton(0)
-        : locked && Input.GetMouseButtonDown(0) && Time.frameCount != DesktopPlayer.CursorLockedFrame;
+        ? locked && RailDesktopInput.GetMouseButton(0)
+        : locked && RailDesktopInput.GetMouseButtonDown(0) && Time.frameCount != DesktopPlayer.CursorLockedFrame;
       rightGripButton.wasPressed = down && !rightGripButton.down;
       rightGripButton.wasReleased = !down && rightGripButton.down;
       rightGripButton.down = down;

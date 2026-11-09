@@ -20,7 +20,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
 #if UNITY_EDITOR
             return Application.isPlaying && RailDiagnostics.Development && GR.Player.instance != null &&
                 Cursor.lockState != CursorLockMode.Locked &&
-                EditorToggleRect.Contains(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y));
+                EditorToggleRect.Contains(new Vector2(RailDesktopInput.mousePosition.x, Screen.height - RailDesktopInput.mousePosition.y));
 #else
             return false;
 #endif
@@ -52,8 +52,8 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         var player = GR.Player.instance;
         if (player == null) { Close(); return; }
         if (IsOpen && desktopOpen != KeyboardMode) { Close(); Toggle(); }
-        if (player.ReturnButtonPress_Left(ButtonName.Start).wasPressed || (Input.GetKeyDown(KeyCode.P) && !DuckCompanionDebug.IsTyping)) Toggle();
-        if (desktopOpen && Input.GetKeyDown(KeyCode.Escape)) Close();
+        if (player.ReturnButtonPress_Left(ButtonName.Start).wasPressed || (RailDesktopInput.GetKeyDown(KeyCode.P) && !DuckCompanionDebug.IsTyping)) Toggle();
+        if (desktopOpen && RailDesktopInput.GetKeyDown(KeyCode.Escape)) Close();
         if (desktopOpen) { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
         if (!RailTestTools.Allowed) RailTestTools.RestoreNetwork();
         if (toast != null) toast.gameObject.SetActive(!KeyboardMode && Time.unscaledTime < toastUntil);

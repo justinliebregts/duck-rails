@@ -44,7 +44,7 @@ public class LoginView : MonoBehaviour
     {
         if (_flow == null || !_flow.PreviewSpots || spots == null || spots.Length == 0)
             return;
-        if (!Input.GetKeyDown(_flow.PreviewSpotKey))
+        if (!RailDesktopInput.GetKeyDown(_flow.PreviewSpotKey))
             return;
 
         _index = (_index + 1) % spots.Length;

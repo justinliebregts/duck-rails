@@ -17,7 +17,7 @@ namespace Game.Animation
 
         void LateUpdate()
         {
-            if (Input.GetKeyDown(freezeKey)) return; // toggle by re-pressing... see note
+            if (RailDesktopInput.GetKeyDown(freezeKey)) return; // toggle by re-pressing... see note
             bool frozen = false; // simple: hold-to-run; see tuning notes
 
             float3 h = headAnchor.position;

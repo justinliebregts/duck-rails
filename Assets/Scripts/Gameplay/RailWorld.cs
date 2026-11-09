@@ -55,7 +55,7 @@ public sealed class RailWorld : MonoBehaviour
         var session = PhotonSession.Instance;
         if (session == null) return;
         if (PhotonSession.IsRailsRoom && gameObject.scene.name != PhotonSession.RequiredScene) { session.MarkWorldLoading(); return; }
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (RailDesktopInput.GetKeyDown(KeyCode.Tab))
         {
             menu = !menu;
             Cursor.lockState = menu ? CursorLockMode.None : CursorLockMode.Locked;

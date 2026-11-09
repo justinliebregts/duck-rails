@@ -209,12 +209,12 @@ public sealed class SimulatedRigInput : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F2) && !DuckCompanionDebug.IsTyping) SetSimulating(!IsSimulating);
-        if (Input.GetKeyDown(KeyCode.F1)) showHelp = !showHelp;
+        if (RailDesktopInput.GetKeyDown(KeyCode.F2) && !DuckCompanionDebug.IsTyping) SetSimulating(!IsSimulating);
+        if (RailDesktopInput.GetKeyDown(KeyCode.F1)) showHelp = !showHelp;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (!UseInjectedInput && focused && !DuckCompanionDebug.IsTyping && !RailWorld.InputBlocked &&
             !RailDiagnosticPanel.BlocksDesktopInput && (!IsSimulating || Cursor.lockState == CursorLockMode.Locked) &&
-            Input.GetKeyDown(KeyCode.PageDown))
+            RailDesktopInput.GetKeyDown(KeyCode.PageDown))
         {
             RailTestTools.SkipBlock();
             Status = RailTestTools.Status;
@@ -229,7 +229,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
         {
             // The keyboard throttle is also available while Quest Link supplies
             // tracked poses. VR does not capture the desktop cursor.
-            bool held = UseInjectedInput ? InjectedInput.throttle : Input.GetKey(KeyCode.T);
+            bool held = UseInjectedInput ? InjectedInput.throttle : RailDesktopInput.GetKey(KeyCode.T);
             SampleThrottle(held, !focused || DuckCompanionDebug.IsTyping || RailWorld.InputBlocked ||
                 RailDiagnosticPanel.BlocksDesktopInput || RailExpedition.LocalDown);
             return;
@@ -246,30 +246,30 @@ public sealed class SimulatedRigInput : MonoBehaviour
 
     Frame ReadKeyboard()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (RailDesktopInput.GetKeyDown(KeyCode.Escape))
         {
             Cursor.lockState = CursorLockMode.None; Cursor.visible = true; ReleaseInput();
         }
         // Session Controls owns the pointer while open. Editor overlays also
         // write the legacy suppression flag, so that flag alone is insufficient.
-        if (Input.GetMouseButtonDown(0) && Cursor.lockState != CursorLockMode.Locked && !RailWorld.InputBlocked &&
+        if (RailDesktopInput.GetMouseButtonDown(0) && Cursor.lockState != CursorLockMode.Locked && !RailWorld.InputBlocked &&
             !DesktopPlayer.SuppressCursorCapture && !DuckCompanionDebug.IsHovered && !DuckCompanionDebug.IsTyping)
             CaptureCursor();
         if (!focused || Cursor.lockState != CursorLockMode.Locked || DuckCompanionDebug.IsTyping || Time.frameCount == cursorFrame)
         { ResetThrottle(); return default; }
         if (RailWorld.InputBlocked) awaitNeutral = true;
-        if (!Input.GetMouseButton(0) && !Input.GetMouseButton(1) && !Input.GetKey(KeyCode.T)) awaitNeutral = false;
+        if (!RailDesktopInput.GetMouseButton(0) && !RailDesktopInput.GetMouseButton(1) && !RailDesktopInput.GetKey(KeyCode.T)) awaitNeutral = false;
         return new Frame {
-            move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")),
-            look = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")) * 2f,
-            leftReach = Input.GetKey(KeyCode.Q), rightReach = Input.GetKey(KeyCode.E),
-            grip = !awaitNeutral && Input.GetMouseButton(1), trigger = !awaitNeutral && Input.GetMouseButton(0),
-            throttle = !awaitNeutral && Input.GetKey(KeyCode.T),
-            reachDelta = Input.mouseScrollDelta.y * .05f,
-            roll = (Input.GetKey(KeyCode.X) ? 1 : 0) - (Input.GetKey(KeyCode.Z) ? 1 : 0),
-            crouch = Input.GetKey(KeyCode.C), jump = Input.GetKeyDown(KeyCode.Space),
-            x = Input.GetKey(KeyCode.Alpha1), y = Input.GetKey(KeyCode.Alpha2),
-            a = Input.GetKey(KeyCode.Alpha3), b = Input.GetKey(KeyCode.Alpha4), menu = Input.GetKey(KeyCode.M)
+            move = new Vector2(RailDesktopInput.GetAxisRaw("Horizontal"), RailDesktopInput.GetAxisRaw("Vertical")),
+            look = new Vector2(RailDesktopInput.GetAxis("Mouse X"), RailDesktopInput.GetAxis("Mouse Y")) * 2f,
+            leftReach = RailDesktopInput.GetKey(KeyCode.Q), rightReach = RailDesktopInput.GetKey(KeyCode.E),
+            grip = !awaitNeutral && RailDesktopInput.GetMouseButton(1), trigger = !awaitNeutral && RailDesktopInput.GetMouseButton(0),
+            throttle = !awaitNeutral && RailDesktopInput.GetKey(KeyCode.T),
+            reachDelta = RailDesktopInput.mouseScrollDelta.y * .05f,
+            roll = (RailDesktopInput.GetKey(KeyCode.X) ? 1 : 0) - (RailDesktopInput.GetKey(KeyCode.Z) ? 1 : 0),
+            crouch = RailDesktopInput.GetKey(KeyCode.C), jump = RailDesktopInput.GetKeyDown(KeyCode.Space),
+            x = RailDesktopInput.GetKey(KeyCode.Alpha1), y = RailDesktopInput.GetKey(KeyCode.Alpha2),
+            a = RailDesktopInput.GetKey(KeyCode.Alpha3), b = RailDesktopInput.GetKey(KeyCode.Alpha4), menu = RailDesktopInput.GetKey(KeyCode.M)
         };
     }
 

@@ -44,7 +44,7 @@ public sealed class WalkieTalkie : MonoBehaviour, IPunObservable
         PlayerHand hand = grabbable.Holder;
         bool want = !PhotonVoiceChat.IsLocallyMuted
             && hand != null
-            && (hand.IsUseHeld || Input.GetKey(DesktopTalkKey));
+            && (hand.IsUseHeld || RailDesktopInput.GetKey(DesktopTalkKey));
         if (want == transmitting)
             return;
 

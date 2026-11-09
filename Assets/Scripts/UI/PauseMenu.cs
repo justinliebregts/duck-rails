@@ -102,7 +102,7 @@ public class PauseMenu : MonoBehaviour
         bool wasPressed = false;
         if ((GR.Player.instance.ReturnButtonPress_Left(ButtonName.Start).wasPressed || GR.Player.instance.ReturnButtonPress_Right(ButtonName.Start).wasPressed)
 #if UNITY_EDITOR || UNITY_STANDALONE
-            || Input.GetKeyDown(KeyCode.P)
+            || RailDesktopInput.GetKeyDown(KeyCode.P)
 #endif
             ) {
             wasPressed = true;

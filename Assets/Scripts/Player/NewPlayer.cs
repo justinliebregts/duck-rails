@@ -494,10 +494,10 @@ public partial class NewPlayer : MonoBehaviour
               }
             }
 
-            if(controllerInput.simulation == null && Input.GetKeyDown(KeyCode.Q)) {
+            if(controllerInput.simulation == null && RailDesktopInput.GetKeyDown(KeyCode.Q)) {
               Turn(-snapRotateAmount);
             }
-            if(controllerInput.simulation == null && Input.GetKeyDown(KeyCode.E)) {
+            if(controllerInput.simulation == null && RailDesktopInput.GetKeyDown(KeyCode.E)) {
               Turn(snapRotateAmount);
             }
           } else if(rotateMode == 1) { //smooth turn

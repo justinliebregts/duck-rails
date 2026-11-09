@@ -19,7 +19,7 @@ public sealed class DuckCompanionDebug : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F8))
+        if (RailDesktopInput.GetKeyDown(KeyCode.F8))
             SetVisible(!visible);
     }
 
