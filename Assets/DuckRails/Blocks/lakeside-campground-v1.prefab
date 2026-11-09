@@ -49912,8 +49912,8 @@ MonoBehaviour:
   stop: {fileID: 4745850317341512469}
   graph: {fileID: 4900000, guid: b975392f5d4ea93499851c33b7c47aa3, type: 3}
   enemyBounds:
-    m_Center: {x: 0, y: 4, z: 80}
-    m_Extent: {x: 39, y: 6, z: 35}
+    m_Center: {x: 0, y: 1.7437501, z: 80}
+    m_Extent: {x: 48, y: 4.94375, z: 80}
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -77034,7 +77034,7 @@ Transform:
   m_GameObject: {fileID: 8192960982816456842}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: 80}
+  m_LocalPosition: {x: -3.5, y: -5.15625, z: 72.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -77052,32 +77052,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bd4e4e1824cfb84496faf11ca0659b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.AI.CrawlGraphBaker
-  size: {x: 80, y: 12, z: 96}
+  size: {x: 105, y: 25.6875, z: 177}
   cellSize: 1
   agentRadius: 0.25
   surfaceMask:
     serializedVersion: 2
     m_Bits: 64
   allowCeilings: 0
-  seeds:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  seeds: []
   minIslandNodes: 10
   graphAsset: {fileID: 4900000, guid: b975392f5d4ea93499851c33b7c47aa3, type: 3}
   rebakeRegion:
@@ -77086,17 +77068,18 @@ MonoBehaviour:
   drawNodes: 0
   drawEdges: 0
   gizmoRadius: 10
-  lastBakeReport: 'Full bake 11/5/2026 7:43 PM  (1.7s)
+  lastBakeReport: 'Full bake 11/8/2026 9:43 PM  (2.2s)
 
-    Nodes 10,575  (floor
-    8,498, wall 2,077, ceiling 0)
+    Nodes 20,318  (floor
+    17,066, wall 3,252, ceiling 0)
 
-    Edges 92,438  Clusters 38  Components 1  Pruned
-    8  Blocked 0
+    Edges 176,200  Clusters 98  Components 1 
+    Pruned 8  Blocked 0
 
-    Runtime ~0.6 MB  File 0.6 MB
+    Runtime ~1.2 MB  File 1.2 MB
 
-    Grid 80x12x96 @ 1m, 30 chunks
+    Grid 105x26x177 @
+    1m, 168 chunks
 
     Assets/DuckRails/Blocks/lakeside-campground-v1.bytes'
 --- !u!1 &8223103075244803307

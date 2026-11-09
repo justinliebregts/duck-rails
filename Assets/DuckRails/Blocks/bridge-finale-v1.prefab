@@ -96313,8 +96313,8 @@ MonoBehaviour:
   stop: {fileID: 5792601630886401451}
   graph: {fileID: 4900000, guid: a61d33b1932d18445ae8d88dab0ad4dd, type: 3}
   enemyBounds:
-    m_Center: {x: 0, y: 5, z: 56}
-    m_Extent: {x: 39, y: 7, z: 23}
+    m_Center: {x: 0, y: 9.247086, z: 150}
+    m_Extent: {x: 65, y: 22.747086, z: 150}
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -153530,7 +153530,7 @@ Transform:
   m_GameObject: {fileID: 6424650287351992261}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6, z: 56}
+  m_LocalPosition: {x: -3, y: 7.4970856, z: 142.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -153548,20 +153548,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bd4e4e1824cfb84496faf11ca0659b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.AI.CrawlGraphBaker
-  size: {x: 80, y: 16, z: 80}
+  size: {x: 138, y: 50.99417, z: 317}
   cellSize: 1
   agentRadius: 0.25
   surfaceMask:
     serializedVersion: 2
     m_Bits: 64
   allowCeilings: 0
-  seeds:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  seeds: []
   minIslandNodes: 10
   graphAsset: {fileID: 4900000, guid: a61d33b1932d18445ae8d88dab0ad4dd, type: 3}
   rebakeRegion:
@@ -153570,18 +153564,18 @@ MonoBehaviour:
   drawNodes: 0
   drawEdges: 0
   gizmoRadius: 10
-  lastBakeReport: 'Full bake 11/6/2026 10:27 AM  (1.8s)
+  lastBakeReport: 'Full bake 11/8/2026 9:43 PM  (5.0s)
 
-    Nodes 10,987  (floor
-    6,423, wall 4,564, ceiling 0)
+    Nodes 63,975  (floor
+    39,885, wall 24,090, ceiling 0)
 
-    Edges 106,550  Clusters 37  Components 1 
-    Pruned 160  Blocked 0
+    Edges 562,774  Clusters 371  Components
+    23  Pruned 25  Blocked 0
 
-    Runtime ~0.7 MB  File 0.7 MB
+    Runtime ~3.9 MB  File 3.9 MB
 
-    Grid 80x16x80 @
-    1m, 25 chunks
+    Grid 138x51x317
+    @ 1m, 720 chunks
 
     Assets/DuckRails/Blocks/bridge-finale-v1.bytes'
 --- !u!1 &6428427912842894398

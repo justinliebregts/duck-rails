@@ -6,8 +6,8 @@ using UnityEngine;
 public static class RailSpawnerPrefabs
 {
     public static string Path(RailSpawnKind kind) => "Assets/DuckRails/Authoring/" + kind + "SpawnMarker.prefab";
-    public static Texture2D Icon(RailSpawnKind kind) => EditorGUIUtility.IconContent("sv_label_" +
-        (kind == RailSpawnKind.Coal ? 3 : kind == RailSpawnKind.Gold ? 4 : 6)).image as Texture2D;
+    public static Texture2D Icon(RailSpawnKind kind) => EditorGUIUtility.IconContent("sv_icon_dot" +
+        (kind == RailSpawnKind.Coal ? 3 : kind == RailSpawnKind.Gold ? 4 : 6) + "_pix16_gizmo").image as Texture2D;
 
     public static void CreateAssets()
     {

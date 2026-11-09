@@ -102437,7 +102437,7 @@ Transform:
   m_GameObject: {fileID: 6244785925252780211}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6, z: 80}
+  m_LocalPosition: {x: -3.5, y: 9.5, z: 72.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -102455,32 +102455,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bd4e4e1824cfb84496faf11ca0659b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.AI.CrawlGraphBaker
-  size: {x: 80, y: 16, z: 96}
+  size: {x: 105, y: 55, z: 177}
   cellSize: 1
   agentRadius: 0.25
   surfaceMask:
     serializedVersion: 2
     m_Bits: 64
   allowCeilings: 0
-  seeds:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  seeds: []
   minIslandNodes: 10
   graphAsset: {fileID: 4900000, guid: 815b38c6f4af85e479d096e441a56f0f, type: 3}
   rebakeRegion:
@@ -102489,18 +102471,18 @@ MonoBehaviour:
   drawNodes: 0
   drawEdges: 0
   gizmoRadius: 10
-  lastBakeReport: 'Full bake 11/5/2026 7:43 PM  (0.8s)
+  lastBakeReport: 'Full bake 11/8/2026 9:47 PM  (1.7s)
 
-    Nodes 16,721  (floor
-    9,765, wall 6,956, ceiling 0)
+    Nodes 31,470  (floor
+    18,447, wall 13,023, ceiling 0)
 
-    Edges 148,402  Clusters 44  Components 1 
-    Pruned 2  Blocked 0
+    Edges 283,078  Clusters 127  Components
+    1  Pruned 16  Blocked 0
 
-    Runtime ~1.0 MB  File 1.0 MB
+    Runtime ~2.0 MB  File 2.0 MB
 
-    Grid 80x16x96 @ 1m,
-    30 chunks
+    Grid 105x55x177
+    @ 1m, 336 chunks
 
     Assets/DuckRails/Blocks/nuclear-power-plant-v1.bytes'
 --- !u!1 &6260276586986631540
@@ -122999,8 +122981,8 @@ MonoBehaviour:
   stop: {fileID: 5461065420129667590}
   graph: {fileID: 4900000, guid: 815b38c6f4af85e479d096e441a56f0f, type: 3}
   enemyBounds:
-    m_Center: {x: 0, y: 3, z: 80}
-    m_Extent: {x: 42, y: 5, z: 35}
+    m_Center: {x: 0, y: 17.35, z: 80}
+    m_Extent: {x: 48, y: 18.65, z: 80}
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}

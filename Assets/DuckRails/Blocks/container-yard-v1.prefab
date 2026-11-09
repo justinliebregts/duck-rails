@@ -10328,8 +10328,8 @@ MonoBehaviour:
   stop: {fileID: 4918283635722935531}
   graph: {fileID: 4900000, guid: fa75892c052a5ce40a41cff658ab69dd, type: 3}
   enemyBounds:
-    m_Center: {x: 0, y: 4, z: 80}
-    m_Extent: {x: 37, y: 6, z: 35}
+    m_Center: {x: 0, y: 10.55, z: 80}
+    m_Extent: {x: 48, y: 12.55, z: 80}
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
@@ -52737,7 +52737,7 @@ Transform:
   m_GameObject: {fileID: 4128631648773160715}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 4, z: 80}
+  m_LocalPosition: {x: -3.5, y: 3.0500002, z: 72.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -52755,32 +52755,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bd4e4e1824cfb84496faf11ca0659b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.AI.CrawlGraphBaker
-  size: {x: 80, y: 12, z: 96}
+  size: {x: 105, y: 42.1, z: 177}
   cellSize: 1
   agentRadius: 0.25
   surfaceMask:
     serializedVersion: 2
     m_Bits: 64
   allowCeilings: 0
-  seeds:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  seeds: []
   minIslandNodes: 10
   graphAsset: {fileID: 4900000, guid: fa75892c052a5ce40a41cff658ab69dd, type: 3}
   rebakeRegion:
@@ -52789,18 +52771,18 @@ MonoBehaviour:
   drawNodes: 0
   drawEdges: 0
   gizmoRadius: 10
-  lastBakeReport: 'Full bake 11/5/2026 7:43 PM  (0.7s)
+  lastBakeReport: 'Full bake 11/8/2026 9:43 PM  (1.3s)
 
-    Nodes 14,408  (floor
-    8,164, wall 6,244, ceiling 0)
+    Nodes 27,537  (floor
+    16,734, wall 10,803, ceiling 0)
 
-    Edges 129,190  Clusters 30  Components 1 
+    Edges 247,948  Clusters 95  Components 2 
     Pruned 0  Blocked 0
 
-    Runtime ~0.9 MB  File 0.9 MB
+    Runtime ~1.7 MB  File 1.7 MB
 
-    Grid 80x12x96 @ 1m,
-    30 chunks
+    Grid 105x43x177 @
+    1m, 252 chunks
 
     Assets/DuckRails/Blocks/container-yard-v1.bytes'
 --- !u!1 &4132319711859825825
