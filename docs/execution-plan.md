@@ -1,5 +1,10 @@
 # Duck Rails — execution plan
 
+- [x] November 8 follow-up: double Container Yard loot candidates to 168 coal / 142 gold; all 84 added coal positions are on or in containers. Existing markers/enemies preserved; new-placement checks and 628 saved-reference/selection checks pass. Expanded-pass user/headset review remains pending.
+
+- [x] November 8: replace Container Yard spawn candidates for user review: 84 coal, 71 gold, 18 enemies; support/clearance and 491 saved-reference/selection/navigation checks pass. See [placement evidence](container-yard-layout.md#spawn-placement-review--november-8-2026).
+- [ ] Inspect Container Yard placement taste and validate natural VR reachability/item settling; approximately half the gold candidates are intended climb rewards.
+
 - [x] November 8: port Duckz enemy mono audio settings and Spider Scar asset;
   all 15 clips import as valid mono audio and the new GUID resolves. See
   [port evidence](duckz-ports.md#31aa84116b80c9fb9682493c4c88f51de505b97f--enemy-mono-audio).

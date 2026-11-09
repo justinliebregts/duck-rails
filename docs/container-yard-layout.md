@@ -1,5 +1,17 @@
 # Container Yard — approved maze and installed rough blockout
 
+## Spawn placement review — November 8, 2026
+
+Follow-up after positive user review: doubled the pools to **168 coal / 142 gold**, retaining all 173 existing marker transforms and all 18 enemy candidates. Added 84 coal (17 interior side-wall positions, 67 container-roof positions) and 71 gold (25 interior corners, 10 accessible container ends, 36 rooftop rewards). All new coal is on or in containers; roof candidates use horizontal container surfaces up to 6 m high. New positions passed support, four-corner footprint, spacing and overlap checks. Saved prefab passed 628 reference/seeded-selection checks. Preserved all 1,412 environment transforms and graph reference; per-run counts remain 6/2/5. User inspection of the expanded pass and natural VR reachability/settling remain pending. The initial pass below is historical.
+
+User authorized replacing the old candidates using the manually authored Convenience Store as the reference. Replaced 42 markers with 84 coal, 71 gold and 18 enemy prefab candidates. Per-run counts remain 6/2/5; runtime sampling is unchanged.
+
+Coal follows container wall corners, the six interiors, low pallets, crane bogies, dispatch and four low-terrace positions. Gold has 36 accessible candidates (pallets, interior corners and container-end recesses) and 35 intended climb rewards (roof ledges, upper terraces, dispatch/stacker roofs and overflow storage). These difficulty descriptions are authoring judgments, not verified VR reachability or runtime quotas. Enemy candidates cover both banks, loading/dispatch areas, interior search rooms, outer storage and one track position.
+
+Verified in the Duck Rails Unity editor: all 173 proposed positions pass downward support and spawn-envelope overlap checks; loot also passes four-corner footprint support checks. Enemy locations are inside current bounds and within 0.8 m of baked ground navigation. Clearance-query positive control detected a known container. Saved-prefab verification passed 491 marker-reference, seeded-selection and navigation checks, including 100 seeds per type and bilateral enemies. Preserved all 1,412 environment transforms and the existing graph reference; no geometry, lighting or runtime code was edited. `git diff --check` passed.
+
+Container Yard is left open in Prefab Mode for user inspection. Automated Scene-view captures were black and do not establish visual acceptance. Natural reachability, item settling, placement taste and headset/multiplayer acceptance remain untested. Marker names describe their location and distinguish accessible/climb gold for review.
+
 November 5, 2026. User approved the denser V6 playground for 3D, explicitly placing the crane at the south side. V6 is installed with rough Quackville materials, superseding V5 and the earlier studies below.
 
 [Approved V6 layout study](../output/imagegen/container-yard-v6/layout.png). The user's subsequent south-crane instruction overrides the drawing's crane position.
