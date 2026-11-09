@@ -45,3 +45,7 @@ Use **Duck Rails > Authoring > Enable Enemies On Both Sides** after rebuilding a
 Unity playtesting/verification was omitted at the user's request. Updated regression assertions are provided for subsequent runs; no multiplayer or headset acceptance is claimed.
 
 Installation result: the authoring command completed successfully and saved all 12 affected prefabs and crawlgraphs plus the scene-owned finale. The five already bilateral encounter prefabs were retained. Source whitespace checks passed. Regression suites and gameplay validation were not run.
+
+## Candidate-pool counts — November 8, 2026
+
+The user replaced variation-based spawn authoring with per-block pools and fixed configurable counts. Default enemy count is now 5 (editable, including zero), selected randomly from the combined candidates; the previous random 4–6 count is superseded for RailRoute. Bilateral selection remains when at least two enemies and candidates on both sides are available. Existing forced-spider playtest type override is retained. See [pool authoring, migration and validation](testing-tools.md#random-spawn-pools--november-8-2026).

@@ -680,3 +680,9 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] Validate authenticated three-client late joins, repair/handoff and loaded-bag
   master departure/rejoin on moving trains and headsets. Synthetic editor checks
   do not complete this multiplayer acceptance.
+
+## Random spawn pools — November 8, 2026
+
+- [x] Replace runtime variation selection with independent seeded coal/gold/enemy pools and per-block counts; preserve candidate transforms, expose all three types in the editor tool and retain undo/floor previews. Saved catalogue migration; open convenience-store migration remains in its user's Prefab Mode save workflow.
+- [x] Unity compilation, 1,047 pool/placement checks and 430 actual prefab route checks passed; see [evidence and limits](testing-tools.md#random-spawn-pools--november-8-2026).
+- [ ] Hands-on three-type painting/save/reopen, balance, and actual updated-client late join/master handoff/headset acceptance. Matchmaking is partitioned from older variation-based clients.

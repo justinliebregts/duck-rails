@@ -544,6 +544,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: roadside-motel-v1
   displayName: Roadside Motel
+  allowedInNormalRuns: 0
   tags:
   - interior
   - straight
@@ -558,6 +559,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 620868130183065459}
+    - {fileID: 1335588743179393256}
+    - {fileID: 717021764696128176}
+    - {fileID: 397492296305792475}
+    - {fileID: 771604550275548615}
+    - {fileID: 1338850066878893914}
+    - {fileID: 2431412490070878038}
+    - {fileID: 3975052533201806758}
+    - {fileID: 6744779385415505083}
+    - {fileID: 9172123095856124073}
+    - {fileID: 7566101097939768756}
+    - {fileID: 946418110049679923}
+    - {fileID: 4913072579902969354}
+    - {fileID: 1058299872545685507}
+    - {fileID: 1853011497475156365}
+    - {fileID: 2872883038667878983}
+    - {fileID: 4401468486604937889}
+    - {fileID: 5682065288573482186}
+    enemies:
+    - {fileID: 2002611060695986466}
+    - {fileID: 5608142729448770784}
+    - {fileID: 1079069233272079391}
+    - {fileID: 2788654511737859829}
+    - {fileID: 1869116774895350771}
+    - {fileID: 3772296746138328455}
+    - {fileID: 8728847017636816164}
+    - {fileID: 4326728031669400536}
+    - {fileID: 6313030376003298677}
+    - {fileID: 3455690320606468687}
+    - {fileID: 1298503935245620510}
+    - {fileID: 3438786858661551457}
+    - {fileID: 4465580507298795230}
+    - {fileID: 7150843230631958095}
+    - {fileID: 8848731939200991912}
+    - {fileID: 735475150566429420}
+    - {fileID: 1431323650141180195}
+    - {fileID: 6022369039620164899}
+    gold:
+    - {fileID: 4808802676978241289}
+    - {fileID: 2927852973999681384}
+    - {fileID: 1289692386999448564}
+    - {fileID: 8200394302753668018}
+    - {fileID: 3829090183607468981}
+    - {fileID: 7969730490544022095}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 620868130183065459}

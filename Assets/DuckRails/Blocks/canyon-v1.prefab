@@ -11915,6 +11915,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: canyon-v1
   displayName: Canyon
+  allowedInNormalRuns: 0
   tags:
   - canyon
   - vertical
@@ -11931,6 +11932,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 5646632420360062010}
+    - {fileID: 1422932957473467967}
+    - {fileID: 1367376081865652940}
+    - {fileID: 963033529910487663}
+    - {fileID: 3635887610208381757}
+    - {fileID: 613600562776696555}
+    - {fileID: 8026950491212595032}
+    - {fileID: 4414552493814921868}
+    - {fileID: 4639195442033680786}
+    - {fileID: 3499408421600448789}
+    - {fileID: 2289278924524962071}
+    - {fileID: 7193565187672399071}
+    - {fileID: 9022032788228401681}
+    - {fileID: 1405102679815032312}
+    - {fileID: 6526436214608881964}
+    - {fileID: 7396328483525305769}
+    - {fileID: 7766892287005662591}
+    - {fileID: 1237448617675667364}
+    enemies:
+    - {fileID: 420415287083696080}
+    - {fileID: 352853464100366654}
+    - {fileID: 2280401481440798251}
+    - {fileID: 1589642061259791132}
+    - {fileID: 3658906698781851322}
+    - {fileID: 1483808716430442684}
+    - {fileID: 721119489028748935}
+    - {fileID: 6682229164062328411}
+    - {fileID: 2965418690346795511}
+    - {fileID: 6922206085536648014}
+    - {fileID: 5941820369455306974}
+    - {fileID: 4077610140723473845}
+    - {fileID: 6487316807605421607}
+    - {fileID: 2451301348262371535}
+    - {fileID: 6547516830672091986}
+    - {fileID: 1986929955004171535}
+    - {fileID: 4721459420204988497}
+    - {fileID: 486288305434995669}
+    gold:
+    - {fileID: 481581143633072995}
+    - {fileID: 1851873216000188033}
+    - {fileID: 4183130276622996451}
+    - {fileID: 6943167712610262195}
+    - {fileID: 8159179208806504499}
+    - {fileID: 4289563592589330193}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 5646632420360062010}

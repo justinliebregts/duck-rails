@@ -12074,6 +12074,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: tunnel-works-v1
   displayName: Tunnel Works
+  allowedInNormalRuns: 0
   tags:
   - yard
   - straight
@@ -12088,6 +12089,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 792477574788767055}
+    - {fileID: 135274468650161298}
+    - {fileID: 3419990359677961769}
+    - {fileID: 3728264165884263790}
+    - {fileID: 53091612165593200}
+    - {fileID: 496171752884171662}
+    - {fileID: 6629837800996510790}
+    - {fileID: 1682734865876982394}
+    - {fileID: 947127535130672044}
+    - {fileID: 914164244679993119}
+    - {fileID: 8951245102379094605}
+    - {fileID: 6459319941301022610}
+    - {fileID: 2425309684845569041}
+    - {fileID: 2369304014803228636}
+    - {fileID: 7677957172561810412}
+    - {fileID: 123656973378792370}
+    - {fileID: 1411159091873088994}
+    - {fileID: 2546579510874191701}
+    enemies:
+    - {fileID: 1717792638272119020}
+    - {fileID: 5519309367995577437}
+    - {fileID: 988272307929327653}
+    - {fileID: 2792447940925881062}
+    - {fileID: 4336464146129754865}
+    - {fileID: 1606310440566088229}
+    - {fileID: 8099017628062608148}
+    - {fileID: 6048450502025919502}
+    - {fileID: 1684314570828878852}
+    - {fileID: 3786799380810739288}
+    - {fileID: 6136854699881635398}
+    - {fileID: 7658762797280302222}
+    - {fileID: 3047982250336148303}
+    - {fileID: 7232234913889849777}
+    - {fileID: 7968216252238415500}
+    - {fileID: 3766097679076549568}
+    - {fileID: 1027916924359266068}
+    - {fileID: 6247662890347020001}
+    gold:
+    - {fileID: 6379612989339296559}
+    - {fileID: 397615660894403970}
+    - {fileID: 8390146843140835292}
+    - {fileID: 2210638705813408905}
+    - {fileID: 8406109830958837288}
+    - {fileID: 6147787108119610898}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 792477574788767055}

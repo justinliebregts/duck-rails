@@ -5,7 +5,7 @@ using Photon.Pun;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-/// <summary>Instantiates only authored assets. Exact block IDs, variations and positions are retained in the room.</summary>
+/// <summary>Instantiates only authored assets. Block IDs, spawn seed and positions are retained in the room.</summary>
 [DefaultExecutionOrder(-20000)]
 public sealed class RailRoute : MonoBehaviour
 {
@@ -45,9 +45,9 @@ public sealed class RailRoute : MonoBehaviour
     public static RailRouteState Choose(string run, RailBlock[] choices, int seed, int count = 5)
     {
         if (choices == null || choices.Length < count || count < 1 ||
-            choices.Any(b => b == null || b.variations == null || b.variations.Length == 0) ||
+            choices.Any(b => b == null) ||
             choices.Select(b => b.id).Distinct().Count() != choices.Length)
-            throw new InvalidOperationException("Enable at least " + count + " distinct blocks with spawn variations for this route.");
+            throw new InvalidOperationException("Enable at least " + count + " distinct blocks with spawn candidates for this route.");
         var rng = new System.Random(seed);
         var pool = choices.OrderBy(b => b.id, StringComparer.Ordinal).ToArray();
         for (int i = pool.Length - 1; i > 0; i--) { int j = rng.Next(i + 1); (pool[i], pool[j]) = (pool[j], pool[i]); }
@@ -55,7 +55,7 @@ public sealed class RailRoute : MonoBehaviour
         float z = StartZ;
         for (int i = 0; i < count; i++)
         {
-            state.blocks[i] = pool[i].id; state.variations[i] = rng.Next(pool[i].variations.Length);
+            state.blocks[i] = pool[i].id; // Legacy variation slot remains zero for retained-state compatibility.
             state.placements[i] = new Vector3(0, 0, z); z += pool[i].length;
         }
         return state;
@@ -89,15 +89,13 @@ public sealed class RailRoute : MonoBehaviour
     }
     public static RailRouteState ChooseOrdered(string run, RailBlock[] blocks, int seed)
     {
-        if (blocks == null || blocks.Length == 0 || blocks.Any(b => b == null || b.variations == null || b.variations.Length == 0))
-            throw new ArgumentException("Select at least one scavenging block with spawn variations.");
-        var rng = new System.Random(seed);
+        if (blocks == null || blocks.Length == 0 || blocks.Any(b => b == null))
+            throw new ArgumentException("Select at least one scavenging block with spawn candidates.");
         var state = new RailRouteState { run = run, enemySeed = seed, blocks = blocks.Select(b => b.id).ToArray(),
             variations = new int[blocks.Length], placements = new Vector3[blocks.Length] };
         float z = StartZ;
         for (int i = 0; i < blocks.Length; i++)
         {
-            state.variations[i] = rng.Next(blocks[i].variations.Length);
             state.placements[i] = Vector3.forward * z; z += blocks[i].length;
         }
         Validate(state, blocks);
@@ -107,17 +105,16 @@ public sealed class RailRoute : MonoBehaviour
     {
         int count = state?.blocks?.Length ?? 0;
         if (count == 0 || state.blocks.Distinct().Count() != count ||
-            state.variations?.Length != count || state.placements?.Length != count)
+            state.placements?.Length != count)
             throw new InvalidOperationException("Select one or more different scavenging blocks (no duplicates).");
         // Validate everything before replacing the current presentation.
         float z = StartZ;
         for (int i = 0; i < count; i++)
         {
             var asset = catalog.Single(b => b.id == state.blocks[i]);
-            if (asset.variations == null || state.variations[i] < 0 || state.variations[i] >= asset.variations.Length ||
-                !float.IsFinite(state.placements[i].sqrMagnitude) || !float.IsFinite(asset.length) || asset.length <= 0 ||
+            if (!float.IsFinite(state.placements[i].sqrMagnitude) || !float.IsFinite(asset.length) || asset.length <= 0 ||
                 Vector3.Distance(state.placements[i], new Vector3(0, 0, z)) > .001f || asset.graph == null)
-                throw new InvalidOperationException("Incompatible block placement/variation.");
+                throw new InvalidOperationException("Incompatible block placement.");
             z += asset.length;
         }
     }
@@ -128,24 +125,25 @@ public sealed class RailRoute : MonoBehaviour
         Blocks.Clear(); var coal = new List<Transform>(); var enemies = new List<Transform>(); var gold = new List<Transform>();
         var graphs = new List<Game.AI.CrawlGraph>(); var offsets = new List<Vector3>();
         var enemyTypes = new List<int>();
-        var encounterRandom = new System.Random(state.enemySeed);
         float distance = StationDepartureLength;
         for (int i = 0; i < count; i++)
         {
             var block = Instantiate(catalog.Single(b => b.id == state.blocks[i]), state.placements[i], Quaternion.identity, transform);
             Blocks.Add(block); distance += block.TrackLength;
-            coal.AddRange(block.variations[state.variations[i]].coal);
-            RailEnemySpawns.Select(block.variations[state.variations[i]].enemies, encounterRandom, enemies, enemyTypes);
-            gold.AddRange(block.variations[state.variations[i]].gold ?? Array.Empty<Transform>());
+            coal.AddRange(RailSpawnPool.Select(block, RailSpawnKind.Coal, state.enemySeed));
+            RailSpawnPool.SelectEnemies(block, state.enemySeed, enemies, enemyTypes);
+            gold.AddRange(RailSpawnPool.Select(block, RailSpawnKind.Gold, state.enemySeed));
             graphs.Add(Game.AI.CrawlGraph.Load(block.graph)); offsets.Add(block.transform.position);
         }
         if (midpointShop != null) midpointShop.position = state.placements[MidpointBlockIndex(count)] + new Vector3(-16, 0, 148);
-        expedition.goldPoints = gold.ToArray();
         FinaleStart = distance;
         finaleRoot.position = new Vector3(0, 0, z);
         graphs.Add(Game.AI.CrawlGraph.Load(finale.graph)); offsets.Add(finaleRoot.position);
         expedition.baseEnemyCount = enemies.Count;
-        RailEnemySpawns.Select(finale.variations[0].enemies, encounterRandom, enemies, enemyTypes);
+        RailSpawnPool.SelectEnemies(finale, state.enemySeed, enemies, enemyTypes);
+        coal.AddRange(RailSpawnPool.Select(finale, RailSpawnKind.Coal, state.enemySeed));
+        gold.AddRange(RailSpawnPool.Select(finale, RailSpawnKind.Gold, state.enemySeed));
+        expedition.goldPoints = gold.ToArray();
         expedition.enemyTypes = enemyTypes.ToArray();
         expedition.coalPoints = coal.ToArray(); expedition.enemyPoints = enemies.ToArray();
         expedition.bridgeZ = z + 80;

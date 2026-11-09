@@ -16955,6 +16955,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: scrapyard-v1
   displayName: Scrapyard
+  allowedInNormalRuns: 0
   tags:
   - interior
   - straight
@@ -16969,6 +16970,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 69078848912916675}
+    - {fileID: 1630788644806837785}
+    - {fileID: 690676956667979064}
+    - {fileID: 5177036888447210413}
+    - {fileID: 5925592366549969931}
+    - {fileID: 448501355618379062}
+    - {fileID: 1930257772603599458}
+    - {fileID: 3593700271546453658}
+    - {fileID: 3637072834542752395}
+    - {fileID: 8441796780896450433}
+    - {fileID: 4558460133001322792}
+    - {fileID: 1899668681374287428}
+    - {fileID: 1015201773792706215}
+    - {fileID: 1222864211235836118}
+    - {fileID: 3254382862100284825}
+    - {fileID: 8379850384442814536}
+    - {fileID: 4253742867909126661}
+    - {fileID: 4540607979481789509}
+    enemies:
+    - {fileID: 2723806059384593681}
+    - {fileID: 2297219075782041132}
+    - {fileID: 218198240043038213}
+    - {fileID: 677369854349549116}
+    - {fileID: 2021267136094301936}
+    - {fileID: 2438904640592643328}
+    - {fileID: 5022269981711741312}
+    - {fileID: 579023104890089410}
+    - {fileID: 8500037144703752828}
+    - {fileID: 8102112517937146528}
+    - {fileID: 5421013218159057825}
+    - {fileID: 4701200221905847140}
+    - {fileID: 2116351998423901441}
+    - {fileID: 6469858308501519695}
+    - {fileID: 7129341810457048654}
+    - {fileID: 3695592919795491215}
+    - {fileID: 2841762722496230104}
+    - {fileID: 693938374666743256}
+    gold:
+    - {fileID: 2253360677142878612}
+    - {fileID: 5971028836372977157}
+    - {fileID: 8735137308507137620}
+    - {fileID: 8137577910575807393}
+    - {fileID: 3451773949581348869}
+    - {fileID: 7022063315329917439}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 69078848912916675}

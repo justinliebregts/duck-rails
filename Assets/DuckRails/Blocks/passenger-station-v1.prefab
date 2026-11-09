@@ -198905,6 +198905,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: passenger-station-v1
   displayName: Abandoned Underground Station
+  allowedInNormalRuns: 0
   tags:
   - interior
   - underground
@@ -198920,6 +198921,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 2946400631652217228}
+    - {fileID: 7121762890458659186}
+    - {fileID: 3969206332098587451}
+    - {fileID: 2774494260407679192}
+    - {fileID: 3568458389763001174}
+    - {fileID: 4502630780588485804}
+    - {fileID: 140864270501369618}
+    - {fileID: 1812134985680493986}
+    - {fileID: 6424441348733203350}
+    - {fileID: 4868932568660934000}
+    - {fileID: 5208923091635462076}
+    - {fileID: 6599797162379127309}
+    - {fileID: 4582335938209953796}
+    - {fileID: 1102608822855100327}
+    - {fileID: 1801487701938731243}
+    - {fileID: 68346905940456248}
+    - {fileID: 7442020849739628115}
+    - {fileID: 9017452534595075458}
+    enemies:
+    - {fileID: 690792071683907797}
+    - {fileID: 2640643192462050682}
+    - {fileID: 2546345761040090175}
+    - {fileID: 1613455523216373744}
+    - {fileID: 2874959289610842970}
+    - {fileID: 1195321433352588877}
+    - {fileID: 6146367963225286752}
+    - {fileID: 5313149093823699148}
+    - {fileID: 923758429391403659}
+    - {fileID: 8360291510052959548}
+    - {fileID: 6618322033319972032}
+    - {fileID: 829145953516347878}
+    - {fileID: 5659830001762991898}
+    - {fileID: 7536383930350168550}
+    - {fileID: 7220448539444039177}
+    - {fileID: 6632099759676687001}
+    - {fileID: 6097434760202637275}
+    - {fileID: 5169203076172459124}
+    gold:
+    - {fileID: 2099016832174994842}
+    - {fileID: 349201094857915448}
+    - {fileID: 2853055250108868397}
+    - {fileID: 8601543194735981254}
+    - {fileID: 3836337120759614357}
+    - {fileID: 490756684625827029}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 2946400631652217228}

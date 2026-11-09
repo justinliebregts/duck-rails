@@ -502,3 +502,7 @@ must preserve live grabs and transfers. Repeated unexpected pickup losses reques
 bounded, corroborated controller-state repair before a possible master handoff.
 Rails cargo and session behavior remain in place. Updated clients use the
 `-rails-pickup-v2` matchmaking suffix. See [port evidence and acceptance limits](duckz-ports.md#2fd048b293dd2c3e1d9e2bfc2e9e8d2d6701de06--late-join-pickup-ownership).
+
+## Randomized candidate pools — November 8, 2026
+
+Confirmed: replace spawn variations with one pool of candidate spawners each for coal, gold and enemies, with independently configurable counts per block. The editor places all three types on Environment floors; each run chooses the configured number without duplicate locations. Initial tuning is 6 coal, 2 gold and 5 enemies per scavenging block. Zero disables a type; an undersized pool spawns all available candidates. Preserve bilateral enemies where count/candidates permit, baked navigation, shared seeded reconstruction, and the safe starting station. No geometry/lighting variations existed. This supersedes the earlier variation-based authoring and random 4–6 enemy count. See [workflow and evidence](testing-tools.md#random-spawn-pools--november-8-2026).

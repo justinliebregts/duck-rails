@@ -1416,6 +1416,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: electrical-substation-v1
   displayName: Electrical Substation
+  allowedInNormalRuns: 0
   tags:
   - interior
   - straight
@@ -1430,6 +1431,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 5296161397994863468}
+    - {fileID: 3330298202070281493}
+    - {fileID: 5426048663274500206}
+    - {fileID: 1236462595015084803}
+    - {fileID: 2068711280269008301}
+    - {fileID: 1786298143085712998}
+    - {fileID: 1360599659629664357}
+    - {fileID: 2676719320243053821}
+    - {fileID: 2294128804133809727}
+    - {fileID: 8459009616191258931}
+    - {fileID: 9146684117582599483}
+    - {fileID: 919633023165807951}
+    - {fileID: 2573857297431440774}
+    - {fileID: 6288659140109538443}
+    - {fileID: 558965951638078346}
+    - {fileID: 450643451017853987}
+    - {fileID: 6025569765936563176}
+    - {fileID: 6417831537727794021}
+    enemies:
+    - {fileID: 3953984536470941204}
+    - {fileID: 3687481002593621072}
+    - {fileID: 921887708212651209}
+    - {fileID: 419053290367813274}
+    - {fileID: 110356139456309039}
+    - {fileID: 1462036866946304204}
+    - {fileID: 7062129807645389692}
+    - {fileID: 4847832858814861323}
+    - {fileID: 8168856978276690444}
+    - {fileID: 3434425822101676197}
+    - {fileID: 2294174767538227484}
+    - {fileID: 6526221442737469108}
+    - {fileID: 2513902199233623117}
+    - {fileID: 7335814515542202951}
+    - {fileID: 7010276679060189491}
+    - {fileID: 5086043207198424913}
+    - {fileID: 4700896625651313874}
+    - {fileID: 6842330743003648382}
+    gold:
+    - {fileID: 2543735726690969993}
+    - {fileID: 1041908739490532443}
+    - {fileID: 5728184488379467687}
+    - {fileID: 8863842385269109985}
+    - {fileID: 364996119401126934}
+    - {fileID: 9200667066414444256}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 5296161397994863468}

@@ -105,7 +105,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
         // Spawn-aware ownership bootstrap and corroborated pickup repair require matching peers.
-        settings.AppVersion = source.AppVersion + "-rails-pickup-v2";
+        settings.AppVersion = source.AppVersion + "-rails-pickup-v2-spawn-pools-v1";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;

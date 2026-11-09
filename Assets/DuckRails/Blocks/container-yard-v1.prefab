@@ -10390,9 +10390,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a30a7130d5abd74d9d1c5af9c11421c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
-  allowedInNormalRuns: 1
   id: container-yard-v1
   displayName: Container Yard
+  allowedInNormalRuns: 1
   tags:
   - interior
   - straight
@@ -10407,6 +10407,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 2985232075072163244}
+    - {fileID: 172871741763062587}
+    - {fileID: 6848630793957542783}
+    - {fileID: 694267937055074939}
+    - {fileID: 598874388183765378}
+    - {fileID: 831252903936822136}
+    - {fileID: 3055567422611303928}
+    - {fileID: 9127673448341126547}
+    - {fileID: 3163752963559827048}
+    - {fileID: 1232269054777772246}
+    - {fileID: 4006473047488609590}
+    - {fileID: 3296576357480800621}
+    - {fileID: 3259420460901913376}
+    - {fileID: 6180788333501496685}
+    - {fileID: 7282638712361088474}
+    - {fileID: 772699510098814470}
+    - {fileID: 6826385132580604543}
+    - {fileID: 1477343896575936869}
+    enemies:
+    - {fileID: 1851005111077140587}
+    - {fileID: 2944871837841376190}
+    - {fileID: 3961890213792142872}
+    - {fileID: 197868392925732059}
+    - {fileID: 2385809385729842184}
+    - {fileID: 1289621617343199878}
+    - {fileID: 5752455616902285315}
+    - {fileID: 107328164308580121}
+    - {fileID: 2278180772059757698}
+    - {fileID: 8654915636947453767}
+    - {fileID: 887824171697377683}
+    - {fileID: 7999885785340793414}
+    - {fileID: 8411900664230742371}
+    - {fileID: 3127187042504574869}
+    - {fileID: 3145689745821080294}
+    - {fileID: 3147801562469930350}
+    - {fileID: 4561954262903580761}
+    - {fileID: 4983578406392377972}
+    gold:
+    - {fileID: 3304259374952674101}
+    - {fileID: 3295294339129961606}
+    - {fileID: 3537378723170578866}
+    - {fileID: 3333204309532027039}
+    - {fileID: 7011160587734872820}
+    - {fileID: 8680751820757238880}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 2985232075072163244}

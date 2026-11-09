@@ -853,6 +853,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: lumber-yard-v1
   displayName: Lumber Yard
+  allowedInNormalRuns: 0
   tags:
   - yard
   - curved
@@ -867,6 +868,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 5314436668025096602}
+    - {fileID: 2183364688418526274}
+    - {fileID: 1158140108891097951}
+    - {fileID: 1758635276495949156}
+    - {fileID: 209383002747185962}
+    - {fileID: 1712733531942990673}
+    - {fileID: 7589697548093929485}
+    - {fileID: 9054851361436247148}
+    - {fileID: 1391503236768352817}
+    - {fileID: 7465054355238485458}
+    - {fileID: 3684409773741979064}
+    - {fileID: 9197414368703116476}
+    - {fileID: 1827598814050970713}
+    - {fileID: 4047207406384518440}
+    - {fileID: 6608760752322804796}
+    - {fileID: 6080556689401449669}
+    - {fileID: 4823648568699010558}
+    - {fileID: 3955129810931253058}
+    enemies:
+    - {fileID: 503702165623191112}
+    - {fileID: 888887738889546964}
+    - {fileID: 3591873188065143649}
+    - {fileID: 1530766720333665254}
+    - {fileID: 5659235226359601024}
+    - {fileID: 4834133287127741417}
+    - {fileID: 5107121910076899910}
+    - {fileID: 5431055798308825830}
+    - {fileID: 5895141213896424886}
+    - {fileID: 2789287045311849127}
+    - {fileID: 5360541870743836639}
+    - {fileID: 777617743720279070}
+    - {fileID: 5913847957796681075}
+    - {fileID: 6549005115020890934}
+    - {fileID: 7977750600028116964}
+    - {fileID: 2258086446102432593}
+    - {fileID: 7919802006274527961}
+    - {fileID: 3034330587700689303}
+    gold:
+    - {fileID: 918511471704012226}
+    - {fileID: 89937581129623703}
+    - {fileID: 7122314215930527912}
+    - {fileID: 1115625309635744462}
+    - {fileID: 4032324538063559319}
+    - {fileID: 2788887801360809154}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 5314436668025096602}

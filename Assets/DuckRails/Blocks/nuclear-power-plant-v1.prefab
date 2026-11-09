@@ -124295,6 +124295,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: nuclear-power-plant-v1
   displayName: Nuclear Power Plant
+  allowedInNormalRuns: 0
   tags:
   - industrial
   - cooling-towers
@@ -124311,6 +124312,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 2032604014385098820}
+    - {fileID: 7630232289803924614}
+    - {fileID: 7922911162679115910}
+    - {fileID: 5763019856120607022}
+    - {fileID: 1631524751657728041}
+    - {fileID: 1570039382297171452}
+    - {fileID: 5024937282176906764}
+    - {fileID: 8692953538854124399}
+    - {fileID: 8481824779053227069}
+    - {fileID: 1346488149688907393}
+    - {fileID: 5675140888932398158}
+    - {fileID: 5675182705561759316}
+    - {fileID: 6148909732194412967}
+    - {fileID: 322091637652719203}
+    - {fileID: 3278045275408023799}
+    - {fileID: 5452533350581002558}
+    - {fileID: 6866589418007925423}
+    - {fileID: 1328830436606979129}
+    enemies:
+    - {fileID: 5272684268645997305}
+    - {fileID: 3999961165488557031}
+    - {fileID: 8841433750002580260}
+    - {fileID: 2836263342517200175}
+    - {fileID: 6590820401845633056}
+    - {fileID: 3926189739506126635}
+    - {fileID: 8874778285419730316}
+    - {fileID: 5815324676342232596}
+    - {fileID: 924148198835613179}
+    - {fileID: 2278250419826444434}
+    - {fileID: 6142420677457639010}
+    - {fileID: 3156374969524519474}
+    - {fileID: 600475839442549714}
+    - {fileID: 5539713829510514117}
+    - {fileID: 1438985642570684230}
+    - {fileID: 8035193183056330033}
+    - {fileID: 5863585554716824337}
+    - {fileID: 1592430498041327696}
+    gold:
+    - {fileID: 3016597039599975297}
+    - {fileID: 2074772557932926294}
+    - {fileID: 5507029426602548667}
+    - {fileID: 1140914127892006606}
+    - {fileID: 4816478655826078507}
+    - {fileID: 5256270569863072556}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 2032604014385098820}

@@ -51255,6 +51255,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: maintenance-depot-v1
   displayName: Maintenance Depot
+  allowedInNormalRuns: 0
   tags:
   - interior
   - curved
@@ -51269,6 +51270,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 3399473863419740197}
+    - {fileID: 4939084344150177116}
+    - {fileID: 1773324093005815893}
+    - {fileID: 673219743357042395}
+    - {fileID: 2836078477957297850}
+    - {fileID: 726755334811520619}
+    - {fileID: 8515241020501294889}
+    - {fileID: 2500596940601027974}
+    - {fileID: 918249509865205620}
+    - {fileID: 9086243526416357223}
+    - {fileID: 140455091147162661}
+    - {fileID: 7916740435053945155}
+    - {fileID: 8755456828307319720}
+    - {fileID: 3291796184552463560}
+    - {fileID: 7696107506450807485}
+    - {fileID: 2350488202852957753}
+    - {fileID: 5778914919807216901}
+    - {fileID: 918349925892761434}
+    enemies:
+    - {fileID: 1173147291736319953}
+    - {fileID: 44447196083204696}
+    - {fileID: 171399700838673283}
+    - {fileID: 4139174003083967629}
+    - {fileID: 3442497302760933755}
+    - {fileID: 548266909938884465}
+    - {fileID: 1699917555126413770}
+    - {fileID: 5727662722743652922}
+    - {fileID: 2863832359010997908}
+    - {fileID: 1572754828759269943}
+    - {fileID: 529398443097295986}
+    - {fileID: 1333596092100180650}
+    - {fileID: 514036643765193582}
+    - {fileID: 6392242315626499335}
+    - {fileID: 5438104544805658712}
+    - {fileID: 2310190733427216514}
+    - {fileID: 5408840188561315486}
+    - {fileID: 3492728077294313497}
+    gold:
+    - {fileID: 1074202318700585023}
+    - {fileID: 6431724161436512865}
+    - {fileID: 1040613901992126277}
+    - {fileID: 9116552804344220525}
+    - {fileID: 3395703610650758708}
+    - {fileID: 8663018527575140488}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 3399473863419740197}

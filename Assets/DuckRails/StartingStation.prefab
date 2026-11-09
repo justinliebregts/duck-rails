@@ -29442,6 +29442,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: starting-station-v1
   displayName: Departure Station
+  allowedInNormalRuns: 0
   tags:
   - fixed-start
   - safe
@@ -29453,6 +29454,17 @@ MonoBehaviour:
   enemyBounds:
     m_Center: {x: 23, y: 4, z: 80}
     m_Extent: {x: 14, y: 6, z: 35}
+  enemySurfaceRailExclusion:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 0
+  goldCount: 0
+  enemyCount: 0
+  spawnCandidates:
+    coal: []
+    enemies: []
+    gold: []
+  spawnCandidatesMigrated: 1
   variations: []
   track:
   - {x: 0, y: 0, z: 0}

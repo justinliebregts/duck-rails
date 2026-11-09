@@ -51174,6 +51174,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: lakeside-campground-v1
   displayName: Lakeside Campground
+  allowedInNormalRuns: 0
   tags:
   - yard
   - curved
@@ -51188,6 +51189,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 2947705353489506459}
+    - {fileID: 774758500344511793}
+    - {fileID: 3683697785746755435}
+    - {fileID: 1094989386095088995}
+    - {fileID: 1287951968994173944}
+    - {fileID: 6679720966876360555}
+    - {fileID: 4937396527527800091}
+    - {fileID: 7470473524471412462}
+    - {fileID: 8517488412013806758}
+    - {fileID: 2696402574736706339}
+    - {fileID: 2211815356138640864}
+    - {fileID: 1903252432800391405}
+    - {fileID: 5102459238402963691}
+    - {fileID: 1331738267677348172}
+    - {fileID: 5334130791915751660}
+    - {fileID: 2509502582182020479}
+    - {fileID: 9025721881940412525}
+    - {fileID: 5284889447058139760}
+    enemies:
+    - {fileID: 3943496997592318393}
+    - {fileID: 3886215120607591431}
+    - {fileID: 1066374039261208915}
+    - {fileID: 1156788147232046018}
+    - {fileID: 599014780196910168}
+    - {fileID: 737041934745095309}
+    - {fileID: 6974582049558191597}
+    - {fileID: 7136659976689614806}
+    - {fileID: 5130718700904055814}
+    - {fileID: 3810530854517042225}
+    - {fileID: 3628716700647783939}
+    - {fileID: 7103435836474019958}
+    - {fileID: 447642219884359035}
+    - {fileID: 910907413000389357}
+    - {fileID: 3075177598730500585}
+    - {fileID: 3567240561892625164}
+    - {fileID: 1741103885215595808}
+    - {fileID: 1459991221289397010}
+    gold:
+    - {fileID: 1738497780494526305}
+    - {fileID: 1232138195704080259}
+    - {fileID: 4299886663036105768}
+    - {fileID: 1580695050393473495}
+    - {fileID: 1416878051139188603}
+    - {fileID: 971368139556934053}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 2947705353489506459}

@@ -96307,6 +96307,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: bridge-finale-v1
   displayName: Bridge Finale
+  allowedInNormalRuns: 0
   tags: []
   length: 300
   entry: {fileID: 5465560230630631015}
@@ -96319,6 +96320,20 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal: []
+    enemies:
+    - {fileID: 88676132904688155}
+    - {fileID: 5242041729340044323}
+    - {fileID: 4305034744159883890}
+    - {fileID: 6973544482445463914}
+    - {fileID: 1613403900279366315}
+    - {fileID: 7297865842818918568}
+    gold: []
+  spawnCandidatesMigrated: 1
   variations:
   - coal: []
     enemies:

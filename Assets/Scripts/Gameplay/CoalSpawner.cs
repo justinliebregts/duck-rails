@@ -6,22 +6,7 @@ public sealed class CoalSpawner : MonoBehaviour
 #if UNITY_EDITOR
     GUIStyle labelStyle;
 
-    public string EditorLabel
-    {
-        get
-        {
-            var block = GetComponentInParent<RailBlock>();
-            if (block != null && block.variations != null)
-                for (int v = 0; v < block.variations.Length; v++)
-                {
-                    var coal = block.variations[v]?.coal;
-                    if (coal == null) continue;
-                    for (int s = 0; s < coal.Length; s++)
-                        if (coal[s] == transform) return $"COAL V{v + 1} / S{s + 1}";
-                }
-            return "COAL";
-        }
-    }
+    public string EditorLabel => "COAL";
 
     void OnDrawGizmos()
     {

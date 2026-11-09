@@ -33528,6 +33528,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: quarry-v1
   displayName: Quarry
+  allowedInNormalRuns: 0
   tags:
   - yard
   - straight
@@ -33542,6 +33543,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 3897753452225295704}
+    - {fileID: 1605244568194358695}
+    - {fileID: 1998222453416353332}
+    - {fileID: 1136776687481795803}
+    - {fileID: 516992031171350457}
+    - {fileID: 3551860660318109994}
+    - {fileID: 9033197062403096187}
+    - {fileID: 8290428101986533926}
+    - {fileID: 4594281145195279243}
+    - {fileID: 4626935706789453718}
+    - {fileID: 1010431189803326729}
+    - {fileID: 4751492331285809476}
+    - {fileID: 6974863482918461138}
+    - {fileID: 8714253443066175381}
+    - {fileID: 908578661462540801}
+    - {fileID: 8852141810432848717}
+    - {fileID: 1109835751979916569}
+    - {fileID: 1140940266252859287}
+    enemies:
+    - {fileID: 2674282942951310330}
+    - {fileID: 4043559222994986356}
+    - {fileID: 211158274641661752}
+    - {fileID: 3569207626352560426}
+    - {fileID: 3363473249557851167}
+    - {fileID: 3367502773729462386}
+    - {fileID: 1842538205447818769}
+    - {fileID: 1526699158238020985}
+    - {fileID: 8032473596462474}
+    - {fileID: 56718457297443428}
+    - {fileID: 1686025958396616735}
+    - {fileID: 2695580065616253667}
+    - {fileID: 959066050194269851}
+    - {fileID: 1954304297133042465}
+    - {fileID: 3624412375559561681}
+    - {fileID: 8672308973231051427}
+    - {fileID: 1188631631560318221}
+    - {fileID: 5331859840591717377}
+    gold:
+    - {fileID: 2247905636150221258}
+    - {fileID: 6089650950800238651}
+    - {fileID: 768262226668455876}
+    - {fileID: 1565893940851054624}
+    - {fileID: 9095292275649712319}
+    - {fileID: 3881258239451520170}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 3897753452225295704}

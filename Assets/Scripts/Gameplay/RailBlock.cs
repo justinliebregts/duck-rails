@@ -24,7 +24,14 @@ public sealed class RailBlock : MonoBehaviour
             ? enemySurfaceRailExclusion.min.x - .05f : enemySurfaceRailExclusion.max.x + .05f;
         return transform.TransformPoint(local);
     }
-    public RailSpawnSet[] variations;
+    [Header("Random spawns per run")]
+    [Min(0)] public int coalCount = 6;
+    [Min(0)] public int goldCount = 2;
+    [Min(0)] public int enemyCount = 5;
+    public RailSpawnSet spawnCandidates = new RailSpawnSet();
+    [HideInInspector] public bool spawnCandidatesMigrated;
+    // Retained only for existing assets and legacy builders. Runtime merges these until migrated.
+    [HideInInspector] public RailSpawnSet[] variations;
     public Vector3[] track;
     public float TrackLength
     {

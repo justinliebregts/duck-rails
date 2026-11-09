@@ -89655,6 +89655,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: hospital-district-v1
   displayName: Hospital District
+  allowedInNormalRuns: 0
   tags:
   - hospital
   - vertical
@@ -89671,6 +89672,56 @@ MonoBehaviour:
   enemySurfaceRailExclusion:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  coalCount: 6
+  goldCount: 2
+  enemyCount: 5
+  spawnCandidates:
+    coal:
+    - {fileID: 2585932477932379853}
+    - {fileID: 4995301125705006896}
+    - {fileID: 1501568704917653244}
+    - {fileID: 2177097342945238096}
+    - {fileID: 71588806095931816}
+    - {fileID: 1426999992474252729}
+    - {fileID: 5050379854423281871}
+    - {fileID: 7241340318212038249}
+    - {fileID: 1918941990021912}
+    - {fileID: 7631317257239298001}
+    - {fileID: 7340235417522275391}
+    - {fileID: 5516701435537892043}
+    - {fileID: 6651652329995968272}
+    - {fileID: 8413277557837976644}
+    - {fileID: 3172346788629185011}
+    - {fileID: 3705205908630928343}
+    - {fileID: 7014153753692134147}
+    - {fileID: 2302910062636182875}
+    enemies:
+    - {fileID: 3392841436633288313}
+    - {fileID: 1321221649197666857}
+    - {fileID: 4511057425515973898}
+    - {fileID: 741079887637862116}
+    - {fileID: 3826159566983213035}
+    - {fileID: 649209234535259918}
+    - {fileID: 7114954656122982309}
+    - {fileID: 5291361870694451961}
+    - {fileID: 6647003413539959519}
+    - {fileID: 66903837182109479}
+    - {fileID: 1113044883895396922}
+    - {fileID: 1187212199731420283}
+    - {fileID: 2095817038614650036}
+    - {fileID: 2006633542335668896}
+    - {fileID: 4664739016035277310}
+    - {fileID: 8610365089516986773}
+    - {fileID: 1652190108268023911}
+    - {fileID: 2355323968847093553}
+    gold:
+    - {fileID: 6940293129668222984}
+    - {fileID: 90084861594656385}
+    - {fileID: 6536086353989057345}
+    - {fileID: 3089706322492871490}
+    - {fileID: 5743453020805117767}
+    - {fileID: 1047707255663012819}
+  spawnCandidatesMigrated: 1
   variations:
   - coal:
     - {fileID: 2585932477932379853}
