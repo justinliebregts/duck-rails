@@ -117,7 +117,7 @@ public sealed class RailLootPlacementWindow : EditorWindow
     }
     static Bounds PreviewBounds(RailSpawnKind type) => type == RailSpawnKind.Enemy
         ? new Bounds(Vector3.up * .4f, new Vector3(.8f, .8f, .8f)) : ItemBounds(type == RailSpawnKind.Gold);
-    static Color Tint(RailSpawnKind type) => type == RailSpawnKind.Enemy ? new Color(1, .3f, .3f) : type == RailSpawnKind.Gold ? new Color(1, .75f, .1f) : Color.cyan;
+    static Color Tint(RailSpawnKind type) => type == RailSpawnKind.Enemy ? Color.red : type == RailSpawnKind.Gold ? Color.yellow : Color.green;
     static void Dirty(RailBlock block)
     {
         PrefabUtility.RecordPrefabInstancePropertyModifications(block);
@@ -134,15 +134,13 @@ public sealed class RailLootPlacementWindow : EditorWindow
         Undo.SetCurrentGroupName(action);
         Undo.RecordObject(block, action);
         RailSpawnPool.Migrate(block);
-        var marker = new GameObject(Names[(int)type] + " Spawn Candidate");
-        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(marker, block.gameObject.scene);
+        var marker = RailSpawnerPrefabs.Instantiate(type, block.gameObject.scene);
         Undo.RegisterCreatedObjectUndo(marker, action);
-        Undo.SetTransformParent(marker.transform, block.transform, action);
+        var parent = block.transform.Find(Names[(int)type] + " Spawns") ?? block.transform;
+        Undo.SetTransformParent(marker.transform, parent, action);
         Undo.RecordObject(marker.transform, action);
         marker.transform.position = position;
-        if (type == RailSpawnKind.Gold) Undo.AddComponent<RailGoldSpawner>(marker);
-        else if (type == RailSpawnKind.Coal) Undo.AddComponent<CoalSpawner>(marker);
-        else Undo.AddComponent<RailEnemySpawner>(marker);
+        PrefabUtility.RecordPrefabInstancePropertyModifications(marker.transform);
         Undo.RecordObject(block, action);
         RailSpawnPool.SetPoints(block.spawnCandidates, type, RailSpawnPool.Points(block.spawnCandidates, type).Concat(new[] { marker.transform }).ToArray());
         Dirty(block);
@@ -197,7 +195,7 @@ public sealed class RailLootPlacementWindow : EditorWindow
             Handles.DrawLine(hit.point, position);
             Handles.DrawWireCube(position + bounds.center, bounds.size);
             Handles.SphereHandleCap(0, position, Quaternion.identity, .06f, EventType.Repaint);
-            Handles.Label(position + Vector3.up * .9f, valid ? Names[(int)kind].ToUpperInvariant() : "Enemy needs baked ground within enemy bounds");
+            if (!valid) Handles.Label(position + Vector3.up * .9f, "Enemy needs baked ground within enemy bounds");
         }
         if (e.type == EventType.MouseDown && e.button == 0 && !e.control && !e.command && HandleUtility.nearestControl == id)
         { if (valid) Place(block, kind, position); e.Use(); Repaint(); }
@@ -209,7 +207,7 @@ public sealed class RailLootPlacementWindow : EditorWindow
         Handles.color = Tint(type);
         foreach (var marker in markers)
         {
-            if (marker == null || !marker.gameObject.activeInHierarchy) continue;
+            if (marker == null || !marker.gameObject.activeInHierarchy || marker.GetComponent<RailSpawnMarker>() != null) continue;
             Handles.DrawWireCube(marker.position + bounds.center, bounds.size);
             Handles.Label(marker.position + Vector3.up * .35f, Names[(int)type].ToUpperInvariant());
         }

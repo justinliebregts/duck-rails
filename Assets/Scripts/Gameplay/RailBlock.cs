@@ -4,6 +4,8 @@ using UnityEngine;
 /// <summary>Authored at rail entry (0,0,0), +Z forward, unit scale. Graph coordinates are local.</summary>
 public sealed class RailBlock : MonoBehaviour
 {
+    // Supports both legacy roots and the pick-lockable Env authoring hierarchy.
+    public static Transform FindEnvironment(Transform root, string path) => root.Find(path) ?? root.Find("Env/" + path);
     public string id, displayName;
     [Tooltip("Allow this prefab in the four-block normal expedition pool. Explicit test routes can still use disabled blocks.")]
     public bool allowedInNormalRuns;

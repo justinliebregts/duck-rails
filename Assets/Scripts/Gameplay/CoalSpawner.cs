@@ -10,7 +10,7 @@ public sealed class CoalSpawner : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        if (Application.isPlaying) return;
+        if (Application.isPlaying || GetComponent<RailSpawnMarker>() != null) return;
         Gizmos.color = new Color(1f, .72f, .12f);
         Gizmos.DrawWireCube(transform.position, Vector3.one * .45f);
         var anchor = transform.position + Vector3.up * .9f;

@@ -683,6 +683,10 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 ## Random spawn pools — November 8, 2026
 
-- [x] Replace runtime variation selection with independent seeded coal/gold/enemy pools and per-block counts; preserve candidate transforms, expose all three types in the editor tool and retain undo/floor previews. Saved catalogue migration; open convenience-store migration remains in its user's Prefab Mode save workflow.
+- [x] Replace runtime variation selection with independent seeded coal/gold/enemy pools and per-block counts; preserve candidate transforms, expose all three types in the editor tool and retain undo/floor previews. Saved catalogue migration, including the convenience-store follow-up: remove its legacy variation lists/hierarchy groups while preserving all 42 marker poses and 300 seeded selections.
 - [x] Unity compilation, 1,047 pool/placement checks and 430 actual prefab route checks passed; see [evidence and limits](testing-tools.md#random-spawn-pools--november-8-2026).
 - [ ] Hands-on three-type painting/save/reopen, balance, and actual updated-client late join/master handoff/headset acceptance. Matchmaking is partitioned from older variation-based clients.
+
+- [x] Convenience Store only: convert all 42 spawners to native colored-label prefab instances and group geometry under identity Env. Compilation, placement/undo suite, saved prefab/icon reload, geometry/lightmap-reference preservation and 300 seeded selections pass. See [preview evidence](testing-tools.md#convenience-store-prefab-marker-preview--november-8-2026).
+- [x] User approved the Convenience Store marker/Env preview and authorized catalogue-wide conversion.
+- [x] Convert all 18 block prefabs: 678 colored-label prefab markers, no legacy variation groups/lists, identity Env geometry parents. Saved reload, 5,400 seeded selection comparisons, pool/route/lighting/bridge checks and placed finale references pass. See [catalogue cleanup](testing-tools.md#catalogue-authoring-cleanup--november-8-2026).

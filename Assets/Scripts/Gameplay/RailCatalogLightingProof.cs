@@ -66,7 +66,7 @@ public sealed class RailCatalogLightingProof : MonoBehaviour
                 Check(Mathf.Abs(sh[0,0]-expectedRedL0[index])<.01f,"Translated baked sample matches authoring data: "+block.id);
                 if(seen.Add(block.id))RailStationLightingProof.CaptureTo(Output,block.id,block.transform.position+new Vector3(-10,2.5f,48),block.transform.position+new Vector3(-24,1.5f,64));
             }
-            var hinge=finale.transform.Find("Bridge hinge");
+            var hinge=RailBlock.FindEnvironment(finale.transform, "Bridge hinge");
             Check(hinge!=null&&!owners.Last().bindings.Any(b=>b.renderer.transform.IsChildOf(hinge)),"Moving bridge excluded from static lightmaps");
             var initial=finale.transform.position;LightProbes.GetInterpolatedProbe(initial+new Vector3(0,2,71),null,out var before);
             finale.transform.position+=Vector3.forward*8;
