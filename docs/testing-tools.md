@@ -1,5 +1,19 @@
 # Duck Rails testing tools
 
+November 9 player-build compilation fix: `RailTestLighting` now guards the
+editor-only `Light.lightmapBakeType` assignment with `UNITY_EDITOR`; newly
+created lights retain their realtime default in players. `LoginFlow` applies
+the same guard to `PhotonSession.SetEditorSignInStatus`, matching that method's
+editor-only declaration while retaining normal login status updates.
+Unity 6000.3.24f1 Roslyn compiled `Assembly-CSharp` against the generated Android
+player references with zero errors (28 warnings), including a second pass with
+development defines. The older development response file referenced a removed
+`PlayerArmGeometry.cs`, so that second pass used the current release response
+file with `DEVELOPMENT_BUILD`, `DEBUG` and `UNITY_ASSERTIONS` added. Outputs/logs
+are in ignored `Temp/player-compile-fix/`. Verified Duck Rails Unity MCP refresh
+completed with `scriptCompilationFailed=False`, and a temporary new Light had
+the realtime default. Full APK/IL2CPP packaging and device execution were not run.
+
 November 9 deep multiplayer regression: see [results and evidence](overnight-regression.md)
 for four-account private/public lifecycle, real wallet payouts, physical coal,
 downs/rescue, enemy transport and interrupted-startup checks. From Edit Mode use

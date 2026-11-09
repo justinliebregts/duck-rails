@@ -91,7 +91,10 @@ public sealed class RailTestLighting : MonoBehaviour
         go.transform.SetParent(transform, false);
         var light = go.AddComponent<Light>();light.enabled = false;
         light.type = type;light.intensity = intensity;light.color = Color.white;
-        light.lightmapBakeType = LightmapBakeType.Realtime;light.shadows = LightShadows.None;
+#if UNITY_EDITOR
+        light.lightmapBakeType = LightmapBakeType.Realtime;
+#endif
+        light.shadows = LightShadows.None;
         light.renderMode = LightRenderMode.ForcePixel;
         return light;
     }
