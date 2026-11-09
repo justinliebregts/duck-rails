@@ -7,7 +7,7 @@
 - Coins persist in the backend and buy only in-run equipment. Purchases remain spent after failure; shop earnings are credited immediately. There is no additional penalty to the existing wallet on failure.
 - Departure and midpoint shops each show one of every standard gear type: nail bat, frying pan, basic bag, helmet, flashlight, walkie-talkie and night vision. Bundle weapons, larger bags and cosmetics are excluded.
 - Reuse Duckz's exact `StoreWallItem` interaction: grab/pull, visible tether, server-authorized deduction and item handoff, snap-back on insufficient funds, then restocking. A display is not a one-purchase stock limit.
-- No gameplay equipment spawns on the train by default. Initial furnace fuel remains 10.
+- November 9 exception: one free flashlight per departing player spawns on the train; late joiners get no extra flashlight. Other equipment remains shop-bought. Current starting fuel is 50 (see resource-balance.md).
 - Depositing a bar at either shop grants the bar value up to each connected crew member's wallet limit. Every player sees coin streams to all credited recipients: their own stream lands in their watch, and other streams land at the recipients' bodies. New arrivals do not receive earlier shop sales.
 - The train safe accepts bars irreversibly and shows its bar count. It gives no immediate money. Only its recorded deposits pay on successful extraction, and only to participants recorded as escaped. Downed passengers aboard qualify; people left behind do not. Catch-up teleports do not alter eligibility.
 - Bars held in a hand, in a backpack or loose on the train never cash out automatically. A failed run pays nothing from the safe.
@@ -107,3 +107,18 @@ Backend: `X:\Work\duck-rails-web\api\gofiber\service\duckz\economy.go` enforces 
 The seven RailShop displays referenced sibling price objects in the original Store prefab asset, so no local labels appeared and the fallback was suppressed. Cleared those foreign references in the shared shop and its builder: each display now creates a local shelf label beneath its collider, at its actual placement. Fixed generated-label initialization so OnEnable subscribes after the store is assigned, and corrected TMP camera-facing direction. Prices continue to use StoreUI and the backend catalogue updates.
 
 Lowered the shared display origins from 1.10 m to 0.75 m (35 cm); the midpoint inherits this. The departure station retains its authored position overrides, while its labels use those actual positions. Unity compilation and the economy suite passed, including checks for foreign label references and lower shelf height. A Unity preview fixture generated all seven labels below their colliders (0.47–0.642 m above the shop origin). Headset reach/readability, live price refresh and real-client purchases remain pending; this is not multiplayer or headset acceptance.
+
+## Departure flashlights — November 9, 2026
+
+RailWorld uses rails.resourceCrew (captured at public/private departure) to spawn
+one existing Rails/RailFlashlight room object per departure slot. Eight separated
+positions span the rear deck. Flashlights remain shared, grabbable cargo. The
+retained per-run flashlightSlots ledger prevents replacement of lost items;
+instantiation markers recover grants if the master changes before ledger commit.
+New runs use a new run ID and existing staging cargo cleanup. Late joins and
+reconnects never increase the departure count. Purchased flashlights remain available.
+
+Verified in the Duck Rails Unity editor: resource prefab includes PhotonView,
+RailCargo and HandFlashlight; all eight positions clear train colliders and have
+floor support; session and drive checks pass. Real-client spawning, late joins,
+reconnects, host migration, repeated runs and headset interaction remain untested.

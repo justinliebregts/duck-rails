@@ -141,12 +141,15 @@ public sealed class RailWorld : MonoBehaviour
     {
         string run = PhotonSession.RunId;
         if (string.IsNullOrEmpty(run)) return;
+        var changes = MaintainFlashlights(run);
         if (PhotonSession.Get("rails.seeded", "") != run)
         {
             if (RailExpedition.Instance != null)
             {
                 RailExpedition.Instance.SeedCargo();
-                PhotonSession.Instance.Commit(new Hashtable { ["rails.seeded"] = run, [RailSessionRules.Cargo] = CurrentCargo() });
+                changes["rails.seeded"] = run;
+                changes[RailSessionRules.Cargo] = CurrentCargo();
+                PhotonSession.Instance.Commit(changes);
                 return;
             }
             // Instantiation markers survive a master change between spawn and manifest commit.
@@ -162,15 +165,49 @@ public sealed class RailWorld : MonoBehaviour
                 data[data.Length - 3] = "rails"; data[data.Length - 2] = run; data[data.Length - 1] = "bag";
                 PhotonNetwork.InstantiateRoomObject(bagPrefab.name, train.transform.TransformPoint(new Vector3(1, .6f, 0)), Quaternion.identity, 0, data);
             }
-            PhotonSession.Instance.Commit(new Hashtable { ["rails.seeded"] = run,
-                [RailSessionRules.Cargo] = CurrentCargo() });
+            changes["rails.seeded"] = run;
+            changes[RailSessionRules.Cargo] = CurrentCargo();
+            PhotonSession.Instance.Commit(changes);
         }
         else
         {
             int[] current = CurrentCargo();
             if (!current.SequenceEqual(PhotonSession.Get(RailSessionRules.Cargo, Array.Empty<int>())))
-                PhotonSession.Instance.Commit(new Hashtable { [RailSessionRules.Cargo] = current });
+                changes[RailSessionRules.Cargo] = current;
+            if (changes.Count > 0) PhotonSession.Instance.Commit(changes);
         }
+    }
+    Hashtable MaintainFlashlights(string run)
+    {
+        var changes = new Hashtable();
+        if (train == null || (PhotonSession.Phase != RailPhase.Departing && PhotonSession.Phase != RailPhase.Running)) return changes;
+        // Use retained departure crew size, never live player count. Retain grants
+        // for lost items; instantiation markers cover a host change before commit.
+        string[] previous = PhotonSession.Get("rails.flashlightRun", "") == run
+            ? PhotonSession.Get("rails.flashlightSlots", Array.Empty<string>()) : Array.Empty<string>();
+        var granted = new HashSet<string>(previous, StringComparer.Ordinal);
+        foreach (var view in CargoViews())
+            if (view.InstantiationData is object[] data && data.Length == 3 &&
+                data[0] as string == "rails" && data[1] as string == run &&
+                data[2] is string marker && marker.StartsWith("flashlight:", StringComparison.Ordinal))
+                granted.Add(marker.Substring("flashlight:".Length));
+        int count = Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey, 1), 1, 8);
+        for (int slot = 0; slot < count; slot++)
+        {
+            string id = slot.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (granted.Contains(id)) continue;
+            var position = new Vector3((slot % 4 - 1.5f) * .55f, .25f, -3.5f + slot / 4 * .65f);
+            var item = PhotonNetwork.InstantiateRoomObject("Rails/RailFlashlight",
+                train.transform.TransformPoint(position), train.transform.rotation,
+                0, new object[] { "rails", run, "flashlight:" + id });
+            if (item != null) granted.Add(id);
+        }
+        if (PhotonSession.Get("rails.flashlightRun", "") != run || !granted.SetEquals(previous))
+        {
+            changes["rails.flashlightRun"] = run;
+            changes["rails.flashlightSlots"] = granted.OrderBy(id => id, StringComparer.Ordinal).ToArray();
+        }
+        return changes;
     }
     static int[] CurrentCargo() => CargoViews().Select(view => view.ViewID).OrderBy(id => id).ToArray();
 

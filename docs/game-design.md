@@ -1,5 +1,10 @@
 # Duck Rails — V1 game design
 
+November 9: spawn one free shared flashlight on the train per departing player.
+Use the retained departure crew size; late joiners receive no additional flashlight.
+Reconnects and host changes must not duplicate grants. Other equipment remains shop-bought.
+See [implementation and validation](gold-economy.md#departure-flashlights--november-9-2026).
+
 November 8 enemy spawning: approved spawning-only crew scaling of 4/8/12 enemies
 for 1–2/3–5/6–8 players per scavenging block, spread across four quadrants with 15 m
 horizontal separation and distributed types. Behavior is unchanged; finale retains

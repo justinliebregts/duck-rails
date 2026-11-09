@@ -436,7 +436,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     {
         string run = PhotonSession.RunId;
         bool Has(string marker) => HasMarker(run, marker);
-        // Equipment is bought at shops; never seed free gear aboard the train.
+        // Other equipment is bought at shops. RailWorld grants one train flashlight per player.
         for (int i = 0; i < goldPoints.Length; i++)
             if (!Has("gold-" + i) && !State.consumedMarkers.Contains("gold-" + i))
                 PhotonNetwork.InstantiateRoomObject(goldPrefab.name, goldPoints[i].position, Quaternion.identity, 0, new object[] { "rails", run, "gold-" + i });

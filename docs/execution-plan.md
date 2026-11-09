@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 9: implement one train flashlight per departure crew member, using retained crew size, room-owned cargo and per-run grant markers; no late-join grants. Prefab and eight deck-position checks, session/drive regressions pass.
+- [ ] Validate flashlight counts for 1–8 departing players, no additions on late join/reconnect, master changes, replay cleanup and moving-train grabbing on real clients/headsets.
+
 - [x] November 8: implement shared VR finger-withdrawal lock across diagnostic and pause-menu buttons; compilation and 25 fingertip/regression checks pass. Headset feel and live page-switch verification remain pending. See [VR press withdrawal](testing-tools.md#vr-press-withdrawal--november-8).
 
 - [x] November 8: add desktop/VR test-panel single-coal fuel simulation using the shared furnace fuel update. Unity compilation and resource/session checks pass; live UI and multiplayer/headset validation remain pending. See [testing tools](testing-tools.md#simulated-coal-deposit--november-8).
