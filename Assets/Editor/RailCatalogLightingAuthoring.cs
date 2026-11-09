@@ -19,6 +19,7 @@ public static class RailCatalogLightingAuthoring
     static string[] paths;
     static int index;
     static bool waiting;
+    static string reopenScene;
     static double next;
     public static string Status { get; private set; } = "Idle";
     static RailCatalogLightingAuthoring() { EditorApplication.update += Tick; }
@@ -38,7 +39,7 @@ public static class RailCatalogLightingAuthoring
     {
         if(EditorApplication.isPlaying || Lightmapping.isRunning || paths!=null)throw new InvalidOperationException("Finish Play Mode or current bake first.");
         for(int i=0;i<SceneManager.sceneCount;i++)if(SceneManager.GetSceneAt(i).isDirty)throw new InvalidOperationException("Save scene edits first.");
-        paths=Prefabs.Where(p=>!File.Exists(Payload(p))).ToArray();index=0;waiting=false;next=0;
+        paths=Prefabs.Where(p=>!File.Exists(Payload(p))).ToArray();index=0;waiting=false;next=0;reopenScene=null;
         Directory.CreateDirectory("output/block-lighting");
         Status="Queued "+paths.Length+" blocks";
         File.WriteAllText("output/block-lighting/bake-progress.txt",Status+"\n");
@@ -53,7 +54,15 @@ public static class RailCatalogLightingAuthoring
             if(waiting)
             {
                 if(Lightmapping.isRunning)return;
-                Export(paths[index]);
+                try { Export(paths[index]); }
+                finally
+                {
+                    if(!string.IsNullOrEmpty(reopenScene))
+                    {
+                        var scenePath=reopenScene;reopenScene=null;
+                        EditorSceneManager.OpenScene(scenePath);
+                    }
+                }
                 File.AppendAllText("output/block-lighting/bake-progress.txt","EXPORTED "+Path.GetFileNameWithoutExtension(paths[index])+"\n");
                 waiting=false;index++;next=EditorApplication.timeSinceStartup+2;return;
             }
@@ -168,12 +177,19 @@ public static class RailCatalogLightingAuthoring
     }
 
     [MenuItem("Duck Rails/Lighting/All Blocks/Bake Open Block")]
-    public static void BakeOpen()
+    public static void BakeOpen() => BakeOpen(false);
+
+    [MenuItem("Duck Rails/Lighting/All Blocks/Bake Open Block And Keep Open")]
+    public static void BakeOpenAndKeepOpen() => BakeOpen(true);
+
+    static void BakeOpen(bool keepOpen)
     {
         var path=Prefabs.FirstOrDefault(p=>BakePath(p)==SceneManager.GetActiveScene().path);
-        if(path==null||EditorApplication.isPlaying||Lightmapping.isRunning)throw new InvalidOperationException("Open a block Bake scene in Edit Mode.");
+        if(path==null||EditorApplication.isPlaying||Lightmapping.isRunning||paths!=null)throw new InvalidOperationException("Open a block Bake scene in Edit Mode and finish any current bake first.");
+        if(!EditorSceneManager.SaveScene(SceneManager.GetActiveScene()))throw new InvalidOperationException("Could not save the block Bake scene.");
+        Directory.CreateDirectory("output/block-lighting");
+        reopenScene=keepOpen?SceneManager.GetActiveScene().path:null;
         paths=new[]{path};index=0;waiting=false;next=0;
-        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
     }
 }
 #endif
