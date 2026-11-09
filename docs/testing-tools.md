@@ -1,5 +1,24 @@
 # Duck Rails testing tools
 
+## Private startup timeout and sandbox retry — November 9, 2026
+
+Reproduced a private launch returning to staging with Test Center idle and the
+saved nine-block ordered route enabled. A bounded readiness trace showed the
+30-second departure deadline expiring while additive baked lighting was loading;
+the route became ready during Returning. This was not an armed regression fixture.
+Startup now allows 120 seconds for private/public departure and running-world
+reconstruction. It remains bounded; this does not optimize loading performance.
+Manual sandbox issues only one departure request and reports a failed departure
+instead of launching again on every return to staging.
+
+Verified in the Duck Rails Unity editor: compilation and session checks passed;
+the same authenticated nine-block Manual sandbox reached Running with WorldReady
+and route Ready true, observed at 96 seconds including login. The sandbox was
+stopped through its runner to restore scenario/quick-start preferences. Saved
+ordered-route and enemy-invincibility preferences were preserved. The failure
+retry guard was source-reviewed; no forced-timeout rerun or multi-client/headset
+acceptance is claimed. No diagnostic reports were inspected.
+
 November 9 player-build compilation fix: `RailTestLighting` now guards the
 editor-only `Light.lightmapBakeType` assignment with `UNITY_EDITOR`; newly
 created lights retain their realtime default in players. `LoginFlow` applies

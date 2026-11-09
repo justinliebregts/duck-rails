@@ -477,7 +477,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!IsPrivate || Phase != RailPhase.Staging || !WorldReady || !PhotonNetwork.IsMasterClient || RailWorld.HasLiveCargo) return;
         Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Departing, [RailSessionRules.Run] = Guid.NewGuid().ToString("N"),
             [RailResourceBalance.CrewKey] = Mathf.Clamp(PhotonNetwork.PlayerList.Count(p => !p.IsInactive), 1, 8),
-            [RailSessionRules.Deadline] = PhotonNetwork.Time + 30d, [RailSessionRules.Fuel] = RailResourceBalance.StartingFuel, [RailExpedition.StateKey] = "",
+            [RailSessionRules.Deadline] = PhotonNetwork.Time + RailSessionRules.WorldLoadSeconds, [RailSessionRules.Fuel] = RailResourceBalance.StartingFuel, [RailExpedition.StateKey] = "",
             [RailSessionRules.Cargo] = Array.Empty<int>(), [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 0f, 0f, 0f } });
     }
     public void FinishRun(bool success)
@@ -673,7 +673,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (Phase == RailPhase.Departing)
         {
             double deadline = Get(RailSessionRules.Deadline, 0d);
-            if (deadline == 0d) { Commit(new Hashtable { [RailSessionRules.Deadline] = now + 30d }); return; }
+            if (deadline == 0d) { Commit(new Hashtable { [RailSessionRules.Deadline] = now + RailSessionRules.WorldLoadSeconds }); return; }
             bool ready = WorldReady && room.Players.Values.Where(p => !p.IsInactive).All(p =>
                 p.CustomProperties[RailSessionRules.Ready] is string r && r == RunId + ":" + RailPhase.Departing);
             if (ready || now >= deadline)
@@ -752,7 +752,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!operationPending && request != Request.None && !PhotonNetwork.InRoom && now >= retryAt && !loadingScene) Connect();
         if (!IsRailsRoom || HasRoomRequest) return;
         FollowTransfer();
-        if (!WorldReady && now - loadingSince > 30 && Phase == RailPhase.Running)
+        if (!WorldReady && now - loadingSince > RailSessionRules.WorldLoadSeconds && Phase == RailPhase.Running)
         { Begin(Request.Random); FailInput("World loading timed out. Returning to a compound."); return; }
         if (now < nextAuthorityTick) return;
         nextAuthorityTick = now + .1; TickAuthority();

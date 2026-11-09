@@ -9,6 +9,8 @@ public static class RailSessionRules
 {
     public const int Version = 5, CompoundCapacity = 12, CrewCapacity = 8, ReconnectMilliseconds = 120000;
     public const double ReturnSearchSeconds = 12, ReservationSeconds = 30;
+    // Authored routes load multiple additive baked-lighting scenes before cargo is ready.
+    public const double WorldLoadSeconds = 120;
     public const string Reservations = "rails.reservations";
     public static bool SearchExistingCompound(int crewSize) => crewSize >= 1 && crewSize <= 4;
 

@@ -249,10 +249,24 @@ public static class RailTestRunner
                 Status = "Manual private sandbox — " + (PhotonSession.Instance != null ? PhotonSession.Instance.Status : "Starting login scene...") +
                     "\nElapsed: " + (DateTime.UtcNow - DateTime.Parse(run.started).ToUniversalTime()).TotalSeconds.ToString("F0") + "s. P opens the test panel once loaded.";
                 var session = PhotonSession.Instance;
-                if (run.state != "sandbox-ready" && session != null && session.WorldReady && !session.HasRoomRequest)
+                if (run.state == "sandbox-starting" && session != null && PhotonSession.Phase == RailPhase.Departing)
+                { run.state = "sandbox-departing"; Save(); }
+                bool awaitingSandbox = run.state == "sandbox-starting" || run.state == "sandbox-departing";
+                if (awaitingSandbox && session != null && PhotonSession.Phase == RailPhase.Running && session.WorldReady)
+                { run.state = "sandbox-ready"; Save(); }
+                if (awaitingSandbox && session != null && (PhotonSession.Phase == RailPhase.Returning ||
+                    run.state == "sandbox-departing" && PhotonSession.Phase == RailPhase.Staging))
+                { run.state = "sandbox-failed"; Save(); }
+                if (run.state == "sandbox-failed")
+                {
+                    Status = "Sandbox departure failed while loading the world. Automatic retry is disabled. Stop and restart the sandbox to retry.";
+                    return;
+                }
+                if (run.state == "launching" && session != null && session.WorldReady && !session.HasRoomRequest)
                 {
                     if (!PhotonSession.IsPrivate) session.RequestCreatePrivate(UnityEngine.Random.Range(10000, 90000).ToString());
-                    else if (PhotonSession.Phase == RailPhase.Staging) session.StartPrivateRun();
+                    else if (PhotonSession.Phase == RailPhase.Staging)
+                    { session.StartPrivateRun(); run.state = "sandbox-starting"; Save(); }
                     else if (PhotonSession.Phase == RailPhase.Running) { run.state = "sandbox-ready"; Save(); }
                 }
                 return;
