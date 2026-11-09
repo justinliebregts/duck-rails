@@ -9,6 +9,40 @@ Use explicit statuses such as pending, in progress, implemented (validation pend
 validated, or already present (verified). A source diff inspection alone is not port validation.
 This history starts November 8, 2026; it is not an audit of earlier imports.
 
+## a2d4b6a64d83f6e77362488b337f400360e9ef0b — Backpack grip rotation
+
+- Status: implemented; focused Unity editor validation passed November 8, 2026.
+  Full batch and real-client/headset acceptance remain pending.
+- Source title: `Fix backpack grip rotation after input mode changes`.
+- Behavior: initialize the skin-attached hold point from the calibrated palm rotation,
+  preventing mirrored 90-degree offsets after starting with hand tracking and switching
+  to controllers. Position offsets use the same frame; attachment timing is unchanged.
+- Destination: `Assets/Scripts/Player/PlayerHand.cs` (exact runtime hunk),
+  `Assets/Editor/Checks/Rendering/BagGripOrientationChecks.cs` and its source `.meta`.
+  Added `RunAttachmentChecks` for safe preview-scene validation without synthetic PUN
+  identity replacement. Original full suite retains its disposable-batch guard.
+- Dependencies/adaptations: both projects use Unity 6000.3.24f1; existing calibrated
+  palms, real DuckPlayer and bag prefabs, and PUN over Realtime are present. Rails
+  cargo recovery, drive controls and network schema remain unchanged. Removed one
+  stale `HelicopterCargo` initialization from `TrackedHandInputChecks.Holds.cs`:
+  that earlier-port fixture referenced a missing Duckz type and nonexistent Rails
+  bag field, preventing editor compilation. No runtime dependency was added.
+- Assets: existing GUIDs and serialized settings retained; the imported test GUID
+  occurs only in its own meta. Authored DuckPlayer hold offsets were inspected;
+  this code-only correction needs no prefab/scene override changes.
+- Validation: exact source/parent diff inspected; runtime hunk applied without
+  replacing Rails code. Verified MCP target `X:/Work/duck-rails/Assets`, compiled,
+  then passed 830 attachment assertions (four startup modes, three rotations,
+  both hands, mode changes, loss retention, deferred attachment and zero-allocation
+  initialized ticks), `ControllerPalmCalibrationChecks.Run`, `RailRigChecks.Run`
+  and `RailDriveChecks.Run`. Preview fixture initially needed prefab unpacking;
+  final rerun succeeded without reported errors. Focused diff whitespace check passed.
+- Remaining: full `RunBatch`/`RunRegressions` in a disposable editor, all four bags,
+  real peers/recovery and worn-headset mode switching, including moving-train use.
+  Source commit's assertion/build results are not Rails validation. No diagnostic
+  reports inspected; source Duckz tree untouched.
+- Destination commit: the commit introducing this entry (see Git history).
+
 ## 60ae0da45436b626c0cec19b13da7dfe622c4cb5 — Worn goggles grab point
 
 - Status: implemented (runtime validation pending), November 8, 2026.

@@ -415,8 +415,12 @@ public class PlayerHand : MonoBehaviour
         if (skinHand == null)
             return;
 
-        Quaternion worldRot = transform.rotation * Quaternion.Euler(holdLocalEuler);
-        Vector3 worldOffset = transform.rotation * holdLocalPosition;
+        // Use the same calibrated frame as the posed hand. Raw tracking here would
+        // bake an inverse +/-90 degree roll into the grip when starting with hand tracking.
+        Transform palm = IsControllerLTouch ? driver.LeftPalmSource : driver.RightPalmSource;
+        Quaternion palmRotation = palm != null ? palm.rotation : transform.rotation;
+        Quaternion worldRot = palmRotation * Quaternion.Euler(holdLocalEuler);
+        Vector3 worldOffset = palmRotation * holdLocalPosition;
 
         holdPoint.SetParent(skinHand, false);
         holdPoint.localRotation = Quaternion.Inverse(skinHand.rotation) * worldRot;

@@ -1,5 +1,11 @@
 # Duck Rails — execution plan
 
+- [x] November 8: port calibrated backpack grip initialization; 830 focused attachment
+  assertions and palm-calibration/shared-rig/drive editor regressions pass. See
+  [port evidence](duckz-ports.md#a2d4b6a64d83f6e77362488b337f400360e9ef0b--backpack-grip-rotation).
+- [ ] Run full bag-orientation batch suites and validate input-mode switching with
+  bags on real clients/headsets, including moving-train use.
+
 - [x] November 8: port smasher rooftop exploration and tiered arcs; Unity compilation, source traversal/synthetic-network suites, Rails train/boundary checks and 24 authored skyscraper landings pass. Real-client/headset performance and natural exploration acceptance remain pending. See [evidence](duckz-fix-ports.md#smasher-rooftop-exploration--november-8-2026).
 
 - [x] November 8: configure four-block normal runs with per-prefab eligibility, enabling only Skyscraper Works, Container Yard, Farm Silos and Convenience Store. Move the midpoint shop and its visibility group after encounter two. Unity compilation and route-selection/assembly checks pass, including 100 seeds, all 24 orders, retained-state serialization and insufficient-pool rejection. See [configuration and evidence](testing-tools.md#normal-playtest-block-pool--november-8).

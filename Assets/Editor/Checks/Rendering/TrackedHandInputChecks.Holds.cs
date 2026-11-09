@@ -191,7 +191,6 @@ public static partial class TrackedHandInputChecks
                 bag = go.AddComponent<BagObject>();
                 Set(bag, "rb", go.GetComponent<Rigidbody>());
                 Set(bag, "box", go.AddComponent<BoxCollider>());
-                Set(bag, "cargo", new HelicopterCargo(bag, go.GetComponent<Rigidbody>()));
                 Set(bag, "grabLeft", go.transform); Set(bag, "grabRight", go.transform);
                 var slots = (List<BagSlot>)Get(bag, "slots");
                 foreach (string key in new[] { "ItemGoldBar", "WeaponNailBat", "", "ItemFlashlight" })

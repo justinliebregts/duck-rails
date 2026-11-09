@@ -1,5 +1,11 @@
 # Duck Rails — V1 game design
 
+November 8 backpack grip correction: port Duckz `a2d4b6a64d83f6e77362488b337f400360e9ef0b`
+to initialize hold points from the calibrated palm frame when attaching to the skin.
+This prevents hand-tracking startup from baking in a rotated controller grip. Focused
+editor checks passed; full bag/network and headset acceptance remain pending. See
+[port evidence](duckz-ports.md#a2d4b6a64d83f6e77362488b337f400360e9ef0b--backpack-grip-rotation).
+
 November 8 retreat tuning: port Duckz `a1be1207774efb66bbe6e7df0c0003c2793a926f`, changing zombie retreat duration from 4–10 to 1–8 seconds. Existing retreat triggers and Rails boarding restrictions remain. Editor checks passed; real-client/headset balance review remains pending. See [port evidence](duckz-ports.md#a1be1207774efb66bbe6e7df0c0003c2793a926f--zombie-retreat-duration).
 
 November 8 confirmed smasher port: retain 12 m jump height, 16 m horizontal reach and rooftop exploration, including Skyscraper Works. Smashers remain excluded from train boarding and confined to their home block. See [port evidence and acceptance limits](duckz-fix-ports.md#smasher-rooftop-exploration--november-8-2026).
