@@ -481,6 +481,8 @@ November 6 confirmed encounter change: enemies must spawn on both rail sides in 
 
 November 6 logo art: user approved the low-poly extruded ivory/red logo with pixel textures and Escape from Quackville subtitle. Reusable model and isolated preview authored; gameplay placement and headset review remain pending. See [logo model](logo-model.md).
 
+November 8 authoring: added the requested Prefab Mode coal/gold click-placement window, Environment floor preview, Z undo and automatic variation registration. Optional all-variation placement, clearance and persistent initial-item outlines are available. See [placement workflow and validation](testing-tools.md#coal-and-gold-placement-tool--november-8-2026).
+
 ## Raised spider reach — November 8, 2026
 
 Port Duckz `eb52afd5e8a5502338e2af4d183c6784ed658259`: supported floor spiders raise toward nearby elevated chase targets, with bounded leg reach and a head-following contact trigger. Train boarding remains enabled; lift uses a separate packet byte alongside the existing train/displaced/heartbeat flags. See [port evidence and limits](duckz-fix-ports.md#raised-spider-attacks--november-8-2026).

@@ -650,6 +650,9 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [x] November 6: build reusable low-poly logo asset with pixel atlas, custom title meshes and CutePixel subtitle; provide editable Blender source, FBX and Unity prefab. See [logo model](logo-model.md).
 - [ ] Choose logo placement and validate baked lighting, headset readability and target-device cost.
 
+- [x] November 8: implement coal/gold Scene-view placement with Prefab Mode support, Environment-only floor preview, variation registration and Unity undo/redo; compilation and 12 isolated editor checks passed. See [placement tool](testing-tools.md#coal-and-gold-placement-tool--november-8-2026).
+- [ ] Hands-on placement tool acceptance: click placement, physical Z/Shift+Z, camera navigation and prefab save/reopen with authored loot.
+
 ## Raised spider port — November 8, 2026
 
 - [x] Port raised spider reach while preserving train boarding; Unity compilation, 9,135 source/Rails assertions, 489 boarding and 125 crossing checks passed. See [port evidence](duckz-fix-ports.md#raised-spider-attacks--november-8-2026).
