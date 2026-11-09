@@ -1,5 +1,9 @@
 # Duck Rails — execution plan
 
+- [x] November 8: author Farm first-pass pools: 100 coal / 100 gold / 18 enemies, including 42 of each loot type inside corn. Support/clearance and 536 saved-reference/selection/navigation checks pass; see [placement evidence](farm-silos-layout.md#spawn-placement-first-pass--november-8-2026).
+- [x] User inspected and approved Farm first-pass placement.
+- [ ] Headset review of Farm loot visibility, corn search difficulty, roof settling and natural reachability.
+
 - [x] November 8 follow-up: double Container Yard loot candidates to 168 coal / 142 gold; all 84 added coal positions are on or in containers. Existing markers/enemies preserved; new-placement checks and 628 saved-reference/selection checks pass. Expanded-pass user/headset review remains pending.
 
 - [x] November 8: replace Container Yard spawn candidates for user review: 84 coal, 71 gold, 18 enemies; support/clearance and 491 saved-reference/selection/navigation checks pass. See [placement evidence](container-yard-layout.md#spawn-placement-review--november-8-2026).

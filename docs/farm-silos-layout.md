@@ -1,5 +1,15 @@
 # Farm Silos layout
 
+## Spawn placement first pass — November 8, 2026
+
+User requested approximately 100 coal, 100 gold and 18 enemies, with substantial loot hidden inside corn, plus house/buildings/roofs/trees/props. Replaced 42 old markers with exactly 100 coal, 100 gold and 18 enemy prefab candidates. Retained per-run counts 6/2/5 and existing seeded selection.
+
+Each of the three cornfields contains 14 coal and 14 gold, sampled inside its planted area away from the authored path/prop clearings. Both loot types have four room candidates on each house level (basement, ground, upstairs, attic), ten furniture/prop candidates, four hay-climb candidates and six tree-root candidates. Coal additionally has ten building-roof and twelve barn/shed corner candidates; gold has fourteen roof, six barn/shed corner and two silo-base candidates. Enemies cover corn/approach areas, barn/sheds, orchard/departure and a track position.
+
+Verified in the Duck Rails editor: all proposed positions have raycast support and clear spawn envelopes; loot has footprint support and slope-aware clearance. Enemies fit current bounds and lie within 0.8 m of baked ground navigation. Positive overlap control detected a known furniture collider. Saved-reference, 100 seeds per type, bilateral-enemy and navigation checks passed (536 checks). Preserved all 996 environment transforms and the graph reference. No geometry, lighting, runtime logic or run counts changed.
+
+User reviewed and approved the first pass and requested commit/push. Natural VR reachability, settling on pitched roofs, corn search difficulty and actual client/headset acceptance remain pending. No diagnostic reports were inspected.
+
 November 4, 2026. User approved building V3 in 3D and added apple trees around the farmhouse. Rough Quackville geometry is installed; validation is recorded below.
 
 [Current V3 layout and farmhouse section](../output/imagegen/farm-silos-v3/layout.png) | [Editable drawing source](../output/imagegen/draw-farm-silos-v3.ps1) | [Previous hay-climb study](../output/imagegen/farm-silos-v2/layout.png)
