@@ -5,6 +5,12 @@ sets existing smasher/spider clips to mono and adds the unbound Spider Scar clip
 Unity import validation passed; headset listening and device performance remain
 unverified. See [port evidence](duckz-ports.md#31aa84116b80c9fb9682493c4c88f51de505b97f--enemy-mono-audio).
 
+November 8 retreat follow-up: port Duckz `43dc293e65b37f9d12498dc209ccd9e9d4588cbe`.
+Retreats now last 3–9 seconds, superseding the earlier 1–8 second tuning below.
+Stationary retreat exits retain a stable PUN comparison packet so state changes are
+sent. Rails boarding and packet fields are preserved. Editor checks pass; actual
+peer/headset acceptance remains pending. See [port evidence](duckz-ports.md#43dc293e65b37f9d12498dc209ccd9e9d4588cbe--retreat-timing-and-stationary-exits).
+
 November 8 backpack grip correction: port Duckz `a2d4b6a64d83f6e77362488b337f400360e9ef0b`
 to initialize hold points from the calibrated palm frame when attaching to the skin.
 This prevents hand-tracking startup from baking in a rotated controller grip. Focused

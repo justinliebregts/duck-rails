@@ -126,10 +126,15 @@ namespace Game.AI
                 // so a lost transition or a late join cannot strand an observer.
                 if (_enemy.Boarding != null && ((long)(PhotonNetwork.Time * 2d) & 1) != 0)
                     _write.Flags |= EnemyPosePacket.HeartbeatFlag;
-                stream.SendNext(_write);
-                EnemyPosePacket swap = _write;
-                _write = _sent;
-                _sent = swap;
+                // PUN keeps the last distinct pose by reference while suppressing idle updates.
+                // Keep that packet stable until there is a change for PUN to send.
+                if (!_write.Equals(_sent))
+                {
+                    EnemyPosePacket previous = _sent;
+                    _sent = _write;
+                    _write = previous;
+                }
+                stream.SendNext(_sent);
                 return;
             }
 

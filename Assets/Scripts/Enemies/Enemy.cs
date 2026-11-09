@@ -98,8 +98,8 @@ namespace Game.AI
         [SerializeField] float maxFlightTime = 4f;
         [Tooltip("Minimum retreat duration. Starts after the shove ends or the enemy lands.")]
         [FormerlySerializedAs("meleeWanderLock")]
-        [SerializeField, Min(0f), InspectorName("Retreat Time Min")] float retreatTime = 1f;
-        [SerializeField, Min(0f)] float retreatTimeMax = 8f;
+        [SerializeField, Min(0f), InspectorName("Retreat Time Min")] float retreatTime = 3f;
+        [SerializeField, Min(0f)] float retreatTimeMax = 9f;
         [SerializeField] bool retreatAfterKill;
         [SerializeField, Min(0f)] float flareFearRadius;
         bool _flareRetreat, _searchingFlareLocation;

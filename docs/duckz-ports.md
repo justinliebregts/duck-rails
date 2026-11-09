@@ -34,6 +34,37 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   source Duckz tree and unrelated destination edits untouched.
 - Destination commit: the commit introducing this entry (see Git history).
 
+## 43dc293e65b37f9d12498dc209ccd9e9d4588cbe — Retreat timing and stationary exits
+
+- Status: implemented; Unity editor validation passed November 8, 2026.
+  Real-client/headset acceptance remains pending.
+- Source title: `Set zombie retreats to 3-9 seconds and sync retreat exits`.
+- Behavior: supersedes the earlier 1–8 second retreat tuning with 3–9 seconds.
+  Preserve PUN's last distinct pose packet while suppressing idle updates so a
+  stationary enemy's retreat exit is transmitted.
+- Destination: `Assets/Scripts/Enemies/{Enemy,EnemyNetSync}.cs`, four base prefabs
+  `Assets/Prefabs/Enemies/Zombie{Bomber,Minion,Smasher,Spider}.prefab`, and
+  `Assets/Editor/Checks/Enemies/EnemyRetreatChecks.cs`.
+- Dependencies/adaptations: both projects use Unity 6000.3.24f1 and PUN over Realtime.
+  Existing retreat logic and packet equality support the change. Applied the exact
+  timing/check changes and adapted only the packet-swap hunk, retaining Rails' 22-byte
+  packet, separate spider lift byte, train/displaced flags, heartbeat and boarding.
+  No new assets, GUID changes or source-tree edits; unrelated local edits preserved.
+- Validation: exact source/parent diff reviewed; focused whitespace check passed.
+  Verified MCP target `X:/Work/duck-rails/Assets`. After recompilation,
+  `EnemyRetreatChecks.Run()` passed prefab settings, 100 duration samples,
+  kill/search/reset behavior and the actual PUN stationary-update suppression/exit
+  regression. All four Rails resource variants resolve to 3–9 seconds; asset-wide
+  prefab/scene scan found no timing overrides. `RailEnemyBoardingChecks.Run()` passed
+  graph/packet/authoring regressions. Final Console error/exception/assert query empty.
+  An initial call used stale compiled checks and failed the prefab-range assertion;
+  the recompiled rerun passed. Existing boarding evidence file preserved.
+- Remaining: natural retreat timing and stationary exits across actual peers,
+  including moving-train encounters, late join/master handoff and target headsets.
+  Editor serialization tests do not establish network/headset acceptance.
+  No diagnostic reports inspected.
+- Destination commit: the commit introducing this entry (see Git history).
+
 ## a2d4b6a64d83f6e77362488b337f400360e9ef0b — Backpack grip rotation
 
 - Status: implemented; focused Unity editor validation passed November 8, 2026.

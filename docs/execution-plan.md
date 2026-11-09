@@ -5,6 +5,13 @@
   [port evidence](duckz-ports.md#31aa84116b80c9fb9682493c4c88f51de505b97f--enemy-mono-audio).
 - [ ] Review smasher/spider mono audio on target headsets and profile device cost.
 
+- [x] November 8: port Duckz 43dc293 retreat range to 3–9 seconds and preserve PUN's
+  last distinct packet for stationary exits. Unity compilation, retreat/PUN regression,
+  inherited Rails prefab settings and boarding graph/packet checks pass. Supersedes
+  earlier 1–8 second tuning. See [port evidence](duckz-ports.md#43dc293e65b37f9d12498dc209ccd9e9d4588cbe--retreat-timing-and-stationary-exits).
+- [ ] Verify retreat timing and stationary exits with real peers and headsets,
+  including moving-train encounters, late joining and master handoff.
+
 - [x] November 8: port calibrated backpack grip initialization; 830 focused attachment
   assertions and palm-calibration/shared-rig/drive editor regressions pass. See
   [port evidence](duckz-ports.md#a2d4b6a64d83f6e77362488b337f400360e9ef0b--backpack-grip-rotation).

@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Game.AI;
+using Photon.Pun;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,7 +23,7 @@ public static class EnemyRetreatChecks
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Enemies/Zombie{name}.prefab");
             var configured = prefab.GetComponent<Enemy>();
-            Check((float)Get(configured, "retreatTime") == 1f && (float)Get(configured, "retreatTimeMax") == 8f, name + " retreat range");
+            Check((float)Get(configured, "retreatTime") == 3f && (float)Get(configured, "retreatTimeMax") == 9f, name + " retreat range");
             Check((bool)Get(configured, "retreatAfterKill") == (name == "Spider" || name == "Smasher"), name + " kill retreat setting");
         }
         var actor = new GameObject("Retreat check");
@@ -44,7 +46,7 @@ public static class EnemyRetreatChecks
             {
                 Call(enemy, "BeginRetreat", null, Vector3.back);
                 float duration = (float)Get(enemy, "_retreatRemaining");
-                Check(duration >= 1 && duration <= 8, "Sample outside retreat range");
+                Check(duration >= 3 && duration <= 9, "Sample outside retreat range");
             }
             Call(enemy, "FinishRetreat", manager);
             Check(enemy.CurrentState == Enemy.State.Search && enemy.LastSeenPos == kill, "Search must use kill position");
@@ -59,6 +61,7 @@ public static class EnemyRetreatChecks
             Check(enemy.LastSeenPos == nextKill, "Next kill must replace search location");
             enemy.ResetBrain();
             Check(!(bool)Get(enemy, "_searchingKillLocation") && !(bool)Get(enemy, "_killRetreatPending"), "Reset must clear kill state");
+            CheckStationaryRetreatExit(enemy, manager);
             Debug.Log("EnemyRetreatChecks PASSED");
         }
         finally
@@ -66,5 +69,26 @@ public static class EnemyRetreatChecks
             UnityEngine.Object.DestroyImmediate(actor);
             UnityEngine.Object.DestroyImmediate(managerObject);
         }
+    }
+
+    static void CheckStationaryRetreatExit(Enemy enemy, EnemyManager manager)
+    {
+        var sync = enemy.gameObject.AddComponent<EnemyNetSync>();
+        Call(sync, "Awake");
+        var view = sync.GetComponent<PhotonView>();
+        view.Synchronization = ViewSynchronization.UnreliableOnChange;
+        view.ObservedComponents = new List<Component> { sync };
+        var serialize = typeof(PhotonNetwork).GetMethod("OnSerializeWrite", BindingFlags.Static | BindingFlags.NonPublic);
+        List<object> NextUpdate() => (List<object>)serialize.Invoke(null, new object[] { view });
+
+        Call(enemy, "BeginRetreat", manager, Vector3.back);
+        Check(NextUpdate() != null, "PUN must send the initial retreat");
+        Check(NextUpdate() != null, "PUN must send a final reliable copy for a stationary enemy");
+        Check(NextUpdate() == null, "PUN must suppress repeated stationary poses");
+
+        Call(enemy, "FinishRetreat", manager);
+        var update = NextUpdate();
+        Check(update != null && ((EnemyPosePacket)update[PhotonNetwork.SyncFirstValue]).State == (byte)Enemy.State.Search,
+            "PUN must send the retreat exit even when the enemy has not moved");
     }
 }
