@@ -1,0 +1,111 @@
+2026-11-09T09:29:03.0360705Z Starting public lifecycle and network recovery test; Unity 6000.3.24f1
+2026-11-09T09:29:03.0370777Z Network PeerCreated room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:29:03.0395888Z step=0 round=0
+2026-11-09T09:29:06.7131423Z Network ConnectingToNameServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:29:08.6537149Z Network Authenticating room= master=False phase=Compound clock=1906875.575 deadline=0
+2026-11-09T09:29:08.7565616Z Network ConnectingToMasterServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:29:09.0701674Z Network Authenticating room= master=False phase=Compound clock=1476012.475 deadline=0
+2026-11-09T09:29:09.1768789Z Network Joining room= master=False phase=Compound clock=1476012.582 deadline=0
+2026-11-09T09:29:09.3831893Z Network ConnectingToGameServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:29:09.6958594Z Network Authenticating room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:29:09.9138248Z Network Joining room= master=False phase=Compound clock=2205739.7 deadline=0
+2026-11-09T09:29:11.1223374Z Network Joined room=75638 master=False phase=Compound clock=2205740.909 deadline=0
+2026-11-09T09:29:20.0163437Z step=1 round=0
+2026-11-09T09:29:20.1189220Z Network Leaving room=75638 master=False phase=Compound clock=2205749.901 deadline=0
+2026-11-09T09:29:20.2211256Z Network ConnectingToMasterServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:29:20.6398360Z Network Authenticating room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:29:20.7462238Z Network Joining room= master=False phase=Compound clock=1476024.151 deadline=0
+2026-11-09T09:29:20.8520697Z Network ConnectingToGameServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:29:21.2654356Z Network Authenticating room= master=False phase=Compound clock=366207.044 deadline=0
+2026-11-09T09:29:22.4023537Z Network Joining room= master=False phase=Compound clock=366208.182 deadline=0
+2026-11-09T09:29:22.6120573Z Network Joined room=89313 master=False phase=Compound clock=366208.386 deadline=0
+2026-11-09T09:29:25.7157695Z PASS round=0 step=1 Expected accounts gathered in fresh public compound avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:29:27.0440602Z step=2 round=0
+2026-11-09T09:29:47.6792346Z Network Joined room=89313 master=True phase=Compound clock=366233.453 deadline=0
+2026-11-09T09:29:47.6814671Z PASS round=0 step=2 Shopper remained in source compound avatars=3:3001,4:4001
+2026-11-09T09:30:06.1536735Z step=3 round=0
+2026-11-09T09:30:06.1536735Z PASS round=0 step=3 Shopper stays available avatars=3:3001,4:4001
+2026-11-09T09:30:22.4415730Z step=4 round=0
+2026-11-09T09:30:22.4436348Z PASS round=0 step=4 Shopper stays available avatars=3:3001,4:4001
+2026-11-09T09:30:34.6042903Z step=5 round=0
+2026-11-09T09:30:34.6058201Z PASS round=0 step=5 Shopper unaffected by expedition transport loss avatars=3:3001,4:4001
+2026-11-09T09:31:00.8303245Z step=6 round=0
+2026-11-09T09:31:00.8319207Z PASS round=0 step=6 Shopper unaffected avatars=3:3001,4:4001
+2026-11-09T09:31:04.0272482Z step=7 round=0
+2026-11-09T09:31:04.0282494Z PASS round=0 step=7 Shopper waits for returning crew avatars=3:3001,4:4001
+2026-11-09T09:31:04.3421965Z step=8 round=0
+2026-11-09T09:31:17.4501298Z PASS round=0 step=8 Whole crew returned to occupied compound; clean objects and voice routing avatars=3:3001,4:4001,5:5001,6:6001
+2026-11-09T09:31:19.8215981Z step=2 round=1
+2026-11-09T09:31:40.4614407Z PASS round=1 step=2 Shopper remained in source compound avatars=3:3001,4:4001
+2026-11-09T09:32:00.3071367Z step=3 round=1
+2026-11-09T09:32:00.3088638Z PASS round=1 step=3 Shopper stays available avatars=3:3001,4:4001
+2026-11-09T09:32:16.3998989Z step=4 round=1
+2026-11-09T09:32:16.4014215Z PASS round=1 step=4 Shopper stays available avatars=3:3001,4:4001
+2026-11-09T09:32:28.6373163Z step=7 round=1
+2026-11-09T09:32:28.6383235Z PASS round=1 step=7 Shopper waits for returning crew avatars=3:3001,4:4001
+2026-11-09T09:32:29.0485475Z step=8 round=1
+2026-11-09T09:32:42.2065764Z PASS round=1 step=8 Whole crew returned to occupied compound; clean objects and voice routing avatars=3:3001,4:4001,7:7001,8:8001
+2026-11-09T09:32:44.4677579Z step=2 round=2
+2026-11-09T09:33:04.9491852Z Network Leaving room=89313 master=True phase=Compound clock=366430.727 deadline=0
+2026-11-09T09:33:05.1524915Z Network ConnectingToMasterServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:33:05.5599728Z Network Authenticating room= master=False phase=Compound clock=1476248.954 deadline=0
+2026-11-09T09:33:05.6627722Z Network Joining room= master=False phase=Compound clock=1476249.057 deadline=0
+2026-11-09T09:33:06.3777965Z Network ConnectingToGameServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:33:06.8522987Z Network Authenticating room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:33:06.9576887Z Network Joining room= master=False phase=Compound clock=3061959.513 deadline=0
+2026-11-09T09:33:08.1539473Z Network Joined room=95585 master=False phase=Departing clock=3061960.709 deadline=0
+2026-11-09T09:33:20.3367142Z Network Joined room=95585 master=False phase=Running clock=3061972.881 deadline=3061974.504
+2026-11-09T09:33:23.3472228Z PASS round=2 step=2 Public departure loaded Expedition with only platform occupants avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:33:23.4460442Z step=3 round=2
+2026-11-09T09:33:39.5448926Z PASS round=2 step=3 Moving passengers and loose bags under simulated latency/loss avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:33:39.7474239Z step=4 round=2
+2026-11-09T09:33:51.7762501Z PASS round=2 step=4 16 rapid GO/STOP requests converged to stopped train avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:33:51.8747242Z step=7 round=2
+2026-11-09T09:33:52.0880123Z Network Joined room=95585 master=False phase=Ending clock=3062004.632 deadline=3062009.233
+2026-11-09T09:33:52.0895789Z PASS round=2 step=7 Session finish path requested avatars=n/a
+2026-11-09T09:33:52.1920418Z step=8 round=2
+2026-11-09T09:33:57.0914797Z Network Joined room=95585 master=False phase=Returning clock=3062009.634 deadline=3062011.31
+2026-11-09T09:34:01.6598699Z Network Leaving room=95585 master=False phase=Returning clock=3062014.194 deadline=3062011.31
+2026-11-09T09:34:01.8682400Z Network ConnectingToMasterServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:34:02.1750699Z Network Authenticating room= master=False phase=Compound clock=1476305.562 deadline=0
+2026-11-09T09:34:02.2789680Z Network Joining room= master=False phase=Compound clock=1476305.666 deadline=0
+2026-11-09T09:34:02.4983793Z Network ConnectingToGameServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:34:02.9148359Z Network Authenticating room= master=False phase=Compound clock=3061843.283 deadline=0
+2026-11-09T09:34:03.1210980Z Network Joining room= master=False phase=Compound clock=3061843.488 deadline=0
+2026-11-09T09:34:03.2860086Z Network Joined room=27547 master=False phase=Compound clock=3061843.589 deadline=0
+2026-11-09T09:34:06.9626844Z PASS round=2 step=8 Whole crew reached shared alternative compound; clean objects and voice routing; fresh=True avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:34:07.0632981Z step=1 round=3
+2026-11-09T09:34:10.1424442Z PASS round=3 step=1 Expected accounts gathered in fresh public compound avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:34:10.3483212Z step=2 round=3
+2026-11-09T09:34:30.7662540Z Network Leaving room=27547 master=False phase=Compound clock=3061871.134 deadline=0
+2026-11-09T09:34:30.8711546Z Network ConnectingToMasterServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:34:31.2834203Z Network Authenticating room= master=False phase=Compound clock=1476334.68 deadline=0
+2026-11-09T09:34:31.3870723Z Network Joining room= master=False phase=Compound clock=1476334.784 deadline=0
+2026-11-09T09:34:32.3204858Z Network ConnectingToGameServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:34:32.7290899Z Network Authenticating room= master=False phase=Compound clock=3061886.652 deadline=0
+2026-11-09T09:34:32.9307948Z Network Joining room= master=False phase=Compound clock=3061886.855 deadline=0
+2026-11-09T09:34:33.9810328Z Network Joined room=85696 master=False phase=Departing clock=3061887.905 deadline=0
+2026-11-09T09:34:45.5618571Z Network Joined room=85696 master=False phase=Running clock=3061899.476 deadline=3061901.28
+2026-11-09T09:34:48.5898529Z PASS round=3 step=2 Public departure loaded Expedition with only platform occupants avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:34:48.9070007Z step=3 round=3
+2026-11-09T09:35:04.9595975Z PASS round=3 step=3 Moving passengers and loose bags under simulated latency/loss avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:35:05.0694897Z step=4 round=3
+2026-11-09T09:35:17.1612245Z PASS round=3 step=4 16 rapid GO/STOP requests converged to stopped train avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:35:17.3691576Z step=7 round=3
+2026-11-09T09:35:17.5868240Z Network Joined room=85696 master=False phase=Ending clock=3061931.498 deadline=3061936.305
+2026-11-09T09:35:17.5888331Z PASS round=3 step=7 Session finish path requested avatars=n/a
+2026-11-09T09:35:17.8094263Z step=8 round=3
+2026-11-09T09:35:22.6514505Z Network Joined room=85696 master=False phase=Returning clock=3061936.562 deadline=3061938.416
+2026-11-09T09:35:26.2702912Z Network Leaving room=85696 master=False phase=Returning clock=3061940.185 deadline=3061938.416
+2026-11-09T09:35:26.3714285Z Network ConnectingToMasterServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:35:26.7842092Z Network Authenticating room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:35:26.9942887Z Network Joining room= master=False phase=Compound clock=1476390.394 deadline=0
+2026-11-09T09:35:27.0976822Z Network ConnectedToMasterServer room= master=False phase=Compound clock=1476390.497 deadline=0
+2026-11-09T09:35:27.1982504Z Network Joining room= master=False phase=Compound clock=1476390.598 deadline=0
+2026-11-09T09:35:27.2988622Z Network ConnectingToGameServer room= master=False phase=Compound clock=0 deadline=0
+2026-11-09T09:35:27.7074341Z Network Authenticating room= master=False phase=Compound clock=3062100.251 deadline=0
+2026-11-09T09:35:27.9266044Z Network Joining room= master=False phase=Compound clock=3062100.465 deadline=0
+2026-11-09T09:35:28.0418881Z Network Joined room=22861 master=True phase=Compound clock=3062100.484 deadline=0
+2026-11-09T09:35:31.8621242Z PASS round=3 step=8 Whole crew reached shared alternative compound; clean objects and voice routing; fresh=True avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T09:35:32.5868963Z step=9 round=4
+2026-11-09T09:35:32.5868963Z PASS: four public departures/returns, shopper isolation, latency/loss, rapid controls, master transport loss/rejoin, unique avatars, cleanup and voice routing

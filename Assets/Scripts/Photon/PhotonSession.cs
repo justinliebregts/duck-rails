@@ -109,6 +109,10 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;
+        // PUN's count includes its two header entries. Four ordinary item views
+        // per event avoid turning the default 18-view pose batches into large
+        // fragmented UDP messages, which accumulate during packet loss.
+        PhotonNetwork.ObjectsInOneUpdate = 6;
         var account = PlayerSession.Instance;
         if (account == null) return;
         PhotonNetwork.NickName = account.DisplayName;
@@ -635,6 +639,10 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!PhotonNetwork.IsMasterClient || !IsRailsRoom || HasRoomRequest) return;
         double now = PhotonNetwork.Time;
         var room = PhotonNetwork.CurrentRoom;
+        // Joining a different game server can precede its first clock sample.
+        // A deadline based on zero expires as soon as that sample arrives and
+        // sends a loading expedition straight back to the compound.
+        if (now <= 0d) return;
         bool shouldOpen = Phase != RailPhase.Ending && Phase != RailPhase.Returning;
         if (room.IsOpen != shouldOpen) room.IsOpen = shouldOpen;
         TickReservations(room, now);

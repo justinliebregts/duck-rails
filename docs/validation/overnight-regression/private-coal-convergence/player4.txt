@@ -1,0 +1,17 @@
+2026-11-09T08:53:44.6449493Z START four authenticated clients; physical intake; real wallet transport; fixture teleports
+2026-11-09T08:53:44.6454721Z ENTER step=0 round=0
+2026-11-09T08:53:52.9499386Z ENTER step=1 round=0
+2026-11-09T08:53:53.0565427Z PASS step=1 round=0 Fourth player waits in compound coins=100 fuel=50
+2026-11-09T08:53:58.7754605Z ENTER step=2 round=0
+2026-11-09T08:53:58.7764668Z PASS step=2 round=0 Late entrant remains outside expedition coins=100 fuel=50
+2026-11-09T08:54:15.9528857Z ENTER step=3 round=0
+2026-11-09T08:54:15.9543967Z PASS step=3 round=0 No sale while outside expedition coins=100 fuel=50
+2026-11-09T08:54:16.7775555Z ENTER step=4 round=0
+2026-11-09T08:54:16.7785540Z PASS step=4 round=0 Absent account received no sale coins=100 fuel=50
+2026-11-09T08:54:16.9843975Z ENTER step=5 round=0
+2026-11-09T08:54:35.5801798Z PASS step=5 round=0 Late join aboard with retained route, sale and no extra flashlight coins=100 fuel=50
+2026-11-09T08:54:35.6776020Z ENTER step=6 round=0
+2026-11-09T08:54:39.7126972Z PASS step=6 round=0 Stable wallets after late join coins=100 fuel=50
+2026-11-09T08:54:39.9315383Z ENTER step=7 round=0
+2026-11-09T08:54:42.3616879Z PASS step=7 round=0 Non-master grab/release/furnace consumption and fuel replicated coins=100 fuel=55.68182
+2026-11-09T08:54:42.4675753Z FAIL Peer failure main: Peer cargo identity disagreement

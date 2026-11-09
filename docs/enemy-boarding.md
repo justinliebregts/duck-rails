@@ -30,6 +30,15 @@ Evidence goes in `docs/validation/enemy-boarding/`. None of these tools queries 
 
 ## Evidence and limits
 
+November 9 repeat: both minion and spider two-client transport loops passed on
+the regression fixes, including moving handoff, remote melee, moving re-entry
+and side exit/reboarding. All six isolated rear/side/surface loops passed again.
+The four-client private regression separately verified enemy identities/poses
+after late join/rejoin, enemy-contact downing, rescue and repeated-run cleanup.
+See [archived results and limits](overnight-regression.md#enemy-movement-and-synchronization).
+Natural multiplayer boarding/combat, multiple simultaneous boarders and headset
+presentation/performance remain unverified.
+
 The isolated Play Mode sequence passed natural rear boarding, accelerating translation/yaw/slope carry, deck chasing and melee knock-off. The final rerun also passed obstruction rejection, fast-train rejection and departure interruption; carry error was about 0.1 mm in that desktop fixture. The first approach fixture had an obstructed sight line; moving its target to the open rear exercised natural perception. An early carry fixture drove through depot scenery; the corrected sequence remains within railway clearance.
 
 The expanded graph/packet/authoring suite passed 390 checks, including all 256 flag combinations. Existing resumable search, ground/climb replacement and cancellation, and shared scheduler budget regression cases also passed. Two actual Photon clients passed stationary/moving train-relative poses, host migration during travel, a non-owner melee RPC knock-off, and leave/rejoin while the train moved (network-main.txt and network-remote.txt, November 6 at 02:02 UTC, repeated after the final handoff fixes). Multi-client transport fixtures intentionally place the enemy aboard; they do not replace natural boarding or headset interaction tests.

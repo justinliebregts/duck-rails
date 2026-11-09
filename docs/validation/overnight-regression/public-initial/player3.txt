@@ -1,0 +1,28 @@
+2026-11-09T08:34:41.5377759Z Starting public lifecycle and network recovery test; Unity 6000.3.24f1
+2026-11-09T08:34:41.5377759Z Network PeerCreated room= master=False
+2026-11-09T08:34:41.5392867Z step=0 round=0
+2026-11-09T08:34:45.7440961Z Network ConnectingToNameServer room= master=False
+2026-11-09T08:34:46.0661244Z Network Authenticating room= master=False
+2026-11-09T08:34:46.1767307Z Network ConnectingToMasterServer room= master=False
+2026-11-09T08:34:46.4888008Z Network Authenticating room= master=False
+2026-11-09T08:34:46.5898292Z Network Joining room= master=False
+2026-11-09T08:34:46.8984097Z Network ConnectingToGameServer room= master=False
+2026-11-09T08:34:47.3192617Z Network Authenticating room= master=False
+2026-11-09T08:34:47.4205540Z Network Joining room= master=False
+2026-11-09T08:34:48.6553257Z Network Joined room=54366 master=True
+2026-11-09T08:35:00.3944286Z step=1 round=0
+2026-11-09T08:35:00.4968882Z Network Leaving room=54366 master=True
+2026-11-09T08:35:00.5982531Z Network ConnectingToMasterServer room= master=False
+2026-11-09T08:35:00.9063316Z Network Authenticating room= master=False
+2026-11-09T08:35:01.1174249Z Network Joining room= master=False
+2026-11-09T08:35:01.2202826Z Network ConnectingToGameServer room= master=False
+2026-11-09T08:35:01.6348995Z Network Authenticating room= master=False
+2026-11-09T08:35:01.7375394Z Network Joining room= master=False
+2026-11-09T08:35:01.8463305Z Network Joined room=62725 master=False
+2026-11-09T08:35:04.9363214Z PASS round=0 step=1 Expected accounts gathered in fresh public compound avatars=1:1001,2:2001,3:3001
+2026-11-09T08:35:05.0331105Z step=2 round=0
+2026-11-09T08:35:25.6631516Z Network Joined room=62725 master=True
+2026-11-09T08:35:25.6641920Z PASS round=0 step=2 Shopper remained in source compound avatars=3:3001
+2026-11-09T08:35:42.9398129Z step=3 round=0
+2026-11-09T08:35:42.9413513Z PASS round=0 step=3 Shopper stays available avatars=3:3001
+2026-11-09T08:35:59.0430759Z FAIL Peer failure: Peer failure: Loose bags remain aboard

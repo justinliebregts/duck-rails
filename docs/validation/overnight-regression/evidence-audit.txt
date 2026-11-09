@@ -1,0 +1,15 @@
+PASS catalogue batch 0: 12 block observations, identical loot identities across every peer/block
+PASS catalogue batch 1: 12 block observations, identical loot identities across every peer/block
+PASS catalogue batch 2: 12 block observations, identical loot identities across every peer/block
+PASS catalogue batch 3: 12 block observations, identical loot identities across every peer/block
+PASS startup fault 0: nonempty inventories match exactly after recovery
+PASS startup fault 1: nonempty inventories match exactly after recovery
+PASS startup fault 2: nonempty inventories match exactly after recovery
+PASS accepted logs private-pass1: 4 completed peer/loop logs; no FAIL/ERROR records
+PASS accepted logs private-mixed-pass2: 4 completed peer/loop logs; no FAIL/ERROR records
+PASS accepted logs private-final-pass3: 4 completed peer/loop logs; no FAIL/ERROR records
+PASS accepted logs public-pass1: 4 completed peer/loop logs; no FAIL/ERROR records
+PASS accepted logs coal-pass: 2 completed peer/loop logs; no FAIL/ERROR records
+PASS accepted logs minion-network-pass: 2 completed peer/loop logs; no FAIL/ERROR records
+PASS accepted logs spider-network-pass: 2 completed peer/loop logs; no FAIL/ERROR records
+PASS accepted logs isolated-enemies: 6 completed peer/loop logs; no FAIL/ERROR records

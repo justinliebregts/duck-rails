@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 9 deep regression: four authenticated desktop clients completed three private lifecycle passes (nine expeditions) and four public departure/return rounds, including late joins, handoff/rejoin, packet loss, loaded bags, downs/rescue, exact coal intake, both shops and safe payouts. Final repeat also proves all five dynamic bridge defenders with exact counts, unique markers and matching peer identities/controllers/poses. Fixed transport saturation, inconsistent local finish position and premature zero-clock departure deadlines; follow-up runs passed. All 15 final editor suites, three startup recovery faults and the complete two-client catalogue sweep pass. See [regression evidence and limits](overnight-regression.md).
+- [x] Two-client physical front-furnace checks pass stopped/moving/after handoff, duplicate rejection, empty-fuel recovery and resumed travel. Minion/spider transport and six isolated natural AI loops pass. These close the exercised desktop cases only; headset feel, natural multiplayer combat and target-device performance remain open.
+
 - [x] November 9: gate normal host eligibility on local world readiness and the candidate's retained current-run/phase token; preserve runtime room-owned loot on scene transitions and suspend expedition authority updates during transitions. Two-client startup, deliberate handoff and late join retain identical loot identities. See [evidence and remaining coverage](spawn-startup.md).
 - [x] November 9 review follow-up: recover interrupted startup without depending on master-produced route/cargo readiness. Require host heartbeat silence and a current-context reliable server barrier before requesting takeover. Two-editor faults before route creation, before manifest commit and before first cargo pose passed; original host resumed, both peers reached Running with identical loot identities and no duplicate-ID errors. See [recovery evidence](spawn-startup.md#interrupted-startup-recovery).
 - [x] November 9: final-code two-editor catalogue smoke sweep covers all 16 encounters plus station/finale (48 peer/block checks), with identical loot identities and no duplicate-ID errors. Both scenarios stopped/restored. This does not close headset, natural traversal/combat, balance or performance acceptance; older catalogue pools remain undersupplied for current crew scaling.
@@ -19,8 +22,8 @@
   scaling, retained departure roster and rational gold payouts. Unity resource
   (2,739), session (40), economy (53), cockpit and assembled-route (430) checks
   pass; API service/repository/routes pass. See [resource balance](resource-balance.md).
-- [ ] Deploy matching scaled-gold API/client and validate actual reward transport,
-  late join/reconnect/master changes and first-coal reachability.
+- [x] November 9: validate matching scaled-gold client/API through actual four-account shop and safe reward transport, per-recipient remainders, late join/reconnect, authority handoff and no failure payout. See [private regression](overnight-regression.md#four-player-private-lifecycle-repeated).
+- [ ] Validate natural first-coal reachability and resource balance on target headsets.
 - [ ] Playtest resource balance across solo/intermediate/eight-player crews on real
   clients/headsets, including uneven participation and stocked physical coal.
 - [x] Implement spawning-only 4/8/12 crew tiers, quadrant quotas, 15 m horizontal

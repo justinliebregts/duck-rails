@@ -79,7 +79,7 @@ public static class RailCoalLiveChecks
             if (stage != current)
             {
                 stage = current; entered = EditorApplication.timeSinceStartup; grabbed = released = ack = false; coalId = 0;
-                beforeCount = run.State.consumed.Count;
+                beforeCount = run.State.consumed.Count; beforeDistance = RailTrain.Instance.Distance;
                 Teleport(RailTrain.Instance.transform.TransformPoint(new Vector3(-1, .35f, 1)));
                 Log("stage=" + stage + " actor=" + PhotonNetwork.LocalPlayer.ActorNumber + " master=" + PhotonNetwork.IsMasterClient);
             }
@@ -107,9 +107,21 @@ public static class RailCoalLiveChecks
             }
             if (stage == 6)
             {
-                Log("Unique avatars after handoff " + RailAvatarChecks.AssertCurrentRoom());
-                if (PhotonNetwork.IsMasterClient) PhotonSession.Instance.SetTrainMoving(false);
-                Log("PASS stopped, moving, and after master handoff; exactly-once fuel/removal agreed on two clients"); done = true; return;
+                if(!ack){Log("PASS stopped, moving, and after master handoff; exactly-once fuel/removal agreed on two clients; " + RailAvatarChecks.AssertCurrentRoom());ack=true;}
+                if(PhotonNetwork.IsMasterClient && age>2) PhotonSession.Instance.Commit(new Hashtable{[RailSessionRules.Motion]=new object[]{PhotonNetwork.Time,RailTrain.Instance.Distance,0f,0f},[RailSessionRules.Fuel]=0f,[Key]=7});
+                return;
+            }
+            if(stage==7)
+            {
+                if(PhotonNetwork.IsMasterClient)PhotonSession.Instance.SetTrainMoving(true);
+                if(age>5){Require(PhotonSession.CurrentFuel==0 && RailTrain.Instance.Speed==0,"Empty train moved without coal");if(!ack){Log("PASS empty train rejects GO until refueled");ack=true;}if(PhotonNetwork.IsMasterClient){PhotonSession.Instance.SetTrainMoving(false);PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable{[Key]=8});}}
+                return;
+            }
+            if(stage==9)
+            {
+                if(PhotonNetwork.IsMasterClient)PhotonSession.Instance.SetTrainMoving(true);
+                if(age>6){Require(RailTrain.Instance.Distance>beforeDistance+5 && RailTrain.Instance.Speed>3.9f && PhotonSession.CurrentFuel>0,"Refueled train did not resume travel");Log("PASS COMPLETE physical coal stopped, moving, after handoff, empty-fuel recovery and resumed driving; four exactly-once deposits");done=true;}
+                return;
             }
             if (age < 3) return;
             if (!PhotonNetwork.IsMasterClient)
@@ -143,20 +155,27 @@ public static class RailCoalLiveChecks
                 var view = PhotonView.Find(coalId);
                 if (!released && view != null && view.IsMine && view.GetComponent<PhotonGrabbable>().IsHeld)
                 {
-                    var target = run.furnace.position + Vector3.up * .35f;
-                    var delta = target - view.transform.position;
-                    if (delta.magnitude > .06f)
+                    // The current firebox has a ceiling and an open front.
+                    // Place the held chunk outside that mouth, then throw it
+                    // through the real collision geometry; no intake teleport.
+                    var releasePoint = run.furnace.position + run.furnace.forward * .72f + Vector3.up * .12f;
+                    // Editor polling is 10 Hz; lead the moving mouth when
+                    // placing the rig, but release against its current pose.
+                    var delta = releasePoint + RailTrain.Instance.Velocity * .12f - view.transform.position;
+                    if (Vector3.Distance(releasePoint,view.transform.position) > .14f)
                     {
                         var player = NewPlayer.instance;
                         var origin = player.headCollider.transform.position;
                         origin.y = player.transform.position.y;
-                        Teleport(origin + delta);
+                        player.Warp(origin + delta, Quaternion.LookRotation(-RailTrain.Instance.transform.forward));
                     }
                     else
                     {
                         beforeFuel = PhotonSession.CurrentFuel; beforeDistance = RailTrain.Instance.Distance;
                         PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { ["test.coal.fuel"] = beforeFuel, ["test.coal.distance"] = beforeDistance, ["test.coal.actor"] = PhotonNetwork.LocalPlayer.ActorNumber });
-                        GR.Player.instance.rightPlayerHand.Release(); released = true;
+                        GR.Player.instance.rightPlayerHand.Release();
+                        view.GetComponent<Rigidbody>().linearVelocity = RailTrain.Instance.Velocity - run.furnace.forward * 4f + Vector3.up;
+                        released = true;
                         Log("Released actual held coal at offset=" + (view.transform.position - run.furnace.position) + " owner=" + view.OwnerActorNr);
                     }
                 }
@@ -166,7 +185,7 @@ public static class RailCoalLiveChecks
                 var props = PhotonNetwork.CurrentRoom.CustomProperties;
                 int id = (int)props["test.coal.id"];
                 if (PhotonView.Find(id) != null) return;
-                float expected = (float)props["test.coal.fuel"] + 2.5f - (RailTrain.Instance.Distance - (float)props["test.coal.distance"]) * .05f;
+                float expected = (float)props["test.coal.fuel"] + RailResourceBalance.CoalValue(RailRoute.Instance.Selection.resourceCrew) - (RailTrain.Instance.Distance - (float)props["test.coal.distance"]) * RailSessionRules.FuelPerMetre;
                 Require(Mathf.Abs(PhotonSession.CurrentFuel - expected) < .08f, "Fuel mismatch actual=" + PhotonSession.CurrentFuel + " expected=" + expected);
                 Require(run.State.players.First(p => p.actor == (int)props["test.coal.actor"]).coal > 0, "Missing non-master credit");
                 run.Request("coal", id); // Deliberate duplicate after destruction.

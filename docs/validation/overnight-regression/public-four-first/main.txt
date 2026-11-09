@@ -1,0 +1,38 @@
+2026-11-09T08:40:00.8253072Z Starting public lifecycle and network recovery test; Unity 6000.3.24f1
+2026-11-09T08:40:00.8263131Z Network PeerCreated room= master=False
+2026-11-09T08:40:00.8286005Z step=0 round=0
+2026-11-09T08:40:03.7720885Z Network ConnectingToNameServer room= master=False
+2026-11-09T08:40:04.1330355Z Network Authenticating room= master=False
+2026-11-09T08:40:04.4179576Z Network ConnectingToMasterServer room= master=False
+2026-11-09T08:40:04.8408302Z Network Authenticating room= master=False
+2026-11-09T08:40:04.9478875Z Network Joining room= master=False
+2026-11-09T08:40:05.0566348Z Network ConnectingToGameServer room= master=False
+2026-11-09T08:40:05.4932725Z Network Authenticating room= master=False
+2026-11-09T08:40:05.7131494Z Network Joining room= master=False
+2026-11-09T08:40:06.8599561Z Network Joined room=83878 master=False
+2026-11-09T08:40:10.0333755Z Network Leaving room=83878 master=False
+2026-11-09T08:40:10.1438304Z Network ConnectingToMasterServer room= master=False
+2026-11-09T08:40:10.5699972Z Network Authenticating room= master=False
+2026-11-09T08:40:10.6794939Z Network Joining room= master=False
+2026-11-09T08:40:10.8918138Z Network ConnectingToGameServer room= master=False
+2026-11-09T08:40:11.3115033Z Network Authenticating room= master=False
+2026-11-09T08:40:11.4188368Z Network Joining room= master=False
+2026-11-09T08:40:11.5236197Z Network Joined room=77420 master=True
+2026-11-09T08:40:14.7270358Z step=1 round=0
+2026-11-09T08:40:17.8311304Z PASS round=0 step=1 Expected accounts gathered in fresh public compound avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T08:40:19.4305774Z step=2 round=0
+2026-11-09T08:40:39.8945271Z Network Leaving room=77420 master=True
+2026-11-09T08:40:40.1098811Z Network ConnectingToMasterServer room= master=False
+2026-11-09T08:40:40.4231382Z Network Authenticating room= master=False
+2026-11-09T08:40:40.5295756Z Network Joining room= master=False
+2026-11-09T08:40:40.6368265Z Network ConnectingToGameServer room= master=False
+2026-11-09T08:40:41.1667704Z Network Authenticating room= master=False
+2026-11-09T08:40:41.2770527Z Network Joining room= master=False
+2026-11-09T08:40:41.8172979Z Network Joined room=22146 master=True
+2026-11-09T08:40:58.1000426Z PASS round=0 step=2 Public departure loaded Expedition with only platform occupants avatars=1:1001,2:2001
+2026-11-09T08:40:58.2141438Z step=3 round=0
+2026-11-09T08:41:00.8702967Z Network Joined room=22146 master=False
+2026-11-09T08:41:07.7316219Z Network Joined room=22146 master=True
+2026-11-09T08:41:14.2892847Z PASS round=0 step=3 Moving passengers and loose bags under simulated latency/loss avatars=1:1001,2:2001
+2026-11-09T08:41:14.3966899Z step=4 round=0
+2026-11-09T08:41:26.4411202Z FAIL Peer failure: Final STOP lost after rapid commands

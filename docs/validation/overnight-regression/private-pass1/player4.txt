@@ -1,0 +1,68 @@
+2026-11-09T09:11:21.6602700Z START four authenticated clients; physical intake; real wallet transport; fixture teleports
+2026-11-09T09:11:21.6612747Z ENTER step=0 round=0
+2026-11-09T09:11:40.8837645Z ENTER step=1 round=0
+2026-11-09T09:11:40.8928927Z PASS step=1 round=0 Fourth player waits in compound coins=100 fuel=50
+2026-11-09T09:11:46.6357327Z ENTER step=2 round=0
+2026-11-09T09:11:46.6367953Z PASS step=2 round=0 Late entrant remains outside expedition coins=100 fuel=50
+2026-11-09T09:12:04.1234126Z ENTER step=3 round=0
+2026-11-09T09:12:04.1244172Z PASS step=3 round=0 No sale while outside expedition coins=100 fuel=50
+2026-11-09T09:12:05.1506976Z ENTER step=4 round=0
+2026-11-09T09:12:05.1517016Z PASS step=4 round=0 Absent account received no sale coins=100 fuel=50
+2026-11-09T09:12:05.3542126Z ENTER step=5 round=0
+2026-11-09T09:12:23.6138623Z PASS step=5 round=0 Late join aboard with retained route, sale and no extra flashlight coins=100 fuel=50
+2026-11-09T09:12:23.7152523Z ENTER step=6 round=0
+2026-11-09T09:12:27.7298197Z PASS step=6 round=0 Stable wallets after late join coins=100 fuel=50
+2026-11-09T09:12:27.9471997Z ENTER step=7 round=0
+2026-11-09T09:12:30.7077637Z PASS step=7 round=0 Non-master grab/release/furnace consumption and fuel replicated coins=100 fuel=55.68182
+2026-11-09T09:12:30.8169838Z ENTER step=8 round=0
+2026-11-09T09:12:34.8528764Z PASS step=8 round=0 Coal duplicate rejected and consumed object absent coins=100 fuel=55.68182
+2026-11-09T09:12:35.0561637Z ENTER step=9 round=0
+2026-11-09T09:12:35.8170074Z PASS step=9 round=0 Safe intake count shared; no immediate credit coins=100 fuel=55.68182
+2026-11-09T09:12:35.9187416Z ENTER step=10 round=0
+2026-11-09T09:12:38.4026708Z PASS step=10 round=0 One down replicated with flare coins=100 fuel=55.68182
+2026-11-09T09:12:38.5989344Z ENTER step=11 round=0
+2026-11-09T09:12:39.2597785Z PASS step=11 round=0 Physical hand proximity starts revive coins=100 fuel=55.68182
+2026-11-09T09:12:39.4617037Z ENTER step=12 round=0
+2026-11-09T09:12:41.4811890Z PASS step=12 round=0 Interrupted revive reset coins=100 fuel=55.68182
+2026-11-09T09:12:41.6924325Z ENTER step=13 round=0
+2026-11-09T09:12:45.7398751Z PASS step=13 round=0 Continuous physical hand rescue revived once coins=100 fuel=55.68182
+2026-11-09T09:12:45.8477823Z ENTER step=14 round=0
+2026-11-09T09:12:48.9395216Z PASS step=14 round=0 Accepted enemy hit emitted retained replicated coal drop coins=100 fuel=55.68182
+2026-11-09T09:12:49.0468010Z ENTER step=15 round=0
+2026-11-09T09:12:54.1442438Z PASS step=15 round=0 Authority handoff preserves cargo, enemies and payouts coins=100 fuel=55.68182
+2026-11-09T09:12:54.2580589Z ENTER step=16 round=0
+2026-11-09T09:12:57.1114818Z PASS step=16 round=0 Fourth client left run coins=100 fuel=50
+2026-11-09T09:12:57.2127937Z ENTER step=17 round=0
+2026-11-09T09:13:15.5437373Z PASS step=17 round=0 Rejoin restores safe/cargo/enemies without new grants coins=100 fuel=55.68182
+2026-11-09T09:13:15.6476347Z ENTER step=18 round=0
+2026-11-09T09:13:18.6601441Z PASS step=18 round=0 Positioned at finale for physical bridge hold coins=100 fuel=50
+2026-11-09T09:13:18.7611082Z ENTER step=19 round=0
+2026-11-09T09:13:22.0534764Z PASS step=19 round=0 Physical bridge hold lowers shared bridge; defenders spawned coins=100 fuel=50
+2026-11-09T09:13:22.1567709Z ENTER step=20 round=0
+2026-11-09T09:13:24.2043994Z PASS step=20 round=0 Release pauses bridge with retained work coins=100 fuel=50
+2026-11-09T09:13:24.4099054Z ENTER step=21 round=0
+2026-11-09T09:13:51.3527809Z PASS step=21 round=0 Bridge fully lowered by actual button hold coins=100 fuel=50
+2026-11-09T09:13:51.5556417Z ENTER step=22 round=0
+2026-11-09T09:13:53.5974939Z PASS step=22 round=0 Three finishers including a downed passenger; fourth left behind coins=100 fuel=50
+2026-11-09T09:13:53.9212351Z ENTER step=23 round=0
+2026-11-09T09:14:00.3136299Z PASS step=23 round=0 Actual bridge crossing commits success and immutable finishers coins=100 fuel=99.62
+2026-11-09T09:14:00.4165847Z ENTER step=24 round=0
+2026-11-09T09:14:05.4521210Z PASS step=24 round=0 Safe pays only escaped players, exact scaled credit coins=100 fuel=93.2025
+2026-11-09T09:14:05.6505123Z ENTER step=25 round=0
+2026-11-09T09:14:40.8313879Z PASS step=25 round=0 Success return: same private code, clean compound coins=100 fuel=48.96124
+2026-11-09T09:14:41.0400685Z ENTER step=26 round=0
+2026-11-09T09:14:59.5176508Z PASS step=26 round=0 Replay: new four-player crew and fresh exact supplies coins=100 fuel=50
+2026-11-09T09:14:59.7280928Z ENTER step=27 round=0
+2026-11-09T09:15:00.2550063Z PASS step=27 round=0 Replay safe deposit unpaid coins=100 fuel=50
+2026-11-09T09:15:00.3586704Z ENTER step=28 round=0
+2026-11-09T09:15:08.5963010Z PASS step=28 round=0 All four down: shared failure and no safe payout coins=100 fuel=50
+2026-11-09T09:15:08.6881389Z ENTER step=29 round=0
+2026-11-09T09:15:49.6733663Z PASS step=29 round=0 Failure return clean; wallet retained coins=100 fuel=50
+2026-11-09T09:15:49.7711602Z ENTER step=30 round=0
+2026-11-09T09:16:06.7787251Z PASS step=30 round=0 Third fresh run ready coins=100 fuel=50
+2026-11-09T09:16:06.8818686Z ENTER step=31 round=0
+2026-11-09T09:16:08.4809139Z PASS step=31 round=0 Raised bridge fails shared expedition coins=100 fuel=50
+2026-11-09T09:16:08.5865456Z ENTER step=32 round=0
+2026-11-09T09:16:49.3566327Z PASS step=32 round=0 Crash return clean coins=100 fuel=50
+2026-11-09T09:16:49.4587464Z ENTER step=33 round=0
+2026-11-09T09:16:49.4587464Z PASS COMPLETE private lifecycle, late join, coal, shop/safe wallet, down/revive, enemies, handoff/rejoin, success, two failures and replays

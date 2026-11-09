@@ -1,5 +1,12 @@
 # Duck Rails — V1 game design
 
+November 9 multiplayer regression: four authenticated desktop clients verified
+group/late joins, repeated success/failure returns, down/rescue, shared cargo,
+coal/train state, both shops and escaped-player safe payouts. Reproduced item
+traffic saturation, inconsistent host finish geometry and zero-clock departure
+deadlines were fixed and rerun. See [evidence and coverage limits](overnight-regression.md).
+Tracked-headset, natural combat/balance and eight-player acceptance remain open.
+
 November 9 startup reliability: normal host candidates must have the current
 run/phase's reconstructed world and cargo snapshot. An avatar or a fresh heartbeat
 from staging is insufficient. A separate startup recovery path may replace a

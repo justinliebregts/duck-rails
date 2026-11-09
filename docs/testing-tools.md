@@ -1,5 +1,19 @@
 # Duck Rails testing tools
 
+November 9 deep multiplayer regression: see [results and evidence](overnight-regression.md)
+for four-account private/public lifecycle, real wallet payouts, physical coal,
+downs/rescue, enemy transport and interrupted-startup checks. From Edit Mode use
+`RailRegressionLauncher.Start("private", 4)`, `.Start("public", 4)` (also three),
+or `.Start("coal", 2)`. Configure saved distinct Player2/3/4 accounts first.
+Monitor every peer's logs under `docs/validation/overnight-regression/`; private,
+public and coal fixtures do not automatically stop after completion.
+`RailRegressionLauncher.Stop()` disarms and restores the selected scenario and
+quick-start preference. Archive logs before rerunning. To vary the private seed,
+call `RailDeepRegressionChecks.ArmTest(seed)` immediately after launcher Start,
+before Play begins. Fixtures use controlled placement/contact and actual
+Photon/backend gameplay paths; they do not open Test Center or read reports.
+`RailRegressionTraffic` is opt-in counter instrumentation for these fixtures.
+
 November 9 spawn-startup investigation: the opt-in `RailSpawnNetworkChecks`
 fixture runs two actual editor clients and checks startup, exact networked loot
 identities and all-block loading. `Start(-1)` uses the normal quick start;

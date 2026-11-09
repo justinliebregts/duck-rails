@@ -1,0 +1,21 @@
+2026-11-09T10:21:16.1017461Z START fault=1
+2026-11-09T10:21:16.1048636Z actor=-1 master= phase=Compound ready=False seeded= views=0 paused=False
+2026-11-09T10:21:23.8929993Z actor=1 master=1 phase=Departing ready=False seeded= views=1 paused=False
+2026-11-09T10:21:33.5679043Z actor=1 master=1 phase=Departing ready=False seeded= views=2 paused=False
+2026-11-09T10:21:33.7915639Z actor=1 master=1 phase=Departing ready=False seeded= views=67 paused=False
+2026-11-09T10:21:34.1043266Z actor=1 master=1 phase=Departing ready=True seeded=1b141e8c44a04acbbe045b8e179ba84e views=67 paused=False
+2026-11-09T10:21:42.3595858Z actor=1 master=1 phase=Departing ready=True seeded=1b141e8c44a04acbbe045b8e179ba84e views=66 paused=False
+2026-11-09T10:21:42.4720998Z actor=1 master=1 phase=Running ready=True seeded=1b141e8c44a04acbbe045b8e179ba84e views=66 paused=False
+2026-11-09T10:21:42.5720014Z actor=1 master=1 phase=Running ready=True seeded=1b141e8c44a04acbbe045b8e179ba84e views=82 paused=False
+2026-11-09T10:21:44.5961583Z actor=1 master=1 phase=Running ready=False seeded=1b141e8c44a04acbbe045b8e179ba84e views=82 paused=False
+2026-11-09T10:21:44.7058690Z actor=-1 master= phase=Compound ready=False seeded= views=0 paused=False
+2026-11-09T10:21:45.9717967Z actor=2 master=1 phase=Staging ready=False seeded= views=0 paused=False
+2026-11-09T10:21:46.7889667Z actor=2 master=1 phase=Staging ready=True seeded= views=4 paused=False
+2026-11-09T10:21:47.9745158Z actor=2 master=1 phase=Departing ready=False seeded= views=4 paused=False
+2026-11-09T10:21:49.3062556Z actor=2 master=1 phase=Departing ready=False seeded= views=2 paused=False
+2026-11-09T10:21:55.4989558Z actor=2 master=1 phase=Departing ready=False seeded= views=47 paused=False
+2026-11-09T10:21:59.6862657Z actor=2 master=2 phase=Departing ready=False seeded= views=49 paused=False
+2026-11-09T10:21:59.9051371Z actor=2 master=2 phase=Departing ready=True seeded=dbc9e41bac0648f3b73f3696f5dac5a8 views=49 paused=False
+2026-11-09T10:21:59.9061456Z RECOVERED while original host paused
+2026-11-09T10:22:00.5388699Z actor=2 master=2 phase=Running ready=True seeded=dbc9e41bac0648f3b73f3696f5dac5a8 views=60 paused=False
+2026-11-09T10:22:05.6945905Z PASS ready after recovery; unique IDs/markers; exact loot counts; pre-pause identities retained

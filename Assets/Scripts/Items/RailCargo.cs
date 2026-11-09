@@ -25,6 +25,11 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
     bool Loose => item != null ? !item.IsHeldByAnyPlayer && !item.IsStashed : bag != null && bag.State == BagState.Dropped;
     void Awake()
     {
+        // Authored loot is mostly stationary. Publish moving/interaction state
+        // at the normal stream rate, then PUN's reliable final rest snapshot.
+        // PUN resets its comparison cache when a player joins.
+        if (photonView.Synchronization == ViewSynchronization.Unreliable)
+            photonView.Synchronization = ViewSynchronization.UnreliableOnChange;
         body = GetComponent<Rigidbody>(); item = GetComponent<PhotonGrabbable>();
         bag = GetComponent<BagObject>(); transformSync = GetComponent<PhotonTransformView>();
         previousLoose = Loose;

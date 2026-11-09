@@ -1,0 +1,175 @@
+Log: RAILS PASS: Five-digit codes preserve leading zeroes
+Log: RAILS PASS: Invalid and non-ASCII codes rejected
+Log: RAILS PASS: Allocation probes cover every five-digit code without repeats
+Log: RAILS PASS: Crew allocation is deterministic and wraps at the code-space boundary
+Log: RAILS PASS: First occupant starts twenty seconds
+Log: RAILS PASS: Entry/exit cannot extend a nonempty countdown
+Log: RAILS PASS: Empty cancels and re-entry starts a fresh countdown
+Log: RAILS PASS: Ninth occupant waits outside the eight-player roster
+Log: RAILS PASS: Vacated slots refill without evicting admitted players
+Log: RAILS PASS: Public compounds: twelve players, discoverable, no inactive shoppers
+Log: RAILS PASS: Private rooms: eight players, hidden, code joinable
+Log: RAILS PASS: 120-second reconnect slots; empty rooms close immediately
+Log: RAILS PASS: One through four returning players search existing compounds
+Log: RAILS PASS: Five through eight returning players skip random matchmaking
+Log: RAILS PASS: Missing reservation leases receive thirty seconds
+Log: RAILS PASS: Master succession preserves deadlines while concurrent arrivals receive their own lease
+Log: RAILS PASS: Removing an expired crew does not shorten another crew's reservation
+Log: RAILS PASS: Consumed reservations remove obsolete lease metadata
+Log: RAILS PASS: Invalid phase shortcuts rejected
+Log: RAILS PASS: Crew stays aboard through ending and returning instead of spawning in a temporary compound
+Log: RAILS PASS: Public compound arrival and private staging present the compound
+Log: RAILS PASS: Acceleration integrates correct distance and speed
+Log: RAILS PASS: Late join reconstructs moving train from current command
+Log: RAILS PASS: Braking stops without changing past position
+Log: RAILS PASS: Fuel burns with travelled distance, including acceleration
+Log: RAILS PASS: Braking consumes fuel; a stopped train does not
+Log: RAILS PASS: Restored room snapshot preserves fuel and motion across a master checkpoint
+Log: RAILS PASS: Fuel exhaustion during acceleration coasts to rest without authority ticks
+Log: RAILS PASS: Empty fuel cannot restart or become negative
+Log: RAILS PASS: Exhaustion preserves speed at the fuel boundary
+Log: RAILS PASS: Empty train advances while smoothly slowing
+Log: RAILS PASS: Empty moving checkpoint preserves coast across master handoff
+Log: RAILS PASS: Late join reconstructs the final coast stop without creeping
+Log: RAILS PASS: Exhaustion during braking keeps motion continuous
+Log: RAILS PASS: Refuelling a coasting GO command resumes acceleration
+Log: RAILS PASS: Fuel exhaustion after the ramp also coasts smoothly
+Log: RAILS PASS: Future motion commands do not burn fuel early
+Log: RAILS PASS: Build starts at Login/Compound/Expedition, permits additive lighting companions and excludes other gameplay scenes
+Log: RAILS PASS: RailBat observes cargo state over PUN
+Log: RAILS PASS: RailBag observes cargo state over PUN
+Log: RAILS CHECKS PASSED: 40. These are local checks, not multi-client acceptance.
+Log: Duck Rails desktop regression checks passed (10 checks).
+Log: Duck Rails quick-start checks passed (8 checks).
+Log: RAILS WEEK 2 PASS: Bridge only advances within the retained live hold
+Log: RAILS WEEK 2 PASS: Late-join/master reconstruction preserves bounded bridge progress
+Log: RAILS WEEK 2 PASS: One downed passenger wins; left-behind player remains a non-finisher
+Log: RAILS WEEK 2 PASS: Catch-up/repeated finish cannot change locked results
+Log: RAILS WEEK 2 PASS: Crash produces failure without reviving anyone
+Log: RAILS WEEK 2 PASS: Default expedition begins with the approved fifty fuel
+Log: RAILS WEEK 2 PASS: RailCoal uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailBat uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailBag uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailWalkie uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailHelmet uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailGoggles uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: RailFlashlight uses shared cargo/ownership
+Log: RAILS WEEK 2 PASS: Authored depot has a baked crawlgraph
+Log: RAILS WEEK 2 PASS: Coal follows the existing grabbable ownership contract
+Log: RAILS WEEK 2 PASS: Coal deduplication distinguishes recycled Photon view IDs
+Log: RAILS WEEK 2 PASS: Remote controller release accepts the same hold generation despite a stale held pose
+Log: RAILS WEEK 2 PASS: Release may precede the remote grab snapshot
+Log: RAILS WEEK 2 PASS: Former controller cannot consume transferred coal
+Log: RAILS WEEK 2 PASS: Delayed release cannot consume a recycled view
+Log: RAILS WEEK 2 PASS: A newer pickup invalidates the pending insertion
+Log: RAILS WEEK 2 PASS: Coal outside the furnace is rejected
+Log: RAILS WEEK 2 PASS: Expired insertion is rejected
+Log: RAILS WEEK 2 PASS: Invalid insertion geometry is rejected
+Log: RAILS WEEK 2 RULES: 24 checks passed
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: scrapyard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: scrapyard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: scrapyard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: scrapyard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: roadside-motel-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Enemy spawn shortfall: quarry-v1 selected 3/4 with 15m spacing. Check quadrant candidates.
+Warning: Resource pool shortfall: quarry-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: scrapyard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: roadside-motel-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: quarry-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: scrapyard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: roadside-motel-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: quarry-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: scrapyard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: roadside-motel-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Enemy spawn shortfall: quarry-v1 selected 3/4 with 15m spacing. Check quadrant candidates.
+Warning: Resource pool shortfall: quarry-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Enemy spawn shortfall: passenger-station-v1 selected 3/4 with 15m spacing. Check quadrant candidates.
+Warning: Resource pool shortfall: passenger-station-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: nuclear-power-plant-v1 Gold has 2/10 usable candidates for crew 1.
+Warning: Enemy spawn shortfall: maintenance-depot-v1 selected 3/4 with 15m spacing. Check quadrant candidates.
+Warning: Resource pool shortfall: maintenance-depot-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: lumber-yard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: lakeside-campground-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: hospital-district-v1 Gold has 2/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: scrapyard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: roadside-motel-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: quarry-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: passenger-station-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: nuclear-power-plant-v1 Gold has 2/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: maintenance-depot-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: lumber-yard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: lakeside-campground-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: hospital-district-v1 Gold has 2/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: tunnel-works-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: scrapyard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: roadside-motel-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: quarry-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: passenger-station-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: nuclear-power-plant-v1 Gold has 2/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: maintenance-depot-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: lumber-yard-v1 Gold has 3/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: lakeside-campground-v1 Gold has 6/10 usable candidates for crew 1.
+Warning: Resource pool shortfall: hospital-district-v1 Gold has 2/10 usable candidates for crew 1.
+Log: TEST BLOCK ORDER: 430 checks passed
+Log: SPAWN POOLS: 1047 checks passed.
+Log: WEEK 3 CHECKS: 607 passed
+Log: RAILS DRIVE PASS: Grip starts in STOP even with a GO payload
+Log: RAILS DRIVE PASS: Another player or hand cannot steal an active hold
+Log: RAILS DRIVE PASS: Non-holder cannot drive or release
+Log: RAILS DRIVE PASS: Partial hand travel replicates without GO
+Log: RAILS DRIVE PASS: Held GO renews the timeout
+Log: RAILS DRIVE PASS: Release clears ownership and GO
+Log: RAILS DRIVE PASS: Delayed heartbeat cannot reacquire after release
+Log: RAILS DRIVE PASS: Old release cannot cancel a new holder
+Log: RAILS DRIVE PASS: Timeout/master reset needs a fresh grip
+Log: RAILS DRIVE PASS: Forward travel is bounded; backward movement stays OFF
+Log: RAILS DRIVE PASS: Push snaps GO and small backward movements do not chatter
+Log: RAILS DRIVE PASS: Pull back snaps OFF and stays OFF until pushed forward again
+Log: RAILS DRIVE PASS: Handle and base are non-solid interaction triggers
+Log: RAILS DRIVE PASS: Locomotion casts pass through the lever and base
+Log: RAILS DRIVE PASS: Desktop targeting still hits the trigger control
+Log: RAILS DRIVE PASS: Grip proximity still detects a hand inside the handle trigger
+Log: RAILS DRIVE PASS: Handle swings forward about the base rather than its centre
+Log: RAILS VR DRIVE: 17 checks passed
+Warning: Only one instance of OVRCameraRig should be created at once!
+Log: 25 VR button checks passed: Link focus, DuckPlayer fingertips and cross-panel withdrawal lock.
+Log: 9 hold-button checks passed. Headset and multi-client checks remain pending.
+Log: BRIDGE HOLD PASS: Idle bridge never lowers
+Log: BRIDGE HOLD PASS: Continuous hold lowers bridge
+Log: BRIDGE HOLD PASS: Release saves progress and pauses indefinitely
+Log: BRIDGE HOLD PASS: Resume and renewed hold retain prior work without counting idle time
+Log: BRIDGE HOLD PASS: Late join reconstructs active hold and prior work
+Log: BRIDGE HOLD PASS: Missing heartbeat or authority cannot lower beyond lease expiry
+Log: BRIDGE HOLD PASS: Paused state survives master reconstruction
+Log: BRIDGE HOLD PASS: Replacement operator resumes without losing work or adding downtime
+Log: BRIDGE HOLD PASS: Duplicate or overlapping holds do not multiply lowering speed
+Log: BRIDGE HOLD PASS: Malformed hold stops safely
+Log: BRIDGE HOLD PASS: Unbounded hold cannot restart lowering
+Log: BRIDGE HOLD PASS: Fully lowered bridge locks in place
+Log: BRIDGE HOLD PASS: Completed bridge stays down after release
+Log: BRIDGE HOLD PASS: End of run stops bridge movement and rejects later holds
+Log: BRIDGE HOLD PASS: Replay starts raised with no carried progress
+Log: BRIDGE HOLD PASS: Authoring installs one bridge hold with a real pressable button
+Log: BRIDGE HOLD PASS: Physical control explains continuous holding
+Log: BRIDGE HOLD: 17 checks passed
+Warning: Only one instance of OVRCameraRig should be created at once!
+Log: Shared rig checks passed (36 checks; synthetic tracking transition, not headset acceptance).
+Log: ECONOMY CHECKS: 53 passed
+Log: RESOURCE BALANCE CHECKS PASSED: 2740
+Log: ENEMY SPAWN BALANCE: 283202 checks passed
+Log: COAL AVATAR LOOKUP: 4 checks passed
+Log: TRAIN BOARDING: 489 graph/packet/authoring checks passed

@@ -9,9 +9,9 @@ using UnityEditor;
 using UnityEngine;
 
 /// <summary>
-/// Opt-in three-process regression. Shared files coordinate test steps only;
+/// Opt-in three/four-process regression. Shared files coordinate test steps only;
 /// room transfers, avatars, cargo, motion, recovery and voice use real Photon.
-/// Two players depart while the third keeps the source compound alive.
+/// Two-player split departures followed by whole-group departures and returns.
 /// </summary>
 [InitializeOnLoad]
 public static class RailStabilityLiveChecks
@@ -19,21 +19,23 @@ public static class RailStabilityLiveChecks
     [Serializable] sealed class Control
     {
         public string token, expires, compound, expedition, run, route;
-        public int step, round, revision, faultActor;
+        public int step, round, revision, faultActor, clients = 3;
     }
     [Serializable] sealed class Receipt
     {
         public string token, room, avatars, error;
         public int revision;
         public float fuel;
+        public Vector3 bagLocal;
     }
     static string Root { get { var p = Application.dataPath.Replace('\\', '/'); var i = p.IndexOf("/Library/VP/", StringComparison.OrdinalIgnoreCase); return i < 0 ? Path.GetDirectoryName(p) : p.Substring(0, i); } }
     static string Folder => Root + "/Temp/rails-stability";
     static string ControlPath => Folder + "/control.json";
     static bool Host => CurrentPlayer.IsMainEditor;
     static bool Second => CurrentPlayer.Tags.Contains("Player2");
-    static bool Shopper => !Host && !Second;
-    static string Role => Host ? "main" : Second ? "player2" : "player3";
+    static bool Shopper => !Host && !Second && (control == null || control.round < 2);
+    static int Departing => control.round < 2 ? 2 : control.clients;
+    static string Role => Host ? "main" : Second ? "player2" : CurrentPlayer.Tags.Contains("Player3") ? "player3" : "player4";
     static Control control;
     static string token, networkState;
     static int revision = -1, commands;
@@ -48,17 +50,19 @@ public static class RailStabilityLiveChecks
         EditorApplication.playModeStateChanged += s => { if (s == PlayModeStateChange.ExitingPlayMode) RestoreSimulation(); };
     }
     [MenuItem("Duck Rails/Legacy/Arm Three Client Stability Test")]
-    public static void Arm()
+    public static void Arm() => ArmClients(3);
+    public static void ArmClients(int clients)
     {
         if (EditorApplication.isPlaying) throw new Exception("Arm before Play");
-        if (!MppmStandaloneCredentials.TryGet("Player2", out _) || !MppmStandaloneCredentials.TryGet("Player3", out _))
-            throw new Exception("Three configured accounts required");
+        if (!MppmStandaloneCredentials.TryGet("Player2", out _) || !MppmStandaloneCredentials.TryGet("Player3", out _) || clients == 4 && !MppmStandaloneCredentials.TryGet("Player4", out _))
+            throw new Exception("Configure distinct accounts for the selected client count");
         Directory.CreateDirectory(Folder);
         RailCoalLiveChecks.Disarm(); RailWeek3LiveChecks.Disarm();
         File.WriteAllText(Root + "/Temp/rails-week2-arm.txt", "");
         EditorPrefs.SetBool("Rails.Stability.PreviousQuickStart", RailEditorQuickStart.Enabled);
         RailEditorQuickStart.Enabled = false;
-        var c = new Control { token = Guid.NewGuid().ToString("N"), expires = DateTime.UtcNow.AddMinutes(40).ToString("O") };
+        if (clients < 3 || clients > 4) throw new ArgumentOutOfRangeException(nameof(clients));
+        var c = new Control { clients = clients, token = Guid.NewGuid().ToString("N"), expires = DateTime.UtcNow.AddMinutes(40).ToString("O") };
         File.WriteAllText(ControlPath, JsonUtility.ToJson(c));
     }
     [MenuItem("Duck Rails/Legacy/Disarm Three Client Stability Test")]
@@ -84,7 +88,8 @@ public static class RailStabilityLiveChecks
         if (ack) return;
         string avatars = avatarCheck ? RailAvatarChecks.AssertCurrentRoom() : "n/a";
         File.WriteAllText(ReceiptPath(Role), JsonUtility.ToJson(new Receipt { token = token, revision = revision,
-            room = PhotonNetwork.CurrentRoom?.Name, avatars = avatars, fuel = PhotonSession.CurrentFuel }));
+            room = PhotonNetwork.CurrentRoom?.Name, avatars = avatars, fuel = PhotonSession.CurrentFuel,
+            bagLocal = BagObject.Active.Count == 1 && RailTrain.Instance != null ? RailTrain.Instance.transform.InverseTransformPoint(BagObject.Active.First().transform.position) : Vector3.zero }));
         Log("PASS round=" + control.round + " step=" + control.step + " " + message + " avatars=" + avatars);
         ack = true;
     }
@@ -94,7 +99,9 @@ public static class RailStabilityLiveChecks
         var receipt = JsonUtility.FromJson<Receipt>(File.ReadAllText(ReceiptPath(role)));
         return receipt != null && receipt.token == token ? receipt : null;
     }
-    static bool AllAck => new[] { "main", "player2", "player3" }.All(r => ReadReceipt(r)?.revision == revision);
+    static string[] Roles => control.clients == 4 ? new[] { "main", "player2", "player3", "player4" } : new[] { "main", "player2", "player3" };
+    static bool AllAck => Roles.All(r => ReadReceipt(r)?.revision == revision);
+    static int ExpectedCargo => RailExpedition.Instance.coalPoints.Length + RailExpedition.Instance.goldPoints.Length + PhotonSession.Get(RailResourceBalance.CrewKey, 1);
     static bool Ready => PhotonSession.Instance != null && PhotonSession.IsRailsRoom && PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest;
     static bool AllPoses => PhotonNetwork.PlayerList.All(p => !p.IsInactive && PhotonPlayer.ForActor(p.ActorNumber) != null);
     static bool Settled
@@ -107,7 +114,7 @@ public static class RailStabilityLiveChecks
         }
     }
     static void Teleport(Vector3 position) => NewPlayer.instance.Warp(position, Quaternion.identity);
-    static void Board() => Teleport(RailTrain.Instance.transform.TransformPoint(new Vector3(Host ? -1 : 1, .35f, -1)));
+    static void Board() => Teleport(RailTrain.Instance.transform.TransformPoint(new Vector3(PhotonNetwork.LocalPlayer.ActorNumber % 2 == 0 ? -.8f : .8f, .35f, -1 - (PhotonNetwork.LocalPlayer.ActorNumber % 4) / 2 * 1.5f)));
     static bool VoiceReady()
     {
         var voice = UnityEngine.Object.FindFirstObjectByType<PunVoiceClient>();
@@ -154,14 +161,14 @@ public static class RailStabilityLiveChecks
             {
                 token = control.token; revision = -1; done = false;
                 File.WriteAllText(Folder + "/" + Role + ".txt", "");
-                Log("Starting three-client public lifecycle and network recovery test; Unity " + Application.unityVersion);
+                Log("Starting public lifecycle and network recovery test; Unity " + Application.unityVersion);
             }
             if (done) return;
             var currentNetworkState = PhotonNetwork.NetworkClientState + " room=" + PhotonNetwork.CurrentRoom?.Name
-                + " master=" + PhotonNetwork.IsMasterClient;
+                + " master=" + PhotonNetwork.IsMasterClient + " phase=" + PhotonSession.Phase;
             if (currentNetworkState != networkState)
-            { networkState = currentNetworkState; Log("Network " + networkState); }
-            foreach (string role in new[] { "main", "player2", "player3" })
+            { networkState = currentNetworkState; Log("Network " + networkState + " clock=" + PhotonNetwork.Time + " deadline=" + PhotonSession.Get(RailSessionRules.Deadline,0d)); }
+            foreach (string role in Roles)
                 if (ReadReceipt(role)?.error is string error && error.Length > 0) throw new Exception("Peer failure: " + error);
             if (revision != control.revision)
             {
@@ -181,23 +188,25 @@ public static class RailStabilityLiveChecks
                 case 1:
                     if (!Ready) break;
                     if (PhotonNetwork.CurrentRoom.Name != control.compound) { session.RequestJoinCode(control.compound); readySince = 0; break; }
-                    if (!Settled || PhotonNetwork.PlayerList.Length != 3 || !AllPoses) break;
-                    Require(PhotonNetwork.PlayerList.Select(p => p.UserId).Distinct().Count() == 3, "Distinct authenticated accounts");
+                    if (!Settled || PhotonNetwork.PlayerList.Length != control.clients || !AllPoses) break;
+                    Require(PhotonNetwork.PlayerList.Select(p => p.UserId).Distinct().Count() == control.clients, "Distinct authenticated accounts");
                     Teleport(new Vector3(8 + (Shopper ? 2 : 0), .4f, 4));
-                    Ack("Three accounts gathered in fresh public compound");
+                    Ack("Expected accounts gathered in fresh public compound");
                     if (Host && AllAck) Next(2); break;
                 case 2:
+                    if (!Shopper && PhotonSession.Kind == RailSessionRules.ExpeditionKind)
+                        Require(PhotonSession.Phase != RailPhase.Returning && PhotonSession.Phase != RailPhase.Ending, "Departure aborted before expedition became ready");
                     if (!Ready) break;
                     if (Shopper)
                     {
                         Require(PhotonSession.Kind == RailSessionRules.CompoundKind && PhotonNetwork.CurrentRoom.Name == control.compound, "Shopper left source compound");
-                        if (PhotonNetwork.PlayerList.Length == 1) Ack("Shopper remained in source compound");
+                        if (PhotonNetwork.PlayerList.Length == control.clients - Departing) Ack("Shopper remained in source compound");
                     }
                     else if (PhotonSession.Kind == RailSessionRules.CompoundKind)
                         Teleport(RailWorld.Instance.boardingTrigger.bounds.center - Vector3.up * .8f);
                     else if (PhotonSession.Phase == RailPhase.Running && Settled && AllPoses)
                     {
-                        Require(PhotonNetwork.PlayerList.Length == 2 && RailCargo.Active.Count == 40, "Exactly two departing crew and 40 authored resources");
+                        Require(PhotonNetwork.PlayerList.Length == Departing && RailCargo.Active.Count == ExpectedCargo, "Expected departing crew and current authored resources and departure flashlights");
                         Board(); Ack("Public departure loaded Expedition with only platform occupants");
                     }
                     if (Host && AllAck)
@@ -205,7 +214,7 @@ public static class RailStabilityLiveChecks
                         if (!PhotonNetwork.IsMasterClient) { PhotonNetwork.SetMasterClient(PhotonNetwork.LocalPlayer); break; }
                         control.expedition = PhotonNetwork.CurrentRoom.Name; control.run = PhotonSession.RunId;
                         control.route = PhotonSession.Get(RailRoute.StateKey, "");
-                        RailTestTools.SpawnBag(); Next(3);
+                        PhotonNetwork.InstantiateRoomObject(RailWorld.Instance.bagPrefab.name, RailTrain.Instance.transform.TransformPoint(new Vector3(0, .5f, -2)), RailTrain.Instance.transform.rotation, 0, BagObject.SpawnData(1, new[] { "RailCoal", "", "", "" }, 0, BagObject.Target.Dropped, 0)); Next(3);
                     }
                     break;
                 case 3:
@@ -223,10 +232,17 @@ public static class RailStabilityLiveChecks
                     {
                         Require(RailTrain.Instance.Distance > distance + 20 && RailTrain.Instance.Speed > 3.9f, "Non-master GO under latency");
                         Require(BagObject.Active.Count == 1 && BagObject.Active.All(b => RailTrain.Instance.Contains(b.transform.position)), "Loose bags remain aboard");
-                        Require(RailTrain.Instance.Contains(GR.Player.instance.transform.position + Vector3.up), "Local passenger remains aboard");
+                        Require(BagObject.Active.First().Slots.Count(s => s.ItemKey == "RailCoal") == 1, "Loaded bag retained coal contents");
+                        Require(RailExpedition.Position(PhotonNetwork.LocalPlayer.ActorNumber, out var head) && RailTrain.Instance.Contains(head), "Local passenger remains aboard");
                         Ack("Moving passengers and loose bags under simulated latency/loss");
                     }
-                    if (Host && AllAck) Next(4); break;
+                    if (Host && AllAck)
+                    {
+                        foreach (string role in Roles.Take(Departing))
+                            Require(Vector3.Distance(ReadReceipt("main").bagLocal, ReadReceipt(role).bagLocal) < .3f, "Moving bag pose disagrees on " + role);
+                        Next(4);
+                    }
+                    break;
                 case 4:
                     if (Shopper) { Ack("Shopper stays available"); break; }
                     if (!Ready) break;
@@ -240,7 +256,8 @@ public static class RailStabilityLiveChecks
                     }
                     if (Host && AllAck)
                     {
-                        Require(Mathf.Abs(ReadReceipt("main").fuel - ReadReceipt("player2").fuel) < .02f, "Stopped fuel differs between clients");
+                        foreach (string role in Roles.Take(Departing))
+                            Require(Mathf.Abs(ReadReceipt("main").fuel - ReadReceipt(role).fuel) < .02f, "Stopped fuel differs on " + role);
                         control.faultActor = PhotonNetwork.LocalPlayer.ActorNumber;
                         Next(control.round == 0 ? 5 : 7);
                     }
@@ -268,9 +285,9 @@ public static class RailStabilityLiveChecks
                     if (Host && AllAck) Next(6); break;
                 case 6:
                     if (Shopper) { Ack("Shopper unaffected"); break; }
-                    if (!Settled || PhotonNetwork.PlayerList.Count(p => !p.IsInactive) != 2 || !AllPoses) break;
+                    if (!Settled || PhotonNetwork.PlayerList.Count(p => !p.IsInactive) != Departing || !AllPoses) break;
                     Require(PhotonSession.RunId == control.run && PhotonSession.Get(RailRoute.StateKey, "") == control.route, "Reconnect changed run/route");
-                    Require(RailCargo.Active.Count == 41, "Reconnect duplicated or lost cargo");
+                    Require(RailCargo.Active.Count == ExpectedCargo + 1, "Reconnect duplicated or lost cargo");
                     if (!VoiceReady()) break;
                     Ack("Reconnect preserved route, supplies, unique avatars and voice room");
                     if (Host && AllAck) Next(7); break;
@@ -284,7 +301,7 @@ public static class RailStabilityLiveChecks
                     if (!Settled || PhotonSession.Kind != RailSessionRules.CompoundKind || !AllPoses) break;
                     string destination = PhotonNetwork.CurrentRoom.Name;
                     bool sourceCompound = destination == control.compound;
-                    if (Shopper && PhotonNetwork.PlayerList.Length == 1)
+                    if (Shopper && PhotonNetwork.PlayerList.Length == control.clients - Departing)
                     {
                         var returned = ReadReceipt("main");
                         if (returned?.revision != revision || returned.room == control.compound) break;
@@ -293,7 +310,7 @@ public static class RailStabilityLiveChecks
                         Ack("Shopper stayed isolated while crew used another shared compound");
                         break;
                     }
-                    if (PhotonNetwork.PlayerList.Length != (sourceCompound ? 3 : 2)) break;
+                    if (PhotonNetwork.PlayerList.Length != (sourceCompound ? control.clients : Departing)) break;
                     Require(!RailWorld.HasLiveCargo && Game.AI.Enemy.Active.Count == 0, "Return leaked expedition objects");
                     if (!VoiceReady()) break;
                     Teleport(new Vector3(8 + (Shopper ? 2 : 0), .4f, 4));

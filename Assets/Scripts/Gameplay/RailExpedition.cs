@@ -113,10 +113,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     }
     public static bool Position(int actor, out Vector3 point)
     {
-        if (PhotonNetwork.LocalPlayer != null && actor == PhotonNetwork.LocalPlayer.ActorNumber && GR.Player.instance != null)
-        { point = GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position) + Vector3.up * .8f; return true; }
+        // Use the same tracked/simulated head for local and remote actors. The
+        // gorilla rig root can sit below the deck while the player is aboard;
+        // adding a fixed height made the host fail its own finish-volume test.
         var p = PhotonPlayer.ForActor(actor);
         if (p != null && p.TryGetHeadPosition(out point)) return true;
+        if (PhotonNetwork.LocalPlayer != null && actor == PhotonNetwork.LocalPlayer.ActorNumber && GR.Player.instance != null &&
+            GR.Player.instance.TryGetHeadPivotHeadPosition(out point)) return true;
         point = default; return false;
     }
     static bool HandNear(int actor, Vector3 point, float radius)
@@ -423,9 +426,10 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
                 (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
                 string.Join("\n", State.players.Select(p => Safe(p.name) + " — " + (p.escaped ? "Escaped" : "Didn't make it") + "\n<size=65%>Coal " + p.coal + "   Revives " + p.revives + "   Downs " + p.downs + "   Honks " + p.horns + "  •  " + Award(p) + "</size>"));
+            bool localAboard = Position(PhotonNetwork.LocalPlayer.ActorNumber, out var localPoint) && RailTrain.Instance.Contains(localPoint);
             if (caughtRun != State.run)
-            { caughtRun = State.run; if (GR.Player.instance != null && !RailTrain.Instance.Contains(GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position) + Vector3.up * .5f)) TeleportAboard(); }
-            if (GR.Player.instance != null && !RailTrain.Instance.Contains(GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position) + Vector3.up))
+            { caughtRun = State.run; if (GR.Player.instance != null && !localAboard) TeleportAboard(); }
+            if (GR.Player.instance != null && !localAboard)
             { if (fallAt <= 0) fallAt = now; if (now - fallAt > 2) TeleportAboard(); }
             else fallAt = 0;
         }

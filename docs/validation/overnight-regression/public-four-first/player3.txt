@@ -1,0 +1,30 @@
+2026-11-09T08:39:51.9537869Z Starting public lifecycle and network recovery test; Unity 6000.3.24f1
+2026-11-09T08:39:51.9547913Z Network PeerCreated room= master=False
+2026-11-09T08:39:51.9558016Z step=0 round=0
+2026-11-09T08:39:55.0172324Z Network ConnectingToNameServer room= master=False
+2026-11-09T08:39:55.2284835Z Network Authenticating room= master=False
+2026-11-09T08:39:55.5549282Z Network ConnectingToMasterServer room= master=False
+2026-11-09T08:39:56.6513453Z Network Authenticating room= master=False
+2026-11-09T08:39:56.7671877Z Network Joining room= master=False
+2026-11-09T08:39:57.0815343Z Network ConnectingToGameServer room= master=False
+2026-11-09T08:39:57.4938647Z Network Authenticating room= master=False
+2026-11-09T08:39:57.6986629Z Network Joining room= master=False
+2026-11-09T08:39:57.8894320Z Network Joined room=83878 master=True
+2026-11-09T08:40:14.6726987Z step=1 round=0
+2026-11-09T08:40:14.7773338Z Network Leaving room=83878 master=True
+2026-11-09T08:40:14.8810877Z Network ConnectingToMasterServer room= master=False
+2026-11-09T08:40:15.2919783Z Network Authenticating room= master=False
+2026-11-09T08:40:15.3935210Z Network Joining room= master=False
+2026-11-09T08:40:15.5992353Z Network ConnectingToGameServer room= master=False
+2026-11-09T08:40:16.0120289Z Network Authenticating room= master=False
+2026-11-09T08:40:16.1129323Z Network Joining room= master=False
+2026-11-09T08:40:16.2171828Z Network Joined room=77420 master=False
+2026-11-09T08:40:19.2283372Z PASS round=0 step=1 Expected accounts gathered in fresh public compound avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T08:40:19.3303437Z step=2 round=0
+2026-11-09T08:40:40.0864011Z Network Joined room=77420 master=True
+2026-11-09T08:40:40.0875614Z PASS round=0 step=2 Shopper remained in source compound avatars=3:3001,4:4001
+2026-11-09T08:40:58.2090646Z step=3 round=0
+2026-11-09T08:40:58.2095687Z PASS round=0 step=3 Shopper stays available avatars=3:3001,4:4001
+2026-11-09T08:41:14.3903488Z step=4 round=0
+2026-11-09T08:41:14.3919412Z PASS round=0 step=4 Shopper stays available avatars=3:3001,4:4001
+2026-11-09T08:41:26.3421615Z FAIL Peer failure: Final STOP lost after rapid commands

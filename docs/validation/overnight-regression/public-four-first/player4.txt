@@ -1,0 +1,29 @@
+2026-11-09T08:39:51.9578164Z Starting public lifecycle and network recovery test; Unity 6000.3.24f1
+2026-11-09T08:39:51.9583188Z Network PeerCreated room= master=False
+2026-11-09T08:39:51.9598817Z step=0 round=0
+2026-11-09T08:39:55.0157110Z Network ConnectingToNameServer room= master=False
+2026-11-09T08:39:55.3296642Z Network Authenticating room= master=False
+2026-11-09T08:39:55.5564387Z Network ConnectingToMasterServer room= master=False
+2026-11-09T08:39:56.7801526Z Network Authenticating room= master=False
+2026-11-09T08:39:56.8806697Z Network Joining room= master=False
+2026-11-09T08:39:57.0909955Z Network ConnectingToGameServer room= master=False
+2026-11-09T08:39:57.5039220Z Network Authenticating room= master=False
+2026-11-09T08:39:57.7107770Z Network Joining room= master=False
+2026-11-09T08:39:57.8894320Z Network Joined room=87486 master=True
+2026-11-09T08:40:14.6649854Z step=1 round=0
+2026-11-09T08:40:14.7684284Z Network Leaving room=87486 master=True
+2026-11-09T08:40:14.8689101Z Network ConnectingToMasterServer room= master=False
+2026-11-09T08:40:15.2814127Z Network Authenticating room= master=False
+2026-11-09T08:40:15.3884220Z Network Joining room= master=False
+2026-11-09T08:40:15.4891001Z Network ConnectingToGameServer room= master=False
+2026-11-09T08:40:15.9996791Z Network Authenticating room= master=False
+2026-11-09T08:40:16.1031574Z Network Joining room= master=False
+2026-11-09T08:40:16.2136721Z Network Joined room=77420 master=False
+2026-11-09T08:40:19.3096275Z PASS round=0 step=1 Expected accounts gathered in fresh public compound avatars=1:1001,2:2001,3:3001,4:4001
+2026-11-09T08:40:19.4090221Z step=2 round=0
+2026-11-09T08:40:40.1098811Z PASS round=0 step=2 Shopper remained in source compound avatars=3:3001,4:4001
+2026-11-09T08:40:58.1319973Z step=3 round=0
+2026-11-09T08:40:58.1330020Z PASS round=0 step=3 Shopper stays available avatars=3:3001,4:4001
+2026-11-09T08:41:14.3591441Z step=4 round=0
+2026-11-09T08:41:14.3601496Z PASS round=0 step=4 Shopper stays available avatars=3:3001,4:4001
+2026-11-09T08:41:26.3635691Z FAIL Peer failure: Final STOP lost after rapid commands
