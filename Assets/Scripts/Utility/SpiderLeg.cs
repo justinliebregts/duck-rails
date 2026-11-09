@@ -29,6 +29,22 @@ namespace Game.Animation
         public Vector3 FootWorld => footTip != null ? footTip.position : HipWorld;
         public float Reach => _l3 + (leg != null ? leg.TotalReach : 0f);  // full leg incl. foot
 
+        // Maximum extra hip displacement along up while the ankle remains inside
+        // the authored two-bone reach. Negative means this pose needs lowering.
+        public float AvailableLift(Vector3 plantPoint, Vector3 normal, Vector3 gaitDir, Vector3 up, float reachUse)
+        {
+            if (leg == null) return 0f;
+            Vector3 n = normal.normalized;
+            Vector3 tangent = Vector3.ProjectOnPlane(gaitDir, n).normalized;
+            if (tangent.sqrMagnitude < 1e-8f) tangent = Vector3.right;
+            Vector3 axis = (-n * footDownness + tangent * footLean).normalized;
+            Vector3 delta = plantPoint - axis * _l3 - HipWorld;
+            float vertical = Vector3.Dot(delta, up);
+            float horizontalSq = Mathf.Max(0f, delta.sqrMagnitude - vertical * vertical);
+            float reach = leg.TotalReach * Mathf.Clamp01(reachUse);
+            return vertical + Mathf.Sqrt(Mathf.Max(0f, reach * reach - horizontalSq));
+        }
+
         public void BeginRagdoll(float signedStrength)
         {
             if (leg != null) leg.BeginRagdoll(signedStrength);

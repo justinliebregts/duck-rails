@@ -8,7 +8,7 @@ namespace Game.Animation
     /// Writes: body visual pose + foot plant/swing targets into SpiderLegs.
     /// Legs stay dumb solvers; ALL policy lives here.
     /// </summary>
-    public class SpiderGait : MonoBehaviour, IGaitStats, IGaitDriver
+    public partial class SpiderGait : MonoBehaviour, IGaitStats, IGaitDriver
     {
         public event System.Action<Vector3, Vector3> FootPlanted;
         [System.Serializable]
@@ -19,6 +19,7 @@ namespace Game.Animation
 
             [HideInInspector] public Vector3 home;
             [HideInInspector] public Vector3 homeNormal = Vector3.up;
+            [System.NonSerialized] public bool homeSupported;
             [HideInInspector] public Vector3 planted;
             [HideInInspector] public Vector3 plantedNormal = Vector3.up;
             [HideInInspector] public Vector3 swingFrom, swingFromNormal;
@@ -110,6 +111,7 @@ namespace Game.Animation
 
         void Awake()
         {
+            _raiseEnemy = GetComponent<Game.AI.Enemy>();
             _scarNetwork = GetComponent<Game.AI.EnemyNetSync>();
             if (Application.isPlaying) _scarPool = SpiderScarPool.Get();
             // Imported animation bounds do not cover procedural wall/ceiling
@@ -286,11 +288,13 @@ namespace Game.Animation
             // --- init / teleport guard ---------------------------------------
             if (!_init || (root.position - _lastRootPos).sqrMagnitude > teleportDistance * teleportDistance)
             {
+                _raiseHeight = 0f;
                 _lastRootPos = root.position;
                 _vel = _prevVel = _accel = Vector3.zero;
                 _pitch = _roll = 0f;
                 _up = root.up;
                 _bodyPos = root.position + _up * rideHeight;
+                body.SetPositionAndRotation(_bodyPos, root.rotation);
                 foreach (var l in legs)
                 {
                     l.swinging = false;
@@ -326,6 +330,9 @@ namespace Game.Animation
 
             // --- step triggering ------------------------------------------------
             float trigger = Mathf.Min(stepTrigger + speed * triggerSpeedScale, maxTrigger);
+            float raised = _raiseLevel / 7f;
+            trigger = Mathf.Lerp(trigger, Mathf.Min(trigger, raisedStepTrigger), raised);
+            float forced = Mathf.Lerp(forcedTrigger, Mathf.Min(forcedTrigger, raisedStepTrigger * 2f), raised);
             int maxSwinging = speed < runSpeed ? 1 : 2;
 
             for (int i = 0; i < legs.Length; i++)
@@ -333,7 +340,7 @@ namespace Game.Animation
                 var l = legs[i];
                 if (l.swinging) continue;
                 l.error = Vector3.Distance(l.planted, l.home);
-                if (l.error > forcedTrigger)                    { BeginSwing(l, speed); continue; } // recovery
+                if (l.error > forced)                           { BeginSwing(l, speed); continue; } // recovery
                 if (l.error > trigger && CanStart(i, maxSwinging)) BeginSwing(l, speed);
             }
 
@@ -345,17 +352,20 @@ namespace Game.Animation
 
         void ProbeHome(LegSlot l)
         {
-            Vector3 anchor = body.TransformPoint(l.homeOffset);
+            // Keep the existing ground probes at crawl height when the body rises.
+            Vector3 anchor = body.TransformPoint(l.homeOffset) - _up * _raiseHeight;
             if (Physics.SphereCast(anchor + _up * probeLift, probeRadius, -_up,
                 out RaycastHit hit, probeLift + probeDistance, surfaceMask, QueryTriggerInteraction.Ignore))
             {
                 l.home = hit.point;
                 l.homeNormal = hit.normal.normalized;
+                l.homeSupported = true;
             }
             else
             {
                 l.home = anchor - _up * rideHeight;   // leg over a gap: dangle at assumed ground
                 l.homeNormal = _up;
+                l.homeSupported = false;
             }
         }
 
@@ -382,6 +392,7 @@ namespace Game.Animation
             l.swingFrom = l.planted;
             l.swingFromNormal = l.plantedNormal;
             l.swingDuration = Mathf.Lerp(swingDuration, swingDurationFast, Mathf.Clamp01(speed / runSpeed));
+            l.swingDuration = Mathf.Lerp(l.swingDuration, Mathf.Min(l.swingDuration, raisedSwingDuration), _raiseLevel / 7f);
             l.swingHeight = Mathf.Min(stepHeight + speed * stepHeightSpeedScale, maxStepHeight);
             Retarget(l);
         }
@@ -391,7 +402,9 @@ namespace Game.Animation
             // land where home will be when the swing ends
             float remaining = l.swingDuration * (1f - Mathf.Clamp01(l.swingT));
             Vector3 to = l.home + _vel * (remaining * plantLead);
-            Vector3 hip = l.leg.RootPos;
+            // Choose a grounded step using the normal hip height, then limit the
+            // body lift to that step. Clamping from a raised hip lifts toes into air.
+            Vector3 hip = (Vector3)l.leg.RootPos - _up * _raiseHeight;
             Vector3 d = to - hip;
             float maxR = l.leg.Reach * reachUse;
             if (d.magnitude > maxR) to = hip + d.normalized * maxR;   // soft reach clamp
@@ -426,7 +439,9 @@ namespace Game.Animation
                         * Quaternion.AngleAxis(_pitch, Vector3.right)
                         * Quaternion.AngleAxis(_roll,  Vector3.forward);
 
-            body.SetPositionAndRotation(_bodyPos, rot);
+            UpdateRaise(dt);
+            body.SetPositionAndRotation(_bodyPos + _up * _raiseHeight, rot);
+            LimitRaiseToLegs(dt);
         }
 
         void SolveLegs(float dt)

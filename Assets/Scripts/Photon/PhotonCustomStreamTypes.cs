@@ -284,16 +284,16 @@ public struct PosePacket
 }
 
 /// <summary>
-/// Fixed 21-byte enemy pose. Position is 3 floats, rotation is the same 4-byte
+/// Fixed 22-byte enemy pose. Position is 3 floats, rotation is the same 4-byte
 /// smallest-three quat as <see cref="PosePacket"/>, then one flags byte and
-/// aim yaw/pitch as shorts. Senders ping-pong two instances so UnreliableOnChange
+/// aim yaw/pitch as shorts and a spider-lift byte. Senders ping-pong two instances so UnreliableOnChange
 /// can compare the previous sample. Receives come from a pool because PUN
 /// deserializes the whole batch before callbacks.
 /// </summary>
 public sealed class EnemyPosePacket
 {
     public const byte TypeCode = 254;
-    public const int PacketBytes = 21;
+    public const int PacketBytes = 22;
     public const float AimDistance = 4f;
     public const byte AimFlag = 4;
     public const byte JumpFlag = 8;
@@ -307,6 +307,8 @@ public sealed class EnemyPosePacket
     public Vector3 Position;
     public Quaternion Rotation = Quaternion.identity;
     public byte Flags;
+    // Rails uses every flag bit for state and boarding. Lift has its own byte.
+    public byte SpiderRaise;
     public float AimYaw;
     public float AimPitch;
 
@@ -321,13 +323,14 @@ public sealed class EnemyPosePacket
         return Position == packet.Position
             && Rotation == packet.Rotation
             && Flags == packet.Flags
+            && SpiderRaise == packet.SpiderRaise
             && AimYaw == packet.AimYaw
             && AimPitch == packet.AimPitch;
     }
 
     public override int GetHashCode()
     {
-        return Position.GetHashCode() ^ (Rotation.GetHashCode() << 2) ^ Flags;
+        return Position.GetHashCode() ^ (Rotation.GetHashCode() << 2) ^ Flags ^ (SpiderRaise << 8);
     }
 
     readonly byte[] _wire = new byte[PacketBytes];
@@ -337,6 +340,7 @@ public sealed class EnemyPosePacket
 
     public void Set(Vector3 position, Quaternion rotation, byte state, bool aim, float aimYaw, float aimPitch)
     {
+        SpiderRaise = 0;
         Position = position;
         Rotation = rotation;
         Flags = (byte)((state & 3) | (aim ? AimFlag : 0));
@@ -373,6 +377,7 @@ public sealed class EnemyPosePacket
         b[i++] = p.Flags;
         PosePacket.WriteShort(b, ref i, PosePacket.QuantAngle(p.AimYaw));
         PosePacket.WriteShort(b, ref i, PosePacket.QuantAngle(p.AimPitch));
+        b[i++] = (byte)Mathf.Min(p.SpiderRaise, 7);
         return b;
     }
 
@@ -388,6 +393,7 @@ public sealed class EnemyPosePacket
             p.Position = default;
             p.Rotation = Quaternion.identity;
             p.Flags = 0;
+            p.SpiderRaise = 0;
             p.AimYaw = 0f;
             p.AimPitch = 0f;
             return p;
@@ -402,6 +408,7 @@ public sealed class EnemyPosePacket
         p.Flags = data[i++];
         p.AimYaw = PosePacket.ReadShort(data, ref i) * DegPerShort;
         p.AimPitch = PosePacket.ReadShort(data, ref i) * DegPerShort;
+        p.SpiderRaise = (byte)Mathf.Min(data[i++], 7);
         return p;
     }
 

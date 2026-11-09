@@ -1,0 +1,3 @@
+Unity 6000.3.24f1; isolated copied project; -batchmode with graphics; SpiderRaiseChecks.RunPlay
+SpiderRaiseChecks PLAY PASS: 5 assertions; real physics contact after rising, ordinary low miss, actual disable/re-enable lifecycle.
+Headless first attempt crashed in native OpenXR before checks ran. Graphics-enabled retry passed and exited through EditorApplication.Exit(0).

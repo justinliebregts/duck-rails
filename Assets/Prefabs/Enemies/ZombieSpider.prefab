@@ -105,7 +105,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3496384509823197134}
-  - {fileID: 8523463616252476708}
   - {fileID: 2033710426408313314}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -191,6 +190,13 @@ MonoBehaviour:
   probeDistance: 1
   probeRadius: 0.15
   rideHeight: 0.35
+  raiseNearTarget: 1
+  raiseDistance: 1
+  lowerDistance: 1.5
+  elevatedHeadHeight: 1
+  maxRaiseHeight: 0.5
+  raiseSeconds: 0.2
+  lowerSeconds: 0.3
   posSmooth: 12
   upSmooth: 10
   leanGain: 2.5
@@ -692,7 +698,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6985187784059606338}
+  m_Father: {fileID: 1779785660026163932}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &9103258846056074671
 BoxCollider:
@@ -714,7 +720,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.5810121, y: 0.4670708, z: 0.48022842}
-  m_Center: {x: 0, y: -0.07596119, z: 0.6839416}
+  m_Center: {x: 0, y: 0, z: 0.235}
 --- !u!114 &4902582674393195919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -850,6 +856,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -5783730287938868487, guid: 4d18376e880e3a844b151627fe89aa7b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8523463616252476708}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 4d18376e880e3a844b151627fe89aa7b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2709131281944449612}

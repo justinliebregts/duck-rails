@@ -117,7 +117,7 @@ public static partial class EnemyPenetrationChecks
                 owner.Repair(manager);
                 Vector3 expected = owner.enemy.Root.position;
                 EnemyPosePacket packet = owner.Capture();
-                Check(EnemyPosePacket.Serialize(packet).Length == 21, "Recovery must retain the existing 21-byte pose");
+                Check(EnemyPosePacket.Serialize(packet).Length == EnemyPosePacket.PacketBytes, "Recovery must retain the existing 22-byte pose");
                 SelectRecoveryPeer(b);
                 var observer = new NetActor(type, originalController); observers.Add(observer);
                 observer.enemy.ApplyRemote(.5f);
@@ -171,7 +171,7 @@ public static partial class EnemyPenetrationChecks
                 owners[i].Receive(wrong, a.LocalPlayer, 3000);
                 owners[i].Settle(expected, 90);
             }
-            Debug.Log("EnemyPenetrationChecks CLOUD: ALL PASSED (four production enemies; two live UDP peers; 150ms lag each direction, 40ms jitter, 5% configured loss; corrected poses, stale/duplicate/wrong-controller rejection, 30/90/144Hz interpolation, real master election and rejoin; unchanged 21-byte pose)");
+            Debug.Log("EnemyPenetrationChecks CLOUD: ALL PASSED (four production enemies; two live UDP peers; 150ms lag each direction, 40ms jitter, 5% configured loss; corrected poses, stale/duplicate/wrong-controller rejection, 30/90/144Hz interpolation, real master election and rejoin; unchanged 22-byte pose)");
         }
         finally
         {

@@ -252,6 +252,8 @@ namespace Game.AI
         Quaternion _headRest = Quaternion.identity;
         bool _remoteAim;
         Vector3 _remoteAimPoint;
+        bool _remoteHeadAim;
+        float _remoteHeadYaw, _remoteHeadPitch;
 
         void Awake()
         {
@@ -309,6 +311,7 @@ namespace Game.AI
 
         public void ResetBrain()
         {
+            if (_gait is SpiderGait spider) spider.ResetRaise();
             _flareRetreat = _searchingFlareLocation = false;
             _flareThreat = null;
             _killRetreatPending = _searchKillLocation = _searchingKillLocation = false;
@@ -722,8 +725,30 @@ namespace Game.AI
 
         public void SetRemoteAim(bool hasAim, Vector3 point)
         {
+            _remoteHeadAim = false;
             _remoteAim = hasAim;
             if (hasAim) _remoteAimPoint = point;
+        }
+
+        public void SetRemoteHeadAim(bool hasAim, float yaw, float pitch)
+        {
+            _remoteAim = hasAim;
+            _remoteHeadAim = true;
+            _remoteHeadYaw = yaw;
+            _remoteHeadPitch = pitch;
+        }
+
+        public void HeadAimAngles(Vector3 point, out float yaw, out float pitch)
+        {
+            yaw = pitch = 0f;
+            if (head == null) return;
+            Vector3 dir = point - head.position;
+            if (!(dir.sqrMagnitude > 1e-4f)) return;
+            Quaternion parentRot = head.parent != null ? head.parent.rotation : Quaternion.identity;
+            Vector3 localDir = Quaternion.Inverse(parentRot * _headRest) * dir.normalized;
+            float horiz = Mathf.Sqrt(localDir.x * localDir.x + localDir.z * localDir.z);
+            yaw = Mathf.Clamp(horiz > .02f ? Mathf.Atan2(localDir.x, localDir.z) * Mathf.Rad2Deg : 0f, -headMaxYaw, headMaxYaw);
+            pitch = Mathf.Clamp(Mathf.Atan2(-localDir.y, horiz) * Mathf.Rad2Deg, -headMaxPitch, headMaxPitch);
         }
 
         public void AimHead(float dt)
@@ -737,18 +762,9 @@ namespace Game.AI
 
             if (aim)
             {
-                Vector3 dir = point - head.position;
-                if (dir.sqrMagnitude > 1e-4f)
-                {
-                    Quaternion parentRot = head.parent != null ? head.parent.rotation : Quaternion.identity;
-                    Vector3 localDir = Quaternion.Inverse(parentRot * _headRest) * dir.normalized;
-                    float horiz = Mathf.Sqrt(localDir.x * localDir.x + localDir.z * localDir.z);
-                    float yaw = horiz > 0.02f ? Mathf.Atan2(localDir.x, localDir.z) * Mathf.Rad2Deg : 0f;
-                    float pitch = Mathf.Atan2(-localDir.y, horiz) * Mathf.Rad2Deg;
-                    yaw = Mathf.Clamp(yaw, -headMaxYaw, headMaxYaw);
-                    pitch = Mathf.Clamp(pitch, -headMaxPitch, headMaxPitch);
-                    desired = _headRest * Quaternion.AngleAxis(yaw, Vector3.up) * Quaternion.AngleAxis(pitch, Vector3.right);
-                }
+                float yaw = _remoteHeadYaw, pitch = _remoteHeadPitch;
+                if (HasAuthority || !_remoteHeadAim) HeadAimAngles(point, out yaw, out pitch);
+                desired = _headRest * Quaternion.AngleAxis(yaw, Vector3.up) * Quaternion.AngleAxis(pitch, Vector3.right);
             }
 
             head.localRotation = Quaternion.Slerp(head.localRotation, desired, 1f - Mathf.Exp(-headTurnSmooth * dt));
@@ -790,6 +806,11 @@ namespace Game.AI
             Vector3 bodyEnd = root.position + up * bodyHeight;
             if (SegmentsWithin(from, to, root.position, bodyEnd, sweepRadius + bodyRadius))
                 return true;
+            // The spider's lethal head follows its raised pose; defensive weapon
+            // sweeps must still be able to hit that same visible head.
+            if (_gait is SpiderGait && head != null
+                && SegmentsWithin(from, to, head.position, head.position + head.forward * .235f, sweepRadius + bodyRadius))
+                return true;
             float limbReach = sweepRadius + limbRadius;
             for (int i = 0; i < _legs.Length; i++)
             {
@@ -813,6 +834,8 @@ namespace Game.AI
             {
                 // A later swing can begin inside. Back up beyond all collision shapes.
                 float reach = bodyHeight + bodyRadius;
+                if (_gait is SpiderGait && head != null)
+                    reach = Mathf.Max(reach, Vector3.Distance(root.position, head.position) + .235f + bodyRadius);
                 for (int i = 0; i < _legs.Length; i++)
                 {
                     SpiderLeg leg = _legs[i];

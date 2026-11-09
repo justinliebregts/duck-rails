@@ -12,7 +12,7 @@ Initial tuning: chase a passenger to a reachable ground graph node near the open
 
 Once attached, the train carries the enemy and its cached movement/contact positions before ordinary AI movement. Losing physical train support detaches it into the existing fall/hit system. A dropped enemy can recover toward nearby world navigation and adopt the block where it actually lands. An aboard enemy cannot use the old home-spawn recovery to teleport back to its original block.
 
-The existing 21-byte enemy packet carries a train-frame flag, an outside-block flag, local position/rotation and local aim when aboard. A heartbeat bit refreshes stationary minion snapshots twice per second even with PUN's UnreliableOnChange transport. Melee confirmations include their coordinate frame. Protocol is **session-v12**: use updated clients together.
+The 22-byte enemy packet carries a train-frame flag, an outside-block flag, local position/rotation and train-local aim for ordinary enemies when aboard. Spiders send head-local aim and a separate requested-lift byte. A heartbeat bit refreshes stationary minion snapshots twice per second even with PUN's UnreliableOnChange transport. Melee confirmations include their coordinate frame. The current build compatibility suffix is **_dra2** (raised-spider port, November 8); this supersedes the historical session-v12 label. Use updated clients together.
 
 Train passengers enter the shared target list. Opted-in minions and spiders can perceive them, and spider passive stalking can approach them; other enemies still exclude passengers. A passenger down request must identify a nearby, active boarded enemy; generic down requests and bomber blasts retain their passenger protection. Ending-phase damage is rejected.
 

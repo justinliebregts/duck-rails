@@ -27,6 +27,8 @@ public static class SpiderFlareChecks
             Set(enemy, "flareFearRadius", 6f);
             var manager = managerObject.AddComponent<EnemyManager>();
             var flare = flareObject.AddComponent<DeathFlare>();
+            // Edit-mode fixtures do not receive MonoBehaviour lifecycle callbacks.
+            Call(flare, "OnEnable");
             Call(flare, "Initialize", -2f);
             Check(!enemy.IsFlareProtected(Vector3.zero), "Unlaunched flare must not protect");
             Call(flare, "Initialize", 0f);
@@ -64,6 +66,7 @@ public static class SpiderFlareChecks
             Check(enemy.CurrentState == Enemy.State.Search, "Expiry must transition to search");
             Call(flare, "Initialize", 0f);
             flareObject.SetActive(false);
+            Call(flare, "OnDisable");
             Check(!enemy.IsFlareProtected(flareObject.transform.position), "Disabled flare must stop protecting");
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Enemies/ZombieSpider.prefab");
             Check(new SerializedObject(prefab.GetComponent<Enemy>()).FindProperty("flareFearRadius").floatValue == 6f, "Spider prefab radius");

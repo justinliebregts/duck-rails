@@ -578,7 +578,7 @@ public static class SmasherWanderExplorationChecks
                 var stream = new PhotonStream(true, null); Call(stream, "SetWriteStream", new List<object>(), 0);
                 ownerNet.OnPhotonSerializeView(stream, default);
                 byte[] bytes = EnemyPosePacket.Serialize(stream.ToArray()[0]);
-                Check(bytes.Length == 21, "No additional network payload");
+                Check(bytes.Length == EnemyPosePacket.PacketBytes, "No additional network payload");
                 remoteNet.OnPhotonSerializeView(new PhotonStream(false, new[] { EnemyPosePacket.Deserialize(bytes) }),
                     new PhotonMessageInfo(owner, 1000 + frame * 33, remoteNet.photonView));
                 Check(remote.CurrentState == Enemy.State.Wander && Get<bool>(remote, "_airborne") == jump.IsJumping,
@@ -604,7 +604,7 @@ public static class SmasherWanderExplorationChecks
             for (int i = 0; i < 90; i++) remote.TickAuthority(manager, 1f / 30, false);
             Check(!remoteJump.IsJumping && Mathf.Abs(remote.Root.position.y - enemy.Root.position.y) < .1f,
                 "New authority finishes the fall safely");
-            Debug.Log($"WANDER NETWORK PASS upward={upward} intermediateArc={tiered}: 21-byte transport, observer, landing, handoff");
+            Debug.Log($"WANDER NETWORK PASS upward={upward} intermediateArc={tiered}: 22-byte transport, observer, landing, handoff");
         }
         finally
         {

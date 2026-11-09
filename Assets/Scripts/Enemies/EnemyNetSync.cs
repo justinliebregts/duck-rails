@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Game.AI
 {
     /// <summary>
-    /// Sends a fixed 21-byte pose from the owner (room objects are owned by the master client).
+    /// Sends a fixed 22-byte pose from the owner (room objects are owned by the master client).
     /// Other clients smooth toward the latest sample; their gait animates locally from the root.
     /// Add this to the PhotonView's Observed Components.
     /// </summary>
@@ -64,6 +64,7 @@ namespace Game.AI
         {
             // A sleeping former master may regain control without ever ticking as a remote.
             if (_enemy != null) _enemy.OnAuthorityChanged();
+            if (_enemy != null && _enemy.Gait is Game.Animation.SpiderGait spider) spider.ResetRaise();
             _hasSample = false;
             if (newController == null || !newController.IsLocal) return;
             // PUN skips serialization when alone, and the authority never calls
@@ -83,7 +84,11 @@ namespace Game.AI
             _netRot = rotation;
             _hasSample = false;
             ClearPrediction();
-            if (_enemy != null) _enemy.SetAirbornePose(false);
+            if (_enemy != null)
+            {
+                _enemy.SetAirbornePose(false);
+                if (_enemy.Gait is Game.Animation.SpiderGait spider) spider.ResetRaise();
+            }
         }
 
         void Awake()
@@ -104,8 +109,14 @@ namespace Game.AI
                 Transform frame = _enemy.Boarding != null ? _enemy.Boarding.Frame : null;
                 Vector3 position = frame != null ? frame.InverseTransformPoint(root.position) : root.position;
                 Quaternion rotation = frame != null ? Quaternion.Inverse(frame.rotation) * root.rotation : root.rotation;
-                if (aim) EnemyPosePacket.AimAngles(position, frame != null ? frame.InverseTransformPoint(aimPoint) : aimPoint, out yaw, out pitch);
+                var spider = _enemy.Gait as Game.Animation.SpiderGait;
+                if (aim)
+                {
+                    if (spider != null) _enemy.HeadAimAngles(aimPoint, out yaw, out pitch);
+                    else EnemyPosePacket.AimAngles(position, frame != null ? frame.InverseTransformPoint(aimPoint) : aimPoint, out yaw, out pitch);
+                }
                 _write.Set(position, rotation, (byte)_enemy.CurrentState, aim, yaw, pitch);
+                _write.SpiderRaise = spider != null ? spider.RaiseLevel : (byte)0;
                 if (frame != null) _write.Flags |= EnemyPosePacket.TrainFlag;
                 if (_enemy.Boarding != null && _enemy.Boarding.OwnsBoundary) _write.Flags |= EnemyPosePacket.DisplacedFlag;
                 if (_enemy.IsJumping) _write.Flags |= EnemyPosePacket.JumpFlag;
@@ -139,7 +150,12 @@ namespace Game.AI
             _enemy.SetAirbornePose((packet.Flags & EnemyPosePacket.JumpFlag) != 0);
             _enemy.SetRemoteKnocked(packet.Knocked);
             _netHasAim = packet.HasAim;
-            _netAim = packet.AimPoint(_netPos);
+            if (_enemy.Gait is Game.Animation.SpiderGait remoteSpider)
+            {
+                remoteSpider.SetRemoteRaise(packet.SpiderRaise);
+                _enemy.SetRemoteHeadAim(packet.HasAim, packet.AimYaw, packet.AimPitch);
+            }
+            else _netAim = packet.AimPoint(_netPos);
             EnemyPosePacket.Return(packet);
             _hasSample = true;
         }
@@ -284,7 +300,9 @@ namespace Game.AI
                 _enemy.Boarding.SetRemoteFrame(true, false);
             Vector3 targetPosition = frame != null ? frame.TransformPoint(_netPos) : _netPos;
             Quaternion targetRotation = frame != null ? frame.rotation * _netRot : _netRot;
-            _enemy.SetRemoteAim(_netHasAim, frame != null ? frame.TransformPoint(_netAim) : _netAim);
+            // Spider angles are already head-local, independent of the moving train frame.
+            if (!(_enemy.Gait is Game.Animation.SpiderGait))
+                _enemy.SetRemoteAim(_netHasAim, frame != null ? frame.TransformPoint(_netAim) : _netAim);
             bool protectedHit = ProtectsLocalHitter;
             if (!protectedHit && (root.position - targetPosition).sqrMagnitude > snapDistance * snapDistance)
             {

@@ -128,7 +128,7 @@ public static class SmasherTallBuildingChecks
                     ownerNet.OnPhotonSerializeView(write, default);
                     var packet = (EnemyPosePacket)write.ToArray()[0];
                     byte[] bytes = EnemyPosePacket.Serialize(packet);
-                    Check(bytes.Length == 21, "Pose wire size remains 21 bytes");
+                    Check(bytes.Length == EnemyPosePacket.PacketBytes, "Pose wire size remains 22 bytes");
                     Check(((packet.Flags & EnemyPosePacket.JumpFlag) != 0) == jump.IsJumping, "Airborne flag matches flight");
                     var copy = (EnemyPosePacket)EnemyPosePacket.Deserialize(bytes);
                     Check(Vector3.Distance(copy.Position, enemy.Root.position) < .0001f, "Tall pose survives wire round-trip");

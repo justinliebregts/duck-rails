@@ -1,0 +1,11 @@
+Unity 6000.3.24f1; isolated copied project; SpiderRaiseChecks.RunRails
+SPIDER RAISE standing lift=0.500, head=(0.000, 0.846, 0.461)
+SPIDER RUN 30Hz minLift=0.500 maxPlantedToeError=0.014
+SPIDER RUN 72Hz minLift=0.500 maxPlantedToeError=0.014
+SPIDER RUN 90Hz minLift=0.480 maxPlantedToeError=0.014
+SPIDER RUN 144Hz minLift=0.475 maxPlantedToeError=0.014
+SpiderRaiseChecks PASS: 5000 assertions; proximity/height hysteresis, moving gait, planted reach, head trigger/defensive hits, lifecycle, 22-byte codec, zero allocations.
+TRAIN BOARDING: 489 graph/packet/authoring checks passed
+TRACK CROSSINGS: 125 checks passed
+SpiderRaiseChecks RAILS PASS: 9135 assertions; exhaustive lift/boarding codec, synthetic owner/observer, moving train aim, detach, stale/foreign rejection, handoff.
+Batchmode quit successfully invoked - shutting down!

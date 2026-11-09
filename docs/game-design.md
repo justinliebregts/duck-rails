@@ -461,3 +461,7 @@ November 5 coin limit: user confirmed the implemented 2,000-coin maximum and tha
 November 6 confirmed encounter change: enemies must spawn on both rail sides in every scavenging block and the bridge finale, retaining 4–6 total enemies, encounter spacing and the safe starting station. This supersedes prior east-only coverage notes. See [both-side implementation](mixed-enemies.md#enemies-on-both-rail-sides--november-6-2026).
 
 November 6 logo art: user approved the low-poly extruded ivory/red logo with pixel textures and Escape from Quackville subtitle. Reusable model and isolated preview authored; gameplay placement and headset review remain pending. See [logo model](logo-model.md).
+
+## Raised spider reach — November 8, 2026
+
+Port Duckz `eb52afd5e8a5502338e2af4d183c6784ed658259`: supported floor spiders raise toward nearby elevated chase targets, with bounded leg reach and a head-following contact trigger. Train boarding remains enabled; lift uses a separate packet byte alongside the existing train/displaced/heartbeat flags. See [port evidence and limits](duckz-fix-ports.md#raised-spider-attacks--november-8-2026).
