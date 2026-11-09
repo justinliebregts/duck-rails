@@ -178,7 +178,7 @@ public class DuckzBuildWindow : EditorWindow
 
         BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
         string extension = target == BuildTarget.Android ? ".apk" : target == BuildTarget.StandaloneWindows64 ? ".exe" : "";
-        string fileName = $"duckz_{PlayerSettings.bundleVersion}_{DuckzVersion.BundleCode(major, minor, patch)}{(development ? "_dev" : "")}{extension}";
+        string fileName = $"duckrails_{PlayerSettings.bundleVersion}_{DuckzVersion.BundleCode(major, minor, patch)}{(development ? "_dev" : "")}{extension}";
         Directory.CreateDirectory(outputFolder);
 
         BuildReport report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
