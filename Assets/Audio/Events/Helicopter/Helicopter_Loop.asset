@@ -18,12 +18,12 @@ MonoBehaviour:
   pitchRange: {x: 1, y: 1}
   volumeRange: {x: 1, y: 1}
   spatialBlend: 1
-  spatialize: 0
   minDistance: 1
-  maxDistance: 220
+  maxDistance: 50
   rolloff: 1
   cullDistance: 40
   mixerOverride: {fileID: 0}
   priority: 100
   maxInstances: 1
   reverbZoneMix: 1
+  useOcclusion: 1
