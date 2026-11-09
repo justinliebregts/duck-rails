@@ -116,7 +116,7 @@ public static class RailSceneBuilder
         var rig = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Player/DuckPlayer.prefab"));
         rig.transform.position = spawn.position;
         new GameObject("Rig input selection").AddComponent<DesktopPlay>();
-        world.expedition = new GameObject("Expedition test block — rail-yard-test-v1");
+        world.expedition = new GameObject("Expedition World");
         root = world.expedition.transform;
         Box("Track bed", root, new Vector3(0, -.4f, 2000), new Vector3(70, .8f, 4200), ground);
         foreach (float x in new[] { -1.5f, 1.5f }) UnityEngine.Object.DestroyImmediate(Box("Track rail", root, new Vector3(x, .05f, 2000), new Vector3(.15f, .1f, 4200), metal).GetComponent<Collider>());
