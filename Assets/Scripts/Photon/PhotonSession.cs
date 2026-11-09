@@ -128,7 +128,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             PhotonNetwork.AuthValues.AddAuthParameter("tkn", token);
             PhotonNetwork.AuthValues.AddAuthParameter("app", "dra");
             // The shared secret is supplied by the Photon dashboard, never the client.
-            Debug.Log("[PhotonAuth] Realtime authentication sent for " + account.PlayerId + ". app=dra is included.");
+            DuckzLog.Log("[PhotonAuth] Realtime authentication sent for " + account.PlayerId + ". app=dra is included.");
         }
     }
     void SetStatus(string text)
@@ -220,17 +220,18 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         object auth = null;
         if (data != null)
             data.TryGetValue("auth", out auth);
-        Debug.Log("[PhotonAuth] Realtime webhook accepted auth=" + auth + ".");
+        DuckzLog.Log("[PhotonAuth] Realtime webhook accepted auth=" + auth + ".");
     }
 
     public override void OnCustomAuthenticationFailed(string debugMessage)
     {
-        Debug.LogError("[PhotonAuth] Realtime authentication rejected.");
+        if (DuckzLog.AllowError(out var notice, "Realtime"))
+            notice.Write("[PhotonAuth] Realtime authentication rejected.");
     }
 
     public override void OnConnectedToMaster()
     {
-        Debug.Log("[PhotonAuth] Realtime connected.");
+        DuckzLog.Log("[PhotonAuth] Realtime connected.");
         operationPending = false;
         if (!quitting && request != Request.None) ExecuteRequest();
     }

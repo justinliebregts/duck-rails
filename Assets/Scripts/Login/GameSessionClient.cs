@@ -82,9 +82,9 @@ public static class GameSessionClient
 #endif
             request.timeout = 30;
             double started = Time.realtimeSinceStartupAsDouble;
-            Debug.Log("[SignIn] Account registration started (30s timeout)");
+            DuckzLog.Log("[SignIn] Account registration started (30s timeout)");
             yield return request.SendWebRequest();
-            Debug.Log("[SignIn] Account registration finished: " + request.result + " HTTP " + request.responseCode +
+            DuckzLog.Log("[SignIn] Account registration finished: " + request.result + " HTTP " + request.responseCode +
                 " after " + (Time.realtimeSinceStartupAsDouble - started).ToString("F1") + "s");
 
             long code = request.responseCode;

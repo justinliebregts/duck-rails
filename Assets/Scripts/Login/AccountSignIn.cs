@@ -114,7 +114,7 @@ public static class AccountSignIn
         if (string.IsNullOrEmpty(message))
             message = "Signing in...";
 
-        Debug.Log("[SignIn] " + message);
+        DuckzLog.Log("[SignIn] " + message);
         status?.Invoke(displayMessage ?? message);
     }
 }

@@ -57,7 +57,7 @@ public sealed class RailCrewReturn : IConnectionCallbacks, IMatchmakingCallbacks
             client.AuthValues.AddAuthParameter("pla", account.Platform);
             client.AuthValues.AddAuthParameter("tkn", accessToken);
             client.AuthValues.AddAuthParameter("app", "dra");
-            Debug.Log("[PhotonAuth] Realtime authentication sent for " + account.PlayerId + ". app=dra is included.");
+            DuckzLog.Log("[PhotonAuth] Realtime authentication sent for " + account.PlayerId + ". app=dra is included.");
         }
         client.ConnectUsingSettings(settings);
         retryAt = Now + 2;

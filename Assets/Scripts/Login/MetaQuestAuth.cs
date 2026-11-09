@@ -404,10 +404,10 @@ public static class MetaQuestAuth
     public static IEnumerator WaitForCallback(Func<bool> finished, string stage, float timeout = 30f)
     {
         double started = Time.realtimeSinceStartupAsDouble;
-        Debug.Log("[SignIn] Meta " + stage + " started");
+        DuckzLog.Log("[SignIn] Meta " + stage + " started");
         while (!finished() && Time.realtimeSinceStartupAsDouble - started < timeout)
             yield return null;
-        Debug.Log("[SignIn] Meta " + stage + (finished() ? " callback received after " : " timed out after ") +
+        DuckzLog.Log("[SignIn] Meta " + stage + (finished() ? " callback received after " : " timed out after ") +
             (Time.realtimeSinceStartupAsDouble - started).ToString("F1") + "s");
     }
 

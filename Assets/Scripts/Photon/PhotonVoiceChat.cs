@@ -13,7 +13,7 @@ sealed class PhotonAuthLog : IConnectionCallbacks
 
     public void OnConnected() { }
 
-    public void OnConnectedToMaster() => Debug.Log("[PhotonAuth] " + Channel + " connected.");
+    public void OnConnectedToMaster() => DuckzLog.Log("[PhotonAuth] " + Channel + " connected.");
 
     public void OnDisconnected(DisconnectCause cause) { }
 
@@ -24,11 +24,14 @@ sealed class PhotonAuthLog : IConnectionCallbacks
         object auth = null;
         if (data != null)
             data.TryGetValue("auth", out auth);
-        Debug.Log("[PhotonAuth] " + Channel + " webhook accepted auth=" + auth + ".");
+        DuckzLog.Log("[PhotonAuth] " + Channel + " webhook accepted auth=" + auth + ".");
     }
 
-    public void OnCustomAuthenticationFailed(string debugMessage) =>
-        Debug.LogError("[PhotonAuth] " + Channel + " authentication rejected.");
+    public void OnCustomAuthenticationFailed(string debugMessage)
+    {
+        if (DuckzLog.AllowError(out var notice, Channel))
+            notice.Write("[PhotonAuth] " + Channel + " authentication rejected.");
+    }
 }
 
 /// <summary>
@@ -111,7 +114,7 @@ public class PhotonVoiceChat : MonoBehaviour
         string query = auth != null ? auth.AuthGetParameters : null;
         string id = auth != null ? auth.UserId : "";
         bool dra = AuthParameterEquals(query, "app", "dra");
-        Debug.Log("[PhotonAuth] Voice authentication sent for " + id + ". " + (dra ? "app=dra is included." : "app is omitted."));
+        DuckzLog.Log("[PhotonAuth] Voice authentication sent for " + id + ". " + (dra ? "app=dra is included." : "app is omitted."));
     }
 
     static bool AuthParameterEquals(string query, string key, string value)

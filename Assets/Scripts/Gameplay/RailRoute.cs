@@ -184,7 +184,8 @@ public sealed class RailRoute : MonoBehaviour
             ? RailResourceBalance.CoalCount(state.resourceCrew) : RailResourceBalance.GoldCount(state.resourceCrew);
         var selected = RailSpawnPool.Select(block, kind, state.enemySeed, count);
         if (selected.Length < count)
-            Debug.LogWarning($"Resource pool shortfall: {block.id} {kind} has {selected.Length}/{count} usable candidates for crew {state.resourceCrew}.");
+            if (DuckzLog.AllowWarning(out var notice, block.id + " " + kind))
+                notice.Write($"Resource pool shortfall: {block.id} {kind} has {selected.Length}/{count} usable candidates for crew {state.resourceCrew}.", block);
         return selected;
     }
     // Authored blocks run along world +Z; use their footprint length, not curved track distance.

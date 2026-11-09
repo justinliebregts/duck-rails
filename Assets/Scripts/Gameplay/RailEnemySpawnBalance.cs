@@ -68,6 +68,7 @@ public static class RailEnemySpawnBalance
             points.Add(point); types.Add(order[(q + used[q]++) % order.Length]);
         }
         if (reportShortfall && block.enemyCount > 0 && chosen.Length < 4 * PerQuadrant(crew))
-            Debug.LogWarning($"Enemy spawn shortfall: {block.id} selected {chosen.Length}/{4 * PerQuadrant(crew)} with {MinimumSpacing}m spacing. Check quadrant candidates.");
+            if (DuckzLog.AllowWarning(out var notice, block.id))
+                notice.Write($"Enemy spawn shortfall: {block.id} selected {chosen.Length}/{4 * PerQuadrant(crew)} with {MinimumSpacing}m spacing. Check quadrant candidates.", block);
     }
 }
