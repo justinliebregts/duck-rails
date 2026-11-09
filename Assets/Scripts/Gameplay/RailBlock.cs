@@ -27,8 +27,11 @@ public sealed class RailBlock : MonoBehaviour
         return transform.TransformPoint(local);
     }
     [Header("Random spawns per run")]
+    [Tooltip("Zero disables coal. Positive values are fixed authoring/finale counts; scavenging routes use RailResourceBalance crew-scaled counts.")]
     [Min(0)] public int coalCount = 6;
+    [Tooltip("Zero disables gold. Positive values are fixed authoring/finale counts; scavenging routes use RailResourceBalance crew-scaled counts.")]
     [Min(0)] public int goldCount = 2;
+    [Tooltip("Zero disables enemies. Positive values are fixed finale/authoring counts; scavenging routes use crew-scaled quadrant selection.")]
     [Min(0)] public int enemyCount = 5;
     public RailSpawnSet spawnCandidates = new RailSpawnSet();
     [HideInInspector] public bool spawnCandidatesMigrated;
@@ -70,6 +73,7 @@ public sealed class RailSpawnSet
 public sealed class RailRouteState
 {
     public string run;
+    public int resourceCrew = 1; // Frozen with the route; never revalue loot on roster changes.
     public int enemySeed;
     public string[] blocks;
     public int[] variations;

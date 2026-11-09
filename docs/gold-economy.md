@@ -13,6 +13,18 @@
 - Bars held in a hand, in a backpack or loose on the train never cash out automatically. A failed run pays nothing from the safe.
 - Admin can inspect a wallet, grant/remove coins and inspect transactions, using the existing admin authorization.
 
+## November 8 balance revision — implemented, rollout and acceptance pending
+
+Approved effective workers E = 1 + (crew - 1) * 0.6. Each scavenging block spawns
+up to G = floor(10E) gold bars, each averaging 100/G coins per eligible recipient.
+Full collection pays 100 coins per recipient per block, independent of crew size.
+Departure roster is retained; integer payouts carry fractional value across eligible
+sales and then safe deposits. The new `/coins/deposit/scaled` API calculates credits
+and retains receipt deduplication/caps; deployment is pending. Legacy queued rewards
+retain their old contract. See [resource balance](resource-balance.md) for tuning,
+validation and rollout details. This supersedes the earlier two-bar/100-coin tuning;
+existing payout eligibility remains unchanged.
+
 ## Initial tuning, not balance acceptance
 
 November 6 shared coin presentation: previously `RailGoldReceiver` played only the local wallet's coin shower. Each confirmed positive credit now also sends reliable, uncached Photon event 109 to the other clients, identifying the run, receiver and receipt. Observers render that stream toward the sender's avatar with `CoinShower.PlayTo`; receipt deduplication prevents repeated effects. The event never changes wallet balances or another player's watch. Zero-credit capped rewards produce no stream. This shared path covers both shops and safe payout. Unity compiled and the existing `RailEconomyChecks.Run()` passed. Real-client all-recipient visibility, simultaneous deposits and headset performance remain unverified.

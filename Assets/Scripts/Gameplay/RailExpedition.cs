@@ -291,10 +291,10 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (action == "editor-fuel")
         {
             var currentMotion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
-            RailSessionRules.EvaluateTrain(currentMotion, PhotonSession.Get(RailSessionRules.Fuel, 10f), now,
+            RailSessionRules.EvaluateTrain(currentMotion, PhotonSession.Get(RailSessionRules.Fuel, RailResourceBalance.StartingFuel), now,
                 out var distance, out var velocity, out var remainingFuel);
             changes[RailSessionRules.Motion] = new object[] { now, distance, velocity, (float)currentMotion[3] };
-            changes[RailSessionRules.Fuel] = remainingFuel + 1f;
+            changes[RailSessionRules.Fuel] = Mathf.Min(RailResourceBalance.Capacity, remainingFuel + 1f);
             return;
         }
         // Only the requesting participant is changed; production masters omit this action.
@@ -347,9 +347,10 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         state.consumed.Add(target); state.consumedSpawns.Add(view.SpawnToken); p.coal++;
         if (view.InstantiationData is object[] data && data.Length >= 3 && data[data.Length - 1] is string marker) state.consumedMarkers.Add(marker);
         var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
-        RailSessionRules.EvaluateTrain(motion, PhotonSession.Get(RailSessionRules.Fuel, 10f), now, out var z, out var speed, out var fuel);
+        RailSessionRules.EvaluateTrain(motion, PhotonSession.Get(RailSessionRules.Fuel, RailResourceBalance.StartingFuel), now, out var z, out var speed, out var fuel);
         changes[RailSessionRules.Motion] = new object[] { now, z, speed, (float)motion[3] };
-        changes[RailSessionRules.Fuel] = Mathf.Min(40f, fuel + 2.5f);
+        changes[RailSessionRules.Fuel] = Mathf.Min(RailResourceBalance.Capacity,
+            fuel + RailResourceBalance.CoalValue(RailRoute.Instance?.Selection?.resourceCrew ?? 1));
     }
     void ConsumeCommittedCoal()
     {

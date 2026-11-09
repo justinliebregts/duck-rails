@@ -105,7 +105,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
         // Spawn-aware ownership bootstrap and corroborated pickup repair require matching peers.
-        settings.AppVersion = source.AppVersion + "-rails-pickup-v2-spawn-pools-v1";
+        settings.AppVersion = source.AppVersion + "-rails-pickup-v2-spawn-pools-v1-resources-v1-enemy-quadrants-v1";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;
@@ -303,6 +303,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     bool JoinAllocatedRoom(string kind, string run, string[] users)
     {
         var options = RailSessionRules.Options(kind, run);
+        if (kind == RailSessionRules.ExpeditionKind)
+            options.CustomRoomProperties[RailResourceBalance.CrewKey] = Mathf.Clamp(users?.Distinct().Count() ?? 1, 1, 8);
         options.CustomRoomProperties[RailSessionRules.Allocation] = allocation;
         options.CustomRoomProperties[RailSessionRules.TransferUntil] = PhotonNetwork.Time + 30d;
         // Server-side matching by allocation prevents joining an unrelated occupied
@@ -467,7 +469,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (!IsPrivate || Phase != RailPhase.Staging || !WorldReady || !PhotonNetwork.IsMasterClient || RailWorld.HasLiveCargo) return;
         Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Departing, [RailSessionRules.Run] = Guid.NewGuid().ToString("N"),
-            [RailSessionRules.Deadline] = PhotonNetwork.Time + 30d, [RailSessionRules.Fuel] = 10f, [RailExpedition.StateKey] = "",
+            [RailResourceBalance.CrewKey] = Mathf.Clamp(PhotonNetwork.PlayerList.Count(p => !p.IsInactive), 1, 8),
+            [RailSessionRules.Deadline] = PhotonNetwork.Time + 30d, [RailSessionRules.Fuel] = RailResourceBalance.StartingFuel, [RailExpedition.StateKey] = "",
             [RailSessionRules.Cargo] = Array.Empty<int>(), [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 0f, 0f, 0f } });
     }
     public void FinishRun(bool success)

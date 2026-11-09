@@ -135,7 +135,7 @@ public static class RailCockpitArt
             // Retain the mesh asset identity after removing the decorative handles.
             Part(art,"Dash trim and handles",details).name="Dash trim";
             var segments=Part(art,"Fuel segments",fill).GetComponent<MeshFilter>();
-            var fuel=root.GetComponent<RailCockpitFuelBar>()??root.AddComponent<RailCockpitFuelBar>();fuel.segments=segments;fuel.capacity=40;
+            var fuel=root.GetComponent<RailCockpitFuelBar>()??root.AddComponent<RailCockpitFuelBar>();fuel.segments=segments;fuel.capacity=RailResourceBalance.Capacity;
             var gauge=t.Find("Fuel gauge").GetComponent<TMP_Text>();gauge.transform.localPosition=Surface(-.48f,.065f,.052f);gauge.transform.localRotation=Slope*Quaternion.Euler(90,0,0);gauge.rectTransform.sizeDelta=new Vector2(.56f,.16f);gauge.fontSize=.65f;gauge.enableAutoSizing=false;gauge.text="FUEL  10.0";gauge.ForceMeshUpdate(true,true);
             var throttle=t.Find("Throttle");throttle.localPosition=new Vector3(.05f,.295f,-.035f);throttle.localRotation=Quaternion.identity;
             var horn=t.Find("Horn");horn.localPosition=Surface(.55f,.015f,.022f);horn.localRotation=Slope;

@@ -63,11 +63,11 @@ public static class RailSessionChecks
         Check(z == 20 && v == 0, "Braking stops without changing past position");
         var go = new object[] { 10d, 0f, 0f, 4f };
         RailSessionRules.EvaluateTrain(go, 100f, 21d, out z, out v, out float fuel);
-        Check(Mathf.Abs(fuel - 98f) < .0001f && z == 40f, "Fuel burns with travelled distance, including acceleration");
+        Check(Mathf.Abs(fuel - 87.5f) < .0001f && z == 40f, "Fuel burns with travelled distance, including acceleration");
         var stop = new object[] { 21d, z, v, 0f };
         RailSessionRules.EvaluateTrain(stop, fuel, 30d, out z, out v, out float stoppedFuel);
         RailSessionRules.EvaluateTrain(stop, fuel, 300d, out float laterZ, out _, out float laterFuel);
-        Check(Mathf.Abs(stoppedFuel - 97.8f) < .0001f && stoppedFuel == laterFuel && z == laterZ,
+        Check(Mathf.Abs(stoppedFuel - 86.25f) < .0001f && stoppedFuel == laterFuel && z == laterZ,
             "Braking consumes fuel; a stopped train does not");
         RailSessionRules.EvaluateTrain(go, 100f, 21d, out z, out v, out fuel);
         var checkpoint = new object[] { 21d, z, v, 4f };
@@ -75,32 +75,32 @@ public static class RailSessionChecks
         RailSessionRules.EvaluateTrain(go, 100f, 41d, out laterZ, out float laterV, out laterFuel);
         Check(z == laterZ && v == laterV && Mathf.Abs(fuel - laterFuel) < .0001f,
             "Restored room snapshot preserves fuel and motion across a master checkpoint");
-        RailSessionRules.EvaluateTrain(go, .1f, 100d, out z, out v, out fuel);
+        RailSessionRules.EvaluateTrain(go, 2f * RailSessionRules.FuelPerMetre, 100d, out z, out v, out fuel);
         Check(Mathf.Abs(z - 4f) < .0001f && v == 0f && fuel == 0f, "Fuel exhaustion during acceleration coasts to rest without authority ticks");
         RailSessionRules.EvaluateTrain(new object[] { 100d, z, v, 4f }, fuel, 200d, out laterZ, out laterV, out laterFuel);
         Check(laterZ == z && laterV == 0f && laterFuel == 0f, "Empty fuel cannot restart or become negative");
         var cruise = new object[] { 10d, 20f, 4f, 4f };
-        RailSessionRules.EvaluateTrain(cruise, .2f, 11d, out z, out v, out fuel);
+        RailSessionRules.EvaluateTrain(cruise, 4f * RailSessionRules.FuelPerMetre, 11d, out z, out v, out fuel);
         Check(Mathf.Abs(z - 24f) < .0001f && v == 4f && fuel == 0f,
             "Exhaustion preserves speed at the fuel boundary");
-        RailSessionRules.EvaluateTrain(cruise, .2f, 12d, out z, out v, out fuel);
+        RailSessionRules.EvaluateTrain(cruise, 4f * RailSessionRules.FuelPerMetre, 12d, out z, out v, out fuel);
         Check(Mathf.Abs(z - 27f) < .0001f && Mathf.Abs(v - 2f) < .0001f && fuel == 0f,
             "Empty train advances while smoothly slowing");
         var coastCheckpoint = new object[] { 12d, z, v, 4f };
         RailSessionRules.EvaluateTrain(coastCheckpoint, 0f, 12.5d, out z, out v, out fuel);
-        RailSessionRules.EvaluateTrain(cruise, .2f, 12.5d, out laterZ, out laterV, out laterFuel);
+        RailSessionRules.EvaluateTrain(cruise, 4f * RailSessionRules.FuelPerMetre, 12.5d, out laterZ, out laterV, out laterFuel);
         Check(Mathf.Abs(z - laterZ) < .0001f && Mathf.Abs(v - laterV) < .0001f && fuel == laterFuel,
             "Empty moving checkpoint preserves coast across master handoff");
-        RailSessionRules.EvaluateTrain(cruise, .2f, 100d, out z, out v, out fuel);
+        RailSessionRules.EvaluateTrain(cruise, 4f * RailSessionRules.FuelPerMetre, 100d, out z, out v, out fuel);
         Check(Mathf.Abs(z - 28f) < .0001f && v == 0f && fuel == 0f,
             "Late join reconstructs the final coast stop without creeping");
-        RailSessionRules.EvaluateTrain(new object[] { 10d, 0f, 4f, 0f }, .15f, 11.5d,
+        RailSessionRules.EvaluateTrain(new object[] { 10d, 0f, 4f, 0f }, 3f * RailSessionRules.FuelPerMetre, 11.5d,
             out z, out v, out fuel);
         Check(Mathf.Abs(z - 3.75f) < .0001f && Mathf.Abs(v - 1f) < .0001f && fuel == 0f,
             "Exhaustion during braking keeps motion continuous");
         RailSessionRules.EvaluateTrain(coastCheckpoint, 1f, 12.5d, out z, out v, out fuel);
         Check(z > 27f && v > 2f && fuel > 0f, "Refuelling a coasting GO command resumes acceleration");
-        RailSessionRules.EvaluateTrain(cruise, .6f, 13.5d, out z, out v, out fuel);
+        RailSessionRules.EvaluateTrain(cruise, 12f * RailSessionRules.FuelPerMetre, 13.5d, out z, out v, out fuel);
         Check(Mathf.Abs(z - 33.75f) < .0001f && Mathf.Abs(v - 3f) < .0001f && fuel == 0f,
             "Fuel exhaustion after the ramp also coasts smoothly");
         RailSessionRules.EvaluateTrain(go, 100f, 9d, out z, out v, out fuel);

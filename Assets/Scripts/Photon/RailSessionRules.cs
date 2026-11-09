@@ -68,7 +68,7 @@ public static class RailSessionRules
             [Phase] = (int)(kind == CompoundKind ? RailPhase.Compound : kind == PrivateKind ? RailPhase.Staging : RailPhase.Departing),
             [Run] = run, [Deadline] = 0d, [Roster] = Array.Empty<int>(), [Destination] = "",
             [TransferUsers] = Array.Empty<string>(), [TransferUntil] = 0d,
-            [Block] = "maintenance-depot-v1", [Fuel] = 10f,
+            [Block] = "maintenance-depot-v1", [Fuel] = RailResourceBalance.StartingFuel,
             [Motion] = new object[] { 0d, 0f, 0f, 0f }, [Cargo] = Array.Empty<int>()
         }
     };
@@ -96,7 +96,7 @@ public static class RailSessionRules
 
     // Fuel is retained at the motion command's starting distance and committed
     // atomically with it. Shared time reconstructs consumption without local timers.
-    public const float FuelPerMetre = .05f; // 8 fuel per 160m block; a coal chunk supplies 100m.
+    public const float FuelPerMetre = RailResourceBalance.FuelPerBlock / RailResourceBalance.StandardBlockMetres;
     public static void EvaluateTrain(object[] command, float startingFuel, double now,
         out float distance, out float speed, out float fuel)
     {

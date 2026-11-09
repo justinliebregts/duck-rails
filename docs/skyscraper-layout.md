@@ -1,5 +1,16 @@
 # Skyscraper Works — V2 layout
 
+## Enemy quadrant coverage — November 8, 2026
+
+User requested enough candidates for the new spawning-only crew tiers. Added eight
+enemy prefab markers through the approach/departure yards, two per quadrant,
+preserving all 18 existing candidates, including elevated tower positions. Pool is
+now 26 enemies; 150 coal and 150 gold are unchanged. Existing geometry, transforms,
+graph and lighting remain unchanged; no rebake. All crew sizes across 100 seeds
+reach their 4/8/12 targets with 15 m horizontal spacing. The prefab remains open
+for inspection; placement taste, natural gameplay and headset performance are pending.
+See [placement and saved-selection evidence](enemy-spawn-balance.md#requested-marker-additions).
+
 ## Spawn placement first pass — November 8, 2026
 
 User requested about 150 coal, 150 gold and 18 enemies across the floors, weighting gold toward harder-to-reach areas. Replaced 42 old markers with exactly 150 coal, 150 gold and 18 enemy prefab candidates. Existing per-run counts remain 6/2/5 and selection logic is unchanged.

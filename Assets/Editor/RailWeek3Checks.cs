@@ -95,8 +95,8 @@ public static class RailWeek3Checks
             Check(combined.FindNearestGroundNode(tuple.b.variations[0].enemies[0].position + offsets[tuple.i], 2) >= 0, tuple.b.id + " translated spawn resolves in assembled graph");
         Check(EditorBuildSettings.scenes.Where(s => s.enabled).Take(3).Select(s => Path.GetFileNameWithoutExtension(s.path)).SequenceEqual(new[] { "Login", "Compound", "Expedition" }), "Gameplay scenes retain Login, Compound and Expedition build indices");
         Check(EditorBuildSettings.scenes.Any(s => s.enabled && s.path == RailStationLightingAuthoring.PayloadScene), "StartingStation lighting companion included in build");
-        RailSessionRules.EvaluateTrain(new object[] { 0d, 0f, 4f, 4f }, 2.5f, 40, out var distance, out var speed, out var fuel);
-        Check(Mathf.Abs(distance - 54) < .001f && speed == 0 && fuel == 0, "One coal chunk buys 50 powered metres plus four metres of exhaustion coast");
+        RailSessionRules.EvaluateTrain(new object[] { 0d, 0f, 4f, 4f }, RailResourceBalance.CoalValue(1), 40, out var distance, out var speed, out var fuel);
+        Check(Mathf.Abs(distance - 44) < .001f && speed == 0 && fuel == 0, "One coal chunk buys 40 powered metres plus four metres of exhaustion coast");
         CheckStartingStation();
         Directory.CreateDirectory("Temp"); File.WriteAllLines("Temp/rails-week3-checks.txt", lines);
         Debug.Log("WEEK 3 CHECKS: " + lines.Count + " passed (includes per-node indexing), evidence Temp/rails-week3-checks.txt");

@@ -11,17 +11,17 @@ PASS Dash trim is non-static and does not bake GI
 PASS Fuel segments is non-static and does not bake GI
 PASS 792 UV edges at 32 square texels/metre; worst relative error 2.343832E-05
 Art geometry: 264 triangles; 3 renderers; 1 shared 256-square atlas material
-PASS Fuel bar handles 0 fuel (capacity 40)
+PASS Fuel bar handles 0 fuel (capacity 100)
 PASS Fuel update retains visible mesh bounds
-PASS Fuel bar handles 10 fuel (capacity 40)
+PASS Fuel bar handles 10 fuel (capacity 100)
 PASS Fuel update retains visible mesh bounds
-PASS Fuel bar handles 40 fuel (capacity 40)
+PASS Fuel bar handles 40 fuel (capacity 100)
 PASS Fuel update retains visible mesh bounds
-PASS Fuel bar handles 100 fuel (capacity 40)
+PASS Fuel bar handles 100 fuel (capacity 100)
 PASS Fuel update retains visible mesh bounds
-PASS Fuel bar handles -1 fuel (capacity 40)
+PASS Fuel bar handles -1 fuel (capacity 100)
 PASS Fuel update retains visible mesh bounds
-PASS Fuel bar handles 20 fuel (capacity 40)
+PASS Fuel bar handles 20 fuel (capacity 100)
 PASS Fuel update retains visible mesh bounds
 PASS Fuel updates leave the source mesh unchanged
 PASS Forward duck-eye sightline remains clear at 0.5m

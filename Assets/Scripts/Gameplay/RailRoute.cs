@@ -74,8 +74,12 @@ public sealed class RailRoute : MonoBehaviour
         if (state == null || state.run != run)
         {
             if (PhotonNetwork.IsMasterClient)
-                PhotonSession.Instance.Commit(new Hashtable { [StateKey] = JsonUtility.ToJson(
-                    RailTestTools.TryRoute(run, out var repeat) ? repeat : ChooseNormal(run, catalog, UnityEngine.Random.Range(0, int.MaxValue))) });
+            {
+                var chosen = RailTestTools.TryRoute(run, out var repeat) ? repeat : ChooseNormal(run, catalog, UnityEngine.Random.Range(0, int.MaxValue));
+                chosen.resourceCrew = Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey,
+                    PhotonNetwork.PlayerList.Count(p => !p.IsInactive)), 1, 8);
+                PhotonSession.Instance.Commit(new Hashtable { [StateKey] = JsonUtility.ToJson(chosen) });
+            }
             return false;
         }
         Build(state); return Ready;
@@ -130,9 +134,9 @@ public sealed class RailRoute : MonoBehaviour
         {
             var block = Instantiate(catalog.Single(b => b.id == state.blocks[i]), state.placements[i], Quaternion.identity, transform);
             Blocks.Add(block); distance += block.TrackLength;
-            coal.AddRange(RailSpawnPool.Select(block, RailSpawnKind.Coal, state.enemySeed));
-            RailSpawnPool.SelectEnemies(block, state.enemySeed, enemies, enemyTypes);
-            gold.AddRange(RailSpawnPool.Select(block, RailSpawnKind.Gold, state.enemySeed));
+            coal.AddRange(SelectResources(block, RailSpawnKind.Coal, state));
+            RailEnemySpawnBalance.Append(block, state.enemySeed, state.resourceCrew, enemies, enemyTypes);
+            gold.AddRange(SelectResources(block, RailSpawnKind.Gold, state));
             graphs.Add(Game.AI.CrawlGraph.Load(block.graph)); offsets.Add(block.transform.position);
         }
         if (midpointShop != null) midpointShop.position = state.placements[MidpointBlockIndex(count)] + new Vector3(-16, 0, 148);
@@ -172,6 +176,16 @@ public sealed class RailRoute : MonoBehaviour
             distance -= block.TrackLength;
         }
         position = finaleRoot.position + new Vector3(0, 1, distance); rotation = Quaternion.identity;
+    }
+
+    public static Transform[] SelectResources(RailBlock block, RailSpawnKind kind, RailRouteState state)
+    {
+        int count = RailSpawnPool.Count(block, kind) == 0 ? 0 : kind == RailSpawnKind.Coal
+            ? RailResourceBalance.CoalCount(state.resourceCrew) : RailResourceBalance.GoldCount(state.resourceCrew);
+        var selected = RailSpawnPool.Select(block, kind, state.enemySeed, count);
+        if (selected.Length < count)
+            Debug.LogWarning($"Resource pool shortfall: {block.id} {kind} has {selected.Length}/{count} usable candidates for crew {state.resourceCrew}.");
+        return selected;
     }
     // Authored blocks run along world +Z; use their footprint length, not curved track distance.
     public bool TryBlockSkip(Vector3 position, out Vector3 destination)

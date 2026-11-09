@@ -4,7 +4,7 @@ using UnityEngine;
 public sealed class RailCockpitFuelBar : MonoBehaviour
 {
     public MeshFilter segments;
-    public float capacity = 40f;
+    public float capacity = RailResourceBalance.Capacity;
     Mesh displayMesh;
     int[] fullIndices;
     int shown = -1;

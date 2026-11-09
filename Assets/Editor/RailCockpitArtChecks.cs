@@ -47,8 +47,8 @@ public static class RailCockpitArtChecks
             var fuel=controls.GetComponent<RailCockpitFuelBar>();var saved=fuel.segments.sharedMesh;var bounds=saved.bounds;
             foreach(float value in new[]{0f,10f,40f,100f,-1f,20f})
             {
-                fuel.SetFuel(value);int expected=value<=0?0:value==10?18:value==20?30:60;
-                check(fuel.segments.sharedMesh.triangles.Length==expected,"Fuel bar handles "+value+" fuel (capacity 40)");
+                fuel.SetFuel(value);int expected=Mathf.CeilToInt(Mathf.Clamp01(value / 100f) * 10) * 6;
+                check(fuel.segments.sharedMesh.triangles.Length==expected,"Fuel bar handles "+value+" fuel (capacity 100)");
                 check(fuel.segments.sharedMesh.bounds==bounds,"Fuel update retains visible mesh bounds");
             }
             check(saved.triangles.Length==60&&fuel.segments.sharedMesh!=saved,"Fuel updates leave the source mesh unchanged");

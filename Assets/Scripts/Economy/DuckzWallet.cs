@@ -15,7 +15,7 @@ public class DuckzWallet : MonoBehaviour
     [Serializable] class ServerStoreItemData { public string key; public int price; public bool durable; }
     [Serializable] class ServerStoreList { public ServerStoreItemData[] items; }
     struct ListedItem { public int price; public bool durable; }
-    [Serializable] class DepositBody { public string request_id; public int bars; }
+    [Serializable] class DepositBody { public string request_id; public int bars; public int gold_denominator; public int gold_index; }
     [Serializable] class DepositData { public int coins; public int credited; public bool idempotent; }
     [Serializable] class BuyBody { public string request_id; public string item_key; }
     [Serializable] class BuyData { public int coins; public string item_key; public bool already_owned; public bool idempotent; }
@@ -200,6 +200,15 @@ public class DuckzWallet : MonoBehaviour
         return true;
     }
 
+    public bool QueueScaledGoldReward(string requestId, int denominator, int index)
+    {
+        if (!UserPlayerPrefs.IsReady || denominator < 10 || denominator > 100 || index < 1 || index > 10000) return false;
+        if (!scheduledRewards.Add(requestId)) return true;
+        AddPendingDeposit(requestId, 1, denominator, index);
+        nextRewardRetry = 0;
+        return true;
+    }
+
     void Update()
     {
         if (!Loaded || !DuckzApiClient.IsReady || Time.unscaledTime < nextRewardRetry) return;
@@ -234,11 +243,11 @@ public class DuckzWallet : MonoBehaviour
         }
     }
 
-    IEnumerator SendDeposit(string requestId, int bars)
+    IEnumerator SendDeposit(string requestId, int bars, int denominator = 0, int index = 0)
     {
         DuckzApiClient.Response<DepositData> response = null;
-        yield return DuckzApiClient.PostSigned<DepositData>("coins/deposit",
-            new DepositBody { request_id = requestId, bars = bars }, r => response = r);
+        yield return DuckzApiClient.PostSigned<DepositData>(denominator > 0 ? "coins/deposit/scaled" : "coins/deposit",
+            new DepositBody { request_id = requestId, bars = bars, gold_denominator = denominator, gold_index = index }, r => response = r);
 
         if (response.Success && response.Data != null)
         {
@@ -251,7 +260,8 @@ public class DuckzWallet : MonoBehaviour
             yield break;
         }
 
-        bool transient = response.Code == 0 || response.Code >= 500 || response.Code == 401;
+        bool transient = response.Code == 0 || response.Code >= 500 || response.Code == 401 ||
+            (denominator > 0 && response.Code == 404); // Keep rewards queued until the matching API is deployed.
         if (!transient)
             RemovePendingDeposit(requestId);
         {
@@ -268,8 +278,8 @@ public class DuckzWallet : MonoBehaviour
         flushingPending = true;
         foreach (string entry in UserPlayerPrefs.GetStringArray(PendingDepositsKey))
         {
-            if (TryParsePending(entry, out string requestId, out int bars))
-                yield return SendDeposit(requestId, bars);
+            if (TryParsePending(entry, out string requestId, out int bars, out int denominator, out int index))
+                yield return SendDeposit(requestId, bars, denominator, index);
             else
                 RemovePendingEntry(entry);
         }
@@ -405,26 +415,31 @@ public class DuckzWallet : MonoBehaviour
                 set.Add(v);
     }
 
-    static bool TryParsePending(string entry, out string requestId, out int bars)
+    static bool TryParsePending(string entry, out string requestId, out int bars, out int denominator, out int index)
     {
         requestId = null;
         bars = 0;
+        denominator = index = 0;
         if (string.IsNullOrEmpty(entry))
             return false;
         int split = entry.IndexOf(':');
         if (split <= 0)
             return false;
         requestId = entry.Substring(0, split);
-        return int.TryParse(entry.Substring(split + 1), out bars) && bars > 0;
+        var parts = entry.Substring(split + 1).Split(':');
+        if (!int.TryParse(parts[0], out bars) || bars <= 0 || bars > MaxBarsPerRequest) return false;
+        if (parts.Length == 1) return true; // Existing queued rewards retain their old contract.
+        return parts.Length == 3 && bars == 1 && int.TryParse(parts[1], out denominator) &&
+            denominator >= 10 && denominator <= 100 && int.TryParse(parts[2], out index) && index >= 1 && index <= 10000;
     }
 
-    static void AddPendingDeposit(string requestId, int bars)
+    static void AddPendingDeposit(string requestId, int bars, int denominator = 0, int index = 0)
     {
         if (!UserPlayerPrefs.IsReady)
             return;
         var list = new List<string>(UserPlayerPrefs.GetStringArray(PendingDepositsKey));
         if (list.Exists(e => e.StartsWith(requestId + ":", StringComparison.Ordinal))) return;
-        list.Add(requestId + ":" + bars);
+        list.Add(requestId + ":" + bars + (denominator > 0 ? ":" + denominator + ":" + index : ""));
         UserPlayerPrefs.SetStringArray(PendingDepositsKey, list.ToArray());
         UserPlayerPrefs.Save();
     }

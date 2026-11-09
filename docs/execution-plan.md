@@ -1,5 +1,23 @@
 # Duck Rails — execution plan
 
+- [x] November 8 starting-range follow-up: raise starting fuel from 25 to 50 to
+  reach the middle of the first scavenging block after leaving the station.
+  Distance-model verification covers every enabled first block; natural-run review remains pending.
+
+- [x] November 8: implement approved two-block tank and 0.6 effective-crew coal/gold
+  scaling, retained departure roster and rational gold payouts. Unity resource
+  (2,739), session (40), economy (53), cockpit and assembled-route (430) checks
+  pass; API service/repository/routes pass. See [resource balance](resource-balance.md).
+- [ ] Deploy matching scaled-gold API/client and validate actual reward transport,
+  late join/reconnect/master changes and first-coal reachability.
+- [ ] Playtest resource balance across solo/intermediate/eight-player crews on real
+  clients/headsets, including uneven participation and stocked physical coal.
+- [x] Implement spawning-only 4/8/12 crew tiers, quadrant quotas, 15 m horizontal
+  spacing and type distribution; add eight candidates each to Convenience Store
+  and Skyscraper. See [enemy spawn balance](enemy-spawn-balance.md).
+- [ ] Inspect the added markers and validate enemy density, initial spacing,
+  natural convergence, late join/master handoff and performance on real clients/headsets.
+
 - [x] November 8: author Skyscraper Works first-pass candidates: 150 coal / 150 gold / 18 enemies across floors and outer yards, with gold weighted toward upper/exposed routes. Placement checks and 636 saved-reference/selection/navigation checks pass; see [placement evidence](skyscraper-layout.md#spawn-placement-first-pass--november-8-2026).
 - [ ] User inspection and headset review of Skyscraper loot placement, vertical reward balance, settling and reachability.
 

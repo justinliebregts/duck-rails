@@ -1,5 +1,22 @@
 # Duck Rails — V1 game design
 
+November 8 enemy spawning: approved spawning-only crew scaling of 4/8/12 enemies
+for 1–2/3–5/6–8 players per scavenging block, spread across four quadrants with 15 m
+horizontal separation and distributed types. Behavior is unchanged; finale retains
+its separate encounter. Added eight enemy candidates each to Convenience Store and
+Skyscraper. See [enemy spawn balance](enemy-spawn-balance.md) for tuning and evidence.
+
+November 8 resource balance implementation: 0–100 fuel gauge, two-block full-tank
+range, 50 starting fuel (station exit plus half the first block) and 50 fuel per 160 m. Approved effective scavenging crew
+E = 1 + (N - 1) * 0.6 applies to coal and gold. Target 4E coal collected; spawn at
+most floor(6E), each worth 12.5/E fuel. Gold spawns floor(10E) bars per block and
+pays a total of 100 coins per eligible player when fully collected. Physical coal
+stockpiling is allowed. Departure roster is retained; fractional gold uses integer
+carry with server-calculated credits. See [resource tuning](resource-balance.md)
+for tuning locations, validation and deployment limits. Source/editor/API checks
+pass; API rollout and real-client/headset acceptance remain pending. This supersedes
+older resource values below. Enemy scaling is separately documented above.
+
 November 8 audio port: Duckz `31aa84116b80c9fb9682493c4c88f51de505b97f`
 sets existing smasher/spider clips to mono and adds the unbound Spider Scar clip.
 Unity import validation passed; headset listening and device performance remain

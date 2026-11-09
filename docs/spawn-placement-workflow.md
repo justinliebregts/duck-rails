@@ -8,9 +8,21 @@ The manually authored Convenience Store is the style reference. Inspect its curr
 
 - Coal generally favors accessible exploration routes and low props, with some climb rewards. Follow block-specific direction: the Container Yard expansion put every new coal candidate on or inside containers.
 - Gold mixes accessible discoveries with harder exploration/climbing. Roughly half accessible was the original general preference; Skyscraper explicitly favors upper floors and exposed routes. Difficulty includes route length, concealment, access and return path, not just height.
-- Enemies use fewer, spaced candidates at major destinations, with ground and elevated coverage where navigation supports it. Preserve bilateral coverage and existing track-level rules.
-- Requested counts are **candidate pool sizes**, not simultaneously spawned items. These passes retained 6 coal / 2 gold / 5 enemies per run. Read the actual block settings and preserve them unless asked to change them.
-- Random selection does not guarantee per-run spacing, floor coverage or an easy/hard gold split. Authoring distribution is not a runtime quota. Do not silently change selection/network logic.
+- Enemies use spaced candidates at major destinations, with ground and elevated coverage where navigation supports it. Preserve bilateral coverage and existing track-level rules. Follow the quadrant requirements below for every future scavenging block.
+- Requested placement counts are **candidate pool sizes**, not simultaneously spawned items. The old 6 coal / 2 gold / 5 enemy counts are historical. Current scavenging routes use [resource scaling](resource-balance.md) and [enemy quadrant scaling](enemy-spawn-balance.md). Positive inspector counts are fixed authoring/finale counts; zero disables a type.
+- Runtime enemy selection now enforces quadrant caps and horizontal spacing. Loot selection still does not guarantee floor coverage or an easy/hard gold split. Do not change selection/network rules during a placement pass.
+
+## Enemy quadrant requirements — November 8, 2026
+
+- Divide block-local X/Z into four quadrants: X < 0 versus X >= 0, and Z below versus at/above half the block length. These are initial-placement regions, not AI boundaries.
+- The departure crew selects one enemy per quadrant for 1–2 players, two for 3–5, and three for 6–8: targets 4/8/12 per scavenging block. The finale retains its separate fixed encounter.
+- Each quadrant needs **at least three simultaneously usable candidates**, with **15 m minimum horizontal separation between every selected pair across the entire block**, including across quadrant boundaries. Merely having three markers per quadrant is not enough.
+- Aim for at least **six candidate locations per quadrant** to allow random variation and alternatives. This is an authoring starting point, not proof of usable capacity. Spread them through approach/departure destinations as well as the centre. Preserve existing elevated/track-level candidates.
+- Height does not count toward the 15 m separation: markers stacked on different floors are alternatives, not independent capacity. Add horizontally distinct destinations/outer-yard coverage when towers are too concentrated. Check support, clearance, bounds and baked ground navigation as below.
+- Preserve existing candidates and append additions unless replacement is explicitly requested. Never automatically scatter markers onto arbitrary floors or rebake navigation to satisfy a quota.
+- **Acceptance before declaring a pool ready:** run `RailEnemySpawnBalance.Select(block, seed, crew)` for crew sizes 1–8 and at least 100 seeds. Require the full 4/8/12 target, the correct per-quadrant quota, unique selected markers and at least 15 m horizontal separation for every selected pair. Verify saved asset reload and nested EnemySpawnMarker prefab references. `RailEnemySpawnBalanceChecks.Run()` covers currently enabled normal blocks.
+- If capacity fails, add validated candidates in the affected quadrants and rerun; do not weaken spacing, overfill another quadrant, or report a raw candidate count as acceptance. Runtime intentionally spawns fewer rather than force a cluster and logs the shortfall.
+- For loot, also validate capacity against the eight-player maxima of 31 coal/52 gold (current tuning). Keep candidate counts separate from per-run counts in handoffs.
 
 ## How the passes were made
 
@@ -38,7 +50,7 @@ These were tailored C# commands through the existing Unity MCP, not a new instal
 - Check the footprint corners have nearby support. Reject overhangs and intersections using the Prefab Stage's physics scene `OverlapBox`. Verify that the query detects a known solid collider as a positive control. A single ray hit is insufficient.
 - Previous passes used approximately 1.8 m minimum between same-type candidates and 0.8 m between different types as authoring defaults, not permanent design requirements. Consider larger spacing between enemies and keep stair/bridge access clear.
 - Enemy origins must be inside local `enemyBounds` and within 0.8 m of `CrawlGraph.FindNearestGroundNode`. Use block-local coordinates for navigation/bounds, especially for transformed instances. A generic 0.8 m preview envelope does not prove clearance for every final enemy type.
-- Verify saved candidate counts, valid nested marker-prefab references, unique active positions, and unchanged per-run counts. Sample 100 seeds per type for count/uniqueness and bilateral enemy selection. Preserve environment transforms, graph references, lighting and unrelated edits; run `git diff --check`.
+- Verify saved candidate counts, valid nested marker-prefab references, unique active positions, and preserved authored settings. Sample 100 seeds per type; use the crew-scaled runtime selectors for per-run acceptance, including the enemy quadrant requirements above. Preserve environment transforms, graph references, lighting and unrelated edits; run `git diff --check`.
 - Support/clearance is not proof of natural hand reach, climb difficulty, item settling on pitched roofs, visibility in corn, or multiplayer/headset acceptance. Record these as pending. Earlier automated Scene-view captures were black; do not call those visual validation. User inspection remains the review step.
 - No diagnostic reports are needed or authorized by this workflow.
 

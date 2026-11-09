@@ -95,16 +95,24 @@ public sealed class RailGoldReceiver : MonoBehaviour, IOnEventCallback
     {
         string player = PhotonNetwork.LocalPlayer?.UserId;
         if (string.IsNullOrEmpty(player) || DuckzWallet.Instance == null) return;
+        int shopIndex = 0;
+        // Safe rewards become eligible only after the immutable finish snapshot.
+        // Start their carry after all eligible shop sales, preserving both past
+        // receipts and the combined exact budget when gold is split between receivers.
+        int safeIndex = run.State.gold.Count(d => !d.safe && Eligible(run.State, d, player));
+        int denominator = RailResourceBalance.GoldCount(RailRoute.Instance?.Selection?.resourceCrew ?? 1);
         foreach (var deposit in run.State.gold)
         {
             if (!Eligible(run.State, deposit, player)) continue;
+            // Late arrivals count only their own eligible sales.
+            int index = deposit.safe ? ++safeIndex : ++shopIndex;
             var receiver = receivers.Find(r => r.receiverId == deposit.receiver);
             if (receiver == null) continue;
             string key = run.State.run + "|" + deposit.token + "|" + player;
             if (receiver.queuedBars.Contains(key)) continue;
             string receipt = Receipt(run.State.run, deposit.token, player);
             receiver.rewards.Add(receipt);
-            if (DuckzWallet.Instance.QueueReward(receipt, 1)) receiver.queuedBars.Add(key);
+            if (DuckzWallet.Instance.QueueScaledGoldReward(receipt, denominator, index)) receiver.queuedBars.Add(key);
         }
     }
     void RewardCredited(string receipt, int amount)

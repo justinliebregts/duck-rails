@@ -107,3 +107,13 @@ Track samples, stop, stable IDs, all three spawn arrays, six coal/two gold per v
 - [Whole-block overhead](../output/convenience-store/whole-block.png) shows the installed outer-third coverage. Post-run Unity Console error/exception query returned zero entries.
 
 Target-headset scale, full hand locomotion, natural loose-item recovery, multiplayer/late joining and Quest frame-time/memory remain unverified. Static gates and simple opaque fridge/shop glass are deliberate rough-blockout choices.
+
+## Enemy quadrant coverage — November 8, 2026
+
+User requested enough candidates for spawning-only crew tiers. Added eight enemy
+prefab markers through approach/departure areas, two per quadrant. Preserved the
+19 existing enemy candidates and all 124 coal/101 gold candidates. Enemy pool is
+now 27. Existing environment and marker transforms, navigation and lighting were
+preserved; no rebake. All crew sizes across 100 seeds reach their 4/8/12 targets
+with 15 m horizontal spacing. User inspection and natural headset/multiplayer
+acceptance remain pending. See [placement evidence](enemy-spawn-balance.md#requested-marker-additions).

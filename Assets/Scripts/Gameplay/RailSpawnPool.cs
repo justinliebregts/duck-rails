@@ -77,13 +77,13 @@ public static class RailSpawnPool
         }
     }
 
-    public static Transform[] Select(RailBlock block, RailSpawnKind kind, int seed)
+    public static Transform[] Select(RailBlock block, RailSpawnKind kind, int seed, int? requestedCount = null)
     {
         var points = Available(block, kind);
         var rng = Random(block, kind, seed);
         for (int i = points.Length - 1; i > 0; i--)
         { int j = rng.Next(i + 1); (points[i], points[j]) = (points[j], points[i]); }
-        int count = Mathf.Min(Count(block, kind), points.Length);
+        int count = Mathf.Clamp(requestedCount ?? Count(block, kind), 0, points.Length);
         if (kind == RailSpawnKind.Enemy && count >= 2)
         {
             // Keep the existing bilateral encounter rule where the candidate pool supports it.

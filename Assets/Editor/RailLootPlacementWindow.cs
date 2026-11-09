@@ -57,7 +57,7 @@ public sealed class RailLootPlacementWindow : EditorWindow
         using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
         {
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Spawn per block", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Fixed authoring/finale counts", EditorStyles.boldLabel);
             EditorGUI.BeginChangeCheck();
             int coal = Mathf.Max(0, EditorGUILayout.IntField("Coal", block.coalCount));
             int gold = Mathf.Max(0, EditorGUILayout.IntField("Gold", block.goldCount));
@@ -75,9 +75,9 @@ public sealed class RailLootPlacementWindow : EditorWindow
                 int requested = RailSpawnPool.Count(block, type);
                 EditorGUILayout.LabelField(Names[(int)type] + " candidates", available + " unique active locations");
                 if (available < requested)
-                    EditorGUILayout.HelpBox($"{Names[(int)type]}: requested {requested}, but only {available} locations exist. All {available} will spawn until you add more.", MessageType.Warning);
+                    EditorGUILayout.HelpBox($"{Names[(int)type]}: fixed preview requests {requested}, but only {available} locations exist. Scavenging routes use separate crew-scaled quotas; validate those before enabling a block.", MessageType.Warning);
             }
-            EditorGUILayout.HelpBox("Each run randomly selects the counts above. Zero disables that type. Enemy markers must be within enemy bounds and near the baked ground graph. Save the prefab normally.", MessageType.None);
+            EditorGUILayout.HelpBox("The counts above are fixed authoring/finale counts; zero disables a type. Scavenging routes use crew-scaled resource counts and 1/2/3 enemies per quadrant. Enemy pools must support three per quadrant with 15m horizontal separation across all selected points, including quadrant boundaries. Keep markers within enemy bounds and near baked ground navigation. Save the prefab normally.", MessageType.None);
             placing = GUILayout.Toggle(placing, placing ? "Placing — click in Scene view" : "Start placing", "Button", GUILayout.Height(32));
         }
         if (GUI.changed) SceneView.RepaintAll();
