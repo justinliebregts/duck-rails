@@ -1,0 +1,22 @@
+2026-11-09T07:37:25.3439871Z START 6000.3.24f1
+2026-11-09T07:37:25.3454923Z actor=-1 master= room= phase=Compound ready=False queue=True coal=0
+2026-11-09T07:37:31.1144056Z actor=1 master=1 room=11111 phase=Departing ready=False queue=False coal=0
+2026-11-09T07:37:32.1475129Z actor=1 master=1 room=11111 phase=Departing ready=False queue=True coal=0
+2026-11-09T07:37:41.5109398Z actor=1 master=1 room=11111 phase=Departing ready=False queue=True coal=24
+2026-11-09T07:37:41.7638238Z actor=1 master=1 room=11111 phase=Departing ready=True queue=True coal=24
+2026-11-09T07:37:45.6461952Z actor=1 master=1 room=11111 phase=Running ready=True queue=True coal=24
+2026-11-09T07:37:47.9419241Z actor=-1 master= room= phase=Compound ready=False queue=True coal=0
+2026-11-09T07:37:49.7925945Z actor=2 master=1 room=60785 phase=Staging ready=True queue=True coal=0
+2026-11-09T07:37:50.9466812Z actor=2 master=1 room=60785 phase=Departing ready=False queue=False coal=0
+2026-11-09T07:37:52.2741548Z actor=2 master=1 room=60785 phase=Departing ready=False queue=True coal=0
+2026-11-09T07:38:01.8355249Z actor=2 master=1 room=60785 phase=Departing ready=False queue=True coal=36
+2026-11-09T07:38:02.0941204Z actor=2 master=1 room=60785 phase=Departing ready=True queue=True coal=36
+2026-11-09T07:38:02.3470640Z actor=2 master=2 room=60785 phase=Running ready=True queue=True coal=36
+2026-11-09T07:38:07.5057376Z PASS loading client excluded from host election
+2026-11-09T07:38:07.5097798Z ERROR Exception: ready remote remains eligible
+RailSpawnNetworkChecks.Require (System.Boolean value, System.String label) (at X:/Work/duck-rails/Assets/Editor/RailSpawnNetworkChecks.cs:184)
+RailSpawnNetworkChecks.CheckStaleCandidate (PhotonMasterHandoff handoff) (at X:/Work/duck-rails/Assets/Editor/RailSpawnNetworkChecks.cs:200)
+RailSpawnNetworkChecks.Tick () (at X:/Work/duck-rails/Assets/Editor/RailSpawnNetworkChecks.cs:129)
+UnityEditor.EditorApplication.Internal_CallUpdateFunctions () (at <8c0bcab5a3cf47549b7148fa2785366a>:0)
+
+2026-11-09T07:38:08.2916028Z FAIL no unexpected errors since startup (1)

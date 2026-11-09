@@ -1,5 +1,22 @@
 # Duck Rails testing tools
 
+November 9 spawn-startup investigation: the opt-in `RailSpawnNetworkChecks`
+fixture runs two actual editor clients and checks startup, exact networked loot
+identities and all-block loading. `Start(-1)` uses the normal quick start;
+`RunCatalogue()` visits the complete catalogue in four private-route batches;
+`Stop()` cancels and restores the launch setup. It does not query diagnostic
+reports. See [fault, evidence and coverage limits](spawn-startup.md).
+
+`RailStartupRecoveryChecks.Start(0)`, `Start(1)` and `Start(2)` separately exercise
+host stalls before route selection, before the cargo manifest commit, and before
+initial cargo serialization. Run from Edit Mode with both test accounts configured.
+The host editor's main loop deliberately blocks for at most 25 seconds while the
+second editor recovers; the Photon background connection remains active. The
+fixture resumes the host, checks both inventories and stops/restores the scenario.
+Evidence goes to `docs/validation/spawn-startup/recovery*-*.txt` and inventory files.
+This does not read diagnostic reports. Unity's ordinary Pause button pauses both
+MPPM editors and cannot substitute for this isolated-host test.
+
 Implemented October 30, 2026. These are development tools, not milestone acceptance for headsets or eight-player play.
 
 Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, with F2 switching during Play. See [shared-rig.md](shared-rig.md) for Q/E reach, simultaneous grip and physical panel controls. Quick regression includes the shared-rig checks. After starting the manual sandbox, **Duck Rails > Legacy > Run Live Shared Rig Checks** exercises actual proximity grabs, fingertip buttons and the physical drive lever. Existing network fixtures use the shared rig but still retain their documented setup shortcuts.

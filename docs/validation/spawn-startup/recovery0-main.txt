@@ -1,0 +1,21 @@
+2026-11-09T08:00:42.0201879Z START fault=0
+2026-11-09T08:00:42.0237334Z actor=-1 master= phase=Compound ready=False seeded= views=0 paused=False
+2026-11-09T08:00:52.4297695Z actor=2 master=1 phase=Departing ready=False seeded= views=2 paused=False
+2026-11-09T08:01:01.7981868Z actor=2 master=1 phase=Departing ready=False seeded=646b7ae6ecf64f22adbad040ec533ae2 views=67 paused=False
+2026-11-09T08:01:02.2871057Z actor=2 master=1 phase=Departing ready=True seeded=646b7ae6ecf64f22adbad040ec533ae2 views=67 paused=False
+2026-11-09T08:01:02.3937261Z actor=2 master=1 phase=Departing ready=False seeded=646b7ae6ecf64f22adbad040ec533ae2 views=67 paused=False
+2026-11-09T08:01:02.5005049Z actor=-1 master= phase=Compound ready=False seeded= views=0 paused=False
+2026-11-09T08:01:03.6292584Z actor=1 master=1 phase=Staging ready=False seeded= views=0 paused=False
+2026-11-09T08:01:04.3398702Z actor=1 master=1 phase=Staging ready=True seeded= views=3 paused=False
+2026-11-09T08:01:06.6999400Z actor=1 master=1 phase=Staging ready=True seeded= views=4 paused=False
+2026-11-09T08:01:07.1736861Z actor=1 master=1 phase=Departing ready=False seeded= views=4 paused=False
+2026-11-09T08:01:08.0050252Z HOLD world before initial seeding
+2026-11-09T08:01:08.0876933Z actor=1 master=1 phase=Departing ready=False seeded= views=2 paused=False
+2026-11-09T08:01:08.0897882Z PAUSE host before route selection and spawning
+2026-11-09T08:01:19.2472622Z RESUME after 11.16 seconds
+2026-11-09T08:01:19.5706979Z actor=1 master=2 phase=Departing ready=False seeded=1c96efbed3404ed09af14ebb7cb27f9d views=49 paused=False
+2026-11-09T08:01:25.7259339Z actor=1 master=2 phase=Departing ready=True seeded=1c96efbed3404ed09af14ebb7cb27f9d views=49 paused=False
+2026-11-09T08:01:26.0473924Z actor=1 master=2 phase=Running ready=True seeded=1c96efbed3404ed09af14ebb7cb27f9d views=49 paused=False
+2026-11-09T08:01:26.1877753Z actor=1 master=2 phase=Running ready=True seeded=1c96efbed3404ed09af14ebb7cb27f9d views=60 paused=False
+2026-11-09T08:01:31.2135988Z PASS ready after recovery; unique IDs/markers; exact loot counts; pre-pause identities retained
+2026-11-09T08:01:31.2151193Z PASS COMPLETE identical peer inventories; host resumed without duplicates

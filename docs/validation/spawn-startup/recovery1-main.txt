@@ -1,0 +1,26 @@
+2026-11-09T08:02:19.1057630Z START fault=1
+2026-11-09T08:02:19.1116231Z actor=-1 master= phase=Compound ready=False seeded= views=0 paused=False
+2026-11-09T08:02:30.2938428Z actor=2 master=1 phase=Departing ready=False seeded= views=2 paused=False
+2026-11-09T08:02:39.0557948Z actor=2 master=1 phase=Departing ready=False seeded=7c3bf6fa91834f2381c5253b7e014bda views=67 paused=False
+2026-11-09T08:02:39.5043389Z actor=2 master=1 phase=Departing ready=True seeded=7c3bf6fa91834f2381c5253b7e014bda views=67 paused=False
+2026-11-09T08:02:39.6086601Z actor=2 master=1 phase=Departing ready=False seeded=7c3bf6fa91834f2381c5253b7e014bda views=67 paused=False
+2026-11-09T08:02:39.7191142Z actor=-1 master= phase=Compound ready=False seeded= views=0 paused=False
+2026-11-09T08:02:40.9355972Z actor=1 master=1 phase=Staging ready=False seeded= views=0 paused=False
+2026-11-09T08:02:41.7031854Z actor=1 master=1 phase=Staging ready=True seeded= views=3 paused=False
+2026-11-09T08:02:44.0360775Z actor=1 master=1 phase=Staging ready=True seeded= views=4 paused=False
+2026-11-09T08:02:44.5130828Z actor=1 master=1 phase=Departing ready=False seeded= views=4 paused=False
+2026-11-09T08:02:45.4131969Z HOLD world before initial seeding
+2026-11-09T08:02:45.5060669Z actor=1 master=1 phase=Departing ready=False seeded= views=2 paused=False
+2026-11-09T08:02:45.6751342Z HOLD world before initial seeding
+2026-11-09T08:02:45.7294179Z HOLD world before initial seeding
+2026-11-09T08:02:51.7442797Z HOLD world before initial seeding
+2026-11-09T08:02:51.8003058Z HOLD world before initial seeding
+2026-11-09T08:02:51.8759450Z HOLD world before initial seeding
+2026-11-09T08:02:51.9735121Z PAUSE host before manifest commit
+2026-11-09T08:02:57.2074137Z RESUME after 5.23 seconds
+2026-11-09T08:02:57.2421269Z actor=1 master=2 phase=Departing ready=False seeded=16b66deeffa74b16adfbb525b0c3535a views=49 paused=False
+2026-11-09T08:02:57.3479498Z actor=1 master=2 phase=Departing ready=True seeded=16b66deeffa74b16adfbb525b0c3535a views=49 paused=False
+2026-11-09T08:02:57.6536753Z actor=1 master=2 phase=Running ready=True seeded=16b66deeffa74b16adfbb525b0c3535a views=49 paused=False
+2026-11-09T08:02:57.7886672Z actor=1 master=2 phase=Running ready=True seeded=16b66deeffa74b16adfbb525b0c3535a views=60 paused=False
+2026-11-09T08:03:02.8123295Z PASS ready after recovery; unique IDs/markers; exact loot counts; pre-pause identities retained
+2026-11-09T08:03:02.8138341Z PASS COMPLETE identical peer inventories; host resumed without duplicates

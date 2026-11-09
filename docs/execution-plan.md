@@ -1,5 +1,9 @@
 # Duck Rails — execution plan
 
+- [x] November 9: gate normal host eligibility on local world readiness and the candidate's retained current-run/phase token; preserve runtime room-owned loot on scene transitions and suspend expedition authority updates during transitions. Two-client startup, deliberate handoff and late join retain identical loot identities. See [evidence and remaining coverage](spawn-startup.md).
+- [x] November 9 review follow-up: recover interrupted startup without depending on master-produced route/cargo readiness. Require host heartbeat silence and a current-context reliable server barrier before requesting takeover. Two-editor faults before route creation, before manifest commit and before first cargo pose passed; original host resumed, both peers reached Running with identical loot identities and no duplicate-ID errors. See [recovery evidence](spawn-startup.md#interrupted-startup-recovery).
+- [x] November 9: final-code two-editor catalogue smoke sweep covers all 16 encounters plus station/finale (48 peer/block checks), with identical loot identities and no duplicate-ID errors. Both scenarios stopped/restored. This does not close headset, natural traversal/combat, balance or performance acceptance; older catalogue pools remain undersupplied for current crew scaling.
+
 - [x] November 9: implement one train flashlight per departure crew member, using retained crew size, room-owned cargo and per-run grant markers; no late-join grants. Prefab and eight deck-position checks, session/drive regressions pass.
 - [ ] Validate flashlight counts for 1–8 departing players, no additions on late join/reconnect, master changes, replay cleanup and moving-train grabbing on real clients/headsets.
 

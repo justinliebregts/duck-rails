@@ -1,0 +1,28 @@
+2026-11-09T07:58:17.7251440Z START fault=0
+2026-11-09T07:58:17.7272327Z actor=-1 master= phase=Compound ready=False seeded= views=0 paused=False
+2026-11-09T07:58:22.8825467Z actor=1 master=1 phase=Departing ready=False seeded= views=0 paused=False
+2026-11-09T07:58:23.9835286Z actor=1 master=1 phase=Departing ready=False seeded= views=1 paused=False
+2026-11-09T07:58:33.0344200Z actor=1 master=1 phase=Departing ready=False seeded= views=2 paused=False
+2026-11-09T07:58:33.4127809Z actor=1 master=1 phase=Departing ready=False seeded= views=67 paused=False
+2026-11-09T07:58:33.6273614Z actor=1 master=1 phase=Departing ready=True seeded=81a891d824604f3194f5707434e2d962 views=67 paused=False
+2026-11-09T07:58:33.7384161Z actor=1 master=1 phase=Departing ready=False seeded=81a891d824604f3194f5707434e2d962 views=67 paused=False
+2026-11-09T07:58:33.9460570Z actor=-1 master= phase=Compound ready=False seeded= views=0 paused=False
+2026-11-09T07:58:35.4235737Z actor=1 master=1 phase=Staging ready=False seeded= views=0 paused=False
+2026-11-09T07:58:36.1661289Z actor=1 master=1 phase=Staging ready=True seeded= views=3 paused=False
+2026-11-09T07:58:38.5861997Z actor=1 master=1 phase=Staging ready=True seeded= views=4 paused=False
+2026-11-09T07:58:39.0431846Z actor=1 master=1 phase=Departing ready=False seeded= views=4 paused=False
+2026-11-09T07:58:41.8718550Z HOLD world before initial seeding
+2026-11-09T07:58:41.9570240Z actor=1 master=1 phase=Departing ready=False seeded= views=2 paused=False
+2026-11-09T07:58:41.9595387Z PAUSE host before route selection and spawning
+2026-11-09T07:58:42.1357452Z actor=1 master=1 phase=Departing ready=False seeded= views=2 paused=True
+2026-11-09T07:58:50.0979500Z ERROR UnityConnectWebRequestException: Token Exchange failed due a failure with the web request.
+UnityEditor.Connect.TokenExchange.VerifyTokenExchangeResponse (UnityEngine.Networking.UnityWebRequest exchangeRequest) (at <8c0bcab5a3cf47549b7148fa2785366a>:0)
+UnityEditor.Connect.TokenExchange.TokenExchangeRequestAsync (UnityEditor.Connect.TokenExchangeRequest tokenExchangeRequest, System.Threading.CancellationToken cancellationToken) (at <8c0bcab5a3cf47549b7148fa2785366a>:0)
+UnityEditor.Connect.TokenExchange.GetServiceTokenAsync (System.String genesisToken, System.Threading.CancellationToken cancellationToken) (at <8c0bcab5a3cf47549b7148fa2785366a>:0)
+UnityEditor.Connect.ServiceToken.GetServiceTokenAsync (System.String genesisToken, System.Threading.CancellationToken cancellationToken) (at <8c0bcab5a3cf47549b7148fa2785366a>:0)
+UnityEditor.Connect.UnityConnect.RequestNewServiceToken () (at <8c0bcab5a3cf47549b7148fa2785366a>:0)
+System.Runtime.CompilerServices.AsyncMethodBuilderCore+<>c.<ThrowAsync>b__7_0 (System.Object state) (at <d49d4cb128564ee1b54a84338c98d353>:0)
+UnityEngine.UnitySynchronizationContext+WorkRequest.Invoke () (at <4188a0f79dff4b4191dbeaff03bfe462>:0)
+UnityEngine.UnitySynchronizationContext.Exec () (at <4188a0f79dff4b4191dbeaff03bfe462>:0)
+UnityEngine.UnitySynchronizationContext.ExecuteTasks () (at <4188a0f79dff4b4191dbeaff03bfe462>:0)
+

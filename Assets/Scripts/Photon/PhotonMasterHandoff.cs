@@ -19,6 +19,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     static bool HasInputFocus(bool keyboard, bool appFocus, bool xrFocus, bool appPaused, bool editorXR)
         => !appPaused && (keyboard || ((appFocus || editorXR) && xrFocus));
     const byte HeartbeatCode = 105;
+    const byte StartupBarrierCode = 114;
     const double HeartbeatInterval = 1;
     const int TimeoutMilliseconds = 5000;
     static readonly RaiseEventOptions Others = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
@@ -38,9 +39,17 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     int observationStartedAt;
     double nextHeartbeat, retryAt, observeUntil, nextHeldCheck;
     Room room;
+    int startupProbe;
+    string startupScope;
+    double startupProbeAt;
 
     bool Ready => InputAvailable && PhotonNetwork.IsMessageQueueRunning
-        && GameScenes.IsLoaded(PhotonSession.RequiredScene) && PhotonPlayer.Local != null;
+        && GameScenes.IsLoaded(PhotonSession.RequiredScene) && PhotonPlayer.Local != null
+        // An avatar can exist while cached room spawns/lighting are still arriving.
+        // Electing that client lets it seed missing loot using IDs the old master
+        // has already allocated. Wait for RailWorld's retained cargo snapshot.
+        && (!PhotonSession.IsRailsRoom || PhotonSession.Instance != null &&
+            PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest);
 
     void Awake() { instance = this; focused = Application.isFocused; }
     void OnDestroy() { if (instance == this) instance = null; }
@@ -92,6 +101,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
 
     void ResetObservation()
     {
+        startupScope = null;
         ClearPickupReports();
         // A waking/joining client must not elect itself using its pre-suspend history.
         heartbeats.Clear();
@@ -153,6 +163,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
             if (!Ready) TryHandoff();
             return;
         }
+        RecoverStartup();
         if (!Ready || PhotonNetwork.MasterClient == null) return;
         int master = PhotonNetwork.MasterClient.ActorNumber;
         bool known = heartbeats.TryGetValue(master, out Heartbeat heartbeat) && heartbeat.Received;
@@ -188,6 +199,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
 
     public void OnEvent(EventData data)
     {
+        if (data.Code == StartupBarrierCode) { ReceiveStartupBarrier(data); return; }
         if (data.Code == PickupReportCode || data.Code == PickupRefreshCode || data.Code == PickupAuthorityCode)
         { ReceivePickupEvent(data); return; }
         if (data.Code == PhotonHeldItems.DropEvent) { PhotonHeldItems.OnEvent(data); return; }
@@ -202,6 +214,51 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         if (heartbeats.TryGetValue(data.Sender, out Heartbeat previous) && unchecked(sentAt - previous.SentAt) < 0) return;
         heartbeats[data.Sender] = new Heartbeat { SentAt = sentAt, Ready = ready, Received = true };
         if (!ready && Ready && PhotonNetwork.IsMasterClient) PhotonHeldItems.RecoverUnavailable(this);
+    }
+
+    // WorldReady includes state produced by the master. A silent host must not
+    // make that state a prerequisite for replacing it. This fallback only runs
+    // after heartbeat silence, never merely because a live host is still loading.
+    bool CanRecoverStartup => PhotonSession.IsRailsRoom && !PhotonNetwork.IsMasterClient &&
+        InputAvailable && PhotonNetwork.IsMessageQueueRunning && PhotonSession.Instance != null &&
+        !PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest &&
+        !PhotonSession.Instance.AwaitingCrewDestination && PhotonPlayer.Local != null &&
+        GameScenes.IsLoaded(PhotonSession.RequiredScene) && RailWorld.Instance != null &&
+        (PhotonSession.Phase == RailPhase.Departing || PhotonSession.Phase == RailPhase.Running);
+
+    string StartupScope => PhotonNetwork.CurrentRoom.Name + ":" + PhotonSession.RunId + ":" +
+        PhotonSession.Phase + ":" + PhotonNetwork.MasterClient?.ActorNumber;
+
+    bool StartupHostSilent()
+    {
+        if (PhotonNetwork.MasterClient == null || Time.realtimeSinceStartupAsDouble < observeUntil) return false;
+        return !heartbeats.TryGetValue(PhotonNetwork.MasterClient.ActorNumber, out var beat) ||
+            !Fresh(beat.SentAt, PhotonNetwork.ServerTimestamp);
+    }
+
+    void RecoverStartup()
+    {
+        if (!CanRecoverStartup || !StartupHostSilent()) { startupScope = null; return; }
+        double now = Time.realtimeSinceStartupAsDouble;
+        if (startupScope == StartupScope && now - startupProbeAt < TimeoutMilliseconds / 1000d) return;
+        startupScope = StartupScope; startupProbeAt = now;
+        // Use the same reliable channel as PUN instantiation. The server echo
+        // follows its previously queued cached/live spawns; an empty local
+        // receive queue alone would not account for packets still in flight.
+        PhotonNetwork.RaiseEvent(StartupBarrierCode, new object[] { ++startupProbe, startupScope },
+            new RaiseEventOptions { TargetActors = new[] { PhotonNetwork.LocalPlayer.ActorNumber } }, SendOptions.SendReliable);
+        PhotonNetwork.SendAllOutgoingCommands();
+    }
+
+    void ReceiveStartupBarrier(EventData data)
+    {
+        if (!CanRecoverStartup || data.Sender != PhotonNetwork.LocalPlayer.ActorNumber ||
+            !(data.CustomData is object[] fields) || fields.Length != 2 ||
+            !(fields[0] is int probe) || probe != startupProbe || fields[1] as string != startupScope ||
+            startupScope != StartupScope || !StartupHostSilent()) return;
+        // SetMasterClient uses the server's current-master comparison. Competing
+        // recovering peers cannot both win; spawning waits for its confirmation.
+        RequestMaster(PhotonNetwork.LocalPlayer);
     }
 
     public bool IsActorUnavailable(int actor)
@@ -224,6 +281,12 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
         {
             if (player.IsInactive || player.IsMasterClient) continue;
+            // Heartbeats stay fresh for five seconds. A ready heartbeat from
+            // staging (or a previous run) must not nominate a client whose new
+            // scene/snapshot is still loading. This retained token is cleared
+            // on loading and republished by RailWorld only after reconstruction.
+            if (PhotonSession.IsRailsRoom && player.CustomProperties[RailSessionRules.Ready] as string !=
+                PhotonSession.RunId + ":" + PhotonSession.Phase) continue;
             bool eligible = player.IsLocal ? Ready
                 : heartbeats.TryGetValue(player.ActorNumber, out Heartbeat heartbeat) && heartbeat.Ready && Fresh(heartbeat.SentAt, now);
             if (eligible && (candidate == null || player.ActorNumber < candidate.ActorNumber)) candidate = player;

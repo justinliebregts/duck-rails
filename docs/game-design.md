@@ -1,5 +1,13 @@
 # Duck Rails — V1 game design
 
+November 9 startup reliability: normal host candidates must have the current
+run/phase's reconstructed world and cargo snapshot. An avatar or a fresh heartbeat
+from staging is insufficient. A separate startup recovery path may replace a
+silent host after a reliable server barrier without waiting for master-produced
+route/cargo state; player input still waits for the reconstructed world. Preserve
+all runtime network spawns during scene transitions, including room-owned loot.
+See [spawn-startup verification](spawn-startup.md).
+
 November 9: spawn one free shared flashlight on the train per departing player.
 Use the retained departure crew size; late joiners receive no additional flashlight.
 Reconnects and host changes must not duplicate grants. Other equipment remains shop-bought.

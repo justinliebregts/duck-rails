@@ -425,7 +425,9 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         loadingScene = true; PhotonNetwork.IsMessageQueueRunning = false; SetStatus("Loading " + destinationScene + "...");
         // Cached room objects may arrive before scene loading. Keep their Photon IDs alive.
         foreach (var view in PhotonNetwork.PhotonViewCollection)
-            if (view != null && view.ViewID != 0 && !view.IsSceneView) DontDestroyOnLoad(view.transform.root.gameObject);
+            // IsSceneView/IsRoomView also includes InstantiateRoomObject loot.
+            // Preserve every runtime spawn, including room-owned coal and gold.
+            if (view != null && view.ViewID != 0 && view.isRuntimeInstantiated) DontDestroyOnLoad(view.transform.root.gameObject);
         var load = SceneManager.LoadSceneAsync(destinationScene, LoadSceneMode.Single);
         if (load != null) yield return load;
         loadingScene = false; PhotonNetwork.IsMessageQueueRunning = true; loginStatus = null;

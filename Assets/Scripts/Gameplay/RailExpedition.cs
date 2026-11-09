@@ -164,6 +164,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     void Update()
     {
         if (!PhotonSession.IsRailsRoom) return;
+        if (!PhotonNetwork.IsMessageQueueRunning || PhotonSession.Instance == null || PhotonSession.Instance.HasRoomRequest) return;
         ReadState();
         if (!PhotonSession.OnTrain)
         {

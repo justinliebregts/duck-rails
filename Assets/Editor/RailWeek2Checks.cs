@@ -24,7 +24,7 @@ public static class RailWeek2Checks
         var failure = new RailRunState(); failure.players.Add(new RailParticipant { id = "crew", down = true }); failure.Finish(200, "Bridge collision", Array.Empty<string>());
         Check(!failure.success && !failure.players.Any(p => p.escaped) && failure.players[0].down, "Crash produces failure without reviving anyone");
         var options = RailSessionRules.Options(RailSessionRules.ExpeditionKind);
-        Check((float)options.CustomRoomProperties[RailSessionRules.Fuel] == 10, "Default expedition begins with ten fuel");
+        Check((float)options.CustomRoomProperties[RailSessionRules.Fuel] == 50, "Default expedition begins with the approved fifty fuel");
         foreach (string name in new[] { "RailCoal", "RailBat", "RailBag", "RailWalkie", "RailHelmet", "RailGoggles", "RailFlashlight" })
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/" + name + ".prefab");
