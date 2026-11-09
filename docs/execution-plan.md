@@ -637,6 +637,11 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [x] Port raised spider reach while preserving train boarding; Unity compilation, 9,135 source/Rails assertions, 489 boarding and 125 crossing checks passed. See [port evidence](duckz-fix-ports.md#raised-spider-attacks--november-8-2026).
 - [ ] Verify raised attacks aboard moving trains with actual peers and headsets, including late join/master migration and Quest performance. Synthetic transport does not close this acceptance.
 
+## Zombie retreat duration port — November 8, 2026
+
+- [x] Port Duckz a1be120 retreat range to 1–8 seconds in defaults and four base prefabs; existing retreat checks and all four inherited Rails prefab ranges pass in the verified Unity editor. See [port evidence](duckz-ports.md#a1be1207774efb66bbe6e7df0c0003c2793a926f--zombie-retreat-duration).
+- [ ] Review natural retreat timing and balance across real clients and target headsets, including train encounters.
+
 ## Hand tracking hold retention — November 8, 2026
 
 - [x] Port Duckz 00ee3e71 with Rails drive/simulator adaptations; Unity compilation,

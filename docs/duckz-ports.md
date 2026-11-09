@@ -29,6 +29,33 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   grabbing on headsets and real-client acceptance remain unverified.
 - Destination commit: the commit introducing this entry (see Git history).
 
+## a1be1207774efb66bbe6e7df0c0003c2793a926f — Zombie retreat duration
+
+- Status: implemented; editor validation passed November 8, 2026. Real-client/headset
+  gameplay acceptance remains pending.
+- Source title: `Set zombie retreat duration to 1-8 seconds`.
+- Intended behavior: change the retreat duration range from 4–10 seconds to 1–8 seconds.
+- Source changes: defaults in `Assets/Scripts/Enemies/Enemy.cs`, serialized values in
+  `Assets/Prefabs/Enemies/ZombieBomber.prefab`, `ZombieMinion.prefab`,
+  `ZombieSmasher.prefab`, and `ZombieSpider.prefab`, and expectations in
+  `Assets/Editor/Checks/Enemies/EnemyRetreatChecks.cs`.
+- Dependencies: Rails already has `BeginRetreat` random duration selection and kill/search
+  retreat behavior. Both projects use Unity 6000.3.24f1; both enemy managers use PUN
+  over the retained Realtime stack. No new subsystem or assets required.
+- Destination files/adaptations: the same six source paths listed above; only the two
+  timing values and existing check expectations changed. Rails resources `RailZombie`,
+  `RailBomber`, `RailSmasher`, and `RailSpider` inherit the base prefab settings without
+  timing overrides. GUIDs, boarding/navigation logic and unrelated local edits retained.
+- Evidence: exact source/parent diff inspected with `git show`. Verified MCP target
+  `X:/Work/duck-rails/Assets`, refreshed scripts and successfully executed
+  `EnemyRetreatChecks.Run()` (four base prefabs, 100 duration samples, kill/search/reset
+  behavior). Unity SerializedObject checks confirmed all four Rails resource variants
+  resolve to 1–8 seconds. Asset-wide prefab/scene text scan found no timing overrides.
+  Focused `git diff --check` passed.
+- Remaining work: natural retreat/balance review across real clients and target headsets,
+  including train encounters; editor checks do not close those acceptance requirements.
+- Destination commit: the commit adding this retreat entry (see Git history).
+
 ## 00ee3e71dd2c70d33f69059bc3caee32eef6bbbd — Holds survive hand tracking loss
 
 - Status: implemented; Unity compilation and core editor regressions passed November 8,
