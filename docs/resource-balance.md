@@ -103,8 +103,14 @@ these budgets. No placement pass was performed in this change.
 ### Deployment and validation
 
 The updated API in `X:/Work/duck-rails-web` must be deployed with/before the client.
-No SQL migration is required. No Git push, container publication or live rollout
-has been performed. Restart clients on the new `resources-v1` matchmaking suffix;
+No SQL migration is required. November 8 publication: game commit `f4bd82b28` and
+backend commit `6c50e16` were pushed to their respective GitHub `main` branches.
+Backend checks passed again before building from the clean committed checkout.
+The project's TCR script successfully built and pushed
+`uswccr.ccs.tencentyun.com/gr-tcr/duckrails-api-golang:api-6c50e16` with registry digest
+`sha256:e1fc456a84b41ea4c11e398896164e83bf468a4b8e097af481b3b9c07adb09a9`.
+TKE rollout and live API/client verification remain pending; TCR publication is not
+a production rollout. Restart clients on the new resource/enemy matchmaking suffix;
 old and new balance clients must not share rooms.
 
 Passed: Unity compilation in the verified `X:/Work/duck-rails` editor; focused
