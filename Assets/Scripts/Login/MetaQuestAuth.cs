@@ -7,6 +7,14 @@ using UnityEngine;
 
 public static class MetaQuestAuth
 {
+    static ulong ageCategoryRequestedUserId;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetAgeCategoryRequest()
+    {
+        ageCategoryRequestedUserId = 0;
+    }
+
     public sealed class Identity
     {
         public string AppScopedId;
@@ -70,6 +78,8 @@ public static class MetaQuestAuth
             yield break;
         }
 
+        RequestAgeCategory(user.ID);
+
         string orgScopedId = null;
         progress?.Invoke("Reading Meta organization identity...");
         yield return GetOrgScopedId(
@@ -108,6 +118,46 @@ public static class MetaQuestAuth
                 Nonce = nonce
             }
         });
+    }
+
+    static void RequestAgeCategory(ulong userId)
+    {
+        if (ageCategoryRequestedUserId == userId)
+            return;
+
+        // Best effort once per signed-in user/session, including failed attempts.
+        // Never wait for this request or repeat it during backend login retries.
+        ageCategoryRequestedUserId = userId;
+        try
+        {
+            Request<UserAccountAgeCategory> request = UserAgeCategory.Get();
+            if (request == null)
+            {
+                if (DuckzLog.AllowWarning(out var notice))
+                    notice.Write("Meta age category request unavailable. Login will continue.");
+                return;
+            }
+
+            request.OnComplete(OnAgeCategoryReceived);
+        }
+        catch (Exception exception)
+        {
+            if (DuckzLog.AllowWarning(out var notice))
+                notice.Write("Meta age category request failed. Login will continue. " + exception.Message);
+        }
+    }
+
+    static void OnAgeCategoryReceived(Message<UserAccountAgeCategory> message)
+    {
+        if (message == null || message.IsError || message.Data == null)
+        {
+            if (DuckzLog.AllowWarning(out var notice))
+                notice.Write(ErrorText(message, "Meta age category unavailable.") + " Gameplay is unaffected.");
+            return;
+        }
+
+        // Includes Unknown; no category changes gameplay or account access.
+        DuckzLog.Log("Meta age category: " + message.Data.AgeCategory);
     }
 
     static IEnumerator Initialize(Action<Result> failed)
