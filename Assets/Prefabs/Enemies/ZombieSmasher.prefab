@@ -456,13 +456,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84a811b8df6d4e20913beed554676fb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.AI.ZombieSmasherJump
-  maxJumpHeight: 5
-  jumpDuration: 1
+  maxJumpHeight: 12
+  jumpDuration: 1.3
   minAirtimeAfterHit: 0.3
-  maxJumpDistance: 9
-  maxDropHeight: 10
+  maxJumpDistance: 16
+  maxDropHeight: 12
   minimumJumpHeight: 0.5
-  arcClearance: 0.65
+  arcClearance: 1.25
   cooldown: 2
   targetSurfaceProbe: 3
 --- !u!1001 &1370407887641181229

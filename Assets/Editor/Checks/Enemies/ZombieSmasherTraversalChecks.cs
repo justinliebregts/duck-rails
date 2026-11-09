@@ -25,8 +25,11 @@ public static class ZombieSmasherTraversalChecks
         Traverse(3, 4.5f, true, "higher rooftop");
         Traverse(3, 0, true, "broad roof descent", 8f);
         Traverse(0, 0, false, "continuous ground");
-        Traverse(0, 6, false, "height limit");
-        Traverse(12, 0, false, "drop limit");
+        Traverse(0, 6, true, "six-unit roof");
+        Traverse(0, 9.6f, true, "Police-height roof");
+        Traverse(0, 11, true, "taller roof");
+        Traverse(0, 12, false, "height limit reserves arc clearance");
+        Traverse(13, 0, false, "drop limit");
         Traverse(3, 3, false, "blocked gap", 3f, true);
         Debug.Log("ZombieSmasherTraversalChecks: ALL PASSED");
     }
@@ -38,7 +41,7 @@ public static class ZombieSmasherTraversalChecks
         Box(new Vector3(0, -0.5f, 0), new Vector3(60, 1, 60));
         if (fromHeight > 0) Box(new Vector3(0, fromHeight / 2, 0), new Vector3(takeoffWidth, fromHeight, 4));
         if (toHeight > 0) Box(new Vector3(6, toHeight / 2, 0), new Vector3(3, toHeight, 4));
-        if (blocked) Box(new Vector3(3, 6, 0), new Vector3(0.5f, 12, 20));
+        if (blocked) Box(new Vector3(3, 10, 0), new Vector3(0.5f, 20, 20));
         var actor = new GameObject("Smasher");
         actor.transform.position = new Vector3(0, fromHeight, 0);
         actor.AddComponent<GroundLocomotion>();
@@ -65,7 +68,7 @@ public static class ZombieSmasherTraversalChecks
         for (int i = 0; i < 200 && jump.IsJumping; i++)
         {
             jump.TickJump(enemy, manager, 0.02f);
-            Check(actor.transform.position.y <= fromHeight + 5.01f, label + ": apex exceeds limit");
+            Check(actor.transform.position.y <= fromHeight + 12.01f, label + ": apex exceeds limit");
         }
         Check(!jump.IsJumping && landings == 1, label + ": must land exactly once");
         Check(Mathf.Abs(actor.transform.position.y - toHeight) < 0.1f && actor.transform.position.x > 4.4f,

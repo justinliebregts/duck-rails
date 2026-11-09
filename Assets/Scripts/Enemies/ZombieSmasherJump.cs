@@ -9,23 +9,26 @@ namespace Game.AI
     {
         [Header("Jump")]
         [Tooltip("Maximum height of the root above takeoff, including the arc, in world units.")]
-        [SerializeField, Min(0.1f)] float maxJumpHeight = 5f;
+        [SerializeField, Min(0.1f)] float maxJumpHeight = 12f;
         [Tooltip("Seconds for the whole jump. Lower values make the jump faster.")]
-        [SerializeField, Min(0.1f)] float jumpDuration = 1.0f;
+        [SerializeField, Min(0.1f)] float jumpDuration = 1.3f;
         [Tooltip("Minimum seconds remaining in the jump arc after a hit.")]
         [SerializeField, Min(0f)] float minAirtimeAfterHit = 0.3f;
-        [SerializeField, Min(0.1f)] float maxJumpDistance = 9f;
+        [SerializeField, Min(0.1f)] float maxJumpDistance = 16f;
         [Tooltip("Maximum distance below takeoff for a planned jump. Accidental falls still land on the first surface below.")]
-        [SerializeField, Min(0.1f)] float maxDropHeight = 10f;
+        [SerializeField, Min(0.1f)] float maxDropHeight = 12f;
         [Tooltip("Height tolerance when checking whether a route can be walked without jumping.")]
         [SerializeField, Min(0.1f)] float minimumJumpHeight = 0.5f;
-        [SerializeField, Min(0.05f)] float arcClearance = 0.65f;
+        [SerializeField, Min(0.05f)] float arcClearance = 1.25f;
         [SerializeField, Min(0f)] float cooldown = 2f;
         [Tooltip("Distance below the player's last seen head position to look for their supporting surface.")]
         [SerializeField, Min(0.1f)] float targetSurfaceProbe = 3f;
 
         const float Skin = GroundLocomotion.CapsuleSkin;
         const int ArcSteps = 64;
+        const int ArcTiers = 4;
+        const int WanderArcsPerService = 2;
+        enum ArcResult { Blocked, Pending, Clear }
         const float RetreatRetryDelay = 1.5f;
         const float JumpCheckInterval = 0.2f;
         const int JumpCheckPhases = 18;
@@ -34,7 +37,25 @@ namespace Game.AI
         bool _checkArmed;
         static readonly Unity.Profiling.ProfilerMarker WalkCheckMarker = new Unity.Profiling.ProfilerMarker("EnemyGround.WalkFeasibility");
         float _nextRetreatCheck;
+        const float WanderElevation = 1.25f;
+        const float WanderArrivalRadius = .8f;
+        float _nextWanderCheck, _wanderExitUntil, _wanderLevelY, _wanderLevelSince, _wanderLastJump;
+        Vector3 _wanderTakeoff, _wanderLanding, _wanderNormal, _wanderLastFrom, _wanderLastTo, _wanderFlightFrom;
+        bool _hasWanderExit, _wanderReady, _wanderLevelKnown, _wanderMemory, _wanderFlight;
+        bool _wanderForwardPending, _wanderReturnPending, _wanderHasDeferred, _wanderReturnValidated;
+        int _wanderDirection, _wanderElevation, _wanderArcAttempt;
+        struct WanderExit
+        {
+            public Vector3 Takeoff, Surface, SurfaceNormal, Landing, Normal;
+        }
+        WanderExit _wanderCandidatePlan, _wanderDeferredPlan;
+        public enum WanderPlanResult { Rejected, Pending, Found, Deferred }
+        public const int WanderDirections = 8;
+        public float MinimumWanderElevation => WanderElevation;
+        public bool HasWanderExit => _hasWanderExit;
+        public Vector3 WanderTakeoff => _wanderTakeoff;
         GroundLocomotion _ground;
+        RailEnemyBounds _railsBounds;
         Vector3 _start, _end, _position;
         Vector3 _landingPoint, _landingNormal;
         Quaternion _rotation;
@@ -54,6 +75,7 @@ namespace Game.AI
         void Awake()
         {
             _ground = GetComponent<GroundLocomotion>();
+            _railsBounds = GetComponent<RailEnemyBounds>();
             _checkPhase = nextCheckPhase;
             nextCheckPhase = (nextCheckPhase + 1) % JumpCheckPhases;
         }
@@ -69,6 +91,9 @@ namespace Game.AI
             _nextCheck = 0f;
             _checkArmed = false;
             _nextRetreatCheck = 0f;
+            CancelWanderExit();
+            _nextWanderCheck = Time.time + Random.Range(10f, 20f);
+            _wanderLevelKnown = _wanderMemory = _wanderFlight = false;
             _airNudge = Vector3.zero;
             _airNudgeFrom = 0f;
             _fallDrift = Vector3.zero;
@@ -120,6 +145,261 @@ namespace Game.AI
 
         void OnDisable() => ResetJump();
 
+        // Called only when selecting a new wander route. No physics or allocations.
+        public bool WanderExplorationDue(Enemy enemy)
+        {
+            return isActiveAndEnabled && enemy.HasAuthority && !IsJumping && !enemy.IsKnocked
+                && !enemy.IsStunned && enemy.CurrentState == Enemy.State.Wander && !_ground.IsRecovering
+                && Time.time >= _nextWanderCheck;
+        }
+
+        void ObserveWanderLevel(Vector3 position)
+        {
+            if (_wanderLevelKnown && Mathf.Abs(position.y - _wanderLevelY) < WanderElevation) return;
+            _wanderLevelKnown = true; _wanderLevelY = position.y; _wanderLevelSince = Time.time;
+        }
+
+        static int SelectWanderElevation(float roll, float linger)
+        {
+            // Staying on one elevation gradually increases exploration, equally in
+            // both directions. It never reinstates a preference for the lowest node.
+            float walking = Mathf.Lerp(.6f, .2f, Mathf.Clamp01((linger - 45f) / 75f));
+            return roll < walking ? 0 : roll < walking + (1f - walking) * .5f ? 1 : -1;
+        }
+
+        public int ChooseWanderElevation(Enemy enemy)
+        {
+            ObserveWanderLevel(enemy.Root.position);
+            _wanderElevation = 0;
+            if (!WanderExplorationDue(enemy)) return 0;
+            _nextWanderCheck = Time.time + Random.Range(10f, 20f);
+            _wanderElevation = SelectWanderElevation(Random.value, Time.time - _wanderLevelSince);
+            return _wanderElevation;
+        }
+
+        public Vector3 WanderDirection(int index) => Quaternion.AngleAxis(
+            ((index + _wanderDirection) % WanderDirections) * 45f, Vector3.up) * Vector3.forward;
+
+        public void FinishWanderScan(Vector3 position, bool found)
+        {
+            ObserveWanderLevel(position);
+            _nextWanderCheck = Time.time + (found ? Random.Range(10f, 20f) : Random.Range(20f, 30f));
+            _wanderDirection = (_wanderDirection + 3) % WanderDirections;
+        }
+
+        public void CancelWanderExit()
+        {
+            _hasWanderExit = _wanderReady = _wanderForwardPending = _wanderReturnPending = _wanderHasDeferred = _wanderReturnValidated = false;
+            _wanderArcAttempt = 0;
+        }
+
+        bool RecentWanderReturn(Vector3 point) => _wanderMemory && Time.time - _wanderLastJump < 45f
+            && (point - _wanderLastFrom).sqrMagnitude < 9f
+            && Mathf.Abs(_wanderLevelY - _wanderLastTo.y) < WanderElevation;
+
+        void CommitWanderExit(WanderExit plan)
+        {
+            _wanderTakeoff = plan.Takeoff; _wanderLanding = plan.Landing; _wanderNormal = plan.Normal;
+            _hasWanderExit = true; _wanderExitUntil = Time.time + 60f;
+        }
+
+        public bool UseDeferredWanderExit()
+        {
+            if (!_wanderHasDeferred) return false;
+            CommitWanderExit(_wanderDeferredPlan);
+            _wanderHasDeferred = false;
+            return true;
+        }
+
+        // The navigation queue calls this once per service, never from every enemy tick.
+        public WanderPlanResult PlanWanderExit(EnemyManager manager, Vector3 launch, Vector3 direction, bool far)
+        {
+            LayerMask mask = manager.SurfaceMask;
+            if (_wanderReturnPending)
+            {
+                WanderExit plan = _wanderCandidatePlan;
+                Vector3 backFrom = _ground.RootFromCapsuleBottom(_ground.CapsuleBottomOnSurface(plan.Landing, plan.Normal));
+                ArcResult result = PlanWanderLanding(backFrom, plan.Surface, plan.SurfaceNormal, mask);
+                if (result == ArcResult.Pending) return WanderPlanResult.Pending;
+                _wanderReturnPending = false;
+                if (result == ArcResult.Blocked) return WanderPlanResult.Rejected;
+                if (RecentWanderReturn(plan.Landing))
+                {
+                    // Keep one safe reverse route as a last resort, while continuing
+                    // this bounded search for a different destination.
+                    if (_wanderHasDeferred) return WanderPlanResult.Rejected;
+                    _wanderDeferredPlan = plan; _wanderHasDeferred = true;
+                    return WanderPlanResult.Deferred;
+                }
+                CommitWanderExit(plan);
+                return WanderPlanResult.Found;
+            }
+            if (_wanderForwardPending) return ContinueWanderForward(mask);
+            if (!Physics.Raycast(launch + Vector3.up * .4f, Vector3.down, out RaycastHit floor, .8f, mask,
+                QueryTriggerInteraction.Ignore) || !CrawlGraph.IsWalkableGround(floor.normal)) return WanderPlanResult.Rejected;
+            // Keep already safe takeoff points. Only inset extreme graph nodes
+            // that cannot support a return landing across the capsule footprint.
+            if (!Supported(floor.point, mask))
+            {
+                _ground.GetCapsuleSize(out float radius, out _);
+                launch -= direction * (radius + .25f);
+                if (!Physics.Raycast(launch + Vector3.up * .4f, Vector3.down, out floor, .8f, mask,
+                    QueryTriggerInteraction.Ignore) || !CrawlGraph.IsWalkableGround(floor.normal)
+                    || !Supported(floor.point, mask)) return WanderPlanResult.Rejected;
+            }
+            Vector3 from = _ground.RootFromCapsuleBottom(_ground.CapsuleBottomOnSurface(floor.point, floor.normal));
+            // Walking stops within arriveRadius of a graph node. Leave room for
+            // that offset so revalidation does not reject an otherwise valid long jump.
+            float reach = Mathf.Max(.1f, maxJumpDistance - WanderArrivalRadius);
+            float distance = far ? reach : Mathf.Min(_wanderElevation > 0 ? 6f : 3f, reach);
+            Vector3 probe = from + direction * distance;
+            float lift = _wanderElevation > 0 ? maxJumpHeight : .1f;
+            if (!Physics.Raycast(probe + Vector3.up * lift, Vector3.down, out RaycastHit landing,
+                lift + maxDropHeight, mask, QueryTriggerInteraction.Ignore)
+                || (landing.point.y - floor.point.y) * _wanderElevation < WanderElevation
+                || !manager.Graph.ContainsCrawlPosition(landing.point)
+                || manager.Graph.FindNearestGroundNode(landing.point, 1.5f) < 0) return WanderPlanResult.Rejected;
+            _wanderCandidatePlan = new WanderExit { Takeoff = from, Surface = floor.point, SurfaceNormal = floor.normal,
+                Landing = landing.point, Normal = landing.normal };
+            _wanderForwardPending = true;
+            return ContinueWanderForward(mask);
+        }
+
+        WanderPlanResult ContinueWanderForward(LayerMask mask)
+        {
+            WanderExit plan = _wanderCandidatePlan;
+            ArcResult result = PlanWanderLanding(plan.Takeoff, plan.Landing, plan.Normal, mask);
+            if (result == ArcResult.Pending) return WanderPlanResult.Pending;
+            _wanderForwardPending = false;
+            if (result == ArcResult.Blocked) return WanderPlanResult.Rejected;
+            _wanderReturnPending = true;
+            // Never spend unused forward work on the reverse arc in this service.
+            return WanderPlanResult.Pending;
+        }
+
+        ArcResult PlanWanderLanding(Vector3 from, Vector3 point, Vector3 normal, LayerMask mask)
+        {
+            float rise = point.y - from.y;
+            Vector3 end = _ground.RootFromCapsuleBottom(_ground.CapsuleBottomOnSurface(point, normal));
+            if (Mathf.Abs(rise) < WanderElevation || rise < -maxDropHeight || rise + .05f > maxJumpHeight
+                || !CrawlGraph.IsWalkableGround(normal)
+                || Vector3.ProjectOnPlane(point - from, Vector3.up).sqrMagnitude > maxJumpDistance * maxJumpDistance
+                || end.y - from.y + .05f > maxJumpHeight
+                || !_ground.HasGroundSupport(from, mask) || !Supported(point, mask))
+            {
+                _wanderArcAttempt = 0;
+                return ArcResult.Blocked;
+            }
+            // Revalidation may resume after the actor/support moved. Do not skip
+            // the low tiers of a different trajectory using an old continuation.
+            if (_start != from || _end != end) _wanderArcAttempt = 0;
+            _start = from; _landingPoint = point; _landingNormal = normal;
+            _end = end;
+            _airNudge = _fallDrift = Vector3.zero; _airNudgeFrom = 0f;
+            ArcResult result = CheckArcTiers(mask, maxJumpHeight, ref _wanderArcAttempt, WanderArcsPerService);
+            if (result != ArcResult.Pending) _wanderArcAttempt = 0;
+            return result;
+        }
+
+        // Keeps a committed walking approach until arrival; takeoff validation uses
+        // the same manager budget as the initial search, not a per-frame physics scan.
+        public bool TickWanderExit(Enemy enemy)
+        {
+            if (IsJumping || _wanderReady) return true;
+            if (!_hasWanderExit) return false;
+            if (Time.time > _wanderExitUntil || _ground.IsRecovering)
+            {
+                CancelWanderExit(); FinishWanderScan(enemy.Root.position, false);
+                return false;
+            }
+            if (!_ground.PathDone || _ground.WantsPath) return true;
+            if ((enemy.Root.position - _wanderTakeoff).sqrMagnitude > WanderArrivalRadius * WanderArrivalRadius)
+            {
+                CancelWanderExit(); FinishWanderScan(enemy.Root.position, false);
+                return false;
+            }
+            if (Time.time >= _nextCheck) _ground.RequestWanderTakeoff();
+            return true;
+        }
+
+        public bool ValidateWanderTakeoff(Enemy enemy, LayerMask mask)
+        {
+            bool valid = _hasWanderExit && Time.time <= _wanderExitUntil && Time.time >= _nextCheck
+                && (enemy.Root.position - _wanderTakeoff).sqrMagnitude <= WanderArrivalRadius * WanderArrivalRadius;
+            if (valid && !_wanderReturnValidated)
+            {
+                Vector3 backFrom = _ground.RootFromCapsuleBottom(_ground.CapsuleBottomOnSurface(_wanderLanding, _wanderNormal));
+                valid = Physics.Raycast(enemy.Root.position + Vector3.up * .4f, Vector3.down, out RaycastHit floor,
+                    .8f, mask, QueryTriggerInteraction.Ignore);
+                if (valid)
+                {
+                    ArcResult result = PlanWanderLanding(backFrom, floor.point, floor.normal, mask);
+                    if (result == ArcResult.Pending) return false;
+                    valid = result == ArcResult.Clear;
+                }
+                if (valid) { _wanderReturnValidated = true; return false; }
+            }
+            else if (valid)
+            {
+                ArcResult result = PlanWanderLanding(enemy.Root.position, _wanderLanding, _wanderNormal, mask);
+                if (result == ArcResult.Pending) return false;
+                valid = result == ArcResult.Clear;
+            }
+            CancelWanderExit();
+            if (valid)
+            {
+                _position = _start;
+                _rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(_end - _start, Vector3.up).normalized);
+                _duration = Mathf.Max(.1f, jumpDuration); _elapsed = _fallSpeed = 0f; _falling = false;
+                _wanderReady = true;
+                _wanderExitUntil = Time.time + .25f;
+            }
+            else FinishWanderScan(enemy.Root.position, false);
+            return true;
+        }
+
+        // Extra lift above the higher endpoint; the last tier preserves the full
+        // reach. Clamping can make tiers identical near the cap: test those once.
+        float TierApex(int tier, float cap)
+        {
+            float clearance = Mathf.Max(.05f, arcClearance);
+            float lift = tier == 0 ? clearance : Mathf.Max(clearance, tier == 1 ? 3f : 6f);
+            return tier == ArcTiers - 1 ? cap : Mathf.Min(cap, Mathf.Max(0f, _end.y - _start.y) + lift);
+        }
+
+        bool TryLowerArc(LayerMask mask)
+        {
+            int attempt = 0;
+            return CheckArcTiers(mask, maxJumpHeight, ref attempt, ArcTiers) == ArcResult.Clear;
+        }
+
+        // Wander resumes this bounded search through the navigation queue. Chase
+        // and retreat use the same tiers synchronously at their existing cadence.
+        ArcResult CheckArcTiers(LayerMask mask, float cap, ref int attempt, int budget)
+        {
+            float rise = _end.y - _start.y;
+            if (rise >= cap) return ArcResult.Blocked;
+            while (attempt < ArcTiers)
+            {
+                float apex = TierApex(attempt, cap);
+                if (attempt > 0 && apex <= TierApex(attempt - 1, cap)) { attempt++; continue; }
+                if (budget == 0) return ArcResult.Pending;
+                budget--; attempt++;
+                _apex = apex;
+                _peakTime = Mathf.Sqrt(_apex) / (Mathf.Sqrt(_apex) + Mathf.Sqrt(_apex - rise));
+                Vector3 previous = _start;
+                bool clear = true;
+                for (int step = 1; step <= ArcSteps; step++)
+                {
+                    Vector3 next = Arc(step / (float)ArcSteps);
+                    if (!ClearSegment(previous, next, mask)) { clear = false; break; }
+                    previous = next;
+                }
+                if (clear) return ArcResult.Clear;
+            }
+            return ArcResult.Blocked;
+        }
+
         /// <summary>Bounded lower-surface escape search; no graph/path requests.</summary>
         public bool TryStartRetreatJump(Enemy enemy, LayerMask mask, Vector3 away)
         {
@@ -149,21 +429,10 @@ namespace Game.AI
                 float rise = _end.y - _start.y;
                 if (rise >= maxJumpHeight || Vector3.ProjectOnPlane(_end - _start, Vector3.up).magnitude > maxJumpDistance)
                     continue;
-                // Only two arcs per candidate, using the normal jump collision
+                // At most four arcs per candidate, using the normal jump collision
                 // sampling and clearance. Stop as soon as a safe arc is found.
-                for (int attempt = 0; attempt < 2; attempt++)
+                if (TryLowerArc(mask))
                 {
-                    _apex = attempt == 0 ? Mathf.Min(maxJumpHeight, Mathf.Max(0f, rise) + arcClearance) : maxJumpHeight;
-                    _peakTime = Mathf.Sqrt(_apex) / (Mathf.Sqrt(_apex) + Mathf.Sqrt(_apex - rise));
-                    Vector3 previous = _start;
-                    bool clear = true;
-                    for (int step = 1; step <= ArcSteps; step++)
-                    {
-                        Vector3 next = Arc(step / (float)ArcSteps);
-                        if (!ClearSegment(previous, next, mask)) { clear = false; break; }
-                        previous = next;
-                    }
-                    if (!clear) continue;
                     _position = _start;
                     _rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(_end - _start, Vector3.up).normalized);
                     _duration = Mathf.Max(.1f, jumpDuration);
@@ -182,6 +451,7 @@ namespace Game.AI
         public bool TickJump(Enemy enemy, EnemyManager manager, float dt)
         {
             if (!enemy.HasAuthority || enemy.Root == null || dt <= 0f) return false;
+            if (enemy.CurrentState != Enemy.State.Wander) CancelWanderExit();
             if (_ground.ValidateSmasherPose(enemy, manager.SurfaceMask))
             {
                 ResetJump();
@@ -207,13 +477,21 @@ namespace Game.AI
                 }
                 else
                 {
-                    if (_ground.IsRecovering || enemy.CurrentState != Enemy.State.Chase)
+                    bool wander = enemy.CurrentState == Enemy.State.Wander && _wanderReady;
+                    if (wander && (Time.time > _wanderExitUntil || (enemy.Root.position - _start).sqrMagnitude > .0025f))
+                    {
+                        CancelWanderExit(); FinishWanderScan(enemy.Root.position, false);
+                        return false;
+                    }
+                    if (_ground.IsRecovering || (!wander && enemy.CurrentState != Enemy.State.Chase))
                     {
                         _checkArmed = false;
                         return false;
                     }
-                    if (!ReadyForJumpCheck(Time.time)) return false;
-                    if (!TryPlan(enemy, manager.SurfaceMask)) return false;
+                    if (!wander && (!ReadyForJumpCheck(Time.time) || !TryPlan(enemy, manager.SurfaceMask))) return false;
+                    _wanderFlight = wander;
+                    if (wander) _wanderFlightFrom = _start;
+                    CancelWanderExit();
                     _plannedJump = true;
                 }
                 _airTime = 0f;
@@ -281,6 +559,17 @@ namespace Game.AI
             // ground mover's surface-normal offset. Invalidate the old path too.
             Capsule(_position, out Vector3 bottom, out _, out _);
             _position = _ground.AdoptLanding(bottom, normal);
+            if (_wanderFlight)
+            {
+                _wanderFlight = false;
+                if (Mathf.Abs(_position.y - _wanderFlightFrom.y) >= WanderElevation)
+                {
+                    _wanderLastFrom = _wanderFlightFrom; _wanderLastTo = _position;
+                    _wanderLastJump = Time.time; _wanderMemory = true;
+                }
+                ObserveWanderLevel(_position);
+                _nextWanderCheck = Time.time + Random.Range(10f, 20f);
+            }
         }
 
         // Dephase newly activated chasers without consuming the A* work budget.
@@ -342,25 +631,8 @@ namespace Game.AI
                     || Vector3.ProjectOnPlane(_end - _start, Vector3.up).magnitude > maxJumpDistance
                     || !Supported(_landingPoint, mask)) continue;
 
-                bool clear = true;
-                float lowApex = Mathf.Min(maxApex, Mathf.Max(0f, rise) + Mathf.Max(0.05f, arcClearance));
-                // Descending jumps may need more lift to leave a broad roof before
-                // descending. Test progressively higher arcs up to the configured cap.
-                for (int attempt = 0; attempt < 4; attempt++)
-                {
-                    _apex = Mathf.Lerp(lowApex, maxApex, attempt / 3f);
-                    _peakTime = Mathf.Sqrt(_apex) / (Mathf.Sqrt(_apex) + Mathf.Sqrt(_apex - rise));
-                    clear = true;
-                    Vector3 previous = _start;
-                    for (int step = 1; step <= ArcSteps; step++)
-                    {
-                        Vector3 point = Arc((float)step / ArcSteps);
-                        if (!ClearSegment(previous, point, mask)) { clear = false; break; }
-                        previous = point;
-                    }
-                    if (clear) break;
-                }
-                if (!clear) continue;
+                int attempt = 0;
+                if (CheckArcTiers(mask, maxApex, ref attempt, ArcTiers) != ArcResult.Clear) continue;
                 _position = _start;
                 Vector3 forward = Vector3.ProjectOnPlane(_end - _start, Vector3.up);
                 _rotation = forward.sqrMagnitude > 0.001f ? Quaternion.LookRotation(forward) : enemy.Root.rotation;
@@ -487,11 +759,19 @@ namespace Game.AI
             _fallDrift -= delta;
         }
 
+        bool AllowsRailsPoint(Vector3 point) => !RailTrainObstacle.Contains(point)
+            && (_railsBounds == null || _railsBounds.AllowsTraversal(point));
+
+        bool AllowsRailsSurface(RaycastHit hit) => AllowsRailsPoint(hit.point)
+            && hit.collider.GetComponentInParent<RailTrain>() == null;
+
         bool Supported(Vector3 point, LayerMask mask)
         {
+            if (!AllowsRailsPoint(point)) return false;
             _ground.GetCapsuleSize(out float radius, out _);
             if (!Physics.Raycast(point + Vector3.up * 0.2f, Vector3.down, out RaycastHit center,
-                0.4f, mask, QueryTriggerInteraction.Ignore) || !CrawlGraph.IsWalkableGround(center.normal)) return false;
+                0.4f, mask, QueryTriggerInteraction.Ignore) || !CrawlGraph.IsWalkableGround(center.normal)
+                || !AllowsRailsSurface(center)) return false;
             for (int i = 0; i < 5; i++)
             {
                 Vector3 offset = i == 0 ? Vector3.zero
@@ -499,7 +779,7 @@ namespace Game.AI
                 Vector3 sample = OnSupportPlane(center.point, center.normal, offset);
                 if (!Physics.Raycast(sample + Vector3.up * 0.2f, Vector3.down,
                     out RaycastHit hit, 0.4f, mask, QueryTriggerInteraction.Ignore)
-                    || !CrawlGraph.IsWalkableGround(hit.normal)) return false;
+                    || !CrawlGraph.IsWalkableGround(hit.normal) || !AllowsRailsSurface(hit)) return false;
             }
             return true;
         }
@@ -513,6 +793,7 @@ namespace Game.AI
 
         bool ClearSegment(Vector3 from, Vector3 to, LayerMask mask)
         {
+            if (!AllowsRailsPoint(to) || RailTrainObstacle.BlocksSegment(from, to)) return false;
             Capsule(to, out Vector3 bottom, out Vector3 top, out float radius);
             return !Physics.CheckCapsule(bottom, top, radius, mask, QueryTriggerInteraction.Ignore)
                 && !Sweep(from, to - from, mask, out _);

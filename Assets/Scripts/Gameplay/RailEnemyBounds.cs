@@ -31,6 +31,19 @@ public sealed class RailEnemyBounds : MonoBehaviour
         var point = points[Random.Range(0, points.Length)];
         position = point.position; rotation = point.rotation; return true;
     }
+    // Reject planned exits before the runtime boundary has to clamp the enemy.
+    public bool AllowsTraversal(Vector3 point)
+    {
+        if (!assigned)
+        {
+            var route = RailRoute.Instance;
+            if (route == null || !route.Ready) return true;
+            var root = enemy != null && enemy.Root != null ? enemy.Root : transform;
+            home = route.EnemyBounds(root.position); assigned = true;
+        }
+        return home.Contains(point);
+    }
+
     void LateUpdate()
     {
         if (enemy == null || !PhotonSession.IsRailsRoom) return;

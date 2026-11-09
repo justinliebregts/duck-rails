@@ -1,0 +1,81 @@
+ARC TIER PASS wall=0 peak=1.25 result=Pending
+ARC TIER PASS wall=9 peak=3 result=Pending
+ARC TIER PASS wall=11.5 peak=6 result=Pending
+ARC TIER PASS wall=15 peak=12 result=Pending
+ARC TIER PASS wall=25 peak=12 result=Rejected
+WANDER EXPLORATION PASS: TieredArcs
+WANDER EXPLORATION PASS: TieredRevalidation
+WANDER EXPLORATION PASS: TierContinuation
+WANDER EXPLORATION PASS: RetreatTierProfile
+WANDER EXPLORATION PASS: SelectionBalance
+WANDER EXPLORATION PASS: UpwardExploration
+WANDER EXPLORATION PASS: ReturnSafetyAndMemory
+WANDER EXPLORATION PASS: BroadAndSmallRoofs
+WANDER EXPLORATION PASS: StagedDescent
+WANDER EXPLORATION PASS: WalkingPreference
+WANDER EXPLORATION PASS: CancellationAndRevalidation
+WANDER EXPLORATION PASS: BackoffAndAllocations
+WANDER CROWD PASS actors=30 services=1950 no scan bursts or starvation
+WANDER EXPLORATION PASS: CrowdScheduling
+WANDER NETWORK PASS upward=False intermediateArc=False: 21-byte transport, observer, landing, handoff
+WANDER NETWORK PASS upward=True intermediateArc=False: 21-byte transport, observer, landing, handoff
+WANDER NETWORK PASS upward=False intermediateArc=True: 21-byte transport, observer, landing, handoff
+WANDER EXPLORATION PASS: Network
+WANDER EXPLORATION PASS: PoliceRoofs
+TALL ROOF NETWORK PASS: 10Hz wire round-trip, remote motion, landing, stale/foreign packets, authority handoff
+POLICE ROOF PASS start=(92.42, 2.67, 31.06) roof=(85.53, 7.91, 31.06) rise=5.22 landed=(86.72, 7.91, 31.06)
+POLICE ROOF PASS start=(92.42, 2.67, 34.06) roof=(85.53, 7.91, 34.06) rise=5.23 landed=(86.72, 7.91, 34.06)
+POLICE ROOF PASS start=(92.42, 2.67, 37.06) roof=(85.53, 7.91, 37.06) rise=5.23 landed=(86.72, 7.91, 37.06)
+POLICE ROOF PASS start=(67.93, 0.86, 37.06) roof=(74.93, 7.91, 37.06) rise=7.05 landed=(73.74, 7.91, 37.06)
+POLICE ROOF PASS start=(67.93, 0.86, 34.06) roof=(74.93, 7.91, 34.06) rise=7.05 landed=(73.74, 7.91, 34.06)
+POLICE ROOF PASS start=(67.93, 0.86, 31.06) roof=(74.93, 7.91, 31.06) rise=7.05 landed=(73.74, 7.91, 31.06)
+POLICE ROOF PASS start=(83.23, 0.86, 48.36) roof=(83.23, 10.46, 41.36) rise=9.60 landed=(83.23, 10.46, 42.55)
+POLICE ROOF PASS start=(80.23, 0.86, 48.36) roof=(80.23, 10.46, 41.36) rise=9.60 landed=(80.23, 10.46, 42.55)
+POLICE ROOF PASS start=(77.23, 0.86, 48.36) roof=(77.23, 10.46, 41.36) rise=9.60 landed=(77.23, 10.46, 42.55)
+POLICE ROOF PASS start=(77.23, 0.92, 19.76) roof=(77.23, 7.91, 26.76) rise=6.99 landed=(77.23, 7.91, 25.57)
+POLICE ROOF PASS start=(80.23, 0.92, 19.76) roof=(80.23, 7.91, 26.76) rise=6.99 landed=(80.23, 7.91, 25.57)
+POLICE ROOF PASS start=(83.23, 0.92, 19.76) roof=(83.23, 7.91, 26.76) rise=6.99 landed=(83.23, 7.91, 25.57)
+ACTUAL POLICE ROOF PASS approaches=12 bounds=Center: (80.23, 5.66, 34.06), Extents: (8.30, 4.80, 10.30)
+Traversal passed: ground to roof
+Traversal passed: roof to ground
+Traversal passed: equal rooftop gap
+Traversal passed: roof to vehicle
+Traversal passed: vehicle to roof
+Traversal passed: higher rooftop
+Traversal passed: broad roof descent
+Traversal passed: six-unit roof
+Traversal passed: Police-height roof
+Traversal passed: taller roof
+ZombieSmasherTraversalChecks: ALL PASSED
+HitRetreatPoseHistory: ALL PASSED
+ZombieSmasherJumpChecks: ALL PASSED
+SmasherRetreatJumpChecks: ALL PASSED
+STAIR PASS ZombieSmasher riser=0.2 dt=0.0111 pos=(5.55, 2.40, 0.00) attempts=9 steps=9
+STAIR PASS ZombieSmasher riser=0.3 dt=0.0111 pos=(5.56, 3.60, 0.00) attempts=12 steps=10
+STAIR PASS ZombieSmasher riser=0.2 dt=0.0333 pos=(5.53, 2.40, 0.00) attempts=9 steps=9
+STAIR PASS ZombieSmasher riser=0.3 dt=0.0333 pos=(5.54, 3.60, 0.00) attempts=5 steps=5
+STAIR PASS ZombieBomber riser=0.2 dt=0.0111 pos=(5.54, 2.40, 0.00) attempts=12 steps=11
+STAIR PASS ZombieBomber riser=0.3 dt=0.0111 pos=(5.52, 3.60, 0.00) attempts=12 steps=10
+STAIR PASS ZombieBomber riser=0.2 dt=0.0333 pos=(5.53, 2.40, 0.00) attempts=11 steps=11
+STAIR PASS ZombieBomber riser=0.3 dt=0.0333 pos=(5.56, 3.60, 0.00) attempts=11 steps=11
+STAIR PASS ZombieMinion riser=0.2 dt=0.0111 pos=(5.52, 2.40, 0.00) attempts=12 steps=7
+STAIR PASS ZombieMinion riser=0.3 dt=0.0111 pos=(5.51, 3.60, 0.00) attempts=12 steps=10
+STAIR PASS ZombieMinion riser=0.2 dt=0.0333 pos=(5.51, 2.40, 0.00) attempts=12 steps=12
+STAIR PASS ZombieMinion riser=0.3 dt=0.0333 pos=(5.55, 3.60, 0.00) attempts=2 steps=2
+STAIR REJECTION PASS tall wall
+STAIR REJECTION PASS low ceiling
+STAIR SMASHER BARRIER PASS
+STAIR COST PASS: flat movement zero allocations, zero step attempts
+STAIR SPIDER PASS (unchanged mover and prefab)
+SpiderRoofLipChecks: ALL PASSED
+SpiderSurfaceRecovery: ALL PASSED
+EnemyStairChecks: ALL PASSED
+SMASHER PHASING PASS fps=30 peakChecks=6/30 cooldown/reset/cadence preserved
+SMASHER PHASING PASS fps=60 peakChecks=4/30 cooldown/reset/cadence preserved
+SMASHER PHASING PASS fps=90 peakChecks=2/30 cooldown/reset/cadence preserved
+SMASHER CLEARANCE PASS fresh obstacle/mask/scale observations between calls
+SharedFallRecovery: ALL PASSED
+HitRecovery: ALL PASSED
+SmasherTallBuildingChecks: ALL PASSED
+WANDER EXPLORATION PASS: Run
+SmasherWanderExplorationChecks: ALL PASSED

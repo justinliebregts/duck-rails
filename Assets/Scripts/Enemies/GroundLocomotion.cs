@@ -54,6 +54,11 @@ namespace Game.AI
         readonly int[] _wanderNodes = new int[256], _wanderParents = new int[256];
         readonly System.Collections.Generic.HashSet<int> _wanderVisited = new System.Collections.Generic.HashSet<int>();
         bool _wanderRequest;
+        ZombieSmasherJump _wanderJump;
+        readonly int[] _wanderLaunchIndices = new int[ZombieSmasherJump.WanderDirections];
+        bool _wanderSearch, _wanderTakeoffRequest;
+        int _wanderCandidate, _wanderFallback, _wanderDeferredLaunch, _wanderElevationIntent;
+        Vector3 _wanderOrigin;
         Vector3 _escapeTarget;
         float _escapeTimer;
         float _escapeSpeed;
@@ -100,6 +105,7 @@ namespace Game.AI
 
         public void Reset()
         {
+            CancelWanderExploration();
             StepAttempts = StepsTaken = 0;
             _pathVersion++;
             _pathCount = _pathIndex = 0;
@@ -124,6 +130,7 @@ namespace Game.AI
 
         public void ClearPath()
         {
+            CancelWanderExploration();
             _pathVersion++;
             _goalNode = -1;
             _pathCount = _pathIndex = 0;
@@ -219,6 +226,56 @@ namespace Game.AI
             _wanderRequest = true;
             _wantsPath = true;
         }
+
+        void CancelWanderExploration()
+        {
+            _wanderSearch = _wanderTakeoffRequest = false;
+            if (_wanderJump != null) _wanderJump.CancelWanderExit();
+        }
+
+        public void RequestWanderTakeoff()
+        {
+            _wanderTakeoffRequest = true;
+            _wantsPath = true;
+        }
+
+        void RunWanderExploration(EnemyManager manager, Transform root)
+        {
+            var enemy = GetComponent<Enemy>();
+            if (_wanderJump == null || !_wanderJump.isActiveAndEnabled || enemy == null || !enemy.HasAuthority
+                || enemy.CurrentState != Enemy.State.Wander || enemy.IsJumping || enemy.IsKnocked
+                || enemy.IsStunned || IsRecovering)
+            {
+                CancelWanderExploration(); _wantsPath = false;
+                return;
+            }
+            if (_wanderTakeoffRequest)
+            {
+                if (_wanderJump.ValidateWanderTakeoff(enemy, manager.SurfaceMask))
+                    _wanderTakeoffRequest = _wantsPath = false;
+                return;
+            }
+            // A hit/teleport invalidates the connected-route snapshot. Replan later.
+            if ((root.position - _wanderOrigin).sqrMagnitude > .25f)
+            {
+                CancelWanderExploration(); _wantsPath = false;
+                _wanderJump.FinishWanderScan(root.position, false);
+                return;
+            }
+            int slot = _wanderCandidate / 2;
+            int launch = _wanderElevationIntent > 0 && (_wanderCandidate & 1) == 0 ? 0 : _wanderLaunchIndices[slot];
+            var result = _wanderJump.PlanWanderExit(manager, manager.Graph.GetPosition(_wanderNodes[launch]),
+                _wanderJump.WanderDirection(slot), (_wanderCandidate & 1) != 0);
+            if (result == ZombieSmasherJump.WanderPlanResult.Pending) return;
+            if (result == ZombieSmasherJump.WanderPlanResult.Deferred) _wanderDeferredLaunch = launch;
+            bool found = result == ZombieSmasherJump.WanderPlanResult.Found;
+            _wanderCandidate++;
+            if (!found && _wanderCandidate < ZombieSmasherJump.WanderDirections * 2) return;
+            if (!found && _wanderJump.UseDeferredWanderExit()) { found = true; launch = _wanderDeferredLaunch; }
+            _wanderSearch = false; _wantsPath = false;
+            _wanderJump.FinishWanderScan(root.position, found);
+            InstallWanderPath(found ? launch : _wanderFallback);
+        }
         public void RequestPathToWorld(EnemyManager m, Vector3 worldPoint)
         {
             if (_escapeTimer > 0f) return;
@@ -258,6 +315,12 @@ namespace Game.AI
         {
             Transform root = GetRoot();
             if (root == null) { ClearPath(); return; }
+
+            if (_wanderSearch || _wanderTakeoffRequest)
+            {
+                RunWanderExploration(m, root);
+                return;
+            }
 
             if (_wanderRequest)
             {
@@ -351,7 +414,10 @@ namespace Game.AI
             {
                 int node = _path[_pathIndex];
                 target = g.GetPosition(node);
-                if ((target - pos).sqrMagnitude < arriveRadius * arriveRadius)
+                bool takeoff = _wanderJump != null && _wanderJump.HasWanderExit && _pathIndex == _pathCount - 1;
+                if (takeoff) target = _wanderJump.WanderTakeoff;
+                float arrival = takeoff ? .05f : arriveRadius;
+                if ((target - pos).sqrMagnitude < arrival * arrival)
                 {
                     _currentNode = node;
                     _pathIndex++;
@@ -856,6 +922,7 @@ namespace Game.AI
 
         void RequestPath(int goal)
         {
+            CancelWanderExploration();
             _wanderRequest = false;
             _pathVersion++;
             if (!_wantsPath) _pathQueuedFrame = Time.frameCount;
@@ -972,9 +1039,57 @@ namespace Game.AI
                     _blockedExpiry.Clear();
                     _blockedUntil = 0f;
                     BuildWanderPath(m, pos, start, false);
+                    return;
                 }
-                return;
             }
+            var enemy = GetComponent<Enemy>();
+            _wanderJump = GetComponent<ZombieSmasherJump>();
+            int elevation = _wanderJump != null && enemy != null ? _wanderJump.ChooseWanderElevation(enemy) : 0;
+            if (elevation != 0)
+            {
+                int walking = -1, options = 0;
+                for (int i = 1; i < count; i++)
+                {
+                    float rise = g.GetPosition(_wanderNodes[i]).y - pos.y;
+                    if (rise * elevation >= _wanderJump.MinimumWanderElevation
+                        && Random.Range(0, ++options) == 0) walking = i;
+                }
+                if (walking >= 0)
+                {
+                    // Reuse the connected-route traversal: stairs/ramps win over jumping.
+                    choice = walking;
+                    _wanderJump.FinishWanderScan(pos, true);
+                }
+                else
+                {
+                    for (int direction = 0; direction < ZombieSmasherJump.WanderDirections; direction++)
+                    {
+                        Vector3 outward = _wanderJump.WanderDirection(direction);
+                        int best = 0; float furthest = 0f;
+                        for (int i = 1; i < count; i++)
+                        {
+                            Vector3 delta = g.GetPosition(_wanderNodes[i]) - pos;
+                            // Search the current platform, not another storey above it.
+                            if (Mathf.Abs(delta.y) > .5f) continue;
+                            float distance = Vector3.Dot(delta, outward);
+                            if (distance > furthest) { furthest = distance; best = i; }
+                        }
+                        int length = 0;
+                        for (int i = best; i >= 0; i = _wanderParents[i]) length++;
+                        _wanderLaunchIndices[direction] = length <= _path.Length ? best : 0;
+                    }
+                    _wanderOrigin = pos; _wanderFallback = choice; _wanderCandidate = 0;
+                    _wanderElevationIntent = elevation;
+                    _wanderSearch = true; _wantsPath = true;
+                    return;
+                }
+            }
+            InstallWanderPath(choice);
+        }
+
+        void InstallWanderPath(int choice)
+        {
+            if (choice < 0) return;
             // Use scratch storage for the reverse chain, then retain its start if
             // the chosen route exceeds the movement path capacity.
             int length = 0;

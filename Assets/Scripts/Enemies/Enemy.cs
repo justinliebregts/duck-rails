@@ -632,6 +632,7 @@ namespace Game.AI
             switch (CurrentState)
             {
                 case State.Wander:
+                    if (_jump != null && _jump.isActiveAndEnabled && _jump.TickWanderExit(this)) break;
                     if (_chaseCooldownRemaining <= 0f && _stalk != null && _stalk.isActiveAndEnabled && _stalk.TickStalk(this, m, dt))
                         break;
                     if (_loco.PathDone && !_loco.WantsPath && _loco.TickWanderPause(dt))

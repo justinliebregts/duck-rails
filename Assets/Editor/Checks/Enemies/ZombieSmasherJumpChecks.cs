@@ -64,6 +64,11 @@ public static class ZombieSmasherJumpChecks
         var jump = actor.AddComponent<ZombieSmasherJump>();
         Call(enemy, "Awake");
         Call(jump, "Awake");
+        // Keep this legacy duration/limit fixture explicit; production tuning is
+        // exercised against the prefab and real buildings in SmasherTallBuildingChecks.
+        Set(jump, "maxJumpHeight", 5f);
+        Set(jump, "maxJumpDistance", 9f);
+        Set(jump, "jumpDuration", 1f);
         int landings = 0;
         jump.Landed += () =>
         {
@@ -102,6 +107,8 @@ public static class ZombieSmasherJumpChecks
         Set(jump, "_airNudge", Vector3.forward * 2f);
         Set(jump, "_airNudgeFrom", 0.5f);
         Set(jump, "_fallDrift", Vector3.right);
+        Check(!jump.TickJump(enemy, manager, 0.02f), "first check arms the staggered deadline");
+        Set(jump, "_nextCheck", Time.time);
         Check(jump.TickJump(enemy, manager, 0.3f) && jump.IsJumping, "jump takes over ground movement");
         Check(Vector3.Distance((Vector3)Call(jump, "Arc", 1f), baselineEnd) < 0.001f,
             "previous hit does not change the next jump destination");
@@ -116,13 +123,19 @@ public static class ZombieSmasherJumpChecks
 
         actor.transform.position = Vector3.zero;
         jump.ResetJump();
+        ground.Reset();
         Set(jump, "jumpDuration", 0.3f);
+        jump.TickJump(enemy, manager, 0.02f);
+        Set(jump, "_nextCheck", Time.time);
         Check(jump.TickJump(enemy, manager, 0.31f) && !jump.IsJumping, "short duration and large timestep land safely");
         Check(Mathf.Abs(actor.transform.position.y - 3f) < 0.01f, "fast jump lands on roof");
 
         actor.transform.position = Vector3.zero;
         jump.ResetJump();
+        ground.Reset();
         Set(jump, "jumpDuration", 0.9f);
+        jump.TickJump(enemy, manager, 0.02f);
+        Set(jump, "_nextCheck", Time.time);
         Check(jump.TickJump(enemy, manager, 0.3f) && jump.IsJumping, "second jump begins");
         UnityEngine.Object.DestroyImmediate(roof);
         Physics.SyncTransforms();
@@ -181,7 +194,7 @@ public static class ZombieSmasherJumpChecks
         Check(prefab != null && prefab.GetComponent<ZombieSmasherJump>() != null, "prefab has jump component");
         Check(prefab.GetComponent<Game.Audio.SoundEmitter>() == null, "no separate landing SoundEmitter");
         var sfx = new SerializedObject(prefab.GetComponent<ZombieSmasherSFX>());
-        var sound = AssetDatabase.LoadAssetAtPath<Game.Audio.SoundEvent>("Assets/Audio/Events/ZombieSmasher_Land.asset");
+        var sound = AssetDatabase.LoadAssetAtPath<Game.Audio.SoundEvent>("Assets/Audio/Events/Enemies/ZombieSmasher_Land.asset");
         Check(sound != null && sfx.FindProperty("landingSound").objectReferenceValue == sound, "SFX references landing event");
         var soundData = new SerializedObject(sound);
         Check(soundData.FindProperty("clips").GetArrayElementAtIndex(0).objectReferenceValue ==
