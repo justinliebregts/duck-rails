@@ -27,7 +27,10 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
     readonly Func<bool> localInteraction;
     readonly string key, revisionKey;
     readonly string spawnToken;
+    readonly int viewId;
     Room room;
+    object refreshProof;
+    int refreshGeneration;
     bool applying, disposed, initialized, deferredRestore, awaitingCheckpoint, needsPublish;
     int revision, revisionWriter, issuedRevision, issuedWriter, lastIssued, firstQueuedRevision, retries;
     double pendingSince;
@@ -48,6 +51,39 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
     }
     public string Identity { get; private set; }
     public bool Applying => applying;
+    internal string Key => key;
+    internal PhotonView View => view;
+
+    internal static bool TryFind(string name, out RoomObjectRecovery record)
+    {
+        return objects.TryGetValue(name, out record) && record.room == PhotonNetwork.CurrentRoom &&
+            !record.disposed && record.view != null && record.view.ViewID == record.viewId && record.view.SpawnToken == record.spawnToken;
+    }
+
+    internal void UnexpectedLoss(string reason, int sender, int holdVersion)
+    {
+        PhotonMasterHandoff.ReportPickupLoss(this, reason, sender, holdVersion, Revision);
+    }
+
+    // Only the corroborated controller may publish, and only its current live contents.
+    bool CanCapturePickup() => view.TryGetComponent(out BagObject bag) ? bag.CanRefreshPickup :
+        view.TryGetComponent(out PhotonGrabbable item) && item.CanRefreshPickup;
+
+    internal bool RefreshFromController(int expectedOwner, int expectedController, int request)
+    {
+        if (!view.IsMine || view.OwnerActorNr != expectedOwner || view.ControllerActorNr != expectedController ||
+            applying || disposed || room != PhotonNetwork.CurrentRoom ||
+            !PhotonMasterHandoff.IsCurrentController(room, expectedOwner, expectedController) || !CanCapturePickup()) return false;
+        // A capture following several coalesced requests satisfies all earlier requests in this epoch.
+        // Bind the proof to this ownership interval and retain it across existing checkpoint CAS retries.
+        if (!(refreshProof is long prior) || refreshGeneration != view.OwnershipGeneration ||
+            (int)(prior >> 32) != room.MasterClientId || !PhotonMasterHandoff.Fresh((int)prior, PhotonNetwork.ServerTimestamp) ||
+            unchecked(request - (int)prior) >= 0)
+            refreshProof = Stamp(room.MasterClientId, request);
+        refreshGeneration = view.OwnershipGeneration;
+        Changed();
+        return true;
+    }
 
     public RoomObjectRecovery(PhotonView view, Func<object[]> capture, Action<object[]> restore, Func<int> wearer = null,
         Func<bool> localInteraction = null)
@@ -56,6 +92,7 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
         this.wearer = wearer;
         this.localInteraction = localInteraction;
         spawnToken = view.SpawnToken;
+        viewId = view.ViewID;
         // Separate scene objects and every spawned lifetime, including objects sharing a prefab/ID.
         key = Prefix + (spawnToken == null ? "s:" : "r:" + spawnToken + ":") + view.ViewID;
         revisionKey = key + ":v";
@@ -108,8 +145,13 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
         int next = Math.Max(previous, lastIssued) + 1;
         int writer = PhotonNetwork.LocalPlayer.ActorNumber;
         int wornBy = wearer != null ? wearer() : 0;
-        var data = new object[] { Identity, next, writer,
-            wornBy != 0 ? wornBy : view.OwnerActorNr, capture(), wornBy };
+        if (refreshProof is long proof && (refreshGeneration != view.OwnershipGeneration ||
+            (int)(proof >> 32) != room.MasterClientId || !PhotonMasterHandoff.Fresh((int)proof, PhotonNetwork.ServerTimestamp) ||
+            !CanCapturePickup())) refreshProof = null;
+        var data = new object[refreshProof == null ? 6 : 7];
+        data[0] = Identity; data[1] = next; data[2] = writer;
+        data[3] = wornBy != 0 ? wornBy : view.OwnerActorNr; data[4] = capture(); data[5] = wornBy;
+        if (refreshProof != null) data[6] = refreshProof;
         var values = new Hashtable { [key] = data, [revisionKey] = Stamp(next, writer) };
         // CAS prevents a delayed previous controller from replacing a newer owner's checkpoint.
         // Initialization is written only by the first controlling client; subsequent changes compare revisions.
@@ -139,13 +181,14 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
     public void Reconcile()
     {
         if (disposed || view == null || room == null || room != PhotonNetwork.CurrentRoom ||
-            !(room.CustomProperties[key] is object[] data) || data.Length != 6 ||
+            !(room.CustomProperties[key] is object[] data) || (data.Length != 6 && data.Length != 7) ||
             !(data[0] is string identity) || !(data[1] is int revision) ||
             !(data[2] is int writer) || !(data[3] is int owner) || !(data[4] is object[] state)) return;
         if (revision < Revision || (revision == Revision && writer == revisionWriter && identity == Identity && !deferredRestore)) return;
         bool ownAcknowledgement = writer == PhotonNetwork.LocalPlayer?.ActorNumber && lastIssued >= revision;
         bool newer = revision != Revision || writer != revisionWriter;
-        bool preserveLiveState = (initialized && owner != view.OwnerActorNr)
+        bool ownerConflict = (initialized || view.HasLiveOwnership) && owner != view.OwnerActorNr;
+        bool preserveLiveState = (ownerConflict && (data.Length == 6 || !PhotonMasterHandoff.CanRepairObserver(this, owner, writer, revision, data[6])))
             || (localInteraction != null && localInteraction())
             || (view.IsMine && (awaitingCheckpoint || needsPublish));
         Identity = identity;
@@ -180,6 +223,7 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
         applying = true;
         try
         {
+            if (ownerConflict) view.MarkLiveOwnership();
             view.OwnerActorNr = owner;
             var player = room.GetPlayer(owner);
             view.ControllerActorNr = owner > 0 && player != null && !player.IsInactive ? owner : room.MasterClientId;
@@ -300,6 +344,7 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
                 item.revisionWriter = item.Revision = item.issuedRevision = item.issuedWriter = item.lastIssued = item.firstQueuedRevision = 0;
                 item.initialized = item.deferredRestore = item.needsPublish = false;
                 item.Identity = null;
+                item.refreshProof = null;
             }
             item.Reconcile();
         }
@@ -311,7 +356,7 @@ public sealed class RoomObjectRecovery : IOnPhotonViewPreNetDestroy
         var current = PhotonNetwork.CurrentRoom;
         if (current == null || current.Name != roomName || string.IsNullOrEmpty(identity)) return false;
         foreach (object value in current.CustomProperties.Values)
-            if (value is object[] data && data.Length == 6 && data[0] is string token && token == identity)
+            if (value is object[] data && (data.Length == 6 || data.Length == 7) && data[0] is string token && token == identity)
             {
                 // A departed wearer's old copy is awaiting destruction, not a live
                 // world pickup. It must not suppress their saved loadout on rejoin.

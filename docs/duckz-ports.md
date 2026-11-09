@@ -185,3 +185,45 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   headset occlusion, recovery timing and Quest performance. Source test results are
   not Rails acceptance evidence. No diagnostic reports were inspected.
 - Destination commit: the commit introducing this entry (see Git history).
+
+## 2fd048b293dd2c3e1d9e2bfc2e9e8d2d6701de06 — Late-join pickup ownership
+
+- Status: implemented; editor and disposable batch validation passed November 8, 2026.
+- Source title: `Preserve held pickups across late joins and recover repeated ownership losses`.
+- Behavior: spawn-matched, current-master join ownership initializes only untouched
+  views; live transfers, confirmed grabs and explicit room returns take precedence.
+  Repeated losses on different pickups request controller-owned live checkpoints.
+  Observer repair requires matching master confirmation and a newer tagged checkpoint;
+  intervening ownership invalidates it. Bags require settled, known contents. Two
+  reporters recurring on different objects after repair can trigger master handoff,
+  with four reports/second, four-second repair grace and a 60-second handoff cooldown.
+- Dependencies: both projects use Unity 6000.3.24f1 and PUN over Realtime. Rails already
+  has spawn tokens, room checkpoints, bag claims and availability heartbeats.
+- Destination: `Assets/Photon/PhotonUnityNetworking/Code/{PhotonHandler,
+  PhotonNetworkPart,PhotonView}.cs`; `Assets/Scripts/Items/{PhotonGrabbable,
+  PhotonGrabbable.Recovery}.cs`, `Items/Bag/{BagObject,BagObject.Recovery}.cs`;
+  `Assets/Scripts/Photon/{PhotonHeldItems,PhotonMasterHandoff,
+  PhotonMasterHandoff.Pickups,RoomObjectRecovery,PhotonSession}.cs`; networking
+  `PickupRecoveryChecks{,.Join}.cs` and `PickupJoinNetworkChecks.cs`.
+- Adaptations: pickup events use 111–113 (Duckz 107–109 collide with Rails train,
+  expedition and reward events). Append `-rails-pickup-v2` to the configured app
+  version; all players need matching updated builds. Crew-return and Voice use the
+  connected PUN version. Preserve Rails focus/shared-rig handling, RailCargo frames,
+  bag reattachment, authentication, session lifecycle and enemy boarding.
+  Fixtures use Rails RequiredScene; the live fixture's synthetic identities still
+  need authenticated account wiring before use with the configured Photon app.
+- Assets: no prefab/scene changes needed; handoff is added at runtime and the new
+  option defaults true. Three new script metas retain source GUIDs, each unique
+  across destination Assets. Existing GUIDs and unrelated edits preserved.
+- Validation: exact source/parent diff inspected; verified MCP target
+  `X:/Work/duck-rails/Assets`; Unity compilation and `RailSessionChecks.Run`,
+  `RailDriveChecks.Run`, `RailDuckzPortChecks.Cargo` passed. Focused diff whitespace
+  check passed. Disposable `PickupRecoveryChecks.Run` passed 298 assertions (including
+  150 regrab assertions), exit 0. Fixture owner/controller now identify the local
+  actor as Rails requires; an initial fixture-readiness failure was corrected.
+  See [validation evidence](validation/pickup-join-port/checks.txt).
+- Remaining: authenticated three-client late join, repeated-loss repair/handoff,
+  loaded-bag request during master departure/rejoin, moving train cargo and worn
+  headset checks. Source test results are not Rails acceptance evidence. No diagnostic
+  reports inspected; source Duckz files untouched.
+- Destination commit: the commit introducing this entry (see Git history).

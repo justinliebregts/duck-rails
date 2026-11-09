@@ -7,6 +7,8 @@ public partial class PhotonGrabbable
     bool checkpointWhenSettled, recoveryStarted, recoverDetachedHand;
     internal bool AcceptRecoveryPacket { get; private set; } = true;
     internal string RecoveryIdentity => recovery?.Identity;
+    internal bool CanRefreshPickup => !pickupPending && !remoteHeld;
+    internal void ReportMasterDrop(int sender) => recovery?.UnexpectedLoss("master released active hand", sender, holdVersion);
 
     void Start() { recoveryStarted = true; EnsureRecovery(); }
 

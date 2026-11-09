@@ -8,7 +8,7 @@ using UnityEngine.XR;
 /// <summary>Transfers simulation off an unfocused headset; detects silent game loops, not transport ACKs.</summary>
 [DisallowMultipleComponent]
 [DefaultExecutionOrder(11000)]
-public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCallback
+public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCallback
 {
     static PhotonMasterHandoff instance;
     public static bool LocalAvailable => instance == null || instance.InputAvailable;
@@ -85,13 +85,14 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
     void ResetRoom()
     {
         room = PhotonNetwork.CurrentRoom;
-        RoomObjectRecovery.JoinedRoom();
         ResetObservation();
+        RoomObjectRecovery.JoinedRoom();
         Publish(true);
     }
 
     void ResetObservation()
     {
+        ClearPickupReports();
         // A waking/joining client must not elect itself using its pre-suspend history.
         heartbeats.Clear();
         observationStartedAt = PhotonNetwork.ServerTimestamp;
@@ -179,7 +180,7 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
             Others, reliable ? SendOptions.SendReliable : SendOptions.SendUnreliable);
     }
 
-    static bool Fresh(int sentAt, int now)
+    internal static bool Fresh(int sentAt, int now)
     {
         int age = unchecked(now - sentAt); // Photon timestamps wrap; subtraction is wrap-safe.
         return age >= -1000 && age < TimeoutMilliseconds;
@@ -187,6 +188,8 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
 
     public void OnEvent(EventData data)
     {
+        if (data.Code == PickupReportCode || data.Code == PickupRefreshCode || data.Code == PickupAuthorityCode)
+        { ReceivePickupEvent(data); return; }
         if (data.Code == PhotonHeldItems.DropEvent) { PhotonHeldItems.OnEvent(data); return; }
         if (data.Code != HeartbeatCode || !PhotonNetwork.InRoom || PhotonNetwork.OfflineMode
             || !(data.CustomData is object[] values) || values.Length != 2
@@ -255,6 +258,8 @@ public sealed class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOnEventCal
     }
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
+        ClearPickupReports();
+        pickupHandoffAfter = Time.realtimeSinceStartupAsDouble + PickupHandoffCooldown;
         RoomObjectRecovery.ReconcileAll();
         retryAt = 0;
         nextHeldCheck = 0;

@@ -74,6 +74,9 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
 
     public void OnControllerChange(Player newController, Player previousController)
     {
+        if (IsHeld && !pickupPending && !photonView.IsMine && previousController == PhotonNetwork.LocalPlayer &&
+            photonView.OwnershipTransferSender == 0)
+            recovery?.UnexpectedLoss("controller changed", 0, holdVersion);
         recovery?.Reconcile();
         if (!photonView.IsMine && !pickupPending && IsHeld) CancelLocalOwnership();
         if (transformView != null) transformView.ResetNetworkState();
@@ -290,6 +293,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
 
         SetTransformSync(false);
         base.Grab(hand);
+        if (IsHeld && !pickupPending && photonView != null && photonView.IsMine) photonView.MarkLiveOwnership();
         TrackHeld();
         RecoveryChanged();
         _hasSamplePrev = false;

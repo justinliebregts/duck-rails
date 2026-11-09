@@ -188,6 +188,17 @@ namespace Photon.Pun
         // Local notification only: Request-mode rejection otherwise has no
         // failure callback. Separate from Takeover's existing callback semantics.
         public event Action<int, int> OwnershipTransferRejected;
+        private Room liveOwnershipRoom;
+        public int OwnershipGeneration { get; private set; }
+        public bool HasLiveOwnership => liveOwnershipRoom != null && ReferenceEquals(liveOwnershipRoom, PhotonNetwork.CurrentRoom);
+        // Set only during dispatch of a validated live transfer, including its controller callbacks.
+        public int OwnershipTransferSender { get; internal set; }
+
+        public void MarkLiveOwnership()
+        {
+            liveOwnershipRoom = PhotonNetwork.CurrentRoom;
+            unchecked { OwnershipGeneration++; }
+        }
         internal void NotifyOwnershipTransferRejected(int recipientActor, int senderActor)
         {
             OwnershipTransferRejected?.Invoke(recipientActor, senderActor);
@@ -319,6 +330,7 @@ namespace Photon.Pun
                     PhotonNetwork.LocalCleanPhotonView(this);
                 }
 
+                liveOwnershipRoom = null;
                 this.viewIdField = value;
                 this.CreatorActorNr = value / PhotonNetwork.MAX_VIEW_IDS;   // the creator can be derived from the viewId. this is also the initial owner and creator.
                 this.OwnerActorNr = this.CreatorActorNr;
@@ -369,6 +381,7 @@ namespace Photon.Pun
         /// called by PhotonNetwork.LocalCleanupAnythingInstantiated
         internal void ResetPhotonView(bool resetOwner)
         {
+            liveOwnershipRoom = null;
             //// If this was fired by this connection rejoining, reset the ownership cache to owner = creator.
             //// TODO: This reset may not be needed at all with the ownership being invalidated next.
             //if (resetOwner)

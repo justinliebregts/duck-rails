@@ -254,6 +254,7 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
         prevCarryOffset = RailCargo.PassengerCarryOffset;
         carryVelocity = Vector3.zero;
         holdingHand = hand;
+        if (photonView.OwnerActorNr == LocalActor) photonView.MarkLiveOwnership();
         if (impactSounds != null) impactSounds.ResetSwingState();
         hand.HoldShape(this);
         Play(GrabSound);
@@ -499,6 +500,9 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
 
     public void OnControllerChange(Player newController, Player previousController)
     {
+        if (holdingHand != null && state == BagState.Held && !CanControl && previousController == PhotonNetwork.LocalPlayer &&
+            photonView.OwnershipTransferSender == 0)
+            recovery?.UnexpectedLoss("bag controller changed", 0, holdVersion);
         recovery?.Reconcile();
         BagInventory.Local?.ReattachRecoveredBack(this);
         // Control may change without an ownership-transfer callback (master

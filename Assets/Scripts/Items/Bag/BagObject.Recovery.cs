@@ -6,6 +6,10 @@ public partial class BagObject
     RoomObjectRecovery recovery;
     bool checkpointWhenSettled, recoveryStarted, recoverDetachedHand;
     public string RecoveryIdentity => recovery?.Identity;
+    internal bool HasLocalHand => holdingHand != null && state == BagState.Held;
+    internal bool CanRefreshPickup => contentsAuthorityKnown && !GrantPending && !awaitingClaim && !orphaned &&
+        (state == BagState.Dropped || holderActor == LocalActor && (HasLocalHand || localBackAnchor != null));
+    internal void ReportMasterDrop(int sender) => recovery?.UnexpectedLoss("master released active bag", sender, holdVersion);
 
     void Start() { recoveryStarted = true; EnsureRecovery(); }
 

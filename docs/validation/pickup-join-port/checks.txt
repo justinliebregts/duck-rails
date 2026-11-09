@@ -1,0 +1,167 @@
+Duck Rails pickup port validation — November 8, 2026
+Source: 2fd048b293dd2c3e1d9e2bfc2e9e8d2d6701de06
+Unity: 6000.3.24f1
+MCP target verified: X:/Work/duck-rails/Assets
+Working editor: compilation complete; RailSessionChecks.Run,
+RailDriveChecks.Run and RailDuckzPortChecks.Cargo completed successfully.
+
+Disposable copy: X:/Work/duck-rails/tmp/duckz-port-validation
+Command: Unity.exe -batchmode -nographics -projectPath <copy> -executeMethod PickupRecoveryChecks.Run
+Final process exit code: 0
+Synthetic Photon transport only; no live clients or headset acceptance.
+The sandbox launch stalled at licensing. Authorized retry reached the tests.
+First test run failed at local-avatar readiness: the imported fixture only set
+IsMine, while Rails requires Owner.IsLocal. Set owner/controller to the actual
+synthetic local actor, preserving production checks. Final rerun passed.
+Full local log: Temp/pickup-recovery-batch-final.log (ignored)
+
+PASS pickup recovery: actor 1 grabs immediately without advancing the confirmed revision
+PASS pickup recovery: normal checkpoint CAS succeeds
+PASS pickup recovery: actor 1 control: acknowledgment preserves grab and hand position
+PASS pickup recovery: actor 1 grabs immediately without advancing the confirmed revision
+PASS pickup recovery: actor 1 unrelated error preserves hold, pose and ownership
+PASS pickup recovery: valid pickup still commits after an unrelated error
+PASS pickup recovery: acknowledgement confirms the revision without detaching the hand
+PASS pickup recovery: actor 2 grabs immediately without advancing the confirmed revision
+PASS pickup recovery: normal checkpoint CAS succeeds
+PASS pickup recovery: actor 2 control: acknowledgment preserves grab and hand position
+PASS pickup recovery: actor 2 grabs immediately without advancing the confirmed revision
+PASS pickup recovery: actor 2 unrelated error preserves hold, pose and ownership
+PASS pickup recovery: valid pickup still commits after an unrelated error
+PASS pickup recovery: acknowledgement confirms the revision without detaching the hand
+PASS pickup recovery: actor 3 grabs immediately without advancing the confirmed revision
+PASS pickup recovery: normal checkpoint CAS succeeds
+PASS pickup recovery: actor 3 control: acknowledgment preserves grab and hand position
+PASS pickup recovery: actor 3 grabs immediately without advancing the confirmed revision
+PASS pickup recovery: actor 3 unrelated error preserves hold, pose and ownership
+PASS pickup recovery: valid pickup still commits after an unrelated error
+PASS pickup recovery: acknowledgement confirms the revision without detaching the hand
+PASS pickup recovery: rejected save does not poison the confirmed revision or stream
+PASS pickup recovery: watchdog retries a rejected same-writer save against the confirmed stamp
+PASS pickup recovery: retry confirms a fresh revision and clears pending state
+PASS pickup recovery: failed enqueue is not treated as a server revision
+PASS pickup recovery: failed enqueue is retried without requiring another interaction
+PASS pickup recovery: original delayed save can succeed after a timeout
+PASS pickup recovery: late original acknowledgement does not restore old pose or acknowledge a different retry payload
+PASS pickup recovery: retry based on an old cache safely fails CAS after original success
+PASS pickup recovery: next retry rebases on the newly acknowledged revision
+PASS pickup recovery: recovery saves the latest pose instead of the failed payload
+PASS pickup recovery: automatic retries stop after three attempts
+PASS pickup recovery: new explicit interaction remains usable after retry exhaustion
+PASS pickup recovery: watchdog stops writing after ownership passes to another player
+PASS pickup recovery: disposed objects cannot retry or resurrect a checkpoint
+PASS pickup recovery: unconfirmed ownership still allows immediate predicted pickup
+PASS pickup recovery: ownership timeout clears only our predicted hold without stealing authority
+PASS pickup recovery: late grant does not reattach a canceled hand
+PASS pickup recovery: fresh pickup is possible after a timed-out grant
+PASS pickup recovery: watchdog preserves hold when ownership arrived without a completion callback
+PASS pickup recovery: initial bag contents confirmed
+PASS pickup recovery: unrelated failure cannot restore removed bag contents
+PASS pickup recovery: earlier bag acknowledgement does not restore newer local contents
+PASS pickup recovery: chained standby/contents flush preserves the latest save
+PASS pickup recovery: retained bag contents have no duplicated gold or weapon
+PASS pickup recovery: delayed previous-owner checkpoint cannot revoke current hold or ownership
+PASS pickup recovery: new owner publishes current hold against the retained revision
+PASS pickup recovery: current hold remains attached after reconciling the older controller's save
+PASS pickup recovery: real transfer clears the previous owner's local hold
+PASS pickup recovery: previous owner's save may still succeed after the transfer
+PASS pickup recovery: late own acknowledgement cannot reclaim another player's item
+PASS pickup recovery: old owner's watchdog sends nothing after the late save
+PASS pickup recovery: first checkpoint initializes a previously nonexistent key
+PASS pickup recovery: unacknowledged initialization is never retried as an unconditional overwrite
+PASS pickup recovery: explicit interaction after exhaustion also cannot overwrite an unseen newer checkpoint
+PASS pickup recovery: original initialization can still be acknowledged late
+PASS pickup recovery: latest state is recoverable once initialization is acknowledged
+PASS pickup recovery: checkpoint ahead of ownership waits for the ownership event
+PASS pickup recovery: owner-only change applies deferred held checkpoint even when controller remains master
+PASS pickup recovery: 400,000 actual pending-item checks allocate zero bytes and emit no premature retries
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: room-wide timeout sends at most four retries per watchdog tick
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: round-robin retry budget reaches every stalled object without starvation
+PASS pickup recovery: 1,000 real pending-list sweeps allocate nothing and send no healthy-room traffic
+PASS pickup recovery: sender's held checkpoint commits
+PASS pickup recovery: observer sees current owner pickup before checkpoint acknowledgement
+PASS pickup recovery: old loose snapshot cannot undo a newer confirmed hold
+PASS pickup recovery: matching confirmed snapshot continues updating the observer
+PASS pickup recovery: matching revision from a stale controller still cannot release another player's hold
+PASS pickup recovery: bootstrap requires current master, valid shape, matching spawn and room member
+PASS pickup recovery: first valid join list initializes room ownership
+PASS pickup recovery: live transfer and acknowledgement establish a confirmed pickup
+PASS pickup recovery: late lists keep the confirmed hand and pose for actor 1
+PASS pickup recovery: legitimate competing transfer still releases previous holder
+PASS pickup recovery: late list preserves explicit return to room
+PASS pickup recovery: bootstrap requires current master, valid shape, matching spawn and room member
+PASS pickup recovery: first valid join list initializes room ownership
+PASS pickup recovery: live transfer and acknowledgement establish a confirmed pickup
+PASS pickup recovery: late lists keep the confirmed hand and pose for actor 2
+PASS pickup recovery: legitimate competing transfer still releases previous holder
+PASS pickup recovery: late list preserves explicit return to room
+PASS pickup recovery: delayed checkpoint or unmatched confirmation cannot repair an observer
+PASS pickup recovery: untagged controller checkpoint cannot impersonate a refresh
+PASS pickup recovery: targeted repair works in both delivery orders
+PASS pickup recovery: intervening live transfer invalidates the old repair
+PASS pickup recovery: delayed checkpoint or unmatched confirmation cannot repair an observer
+PASS pickup recovery: untagged controller checkpoint cannot impersonate a refresh
+PASS pickup recovery: confirmation waits for a newer controller checkpoint
+PASS pickup recovery: targeted repair works in both delivery orders
+PASS pickup recovery: intervening live transfer invalidates the old repair
+PASS pickup recovery: healthy master is ready throughout pickup-only handoff checks
+PASS pickup recovery: handoff boundary checks have an eligible backup
+PASS pickup recovery: one reporter on multiple objects cannot switch master
+PASS pickup recovery: two reporters on one object cannot switch master
+PASS pickup recovery: early, duplicate and out-of-order reports cannot corroborate
+PASS pickup recovery: reports at 20 seconds start a new observation window
+PASS pickup recovery: confirmed switch installs the 60-second pickup cooldown
+PASS pickup recovery: fully corroborated failures during cooldown cannot switch master again
+PASS pickup recovery: with identical evidence the master can hand off once cooldown expires
+PASS pickup recovery: room diagnostic detects distinct stalled objects with bounded tracking
+PASS pickup recovery: 10,000 idle watchdog/flush calls allocate nothing and send no traffic
+PickupRegrabChecks ALL PASSED (4 cases, 150 assertions)
+PickupRecoveryChecks ALL PASSED (298 assertions)

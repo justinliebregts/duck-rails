@@ -100,7 +100,22 @@ public static class PhotonHeldItems
         if (data.Sender != actor && data.Sender != PhotonNetwork.CurrentRoom.MasterClientId) return;
         PhotonView view = PhotonView.Find(id);
         // A reliable drop queued before standby must not release a later spawn reusing this ID.
-        if (view != null && Equals(values[5], view.SpawnToken)) Apply(view, actor, version, position, rotation);
+        if (view == null || !Equals(values[5], view.SpawnToken)) return;
+        if (data.Sender != actor && actor == PhotonNetwork.LocalPlayer.ActorNumber && view.IsMine)
+        {
+            // Report only a release that actually removed a confirmed local hand.
+            if (view.TryGetComponent(out PhotonGrabbable item) && item.IsHeld && !item.PickupPending)
+            {
+                if (item.ApplyUnavailableDrop(actor, version, position, rotation)) item.ReportMasterDrop(data.Sender);
+                return;
+            }
+            if (view.TryGetComponent(out BagObject bag) && bag.HasLocalHand)
+            {
+                if (bag.ApplyUnavailableDrop(actor, version, position, rotation)) bag.ReportMasterDrop(data.Sender);
+                return;
+            }
+        }
+        Apply(view, actor, version, position, rotation);
     }
 
     static bool Apply(PhotonView view, int actor, int version, Vector3 position, Quaternion rotation)
@@ -114,6 +129,7 @@ public static class PhotonHeldItems
     public static void ReturnToRoom(PhotonView view)
     {
         if (!PhotonNetwork.InRoom) return;
+        view.MarkLiveOwnership();
         view.OwnerActorNr = 0;
         view.ControllerActorNr = PhotonNetwork.CurrentRoom.MasterClientId;
     }

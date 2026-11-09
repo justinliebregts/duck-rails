@@ -311,7 +311,7 @@ namespace Photon.Pun
                 // on join / rejoin, assign control to either the Master Client (for room objects) or the owner (for anything else)
                     view.RebuildControllerCache();
 
-                // Rejoining master should enforce its world view, and override any changes that happened while it was soft disconnected
+                // Supply the rejoining master's baseline for peers still awaiting ownership initialization.
                 if (amRejoiningMaster)
                     if (viewOwnerId != viewCreatorId)
                     {
@@ -404,6 +404,7 @@ namespace Photon.Pun
                     // Any views owned by the leaving player, default to null owner (which will become master controlled).
                     if (view.OwnerActorNr == leavingPlayerId || view.ControllerActorNr == leavingPlayerId)
                     {
+                        view.MarkLiveOwnership();
                         view.OwnerActorNr = 0;
                         view.ControllerActorNr = PhotonNetwork.MasterClient.ActorNumber;
                     }

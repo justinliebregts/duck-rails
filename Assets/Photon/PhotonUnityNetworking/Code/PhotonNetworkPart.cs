@@ -741,6 +741,7 @@ namespace Photon.Pun
                 if (view.OwnerActorNr == playerId)
                 {
                     var previousOwner = view.Owner;
+                    view.MarkLiveOwnership();
                     view.OwnerActorNr = view.PreserveOnCreatorLeave ? 0 : view.CreatorActorNr;
                     view.RebuildControllerCache();
 
@@ -954,7 +955,26 @@ namespace Photon.Pun
                 SendToSingleOptions.TargetActors[0] = targetActor;
                 opts = SendToSingleOptions;
             }
-            PhotonNetwork.RaiseEventInternal(PunEvent.OwnershipUpdate, viewOwnerPairs, opts, SendOptions.SendReliable);
+            // A delayed bootstrap for a destroyed pickup must not initialize its reused ViewID.
+            var lifetimes = new string[viewOwnerPairs.Length / 2];
+            for (int i = 0; i < lifetimes.Length; ++i)
+                lifetimes[i] = GetPhotonView(viewOwnerPairs[i * 2])?.SpawnToken ?? string.Empty;
+            PhotonNetwork.RaiseEventInternal(PunEvent.OwnershipUpdate, new object[] { viewOwnerPairs, lifetimes }, opts, SendOptions.SendReliable);
+        }
+
+        private static void ApplyLiveTransfer(PhotonView view, int newOwner, int sender)
+        {
+            Player previousOwner = view.Owner;
+            int previousSender = view.OwnershipTransferSender;
+            view.MarkLiveOwnership();
+            view.OwnershipTransferSender = sender;
+            try
+            {
+                view.OwnerActorNr = newOwner;
+                view.ControllerActorNr = newOwner;
+                OnOwnershipTransferedEv?.Invoke(view, previousOwner);
+            }
+            finally { view.OwnershipTransferSender = previousSender; }
         }
 
         public static bool LocalCleanPhotonView(PhotonView view)
@@ -2368,15 +2388,7 @@ namespace Photon.Pun
                                 if (requestedFromOwnerId == currentPvOwnerId || (requestedFromOwnerId == 0 && currentPvOwnerId == MasterClient.ActorNumber) || currentPvOwnerId == 0)
                                 {
                                     // a takeover is successful automatically, if taken from current owner
-                                    Player prevOwner = requestedView.Owner;
-
-                                    requestedView.OwnerActorNr = actorNr;
-                                    requestedView.ControllerActorNr = actorNr;
-
-                                    if (PhotonNetwork.OnOwnershipTransferedEv != null)
-                                    {
-                                        PhotonNetwork.OnOwnershipTransferedEv(requestedView, prevOwner);
-                                    }
+                                    ApplyLiveTransfer(requestedView, actorNr, actorNr);
                                 }
                                 else
                                 {
@@ -2430,15 +2442,7 @@ namespace Photon.Pun
                             if (requestedView.OwnershipTransfer == OwnershipOption.Takeover ||
                                 (requestedView.OwnershipTransfer == OwnershipOption.Request && (originatingPlayer == requestedView.Controller || originatingPlayer == requestedView.Owner)))
                             {
-                                Player prevOwner = requestedView.Owner;
-
-                                requestedView.OwnerActorNr= newOwnerId;
-                                requestedView.ControllerActorNr = newOwnerId;
-
-                                if (PhotonNetwork.OnOwnershipTransferedEv != null)
-                                {
-                                    PhotonNetwork.OnOwnershipTransferedEv(requestedView, prevOwner);
-                                }
+                                ApplyLiveTransfer(requestedView, newOwnerId, actorNr);
                             }
                             else
                             {
@@ -2462,11 +2466,14 @@ namespace Photon.Pun
 
                 case PunEvent.OwnershipUpdate:
                     {
+                        if (CurrentRoom == null || actorNr <= 0 || actorNr != CurrentRoom.MasterClientId ||
+                            !(photonEvent.CustomData is object[] bootstrap) || bootstrap.Length != 2 ||
+                            !(bootstrap[0] is int[] viewOwnerPair) || !(bootstrap[1] is string[] lifetimes) ||
+                            (viewOwnerPair.Length & 1) != 0 || lifetimes.Length != viewOwnerPair.Length / 2)
+                            break;
                         reusablePVHashset.Clear();
 
                         // Deserialize the list of exceptions, these are views on the master who's Owner and Creator didn't match.
-                        int[] viewOwnerPair = (int[])photonEvent.CustomData;
-
                         for (int i = 0, cnt = viewOwnerPair.Length; i < cnt; i++)
                         {
                             int viewId = viewOwnerPair[i];
@@ -2485,13 +2492,17 @@ namespace Photon.Pun
                                 continue;
                             }
 
+                            reusablePVHashset.Add(view);
+                            if (view.HasLiveOwnership || lifetimes[i / 2] != (view.SpawnToken ?? string.Empty))
+                                continue;
+                            Player newOwner = CurrentRoom.GetPlayer(newOwnerId);
+                            if (newOwnerId != 0 && newOwner == null) continue;
                             Player prevOwner = view.Owner;
-                            Player newOwner = CurrentRoom.GetPlayer(newOwnerId, true);
 
-                            view.OwnerActorNr= newOwnerId;
+                            view.MarkLiveOwnership();
+                            view.OwnerActorNr = newOwnerId;
                             view.ControllerActorNr = newOwnerId;
 
-                            reusablePVHashset.Add(view);
                             // If this produces an owner change locally, fire the OnOwnershipTransfered callbacks
                             if (PhotonNetwork.OnOwnershipTransferedEv != null && newOwner != prevOwner)
                             {
@@ -2503,7 +2514,7 @@ namespace Photon.Pun
                         // This was moved from PhotonHandler OnJoinedRoom to here, to allow objects to retain controller = -1 until an controller is actually known.
                         foreach (var view in PhotonViewCollection)
                         {
-                            if (!reusablePVHashset.Contains(view))
+                            if (!view.HasLiveOwnership && !reusablePVHashset.Contains(view))
                                 view.RebuildControllerCache();
                         }
 

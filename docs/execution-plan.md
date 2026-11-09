@@ -668,3 +668,12 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] Run expanded disposable held-object/transport suites and validate loaded bags,
   weapons, tracking occlusion/recovery, availability cleanup and moving cargo across
   real clients/headsets; profile Quest performance.
+
+## Late-join pickup ownership — November 8, 2026
+
+- [x] Adapt Duckz 2fd048b late-join ownership and bounded pickup recovery, preserving
+  Rails event IDs/cargo/focus handling; Unity compilation and Rails session, drive
+  and cargo regression checks plus 298 disposable pickup assertions passed. See [port evidence](duckz-ports.md#2fd048b293dd2c3e1d9e2bfc2e9e8d2d6701de06--late-join-pickup-ownership).
+- [ ] Validate authenticated three-client late joins, repair/handoff and loaded-bag
+  master departure/rejoin on moving trains and headsets. Synthetic editor checks
+  do not complete this multiplayer acceptance.

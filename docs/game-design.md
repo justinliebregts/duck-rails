@@ -492,3 +492,11 @@ weapons and bags stay attached during missing bare-hand tracking until a valid o
 release or existing focus/availability/mode-switch cleanup. UI/new grabs and the
 train lever retain their prior input behavior. See [port evidence and remaining
 acceptance](duckz-ports.md#00ee3e71dd2c70d33f69059bc3caee32eef6bbbd--holds-survive-hand-tracking-loss).
+
+## Late-join pickup ownership — November 8, 2026
+
+Port Duckz `2fd048b293dd2c3e1d9e2bfc2e9e8d2d6701de06`: delayed join ownership
+must preserve live grabs and transfers. Repeated unexpected pickup losses request
+bounded, corroborated controller-state repair before a possible master handoff.
+Rails cargo and session behavior remain in place. Updated clients use the
+`-rails-pickup-v2` matchmaking suffix. See [port evidence and acceptance limits](duckz-ports.md#2fd048b293dd2c3e1d9e2bfc2e9e8d2d6701de06--late-join-pickup-ownership).

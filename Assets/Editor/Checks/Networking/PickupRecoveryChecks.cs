@@ -11,11 +11,11 @@ using Object = UnityEngine.Object;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 // Deterministic delayed transport; run only in a disposable Unity batch project.
-public static class PickupRecoveryChecks
+public static partial class PickupRecoveryChecks
 {
     static int checks;
     const BindingFlags Flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-    sealed class Actor : Player { public Actor(int id) : base("investigation", id, true) { } }
+    sealed class Actor : Player { public Actor(int id, bool local = true) : base("investigation", id, local) { } }
     sealed class QueuedRoom : Room
     {
         public readonly List<(Hashtable values, Hashtable expected)> Pending = new();
@@ -79,6 +79,9 @@ public static class PickupRecoveryChecks
             TestPendingSweepAllocations();
             TestRoomRetryBudget();
             TestObserverSnapshotOrdering();
+            TestJoinOwnership();
+            TestObserverRepair();
+            TestPickupHandoffLimits();
             TestRoomDiagnosticsAndIdle();
             checks += PickupRegrabChecks.RunCases();
             Debug.Log("PickupRecoveryChecks ALL PASSED (" + checks + " assertions)");
