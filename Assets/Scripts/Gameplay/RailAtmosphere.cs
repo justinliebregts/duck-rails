@@ -51,7 +51,7 @@ public sealed class RailAtmosphere
         sky.SetColor("_GroundColor", new Color(.12f, .13f, .16f));
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogDensity = Mathf.Lerp(dawn ? .065f : .1f, dawn ? .0125f : .065f, blend);
+        RenderSettings.fogDensity = Mathf.Lerp(dawn ? .05f : .06f, dawn ? .0125f : .05f, blend);
         RenderSettings.fogColor = Color.Lerp(dawn ? PreFog : NightFog, dawn ? DawnFog : PreFog, blend);
         RenderSettings.ambientMode = AmbientMode.Flat;
         RenderSettings.ambientLight = Color.Lerp(dawn ? PreAmbient : NightAmbient, dawn ? DawnAmbient : PreAmbient, blend);

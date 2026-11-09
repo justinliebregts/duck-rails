@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- November 9 fog tuning: night 0.06, pre-dawn 0.05, successful dawn 0.0125;
+  runtime values and Expedition scene starting density updated. Headset readability review remains open.
+
 - [x] November 9 deep regression: four authenticated desktop clients completed three private lifecycle passes (nine expeditions) and four public departure/return rounds, including late joins, handoff/rejoin, packet loss, loaded bags, downs/rescue, exact coal intake, both shops and safe payouts. Final repeat also proves all five dynamic bridge defenders with exact counts, unique markers and matching peer identities/controllers/poses. Fixed transport saturation, inconsistent local finish position and premature zero-clock departure deadlines; follow-up runs passed. All 15 final editor suites, three startup recovery faults and the complete two-client catalogue sweep pass. See [regression evidence and limits](overnight-regression.md).
 - [x] Two-client physical front-furnace checks pass stopped/moving/after handoff, duplicate rejection, empty-fuel recovery and resumed travel. Minion/spider transport and six isolated natural AI loops pass. These close the exercised desktop cases only; headset feel, natural multiplayer combat and target-device performance remain open.
 

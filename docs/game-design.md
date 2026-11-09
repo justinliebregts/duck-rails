@@ -1,5 +1,9 @@
 # Duck Rails — V1 game design
 
+November 9 fog tuning: user-approved exponential-squared densities are night
+0.06, pre-dawn 0.05, and successful dawn 0.0125. Keep existing transition timing;
+Expedition's saved starting density matches night. Headset readability awaits review.
+
 November 9 multiplayer regression: four authenticated desktop clients verified
 group/late joins, repeated success/failure returns, down/rescue, shared cargo,
 coal/train state, both shops and escaped-player safe payouts. Reproduced item
