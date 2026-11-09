@@ -9,6 +9,26 @@ Use explicit statuses such as pending, in progress, implemented (validation pend
 validated, or already present (verified). A source diff inspection alone is not port validation.
 This history starts November 8, 2026; it is not an audit of earlier imports.
 
+## 60ae0da45436b626c0cec19b13da7dfe622c4cb5 — Worn goggles grab point
+
+- Status: implemented (runtime validation pending), November 8, 2026.
+- Source title: `Move worn goggles grab point closer to face`.
+- Behavior: move GrabPoint local Z from 0.22 m to 0.08 m; preserve X=0,
+  Y=-0.03 and the separate EquipPoint position.
+- Destination: `Assets/Prefabs/Items/ItemNightVisionGoggles.prefab`, transform
+  `9100300300300300322`. Applied the exact source change without replacing the prefab.
+- Dependencies/adaptations: existing equipment grab anchor is already wired. Both
+  projects use Unity 6000.3.24f1. `Assets/Resources/Rails/RailGoggles.prefab` and
+  `Assets/DuckRails/Economy/RailShopItemNightVisionGoggles.prefab` inherit this anchor
+  without overrides; their Rails cargo/PUN configuration is preserved. No new assets
+  or GUID changes, and no source-project edits.
+- Validation: inspected the exact commit/parent diff, serialized anchor references and
+  prefab/scene references; destination prefab diff matches the single source change;
+  targeted `git diff --check` passed.
+- Remaining: Unity testing explicitly skipped at user request; natural worn-goggle
+  grabbing on headsets and real-client acceptance remain unverified.
+- Destination commit: the commit introducing this entry (see Git history).
+
 ## 00ee3e71dd2c70d33f69059bc3caee32eef6bbbd — Holds survive hand tracking loss
 
 - Status: implemented; Unity compilation and core editor regressions passed November 8,
