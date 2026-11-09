@@ -75,3 +75,11 @@ Imported recovery Play Mode checks passed 48 embedded production-prefab cases an
 The imported exhaustive Quackville riverbank Play Mode matrix and direct-cloud recovery harness were not run for this port. The network assertions run here use synthetic transport; actual-peer recovery, natural authored-slope encounters and headset performance remain unverified. No diagnostic report inbox was queried. Repeat EnemyPenetrationChecks.Run and GroundRecoveryChecks.Run in a disposable batch project, and EnemyPenetrationChecks.RunPlay in a separate disposable process without -quit.
 
 Actual minion side exits/reboarding, blocked-nearest fallback, all-blocked hold and retry after clearance also passed. [Minion Play evidence](validation/penetration-port/minion-side-play.txt). The isolated tests restored the editor to Edit Mode.
+
+## Login tracked-pose alignment — November 8, 2026
+
+Ported runtime and regression portions of `68e58ad4dd4211a627fd23a93a5ffe00eb5781c4`. HeadsetCamera emits a callback only after applying a valid tracked position and orientation. LoginView waits for that callback instead of consuming alignment after a 90-frame timeout, then corrects yaw and horizontal room-scale offset once while preserving tracked eye height and subsequent free movement. Unusable vertical gaze keeps alignment pending. No login authentication/session behavior changed.
+
+Omitted the source Login.unity forest-height change: Rails replaced its authored login locations in `2c4102280`, and the corresponding spot is now at a different position (Y=-0.46 rather than Duckz's 2.032). Rails scene placements are unchanged. Imported LoginViewChecks is available under Duck Rails > Tests > Login View Alignment.
+
+Unity MCP verified the Duck Rails editor in Edit Mode. Compilation and LoginViewChecks.Run passed: 108 offset/heading/pitch/spot combinations, delayed pose beyond the former timeout, free movement after alignment, vertical-gaze retry, disable/re-enable subscriptions, and all three current Rails authored logo placements. Git diff whitespace checks passed. Tracking was simulated; physical headset startup and before-render timing remain unverified.
