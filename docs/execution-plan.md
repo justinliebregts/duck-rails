@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 8: author Skyscraper Works first-pass candidates: 150 coal / 150 gold / 18 enemies across floors and outer yards, with gold weighted toward upper/exposed routes. Placement checks and 636 saved-reference/selection/navigation checks pass; see [placement evidence](skyscraper-layout.md#spawn-placement-first-pass--november-8-2026).
+- [ ] User inspection and headset review of Skyscraper loot placement, vertical reward balance, settling and reachability.
+
 - [x] November 8: author Farm first-pass pools: 100 coal / 100 gold / 18 enemies, including 42 of each loot type inside corn. Support/clearance and 536 saved-reference/selection/navigation checks pass; see [placement evidence](farm-silos-layout.md#spawn-placement-first-pass--november-8-2026).
 - [x] User inspected and approved Farm first-pass placement.
 - [ ] Headset review of Farm loot visibility, corn search difficulty, roof settling and natural reachability.

@@ -1,5 +1,15 @@
 # Skyscraper Works — V2 layout
 
+## Spawn placement first pass — November 8, 2026
+
+User requested about 150 coal, 150 gold and 18 enemies across the floors, weighting gold toward harder-to-reach areas. Replaced 42 old markers with exactly 150 coal, 150 gold and 18 enemy prefab candidates. Existing per-run counts remain 6/2/5 and selection logic is unchanged.
+
+Coal: six on each of twenty tower floors (supply piles and structural corners), 24 on outer-yard supplies and six on elevated crossing decks. Gold: 3/4/5/8/10 candidates per tower at 0/4/8/12/16 m, plus twelve skybridge, seven crane-deck, one crane-machinery, eight shelter-roof and two yard-stash candidates. Of 150 gold candidates, 112 are at least 8 m high and 84 at least 12 m high. This rewards longer vertical/exposed routes; height is not proof of VR difficulty. Enemies have four candidates per tower distributed between ground and upper floors, plus two outer-yard locations; all five floor heights are represented across the pool.
+
+Verified in the Duck Rails editor: support, four-corner loot footprint, minimum spacing and spawn-envelope overlap checks passed during placement. Enemy candidates fit current bounds and lie within 0.8 m of baked ground navigation. Saved-prefab reference checks, 100 seeds per type, bilateral enemy selection and navigation passed (636 checks); overlap positive control detected a concrete pillar. Preserved all 3,459 environment transforms and the graph reference. No geometry, lighting, navigation bake or runtime code changes.
+
+Saved and left open in Prefab Mode for user inspection. Placement taste, natural VR traversal/hand reach, item settling and real-client/headset acceptance remain pending. User subsequently requested committing and pushing this pass. No diagnostic reports were inspected.
+
 November 4, 2026. User approved V2 for 3D. The rough Quackville blockout is now installed; see implementation and validation below. Earlier drawing dimensions remain design history where superseded by the installed geometry.
 
 ## Confirmed direction
