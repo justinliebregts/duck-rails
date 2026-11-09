@@ -1,5 +1,10 @@
 # Duck Rails — V1 game design
 
+November 8 audio port: Duckz `31aa84116b80c9fb9682493c4c88f51de505b97f`
+sets existing smasher/spider clips to mono and adds the unbound Spider Scar clip.
+Unity import validation passed; headset listening and device performance remain
+unverified. See [port evidence](duckz-ports.md#31aa84116b80c9fb9682493c4c88f51de505b97f--enemy-mono-audio).
+
 November 8 backpack grip correction: port Duckz `a2d4b6a64d83f6e77362488b337f400360e9ef0b`
 to initialize hold points from the calibrated palm frame when attaching to the skin.
 This prevents hand-tracking startup from baking in a rotated controller grip. Focused

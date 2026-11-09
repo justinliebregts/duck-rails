@@ -9,6 +9,31 @@ Use explicit statuses such as pending, in progress, implemented (validation pend
 validated, or already present (verified). A source diff inspection alone is not port validation.
 This history starts November 8, 2026; it is not an audit of earlier imports.
 
+## 31aa84116b80c9fb9682493c4c88f51de505b97f — Enemy mono audio
+
+- Status: implemented; Unity import validation passed November 8, 2026.
+- Source title: `[update] optimize audio, add ZombieSpider_Scar.ogg`.
+- Behavior/destination: set `forceToMono` to 1 on eight existing clips under
+  `Assets/Audio/Enemies/ZombieSmasher` and six under `Assets/Audio/Enemies/ZombieSpider`;
+  add `ZombieSpider_Scar.ogg` and its source `.meta` in the latter directory.
+  The source commit adds no playback binding for Scar; none was introduced here.
+- Dependencies/adaptations: both projects use Unity 6000.3.24f1; all existing audio
+  paths were present. No code or prefab changes required. Existing GUIDs, Android
+  overrides and other importer settings retained. Enemy managers use PUN over the
+  retained Realtime stack; networking and Rails boarding behavior are unaffected.
+- Validation: exact source/parent diff inspected; all 16 destination Git blobs
+  match the requested source commit. New GUID `35120b179e43ef04dabe675d0f93f37f`
+  occurs only in its intended meta; source reference scan found no playback binding.
+  Verified MCP target `X:/Work/duck-rails/Assets`, synchronously imported each clip,
+  and confirmed all 15 AudioImporters force mono, all AudioClips have one channel
+  and positive sample counts, and the Scar GUID resolves to the intended asset.
+  Initial pre-edit validation failed after the local Python launcher was unavailable;
+  PowerShell extraction and the final Unity rerun succeeded. Focused diff check passed.
+- Remaining: target-headset listening/spatialization and device performance review;
+  real-client gameplay acceptance remains open. No diagnostic reports inspected;
+  source Duckz tree and unrelated destination edits untouched.
+- Destination commit: the commit introducing this entry (see Git history).
+
 ## a2d4b6a64d83f6e77362488b337f400360e9ef0b — Backpack grip rotation
 
 - Status: implemented; focused Unity editor validation passed November 8, 2026.

@@ -1,5 +1,10 @@
 # Duck Rails — execution plan
 
+- [x] November 8: port Duckz enemy mono audio settings and Spider Scar asset;
+  all 15 clips import as valid mono audio and the new GUID resolves. See
+  [port evidence](duckz-ports.md#31aa84116b80c9fb9682493c4c88f51de505b97f--enemy-mono-audio).
+- [ ] Review smasher/spider mono audio on target headsets and profile device cost.
+
 - [x] November 8: port calibrated backpack grip initialization; 830 focused attachment
   assertions and palm-calibration/shared-rig/drive editor regressions pass. See
   [port evidence](duckz-ports.md#a2d4b6a64d83f6e77362488b337f400360e9ef0b--backpack-grip-rotation).
