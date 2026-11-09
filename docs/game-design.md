@@ -554,6 +554,12 @@ November 8 catalogue rollout: user approved the Convenience Store preview and re
 
 November 8 full-area navigation: expand enemy bounds and offline crawlgraph coverage across all 17 encounter blocks, including approach/departure areas and the full bridge finale. Derive lateral and vertical extent from Environment colliders; clamp longitudinal bounds to each block's length. Keep the starting station enemy-free. Retain unseeded navigable islands above the existing small-island threshold so new enemy placements do not require connection to old spawners. No runtime baking or new cross-block navigation edges.
 
+November 9 midpoint art: user approved a separate 60 m helipad supply-stop layout with low pad, perimeter lights, rear fuel tank, hut and trees; no gold deposit in this blockout. The helicopter shop will reuse the existing asset later. Editable preview is built; live route still uses the previous midpoint shop. See gold-economy.md, Approved helipad blockout.
+
+November 9 helicopter shop: authorized permanent parked helicopter on midpoint helipad with rotors/audio/wash running, existing security camera and interior shared gold deposit. Rails catalogue replaces extra Duckz merchandise. Implemented in preview; current expedition route is unchanged. See gold-economy.md, Parked helicopter shop.
+
+November 9 helipad integration: the approved 60 m helicopter stop is now a dedicated fixed route segment after the second of four scavenging blocks. Later placements and train distance include the additional 60 m; normal fuel-per-metre applies. The helicopter faces block entry, and the obsolete midpoint overlay is removed. Offline graph and lighting bakes completed. See [helipad setup and validation](helipad-shop.md). This supersedes earlier preview-only notes.
+
 ## Shared baked moonlight decision — November 9
 
 Use the user's farm-authored Moonlight as one shared baked directional-light prefab in all block bake scenes and Starting Station. Preserve local fixture lighting and runtime night/pre-dawn/dawn atmosphere. Authoring scenes use their prefab filename plus `-bake` for discoverability. See [lighting workflow and validation](block-lighting.md#shared-baked-moonlight-and-searchable-scenes--november-9).

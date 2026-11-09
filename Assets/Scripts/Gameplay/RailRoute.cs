@@ -15,7 +15,7 @@ public sealed class RailRoute : MonoBehaviour
     public RailBlock finale;
     public RailBlock startingStation;
     public Transform finaleRoot;
-    public Transform midpointShop;
+    public RailBlock midpointBlock;
     public RailExpedition expedition;
     public Game.AI.EnemyManager manager;
     public readonly List<RailBlock> Blocks = new List<RailBlock>();
@@ -24,7 +24,7 @@ public sealed class RailRoute : MonoBehaviour
     bool LightingReady()
     {
         bool Lit(RailBlock block) { var lighting = block != null ? block.GetComponent<RailBakedBlockLighting>() : null; return lighting == null || lighting.Ready; }
-        return Lit(startingStation) && Lit(finale) && Blocks.All(Lit);
+        return Lit(startingStation) && Lit(finale) && Lit(midpointBlock) && Blocks.All(Lit);
     }
     public string LoadedRun { get; private set; }
     public RailRouteState Selection { get; private set; }
@@ -36,7 +36,15 @@ public sealed class RailRoute : MonoBehaviour
     void OnDestroy() { if (Instance == this) Instance = null; }
 
     public const int NormalBlockCount = 4;
+    public const int LayoutVersion = 2;
+    public const float MidpointLength = 60;
+    public const string MidpointId = "midpoint-helipad-v1";
     public static int MidpointBlockIndex(int count) => (count - 1) / 2;
+    // Blocks remains the scavenging list. TravelBlocks includes the fixed service stop.
+    public IEnumerable<RailBlock> TravelBlocks
+    {
+        get { for (int i=0;i<Blocks.Count;i++) { yield return Blocks[i]; if(i==MidpointBlockIndex(Blocks.Count) && midpointBlock!=null) yield return midpointBlock; } }
+    }
 
     public static RailRouteState ChooseNormal(string run, RailBlock[] catalog, int seed)
         => Choose(run, catalog.Where(b => b != null && b.allowedInNormalRuns).ToArray(), seed, NormalBlockCount);
@@ -51,12 +59,13 @@ public sealed class RailRoute : MonoBehaviour
         var rng = new System.Random(seed);
         var pool = choices.OrderBy(b => b.id, StringComparer.Ordinal).ToArray();
         for (int i = pool.Length - 1; i > 0; i--) { int j = rng.Next(i + 1); (pool[i], pool[j]) = (pool[j], pool[i]); }
-        var state = new RailRouteState { run = run, enemySeed = seed, blocks = new string[count], variations = new int[count], placements = new Vector3[count] };
+        var state = new RailRouteState { layoutVersion = LayoutVersion, run = run, enemySeed = seed, blocks = new string[count], variations = new int[count], placements = new Vector3[count] };
         float z = StartZ;
         for (int i = 0; i < count; i++)
         {
             state.blocks[i] = pool[i].id; // Legacy variation slot remains zero for retained-state compatibility.
             state.placements[i] = new Vector3(0, 0, z); z += pool[i].length;
+            if(i==MidpointBlockIndex(count)) z+=MidpointLength;
         }
         return state;
     }
@@ -88,19 +97,22 @@ public sealed class RailRoute : MonoBehaviour
     {
         Validate(state, catalog);
         int count = state.blocks.Length;
-        float z = StartZ + state.blocks.Sum(id => catalog.Single(b => b.id == id).length);
+        if(midpointBlock==null || midpointBlock.id!=MidpointId || midpointBlock.length!=MidpointLength || midpointBlock.graph==null)
+            throw new InvalidOperationException("Missing or incompatible authored midpoint helipad.");
+        float z = StartZ + state.blocks.Sum(id => catalog.Single(b => b.id == id).length) + MidpointLength;
         BuildValidated(state, count, z);
     }
     public static RailRouteState ChooseOrdered(string run, RailBlock[] blocks, int seed)
     {
         if (blocks == null || blocks.Length == 0 || blocks.Any(b => b == null))
             throw new ArgumentException("Select at least one scavenging block with spawn candidates.");
-        var state = new RailRouteState { run = run, enemySeed = seed, blocks = blocks.Select(b => b.id).ToArray(),
+        var state = new RailRouteState { layoutVersion = LayoutVersion, run = run, enemySeed = seed, blocks = blocks.Select(b => b.id).ToArray(),
             variations = new int[blocks.Length], placements = new Vector3[blocks.Length] };
         float z = StartZ;
         for (int i = 0; i < blocks.Length; i++)
         {
             state.placements[i] = Vector3.forward * z; z += blocks[i].length;
+            if(i==MidpointBlockIndex(blocks.Length)) z+=MidpointLength;
         }
         Validate(state, blocks);
         return state;
@@ -108,7 +120,7 @@ public sealed class RailRoute : MonoBehaviour
     public static void Validate(RailRouteState state, RailBlock[] catalog)
     {
         int count = state?.blocks?.Length ?? 0;
-        if (count == 0 || state.blocks.Distinct().Count() != count ||
+        if (count == 0 || state.layoutVersion != LayoutVersion || state.blocks.Contains(MidpointId) || state.blocks.Distinct().Count() != count ||
             state.placements?.Length != count)
             throw new InvalidOperationException("Select one or more different scavenging blocks (no duplicates).");
         // Validate everything before replacing the current presentation.
@@ -120,6 +132,7 @@ public sealed class RailRoute : MonoBehaviour
                 Vector3.Distance(state.placements[i], new Vector3(0, 0, z)) > .001f || asset.graph == null)
                 throw new InvalidOperationException("Incompatible block placement.");
             z += asset.length;
+            if(i==MidpointBlockIndex(count)) z+=MidpointLength;
         }
     }
     void BuildValidated(RailRouteState state, int count, float z)
@@ -139,7 +152,10 @@ public sealed class RailRoute : MonoBehaviour
             gold.AddRange(SelectResources(block, RailSpawnKind.Gold, state));
             graphs.Add(Game.AI.CrawlGraph.Load(block.graph)); offsets.Add(block.transform.position);
         }
-        if (midpointShop != null) midpointShop.position = state.placements[MidpointBlockIndex(count)] + new Vector3(-16, 0, 148);
+        int middle = MidpointBlockIndex(count);
+        midpointBlock.transform.position = state.placements[middle] + Vector3.forward * Blocks[middle].length;
+        distance += midpointBlock.TrackLength;
+        graphs.Add(Game.AI.CrawlGraph.Load(midpointBlock.graph)); offsets.Add(midpointBlock.transform.position);
         FinaleStart = distance;
         finaleRoot.position = new Vector3(0, 0, z);
         graphs.Add(Game.AI.CrawlGraph.Load(finale.graph)); offsets.Add(finaleRoot.position);
@@ -152,7 +168,7 @@ public sealed class RailRoute : MonoBehaviour
         expedition.coalPoints = coal.ToArray(); expedition.enemyPoints = enemies.ToArray();
         expedition.bridgeZ = z + 80;
         var graph = RailGraphAssembly.Combine(graphs, offsets);
-        graph.RestrictToBounds(Blocks.Select(b => new Bounds(b.transform.position + b.enemyBounds.center, b.enemyBounds.size))
+        graph.RestrictToBounds(TravelBlocks.Select(b => new Bounds(b.transform.position + b.enemyBounds.center, b.enemyBounds.size))
             .Concat(new[] { new Bounds(finaleRoot.position + finale.enemyBounds.center, finale.enemyBounds.size) }).ToArray());
         manager.SetGraph(graph);
         LoadedRun = state.run; Selection = state; geometryReady = true;
@@ -170,7 +186,7 @@ public sealed class RailRoute : MonoBehaviour
             position.y += 1; return;
         }
         distance -= StationDepartureLength;
-        foreach (var block in Blocks)
+        foreach (var block in TravelBlocks)
         {
             if (distance <= block.TrackLength) { block.Sample(distance, out position, out rotation); position.y += 1; return; }
             distance -= block.TrackLength;
@@ -196,7 +212,7 @@ public sealed class RailRoute : MonoBehaviour
         bool Contains(RailBlock block) => block != null && position.z >= block.transform.position.z &&
             position.z < block.transform.position.z + block.length;
         if (Contains(startingStation)) current = startingStation;
-        else foreach (var block in Blocks) if (Contains(block)) { current = block; break; }
+        else foreach (var block in TravelBlocks) if (Contains(block)) { current = block; break; }
         if (current == null || finale == null || current.length <= 0) return false;
         var target = position + new Vector3(0, 1, current.length);
         if (target.z >= finale.transform.position.z + finale.length) return false;
@@ -206,7 +222,7 @@ public sealed class RailRoute : MonoBehaviour
 
     public Bounds EnemyBounds(Vector3 position)
     {
-        foreach (var block in Blocks)
+        foreach (var block in TravelBlocks)
             if (position.z >= block.transform.position.z && position.z < block.transform.position.z + block.length)
                 return new Bounds(block.transform.position + block.enemyBounds.center, block.enemyBounds.size);
         return new Bounds(finaleRoot.position + finale.enemyBounds.center, finale.enemyBounds.size);

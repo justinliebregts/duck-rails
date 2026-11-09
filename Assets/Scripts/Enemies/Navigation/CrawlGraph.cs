@@ -66,6 +66,15 @@ namespace Game.AI
         public int[] ClusterChunk;
         public int[] ClusterEdgeStart;   // ClusterCount + 1
         public int[] ClusterEdgeTarget;
+        int[] clusterMemberStart, clusterMembers;
+        public void IndexClusterMembers()
+        {
+            clusterMemberStart = new int[ClusterCount + 1];
+            foreach(int cluster in NodeCluster) clusterMemberStart[cluster + 1]++;
+            for(int i=1;i<clusterMemberStart.Length;i++) clusterMemberStart[i]+=clusterMemberStart[i-1];
+            var cursor=(int[])clusterMemberStart.Clone(); clusterMembers=new int[NodeCount];
+            for(int n=0;n<NodeCount;n++) clusterMembers[cursor[NodeCluster[n]]++]=n;
+        }
 
         Bounds[] _allowedBounds;
         Matrix4x4[] _boundaryWorldToLocal;
@@ -304,10 +313,12 @@ namespace Game.AI
         public int RandomGroundNodeInCluster(int cluster)
         {
             int chunk = ClusterChunk[cluster];
-            int start = ChunkStart[chunk], end = ChunkStart[chunk + 1];
+            int start = clusterMembers == null ? ChunkStart[chunk] : clusterMemberStart[cluster];
+            int end = clusterMembers == null ? ChunkStart[chunk + 1] : clusterMemberStart[cluster + 1];
             for (int tries = 0; tries < 24; tries++)
             {
                 int node = UnityEngine.Random.Range(start, end);
+                if(clusterMembers != null) node=clusterMembers[node];
                 if (NodeCluster[node] == cluster && IsGroundNode(node)) return node;
             }
             int rep = ClusterNode[cluster];
@@ -318,10 +329,12 @@ namespace Game.AI
         public int RandomNodeInCluster(int cluster)
         {
             int chunk = ClusterChunk[cluster];
-            int start = ChunkStart[chunk], end = ChunkStart[chunk + 1];
+            int start = clusterMembers == null ? ChunkStart[chunk] : clusterMemberStart[cluster];
+            int end = clusterMembers == null ? ChunkStart[chunk + 1] : clusterMemberStart[cluster + 1];
             for (int tries = 0; tries < 16; tries++)
             {
                 int node = UnityEngine.Random.Range(start, end);
+                if(clusterMembers != null) node=clusterMembers[node];
                 if (NodeCluster[node] == cluster && IsNodeAllowed(node)) return node;
             }
             return ClusterNode[cluster];

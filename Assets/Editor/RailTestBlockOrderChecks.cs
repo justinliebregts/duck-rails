@@ -17,7 +17,7 @@ public static class RailTestBlockOrderChecks
         void Check(bool value, string label) { if (!value) throw new Exception(label); lines.Add("PASS " + label); }
         var catalog = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/DuckRails/Blocks" })
             .Select(g => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(g)).GetComponent<RailBlock>())
-            .Where(b => b != null && b.id != "bridge-finale-v1").OrderByDescending(b => b.id).ToArray();
+            .Where(b => b != null && b.id != "bridge-finale-v1" && b.id != RailRoute.MidpointId).OrderByDescending(b => b.id).ToArray();
         foreach (int count in new[] { 1, 2, 3, 4, 5, 12 })
         {
             var selected = count == RailRoute.NormalBlockCount
@@ -40,12 +40,12 @@ public static class RailTestBlockOrderChecks
                 route.startingStation = ((GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/StartingStation.prefab"), scene)).GetComponent<RailBlock>();
                 route.finale = ((GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/bridge-finale-v1.prefab"), scene)).GetComponent<RailBlock>();
                 route.finaleRoot = route.finale.transform;
-                route.midpointShop = new GameObject("Shop position check").transform; route.midpointShop.parent = root.transform;
+                route.midpointBlock = ((GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(RailHelipadPreview.Path), scene)).GetComponent<RailBlock>();
                 route.Build(copy);
                 Check(route.Blocks.Select(b => b.id).SequenceEqual(state.blocks), count + " actual prefab instances in order");
-                Check(route.finaleRoot.position.z == RailRoute.StartZ + selected.Sum(b => b.length), count + " bridge follows last block");
-                Check(route.midpointShop.position == state.placements[(count - 1) / 2] + new Vector3(-16, 0, 148), count + " midpoint shop placement");
-                Check(Mathf.Abs(route.FinaleStart - RailRoute.StationDepartureLength - selected.Sum(b => b.TrackLength)) < .01f, count + " train route distance");
+                Check(route.finaleRoot.position.z == RailRoute.StartZ + selected.Sum(b => b.length) + RailRoute.MidpointLength, count + " bridge follows last block");
+                Check(route.midpointBlock.transform.position == state.placements[(count - 1) / 2] + Vector3.forward * selected[(count-1)/2].length, count + " midpoint block placement");
+                Check(Mathf.Abs(route.FinaleStart - RailRoute.StationDepartureLength - selected.Sum(b => b.TrackLength) - RailRoute.MidpointLength) < .01f, count + " train route distance");
                 Check(route.expedition.coalPoints.Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Coal, copy).Length) + RailSpawnPool.Select(route.finale, RailSpawnKind.Coal, copy.enemySeed).Length &&
                     route.expedition.goldPoints.Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Gold, copy).Length) + RailSpawnPool.Select(route.finale, RailSpawnKind.Gold, copy.enemySeed).Length &&
                     route.expedition.baseEnemyCount == selected.Sum(b => RailEnemySpawnBalance.Select(b, copy.enemySeed, copy.resourceCrew).Length), count + " exact configured supplies and encounters scale with route");

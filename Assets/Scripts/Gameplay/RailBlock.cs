@@ -72,6 +72,7 @@ public sealed class RailSpawnSet
 [Serializable]
 public sealed class RailRouteState
 {
+    public int layoutVersion;
     public string run;
     public int resourceCrew = 1; // Frozen with the route; never revalue loot on roster changes.
     public int enemySeed;

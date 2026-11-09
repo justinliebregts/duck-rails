@@ -48,10 +48,10 @@ public sealed class RailBlockVisibilityProof : MonoBehaviour
         route.catalog = new[] { "convenience-store", "container-yard", "farm-silos", "skyscraper-works", "hospital-district" }
             .Select(id => Prefab("Assets/DuckRails/Blocks/" + id + "-v1.prefab").GetComponent<RailBlock>()).ToArray();
         // Suppress store sign-in/wallet callbacks in this offline fixture before activation.
-        var shop = Instantiate(Prefab("Assets/DuckRails/Economy/RailShop.prefab"), data.transform);
-        route.midpointShop = shop.transform;
+        var shop = Instantiate(Prefab("Assets/DuckRails/Blocks/midpoint-helipad-v1.prefab"), data.transform);
+        route.midpointBlock = shop.GetComponent<RailBlock>();
         shop.SetActive(false);
-        foreach (var behaviour in shop.GetComponentsInChildren<MonoBehaviour>()) behaviour.enabled = false;
+        foreach (var behaviour in shop.GetComponentsInChildren<MonoBehaviour>(true)) if(!(behaviour is RailBlock)&&!(behaviour is RailBakedBlockLighting)) behaviour.enabled = false;
         shop.transform.SetParent(root.transform);
         var disabled = Marker(station.transform, "Disabled renderer sentinel"); disabled.enabled = false;
         var hidden = Marker(station.transform, "Pre-hidden renderer sentinel"); hidden.forceRenderingOff = true;
@@ -63,25 +63,32 @@ public sealed class RailBlockVisibilityProof : MonoBehaviour
         {
             var chosen = round == 0 ? route.catalog : round == 1 ? Enumerable.Reverse(route.catalog).ToArray() : route.catalog.Take(1).ToArray();
             camera.transform.position = new Vector3(0, 2, 70);
+            // Match Expedition: Awake-created dust/pull-line renderers exist before route grouping.
+            shop.SetActive(true);
             route.Build(RailRoute.ChooseOrdered("visibility-" + round, chosen, 456));
             var visibility = route.GetComponent<RailBlockVisibility>();
             Check(visibility != null, "Runtime route automatically installs visibility, round " + round);
             float timeout = Time.realtimeSinceStartup + 120;
-            while ((!route.Ready || Payloads != chosen.Length + 2) && Time.realtimeSinceStartup < timeout) yield return null;
-            Check(route.Ready && Payloads == chosen.Length + 2, "All lighting payloads remain loaded, round " + round);
-            var blocks = new[] { station }.Concat(route.Blocks).Concat(new[] { finale }).ToArray();
-            var renderers = blocks.Select(b => b.GetComponentsInChildren<Renderer>(true).Where(r => r != networked).ToArray()).ToArray();
+            while ((!route.Ready || Payloads != chosen.Length + 3) && Time.realtimeSinceStartup < timeout) yield return null;
+            Check(route.Ready && Payloads == chosen.Length + 3, "All lighting payloads remain loaded, round " + round);
+            var blocks = new[] { station }.Concat(route.TravelBlocks).Concat(new[] { finale }).ToArray();
+            var renderers = blocks.Select(b => b.GetComponentsInChildren<Renderer>(true).Where(r => r != networked && r.GetComponentInParent<Grabbable>(true) == null).ToArray()).ToArray();
             var shopRenderers = shop.GetComponentsInChildren<Renderer>(true).Where(r => r.GetComponentInParent<Grabbable>(true) == null).ToArray();
             var shopItems = shop.GetComponentsInChildren<Renderer>(true).Where(r => r.GetComponentInParent<Grabbable>(true) != null).ToArray();
             var colliders = blocks.SelectMany(b => b.GetComponentsInChildren<Collider>(true)).ToDictionary(c => c, c => (c.enabled, c.gameObject.activeSelf));
             var behaviours = blocks.SelectMany(b => b.GetComponentsInChildren<MonoBehaviour>(true)).ToDictionary(b => b, b => b.enabled);
             var enabled = renderers.SelectMany(r => r).ToDictionary(r => r, r => r.enabled);
-            int midpoint = 1 + RailRoute.MidpointBlockIndex(chosen.Length);
+            int midpoint = 2 + RailRoute.MidpointBlockIndex(chosen.Length);
             void Verify(int index, string label)
             {
                 bool correct = true;
                 for (int b = 0; b < blocks.Length; b++)
+                {
+                    foreach (var r in renderers[b])
+                        if (r.forceRenderingOff != (Math.Abs(b - index) > 1 || r == hidden))
+                            lines.Add("MISMATCH block=" + b + " renderer=" + r.name + " off=" + r.forceRenderingOff + " viewer index=" + index);
                     correct &= renderers[b].All(r => r.forceRenderingOff == (Math.Abs(b - index) > 1 || r == hidden));
+                }
                 correct &= shopRenderers.All(r => r.forceRenderingOff == (Math.Abs(midpoint - index) > 1));
                 Check(correct, label + ": scenery and midpoint shop window");
                 Check(!networked.forceRenderingOff && !independent.forceRenderingOff && shopItems.All(r => !r.forceRenderingOff), label + ": independent/networked/grabbable rendering retained");
@@ -107,7 +114,7 @@ public sealed class RailBlockVisibilityProof : MonoBehaviour
             Check(colliders.All(p => p.Key.enabled == p.Value.Item1 && p.Key.gameObject.activeSelf == p.Value.Item2) &&
                 behaviours.All(p => p.Key.enabled == p.Value) && enabled.All(p => p.Key.enabled == p.Value),
                 "Collision, gameplay behaviours and authored renderer.enabled states unchanged, round " + round);
-            Check(route.Ready && Payloads == chosen.Length + 2, "Visibility leaves all baked lighting ready, round " + round);
+            Check(route.Ready && Payloads == chosen.Length + 3, "Visibility leaves all baked lighting ready, round " + round);
             lines.Add("INFO round " + round + ": total scenery renderers=" + renderers.Sum(r => r.Length) +
                 ", suppressed from station=" + renderers.SelectMany(r => r).Count(r => r.forceRenderingOff));
 

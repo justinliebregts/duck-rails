@@ -26,8 +26,8 @@ public static class RailGraphAssembly
             if (g.CellSize != result.CellSize || g.ChunkCells != result.ChunkCells) throw new ArgumentException("Block bake grids must match.");
             Vector3 cells = (g.Origin + offsets[s] - min) / result.CellSize;
             Vector3Int shift = Vector3Int.RoundToInt(cells);
-            if ((cells - (Vector3)shift).sqrMagnitude > .001f || shift.x % g.ChunkCells != 0 || shift.y % g.ChunkCells != 0 || shift.z % g.ChunkCells != 0)
-                throw new ArgumentException("Block placement must align to baked chunks.");
+            if ((cells - (Vector3)shift).sqrMagnitude > .001f)
+                throw new ArgumentException("Block placement must align to baked cells.");
             clusterBase[s] = clusters; componentBase[s] = components; clusters += g.ClusterCount;
             components += g.ClusterComponent.Length == 0 ? 0 : g.ClusterComponent.Max() + 1;
             for (int n = 0; n < g.NodeCount; n++)
@@ -66,6 +66,10 @@ public static class RailGraphAssembly
             result.ClusterEdgeStart[dest] = edges.Count;
             for (int e = g.ClusterEdgeStart[c]; e < g.ClusterEdgeStart[c + 1]; e++) edges.Add(clusterBase[s] + g.ClusterEdgeTarget[e]);
         }
-        result.ClusterEdgeStart[clusters] = edges.Count; result.ClusterEdgeTarget = edges.ToArray(); return result;
+        result.ClusterEdgeStart[clusters] = edges.Count; result.ClusterEdgeTarget = edges.ToArray();
+        // Translation can split an authored cluster across spatial chunks (e.g. a 60m stop).
+        // Preserve every baked node/edge/cluster; index its members rather than rebaking it.
+        result.IndexClusterMembers();
+        return result;
     }
 }

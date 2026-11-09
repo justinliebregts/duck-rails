@@ -164,12 +164,11 @@ public static class RailEconomyBuilder
             start.transform.localRotation = Quaternion.Euler(0, -90, 0);
             start.GetComponentInChildren<RailGoldReceiver>().receiverId = 1;
         }
-        if (route.midpointShop == null)
+        if (route.midpointBlock == null)
         {
-            var middle = (GameObject)PrefabUtility.InstantiatePrefab(shop, route.transform);
-            middle.name = "Midpoint Shop"; middle.transform.position = new Vector3(-16, 0, RailRoute.StartZ + 2 * 160 + 148);
-            middle.transform.rotation = Quaternion.Euler(0, -90, 0);
-            middle.GetComponentInChildren<RailGoldReceiver>().receiverId = 2; route.midpointShop = middle.transform;
+            var middle = (GameObject)PrefabUtility.InstantiatePrefab(Asset<GameObject>(RailHelipadPreview.Path), route.transform);
+            middle.name = "Midpoint Helipad"; middle.transform.position = new Vector3(0, 0, RailRoute.StartZ + 2 * 160);
+            route.midpointBlock = middle.GetComponent<RailBlock>();
         }
         route.expedition.goldPrefab = CargoVariant(Asset<GameObject>("Assets/Prefabs/Items/ItemGoldBar.prefab"), "RailGoldBar");
         route.expedition.supplies = route.expedition.supplies.Concat(catalog.items.Where(i => i.prefab != null).Select(i => i.prefab)).Distinct().ToArray();

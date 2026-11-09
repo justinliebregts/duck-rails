@@ -741,6 +741,16 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [x] Expand enemy bounds and offline navigation across all 17 encounter blocks. Saved reload verifies full longitudinal/lateral coverage, 295 supported enemy markers, 880 linked prefab markers, valid lighting references and combined chunk alignment. Route, lighting and bridge editor checks pass; Convenience Store's 244 current markers are preserved. See [full-area navigation](testing-tools.md#full-area-navigation--november-8-2026).
 - [ ] Validate expanded-area enemy pursuit and performance on real multiplayer clients/headsets.
 
+## Midpoint helipad preview — November 9
+- [x] Build approved 60 m rough helipad prefab with pad lights, tank, hut, trees and no gold deposit; validate references/rail clearance and inspect editor layout. See gold-economy.md.
+- [ ] Review blockout, verify actual helicopter clearance, bake navigation/lighting and integrate the dedicated block with retained route state before multiplayer/headset acceptance.
+
+- [x] Adapt existing helicopter as a stationary helipad shop: seven Rails displays, interior shared gold intake, camera, rotors, engine loop and wash. Prefab checks and isolated presentation Play Mode passed; see gold-economy.md.
+- [ ] Validate helicopter cabin purchases/deposits and reach on authenticated real clients/headsets after route integration and bakes.
+
+- [x] Integrate dedicated 60 m helipad into Expedition, retained route layout, train sampling, visibility and navigation; remove old midpoint overlay/size preview, retain departure shop. Offline graph/lighting bakes, 175,035 focused assertions and 430 block-order checks passed. See [helipad evidence](helipad-shop.md).
+- [ ] Verify the integrated helipad on real multiplayer clients/headsets: late join/host migration, purchase/deposit, traversal and performance.
+
 ## Shared baked moonlight — November 9
 
 - [x] Promote the user's farm Moonlight to a shared prefab and install a root instance in all 18 block bake scenes plus Starting Station; preserve the authored light settings.

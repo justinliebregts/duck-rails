@@ -30,6 +30,7 @@ public static class RailCatalogLightingAuthoring
     static string Payload(string prefab) => Folder(prefab)+"/"+Path.GetFileNameWithoutExtension(prefab)+"-Lighting.unity";
     static bool Excluded(Transform t,Transform root)
     {
+        if(t.GetComponentInParent<Helicopter>(true)!=null) return true;
         for(var p=t;p!=null&&p!=root;p=p.parent)
             if(p.name=="Bridge hinge" || p.name.StartsWith("Spawn variation") || p.name=="Far bank" || p.name=="Exit rail" || p.name=="DAWN")return true;
         return false;
@@ -84,7 +85,7 @@ public static class RailCatalogLightingAuthoring
         }
         catch(Exception ex){Status="FAILED "+ex;paths=null;SessionState.SetBool(Key,false);File.AppendAllText("output/block-lighting/bake-progress.txt",Status+"\n");Debug.LogException(ex);}
     }
-    static void Prepare(string path)
+    public static void Prepare(string path)
     {
         if(File.Exists(BakePath(path))){EditorSceneManager.OpenScene(BakePath(path));return;}
         Directory.CreateDirectory(Folder(path));AssetDatabase.Refresh();
@@ -110,7 +111,8 @@ public static class RailCatalogLightingAuthoring
             PrefabUtility.RecordPrefabInstancePropertyModifications(filter);PrefabUtility.RecordPrefabInstancePropertyModifications(renderer);PrefabUtility.RecordPrefabInstancePropertyModifications(renderer.gameObject);
         }
         var fixtures=new GameObject("Baked block sample lights");fixtures.transform.SetParent(root.transform,false);
-        if(!finale)
+        if(root.GetComponent<RailBlock>().id == RailRoute.MidpointId) { /* Use authored pad and hut fixtures. */ }
+        else if(!finale)
         {
             Spot(fixtures.transform,"Left near shelter",new Vector3(-24,3.65f,62),new Vector3(-24,.5f,62),true);
             Spot(fixtures.transform,"Left far shelter",new Vector3(-24,3.65f,98),new Vector3(-24,.5f,98),true);
@@ -129,12 +131,13 @@ public static class RailCatalogLightingAuthoring
         // Keep the moving bridge and dawn-side pieces out of both lightmaps and baked shadows.
         foreach(var r in root.GetComponentsInChildren<Renderer>())if(Excluded(r.transform,root.transform))r.enabled=false;
         var probes=new GameObject("Block baked probes").AddComponent<LightProbeGroup>();var points=new List<Vector3>();Physics.SyncTransforms();
-        for(float z=1;z<=159;z+=10)
+        float farEdge=root.GetComponent<RailBlock>().length-1;
+        for(float z=1;z<=farEdge;z+=10)
             foreach(float x in new[]{-40f,-26f,-12f,0f,12f,26f,40f})
                 foreach(float y in new[]{.6f,2f,5.5f})
                 {var p=new Vector3(x,y,z);if(!Physics.CheckSphere(p,.15f,1<<6,QueryTriggerInteraction.Ignore))points.Add(p);}
         // Explicit far edge, separated from the adjacent block's entry probes.
-        foreach(float x in new[]{-40f,0f,40f})foreach(float y in new[]{.6f,5.5f})points.Add(new Vector3(x,y,159));
+        foreach(float x in new[]{-40f,0f,40f})foreach(float y in new[]{.6f,5.5f})points.Add(new Vector3(x,y,farEdge));
         probes.probePositions=points.ToArray();
         RenderSettings.skybox=null;RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=new Color(.045f,.055f,.075f);
         RenderSettings.fog=true;RenderSettings.fogMode=FogMode.ExponentialSquared;RenderSettings.fogDensity=.012f;RenderSettings.fogColor=new Color(.018f,.024f,.033f);

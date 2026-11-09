@@ -40,6 +40,9 @@ public sealed class RailCatalogLightingProof : MonoBehaviour
         var data=new GameObject("Inactive gameplay data for route build");data.SetActive(false);
         route.expedition=data.AddComponent<RailExpedition>();route.manager=data.AddComponent<Game.AI.EnemyManager>();
         route.catalog=catalog;route.startingStation=station;route.finale=finale;route.finaleRoot=finale.transform;
+        route.midpointBlock=Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/midpoint-helipad-v1.prefab"),data.transform).GetComponent<RailBlock>();
+        foreach(var behaviour in route.midpointBlock.GetComponentsInChildren<MonoBehaviour>(true)) if(!(behaviour is RailBlock)&&!(behaviour is RailBakedBlockLighting)) behaviour.enabled=false;
+        route.midpointBlock.transform.SetParent(route.transform);
         var seen=new HashSet<string>();
         for(int round=0;round<seeds.Length;round++)
         {
@@ -48,12 +51,12 @@ public sealed class RailCatalogLightingProof : MonoBehaviour
             Check(!route.Ready,"Route waits for all new lighting loads, round "+round);
             float end=Time.realtimeSinceStartup+120;
             while(!route.Ready && Time.realtimeSinceStartup<end)yield return null;
-            Check(route.Ready,"All seven lighting owners ready, round "+round);
+            Check(route.Ready,"All eight lighting owners ready, round "+round);
             // Previous blocks are destroyed at end-of-frame; wait for their serialized unloads too.
             end=Time.realtimeSinceStartup+120;
-            while(PayloadCount!=7 && Time.realtimeSinceStartup<end)yield return null;
-            Check(PayloadCount==7,"Exactly seven payloads after route replacement, round "+round);
-            var owners=route.Blocks.Concat(new[]{station,finale}).Select(b=>b.GetComponent<RailBakedBlockLighting>()).ToArray();
+            while(PayloadCount!=8 && Time.realtimeSinceStartup<end)yield return null;
+            Check(PayloadCount==8,"Exactly eight payloads after route replacement, round "+round);
+            var owners=route.TravelBlocks.Concat(new[]{station,finale}).Select(b=>b.GetComponent<RailBakedBlockLighting>()).ToArray();
             var maps=LightmapSettings.lightmaps;
             foreach(var owner in owners)
             {
