@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 public static class RailStationLightingAuthoring
 {
     public const string Folder = "Assets/DuckRails/Lighting/StartingStation";
-    public const string BakeScene = Folder + "/StartingStationBake.unity";
+    public const string BakeScene = Folder + "/StartingStation-bake.unity";
     public const string PayloadScene = Folder + "/StartingStationLighting.unity";
     public const string Output = "output/starting-station-lighting";
 
@@ -146,7 +146,7 @@ public static class RailStationLightingAuthoring
     [MenuItem("Duck Rails/Lighting/Starting Station/2 Bake")]
     public static void Bake()
     {
-        if (EditorApplication.isPlaying || SceneManager.GetActiveScene().path != BakeScene) throw new InvalidOperationException("Open StartingStationBake in Edit Mode.");
+        if (EditorApplication.isPlaying || SceneManager.GetActiveScene().path != BakeScene) throw new InvalidOperationException("Open StartingStation-bake in Edit Mode.");
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
         if (!Lightmapping.BakeAsync()) throw new InvalidOperationException("Bake did not start.");
     }

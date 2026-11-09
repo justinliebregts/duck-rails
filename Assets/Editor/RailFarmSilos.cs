@@ -16,7 +16,7 @@ using Object=UnityEngine.Object;
 public static partial class RailFarmSilos
 {
     public const string Id="farm-silos-v1", RootName="Farm authored v3", Folder="Assets/DuckRails/FarmSilos";
-    public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/Bake.unity";
+    public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/"+Id+"-bake.unity";
     public const int LightCount=18;
     static Mesh cube,octa;
     static readonly Dictionary<string,Mesh> meshes=new();

@@ -17,7 +17,7 @@ using Object=UnityEngine.Object;
 public static class RailNuclearPlant
 {
  public const string Id="nuclear-power-plant-v1", RootName="Nuclear plant authored v2", Folder="Assets/DuckRails/NuclearPlant";
- public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id, BakeScene=LightingFolder+"/Bake.unity";
+ public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id, BakeScene=LightingFolder+"/"+Id+"-bake.unity";
  public const int LightCount=29;
  static Material concrete,steel,wood,yellow,gravel,paint,white,red,glass,grass,water,screen,waste;
  static Mesh cube;

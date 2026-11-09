@@ -549,3 +549,7 @@ November 8 convenience-store authoring preview: user requests native GameObject-
 November 8 catalogue rollout: user approved the Convenience Store preview and requested it on every other block. All 18 block prefabs now have native colored-label spawner instances, cleared variation lists/groups, and identity Env geometry parents. Existing spawn selections, geometry, navigation data and baked-lighting bindings are preserved. See [catalogue cleanup validation](testing-tools.md#catalogue-authoring-cleanup--november-8-2026).
 
 November 8 full-area navigation: expand enemy bounds and offline crawlgraph coverage across all 17 encounter blocks, including approach/departure areas and the full bridge finale. Derive lateral and vertical extent from Environment colliders; clamp longitudinal bounds to each block's length. Keep the starting station enemy-free. Retain unseeded navigable islands above the existing small-island threshold so new enemy placements do not require connection to old spawners. No runtime baking or new cross-block navigation edges.
+
+## Shared baked moonlight decision — November 9
+
+Use the user's farm-authored Moonlight as one shared baked directional-light prefab in all block bake scenes and Starting Station. Preserve local fixture lighting and runtime night/pre-dawn/dawn atmosphere. Authoring scenes use their prefab filename plus `-bake` for discoverability. See [lighting workflow and validation](block-lighting.md#shared-baked-moonlight-and-searchable-scenes--november-9).

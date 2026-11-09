@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 public static class RailDepotGreybox
 {
     public const string PrefabPath = "Assets/DuckRails/Blocks/maintenance-depot-v1.prefab";
-    public const string BakeScene = "Assets/DuckRails/Lighting/Blocks/maintenance-depot-v1/Bake.unity";
+    public const string BakeScene = "Assets/DuckRails/Lighting/Blocks/maintenance-depot-v1/maintenance-depot-v1-bake.unity";
     public const string RootName = "Depot greybox v3";
     const string Folder = "Assets/DuckRails/DepotGreybox";
     static Material walls, roofs, paving, fence, lens;

@@ -57,7 +57,7 @@ Authoring: `Assets/Editor/RailFarmSilos.cs`. Run **Duck Rails > Authoring > Farm
 - White weathered boards, red barn boards and dark roofing reuse Quackville Town atlas pixels. Broad columned porch, tall windows, front gable and chimney follow the photo reference. Geometry and props remain intentionally rough.
 - Nine apple trees surround the house, with 81 visible decorative apples and low-poly rounded foliage. Apples are static scenery, not new collectible items. Four combined-mesh corn fields have visual stalks/leaves/ears, cross-gaps and perimeter routes; corn is non-colliding scenery in this pass.
 - Eighteen baked lights and additional probes cover the house levels and farm. Existing Expedition atmosphere is unchanged. Existing east-side enemy bounds are retained; the farmhouse remains outside enemy coverage.
-- Build/capture commands operate on `Assets/DuckRails/Lighting/Blocks/farm-silos-v1/Bake.unity`; runtime uses the original `farm-silos-v1.prefab` and its exported lighting companion.
+- Build/capture commands operate on `Assets/DuckRails/Lighting/Blocks/farm-silos-v1/farm-silos-v1-bake.unity`; runtime uses the original `farm-silos-v1.prefab` and its exported lighting companion.
 
 ### Validation
 

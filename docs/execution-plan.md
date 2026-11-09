@@ -737,3 +737,10 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] Expand enemy bounds and offline navigation across all 17 encounter blocks. Saved reload verifies full longitudinal/lateral coverage, 295 supported enemy markers, 880 linked prefab markers, valid lighting references and combined chunk alignment. Route, lighting and bridge editor checks pass; Convenience Store's 244 current markers are preserved. See [full-area navigation](testing-tools.md#full-area-navigation--november-8-2026).
 - [ ] Validate expanded-area enemy pursuit and performance on real multiplayer clients/headsets.
+
+## Shared baked moonlight — November 9
+
+- [x] Promote the user's farm Moonlight to a shared prefab and install a root instance in all 18 block bake scenes plus Starting Station; preserve the authored light settings.
+- [x] Rename authoring scenes to `<prefab-file-name>-bake.unity`, preserve scene GUIDs and update authoring/proof paths.
+- [x] Complete all 19 rebakes/exports, refresh Expedition's finale bindings and validate saved payloads; 84 offline route proof PASS lines, with saved exports rechecked after the user-reported editor crash/restart. See [lighting workflow](block-lighting.md#shared-baked-moonlight-and-searchable-scenes--november-9).
+- [ ] User visual review of block transitions and headset darkness/readability with the shared baked moon.

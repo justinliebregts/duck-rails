@@ -25,7 +25,7 @@ Headset traversal, low-eye readability, enemy pursuit/rescue, real-client behavi
 
 ### Reproduce / review
 
-Open `Assets/DuckRails/Lighting/Blocks/nuclear-power-plant-v1/Bake.unity`, or include **Nuclear Power Plant** in Duck Rails Tests > Test Block Order. Authoring entry point: **Duck Rails > Authoring > Nuclear Plant > Install approved block**. After geometry edits, rerun `RailNuclearPlantChecks.Run()`, bake/export via **Lighting > All Blocks > Bake Open Block**, and validate the catalogue export. `RailNuclearPlantChecks.PrepareProof()` creates the offline assembled-route proof; then enter Play Mode. `Register()` adds the prefab to Expedition without rebuilding other blocks.
+Open `Assets/DuckRails/Lighting/Blocks/nuclear-power-plant-v1/nuclear-power-plant-v1-bake.unity`, or include **Nuclear Power Plant** in Duck Rails Tests > Test Block Order. Authoring entry point: **Duck Rails > Authoring > Nuclear Plant > Install approved block**. After geometry edits, rerun `RailNuclearPlantChecks.Run()`, bake/export via **Lighting > All Blocks > Bake Open Block**, and validate the catalogue export. `RailNuclearPlantChecks.PrepareProof()` creates the offline assembled-route proof; then enter Play Mode. `Register()` adds the prefab to Expedition without rebuilding other blocks.
 
 ## V2 — enterable cooling towers and waste-drum yard
 

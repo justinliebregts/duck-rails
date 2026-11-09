@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 public static class RailContainerYard
 {
     public const string Id="container-yard-v1", RootName="Container yard authored v6", Folder="Assets/DuckRails/ContainerYard";
-    public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/Bake.unity";
+    public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/"+Id+"-bake.unity";
     public const int LightCount=16;
     static readonly Dictionary<string,Mesh> meshes=new();
     static Mesh cube;

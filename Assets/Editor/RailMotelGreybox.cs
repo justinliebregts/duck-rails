@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 public static class RailMotelGreybox
 {
     public const string PrefabPath = "Assets/DuckRails/Blocks/roadside-motel-v1.prefab";
-    public const string BakeScene = "Assets/DuckRails/Lighting/Blocks/roadside-motel-v1/Bake.unity";
+    public const string BakeScene = "Assets/DuckRails/Lighting/Blocks/roadside-motel-v1/roadside-motel-v1-bake.unity";
     public const string RootName = "Motel greybox v1";
     const string Folder = "Assets/DuckRails/MotelGreybox";
     static Material walls, roofs, paving, fence, lens;

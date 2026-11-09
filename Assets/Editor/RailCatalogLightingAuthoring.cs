@@ -26,7 +26,7 @@ public static class RailCatalogLightingAuthoring
     public static string[] Prefabs => AssetDatabase.FindAssets("t:Prefab",new[]{RailWeek3Builder.Folder})
         .Select(AssetDatabase.GUIDToAssetPath).Where(p=>AssetDatabase.LoadAssetAtPath<GameObject>(p).GetComponent<RailBlock>()!=null).OrderBy(p=>p).ToArray();
     static string Folder(string prefab) => Root+"/"+Path.GetFileNameWithoutExtension(prefab);
-    static string BakePath(string prefab) => Folder(prefab)+"/Bake.unity";
+    static string BakePath(string prefab) => Folder(prefab)+"/"+Path.GetFileNameWithoutExtension(prefab)+"-bake.unity";
     static string Payload(string prefab) => Folder(prefab)+"/"+Path.GetFileNameWithoutExtension(prefab)+"-Lighting.unity";
     static bool Excluded(Transform t,Transform root)
     {
@@ -35,11 +35,16 @@ public static class RailCatalogLightingAuthoring
         return false;
     }
     [MenuItem("Duck Rails/Lighting/All Blocks/Bake Missing Samples")]
-    public static void StartBatch()
+    public static void StartBatch() => StartBatch(false);
+
+    [MenuItem("Duck Rails/Lighting/All Blocks/Rebake All Blocks")]
+    public static void RebakeAll() => StartBatch(true);
+
+    static void StartBatch(bool rebakeAll)
     {
         if(EditorApplication.isPlaying || Lightmapping.isRunning || paths!=null)throw new InvalidOperationException("Finish Play Mode or current bake first.");
         for(int i=0;i<SceneManager.sceneCount;i++)if(SceneManager.GetSceneAt(i).isDirty)throw new InvalidOperationException("Save scene edits first.");
-        paths=Prefabs.Where(p=>!File.Exists(Payload(p))).ToArray();index=0;waiting=false;next=0;reopenScene=null;
+        paths=Prefabs.Where(p=>rebakeAll || !File.Exists(Payload(p))).ToArray();index=0;waiting=false;next=0;reopenScene=null;
         Directory.CreateDirectory("output/block-lighting");
         Status="Queued "+paths.Length+" blocks";
         File.WriteAllText("output/block-lighting/bake-progress.txt",Status+"\n");

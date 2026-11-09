@@ -15,7 +15,7 @@ using Object=UnityEngine.Object;
 public static class RailFinaleFort
 {
  public const string Id="bridge-finale-v1", RootName="Containment fort and Happy Land", Folder="Assets/DuckRails/FinaleFort";
- public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id, BakeScene=LightingFolder+"/Bake.unity";
+ public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id, BakeScene=LightingFolder+"/"+Id+"-bake.unity";
  public const int LightCount=24;
  static Material concrete,steel,wood,yellow,gravel,grass,rock,cream,water,leaf,pink;
  static Mesh cube;

@@ -30,7 +30,7 @@ Do not rerun **Apply Sample Setup** over an installed sample or use the whole-sc
 
 ## StartingStation: bake, then export
 
-1. Open `Assets/DuckRails/Lighting/StartingStation/StartingStationBake.unity`. It contains the actual station prefab at origin, its eight permanent baked spotlights, and a separate Light Probe Group. Edit the prefab geometry/fixtures here; preserve its track contract, origin, rotation and scale. Probe positions belong to this bake scene.
+1. Open `Assets/DuckRails/Lighting/StartingStation/StartingStation-bake.unity`. It contains the actual station prefab at origin, its eight permanent baked spotlights, and a separate Light Probe Group. Edit the prefab geometry/fixtures here; preserve its track contract, origin, rotation and scale. Probe positions belong to this bake scene.
 2. Use **Duck Rails > Lighting > Starting Station > 2 Bake**. Wait for Unity to finish. There is no runtime bake.
 3. Use **3 Export Lighting Companion**. This applies renderer bindings to the station prefab and writes `StartingStationLighting.unity`, a probe-only additive scene referencing the baked LightingData and textures. Export after every rebake or renderer change. Do not edit the generated companion directly.
 4. The companion must remain enabled in Build Settings. The exporter adds it without changing Login/Compound/Expedition build indices. Authoring and proof scenes are not shipping entry scenes.
@@ -41,7 +41,7 @@ The initial preparation command is one-time and refuses to overwrite an existing
 
 Every prefab in `Assets/DuckRails/Blocks` now has four permanent baked spotlights: two warm shelter lights on the left and two cool work lights on the right. The finale instead lights its approach, control area, bridge threshold and tunnel. This adds 52 sample lights across thirteen blocks. It uses the same non-directional bake settings as the station and conventional probes at multiple heights across each block.
 
-1. Open `Assets/DuckRails/Lighting/Blocks/<block-id>/Bake.unity`. Edit fixtures/geometry in this scene, with the prefab at the origin. Probe positions belong to the bake scene.
+1. Open `Assets/DuckRails/Lighting/Blocks/<block-id>/<block-id>-bake.unity`. Edit fixtures/geometry in this scene, with the prefab at the origin. Probe positions belong to the bake scene.
 2. Use **Duck Rails > Lighting > All Blocks > Bake Open Block**. This asynchronously bakes and exports that block, including prefab bindings and its `<block-id>-Lighting.unity` companion. Choose **Bake Open Block And Keep Open** to reopen the original bake scene after export (also if export fails after switching scenes). Both commands save the bake scene before starting and refuse overlapping queued bakes. Wait for completion in the Console or `output/block-lighting/bake-progress.txt` before changing scenes.
 3. After rebaking the bridge finale, use **Install Finale Lighting**. Expedition contains existing bridge objects and interaction references, so this transfers matching render bindings onto them without replacing the bridge.
 4. Use **Validate Exported Catalogue** to verify all thirteen exports. **Bake Missing Samples** prepares/bakes missing companions; **Re-export Existing Bakes** refreshes all exports without rebaking.
@@ -137,3 +137,17 @@ The successful ending still applies dawn after 14 seconds. It captures ambient m
 Unity compiled the change. Six direct editor comparisons passed for initial preservation, dawn, repeated calls, latest-edit restoration, a second cycle and untouched environment properties. The SendMessage editor harness emitted ShouldRunBehaviour assertions when invoking the runtime component outside Play Mode; settings comparisons passed and original values were restored. No new full-run/headset test was performed. The diagnostics backend retry succeeded with ten existing open reports; none was resolved.
 
 November 9 editor convenience: added **Bake Open Block And Keep Open**. Verified the new command compiles in the Duck Rails Unity editor with no script compilation failure; full bake/export/reopen execution remains untested.
+
+## Shared baked moonlight and searchable scenes — November 9
+
+The user-approved farm root Moonlight is now the shared `Assets/DuckRails/Lighting/Moonlight.prefab`: Baked directional light, intensity 0.2, RGB (0.16995145, 0.17924529, 0.15303490), rotation (50, 330, 0), soft shadows. All 18 block authoring scenes and Starting Station contain one root prefab instance. It is outside the gameplay block prefab and is stripped from exported probe-only companions. Existing local fixtures, bake settings and gameplay atmosphere are retained. Compound still bakes its gameplay scene directly and is outside this block-bake migration.
+
+Authoring scene names now follow `<prefab-file-name>-bake.unity`, including `farm-silos-v1-bake.unity` and `StartingStation-bake.unity`. Scene assets were moved with AssetDatabase so their GUIDs survive. Block lightmap folders follow the same stem. Authoring and proof tools use the new paths.
+
+Edit the shared Moonlight prefab to change the moon across all authoring scenes, then use **Duck Rails > Lighting > All Blocks > Rebake All Blocks**. Starting Station retains its separate **2 Bake** and **3 Export Lighting Companion** commands. After the block batch, run **Install Finale Lighting** to update Expedition's separate finale render bindings. Changing the prefab alone does not update existing baked data. Keep scene instances free of light/rotation overrides if they should follow the shared moon.
+
+Migration evidence: `output/shared-moonlight/migration.txt`. All 19 rebakes and exports completed; Expedition finale bindings were installed. Saved-scene checks passed for the shared moon, native lighting data, probe-only companions, build entries and renderer texture references in every level. All 19 renamed scene GUIDs were preserved. Headset appearance and block-seam review remain user acceptance work.
+
+Validation: `output/shared-moonlight/export-validation.txt` records 19 passing exports; `output/shared-moonlight/runtime-proof.txt` records 84 PASS lines across four offline assembled routes (seeds 0, 5, 7, 8), covering all 16 scavenging blocks plus station, helipad and finale. Checks include readiness, texture/UV bindings, translated probes, moving-bridge exclusion, finale relocation and complete teardown. An initial editor setup attempt used unloaded prefab references; reloading those references before creating the proof resolved it. No gameplay code changes were needed.
+
+The user reported Unity crashing during the subsequent exit-from-Play interval. PASS and complete teardown were written before exit; the crash cause is not established. After restart, MCP verified Duck Rails in Edit Mode, the saved shared prefab and all 19 exports. Removed the temporary proof scene without opening or replacing the user's current scene. No diagnostic reports were inspected. Headset/multiplayer acceptance and visual seam review remain open.

@@ -16,7 +16,7 @@ using Object=UnityEngine.Object;
 public static class RailHospital
 {
  public const string Id="hospital-district-v1", RootName="Hospital district authored v4", Folder="Assets/DuckRails/HospitalDistrict";
- public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id, BakeScene=LightingFolder+"/Bake.unity";
+ public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id, BakeScene=LightingFolder+"/"+Id+"-bake.unity";
  public const int LightCount=40;
  static Material concrete,steel,wood,yellow,gravel,paint,white,red,glass,grass;
  static Mesh cube;

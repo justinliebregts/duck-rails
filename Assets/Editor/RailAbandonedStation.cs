@@ -18,7 +18,7 @@ public static partial class RailAbandonedStation
 {
     public const string Id="passenger-station-v1", RootName="Abandoned underground station v2";
     public const string Folder="Assets/DuckRails/AbandonedStation", PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab";
-    public const string BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/Bake.unity";
+    public const string BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/"+Id+"-bake.unity";
     static Mesh cube;
     static Material concrete,paint,steel,roof,wood,yellow,gravel,grass;
     static readonly Dictionary<string,Mesh> meshes=new();

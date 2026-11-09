@@ -18,7 +18,7 @@ public static partial class RailConvenienceStore
 {
     public const string RootName="Convenience store authored v5";
     public const string PrefabPath="Assets/DuckRails/Blocks/convenience-store-v1.prefab";
-    public const string BakeScene="Assets/DuckRails/Lighting/Blocks/convenience-store-v1/Bake.unity";
+    public const string BakeScene="Assets/DuckRails/Lighting/Blocks/convenience-store-v1/convenience-store-v1-bake.unity";
     public const string Folder="Assets/DuckRails/ConvenienceStore";
     public const int LightCount=30;
     static Mesh cube;

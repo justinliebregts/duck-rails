@@ -11,7 +11,7 @@ November 4, 2026. The user approved the hospital drawings including the V4 south
 - Large HDR HOSPITAL lettering and baked warm sign spill face south; three static rough ambulance wrecks include side-overturned, upside-down and barrier-crashed poses. Vehicles and furniture are blockout geometry, not finished models or new interactions.
 - Reused Quackville materials with mesh UVs, 40 baked lights, conventional probes and 1,246 exported lightmap receiver bindings. No runtime baking or gameplay atmosphere change. Three spawn variations retain six coal, six enemy candidates and two gold markers each; enemy navigation excludes the railway.
 
-Authoring: `Assets/Editor/RailHospital.cs` (Duck Rails > Authoring > Hospital > Install approved district). Bake/review scene: `Assets/DuckRails/Lighting/Blocks/hospital-district-v1/Bake.unity`. The install command rebuilds the authored block; use ordinary prefab edits for hand refinement, then rebake graph/lighting as needed. Review via Test Block Order by selecting the Hospital District prefab. Do not use the offline RouteProof scene as a gameplay entry point.
+Authoring: `Assets/Editor/RailHospital.cs` (Duck Rails > Authoring > Hospital > Install approved district). Bake/review scene: `Assets/DuckRails/Lighting/Blocks/hospital-district-v1/hospital-district-v1-bake.unity`. The install command rebuilds the authored block; use ordinary prefab edits for hand refinement, then rebake graph/lighting as needed. Review via Test Block Order by selecting the Hospital District prefab. Do not use the offline RouteProof scene as a gameplay entry point.
 
 ### Validation and limits
 

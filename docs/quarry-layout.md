@@ -11,7 +11,7 @@ November 4, 2026. User approved V5: "looks great. let's do it." Installed on the
 - Same three spawn variations, six coal (three per side), six enemy candidates and two gold markers per set. Loot markers are grounded in the new excavation/tunnels.
 - Enemy bounds now include both pits and underground passages but retain the central Z=45..115 encounter span. The baked graph excludes the surface railway; a per-block runtime exclusion also prevents knockback/drift into that strip while allowing passage below Y=-2. Other blocks default to no additional exclusion. No new enemy counts or inter-block navigation.
 
-Authoring: `RailQuarryMine.Install()` (menu **Duck Rails > Authoring > Quarry Mine > Install approved V5**), then `RailQuarryMineChecks.Run()`, then the existing **Bake Open Block** lighting command. Use `Assets/DuckRails/Lighting/Blocks/quarry-v1/Bake.unity` for editing. The catalogue builder preserves the authored mine. `RefreshTerrainMaterials()` rebuilds the terrain and graph without replacing machinery; mesh updates explicitly refresh GPU buffers as well as saved mesh data.
+Authoring: `RailQuarryMine.Install()` (menu **Duck Rails > Authoring > Quarry Mine > Install approved V5**), then `RailQuarryMineChecks.Run()`, then the existing **Bake Open Block** lighting command. Use `Assets/DuckRails/Lighting/Blocks/quarry-v1/quarry-v1-bake.unity` for editing. The catalogue builder preserves the authored mine. `RefreshTerrainMaterials()` rebuilds the terrain and graph without replacing machinery; mesh updates explicitly refresh GPU buffers as well as saved mesh data.
 
 ### Verification and limits
 

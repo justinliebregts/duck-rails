@@ -68,7 +68,7 @@ Six simple baked lights occupy the diagram's fixture areas. L4's pole moves from
 
 Authoring and review:
 
-- Open the prefab normally, or its existing `Assets/DuckRails/Lighting/Blocks/maintenance-depot-v1/Bake.unity` scene for lighting-aware edits. Do not press Play directly in the isolated bake scene; launch normal gameplay from Compound/Login.
+- Open the prefab normally, or its existing `Assets/DuckRails/Lighting/Blocks/maintenance-depot-v1/maintenance-depot-v1-bake.unity` scene for lighting-aware edits. Do not press Play directly in the isolated bake scene; launch normal gameplay from Compound/Login.
 - **Duck Rails > Authoring > Depot > Load depot-first review route** sets the next development private expedition to visit the depot first. Then use **Duck Rails > Test Center > Manual sandbox** or a normal development private run. The depot stop is about 160 m of train travel from the starting position. For headset review, use the established shared rig/Quest Link flow.
 - **Test Center > Restore normal random routes** clears the saved review preset. The menu affects private development routes only, not normal public departures.
 - The full Week 3 builder now preserves an installed authored depot. **Install scaled greybox (resets depot layout)** intentionally reapplies this layout and queues a bake; do not use it after manual edits unless resetting them is intended. Other marker-placement utilities still overwrite manual spawn placement.

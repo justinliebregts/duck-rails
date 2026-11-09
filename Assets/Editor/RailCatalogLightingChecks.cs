@@ -52,7 +52,7 @@ public static class RailCatalogLightingChecks
         var expected=new float[catalog.Length];
         for(int i=0;i<catalog.Length;i++)
         {
-            EditorSceneManager.OpenScene(Root+"/"+catalog[i].id+"/Bake.unity");
+            EditorSceneManager.OpenScene(Root+"/"+catalog[i].id+"/"+catalog[i].id+"-bake.unity");
             LightProbes.GetInterpolatedProbe(new Vector3(-26,2,61),null,out var sh);expected[i]=sh[0,0];
         }
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);

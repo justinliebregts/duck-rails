@@ -69,7 +69,7 @@ Visual review: the sheet demonstrates denser double-depth masses, uneven ends, a
 
 Authoring: `Assets/Editor/RailContainerYard.cs`, menu **Duck Rails > Authoring > Container Yard > Install approved yard**. This explicitly rebuilds the yard; ordinary prefab refinement followed by graph/lighting rebakes is appropriate for manual edits. The general prototype builder now preserves this authored block. Geometry checks/captures and an offline route proof are in `Assets/Editor/RailContainerYardChecks.cs`.
 
-Review through **Duck Rails Tests > Test Block Order** with the existing **Container Yard** prefab. Bake scene: `Assets/DuckRails/Lighting/Blocks/container-yard-v1/Bake.unity`. `Assets/DuckRails/ContainerYard/RouteProof.unity` is an offline integration harness, not a gameplay entry scene. The user's pending Expedition scene edits were saved before authoring; the prior disk scene was backed up to `tmp/container-yard-backup/Expedition-before-save.unity`.
+Review through **Duck Rails Tests > Test Block Order** with the existing **Container Yard** prefab. Bake scene: `Assets/DuckRails/Lighting/Blocks/container-yard-v1/container-yard-v1-bake.unity`. `Assets/DuckRails/ContainerYard/RouteProof.unity` is an offline integration harness, not a gameplay entry scene. The user's pending Expedition scene edits were saved before authoring; the prior disk scene was backed up to `tmp/container-yard-backup/Expedition-before-save.unity`.
 
 ### Validation and remaining acceptance
 

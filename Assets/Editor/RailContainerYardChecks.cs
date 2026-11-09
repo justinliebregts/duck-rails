@@ -149,7 +149,7 @@ public static class RailContainerYardChecks
     {
         RailContainerYard.Guard();var ids=new[]{RailContainerYard.Id,"convenience-store-v1","roadside-motel-v1","lumber-yard-v1","electrical-substation-v1"};
         var catalog=ids.Select(id=>AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/"+id+".prefab").GetComponent<RailBlock>()).ToArray();var expected=new float[catalog.Length];
-        for(int i=0;i<catalog.Length;i++){EditorSceneManager.OpenScene("Assets/DuckRails/Lighting/Blocks/"+catalog[i].id+"/Bake.unity");LightProbes.GetInterpolatedProbe(new Vector3(-26,2,61),null,out var sh);expected[i]=sh[0,0];}
+        for(int i=0;i<catalog.Length;i++){EditorSceneManager.OpenScene("Assets/DuckRails/Lighting/Blocks/"+catalog[i].id+"/"+catalog[i].id+"-bake.unity");LightProbes.GetInterpolatedProbe(new Vector3(-26,2,61),null,out var sh);expected[i]=sh[0,0];}
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);var guard=new GameObject("Offline sign-in guard");guard.SetActive(false);guard.AddComponent<LoginFlow>();
         var proof=new GameObject("Container yard route integration proof").AddComponent<RailCatalogLightingProof>();proof.catalog=catalog;proof.expectedRedL0=expected;proof.seeds=new[]{11,43};proof.outputDirectory=Evidence+"/runtime";
         proof.stationPrefab=AssetDatabase.LoadAssetAtPath<GameObject>(RailStartingStationBuilder.PrefabPath).GetComponent<RailBlock>();proof.finalePrefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/bridge-finale-v1.prefab").GetComponent<RailBlock>();

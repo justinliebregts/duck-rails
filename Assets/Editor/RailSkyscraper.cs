@@ -15,7 +15,7 @@ using Object=UnityEngine.Object;
 public static class RailSkyscraper
 {
  public const string Id="skyscraper-works-v1", RootName="Skyscraper Works authored v2", Folder="Assets/DuckRails/SkyscraperWorks";
- public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id, BakeScene=LightingFolder+"/Bake.unity";
+ public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id, BakeScene=LightingFolder+"/"+Id+"-bake.unity";
  public const int LightCount=24;
  static Material concrete,steel,wood,yellow,gravel;
  static Mesh cube;

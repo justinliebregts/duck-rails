@@ -16,7 +16,7 @@ public static class RailQuarryMineChecks
         if(EditorApplication.isPlaying||Lightmapping.isRunning)throw new Exception("Finish bake/play first");
         var prefabs=RailCatalogLightingAuthoring.Prefabs.Select(p=>AssetDatabase.LoadAssetAtPath<GameObject>(p).GetComponent<RailBlock>()).ToArray();
         var catalog=prefabs.Where(b=>b.id!="bridge-finale-v1").ToArray();var expected=new float[catalog.Length];
-        for(int i=0;i<catalog.Length;i++){EditorSceneManager.OpenScene("Assets/DuckRails/Lighting/Blocks/"+catalog[i].id+"/Bake.unity");LightProbes.GetInterpolatedProbe(new Vector3(-26,2,61),null,out var sh);expected[i]=sh[0,0];}
+        for(int i=0;i<catalog.Length;i++){EditorSceneManager.OpenScene("Assets/DuckRails/Lighting/Blocks/"+catalog[i].id+"/"+catalog[i].id+"-bake.unity");LightProbes.GetInterpolatedProbe(new Vector3(-26,2,61),null,out var sh);expected[i]=sh[0,0];}
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
         var guard=new GameObject("Offline sign-in guard");guard.SetActive(false);guard.AddComponent<LoginFlow>();
         var proof=new GameObject("Mine catalogue integration proof").AddComponent<RailCatalogLightingProof>();proof.catalog=catalog;proof.expectedRedL0=expected;proof.outputDirectory="output/quarry-mine/runtime-proof";

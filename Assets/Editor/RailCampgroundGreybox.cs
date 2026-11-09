@@ -18,7 +18,7 @@ public static partial class RailCampgroundGreybox
     public const string Id="lakeside-campground-v1";
     public const string RootName="Campground greybox v1";
     public const string Folder="Assets/DuckRails/CampgroundGreybox";
-    public const string BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/Bake.unity";
+    public const string BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/"+Id+"-bake.unity";
     public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab";
     static Material grass, gravel, timber, roof, concrete, foliage, water, metal;
     static Mesh cube;

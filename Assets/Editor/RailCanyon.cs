@@ -17,7 +17,7 @@ public static class RailCanyon
 {
     public const string Id="canyon-v1", RootName="Canyon authored v1", Folder="Assets/DuckRails/Canyon";
     public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id;
-    public const string BakeScene=LightingFolder+"/Bake.unity";
+    public const string BakeScene=LightingFolder+"/"+Id+"-bake.unity";
     public const int LightCount=12;
     static Material sand,rock,wood,steel,green,water;
     static Mesh cube;

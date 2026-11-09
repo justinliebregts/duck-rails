@@ -98,7 +98,7 @@ Review images: [bright arrival](../output/underground-station/bright-arrival.png
 
 ### Continue editing/testing
 
-Open `Assets/DuckRails/Lighting/Blocks/passenger-station-v1/Bake.unity`. Authoring commands are under **Duck Rails > Authoring > Abandoned Station**. `RailAbandonedStation.Install()` regenerates the owned geometry/materials/markers and navigation; it does not automatically bake lighting. Run **Validate geometry**, then **Duck Rails > Lighting > All Blocks > Bake Open Block**. Wait for the export status to complete before **Capture review**.
+Open `Assets/DuckRails/Lighting/Blocks/passenger-station-v1/passenger-station-v1-bake.unity`. Authoring commands are under **Duck Rails > Authoring > Abandoned Station**. `RailAbandonedStation.Install()` regenerates the owned geometry/materials/markers and navigation; it does not automatically bake lighting. Run **Validate geometry**, then **Duck Rails > Lighting > All Blocks > Bake Open Block**. Wait for the export status to complete before **Capture review**.
 
 Use the existing Test Block Order list to select `passenger-station-v1.prefab` for a private development expedition. The saved offline integration scene is `Assets/DuckRails/AbandonedStation/RuntimeProof.unity` and uses the existing `RailCatalogLightingProof` component with seeds 0 and 1.
 

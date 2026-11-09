@@ -16,7 +16,7 @@ using Object=UnityEngine.Object;
 public static class RailQuarryMine
 {
     public const string Id="quarry-v1", RootName="Twin mine authored v5", Folder="Assets/DuckRails/QuarryMine";
-    public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/Bake.unity";
+    public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/"+Id+"-bake.unity";
     public const int LightCount=10;
     static Material rock,grass,gravel,wood,steel,yellow,glass;
     static Mesh cube;

@@ -68,7 +68,7 @@ public static class RailNuclearPlantChecks
  {
   RailNuclearPlant.Guard();var sample=new Vector3(-26,2,61);
   var ids=new[]{RailNuclearPlant.Id,"electrical-substation-v1","lumber-yard-v1","tunnel-works-v1","scrapyard-v1"};
-  var expected=new float[ids.Length];for(int i=0;i<ids.Length;i++){EditorSceneManager.OpenScene("Assets/DuckRails/Lighting/Blocks/"+ids[i]+"/Bake.unity");LightProbes.GetInterpolatedProbe(sample,null,out var sh);expected[i]=sh[0,0];}
+  var expected=new float[ids.Length];for(int i=0;i<ids.Length;i++){EditorSceneManager.OpenScene("Assets/DuckRails/Lighting/Blocks/"+ids[i]+"/"+ids[i]+"-bake.unity");LightProbes.GetInterpolatedProbe(sample,null,out var sh);expected[i]=sh[0,0];}
   var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);var guard=new GameObject("Offline sign-in guard");guard.SetActive(false);guard.AddComponent<LoginFlow>();
   var proof=new GameObject("Nuclear plant route proof").AddComponent<RailCatalogLightingProof>();proof.catalog=ids.Select(id=>AssetDatabase.LoadAssetAtPath<GameObject>(RailWeek3Builder.Folder+"/"+id+".prefab").GetComponent<RailBlock>()).ToArray();proof.expectedRedL0=expected;proof.samplePosition=sample;proof.seeds=new[]{11,43};proof.outputDirectory=Output+"/runtime";proof.stationPrefab=AssetDatabase.LoadAssetAtPath<GameObject>(RailStartingStationBuilder.PrefabPath).GetComponent<RailBlock>();proof.finalePrefab=AssetDatabase.LoadAssetAtPath<GameObject>(RailWeek3Builder.Folder+"/bridge-finale-v1.prefab").GetComponent<RailBlock>();
   EditorSceneManager.SaveScene(scene,RailNuclearPlant.LightingFolder+"/PlantProof.unity");
