@@ -3034,22 +3034,6 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: 2376154815042327235, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.45234277
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893043623557456898, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.45234277
-      objectReference: {fileID: 0}
-    - target: {fileID: -592703772467933161, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.41445393
-      objectReference: {fileID: 0}
-    - target: {fileID: -4613335815878545100, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.41445393
-      objectReference: {fileID: 0}
     - target: {fileID: -592703772467933161, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.99918133
@@ -3221,9 +3205,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7948746236572638086}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6719169489620636574}
     - targetCorrespondingSourceObject: {fileID: 3884719049676029345, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2452428609055133676}
@@ -3586,16 +3567,3 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: -1051307216263671134, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
   m_PrefabInstance: {fileID: 6780811638430472446}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6719169489620636574
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5970402648962540975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e0d171bd143e53468791350cbf0076a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerArmGeometry
-  body: {fileID: 3419157813316225628}

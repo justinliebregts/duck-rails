@@ -17,7 +17,7 @@ public static class PlayerArmGeometryChecks
         "Assets/Prefabs/Photon/PhotonPlayer.prefab"
     };
     const string CorpsePath = "Assets/Prefabs/Player/DuckPlayer_Ragdoll.prefab";
-    const string Output = ".utmp/player-arm-geometry";
+    const string Output = ".utmp/stretch-arms/renders";
     static readonly string[] Skins = { "Default", "Rambro", "Ninja", "Gorilla" };
 
     [MenuItem("Tools/DuckZ/Validation/Rendering/Validate and Render Player Arm Geometry")]
@@ -35,7 +35,7 @@ public static class PlayerArmGeometryChecks
             CheckExclusions(scene);
         }
         finally { EditorSceneManager.ClosePreviewScene(scene); }
-        Debug.Log("PlayerArmGeometryChecks PASS: all 4 skins on VR, desktop, Photon and player ragdoll; shared/idempotent meshes; unchanged hand vertices, source meshes and transforms; NPC exclusions. Saved 48 posed renders to " + Output);
+        Debug.Log("PlayerArmGeometryChecks PASS: all 4 skins on VR, desktop, Photon and player ragdoll; original shared meshes; no bind-pose fitting or mesh copies; NPC exclusions. Saved 48 posed renders to " + Output);
     }
 
     static void CheckPlayer(Scene scene, int route, byte id, Dictionary<byte, Mesh> shared)
@@ -62,16 +62,14 @@ public static class PlayerArmGeometryChecks
                 rig = corpseRoot;
             }
             var renderer = Main(rig);
+            if (route == 0 && id == 0)
+                Debug.Log("Player body bounds: " + renderer.localBounds + "; updateWhenOffscreen=" + renderer.updateWhenOffscreen);
             // Multiple snapshots run in one editor tick; refresh skinning for every render.
             renderer.updateWhenOffscreen = true;
             renderer.forceMatrixRecalculationPerRender = true;
-            var fit = rig.GetComponent<PlayerArmGeometry>();
-            Require(fit != null && fit.enabled, "human opt-in");
-            Require(new SerializedObject(fit).FindProperty("body").objectReferenceValue == renderer, "Awake renderer reference");
             var asset = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Skins/DuckSkin_" + Skins[id] + "/DuckSkin_" + Skins[id] + ".fbx");
             var source = Main(asset).sharedMesh;
-            Require(renderer.sharedMesh != source, "production Apply must fit " + Skins[id]);
-            CheckMesh(source, renderer, fit);
+            Require(renderer.sharedMesh == source, "production uses original shared mesh " + Skins[id]);
             if (shared.TryGetValue(id, out Mesh previous)) Require(previous == renderer.sharedMesh, "same cached mesh across routes");
             else shared.Add(id, renderer.sharedMesh);
 
@@ -97,63 +95,6 @@ public static class PlayerArmGeometryChecks
         }
     }
 
-    static void CheckMesh(Mesh source, SkinnedMeshRenderer renderer, PlayerArmGeometry fit)
-    {
-        Mesh corrected = renderer.sharedMesh;
-        var bones = renderer.bones;
-        var originalPoses = source.bindposes;
-        var poses = corrected.bindposes;
-        Require(corrected.vertexCount == source.vertexCount && corrected.subMeshCount == source.subMeshCount, "topology unchanged");
-        int armCount = 0;
-        for (int i = 0; i < poses.Length; i++)
-        {
-            bool arm = bones[i] != null && IsArm(bones[i].name);
-            Matrix4x4 expected = arm ? Matrix4x4.Scale(new Vector3(1, 1.1f, 1)) * originalPoses[i] : originalPoses[i];
-            Require(poses[i] == expected, "only arm bind poses change: " + bones[i].name);
-            if (arm) armCount++;
-        }
-        Require(armCount == 4, "four arm segments");
-        var positions = bones.Select(b => b.localPosition).ToArray();
-        var rotations = bones.Select(b => b.localRotation).ToArray();
-        var scales = bones.Select(b => b.localScale).ToArray();
-        Bounds bounds = renderer.localBounds;
-        fit.Prepare(renderer);
-        fit.Prepare(renderer);
-        Require(renderer.sharedMesh == corrected && fit.Fit(source, bones) == corrected, "no double stretching or per-instance copies");
-        Require(renderer.localBounds == bounds, "bounds do not compound");
-        for (int i = 0; i < bones.Length; i++)
-            Require(bones[i].localPosition == positions[i] && bones[i].localRotation == rotations[i] && bones[i].localScale == scales[i], "transforms untouched");
-
-        var originalBake = new Mesh();
-        var correctedBake = new Mesh();
-        try
-        {
-            renderer.sharedMesh = source;
-            renderer.BakeMesh(originalBake);
-            renderer.sharedMesh = corrected;
-            renderer.BakeMesh(correctedBake);
-            var a = originalBake.vertices;
-            var b = correctedBake.vertices;
-            var weights = source.boneWeights;
-            int handVertices = 0;
-            for (int i = 0; i < weights.Length; i++)
-            {
-                var w = weights[i];
-                if ((w.weight0 == 0 || !IsArm(bones[w.boneIndex0].name)) &&
-                    (w.weight1 == 0 || !IsArm(bones[w.boneIndex1].name)) &&
-                    (w.weight2 == 0 || !IsArm(bones[w.boneIndex2].name)) &&
-                    (w.weight3 == 0 || !IsArm(bones[w.boneIndex3].name)))
-                {
-                    Require(Vector3.Distance(a[i], b[i]) < .000001f, "non-arm vertex unchanged");
-                    if (bones[w.boneIndex0].name.StartsWith("hand.")) handVertices++;
-                }
-            }
-            Require(handVertices > 0, "hand vertices verified");
-            Require(source.bindposes.SequenceEqual(originalPoses), "source asset never mutated");
-        }
-        finally { renderer.sharedMesh = corrected; Object.DestroyImmediate(originalBake); Object.DestroyImmediate(correctedBake); }
-    }
-
     static void CheckExclusions(Scene scene)
     {
         foreach (string path in new[] {
@@ -165,14 +106,6 @@ public static class PlayerArmGeometryChecks
             var root = Spawn(path, scene);
             try
             {
-                foreach (var fit in root.GetComponentsInChildren<PlayerArmGeometry>(true))
-                {
-                    Require(!fit.enabled, path + " must not opt in");
-                    var r = Main(fit.gameObject);
-                    Mesh before = r.sharedMesh;
-                    fit.Prepare(r);
-                    Require(r.sharedMesh == before && fit.Fit(before, r.bones) == before, "disabled companion no-op");
-                }
                 Require(root.GetComponentsInChildren<SkinnedMeshRenderer>(true).All(r => r.sharedMesh == null || AssetDatabase.Contains(r.sharedMesh)), "NPC meshes remain assets");
             }
             finally { Object.DestroyImmediate(root); }

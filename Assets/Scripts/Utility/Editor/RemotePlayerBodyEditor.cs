@@ -232,7 +232,8 @@ public sealed class RemotePlayerBodyEditor : Editor
         double now = EditorApplication.timeSinceStartup;
         float dt = (float)(now - lastPreviewTime);
         lastPreviewTime = now;
-        Body.ApplyIKPreview(pose, simulateSmoothing, dt);
+        // Elbow-tuning preview keeps the authored hierarchy and original arm lengths.
+        Body.ApplyIKPreview(pose, simulateSmoothing, dt, stretchArms: false);
         SceneView.RepaintAll();
     }
 

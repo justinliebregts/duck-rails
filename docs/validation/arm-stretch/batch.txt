@@ -1,0 +1,74 @@
+PlayerArmLengthChecks PASS: VR/desktop/Photon 55.160 cm rest arms, 1.4x visual stretch; reachable and bounded targets; unchanged enemies/companion; network codec pose agreement.
+PlayerPalmAlignmentChecks PASS: 1812 checks; all skins on VR/desktop/Photon; rotated palms, bounded reach, unchanged hand geometry, corpse poses, held-item anchors, zero pose allocations, NPC exclusions.
+ControllerPalmCalibrationChecks PASS 1830: includes bare-hand orientation, tracking loss, input switching and Photon rotation parity
+ControllerPalmInteractionChecks PASS 2912: four skins, both hands, four rotations; grab boundaries, transfers, throws, actual held/bare wall sweeps, unstick, PUN held-item callbacks.
+TrackedHandInputChecks PASS 363: joint curl, gesture edges, post-grab trigger guard, tracking loss, controller isolation, item use and network curls.
+PlayerRagdollLengthChecks PASS: local VR/desktop, Photon death/respawn/reuse, all four skins, 5400 isolated physics steps, matching bones/colliders, original companion corpse. Maximum dynamic reach drift: 0.002602935 m; impact arm anchor separation: 0.02200066 m.
+Death launch checks passed: four prefab profiles, variation, separate tracking clamp, hands, reuse, dead-only stream, remote launch and duplicate rejection.
+Ragdoll checks passed: three deaths, distant spawn, impossible hand target, bone resets, hip rotation, Smasher launch into wall and 720 physics steps.
+PlayerArmGeometryChecks PASS: all 4 skins on VR, desktop, Photon and player ragdoll; original shared meshes; no bind-pose fitting or mesh copies; NPC exclusions. Saved 48 posed renders to .utmp/stretch-arms/renders
+STRETCH ARM VALIDATION PASS
+Pickup surface network PASS: 60 cases through actual PUN spawn and stream callbacks; corrected mesh contact, moving hands, delayed arrival, full growth and release.
+PickupPoseChecks PASS: four bag miniatures and four wall displays; mesh alignment, anchored growth, remote pose reconstruction, delayed arrival and completion.
+HeadPivotLifeNetworkChecks PASS: 210 assertions; six B respawn/pose combinations, ragdoll sync, compact pose codec, remote death/respawn and stale death rejection.
+Arm kick checks PASSED: inactive cache, bounded asymmetric kicks, shared peer result, pooled reset, unchanged torso and linear velocities.
+RagdollOwnerCollisionChecks PASSED: owner root/child/controller ignored, environment/other player/items preserved, three activations, unchanged launch and physics motion.
+Carry network PASS: VR, support 0, 80 ms latency, max head deficit 0.0006 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 1, 80 ms latency, max head deficit 0.0009 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 2, 80 ms latency, max head deficit 0.0032 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 5, 80 ms latency, max head deficit 0.0038 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 6, 80 ms latency, max head deficit 0.0032 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 3, 80 ms latency, max head deficit 0.0022 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 4, 80 ms latency, max head deficit 0.0085 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 0, 250 ms latency, max head deficit 0.0005 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 1, 250 ms latency, max head deficit 0.0009 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 2, 250 ms latency, max head deficit 0.0032 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 5, 250 ms latency, max head deficit 0.0038 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 6, 250 ms latency, max head deficit 0.0032 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 3, 250 ms latency, max head deficit 0.0023 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 4, 250 ms latency, max head deficit 0.0090 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 0, 450 ms latency, max head deficit 0.0005 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 1, 450 ms latency, max head deficit 0.0009 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 2, 450 ms latency, max head deficit 0.0032 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 5, 450 ms latency, max head deficit 0.0038 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 6, 450 ms latency, max head deficit 0.0032 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 3, 450 ms latency, max head deficit 0.0023 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: VR, support 4, 450 ms latency, max head deficit 0.0091 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 0, 80 ms latency, max head deficit 0.0009 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 1, 80 ms latency, max head deficit 0.0012 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 3, 80 ms latency, max head deficit 0.0025 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 4, 80 ms latency, max head deficit 0.0088 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 0, 250 ms latency, max head deficit 0.0009 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 1, 250 ms latency, max head deficit 0.0012 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 3, 250 ms latency, max head deficit 0.0026 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 4, 250 ms latency, max head deficit 0.0093 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 0, 450 ms latency, max head deficit 0.0009 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 1, 450 ms latency, max head deficit 0.0012 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 3, 450 ms latency, max head deficit 0.0026 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Carry network PASS: desktop, support 4, 450 ms latency, max head deficit 0.0094 m; jitter/loss, late join, manager delay, host switch, ghost/respawn
+Resting hand network release PASS: support 5, production capture/codec/render, no residual carry
+Resting hand network release PASS: support 6, production capture/codec/render, no residual carry
+HelicopterNetworkChecks: ALL PASSED (127990 assertions; simulated peers, actual Photon stream and codec)
+First pose / input validation PASS
+Lifetime / wire schema PASS
+Zero-lifetime clock recovery PASS: 100 -> 80
+Zero-lifetime clock recovery PASS: 2600000 -> 100
+Zero-lifetime clock recovery PASS: 100 -> 2600000
+Duplicate / stale / burst / death ordering PASS
+Real ragdoll death / respawn PASS
+Death / respawn during timestamp recovery PASS
+Companion life payload ordering PASS
+Timestamp wrap / disable reset PASS
+Interpolation PASS: delay=0.08 outage=False hitch=False
+Interpolation PASS: delay=0.22 outage=False hitch=False
+Interpolation PASS: delay=0.08 outage=True hitch=False
+Interpolation PASS: delay=0.08 outage=False hitch=True
+Stretch playback PASS: latency=0.08, packet gap=False
+Stretch playback PASS: latency=0.22, packet gap=True
+Delayed advancing stream / life ordering PASS
+Owner actor identity / missing cache PASS
+Companion controller handoff PASS
+Allocation PASS: 0 bytes / 30,000 warmed playback + timestamp + timer calls (unchanged displayed second)
+Full receiver allocation PASS: 0 bytes / 30,000 accepted packets + playback calls (predecoded input; unchanged displayed second)
+PhotonAvatarRecoveryChecks: ALL PASSED (12809 assertions)
+Asset Pipeline Refresh (id=97690fc57541a1e40bc44fa0d159ef1e): Total: 0.139 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)

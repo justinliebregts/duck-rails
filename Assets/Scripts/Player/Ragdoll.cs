@@ -153,9 +153,15 @@ public class Ragdoll : MonoBehaviour
         }
         // Preserve bone lengths: never teleport an end bone to a tracking target.
         if (leftHandTarget != null && leftHandSource != null)
+        {
             leftHandTarget.rotation = leftHandSource.rotation;
+            CopyRotations(leftHandSource, leftHandTarget);
+        }
         if (rightHandTarget != null && rightHandSource != null)
+        {
             rightHandTarget.rotation = rightHandSource.rotation;
+            CopyRotations(rightHandSource, rightHandTarget);
+        }
 
         // Snapshot all world poses before Rigidbody setters can affect child transforms.
         for (int i = 0; i < bodies.Length; i++)

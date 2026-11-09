@@ -27,6 +27,10 @@ namespace Game.Animation
         quaternion _upperRestRot, _midRestRot, _endRestRot;
         float3 _upperRestDir, _midRestDir;
         float _l1, _l2;
+        Vector3 _upperScale;
+        int _lengthAxis;
+        bool _handDetached;
+        float _visualStretch = 1f;
 
         // parent-frame rest (round 26: twist anchored to parent, follows the body)
         quaternion _upperRestLocalRot, _midRestLocalRot;
@@ -64,6 +68,14 @@ namespace Game.Animation
         [ContextMenu("Capture Rest Pose")]
         public void CaptureRest()
         {
+            // A second initialization must not measure a posed/stretched arm.
+            if (_handDetached && endBone.parent != midBone) return;
+            _handDetached = false;
+            _visualStretch = 1f;
+            _upperScale = upperBone.localScale;
+            Vector3 along = midBone.localPosition;
+            _lengthAxis = Mathf.Abs(along.x) > Mathf.Abs(along.y) && Mathf.Abs(along.x) > Mathf.Abs(along.z)
+                ? 0 : Mathf.Abs(along.y) >= Mathf.Abs(along.z) ? 1 : 2;
             _upperRestRot = upperBone.rotation;
             _midRestRot   = midBone.rotation;
             _hasEnd       = endBone != null;
@@ -84,7 +96,7 @@ namespace Game.Animation
                         logNotice1.Write("[TwoBoneLimb] midBone must be a child of upperBone (chain contract).", this);
                 }
 
-            // Bone offsets define reach. Cache once with the rest pose; solving only rotates bones.
+            // Cache the authored reach, never the current visual stretch.
             _l1 = math.distance(upperBone.position, midBone.position);
             _l2 = math.distance(midBone.position, endBone.position);
 
@@ -97,13 +109,60 @@ namespace Game.Animation
             _twist = 0f;
         }
 
-        public void Solve(float3 targetPos, quaternion targetRot, float3 polePos)
+        public void Solve(float3 targetPos, quaternion targetRot, float3 polePos, float maxStretch = 1f)
         {
             float3 root    = upperBone.position;
             float3 poleDir = math.normalizesafe(polePos - root, new float3(0f, -1f, 0f));
             _dbgTarget = targetPos; _dbgPole = polePos;
 
-            TwoBoneResult r = TwoBoneIK.Solve(root, targetPos, poleDir, _l1, _l2);
+            float stretch = 1f;
+            TwoBoneResult r;
+            if (maxStretch > 1f)
+            {
+                if (!_handDetached)
+                {
+                    // Only the visual player arms opt in. The existing hand/fingers
+                    // and held-item anchor keep their size, even during wrist twists.
+                    endBone.SetParent(upperBone.parent, true);
+                    _handDetached = true;
+                }
+                float distanceSq = math.distancesq(root, targetPos);
+                float reach = _l1 + _l2;
+                if (distanceSq >= reach * reach)
+                {
+                    float distance = math.sqrt(distanceSq);
+                    stretch = math.min(distance / reach, maxStretch);
+                    float3 direction = (targetPos - root) / distance;
+                    // A stretched arm is straight: no elbow singularity or inherited
+                    // non-uniform-scale shear from bending the forearm.
+                    r = new TwoBoneResult {
+                        mid = root + direction * (_l1 * stretch),
+                        end = root + direction * (reach * stretch),
+                        reached = distance <= reach * maxStretch
+                    };
+                }
+                else
+                {
+                    float distance = math.sqrt(distanceSq);
+                    float3 direction = distance > 1e-6f ? (targetPos - root) / distance : new float3(0f, 0f, 1f);
+                    // The two unequal segments cannot fold all the way to the shoulder.
+                    // Keep the detached wrist connected at the solver's minimum reach.
+                    float minReach = math.abs(_l1 - _l2) + 1e-3f;
+                    float3 wristTarget = distance < minReach ? root + direction * minReach : targetPos;
+                    // A vertical target parallel to the pole also needs a valid bend plane.
+                    if (math.lengthsq(math.cross(direction, poleDir)) <= 1e-10f)
+                        poleDir = math.abs(direction.y) < .9f ? new float3(0f, 1f, 0f) : new float3(1f, 0f, 0f);
+                    r = TwoBoneIK.Solve(root, wristTarget, poleDir, _l1, _l2);
+                }
+                if (stretch != _visualStretch)
+                {
+                    Vector3 scale = _upperScale;
+                    scale[_lengthAxis] *= stretch;
+                    upperBone.localScale = scale;
+                    _visualStretch = stretch;
+                }
+            }
+            else r = TwoBoneIK.Solve(root, targetPos, poleDir, _l1, _l2);
 
             float3 upperDir = math.normalizesafe(r.mid - root, _upperRestDir);
             float3 midDir   = math.normalizesafe(r.end - r.mid, _midRestDir);
@@ -152,6 +211,7 @@ namespace Game.Animation
 
             upperBone.rotation = upperRot;
             midBone.rotation   = midRot;
+            if (_handDetached) endBone.position = r.end;
             if (_hasEnd) endBone.rotation = endRot;
         }
 

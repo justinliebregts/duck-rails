@@ -10,7 +10,7 @@ using Object = UnityEngine.Object;
 
 public static class PlayerPalmAlignmentChecks
 {
-    const float Reach = .6067576f;
+    const float Reach = .5515978f;
     const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     static readonly string[] Players = {
         "Assets/Prefabs/Player/DuckPlayer.prefab", "Assets/Prefabs/Player/DesktopPlayer.prefab",
@@ -52,8 +52,6 @@ public static class PlayerPalmAlignmentChecks
             corpse.sourceHip = body.Chest; corpse.leftHandSource = body.LeftHand; corpse.rightHandSource = body.RightHand;
             corpse.Park();
             var hands = root.GetComponentsInChildren<PlayerHand>(true);
-            var offsets = new[] { body.LeftHand.localPosition, body.RightHand.localPosition,
-                body.LeftHand.parent.localPosition, body.RightHand.parent.localPosition };
             foreach (byte id in new byte[] { 0, 1, 2, 3, 0, 3 })
             {
                 skin.Apply(id);
@@ -79,25 +77,23 @@ public static class PlayerPalmAlignmentChecks
                         var endOffset = new SerializedObject(arm).FindProperty("endRotOffset").quaternionValue;
                         Require(Quaternion.Angle(h.rotation, rotations[side] * endOffset) < .05f, "authored hand rotation preserved");
                         Near(h.lossyScale, Vector3.one * .7f, "normal hand scale");
-                        Require(Mathf.Abs(Vector3.Distance(h.position, h.parent.position) + Vector3.Distance(h.parent.position, h.parent.parent.position) - Reach) < .00002f, "arm length unchanged");
+                        Require(Mathf.Abs(arm.TotalReach - Reach) < .00002f, "original arm reach cached");
                         side++;
                     }
-                    Require(body.LeftHand.localPosition == offsets[0] && body.RightHand.localPosition == offsets[1]
-                        && body.LeftHand.parent.localPosition == offsets[2] && body.RightHand.parent.localPosition == offsets[3], "bone offsets unchanged");
                     CheckHoldPoints(hands, body, pose);
 
                     corpse.ApplySkin(id); corpse.PoseToPlayer(root.transform);
                     Near(Palm(corpse.leftHandTarget), Palm(body.LeftHand), "left corpse palm copies living pose once");
                     Near(Palm(corpse.rightHandTarget), Palm(body.RightHand), "right corpse palm copies living pose once");
-                    Require(Main(corpseRoot).sharedMesh == renderer.sharedMesh, "corpse and living skin share corrected mesh");
+                    Require(Main(corpseRoot).sharedMesh == renderer.sharedMesh, "corpse and living skin share original mesh");
                     corpse.Park();
                 }
             }
 
             var far = Pose(0); far.lHandPos = new Vector3(-10, 2, 10); far.rHandPos = new Vector3(10, 2, 10);
             body.ApplyIKPreview(far);
-            Require(Vector3.Distance(body.LeftArm.RootPos, body.LeftHand.position) <= Reach + .00002f
-                && Vector3.Distance(body.RightArm.RootPos, body.RightHand.position) <= Reach + .00002f, "far palm targets do not stretch arms");
+            Require(Vector3.Distance(body.LeftArm.RootPos, body.LeftHand.position) <= Reach * 1.4f + .00002f
+                && Vector3.Distance(body.RightArm.RootPos, body.RightHand.position) <= Reach * 1.4f + .00002f, "far palm targets stop at 1.4x reach");
             var normal = Pose(0);
             for (int i = 0; i < 16; i++) body.ApplyIKPreview(normal);
             long before = GC.GetAllocatedBytesForCurrentThread();

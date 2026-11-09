@@ -52,7 +52,7 @@ public static class PhotonAvatarRecoveryChecks
             player.photonView.ControllerActorNr = owner.ActorNumber;
             body = Get<RemotePlayerBody>(player, "body");
             Check(body != null && body.Head != null, "Remote body resolves");
-            foreach (var limb in go.GetComponentsInChildren<TwoBoneLimb>(true)) limb.CaptureRest();
+            body.InitializeIKPreview();
             if (!ragdoll) Set(player, "deathRagdollPrefab", null);
             tick = Bind(player, "LateUpdate");
         }
@@ -118,12 +118,67 @@ public static class PhotonAvatarRecoveryChecks
             Playback(.22, false, false);
             Playback(.08, true, false);
             Playback(.08, false, true);
+            StretchPlayback(.08, false);
+            StretchPlayback(.22, true);
             ReleaseReviewEdges();
             Allocation();
             Debug.Log("PhotonAvatarRecoveryChecks: ALL PASSED (" + checks + " assertions)");
             EditorApplication.Exit(0);
         }
         catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
+    }
+
+    static void StretchPlayback(double latency, bool dropPackets)
+    {
+        using var f = new Fixture();
+        TwoBoneLimb[] arms = { f.body.LeftArm, f.body.RightArm };
+        Transform[] mids = new Transform[2];
+        Vector3[] wristOffsets = new Vector3[2];
+        for (int a = 0; a < 2; a++)
+        {
+            mids[a] = (Transform)new SerializedObject(arms[a]).FindProperty("midBone").objectReferenceValue;
+            wristOffsets[a] = arms[a].EndBone.localPosition;
+        }
+        bool stretched = false, recovered = false;
+        for (int frame = 0; frame < 360; frame++)
+        {
+            double t = frame / 60d;
+            if (frame % 3 == 0 && !(dropPackets && frame >= 120 && frame < 150))
+            {
+                var packet = Pose(0);
+                float reach = frame < 60 ? .3f : frame < 120 ? .62f : frame < 240 ? 1.2f : .3f;
+                packet.LHandPos = new Vector3(-reach, 1.75f, .05f);
+                packet.RHandPos = new Vector3(reach, 1.75f, .05f);
+                packet.LHandRot = Quaternion.Euler(0, 0, frame * 7);
+                packet.RHandRot = Quaternion.Euler(0, 0, -frame * 7);
+                var decoded = (PosePacket)PosePacket.Deserialize(PosePacket.Serialize(packet));
+                Deliver(f.player, 100 + t, t, 100 + t - latency,
+                    new object[] { decoded, false, (int)t }, owner);
+            }
+            Clock(100 + t); f.tick();
+            var displayed = Get<BodyPose>(f.player, "_lastPose");
+            for (int a = 0; a < 2; a++)
+            {
+                var arm = arms[a];
+                Vector3 root = arm.RootPos;
+                Quaternion rotation = a == 0 ? displayed.lHandRot : displayed.rHandRot;
+                Vector3 palm = a == 0 ? displayed.lHandPos : displayed.rHandPos;
+                Vector3 wrist = palm - rotation * (Vector3)arm.EndPointOffset(RemotePlayerBody.PlayerPalmPoint);
+                float distance = Vector3.Distance(root, wrist);
+                float expected = Mathf.Clamp(distance, .025111f, arm.TotalReach * 1.4f);
+                Check(Mathf.Abs(Vector3.Distance(root, arm.EndPos) - expected) < .0012f,
+                    "Displayed Photon wrist follows received/interpolated target and 1.4x cap");
+                Check(Vector3.Distance(mids[a].TransformPoint(wristOffsets[a]), arm.EndPos) < .0012f,
+                    "Photon wrist remains connected through delay, loss and rotation");
+                Check(Vector3.Distance(arm.EndBone.lossyScale, Vector3.one * .7f) < .00002f,
+                    "Photon hand size remains unchanged");
+                float scale = mids[a].parent.localScale.y;
+                if (scale > 1.35f) stretched = true;
+                if (frame > 300 && Mathf.Abs(scale - 1f) < .00002f) recovered = true;
+            }
+        }
+        Check(stretched && recovered, "Remote arms stretch and return to rest through production playback");
+        Debug.Log("Stretch playback PASS: latency=" + latency + ", packet gap=" + dropPackets);
     }
 
     static void FirstPoseAndValidation()

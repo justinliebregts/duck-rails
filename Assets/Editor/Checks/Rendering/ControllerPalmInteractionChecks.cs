@@ -75,6 +75,7 @@ public static class ControllerPalmInteractionChecks
                         Near(Current(movement, right), centre, "climbing uses held-item geometry");
                         Near(right ? movement.lastRightHandPosition : movement.lastLeftHandPosition, centre, "grab seeds anchor without yank");
                         CheckNetwork(owner, peer, item, replica);
+                        CheckStretchedHold(driver, hand, owner, peer, item, replica);
 
                         // Seed the item behind a wall, then move the real controller through it.
                         Vector3 tracked = raw.position;
@@ -166,12 +167,39 @@ public static class ControllerPalmInteractionChecks
         // Supply the decoded playback pose; transport/interpolation is covered separately.
         Set(peer, "_lastPose", decoded.ToBodyPose()); Set(peer, "_hasPose", true);
         var stream = Writing(); item.OnPhotonSerializeView(stream, default);
-        Check(stream.ToArray().Length == 11, "held-item packet size unchanged");
+        Check(stream.ToArray().Length == 11, "Rails held-item schema includes recovery revision; train cargo serializes separately");
         replica.OnPhotonSerializeView(new PhotonStream(false, stream.ToArray()), default);
         Set(replica, "remoteOwner", peer); Call(replica, "UpdateItemPose");
         Near(replica.transform.position, item.transform.position, "remote held item matches calibrated owner", .003f);
         Check(Quaternion.Angle(replica.transform.rotation, item.transform.rotation) < .2f, "remote held rotation matches");
         Near(replica.transform.lossyScale, Vector3.one, "remote item size unchanged");
+    }
+
+    static void CheckStretchedHold(LocalBodyDriver driver, PlayerHand hand, PhotonPlayer owner, PhotonPlayer peer,
+        PhotonGrabbable item, PhotonGrabbable replica)
+    {
+        var arm = hand.IsControllerLTouch ? driver.Body.LeftArm : driver.Body.RightArm;
+        var raw = hand.IsControllerLTouch ? driver.LeftHandAnchor : driver.RightHandAnchor;
+        Vector3 saved = raw.position, savedHand = hand.transform.position;
+        Vector3 grip = item.transform.localPosition;
+        var collider = item.GetComponent<BoxCollider>();
+        Vector3 size = collider.size, centre = collider.center;
+        try
+        {
+            foreach (float reach in new[] { .45f, .62f, .70f, .76f, .9f, .45f })
+            {
+                Vector3 target = (Vector3)arm.RootPos + (hand.IsControllerLTouch ? Vector3.left : Vector3.right) * reach;
+                raw.position = target; hand.transform.position = target;
+                driver.PoseNow();
+                Near(raw.position, target, "visual solve leaves tracked/physics anchor untouched");
+                Near(item.transform.localPosition, grip, "stretch preserves held grip offset");
+                Near(item.transform.lossyScale, Vector3.one, "stretch never scales held items");
+                Check(collider.size == size && collider.center == centre, "stretch does not edit item collider dimensions");
+                Check(Vector3.Distance(arm.RootPos, arm.EndPos) <= arm.TotalReach * 1.4f + .0001f, "held reach capped at 1.4x");
+                CheckNetwork(owner, peer, item, replica);
+            }
+        }
+        finally { raw.position = saved; hand.transform.position = savedHand; driver.PoseNow(); }
     }
 
     static PhotonGrabbable Item(bool mine)

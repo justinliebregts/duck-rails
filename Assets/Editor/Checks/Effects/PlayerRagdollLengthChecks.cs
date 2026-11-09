@@ -13,7 +13,7 @@ public static class PlayerRagdollLengthChecks
     const string PlayerCorpse = "Assets/Prefabs/Player/DuckPlayer_Ragdoll.prefab";
     const string OriginalCorpse = "Assets/Prefabs/Player/DuckSkin_Ragdoll.prefab";
     const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
-    const float HumanReach = 0.6067576f;
+    const float HumanReach = 0.5515978f;
     const float OriginalReach = 0.5515978f;
     static float maxPhysicsDrift;
     static float maxImpactSeparation;
@@ -76,6 +76,7 @@ public static class PlayerRagdollLengthChecks
             for (int i = 0; i < 3; i++)
             {
                 body.ApplyIKPreview(Packet(i).ToBodyPose());
+                body.LeftHand.Find("index_01.L").localRotation *= Quaternion.Euler(0, 0, 25);
                 corpse.PoseToPlayer(root.transform, new RagdollLaunch { impact = new Vector3(1, 2, 0) });
                 CheckPose(corpse, body, path);
                 Simulate(corpse, physics, path);
@@ -135,8 +136,8 @@ public static class PlayerRagdollLengthChecks
 
     static PosePacket Packet(int i) => new PosePacket {
         HeadPos = new Vector3(i * 3, 3, 0), HeadRot = Quaternion.Euler(0, i * 30, 0),
-        LHandPos = new Vector3(i * 3 - .3f, 2.8f, .4f), LHandRot = Quaternion.Euler(10, 20, 30),
-        RHandPos = new Vector3(i * 3 + .3f, 2.7f, .3f), RHandRot = Quaternion.Euler(-10, -20, -30)
+        LHandPos = new Vector3(i * 3 - (i == 2 ? 1.2f : .3f), 2.8f, .4f), LHandRot = Quaternion.Euler(10, 20, 30),
+        RHandPos = new Vector3(i * 3 + (i == 2 ? 1.2f : .3f), 2.7f, .3f), RHandRot = Quaternion.Euler(-10, -20, -30)
     };
 
     static void VerifyImpacts(GameObject prefab, Ragdoll human, Scene scene, PhysicsScene physics)
@@ -213,9 +214,11 @@ public static class PlayerRagdollLengthChecks
     {
         CheckProjection(corpse);
         CheckLengths(corpse, HumanReach);
-        Require(Vector3.Distance(corpse.leftHandTarget.position, body.LeftHand.position) < .001f
-            && Vector3.Distance(corpse.rightHandTarget.position, body.RightHand.position) < .001f,
-            label + " no hand jump at death");
+        Require(Quaternion.Angle(corpse.leftHandTarget.Find("index_01.L").localRotation,
+            body.LeftHand.Find("index_01.L").localRotation) < .05f, label + " detached hand finger pose transfers");
+        Require(Quaternion.Angle(corpse.leftHandTarget.rotation, body.LeftHand.rotation) < .05f
+            && Quaternion.Angle(corpse.rightHandTarget.rotation, body.RightHand.rotation) < .05f,
+            label + " hand rotations transfer onto normal-length corpse");
         foreach (var joint in corpse.GetComponentsInChildren<CharacterJoint>())
             Require(Vector3.Distance(joint.transform.TransformPoint(joint.anchor),
                 joint.connectedBody.transform.TransformPoint(joint.connectedAnchor)) < .001f,
@@ -292,7 +295,7 @@ public static class PlayerRagdollLengthChecks
             var source = PrefabUtility.GetCorrespondingObjectFromSource(bone);
             var a = source.GetComponent<CapsuleCollider>();
             var b = bone.GetComponent<CapsuleCollider>();
-            float multiplier = bone.name.StartsWith("hand.") ? 1f : 1.1f;
+            float multiplier = 1f;
             Require(Mathf.Abs(b.height - a.height * multiplier) < .00001f
                 && Mathf.Abs(b.center.y - a.center.y * multiplier) < .00001f && b.radius == a.radius,
                 bone.name + " collider length/width");

@@ -798,18 +798,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: -4613335815878545100, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.41445392
-      objectReference: {fileID: 0}
     - target: {fileID: -1051307216263671134, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: dd2754d29ce685f458365c8f7f3797a2, type: 2}
-    - target: {fileID: -592703772467933161, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.41445392
-      objectReference: {fileID: 0}
     - target: {fileID: -592703772467933161, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.99918133
@@ -869,14 +861,6 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
       propertyPath: m_Name
       value: DuckSkin_Default
-      objectReference: {fileID: 0}
-    - target: {fileID: 1893043623557456898, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.45234278
-      objectReference: {fileID: 0}
-    - target: {fileID: 2376154815042327235, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.45234278
       objectReference: {fileID: 0}
     - target: {fileID: 2376154815042327235, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -964,9 +948,6 @@ PrefabInstance:
       addedObject: {fileID: 7948746236572638086}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2347496332938465967}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 400120}
   m_SourcePrefab: {fileID: 100100000, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
 --- !u!4 &15326333608940039 stripped
@@ -1007,11 +988,6 @@ Transform:
 --- !u!4 &3016289481498577129 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -592703772467933161, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
-  m_PrefabInstance: {fileID: 6780811638430472446}
-  m_PrefabAsset: {fileID: 0}
---- !u!137 &3419157813316225628 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: -1051307216263671134, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
   m_PrefabInstance: {fileID: 6780811638430472446}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &3637908504846817047 stripped
@@ -1122,19 +1098,6 @@ MonoBehaviour:
   rollToUpper: 0
   rollSmooth: 30
   maxTwistDegrees: 150
---- !u!114 &2347496332938465967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5970402648962540975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e0d171bd143e53468791350cbf0076a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerArmGeometry
-  body: {fileID: 3419157813316225628}
 --- !u!114 &400120
 MonoBehaviour:
   m_ObjectHideFlags: 0

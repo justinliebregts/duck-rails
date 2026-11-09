@@ -45,7 +45,6 @@ public class DuckSkinVisuals : MonoBehaviourPunCallbacks
 
     PhotonView view;
     SkinnedMeshRenderer body;
-    PlayerArmGeometry armGeometry;
     Mesh defaultMesh;
     Material[] defaultMaterials;
     Transform[] defaultBones;
@@ -270,7 +269,7 @@ public class DuckSkinVisuals : MonoBehaviourPunCallbacks
                 return false;
             }
         }
-        body.sharedMesh = armGeometry != null ? armGeometry.Fit(model.mesh, bones) : model.mesh;
+        body.sharedMesh = model.mesh;
         body.sharedMaterials = model.materials;
         body.bones = bones;
         body.rootBone = model.rootBoneName != null && boneMap.TryGetValue(model.rootBoneName, out Transform root) ? root : defaultRootBone;
@@ -336,8 +335,6 @@ public class DuckSkinVisuals : MonoBehaviourPunCallbacks
             }
             return;
         }
-        armGeometry = GetComponent<PlayerArmGeometry>();
-        if (armGeometry != null) armGeometry.Prepare(body);
         defaultMesh = body.sharedMesh;
         defaultMaterials = body.sharedMaterials;
         defaultBones = body.bones;

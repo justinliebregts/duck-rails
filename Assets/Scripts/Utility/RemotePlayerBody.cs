@@ -31,6 +31,7 @@ namespace Game.Animation
         // At the authored 0.7 hand scale this is 3.731 cm; independent of arm length and skin.
         public static readonly float3 PlayerPalmPoint = new float3(0f, 0.0533f, 0f);
         public bool TracksPalms => trackPalms;
+        public const float PlayerArmMaxStretch = 1.4f;
         float3 _leftPalmOffset, _rightPalmOffset;
 
         void Awake() => CachePalmOffsets();
@@ -119,9 +120,9 @@ namespace Game.Animation
             _leftElbow = default;
             _rightElbow = default;
         }
-        public void ApplyIKPreview(in BodyPose pose, bool simulateSmoothing = false, float deltaTime = 0f)
+        public void ApplyIKPreview(in BodyPose pose, bool simulateSmoothing = false, float deltaTime = 0f, bool stretchArms = true)
         {
-            ApplyPoseInternal(pose, 0f, deltaTime, simulateSmoothing);
+            ApplyPoseInternal(pose, 0f, deltaTime, simulateSmoothing, stretchArms: stretchArms);
         }
 #endif
 
@@ -132,7 +133,7 @@ namespace Game.Animation
         public void ApplyPose(in BodyPose p, float chestBack = 0f, Quaternion? bodyRotation = null)
             => ApplyPoseInternal(p, chestBack, Time.deltaTime, Application.isPlaying, bodyRotation);
 
-        void ApplyPoseInternal(in BodyPose p, float chestBack, float deltaTime, bool smooth, Quaternion? bodyRotation = null)
+        void ApplyPoseInternal(in BodyPose p, float chestBack, float deltaTime, bool smooth, Quaternion? bodyRotation = null, bool stretchArms = true)
         {
             // --- Chest FIRST (parent of the head in nested rigs) ----------------
             float3 hf   = bodyRotation.HasValue ? (float3)(bodyRotation.Value * Vector3.forward) : math.mul(p.headRot, new float3(0, 0, 1));
@@ -167,8 +168,9 @@ namespace Game.Animation
             // --- Arms ----------------------------------------------------------
             float3 lShoulder = leftArm.RootPos;
             float3 rShoulder = rightArm.RootPos;
-            leftArm .Solve(lWrist, p.lHandRot, lShoulder + _lPoleDir);
-            rightArm.Solve(rWrist, p.rHandRot, rShoulder + _rPoleDir);
+            float stretch = trackPalms && stretchArms ? PlayerArmMaxStretch : 1f;
+            leftArm .Solve(lWrist, p.lHandRot, lShoulder + _lPoleDir, stretch);
+            rightArm.Solve(rWrist, p.rHandRot, rShoulder + _rPoleDir, stretch);
         }
 
         float3 ElbowTarget(float3 hand, float3 eyes, float3 shoulder, float3 outward,

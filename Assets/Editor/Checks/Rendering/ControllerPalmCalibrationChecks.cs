@@ -47,7 +47,6 @@ public static class ControllerPalmCalibrationChecks
                 bool holdPointsReady = false;
                 Vector3 rawLeft = new Vector3(-.22f, 2.23f, .3f), rawRight = new Vector3(.22f, 2.23f, .3f);
                 driver.HeadAnchor.SetPositionAndRotation(new Vector3(0, 2.5f, 0), Quaternion.identity);
-                Vector3 leftBone = body.LeftHand.localPosition, rightBone = body.RightHand.localPosition;
                 foreach (byte id in new byte[] { 0, 1, 2, 3 }) {
                     skin.Apply(id); remoteSkin.Apply(id); corpse.ApplySkin(id); remoteCorpse.ApplySkin(id);
                     foreach (float spacing in new[] { .04f, .22f, .32f })
@@ -88,8 +87,8 @@ public static class ControllerPalmCalibrationChecks
                         Near(decoded.RHandPos, right.position, "Photon sends calibrated right once", .002f);
                         Require(owner.TryGetHandPose(true, out Vector3 sentLeft, out _) && Vector3.Distance(sentLeft, left.position) < .0001f, "owner interaction pose matches stream");
                         remote.ApplyIKPreview(decoded.ToBodyPose());
-                        CheckArm(body.LeftArm, left, body.LeftHand.localPosition == leftBone);
-                        CheckArm(body.RightArm, right, body.RightHand.localPosition == rightBone);
+                        CheckArm(body.LeftArm, left);
+                        CheckArm(body.RightArm, right);
                         Near(Palm(remote.LeftHand), Palm(body.LeftHand), "remote left palm agrees", .003f);
                         Near(Palm(remote.RightHand), Palm(body.RightHand), "remote right palm agrees", .003f);
                         foreach (var hand in hands) {
@@ -113,8 +112,8 @@ public static class ControllerPalmCalibrationChecks
                 CheckHandTrackingRotation(driver, remote, left, right);
                 driver.LeftHandAnchor.position = driver.HeadAnchor.position + Vector3.left * 3f;
                 driver.PoseNow();
-                Require(Vector3.Distance(body.LeftArm.RootPos, body.LeftHand.position) <= body.LeftArm.TotalReach + .0001f,
-                    "calibration cannot stretch arm past existing reach");
+                Require(Vector3.Distance(body.LeftArm.RootPos, body.LeftHand.position) <= body.LeftArm.TotalReach * 1.4f + .0001f,
+                    "calibration cannot stretch arm past 1.4x reach");
                 Near(driver.LeftPalmSource.position, driver.LeftHandAnchor.position + driver.LeftHandAnchor.rotation * offset, "far controller source keeps fixed calibration");
 
                 driver.controllerInput.mouseGrip = true;
@@ -219,7 +218,7 @@ public static class ControllerPalmCalibrationChecks
             driver.PoseNow();
             Require(Quaternion.Angle(left.rotation, worldTurn) < .01f && Quaternion.Angle(right.rotation, worldTurn) < .01f,
                 "returning to controllers removes both corrections");
-            CheckArm(body.LeftArm, left, true); CheckArm(body.RightArm, right, true);
+            CheckArm(body.LeftArm, left); CheckArm(body.RightArm, right);
         }
         Sample(true, OVRInput.Controller.LHand); Sample(false, OVRInput.Controller.RHand);
         driver.controllerInput.mouseGrip = true;
@@ -231,11 +230,11 @@ public static class ControllerPalmCalibrationChecks
     }
 
     static void BindCorpse(Ragdoll corpse, RemotePlayerBody body) { corpse.sourceHip = body.Chest; corpse.leftHandSource = body.LeftHand; corpse.rightHandSource = body.RightHand; corpse.Park(); }
-    static void CheckArm(TwoBoneLimb arm, Transform target, bool sameOffset)
+    static void CheckArm(TwoBoneLimb arm, Transform target)
     {
-        Require(sameOffset, "authored hand bone offset retained");
+
         Near(Palm(arm.EndBone), target.position, "local palm reaches calibrated source");
-        Require(Mathf.Abs(arm.TotalReach - .6067576f) < .00003f, "arm length retained");
+        Require(Mathf.Abs(arm.TotalReach - .5515978f) < .00003f, "arm length retained");
         Require(Mathf.Abs(Vector3.Distance(arm.EndBone.position, target.position) - .03731f) < .00003f, "palm-to-wrist correction retained");
         Near(arm.EndBone.lossyScale, Vector3.one * .7f, "hand size retained");
         Quaternion endOffset = new SerializedObject(arm).FindProperty("endRotOffset").quaternionValue;
