@@ -1,5 +1,9 @@
 # Duck Rails — execution plan
 
+- [x] November 8: implement shared VR finger-withdrawal lock across diagnostic and pause-menu buttons; compilation and 25 fingertip/regression checks pass. Headset feel and live page-switch verification remain pending. See [VR press withdrawal](testing-tools.md#vr-press-withdrawal--november-8).
+
+- [x] November 8: add desktop/VR test-panel single-coal fuel simulation using the shared furnace fuel update. Unity compilation and resource/session checks pass; live UI and multiplayer/headset validation remain pending. See [testing tools](testing-tools.md#simulated-coal-deposit--november-8).
+
 - [x] November 8 starting-range follow-up: raise starting fuel from 25 to 50 to
   reach the middle of the first scavenging block after leaving the station.
   Distance-model verification covers every enabled first block; natural-run review remains pending.

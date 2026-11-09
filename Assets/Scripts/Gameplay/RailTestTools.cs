@@ -121,6 +121,13 @@ public static class RailTestTools
         Commit(new Hashtable { [RailSessionRules.Fuel] = Mathf.Clamp(fuel, 0, 100),
             [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, train.Distance, 0f, 0f } }, "Set fuel and stopped train");
     }
+    public static void DepositCoal()
+    {
+        if (!CanMutate) { Status = "Coal deposit requires the master of a ready private run"; return; }
+        var changes = new Hashtable();
+        RailExpedition.ApplyCoalFuel(changes, PhotonNetwork.Time);
+        Commit(changes, "Simulated 1 coal block deposited into the furnace");
+    }
     public static void Bridge()
     {
         if (!CanMutate || RailRoute.Instance == null || !RailRoute.Instance.Ready) { Status = "Requires master in a ready private run"; return; }

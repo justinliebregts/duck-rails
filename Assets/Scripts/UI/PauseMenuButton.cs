@@ -85,6 +85,7 @@ public class PauseMenuButton : MonoBehaviour
     }
 
     void LateUpdate() {
+        _ = VRButtonPressLock.Blocked;
         Depress(PressSpeed * Time.deltaTime);
     }
 
@@ -97,7 +98,7 @@ public class PauseMenuButton : MonoBehaviour
         }
 
         contacts.Add(other);
-        if (contacts.Count == 1) {
+        if (contacts.Count == 1 && VRButtonPressLock.TryPress(box, other)) {
             Press();
         }
     }

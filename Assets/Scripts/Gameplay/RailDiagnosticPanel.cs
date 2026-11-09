@@ -158,6 +158,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
             Button("FLASHLIGHT", -.095f, -.305f, RailTestTools.SpawnFlashlight);
             trainSpeedLabel = Button("TRAIN 5X: OFF", .095f, -.305f, RailTestTools.ToggleTrainSpeed);
             Button("TEST SUCCESS", -.095f, -.365f, RailTestTools.SimulateSuccess);
+            Button("DEPOSIT 1 COAL", .095f, -.365f, RailTestTools.DepositCoal);
         }
         else
         {
@@ -216,6 +217,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
             GuiPair("Bright Lighting", RailTestLighting.Bright, "Gameplay Lighting", RailTestLighting.Gameplay, button);
             GuiPair("Bridge", RailTestTools.Bridge, "Board train", RailTestTools.Board, button);
             GuiPair("Fuel 20", () => RailTestTools.SetFuel(20), "Loaded bag", RailTestTools.SpawnBag, button);
+            if (GUILayout.Button("Deposit 1 coal into furnace", button)) RailTestTools.DepositCoal();
             GuiPair("Down me", RailTestTools.DownSelf, "Repeat route", RailTestTools.RepeatRoute, button);
             if (GUILayout.Button("Spawn flashlight", button)) RailTestTools.SpawnFlashlight();
             if (GUILayout.Button("Test success - bridge and dawn ride", button)) RailTestTools.SimulateSuccess();

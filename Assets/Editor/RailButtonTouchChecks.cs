@@ -43,9 +43,45 @@ public static class RailButtonTouchChecks
                 finger.enabled = true; finger.transform.position += Vector3.up;
                 Check(!hand.TouchesButton(volume), "Withdrawal releases contact");
             }
-            Debug.Log("18 VR button checks passed: Link focus policy and DuckPlayer prefab hands.");
+            CheckPressLock();
+            Debug.Log("25 VR button checks passed: Link focus, DuckPlayer fingertips and cross-panel withdrawal lock.");
         }
         finally { UnityEngine.Object.DestroyImmediate(rig); UnityEngine.Object.DestroyImmediate(key); }
     }
     static void Check(bool value, string label) { if (!value) throw new Exception(label); }
+
+    static void CheckPressLock()
+    {
+        var button = new GameObject("Press lock fixture");
+        var fingerObject = new GameObject("Press lock finger");
+        var flags = BindingFlags.Static | BindingFlags.NonPublic;
+        var reset = typeof(VRButtonPressLock).GetMethod("Reset", flags);
+        var frame = typeof(VRButtonPressLock).GetField("pressedFrame", flags);
+        try {
+            reset.Invoke(null, null);
+            var box = button.AddComponent<BoxCollider>(); box.size = new Vector3(.2f, .1f, .02f);
+            var finger = fingerObject.AddComponent<SphereCollider>(); finger.radius = .01f;
+            Check(VRButtonPressLock.TryPress(box, finger), "First physical press accepted");
+            Check(!VRButtonPressLock.TryPress(box, finger), "Same-frame next panel is blocked");
+            frame.SetValue(null, -1);
+            Vector3 front = (Vector3)typeof(VRButtonPressLock).GetField("front", flags).GetValue(null);
+            fingerObject.transform.position = -front * .3f; Physics.SyncTransforms();
+            Check(VRButtonPressLock.Blocked, "Deep poke behind button stays locked");
+            button.SetActive(false);
+            Check(VRButtonPressLock.Blocked, "Hiding source panel preserves lock");
+            fingerObject.transform.position = front * .025f; Physics.SyncTransforms();
+            Check(VRButtonPressLock.Blocked, "Returning through face and small jitter stay locked");
+            fingerObject.transform.position = front * .08f; Physics.SyncTransforms();
+            Check(!VRButtonPressLock.Blocked, "Clear front withdrawal rearms");
+            button.SetActive(true);
+            fingerObject.transform.position = Vector3.zero; Physics.SyncTransforms();
+            VRButtonPressLock.TryPress(box, finger); frame.SetValue(null, -1);
+            fingerObject.transform.position = Vector3.right * .2f; Physics.SyncTransforms();
+            Check(!VRButtonPressLock.Blocked, "Clear sideways withdrawal rearms");
+        } finally {
+            reset.Invoke(null, null);
+            UnityEngine.Object.DestroyImmediate(button);
+            UnityEngine.Object.DestroyImmediate(fingerObject);
+        }
+    }
 }

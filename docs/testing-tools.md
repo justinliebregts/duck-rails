@@ -6,6 +6,18 @@ Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, w
 
 ## In-game panel
 
+### VR press withdrawal — November 8
+
+Physical presses now share a finger-clear lock across PressableButton and PauseMenuButton, including diagnostic-to-game-menu and settings-page transitions. A successful poke blocks further physical presses until its contacting fingers withdraw beyond the original button face or sides with 3 cm clearance. Passing through the back does not rearm; hiding/rebuilding the source panel preserves the lock. Desktop click APIs and normal hold/release events remain unchanged.
+
+Unity compilation and 25 VR button checks passed, covering actual DuckPlayer fingertips, focus policy, same-frame repeat blocking, deep penetration, source-panel hiding, return-through-face jitter, and front/side withdrawal. Headset feel and actual page-switch interaction still need user validation. The gate snapshots the pressed button's world pose; moving the panel itself can also clear that original area.
+
+### Simulated coal deposit — November 8
+
+**P > Show test tools > Deposit 1 coal into furnace** (VR: **DEPOSIT 1 COAL**, beside TEST SUCCESS) adds one coal block's crew-scaled fuel through the same fuel update used by physical furnace deposits. Requires the master of a ready private running development expedition. Preserves current train distance, speed and drive target, and caps fuel at 100. This simulates the fuel effect without consuming a physical item or increasing player coal statistics.
+
+Validation: Unity compilation, resource-balance and session regression suites passed in the verified Duck Rails editor. Direct checks verified the single-coal increment and rejection outside a permitted run. Live button presses, multiplayer replication and headset reach remain unverified.
+
 November 7 editor overlay: during Play Mode, **Open test panel / Close test panel** appears at the Game view's top right as an alternative to P. It uses the existing toggle, opening the desktop panel in keyboard mode and the wrist panel in VR mode. If mouse-look has locked the cursor, press Esc to release it before clicking. Hovering the button blocks desktop gameplay input so its click does not recapture the cursor. The button is editor-only. Unity compilation passed; live mouse-click validation remains pending.
 
 ### Success lighting preview — November 7

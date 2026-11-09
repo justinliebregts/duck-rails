@@ -346,6 +346,11 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             !AcceptsFurnaceSample(Quaternion.Inverse(furnace.rotation) * (coal.transform.position - furnace.position))) return;
         state.consumed.Add(target); state.consumedSpawns.Add(view.SpawnToken); p.coal++;
         if (view.InstantiationData is object[] data && data.Length >= 3 && data[data.Length - 1] is string marker) state.consumedMarkers.Add(marker);
+        ApplyCoalFuel(changes, now);
+    }
+    // Shared by physical furnace deposits and the explicit development-panel simulation.
+    public static void ApplyCoalFuel(Hashtable changes, double now)
+    {
         var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
         RailSessionRules.EvaluateTrain(motion, PhotonSession.Get(RailSessionRules.Fuel, RailResourceBalance.StartingFuel), now, out var z, out var speed, out var fuel);
         changes[RailSessionRules.Motion] = new object[] { now, z, speed, (float)motion[3] };

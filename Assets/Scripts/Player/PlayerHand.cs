@@ -48,6 +48,11 @@ public class PlayerHand : MonoBehaviour
     // DuckPlayer's finger colliders live on the posed skin, not under PlayerHand.
     public bool TouchesButton(Collider button)
     {
+        return CollectButtonContacts(button, null);
+    }
+
+    public bool CollectButtonContacts(Collider button, List<Collider> contacts)
+    {
         var driver = GetComponentInParent<LocalBodyDriver>();
         var body = driver != null ? driver.Body : null;
         Transform skin = body == null ? null : IsControllerLTouch ? body.LeftHand : body.RightHand;
@@ -57,9 +62,13 @@ public class PlayerHand : MonoBehaviour
             buttonTouchRoot = skin;
             buttonTouchColliders = skin.GetComponentsInChildren<SphereCollider>(true);
         }
+        bool touching = false;
         foreach (var finger in buttonTouchColliders)
-            if (ButtonContact(button, finger)) return true;
-        return false;
+            if (ButtonContact(button, finger)) {
+                touching = true;
+                contacts?.Add(finger);
+            }
+        return touching;
     }
 
     public static bool ButtonContact(Collider button, SphereCollider finger)

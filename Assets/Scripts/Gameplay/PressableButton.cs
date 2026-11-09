@@ -39,12 +39,13 @@ public sealed class PressableButton : MonoBehaviour
     }
     void LateUpdate()
     {
+        bool blocked = VRButtonPressLock.Blocked;
         var player = GR.Player.instance;
         bool available = diagnostic || (!RailWorld.InputBlocked && !RailExpedition.LocalDown);
         bool contact = player != null && available &&
             (Touches(player.leftPlayerHand) || Touches(player.rightPlayerHand));
         // Require withdrawal before another press, including after a disabled contact.
-        if (contact && !touching) Press();
+        if (contact && !touching && !blocked && VRButtonPressLock.TryPress(volume)) Press();
         if (!contact && touching) Release();
         touching = contact;
         if (!interactable || !available) Release();
