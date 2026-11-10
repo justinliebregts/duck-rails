@@ -291,8 +291,8 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   Rails' boarding/coal-carrier code). Photon RPC list and `GameAudioSettings` updated.
 - Adaptations: `RailEnemySpawns.Names` gains `RailHook` at index 4 (spider stays 3, forced-type override
   unchanged). `RailEnemySpawnBalance` now spreads five types: no repeat within a quadrant, totals differ by at
-  most one (4 spawns → 4 of 5 types, 8 → 1–2 each, 12 → 2–3 each; the omitted/extra type is seeded). The legacy
-  `RailEnemySpawns.Select` stream (finale/bridge, 4 types) is untouched. Hook prefab retreat set to Rails' 3–9 s.
+  most one (4 spawns → 4 of 5 types, 8 → 1–2 each, 12 → 2–3 each; the omitted/extra type is seeded). The finale
+  selection (`RailSpawnPool.SelectEnemies`, which already cycles `Names.Length`) now includes the hook, so its 5 fixed enemies cover all five types and bridge defenders can be hooks (same seed gives different finale types than before). Hook prefab retreat set to Rails' 3–9 s.
   Source `Main.unity` spawn-list registration not applicable; Rails registers via `RailEnemySpawns.Register`.
 - Networking: hook state uses three PUN RPCs (`ReceiveHookState`, `CheckHookDefense`, `ReportHookDefense`); no raised
   events, so codes 101–117 are unaffected. `EnemyNetSync`'s 22-byte packet, spider lift byte and train/displaced flags

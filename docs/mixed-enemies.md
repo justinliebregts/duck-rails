@@ -52,4 +52,4 @@ The user replaced variation-based spawn authoring with per-block pools and fixed
 
 ## ZombieHook — November 10, 2026
 
-`RailHook` (Duckz `ZombieHook`, see [port](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e)) is the fifth type in scavenging encounters. It keeps block boundaries and **does not board the train**. Selection is in `RailEnemySpawnBalance` only; the finale/bridge fixed selection still uses the four original types. Counts per crew size are unchanged.
+`RailHook` (Duckz `ZombieHook`, see [port](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e)) is the fifth type in scavenging encounters. It keeps block boundaries and **does not board the train**. Scavenging selection is in `RailEnemySpawnBalance`; the finale and bridge defenders (`RailSpawnPool.SelectEnemies`) also include it, since they cycle all `Names`. Counts per crew size are unchanged.
