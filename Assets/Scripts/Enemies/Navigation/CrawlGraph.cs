@@ -105,10 +105,38 @@ namespace Game.AI
         public bool ContainsCrawlSegment(Vector3 from, Vector3 to)
         {
             if (_allowedBounds == null) return true;
+            // Exact shortcut: boxes are convex (also after an affine world-to-local transform), so a
+            // segment whose ends lie inside one box, clear of its faces, lies entirely inside it.
+            // That holds for the centre and each inset probe, so the sampled test below would pass.
+            // Only segments near a face are sampled. This made route assembly ~10 s faster.
+            if (SegmentInsideOneBox(from, to)
+                && (_boundaryInset <= 0f
+                    || SegmentInsideOneBox(from + Vector3.right * _boundaryInset, to + Vector3.right * _boundaryInset)
+                    && SegmentInsideOneBox(from - Vector3.right * _boundaryInset, to - Vector3.right * _boundaryInset)
+                    && SegmentInsideOneBox(from + Vector3.forward * _boundaryInset, to + Vector3.forward * _boundaryInset)
+                    && SegmentInsideOneBox(from - Vector3.forward * _boundaryInset, to - Vector3.forward * _boundaryInset)))
+                return true;
             int steps = Mathf.Max(1, Mathf.CeilToInt(Vector3.Distance(from, to) / 0.1f));
             for (int i = 0; i <= steps; i++)
                 if (!ContainsCrawlPosition(Vector3.Lerp(from, to, i / (float)steps))) return false;
             return true;
+        }
+
+        // Margin keeps interpolated sample points (float rounding) from crossing a face the
+        // endpoints merely touch; such segments fall back to sampling.
+        const float SegmentShortcutMargin = 1e-3f;
+        bool SegmentInsideOneBox(Vector3 from, Vector3 to)
+        {
+            for (int i = 0; i < _allowedBounds.Length; i++)
+            {
+                Vector3 a = from, b = to;
+                if (_boundaryWorldToLocal != null) { a = _boundaryWorldToLocal[i].MultiplyPoint3x4(from); b = _boundaryWorldToLocal[i].MultiplyPoint3x4(to); }
+                Vector3 min = _allowedBounds[i].min + Vector3.one * SegmentShortcutMargin;
+                Vector3 max = _allowedBounds[i].max - Vector3.one * SegmentShortcutMargin;
+                if (a.x >= min.x && a.y >= min.y && a.z >= min.z && a.x <= max.x && a.y <= max.y && a.z <= max.z &&
+                    b.x >= min.x && b.y >= min.y && b.z >= min.z && b.x <= max.x && b.y <= max.y && b.z <= max.z) return true;
+            }
+            return false;
         }
 
         // Apply to the in-memory graph, preserving the baked asset and node IDs.

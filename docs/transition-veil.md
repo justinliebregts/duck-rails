@@ -78,11 +78,42 @@ Findings:
 - Multiple clients.
 - Quest timings. Editor stall durations are not representative of Quest.
 
-## Next: shortening the load
+## Load profiling and the crawl-boundary fix (November 10)
 
-Proposed, not implemented. The sandbox showed one ~10 s editor frame after Expedition activation (the route build), which Quest timing needs to confirm:
+Desktop editor sandbox with the Unity Profiler (not deep profiling). Times are PC editor times, not Quest times.
 
-- Instantiate blocks across frames (`Object.InstantiateAsync`, Unity 6.3) and build crawlgraphs off the main thread.
+| Departure frame | Before | After |
+|---|---|---|
+| Route build (`RailWorld.Update` → `RailRoute.Build`) | 10,304 ms | 1,160 ms |
+| Expedition scene integrate (incl. forced `GC.Collect` ≈ 500 ms) | 634 ms | 638 ms |
+| Departure → veil fully faded | ≈ 14.5 s | 5.4 s |
+
+Timing each step of the route build in Play Mode isolated the stall:
+
+- `CrawlGraph.RestrictToBounds` took 9,996 ms.
+- Graph loads (2 ms), resource and enemy selection (11 ms), `Combine` (57 ms), and the visibility rebuild (11 ms) were small.
+- Prefab instantiation stayed under the 206 ms profiler threshold; it measured 84 ms afterwards.
+
+`ContainsCrawlSegment` sampled every edge at 0.1 m, checking 5 inset probes against every bounds box. That is millions of box tests across about 1.1 M edges.
+
+**Fix:** an exact shortcut. If both ends of a segment, and of each inset probe, lie inside one box with a 1 mm margin from its faces, the segment is accepted without sampling. A box stays convex under the affine world-to-local transform, so the sampled test would pass. Other segments still use the original sampling. The shortcut also applies to runtime `ContainsCrawlSegment` callers in `ClimbLocomotion`.
+
+**Equivalence check** (farm-silos, canyon, container-yard, skyscraper-works; 120,776 nodes; 1,112,970 edges). The new output was compared element by element with a reimplementation of the original sampling, with identical results in all three cases:
+
+| Case | Edges kept | New | Original sampling |
+|---|---|---|---|
+| Real enemy bounds (no edges cut) | 1,112,970 | 425 ms | 4,884 ms |
+| Shrunken boxes | 370,504 | 131 ms | 2,058 ms |
+| Rotated frames, 0.5 m inset (the `EnemyManager` terrain path) | 523,762 | 818 ms | 4,251 ms |
+
+In every case, node permissions, `EdgeStart` and `EdgeTarget` were identical. Enemy navigation behaviour was not separately play-tested.
+
+## Next: shortening the rest of the load
+
+Proposed, not implemented:
+
+- Spread the remaining ~1.2 s route build across frames, or move graph restriction off the main thread (`EnsureReady` already gates readiness).
+- Instantiate blocks across frames (`Object.InstantiateAsync`, Unity 6.3).
 - Load Expedition additively, unload Compound separately, and defer `UnloadUnusedAssets` until under the veil.
 - Preload Expedition with `allowSceneActivation = false` during boarding. Note that Unity holds other async scene loads until activation.
 - Warm up Expedition shader variants.
