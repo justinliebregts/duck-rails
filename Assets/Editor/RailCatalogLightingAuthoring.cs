@@ -41,6 +41,17 @@ public static class RailCatalogLightingAuthoring
     [MenuItem("Duck Rails/Lighting/All Blocks/Rebake All Blocks")]
     public static void RebakeAll() => StartBatch(true);
 
+    // Resume an interrupted art-pass bake without rebaking already exported blocks.
+    public static void RebakeFrom(string firstPrefab)
+    {
+        var remaining=Prefabs.SkipWhile(p=>p!=firstPrefab).ToArray();
+        if(remaining.Length==0)throw new ArgumentException("Unknown block prefab",nameof(firstPrefab));
+        StartBatch(true);
+        paths=remaining;
+        Status="Queued "+paths.Length+" remaining blocks";
+        File.WriteAllText("output/block-lighting/bake-progress.txt",Status+"\n");
+    }
+
     static void StartBatch(bool rebakeAll)
     {
         if(EditorApplication.isPlaying || Lightmapping.isRunning || paths!=null)throw new InvalidOperationException("Finish Play Mode or current bake first.");

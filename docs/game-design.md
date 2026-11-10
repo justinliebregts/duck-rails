@@ -1,5 +1,10 @@
 # Duck Rails — V1 game design
 
+November 10 railway art: use dull grey atlas-textured metal rails and wooden
+sleepers throughout all blocks, including Starting Station, midpoint shop and
+finale, with approximately 2 m sleeper centres. Preserve authored track routes
+and collision. See [railway surfaces](track-surfaces.md).
+
 November 10: the train safe is removed. Gold pays only at the departure and midpoint shops, immediately, to connected crew. Escape and failure do not add another payout. See [gold economy](gold-economy.md).
 
 November 9 fog tuning: user-approved exponential-squared densities are night

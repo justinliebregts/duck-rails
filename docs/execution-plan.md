@@ -1,5 +1,12 @@
 # Duck Rails — execution plan
 
+- [x] November 10: apply shared atlas railway surfaces and consistent 2 m sleeper
+  spacing across all 19 block prefabs; saved-asset and unchanged collision/track/
+  navigation checks pass. See [railway surfaces](track-surfaces.md).
+- [x] Rebake/export all 19 railway lighting samples, refresh Expedition finale
+  bindings, inspect the material preview and validate every saved lighting payload.
+- [ ] Review refreshed railway textures, route seams and device performance in a headset.
+
 - November 9 fog tuning: night 0.06, pre-dawn 0.05, successful dawn 0.0125;
   runtime values and Expedition scene starting density updated. Headset readability review remains open.
 
