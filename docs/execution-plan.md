@@ -439,6 +439,7 @@ See `week1-session.md` for source paths, controls, validation results and pendin
 - [ ] Distinguish Create from Join; show occupied, missing, full, incompatible, and connection-failure states.
 - [ ] Keep private staging/run/return in the same room where compatible with existing architecture.
 - [ ] Support late entry to the run with a loading stage before spawn/interaction.
+  - November 10: compositor-layer [transition veil](transition-veil.md) masks compound↔expedition loads. Verified in a desktop editor sandbox. Over Quest Link, the black layer covered the stall; after the panel layer-order fix, the user's own Link test looked good. Standalone Quest and multi-client remain unverified.
 - [ ] Replicate actual moving-platform pose, sample fuel value, selected test block, one bat, and one loaded backpack.
 - [ ] Define current-state reconstruction instead of depending on historical events a newcomer did not receive.
 - [ ] Implement temporary success/failure controls and group return.

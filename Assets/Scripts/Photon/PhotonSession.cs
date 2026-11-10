@@ -62,6 +62,11 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public bool AwaitingCrewDestination => crewReturn != null && crewReturn.Active &&
         Kind == RailSessionRules.CompoundKind && !crewReturn.InDestination;
     public bool WorldReady { get; private set; }
+    /// <summary>A room change or world-scene swap is pending or underway (drives the transition veil).</summary>
+    public bool InWorldTransition => HasRoomRequest || (IsRailsRoom && !GameScenes.IsLoaded(RequiredScene));
+    /// <summary>Best-known destination of the current transition, for the veil's message.</summary>
+    public bool HeadingToExpedition => request == Request.Transfer ? transferKind == RailSessionRules.ExpeditionKind
+        : request == Request.None && IsRailsRoom && OnTrain;
     public event Action RoomMembershipChanged, RoomRequestStarted;
     public event Action<string> RoomRequestFailed;
 
@@ -433,6 +438,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             // IsSceneView/IsRoomView also includes InstantiateRoomObject loot.
             // Preserve every runtime spawn, including room-owned coal and gold.
             if (view != null && view.ViewID != 0 && view.isRuntimeInstantiated) DontDestroyOnLoad(view.transform.root.gameObject);
+        // Scene activation stalls the main thread; let the compositor veil reach full cover first.
+        yield return RailTransitionVeil.WaitUntilCovered(.75f);
         var load = SceneManager.LoadSceneAsync(destinationScene, LoadSceneMode.Single);
         if (load != null) yield return load;
         loadingScene = false; PhotonNetwork.IsMessageQueueRunning = true; loginStatus = null;
