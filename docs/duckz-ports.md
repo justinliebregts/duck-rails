@@ -227,3 +227,47 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   headset checks. Source test results are not Rails acceptance evidence. No diagnostic
   reports inspected; source Duckz files untouched.
 - Destination commit: the commit introducing this entry (see Git history).
+
+## 0f9a8a96d278d4e0a488d8f9306423e87bde94e7 — Holder checks before stale-heartbeat drops
+
+- Status: implemented; editor compile and disposable batch validation passed November 10,
+  2026. Real-client/headset acceptance pending.
+- Source title: `Preserve active players' pickups when heartbeats go stale`.
+- Behavior: heartbeat silence alone no longer makes the master drop a player's held
+  items or bags. Heartbeats now carry input availability. Validated avatar poses and
+  owner-sent held snapshots count as holder activity. Otherwise the master sends the
+  holder a direct reliable query and releases only after two unanswered checks (3 s
+  apart), bound to the observed view, spawn token, holder, hold version and ownership
+  generation, so a late reply or an expired check cannot revoke a newer grip. Explicit
+  standby heartbeats and departures still release immediately. A not-ready but focused
+  player (for example, still loading) keeps its holds.
+- Destination: new `Assets/Scripts/Photon/PhotonMasterHandoff.Holders.cs`; hooks in
+  `Photon/{PhotonMasterHandoff,PhotonHeldItems,PhotonPlayer,PhotonSession}.cs`,
+  `Items/PhotonGrabbable.cs`, `Items/Bag/BagObject.cs`; checks
+  `Editor/Checks/Items/HeldItemRecoveryChecks.cs`, new
+  `Editor/Checks/Networking/PickupJoinNetworkChecks.Holders.cs` (`-holderCheck`).
+- Dependencies/adaptations: both projects use Unity 6000.3.24f1 and PUN over Realtime;
+  builds on the `2fd048b` pickup port. Holder events use 116/117 (Duckz 110/111 collide
+  with Rails drive-grip and pickup-report events). The app-version partition is now
+  `-rails-pickup-v3` because old clients reject three-field heartbeats; all players need
+  matching builds. Rails clock-skew handling is kept: a peer with live heartbeat
+  cadence is never queried (`UnavailableReason`), and the master-recovery diagnostics
+  remain. A skewed holder's standby beat is discarded by the timestamp filter, so it
+  is released by the unanswered checks rather than at once
+  ([pickup-clock-skew.md](pickup-clock-skew.md) updated). The Rails `ClockSkew` check
+  now asserts that and sends three-field heartbeats. Source HelicopterCargo and hook
+  protections are absent from the Rails hunks. New script metas keep source GUIDs,
+  each unique in destination Assets.
+- Validation: exact source/parent diff inspected. Verified MCP target
+  `X:/Work/duck-rails/Assets`; the editor recompiled with an empty error Console. In
+  the synced disposable copy, `PickupRecoveryChecks` (alone), `HeldItemRecoveryChecks`
+  (twice), `RoomObjectRecoveryChecks` and `PhotonGrabbableChecks` passed. Repeating
+  `PickupRecoveryChecks` later in the same process fails its "round-robin retry budget"
+  assertion; the pre-port HEAD code fails identically in the same order, so this is an
+  existing fixture order dependency, not a regression. Diff whitespace check passed.
+  See [batch evidence](validation/holder-check-port/batch.txt).
+- Remaining: three-client `-holderCheck` live trial (its synthetic identities still
+  need the authenticated wiring noted for `2fd048b`). Also: moving-train holds while
+  heartbeats drop, Quest standby/wake and master handoff on headsets. No diagnostic
+  reports inspected; source Duckz untouched.
+- Destination commit: the commit introducing this entry (see Git history).

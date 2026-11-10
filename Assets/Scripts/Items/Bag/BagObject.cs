@@ -734,6 +734,8 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
         contentsAuthorityKnown = true;
         if (newVersion < holdVersion || (newVersion <= releasedVersion &&
             ((newState != BagState.Dropped && newHolder == releasedActor) || (newAwaitingClaim && requester == releasedActor)))) return;
+        if (newState == BagState.Held && info.Sender != null && newHolder == info.Sender.ActorNumber && newHolder == photonView.OwnerActorNr)
+            PhotonMasterHandoff.HolderActivity(newHolder, info.SentServerTimestamp);
         holdVersion = newVersion;
         awaitingClaim = newAwaitingClaim;
         if (newState == BagState.Held)

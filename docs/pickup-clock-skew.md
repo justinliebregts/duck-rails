@@ -56,6 +56,12 @@ about 15 seconds, pickups worked again. This is probably the same fault as the e
    five seconds of silence, an inactive player, or a burst of queued old heartbeats
    (which cannot prove liveness). Master election is unchanged and still uses only
    accepted heartbeats.
+
+   November 10 update (Duckz `0f9a8a96` port, see [duckz-ports.md](duckz-ports.md)):
+   those cases no longer release on their own. A not-ready but focused holder keeps
+   its holds. An explicit standby heartbeat or a departure still releases at once.
+   Silence, or a standby beat rejected for clock skew, now releases only after two
+   unanswered direct holder checks (about 3–6 s).
 3. **Diagnostics for the next occurrence**, as rate-limited warnings (Console/logcat)
    and diagnostic-report events:
    - `Master recovering held object: view, holder, owner, reason=` is logged on the

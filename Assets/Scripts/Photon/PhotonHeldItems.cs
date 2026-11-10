@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
@@ -48,9 +49,9 @@ public static class PhotonHeldItems
             PhotonGrabbable item = PhotonGrabbable.HeldItems[i];
             if (item == null) continue;
             int actor = item.HeldActor;
-            if (actor <= 0 || (actor != departedActor && !availability.IsActorUnavailable(actor))) continue;
+            if (actor <= 0) continue;
             PhotonView view = item.GetComponent<PhotonView>();
-            if (!CanRecoverOwner(view, actor, availability, departedActor)) continue;
+            if (!CanRecover(view, actor, item.HoldVersion, availability, departedActor)) continue;
             availability.NoteHeldRecovery(view, actor, departedActor);
             changed |= Drop(item);
         }
@@ -61,8 +62,7 @@ public static class PhotonHeldItems
             int actor = bag.DropActor;
             // Dropped bags use Request ownership too: an unavailable owner cannot grant a pickup.
             if (actor > 0 && (bag.State == BagState.Held || bag.PendingHandClaim || (bag.State == BagState.Dropped && !bag.AwaitingClaim))
-                && (actor == departedActor || availability.IsActorUnavailable(actor))
-                && CanRecoverOwner(bag.photonView, actor, availability, departedActor))
+                && CanRecover(bag.photonView, actor, bag.HoldVersion, availability, departedActor))
             {
                 availability.NoteHeldRecovery(bag.photonView, actor, departedActor);
                 changed |= Drop(bag);
@@ -71,12 +71,34 @@ public static class PhotonHeldItems
         if (changed) { RoomObjectRecovery.Flush(); PhotonNetwork.SendAllOutgoingCommands(); }
     }
 
-    static bool CanRecoverOwner(PhotonView view, int holder, PhotonMasterHandoff availability, int departedActor)
+    internal static void CaptureHolds(int actor, HashSet<(PhotonView, string, int, int, int)> holds)
+    {
+        holds.Clear();
+        foreach (var item in PhotonGrabbable.HeldItems)
+        {
+            if (item == null) continue;
+            var view = item.GetComponent<PhotonView>();
+            if (item.HeldActor == actor || view.OwnerActorNr == actor)
+                holds.Add((view, view.SpawnToken, item.HeldActor, item.HoldVersion, view.OwnershipGeneration));
+        }
+        foreach (var bag in BagObject.Active)
+        {
+            if (bag == null || bag.State == BagState.Stowed) continue;
+            var view = bag.photonView;
+            if (bag.DropActor == actor || view.OwnerActorNr == actor)
+                holds.Add((view, view.SpawnToken, bag.DropActor, bag.HoldVersion, view.OwnershipGeneration));
+        }
+    }
+
+    // Heartbeat silence alone no longer releases a hold: CanRelease confirms an
+    // explicit standby or an unanswered direct holder query (PhotonMasterHandoff.Holders).
+    static bool CanRecover(PhotonView view, int holder, int version, PhotonMasterHandoff availability, int departedActor)
     {
         // Ownership may arrive before the new holder's pose. A waking master must
         // not reclaim that healthy owner's pickup using the old held snapshot.
         int owner = view.OwnerActorNr;
-        return owner == 0 || owner == holder || owner == departedActor || availability.IsActorUnavailable(owner);
+        return (holder == departedActor || availability.CanRelease(holder, view, holder, version))
+            && (owner == 0 || owner == holder || owner == departedActor || availability.CanRelease(owner, view, holder, version));
     }
 
     public static bool Drop(PhotonGrabbable item) => Send(item.GetComponent<PhotonView>(), item.HeldActor, item.HoldVersion);

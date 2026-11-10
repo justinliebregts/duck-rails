@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 // Rails: this inherited synthetic-identity harness still needs authenticated account wiring
 // before use against the configured production Photon app; it is not Rails live acceptance.
 [InitializeOnLoad]
-public static class PickupJoinNetworkChecks
+public static partial class PickupJoinNetworkChecks
 {
     const BindingFlags Fields = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
     const string Running = "DuckzPickupJoinNetworkCheck";
@@ -57,6 +57,7 @@ public static class PickupJoinNetworkChecks
     {
         try
         {
+            MonitorHolderTrial();
             if (condition != null && !condition())
             {
                 if (EditorApplication.timeSinceStartup > deadline) throw new TimeoutException(waiting + " / " + PhotonNetwork.NetworkClientState);
@@ -182,6 +183,11 @@ public static class PickupJoinNetworkChecks
         peer.NetworkSimulationSettings.IncomingJitter = peer.NetworkSimulationSettings.OutgoingJitter = 20;
         peer.NetworkSimulationSettings.IncomingLossPercentage = peer.NetworkSimulationSettings.OutgoingLossPercentage = 3;
         peer.IsSimulationEnabled = true;
+        if (Array.IndexOf(Environment.GetCommandLineArgs(), "-holderCheck") >= 0)
+        {
+            foreach (var step in HolderTrial()) yield return step;
+            yield break;
+        }
         if (role == 1)
         {
             Mark("join2");

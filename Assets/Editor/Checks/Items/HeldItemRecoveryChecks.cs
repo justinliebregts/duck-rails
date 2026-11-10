@@ -66,12 +66,23 @@ public static class HeldItemRecoveryChecks
         return bag;
     }
     static void Dispose(BagObject bag) { BagObject.Active.Remove(bag); Object.DestroyImmediate(bag.gameObject); }
-    static void Beat(PhotonMasterHandoff h, Player actor, bool ready)
+    static void Beat(PhotonMasterHandoff h, Player actor, bool ready, bool? available = null)
     {
         var e = new EventData { Code = 105 };
         e.Parameters[ParameterCode.ActorNr] = actor.ActorNumber;
-        e.Parameters[ParameterCode.Data] = new object[] { PhotonNetwork.ServerTimestamp, ready };
+        e.Parameters[ParameterCode.Data] = new object[] { PhotonNetwork.ServerTimestamp, ready, available ?? ready };
         h.OnEvent(e);
+    }
+
+    // The synthetic room cannot enqueue Photon events. The live suite exercises both
+    // reliable sends. Here advance an already-open check to the end of its two waits.
+    static void ExpireCheck(PhotonMasterHandoff h, int actor)
+    {
+        var holder = Get<IDictionary>(h, "holders")[actor];
+        Check(Get<bool>(holder, "Checking"), "master opened a holder check before cleanup");
+        Set(holder, "Attempts", 2);
+        Set(holder, "NextCheck", 0d);
+        PhotonHeldItems.RecoverUnavailable(h);
     }
     public static void Run()
     {
@@ -231,6 +242,10 @@ public static class HeldItemRecoveryChecks
         var healthyBag = Bag(remote.ActorNumber, BagState.Held, "WeaponNailBat", "ItemGoldBar", "ItemFlashlight");
         PhotonHeldItems.RecoverUnavailable(h);
         Check(item.IsHeldByAnyPlayer, "healthy holder is never released by watchdog");
+        Beat(h, remote, false, true);
+        PhotonHeldItems.RecoverUnavailable(h);
+        Check(h.IsActorUnavailable(remote.ActorNumber) && item.IsHeldByAnyPlayer && healthyBag.State == BagState.Held,
+            "a focused player can keep both holds while ineligible for the master job");
         var sweep = (Action<PhotonMasterHandoff, int>)Delegate.CreateDelegate(typeof(Action<PhotonMasterHandoff, int>), typeof(PhotonHeldItems).GetMethod("RecoverUnavailable"));
         for (int i = 0; i < 100; i++) sweep(h, 0);
         long before = GC.GetAllocatedBytesForCurrentThread();
@@ -253,25 +268,46 @@ public static class HeldItemRecoveryChecks
         HeldPacket(item, remote, 2); Beat(h, remote, true);
         var beats = Get<IDictionary>(h, "heartbeats"); object stale = beats[remote.ActorNumber];
         stale.GetType().GetField("SentAt").SetValue(stale, unchecked(PhotonNetwork.ServerTimestamp - 5100)); beats[remote.ActorNumber] = stale;
+        Set(Get<IDictionary>(h, "holders")[remote.ActorNumber], "Activity", (int?)null);
         Set(room, "masterClientId", remote.ActorNumber); PhotonHeldItems.RecoverUnavailable(h);
         Check(item.IsHeldByAnyPlayer, "non-master does not run remote recovery");
         Set(room, "masterClientId", local.ActorNumber); PhotonHeldItems.RecoverUnavailable(h);
-        Check(!item.IsHeldByAnyPlayer, "five-second silence releases a client's held item");
+        Check(item.IsHeldByAnyPlayer, "five-second silence alone preserves the held item");
+        int oldQuery = Get<int>(Get<IDictionary>(h, "holders")[remote.ActorNumber], "Query");
+        Set(room, "masterClientId", remote.ActorNumber); h.OnMasterClientSwitched(remote);
+        Set(room, "masterClientId", local.ActorNumber); h.OnMasterClientSwitched(local);
+        Set(h, "observationStartedAt", unchecked(PhotonNetwork.ServerTimestamp - 5100));
+        PhotonHeldItems.RecoverUnavailable(h);
+        var check = Get<IDictionary>(h, "holders")[remote.ActorNumber];
+        var delayed = new EventData { Code = 117 };
+        delayed.Parameters[ParameterCode.ActorNr] = remote.ActorNumber;
+        delayed.Parameters[ParameterCode.Data] = new object[] { oldQuery, PhotonNetwork.ServerTimestamp, false };
+        h.OnEvent(delayed);
+        Check(Get<bool>(check, "Checking") && Get<int>(check, "Query") != oldQuery && item.IsHeldByAnyPlayer,
+            "a standby reply to the previous master's check cannot release a current hold");
+        // A new grip is already visible through recovery state while the old probe expires.
+        // It must receive its own grace even in the absence of any new liveness packet.
+        Set(item, "holdVersion", item.HoldVersion + 1);
+        ExpireCheck(h, remote.ActorNumber);
+        Check(item.IsHeldByAnyPlayer, "an expired probe cannot release a newer hold version");
+        ExpireCheck(h, remote.ActorNumber);
+        Check(!item.IsHeldByAnyPlayer, "unanswered checks recover an unchanged hold");
         item.GetComponent<PhotonView>().OwnerActorNr = remote.ActorNumber; item.GetComponent<PhotonView>().ControllerActorNr = remote.ActorNumber;
-        HeldPacket(item, remote, 3); Beat(h, remote, false);
+        HeldPacket(item, remote, 4); Beat(h, remote, false);
         Check(!item.IsHeldByAnyPlayer, "explicit unavailability releases immediately without timeout");
         Beat(h, remote, true); item.GetComponent<PhotonView>().OwnerActorNr = remote.ActorNumber; item.GetComponent<PhotonView>().ControllerActorNr = remote.ActorNumber;
-        HeldPacket(item, remote, 4); h.OnPlayerLeftRoom(remote);
+        HeldPacket(item, remote, 5); h.OnPlayerLeftRoom(remote);
         Check(!item.IsHeldByAnyPlayer, "confirmed departure releases immediately");
         h.OnPlayerEnteredRoom(remote);
         Check(!h.IsActorUnavailable(remote.ActorNumber), "newly joined player has time to send first heartbeat");
         item.GetComponent<PhotonView>().OwnerActorNr = remote.ActorNumber; item.GetComponent<PhotonView>().ControllerActorNr = remote.ActorNumber;
-        HeldPacket(item, remote, 5);
+        HeldPacket(item, remote, 6);
         var sleepingBag = Bag(remote.ActorNumber, BagState.Held, "ItemGoldBar", "WeaponNailBat");
         Call(h, "ResetObservation"); PhotonHeldItems.RecoverUnavailable(h);
         Check(item.IsHeldByAnyPlayer && sleepingBag.State == BagState.Held, "first waking master observes peers before recovering their holds");
         Set(h, "observeUntil", Time.realtimeSinceStartupAsDouble - 0.001);
         Set(h, "observationStartedAt", unchecked(PhotonNetwork.ServerTimestamp - 5100)); PhotonHeldItems.RecoverUnavailable(h);
+        ExpireCheck(h, remote.ActorNumber);
         Check(!item.IsHeldByAnyPlayer && sleepingBag.State == BagState.Dropped && string.Join("|", sleepingBag.Keys()) == "ItemGoldBar|WeaponNailBat",
             "all-asleep first-waker recovers both weapon and loaded bag after observation grace");
         Dispose(sleepingBag);
@@ -286,11 +322,11 @@ public static class HeldItemRecoveryChecks
     // Photon's ServerTimestamp is fetched once per connection and advanced by a local
     // timer that stops while a Quest sleeps. A brief standby that keeps the connection
     // leaves that headset's heartbeats seconds behind the master's clock.
-    static void SkewedBeat(PhotonMasterHandoff h, Player actor, bool ready, int sentAt)
+    static void SkewedBeat(PhotonMasterHandoff h, Player actor, bool ready, int sentAt, bool? available = null)
     {
         var e = new EventData { Code = 105 };
         e.Parameters[ParameterCode.ActorNr] = actor.ActorNumber;
-        e.Parameters[ParameterCode.Data] = new object[] { sentAt, ready };
+        e.Parameters[ParameterCode.Data] = new object[] { sentAt, ready, available ?? ready };
         h.OnEvent(e);
     }
     static void ClockSkew(Room room, Player local, Player remote)
@@ -323,10 +359,16 @@ public static class HeldItemRecoveryChecks
         Check(requests.Contains(remote.ActorNumber), "proven-live clock disagreement requests a server-time re-sync");
 
         // A state change can be published within the same millisecond as the previous beat.
-        SkewedBeat(h, remote, false, lastSent);
+        // Duckz 0f9a8a96: not-ready-but-focused keeps its hold; standby releases. A skewed
+        // standby beat is discarded by the Fresh filter, so the holder checks release it.
+        SkewedBeat(h, remote, false, lastSent, true);
         PhotonHeldItems.RecoverUnavailable(h);
+        Check(item.IsHeldByAnyPlayer, "skewed focused holder reporting not-ready keeps its pickup");
+        SkewedBeat(h, remote, false, unchecked(lastSent + 1), false);
+        PhotonHeldItems.RecoverUnavailable(h);
+        ExpireCheck(h, remote.ActorNumber);
         Check(h.IsActorUnavailable(remote.ActorNumber) && !item.IsHeldByAnyPlayer,
-            "skewed holder reporting not-ready is still released");
+            "skewed holder entering standby is released after unanswered holder checks");
 
         var queued = Item(remote.ActorNumber); HeldPacket(queued, remote, 2);
         Call(h, "ResetObservation");
@@ -334,6 +376,7 @@ public static class HeldItemRecoveryChecks
         int burst = unchecked(PhotonNetwork.ServerTimestamp - 9000);
         for (int i = 0; i < 4; i++) SkewedBeat(h, remote, true, unchecked(burst + i * 1000));
         PhotonHeldItems.RecoverUnavailable(h);
+        ExpireCheck(h, remote.ActorNumber);
         Check(h.IsActorUnavailable(remote.ActorNumber) && !queued.IsHeldByAnyPlayer,
             "a burst of queued old heartbeats does not prove liveness");
 
@@ -347,6 +390,7 @@ public static class HeldItemRecoveryChecks
         var last = arrival.GetType().GetField("LastLocal");
         last.SetValue(arrival, (double)last.GetValue(arrival) - 5.1); arrivals[remote.ActorNumber] = arrival;
         PhotonHeldItems.RecoverUnavailable(h);
+        ExpireCheck(h, remote.ActorNumber);
         Check(h.IsActorUnavailable(remote.ActorNumber) && !silent.IsHeldByAnyPlayer,
             "a skewed peer that goes silent for five seconds is released");
 
@@ -453,9 +497,10 @@ public static class HeldItemRecoveryChecks
                         handler.OnMasterClientSwitched(local); h.OnMasterClientSwitched(local);
                     }
                     PhotonHeldItems.RecoverUnavailable(h);
+                    ExpireCheck(h, remote.ActorNumber);
                     Check(mine.CanInteract && theirs.CanInteract && theirs.State == BagState.Dropped
                         && mine.photonView.OwnerActorNr == 0 && theirs.photonView.OwnerActorNr == 0,
-                        "first waking original master recovers loaded bags without a second five-second wait (handoff=" + completedHandoff + ")");
+                        "first waking original master recovers silent loaded bags after holder checks (handoff=" + completedHandoff + ")");
                     Check(string.Join("|", mine.Keys()) == "ItemGoldBar|WeaponNailBat"
                         && string.Join("|", theirs.Keys()) == "ItemFlashlight|ItemGoldBar|",
                         "all-sleep recovery preserves both players' loaded bags exactly");

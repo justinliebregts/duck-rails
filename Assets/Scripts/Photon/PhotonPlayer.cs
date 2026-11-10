@@ -451,6 +451,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         double received = Time.realtimeSinceStartupAsDouble;
         if (!AcceptPoseTimestamp(sent, now, received))
             return;
+        if (sourceCompanion == null) PhotonMasterHandoff.HolderActivity(sourceActor, info.SentServerTimestamp);
         // Each avatar view observes this component only. Discard the companion
         // payload with a rejected snapshot instead of replaying stale life state.
         if (sourceCompanion != null) sourceCompanion.Serialize(stream);

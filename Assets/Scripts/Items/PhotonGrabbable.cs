@@ -572,6 +572,8 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         if (!AcceptRecoveryPacket || photonView.IsMine || pickupPending ||
             (info.Sender != null && info.Sender != photonView.Controller)) return;
         if (incomingHeld && incomingActor == releasedActor && incomingVersion <= releasedVersion) return;
+        if (incomingHeld && info.Sender != null && incomingActor == info.Sender.ActorNumber && incomingActor == photonView.OwnerActorNr)
+            PhotonMasterHandoff.HolderActivity(incomingActor, info.SentServerTimestamp);
         bool heldChanged = remoteHeld != incomingHeld;
         remoteHeld = incomingHeld;
         remoteHolderActorNumber = incomingActor;

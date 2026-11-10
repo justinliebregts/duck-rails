@@ -88,8 +88,8 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     }
 
     public override void OnJoinedRoom() => ResetRoom();
-    public override void OnLeftRoom() { room = null; heartbeats.Clear(); ResetArrivals(); }
-    public override void OnDisconnected(DisconnectCause cause) { PhotonHeldItems.DropLocalHands(); room = null; heartbeats.Clear(); ResetArrivals(); hasClockDrift = false; }
+    public override void OnLeftRoom() { room = null; heartbeats.Clear(); holders.Clear(); ResetArrivals(); }
+    public override void OnDisconnected(DisconnectCause cause) { PhotonHeldItems.DropLocalHands(); OnLeftRoom(); hasClockDrift = false; }
 
     void ResetRoom()
     {
@@ -106,6 +106,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         ClearPickupReports();
         // A waking/joining client must not elect itself using its pre-suspend history.
         heartbeats.Clear();
+        holders.Clear();
         ResetArrivals();
         observationStartedAt = PhotonNetwork.ServerTimestamp;
         observeUntil = Time.realtimeSinceStartupAsDouble + TimeoutMilliseconds / 1000d;
@@ -191,7 +192,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         ObserveDisplay();
         lastReady = Ready;
         nextHeartbeat = Time.realtimeSinceStartupAsDouble + HeartbeatInterval;
-        PhotonNetwork.RaiseEvent(HeartbeatCode, new object[] { PhotonNetwork.ServerTimestamp, lastReady },
+        PhotonNetwork.RaiseEvent(HeartbeatCode, new object[] { PhotonNetwork.ServerTimestamp, lastReady, LocalAvailable },
             Others, reliable ? SendOptions.SendReliable : SendOptions.SendUnreliable);
     }
 
@@ -204,13 +205,15 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     public void OnEvent(EventData data)
     {
         if (data.Code == StartupBarrierCode) { ReceiveStartupBarrier(data); return; }
+        if (data.Code == HolderQuery || data.Code == HolderReply) { ReceiveHolderCheck(data); return; }
         if (data.Code == PickupReportCode || data.Code == PickupRefreshCode || data.Code == PickupAuthorityCode)
         { ReceivePickupEvent(data); return; }
         if (data.Code == PhotonHeldItems.DropEvent) { PhotonHeldItems.OnEvent(data); return; }
         if (data.Code == ClockResyncCode) { ReceiveClockResync(data); return; }
         if (data.Code != HeartbeatCode || !PhotonNetwork.InRoom || PhotonNetwork.OfflineMode
-            || !(data.CustomData is object[] values) || values.Length != 2
+            || !(data.CustomData is object[] values) || (values.Length != 2 && values.Length != 3)
             || !(values[0] is int sentAt) || !(values[1] is bool ready)) return;
+        if (values.Length == 3 && !(values[2] is bool)) return;
         Player player = PhotonNetwork.CurrentRoom.GetPlayer(data.Sender);
         if (player == null || player.IsInactive || player.IsLocal) return;
         RecordArrival(data.Sender, sentAt, ready);
@@ -220,8 +223,11 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         // must not restore a sleeping candidate or override the wake observation window.
         if (unchecked(sentAt - observationStartedAt) < 0) return;
         if (heartbeats.TryGetValue(data.Sender, out Heartbeat previous) && unchecked(sentAt - previous.SentAt) < 0) return;
+        bool standby = values.Length == 3 && !(bool)values[2];
         heartbeats[data.Sender] = new Heartbeat { SentAt = sentAt, Ready = ready, Received = true };
-        if (!ready && Ready && PhotonNetwork.IsMasterClient) PhotonHeldItems.RecoverUnavailable(this);
+        if (PhotonNetwork.IsMasterClient && (ready || values.Length == 3))
+            ObserveHolderState(data.Sender, sentAt, standby);
+        if (standby && Ready && PhotonNetwork.IsMasterClient) PhotonHeldItems.RecoverUnavailable(this);
     }
 
     // WorldReady includes state produced by the master. A silent host must not
@@ -308,18 +314,21 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
+        holders.Remove(newPlayer.ActorNumber);
         heartbeats[newPlayer.ActorNumber] = new Heartbeat { SentAt = PhotonNetwork.ServerTimestamp };
         Publish(true);
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         heartbeats.Remove(otherPlayer.ActorNumber);
+        holders.Remove(otherPlayer.ActorNumber);
         arrivals.Remove(otherPlayer.ActorNumber);
         clockRequests.Remove(otherPlayer.ActorNumber);
         if (Ready && PhotonNetwork.IsMasterClient) PhotonHeldItems.RecoverUnavailable(this, otherPlayer.ActorNumber);
     }
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
+        holders.Clear();
         ClearPickupReports();
         pickupHandoffAfter = Time.realtimeSinceStartupAsDouble + PickupHandoffCooldown;
         RoomObjectRecovery.ReconcileAll();
