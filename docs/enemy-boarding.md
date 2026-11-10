@@ -18,7 +18,7 @@ Train passengers enter the shared target list. Opted-in minions and spiders can 
 
 ## Fast iteration
 
-Temporary spider-only playtest: RailEnemySpawns.ForcedEnemyType = 3 overrides newly spawned expedition enemies to RailSpider, preserving spawn counts, positions and seeded encounter choices. Set it to -1 to restore the normal mix (0 selects minions). Start a fresh expedition to replace enemies already spawned in a room. This applies to builds as well as the editor.
+The spider-only playtest override was turned off on November 10: RailEnemySpawns.ForcedEnemyType = -1 uses the normal enemy mix. Set it to an enemy index (3 = RailSpider, 0 = minions) to force one type for a playtest, preserving spawn counts, positions and seeded encounter choices. Start a fresh expedition to replace enemies already spawned in a room. This applies to builds as well as the editor.
 
 - **Duck Rails > Authoring > Bake Train Enemy Navigation** rebuilds only the train navigation asset and installs its prefab component plus minion/spider opt-in. Save open scene edits first.
 - **Duck Rails > Tests > Enemy Boarding > Graph And Network Checks** checks the bake, transformed node lookups, deck pathfinding and packet flags.

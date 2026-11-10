@@ -116,7 +116,7 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 ## November 6 — spider train boarding
 
 - [x] Opt the spider into rear/left/right boarding and dismount using its climbing mover and collision radius; preserve world crawl behavior and minion boarding.
-- [x] Switch temporary encounter spawning to spiders only. ForcedEnemyType = -1 restores the normal mix.
+- [x] Switch temporary encounter spawning to spiders only. (Turned off November 10: ForcedEnemyType = -1, normal mix restored.)
 - [x] Actual spider/motel Play Mode: both side exits/reboarding, blocked-opening fallback, all-blocked hold/retry, rear boarding, speed/abort gates, moving carry, deck pursuit, voluntary exit/reboarding and melee knock-off.
 - [x] Carry surface normals and gait contacts with the train; actual wall attachment and planted feet stay stable through 32 translated/yawed/pitched poses. Existing graph/navigation, roof-lip and web safety regressions pass.
 - [x] Passive stalking boards without a combat target. Two authenticated clients pass spider-only spawns, moving carry/host handoff, confirmed non-owner hit plus separate support-loss detachment, moving leave/rejoin, left exit/reboard and right exit. See [evidence and fixture limits](enemy-boarding.md).

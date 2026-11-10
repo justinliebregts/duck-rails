@@ -5,8 +5,8 @@ using UnityEngine;
 /// <summary>Stable per-route encounter choices using authored, navigation-checked points.</summary>
 public static class RailEnemySpawns
 {
-    // TEMP: train-boarding playtest. Set to -1 to restore the normal enemy mix.
-    public const int ForcedEnemyType = 3; // RailSpider
+    // Set to an enemy index (3 = RailSpider) to force a single type for playtests; -1 uses the normal enemy mix.
+    public const int ForcedEnemyType = -1;
     public static readonly string[] Names = { "RailZombie", "RailBomber", "RailSmasher", "RailSpider" };
     public static GameObject Prefab(int type) => Resources.Load<GameObject>("Rails/" + Names[type]);
     public static void Register() { for (int i = 0; i < Names.Length; i++) PhotonPreparePool.Register(Prefab(i)); }
