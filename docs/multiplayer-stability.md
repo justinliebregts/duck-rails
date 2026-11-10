@@ -1,5 +1,7 @@
 # Multiplayer stability regression — October 30, 2026
 
+November 10 follow-up: pickups that dropped within a second until someone left the room are traced to Photon server-clock skew after a short standby. The heartbeat availability check then failed for a live player. See [pickup clock skew](pickup-clock-skew.md).
+
 This pass uses the existing three authenticated desktop accounts in Unity 6000.3.24f1, PUN/Realtime and Photon Voice. Unity MCP confirmed `X:/Work/duck-rails/Assets` before operating the editor. The source Duckz project was not modified. Existing uncommitted development work was retained.
 
 ## Duplicate-avatar fix

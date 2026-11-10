@@ -48,8 +48,11 @@ public static class PhotonHeldItems
             PhotonGrabbable item = PhotonGrabbable.HeldItems[i];
             if (item == null) continue;
             int actor = item.HeldActor;
-            if (actor > 0 && (actor == departedActor || availability.IsActorUnavailable(actor))
-                && CanRecoverOwner(item.GetComponent<PhotonView>(), actor, availability, departedActor)) changed |= Drop(item);
+            if (actor <= 0 || (actor != departedActor && !availability.IsActorUnavailable(actor))) continue;
+            PhotonView view = item.GetComponent<PhotonView>();
+            if (!CanRecoverOwner(view, actor, availability, departedActor)) continue;
+            availability.NoteHeldRecovery(view, actor, departedActor);
+            changed |= Drop(item);
         }
         for (int i = BagObject.Active.Count - 1; i >= 0; i--)
         {
@@ -60,7 +63,10 @@ public static class PhotonHeldItems
             if (actor > 0 && (bag.State == BagState.Held || bag.PendingHandClaim || (bag.State == BagState.Dropped && !bag.AwaitingClaim))
                 && (actor == departedActor || availability.IsActorUnavailable(actor))
                 && CanRecoverOwner(bag.photonView, actor, availability, departedActor))
+            {
+                availability.NoteHeldRecovery(bag.photonView, actor, departedActor);
                 changed |= Drop(bag);
+            }
         }
         if (changed) { RoomObjectRecovery.Flush(); PhotonNetwork.SendAllOutgoingCommands(); }
     }

@@ -1,0 +1,16 @@
+# Live single-client check, November 10 2026, Duck Rails editor (Unity 6000.3.24f1), MCP target X:/Work/duck-rails/Assets
+# Manual private sandbox, authenticated, Photon game server, phase Running, WorldReady true.
+
+Startup (Login -> master server -> game server -> expedition): ClockResyncs=0
+  (A first attempt, before re-baselining on server/room change, logged one spurious
+   "local timer jumped -1599412944 ms" fetch at the master->game server switch; fixed.)
+
+Simulated sleep: temporary editor probe lowered Photon PeerBase.serverTimeOffset by 8000 ms
+  t=75.19  wall=63929898971483  ServerTimestamp -1147956728 -> -1147964728 (skewed)
+Console: "Re-syncing Photon server time (local timer jumped 8000 ms against the wall clock)."
+  t=80.17  wall=63929898976460  ServerTimestamp=-1147951740  ClockResyncs=1
+  Expected unskewed value = -1147956728 + 4977 = -1147951751; residual 11 ms.
+  WorldReady and InRoom remained true.
+
+Not covered: two-client heartbeat exchange with a skewed peer (covered synthetically in
+HeldItemRecoveryChecks.ClockSkew), real Quest sleep, headset grabs.

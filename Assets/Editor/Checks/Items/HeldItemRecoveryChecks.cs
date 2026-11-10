@@ -95,6 +95,7 @@ public static class HeldItemRecoveryChecks
             Heartbeat(room, local, remote);
             ReviewWakeEdges(room, local, remote);
             Lifetime(room, local, remote);
+            ClockSkew(room, local, remote);
             Debug.Log("HeldItemRecoveryChecks: ALL PASSED (" + checks + " assertions)");
         }
         finally
@@ -281,6 +282,76 @@ public static class HeldItemRecoveryChecks
         Check(hand.Held == null && !item.IsHeldByAnyPlayer, "resume clears old hands even when the OS skipped the suspend callback");
         Object.DestroyImmediate(hand.gameObject);
         Object.DestroyImmediate(item.gameObject); PhotonPlayer.Active.Remove(avatar); Object.DestroyImmediate(avatar.gameObject); Object.DestroyImmediate(h.gameObject);
+    }
+    // Photon's ServerTimestamp is fetched once per connection and advanced by a local
+    // timer that stops while a Quest sleeps. A brief standby that keeps the connection
+    // leaves that headset's heartbeats seconds behind the master's clock.
+    static void SkewedBeat(PhotonMasterHandoff h, Player actor, bool ready, int sentAt)
+    {
+        var e = new EventData { Code = 105 };
+        e.Parameters[ParameterCode.ActorNr] = actor.ActorNumber;
+        e.Parameters[ParameterCode.Data] = new object[] { sentAt, ready };
+        h.OnEvent(e);
+    }
+    static void ClockSkew(Room room, Player local, Player remote)
+    {
+        Set(room, "masterClientId", local.ActorNumber);
+        var h = new GameObject("clock skew availability").AddComponent<PhotonMasterHandoff>();
+        Set(h, "focused", true); Set(h, "room", room); Call(h, "ResetObservation");
+        var avatar = new GameObject("clock skew avatar").AddComponent<PhotonPlayer>();
+        if (avatar.photonView == null) avatar.gameObject.AddComponent<PhotonView>();
+        typeof(PhotonView).GetProperty("Owner").SetValue(avatar.photonView, local);
+        typeof(PhotonView).GetProperty("IsMine").SetValue(avatar.photonView, true); PhotonPlayer.Active.Add(avatar);
+        // The master's own observation grace has elapsed, as in a long-running expedition.
+        Set(h, "observationStartedAt", unchecked(PhotonNetwork.ServerTimestamp - 5100));
+        var item = Item(remote.ActorNumber); HeldPacket(item, remote, 1);
+
+        const int Skew = 8000;
+        var clock = System.Diagnostics.Stopwatch.StartNew();
+        int start = unchecked(PhotonNetwork.ServerTimestamp - Skew);
+        int Sent() => unchecked(start + (int)clock.ElapsedMilliseconds);
+        SkewedBeat(h, remote, true, Sent());
+        System.Threading.Thread.Sleep(600);
+        SkewedBeat(h, remote, true, Sent());
+        System.Threading.Thread.Sleep(600);
+        int lastSent = Sent();
+        SkewedBeat(h, remote, true, lastSent);
+        PhotonHeldItems.RecoverUnavailable(h);
+        Check(!h.IsActorUnavailable(remote.ActorNumber) && item.IsHeldByAnyPlayer,
+            "live holder whose clock lags 8 s keeps its pickup (previously dropped every second)");
+        var requests = Get<IDictionary>(h, "clockRequests");
+        Check(requests.Contains(remote.ActorNumber), "proven-live clock disagreement requests a server-time re-sync");
+
+        // A state change can be published within the same millisecond as the previous beat.
+        SkewedBeat(h, remote, false, lastSent);
+        PhotonHeldItems.RecoverUnavailable(h);
+        Check(h.IsActorUnavailable(remote.ActorNumber) && !item.IsHeldByAnyPlayer,
+            "skewed holder reporting not-ready is still released");
+
+        var queued = Item(remote.ActorNumber); HeldPacket(queued, remote, 2);
+        Call(h, "ResetObservation");
+        Set(h, "observationStartedAt", unchecked(PhotonNetwork.ServerTimestamp - 5100));
+        int burst = unchecked(PhotonNetwork.ServerTimestamp - 9000);
+        for (int i = 0; i < 4; i++) SkewedBeat(h, remote, true, unchecked(burst + i * 1000));
+        PhotonHeldItems.RecoverUnavailable(h);
+        Check(h.IsActorUnavailable(remote.ActorNumber) && !queued.IsHeldByAnyPlayer,
+            "a burst of queued old heartbeats does not prove liveness");
+
+        var silent = Item(remote.ActorNumber); HeldPacket(silent, remote, 3);
+        Call(h, "ResetObservation");
+        Set(h, "observationStartedAt", unchecked(PhotonNetwork.ServerTimestamp - 5100));
+        start = unchecked(PhotonNetwork.ServerTimestamp - Skew - (int)clock.ElapsedMilliseconds);
+        SkewedBeat(h, remote, true, Sent()); System.Threading.Thread.Sleep(600); SkewedBeat(h, remote, true, Sent());
+        Check(!h.IsActorUnavailable(remote.ActorNumber), "fixture re-establishes a live skewed series");
+        var arrivals = Get<IDictionary>(h, "arrivals"); object arrival = arrivals[remote.ActorNumber];
+        var last = arrival.GetType().GetField("LastLocal");
+        last.SetValue(arrival, (double)last.GetValue(arrival) - 5.1); arrivals[remote.ActorNumber] = arrival;
+        PhotonHeldItems.RecoverUnavailable(h);
+        Check(h.IsActorUnavailable(remote.ActorNumber) && !silent.IsHeldByAnyPlayer,
+            "a skewed peer that goes silent for five seconds is released");
+
+        Object.DestroyImmediate(item.gameObject); Object.DestroyImmediate(queued.gameObject); Object.DestroyImmediate(silent.gameObject);
+        PhotonPlayer.Active.Remove(avatar); Object.DestroyImmediate(avatar.gameObject); Object.DestroyImmediate(h.gameObject);
     }
     static void ReviewWakeEdges(Room room, Player local, Player remote)
     {

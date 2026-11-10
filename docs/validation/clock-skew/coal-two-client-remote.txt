@@ -1,0 +1,22 @@
+2026-11-10T09:17:52.1581741Z stage=0 actor=2 master=False
+2026-11-10T09:17:55.1824994Z Unique avatars 1:1001,2:2001
+2026-11-10T09:17:56.4763149Z stage=1 actor=2 master=False
+2026-11-10T09:17:59.5094057Z Interior selection pickup accepted actor=2
+2026-11-10T09:17:59.9505588Z Released actual held coal at offset=(0.00, 0.06, 0.72) owner=2
+2026-11-10T09:18:01.5378045Z PASS stage=1 consumed=65 fuel=62.5 expected=62.5 removed=true
+2026-11-10T09:18:05.7364948Z stage=2 actor=2 master=False
+2026-11-10T09:18:10.0074442Z stage=3 actor=2 master=False
+2026-11-10T09:18:13.0742411Z Interior selection pickup accepted actor=2
+2026-11-10T09:18:13.5052316Z Released actual held coal at offset=(0.00, 0.06, 0.75) owner=2
+2026-11-10T09:18:15.0134416Z PASS stage=3 consumed=60 fuel=69.79125 expected=69.79125 removed=true
+2026-11-10T09:18:19.3477720Z stage=4 actor=2 master=False
+2026-11-10T09:18:23.5634158Z stage=5 actor=2 master=True
+2026-11-10T09:18:28.5640242Z PASS stage=5 consumed=43 fuel=70.54001 expected=70.54001 removed=true
+2026-11-10T09:18:32.8888297Z stage=6 actor=2 master=True
+2026-11-10T09:18:32.8918622Z PASS stopped, moving, and after master handoff; exactly-once fuel/removal agreed on two clients; 1:1001,2:2001
+2026-11-10T09:18:35.1544463Z stage=7 actor=2 master=True
+2026-11-10T09:18:40.2618800Z PASS empty train rejects GO until refueled
+2026-11-10T09:18:40.4815387Z stage=8 actor=2 master=True
+2026-11-10T09:18:45.5068925Z PASS stage=8 consumed=47 fuel=12.5 expected=12.5 removed=true
+2026-11-10T09:18:49.7729337Z stage=9 actor=2 master=True
+2026-11-10T09:18:55.8576030Z PASS COMPLETE physical coal stopped, moving, after handoff, empty-fuel recovery and resumed driving; four exactly-once deposits

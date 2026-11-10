@@ -1,0 +1,183 @@
+# After fix: HeldItemRecoveryChecks.Run alone
+PASS: local pickup remains immediate
+PASS: forced drop clears both references and held registry
+PASS: forced drop restores collisions/gravity without throwing, equipping, or release events
+PASS: dropped item belongs to room and has live master physics/synchronization
+PASS: duplicate release is harmless
+PASS: delayed held snapshot cannot resurrect a recovered hold
+PASS: new holder's new hold is accepted
+PASS: old release cannot drop another player's new pickup
+PASS: recovered item is immediately grabbable
+PASS: delayed local ownership echo cannot revive cancelled pickup
+PASS: fresh pickup still works after cancelled ownership echo
+PASS: controller-only loss clears hand without gameplay release
+PASS: re-enabled remote hold remains discoverable without another snapshot
+PASS: reliable item release may precede the newest held snapshot
+PASS: old release leaves worn equipment alone
+PASS: removing equipment and sleeping before a snapshot still drops it
+PASS: both empty and loaded hand bags drop
+PASS: drop preserves mixed weapons, gold, items, and empty slots exactly
+PASS: dropped bag is pickable with master-controlled physics
+PASS: hand cleanup leaves worn bag and its inventory unchanged
+PASS: sleep invalidates delayed hand deliveries
+PASS: old release leaves worn bag alone
+PASS: removing bag from back and sleeping before a snapshot drops it intact
+PASS: duplicate bag drop cannot move or empty it
+PASS: stale bag held snapshot cannot reattach recovered bag
+PASS: old drop cannot steal bag from new holder
+PASS: former controller's delayed contents cannot overwrite recovered bag
+PASS: reliable bag release may precede the newest held snapshot
+PASS: availability cleanup cancels hold/take/put requests together
+PASS: late ownership grant of cancelled bag delivery returns it to room without losing contents
+PASS: joining client accepts initial contents before cross-sender ownership update
+PASS: master migration preserves an awake client's claimed room item
+PASS: ownerless room item follows new master without assigning an owner
+PASS: healthy holder is never released by watchdog
+PASS: healthy held-item and loaded-bag sweep allocates zero bytes over 10,000 checks
+PASS: ownership arriving before new held snapshot protects healthy new bag/item owner
+PASS: stale holder metadata still recovers if both old holder and new owner become unavailable
+PASS: non-master does not run remote recovery
+PASS: five-second silence releases a client's held item
+PASS: explicit unavailability releases immediately without timeout
+PASS: confirmed departure releases immediately
+PASS: newly joined player has time to send first heartbeat
+PASS: first waking master observes peers before recovering their holds
+PASS: all-asleep first-waker recovers both weapon and loaded bag after observation grace
+PASS: resume fixture starts with a local hold
+PASS: resume clears old hands even when the OS skipped the suspend callback
+PASS: late grant after a completed drop cannot leave bag locked to sleeping owner
+PASS: late-grant repair preserves pose, lifetime, and every bag slot
+PASS: already repaired duplicate does no further work
+PASS: queued pre-drop worn snapshot cannot reattach or rewind recovered bag
+PASS: queued pending-delivery snapshot cannot lock a recovered bag again
+PASS: late old release cannot revoke a new holder's bag
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=False)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=False)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=False)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=False)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=False)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=False)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: waking former master does not recover before confirmed authority
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=True)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: waking former master does not recover before confirmed authority
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=True)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: waking former master does not recover before confirmed authority
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=True)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: waking former master does not recover before confirmed authority
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=True)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: waking former master does not recover before confirmed authority
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=True)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: all-sleep: original master releases its loaded bag
+PASS: first waker gives silent peers the observation grace
+PASS: waking former master does not recover before confirmed authority
+PASS: first waking original master recovers loaded bags without a second five-second wait (handoff=True)
+PASS: all-sleep recovery preserves both players' loaded bags exactly
+PASS: late wake/drop cannot steal the recovered bag from its new holder
+PASS: later waking client cannot reclaim the loaded bag already picked up by original master
+PASS: persistent pickup preserves immediate local allocation
+PASS: persistent pickup creation uses room-global cache
+PASS: creator departure retains pickup now owned by another player
+PASS: departing owner leaves persistent pickup under master control
+PASS: cached pickup instantiates safely after creator is gone
+PASS: ordinary avatar/object creation keeps actor lifetime and cache
+PASS: ordinary player objects still clean up on departure
+PASS: live holder whose clock lags 8 s keeps its pickup (previously dropped every second)
+PASS: proven-live clock disagreement requests a server-time re-sync
+PASS: skewed holder reporting not-ready is still released
+PASS: a burst of queued old heartbeats does not prove liveness
+PASS: fixture re-establishes a live skewed series
+PASS: a skewed peer that goes silent for five seconds is released
+HeldItemRecoveryChecks: ALL PASSED (143 assertions)
+
+# After equal-timestamp correction: PickupRecovery(+Regrab), RoomObjectRecovery(+HeldItemRecovery), PhotonGrabbable, HeldItemRecovery (second run in same process)
+PickupRegrabChecks ALL PASSED (4 cases, 150 assertions)
+PickupRecoveryChecks ALL PASSED (298 assertions)
+SUITE PASS PickupRecoveryChecks
+RoomObjectRecoveryChecks ALL PASSED (289 assertions)
+HeldItemRecoveryChecks: ALL PASSED (143 assertions)
+PhotonGrabbableChecks: ALL PASSED
+SUITE PASS RoomObjectRecoveryChecks
+PhotonGrabbableChecks: ALL PASSED
+SUITE PASS PhotonGrabbableChecks
+HeldItemRecoveryChecks: ALL PASSED (143 assertions)
+SUITE PASS HeldItemRecoveryChecks
+CLOCKFIX BATCH failed=0
+
+# Intermediate run that exposed equal-millisecond heartbeat handling (fixed afterwards)
+SUITE PASS PickupRecoveryChecks
+SUITE PASS RoomObjectRecoveryChecks
+SUITE PASS PhotonGrabbableChecks
+SUITE FAIL HeldItemRecoveryChecks: skewed holder reporting not-ready is still released
+CLOCKFIX BATCH failed=1
+
+# Pre-existing, unrelated: MasterHandoffChecks fails on unmodified main HEAD
+Exception: lowest ready actor is the sole fallback candidate
+
+# Final source (after server-switch clock baseline change), same four suites
+PickupRegrabChecks ALL PASSED (4 cases, 150 assertions)
+PickupRecoveryChecks ALL PASSED (298 assertions)
+SUITE PASS PickupRecoveryChecks
+RoomObjectRecoveryChecks ALL PASSED (289 assertions)
+HeldItemRecoveryChecks: ALL PASSED (143 assertions)
+PhotonGrabbableChecks: ALL PASSED
+SUITE PASS RoomObjectRecoveryChecks
+PhotonGrabbableChecks: ALL PASSED
+SUITE PASS PhotonGrabbableChecks
+HeldItemRecoveryChecks: ALL PASSED (143 assertions)
+SUITE PASS HeldItemRecoveryChecks
+CLOCKFIX BATCH failed=0

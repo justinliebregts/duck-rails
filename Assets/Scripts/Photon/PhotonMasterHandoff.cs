@@ -88,12 +88,13 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     }
 
     public override void OnJoinedRoom() => ResetRoom();
-    public override void OnLeftRoom() { room = null; heartbeats.Clear(); }
-    public override void OnDisconnected(DisconnectCause cause) { PhotonHeldItems.DropLocalHands(); room = null; heartbeats.Clear(); }
+    public override void OnLeftRoom() { room = null; heartbeats.Clear(); ResetArrivals(); }
+    public override void OnDisconnected(DisconnectCause cause) { PhotonHeldItems.DropLocalHands(); room = null; heartbeats.Clear(); ResetArrivals(); hasClockDrift = false; }
 
     void ResetRoom()
     {
         room = PhotonNetwork.CurrentRoom;
+        hasClockDrift = false;
         ResetObservation();
         RoomObjectRecovery.JoinedRoom();
         Publish(true);
@@ -105,6 +106,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         ClearPickupReports();
         // A waking/joining client must not elect itself using its pre-suspend history.
         heartbeats.Clear();
+        ResetArrivals();
         observationStartedAt = PhotonNetwork.ServerTimestamp;
         observeUntil = Time.realtimeSinceStartupAsDouble + TimeoutMilliseconds / 1000d;
         nextHeartbeat = retryAt = nextHeldCheck = 0;
@@ -138,7 +140,8 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         if (!PhotonNetwork.InRoom || PhotonNetwork.OfflineMode) return;
         // Pause/app/XR focus can recover in any order. Discard old candidates on
         // the first wake signal, before an only-partly-focused master can hand off.
-        if (resuming) ResetObservation();
+        // A sleep that kept the connection also stopped Photon's local timer.
+        if (resuming) { ResetObservation(); FetchServerClock("resumed"); }
         Publish(true);
         if (!Ready && PhotonNetwork.IsMasterClient) TryHandoff();
         // Also flush unavailability when there is no eligible successor yet.
@@ -149,6 +152,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     {
         if (!PhotonNetwork.InRoom || PhotonNetwork.OfflineMode) return;
         if (!ReferenceEquals(room, PhotonNetwork.CurrentRoom)) ResetRoom();
+        CheckLocalClock();
         double now = Time.realtimeSinceStartupAsDouble;
         if (Ready != lastReady || now >= nextHeartbeat) Publish(Ready != lastReady);
         if (Ready && PhotonNetwork.IsMasterClient && now >= nextHeldCheck)
@@ -203,11 +207,15 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         if (data.Code == PickupReportCode || data.Code == PickupRefreshCode || data.Code == PickupAuthorityCode)
         { ReceivePickupEvent(data); return; }
         if (data.Code == PhotonHeldItems.DropEvent) { PhotonHeldItems.OnEvent(data); return; }
+        if (data.Code == ClockResyncCode) { ReceiveClockResync(data); return; }
         if (data.Code != HeartbeatCode || !PhotonNetwork.InRoom || PhotonNetwork.OfflineMode
             || !(data.CustomData is object[] values) || values.Length != 2
             || !(values[0] is int sentAt) || !(values[1] is bool ready)) return;
         Player player = PhotonNetwork.CurrentRoom.GetPlayer(data.Sender);
-        if (player == null || player.IsInactive || player.IsLocal || !Fresh(sentAt, PhotonNetwork.ServerTimestamp)) return;
+        if (player == null || player.IsInactive || player.IsLocal) return;
+        RecordArrival(data.Sender, sentAt, ready);
+        ObserveClockDisagreement(player, sentAt);
+        if (!Fresh(sentAt, PhotonNetwork.ServerTimestamp)) return;
         // Even a short standby can leave otherwise-fresh packets queued. They
         // must not restore a sleeping candidate or override the wake observation window.
         if (unchecked(sentAt - observationStartedAt) < 0) return;
@@ -261,18 +269,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         RequestMaster(PhotonNetwork.LocalPlayer);
     }
 
-    public bool IsActorUnavailable(int actor)
-    {
-        if (actor <= 0 || !PhotonNetwork.InRoom) return false;
-        if (actor == PhotonNetwork.LocalPlayer.ActorNumber) return !LocalAvailable;
-        Player player = PhotonNetwork.CurrentRoom.GetPlayer(actor);
-        if (player != null && player.IsInactive) return true;
-        if (heartbeats.TryGetValue(actor, out Heartbeat heartbeat))
-            return (heartbeat.Received && !heartbeat.Ready) || !Fresh(heartbeat.SentAt, PhotonNetwork.ServerTimestamp);
-        // A confirmed master change must not restart the observation already done
-        // since waking. observeUntil separately protects master-election stability.
-        return !Fresh(observationStartedAt, PhotonNetwork.ServerTimestamp);
-    }
+    public bool IsActorUnavailable(int actor) => UnavailableReason(actor) != null;
 
     Player SelectCandidate()
     {
@@ -317,6 +314,8 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         heartbeats.Remove(otherPlayer.ActorNumber);
+        arrivals.Remove(otherPlayer.ActorNumber);
+        clockRequests.Remove(otherPlayer.ActorNumber);
         if (Ready && PhotonNetwork.IsMasterClient) PhotonHeldItems.RecoverUnavailable(this, otherPlayer.ActorNumber);
     }
     public override void OnMasterClientSwitched(Player newMasterClient)
