@@ -714,6 +714,14 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         StoreSamples(count);
     }
 
+    // Use the same shape on the item owner and on remote held copies.
+    internal int CopyHookBlockSamples(Vector3[] buffer, out float radius)
+    {
+        radius = LocomotionRadius;
+        int count = CopySampleWorldPositions(buffer);
+        return count > 0 ? count : CopyCompanionHitSamples(buffer, out radius);
+    }
+
     // Some items have no locomotion collider (or use a sphere/mesh). They can still
     // hit Duck. Sample their physical shape without changing human/enemy combat.
     int CopyCompanionHitSamples(Vector3[] buffer, out float radius)

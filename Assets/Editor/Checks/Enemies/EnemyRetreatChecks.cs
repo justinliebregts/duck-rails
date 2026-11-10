@@ -19,7 +19,7 @@ public static class EnemyRetreatChecks
 
     public static void Run()
     {
-        foreach (string name in new[] { "Spider", "Smasher", "Minion", "Bomber" })
+        foreach (string name in new[] { "Spider", "Smasher", "Minion", "Bomber", "Hook" })
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Enemies/Zombie{name}.prefab");
             var configured = prefab.GetComponent<Enemy>();

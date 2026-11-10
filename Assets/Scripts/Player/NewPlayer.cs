@@ -251,6 +251,7 @@ public partial class NewPlayer : MonoBehaviour
         }
 
         public void Warp(Vector3 pos) {
+          PhotonPlayer.InvalidateLocalHookShots();
           // A warp between pose restoration and rendering must not be interpolated away.
           movementPoseRenderCancelled = true;
           // Warp destinations describe where the player stands, even after room-scale walking.
@@ -1364,7 +1365,8 @@ public partial class NewPlayer : MonoBehaviour
           SetVelHistoryToCurrentVel();
         }
 
-        int disableMovementRequestCount = 0;
+        int disableMovementRequestCount;
+        int launchGeneration;
 
         /// <summary>
         /// Launch method used by LaunchPad triggers.
@@ -1383,19 +1385,24 @@ public partial class NewPlayer : MonoBehaviour
 
           LaunchPlayer(vel, type);
 
-          StartCoroutine(DisableMovementForFixedFrames(fixedFramesToDisable));
+          StartCoroutine(DisableMovementForFixedFrames(fixedFramesToDisable, launchGeneration));
         }
 
-        System.Collections.IEnumerator DisableMovementForFixedFrames(int fixedFramesToDisable) {
+        System.Collections.IEnumerator DisableMovementForFixedFrames(int fixedFramesToDisable, int generation) {
           for (int i = 0; i < fixedFramesToDisable; i++) {
             yield return new WaitForFixedUpdate();
+            if (generation != launchGeneration) yield break;
           }
+          if (--disableMovementRequestCount == 0) disableMovement = false;
+        }
 
-          disableMovementRequestCount--;
-          if (disableMovementRequestCount <= 0) {
-            disableMovementRequestCount = 0;
-            disableMovement = false;
-          }
+        void ClearLaunchLock() {
+          if (disableMovementRequestCount == 0) return;
+          // A disabled component may still have ticking coroutines, while
+          // deactivating its GameObject stops them. Retire both kinds of lock.
+          unchecked { launchGeneration++; }
+          disableMovementRequestCount = 0;
+          disableMovement = false;
         }
 
         void SetVelHistoryToCurrentVel() {

@@ -86,3 +86,7 @@ Final two-client spider run passed on both authenticated editors at 05:08 UTC: s
 The final minion compatibility loop initially finished all four side transfers, then its search expired while facing away during the blocked-left detour (minion-side-search-timeout.txt). The navigation-only side fixture now keeps target sensing within 30 m as well as disabling sight occlusion; the passive-stalk case explicitly resets sensing to zero. Ordinary gameplay perception and search timers are unchanged.
 
 Final minion compatibility rerun passed at 05:13 UTC: both side transfers in both directions, blocked-nearest fallback, all-blocked hold and retry after clearing (side-play.txt). Unity returned to Edit Mode, the network fixture was disarmed, and the saved launch scenario was restored. Spider-only spawning remains enabled.
+
+## ZombieHook — November 10, 2026
+
+The ZombieHook enemy does not board: it has no `RailEnemyBoarding` and keeps block boundaries (a check asserts this). Only minions and spiders board.

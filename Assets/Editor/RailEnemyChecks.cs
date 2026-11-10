@@ -15,7 +15,7 @@ public static class RailEnemyChecks
     {
         var log = new List<string>();
         void Check(bool ok, string message) { if (!ok) throw new Exception(message); log.Add("PASS " + message); }
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < RailEnemySpawns.Names.Length; i++)
         {
             var prefab = RailEnemySpawns.Prefab(i);
             Check(prefab != null && prefab.GetComponent<Enemy>() != null && prefab.GetComponent<EnemyNetSync>() != null && prefab.GetComponent<PhotonView>() != null && prefab.GetComponent<RailEnemyBounds>() != null && prefab.GetComponent<RailCoalCarrier>()?.display != null, RailEnemySpawns.Names[i] + " network, bounds and coal carrier");
@@ -23,6 +23,7 @@ public static class RailEnemyChecks
         Check(RailEnemySpawns.Prefab(1).GetComponent<ZombieBomberExplode>() != null, "Bomber explosion retained");
         Check(RailEnemySpawns.Prefab(2).GetComponent<ZombieSmasherJump>() != null, "Smasher jump retained");
         Check(RailEnemySpawns.Prefab(3).GetComponent<ZombieSpiderStalk>() != null, "Spider stalk retained");
+        Check(RailEnemySpawns.Prefab(4).GetComponent<ZombieHookAttack>() != null && RailEnemySpawns.Prefab(4).GetComponent<RailEnemyBoarding>() == null, "Hook attack retained; hook does not board the train");
         foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { RailWeek3Builder.Folder }))
         {
             var b = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid)).GetComponent<RailBlock>();

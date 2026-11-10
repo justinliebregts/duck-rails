@@ -46,6 +46,8 @@ public class DesktopPlayer : MonoBehaviour
     float _pitchAngle;
     float _verticalVelocity;
     Vector3 _pushVelocity;
+    float _hookSlideTime;
+    double _hookSlideUntil;
     PauseMenu _pauseMenu;
     PauseMenuButton _pressedButton;
     PressableButton _worldButton;
@@ -67,6 +69,7 @@ public class DesktopPlayer : MonoBehaviour
 
     void OnDisable()
     {
+        EndHookSlide();
         ReleaseMenuButton();
         SuppressMouseGrip = false;
     }
@@ -200,6 +203,7 @@ public class DesktopPlayer : MonoBehaviour
 
     public void Teleport(Vector3 position, Quaternion rotation, bool resetLook = false)
     {
+        PhotonPlayer.InvalidateLocalHookShots();
         if (HelicopterManager.instance != null) HelicopterManager.instance.ReleasePassenger();
         _controller.enabled = false;
         transform.SetPositionAndRotation(position, rotation);
@@ -211,6 +215,7 @@ public class DesktopPlayer : MonoBehaviour
         }
         _verticalVelocity = 0f;
         _pushVelocity = Vector3.zero;
+        _hookSlideTime = 0f;
         _controller.enabled = true;
     }
 
@@ -233,7 +238,28 @@ public class DesktopPlayer : MonoBehaviour
 
     public void Launch(Vector3 worldVelocity)
     {
+        _hookSlideTime = 0f;
         _pushVelocity = worldVelocity;
+    }
+
+    public void PullByHook(Vector3 velocity)
+    {
+        Launch(velocity);
+        _verticalVelocity = velocity.y;
+        _hookSlideTime = 0.42f;
+        _hookSlideUntil = Time.realtimeSinceStartupAsDouble + _hookSlideTime;
+    }
+
+    void EndHookSlide()
+    {
+        if (_hookSlideTime <= 0f) return;
+        _hookSlideTime = 0f;
+        _pushVelocity = Vector3.zero;
+    }
+
+    void OnApplicationPause(bool paused)
+    {
+        if (paused) EndHookSlide();
     }
 
     void Update()
@@ -308,6 +334,7 @@ public class DesktopPlayer : MonoBehaviour
             _yaw.localPosition = new Vector3(0, RailExpedition.LocalDown ? .55f : eyeHeight, 0);
         var motion = _yaw.TransformDirection(planar) * speed;
 
+        if (_hookSlideTime > 0f && Time.realtimeSinceStartupAsDouble >= _hookSlideUntil) EndHookSlide();
         bool pushRising = _pushVelocity.y > 0f;
         if (_controller.isGrounded && _verticalVelocity < 0f && !pushRising)
             _verticalVelocity = -1f;
@@ -317,7 +344,16 @@ public class DesktopPlayer : MonoBehaviour
         float gravityStep = Physics.gravity.y * Time.deltaTime;
         _verticalVelocity += gravityStep;
 
-        if (_pushVelocity.sqrMagnitude > 0f)
+        if (_hookSlideTime > 0f)
+        {
+            // The controller drops grounded weapon launches on its next step.
+            // Let the horizontal tug travel through its ordinary collision-aware Move.
+            float step = Mathf.Min(Time.deltaTime, _hookSlideTime);
+            if (step > 0f) motion += Vector3.ProjectOnPlane(_pushVelocity, Vector3.up) * (step / Time.deltaTime);
+            _hookSlideTime -= step;
+            if (_hookSlideTime <= 0f) _pushVelocity = Vector3.zero;
+        }
+        else if (_pushVelocity.sqrMagnitude > 0f)
         {
             _pushVelocity.y += gravityStep;
             motion.x += _pushVelocity.x;

@@ -387,7 +387,7 @@ namespace Game.AI
 
             Vector3 toSeen = enemy.LastSeenPos - pos;
             Vector3 flatSeen = Vector3.ProjectOnPlane(toSeen, up);
-            bool direct = enemy.CurrentState == Enemy.State.Chase && enemy.Seen
+            bool direct = enemy.CurrentState == Enemy.State.Chase && enemy.Seen && !enemy.SeekingHookPosition
                 && !(enemy.Boarding != null && enemy.Boarding.HasBoardingPlan)
                 && !TrainBlocks(pos, enemy.LastSeenPos)
                 && GoalOnWalkingLevel(g, pos)
@@ -981,8 +981,12 @@ namespace Game.AI
             // actual travel should turn the rig; ignore contact-scale motion.
             Quaternion rotation = root.rotation;
             if (moved.sqrMagnitude > Mathf.Pow(0.08f * dt, 2f))
-                rotation = Quaternion.RotateTowards(rotation,
-                    Quaternion.LookRotation(moved, Vector3.up), yawSpeed * dt);
+            {
+                Vector3 facing = enemy.SeekingHookPosition
+                    ? Vector3.ProjectOnPlane(enemy.LastSeenPos - next, Vector3.up) : moved;
+                if (facing.sqrMagnitude > 0.000001f)
+                    rotation = Quaternion.RotateTowards(rotation, Quaternion.LookRotation(facing, Vector3.up), yawSpeed * dt);
+            }
             enemy.SetRootPose(next, rotation);
         }
 

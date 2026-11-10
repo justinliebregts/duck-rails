@@ -81,7 +81,7 @@ public static class RailDeepRegressionChecks
         Require(UnityEngine.Object.FindObjectsByType<ItemGoldBar>(FindObjectsSortMode.None).Length==run.goldPoints.Length,"Exact authored gold count");
         Require(Game.AI.Enemy.Active.Count==run.baseEnemyCount,"Exact base enemy count");
         Require(Flashlights()==crew,"One flashlight per departing player");
-        if(RailEnemySpawns.ForcedEnemyType<0)Require(RailEnemySpawns.Names.All(name=>Game.AI.Enemy.Active.Any(e=>e.name.StartsWith(name))),"All four normal enemy types spawned");
+        if(RailEnemySpawns.ForcedEnemyType<0)Require(run.baseEnemyCount<RailEnemySpawns.Names.Length||RailEnemySpawns.Names.All(name=>Game.AI.Enemy.Active.Any(e=>e.name.StartsWith(name))),"All five normal enemy types spawned when the crew budget allows");
     }
     static int Flashlights() => Views().Count(v=>v.InstantiationData is object[] d && d.Length==3 && d[2] is string s && s.StartsWith("flashlight:"));
     static void Gold(int receiver)

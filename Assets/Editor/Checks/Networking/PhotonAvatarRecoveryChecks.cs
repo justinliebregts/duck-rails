@@ -105,6 +105,7 @@ public static class PhotonAvatarRecoveryChecks
             room.AddPlayer(owner); room.AddPlayer(stranger);
             PhotonNetwork.NetworkingClient.CurrentRoom = room;
             FirstPoseAndValidation();
+            OwnerHookTarget();
             TimerAndWire();
             Recovery(100, 80);
             Recovery(2600000, 100);
@@ -200,6 +201,23 @@ public static class PhotonAvatarRecoveryChecks
         Check(p.photonView.Synchronization == ViewSynchronization.Unreliable
             && p.photonView.ObservedComponents.Count == 1, "Prefab stream configuration unchanged");
         Debug.Log("First pose / input validation PASS");
+    }
+
+    static void OwnerHookTarget()
+    {
+        using var fixture = new Fixture();
+        var ownerAvatar = fixture.player;
+        typeof(PhotonView).GetProperty("IsMine").SetValue(ownerAvatar.photonView, true);
+        var tracker = new GameObject("Tracked head").transform;
+        tracker.SetParent(ownerAvatar.transform, false);
+        tracker.position = fixture.body.Chest.position + new Vector3(20f, 4f, 0f);
+        ownerAvatar.BindSources(tracker, null, null);
+        var overlaps = (Func<Vector3, Vector3, float, bool>)Delegate.CreateDelegate(
+            typeof(Func<Vector3, Vector3, float, bool>), ownerAvatar, typeof(PhotonPlayer).GetMethod("OverlapsHook", Private));
+        Check(ownerAvatar.TryGetHeadPosition(out Vector3 head) && overlaps(head - Vector3.forward, head, .045f),
+            "Owner can be hooked at the tracked head before receiving any network pose");
+        Vector3 stale = fixture.body.Chest.position;
+        Check(!overlaps(stale, stale + Vector3.up * .1f, .045f), "Owner's spawn-position avatar cannot intercept the hook");
     }
 
     static void TimerAndWire()

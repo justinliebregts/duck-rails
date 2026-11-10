@@ -779,3 +779,8 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [x] Rename authoring scenes to `<prefab-file-name>-bake.unity`, preserve scene GUIDs and update authoring/proof paths.
 - [x] Complete all 19 rebakes/exports, refresh Expedition's finale bindings and validate saved payloads; 84 offline route proof PASS lines, with saved exports rechecked after the user-reported editor crash/restart. See [lighting workflow](block-lighting.md#shared-baked-moonlight-and-searchable-scenes--november-9).
 - [ ] User visual review of block transitions and headset darkness/readability with the shared baked moon.
+
+## ZombieHook port — November 10, 2026
+
+- [x] Port Duckz 73b78c46, 7ed6d880, 2719d1a1 (editor checks pass; see [port evidence](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e)). b591543e not applicable (no Rails warmup catalog).
+- [ ] Two-client and headset acceptance for the hook (defense handshake, master handoff, Quest cost).

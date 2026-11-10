@@ -12,6 +12,10 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
 {
     static PhotonMasterHandoff instance;
     public static bool LocalAvailable => instance == null || instance.InputAvailable;
+    internal static event System.Action LocalAvailabilityChanged;
+
+    internal static bool IsUnavailableInRoom(int actor) => instance != null &&
+        instance.room == PhotonNetwork.CurrentRoom && instance.IsActorUnavailable(actor);
     // Link's headset focus is independent of Unity's Game/Scene window focus.
     // Keep the app-focus requirement unless an editor XR display is running.
     bool InputAvailable => HasInputFocus(DesktopPlay.UseDesktop, focused, xrFocused, paused,
@@ -130,6 +134,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
 
     void AvailabilityChanged(bool resuming)
     {
+        LocalAvailabilityChanged?.Invoke();
         RoomObjectRecovery.ReconcileAll();
         // Retain this frame's inventory changes while we still own the objects.
         // Dropping a client's hands returns ownership to the (possibly asleep) master.

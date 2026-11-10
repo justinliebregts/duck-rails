@@ -73,6 +73,8 @@ editor checks passed; full bag/network and headset acceptance remain pending. Se
 
 November 8 retreat tuning: port Duckz `a1be1207774efb66bbe6e7df0c0003c2793a926f`, changing zombie retreat duration from 4–10 to 1–8 seconds. Existing retreat triggers and Rails boarding restrictions remain. Editor checks passed; real-client/headset balance review remains pending. See [port evidence](duckz-ports.md#a1be1207774efb66bbe6e7df0c0003c2793a926f--zombie-retreat-duration).
 
+November 10 ZombieHook: a fifth enemy type joins the scavenging mix (port of Duckz `73b78c46`, `7ed6d880`, `2719d1a1`). It keeps block boundaries and does not board; only minions and spiders board. Per-crew counts are unchanged. See [port evidence](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e).
+
 November 8 confirmed smasher port: retain 12 m jump height, 16 m horizontal reach and rooftop exploration, including Skyscraper Works. Smashers remain excluded from train boarding and confined to their home block. See [port evidence and acceptance limits](duckz-fix-ports.md#smasher-rooftop-exploration--november-8-2026).
 
 November 8 playtest route: normal expeditions now select four distinct enabled prefabs at departure, shuffle them once, and retain that order for the run. Only Skyscraper Works, Container Yard, Farm Silos and Convenience Store are enabled initially. Flow: starting station → two scavenging blocks → existing midpoint shop → two scavenging blocks → finale. The shop occupies the second block's quiet departure stretch. This supersedes the five-stop normal-run scope below. See [route configuration](testing-tools.md#normal-playtest-block-pool--november-8).

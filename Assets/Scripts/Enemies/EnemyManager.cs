@@ -384,6 +384,8 @@ namespace Game.AI
             return _slotOwner[slot] != null;
         }
 
+        internal Object TargetOwner(int slot) => slot >= 0 && slot < MaxTargets ? _slotOwner[slot] : null;
+
         public int TrailSeq(int slot) => _trailSeq[slot];
 
         public bool TryGetTrailPoint(int slot, ref int seq, out Vector3 point)

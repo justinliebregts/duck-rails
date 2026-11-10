@@ -7,7 +7,9 @@ public static class RailEnemySpawns
 {
     // Set to an enemy index (3 = RailSpider) to force a single type for playtests; -1 uses the normal enemy mix.
     public const int ForcedEnemyType = -1;
-    public static readonly string[] Names = { "RailZombie", "RailBomber", "RailSmasher", "RailSpider" };
+    // RailHook is appended so existing type indices (3 = RailSpider) stay stable. It is spawned only by
+    // RailEnemySpawnBalance; the legacy Select/finale stream keeps the original four types.
+    public static readonly string[] Names = { "RailZombie", "RailBomber", "RailSmasher", "RailSpider", "RailHook" };
     public static GameObject Prefab(int type) => Resources.Load<GameObject>("Rails/" + Names[type]);
     public static void Register() { for (int i = 0; i < Names.Length; i++) PhotonPreparePool.Register(Prefab(i)); }
     public static void Select(Transform[] candidates, System.Random rng, List<Transform> points, List<int> types)

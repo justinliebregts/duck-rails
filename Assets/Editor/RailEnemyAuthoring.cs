@@ -15,7 +15,30 @@ public static class RailEnemyAuthoring
         var setup = EditorSceneManager.GetSceneManagerSetup();
         for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
             if (UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).isDirty) throw new InvalidOperationException("Save scene edits first.");
-        string[] sources = { "ZombieBomber", "ZombieSmasher", "ZombieSpider" };
+        InstallVariants();
+        foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { RailWeek3Builder.Folder }))
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid); var root = PrefabUtility.LoadPrefabContents(path);
+            try { var block = root.GetComponent<RailBlock>(); if (block == null) continue; AddCandidates(block); PrefabUtility.SaveAsPrefabAsset(root, path); }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+        try
+        {
+            var scene = EditorSceneManager.OpenScene("Assets/Scenes/Expedition.unity");
+            var route = UnityEngine.Object.FindFirstObjectByType<RailRoute>();
+            AddCandidates(route.finale);
+            EditorSceneManager.SaveScene(scene);
+        }
+        finally { EditorSceneManager.RestoreSceneManagerSetup(setup); }
+        AssetDatabase.SaveAssets();
+        Debug.Log("Mixed enemies installed; six navigation-checked candidates per encounter variation.");
+    }
+
+    /// <summary>Creates any missing Resources/Rails enemy variants (bounds + coal carrier) without touching blocks or scenes.</summary>
+    [MenuItem("Duck Rails/Authoring/Install Enemy Prefab Variants")]
+    public static void InstallVariants()
+    {
+        string[] sources = { "ZombieBomber", "ZombieSmasher", "ZombieSpider", "ZombieHook" };
         for (int i = 0; i < sources.Length; i++)
         {
             string path = "Assets/Resources/Rails/" + RailEnemySpawns.Names[i + 1] + ".prefab";
@@ -33,22 +56,7 @@ public static class RailEnemyAuthoring
             }
             finally { UnityEngine.Object.DestroyImmediate(root); }
         }
-        foreach (string guid in AssetDatabase.FindAssets("t:Prefab", new[] { RailWeek3Builder.Folder }))
-        {
-            string path = AssetDatabase.GUIDToAssetPath(guid); var root = PrefabUtility.LoadPrefabContents(path);
-            try { var block = root.GetComponent<RailBlock>(); if (block == null) continue; AddCandidates(block); PrefabUtility.SaveAsPrefabAsset(root, path); }
-            finally { PrefabUtility.UnloadPrefabContents(root); }
-        }
-        try
-        {
-            var scene = EditorSceneManager.OpenScene("Assets/Scenes/Expedition.unity");
-            var route = UnityEngine.Object.FindFirstObjectByType<RailRoute>();
-            AddCandidates(route.finale);
-            EditorSceneManager.SaveScene(scene);
-        }
-        finally { EditorSceneManager.RestoreSceneManagerSetup(setup); }
         AssetDatabase.SaveAssets();
-        Debug.Log("Mixed enemies installed; six navigation-checked candidates per encounter variation.");
     }
 
     static void AddCandidates(RailBlock block)

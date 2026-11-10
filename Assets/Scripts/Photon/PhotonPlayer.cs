@@ -113,6 +113,20 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         }
     }
 
+    int lastHookReset;
+    bool hasHookReset;
+
+    internal static void InvalidateLocalHookShots()
+    {
+        var local = Local;
+        if (local == null || !PhotonNetwork.InRoom) return;
+        local.lastHookReset = PhotonNetwork.ServerTimestamp;
+        local.hasHookReset = true;
+    }
+
+    internal bool CanReceiveHookReleasedAt(int release) =>
+        !IsDead && (!hasHookReset || unchecked(release - lastHookReset) > 0);
+
     public static void BroadcastDeathBlood(Vector3 position, int seed)
     {
         if (!PhotonNetwork.InRoom) return;
@@ -911,6 +925,54 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         dir = (dir + Vector3.up * (lift * strength)).normalized;
         launch = dir * (launchSpeed * strength);
         return true;
+    }
+
+    internal bool OverlapsHook(Vector3 from, Vector3 to, float radius)
+    {
+        // The owner's network avatar does not interpolate its own pose. Its visual
+        // chest can still be at spawn while the tracked player is across the map.
+        if (IsLocalHuman && headSource != null)
+        {
+            Transform chest = _fingerSource != null && _fingerSource.Body != null ? _fingerSource.Body.Chest : null;
+            return OverlapsTrackedHook(headSource, chest, lHandSource, rHandSource, from, to, radius,
+                headRadius, bodyRadius, bodyLength, handRadius);
+        }
+        if (OverlapsSwing(from, to, radius)) return true;
+        if (!_hasPose || Chest == null) return false;
+        Vector3 side = Chest.right * bodyRadius;
+        return (LeftHand != null && SegmentsWithin(from, to, Chest.position - side, LeftHand.position, radius + handRadius))
+            || (RightHand != null && SegmentsWithin(from, to, Chest.position + side, RightHand.position, radius + handRadius));
+    }
+
+    internal static bool OverlapsOfflineHook(LocalBodyDriver rig, Vector3 from, Vector3 to, float radius)
+    {
+        Transform chest = rig.Body != null ? rig.Body.Chest : null;
+        return OverlapsTrackedHook(rig.HeadAnchor, chest, rig.LeftHandAnchor, rig.RightHandAnchor, from, to, radius,
+            0.15f, 0.15f, 0.35f, 0.1f);
+    }
+
+    static bool OverlapsTrackedHook(Transform head, Transform chest, Transform left, Transform right,
+        Vector3 from, Vector3 to, float radius, float headRadius, float bodyRadius, float bodyLength, float handRadius)
+    {
+        if (head == null) return false;
+        Vector3 top = chest != null ? chest.position : head.position - Vector3.up * 0.22f;
+        Vector3 up = chest != null ? chest.up : Vector3.up;
+        Vector3 side = (chest != null ? chest.right : head.right) * bodyRadius;
+        return SegmentHitsSphere(from, to, head.position, radius + headRadius)
+            || SegmentsWithin(from, to, top, top - up * bodyLength, radius + bodyRadius)
+            || (left != null && SegmentsWithin(from, to, top - side, left.position, radius + handRadius))
+            || (right != null && SegmentsWithin(from, to, top + side, right.position, radius + handRadius));
+    }
+
+    internal static void ApplyLocalHookPull(Vector3 velocity)
+    {
+        var player = GR.Player.instance;
+        if (player == null || player.IsDead || velocity.sqrMagnitude < 0.0001f) return;
+        var desktop = player.GetComponent<DesktopPlayer>();
+        if (desktop != null && desktop.isActiveAndEnabled) desktop.PullByHook(velocity);
+        else if (NewPlayer.instance != null && NewPlayer.instance.isActiveAndEnabled)
+            NewPlayer.instance.LaunchPlayerFromLaunchPad(velocity, LaunchType.OverwriteVelocity,
+                Mathf.Max(1, Mathf.RoundToInt(0.36f / Time.fixedDeltaTime)));
     }
 
     [PunRPC]

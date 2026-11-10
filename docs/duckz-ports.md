@@ -271,3 +271,37 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   heartbeats drop, Quest standby/wake and master handoff on headsets. No diagnostic
   reports inspected; source Duckz untouched.
 - Destination commit: the commit introducing this entry (see Git history).
+
+## ZombieHook group — 73b78c46, 7ed6d880, 2719d1a1, b591543e
+
+- Status: implemented; Unity editor checks passed November 10, 2026. Real-client/headset
+  acceptance (including the hook-defense handshake across peers and master handoff) is pending.
+- Source SHAs: `73b78c46fe9af08bc0e13c2fe87f094356ff60d4` (enemy, synchronized interruptible
+  chain attack, audio, prefab, RPCs), `7ed6d880612717454c6672119f2ec4581bd9bb75` (footstep clip),
+  `2719d1a1406cbef1577851d1dc47c81af975be10` (windup 0.2→0.25 s, flight 0.25→0.3 s on the prefab),
+  `b591543ef3b68f4d0dead775280cb125b3d094e8` (warmup catalog refresh).
+- Decision (November 10): the hook joins the Rails mix but does **not** board the train; only minions and
+  spiders do. Per-crew enemy counts (4/8/12) are unchanged.
+- Destination: `Assets/Scripts/Enemies/ZombieHookAttack{,.Contacts,.Defense}.cs`,
+  `Assets/Prefabs/Enemies/ZombieHook.prefab` (+ `Resources/Rails/RailHook.prefab`, a bounds + coal-carrier
+  variant created by `RailEnemyAuthoring.InstallVariants`), `Assets/Audio/**/ZombieHook*`, chain
+  model/material/shader, `Assets/Editor/{Authoring/ZombieHookModelImporter,Checks/Enemies/ZombieHookChecks}.cs`.
+  Hooks into `Enemy`, `EnemyManager`, `GroundLocomotion`, `PhotonGrabbable`, `PhotonMasterHandoff`,
+  `PhotonPlayer`, `DesktopPlayer`, `NewPlayer*`, `Player` were applied (four hunks merged by hand around
+  Rails' boarding/coal-carrier code). Photon RPC list and `GameAudioSettings` updated.
+- Adaptations: `RailEnemySpawns.Names` gains `RailHook` at index 4 (spider stays 3, forced-type override
+  unchanged). `RailEnemySpawnBalance` now spreads five types: no repeat within a quadrant, totals differ by at
+  most one (4 spawns → 4 of 5 types, 8 → 1–2 each, 12 → 2–3 each; the omitted/extra type is seeded). The legacy
+  `RailEnemySpawns.Select` stream (finale/bridge, 4 types) is untouched. Hook prefab retreat set to Rails' 3–9 s.
+  Source `Main.unity` spawn-list registration not applicable; Rails registers via `RailEnemySpawns.Register`.
+- Networking: hook state uses three PUN RPCs (`ReceiveHookState`, `CheckHookDefense`, `ReportHookDefense`); no raised
+  events, so codes 101–117 are unaffected. `EnemyNetSync`'s 22-byte packet, spider lift byte and train/displaced flags
+  are not modified. Build partition suffix `-hook-defense-v3` appended to the AppVersion in `PhotonSession.cs`.
+- b591543e: **not ported.** Rails has no gameplay warmup catalog/subsystem (no `GameplayWarmupCatalog`,
+  `GameplayWarmupBatch`); importing it would be a separate decision.
+- Validation: project compiled; `ZombieHookChecks`, `RailEnemyChecks` (now five prefabs, hook has no boarding component),
+  `RailEnemySpawnBalanceChecks` (updated type-total rule) and `EnemyRetreatChecks` (now includes Hook) passed. New GUIDs
+  checked against all tracked metas: no collisions. `RailEnemyBoardingChecks` could not write its log (Win32 1224)
+  and is not claimed.
+- Remaining: two-client/headset hook tests, block-by-block clearance for the hook's firing lane, Quest cost, balance review.
+  Out of scope: impact sparks/blood, player pull fixes, later tuning commits.

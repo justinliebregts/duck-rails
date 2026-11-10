@@ -49,3 +49,7 @@ Installation result: the authoring command completed successfully and saved all 
 ## Candidate-pool counts — November 8, 2026
 
 The user replaced variation-based spawn authoring with per-block pools and fixed configurable counts. Default enemy count is now 5 (editable, including zero), selected randomly from the combined candidates; the previous random 4–6 count is superseded for RailRoute. Bilateral selection remains when at least two enemies and candidates on both sides are available. Existing forced-spider playtest type override is retained. See [pool authoring, migration and validation](testing-tools.md#random-spawn-pools--november-8-2026).
+
+## ZombieHook — November 10, 2026
+
+`RailHook` (Duckz `ZombieHook`, see [port](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e)) is the fifth type in scavenging encounters. It keeps block boundaries and **does not board the train**. Selection is in `RailEnemySpawnBalance` only; the finale/bridge fixed selection still uses the four original types. Counts per crew size are unchanged.

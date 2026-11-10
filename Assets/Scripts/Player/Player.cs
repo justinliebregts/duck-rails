@@ -136,6 +136,7 @@ namespace GR {
             float aliveSeconds = DuckzAnalytics.AliveSeconds();
             string held = HeldItemName();
             IsDead = true;
+            PhotonPlayer.InvalidateLocalHookShots();
             if (cause == "duck")
                 DuckzAnalytics.DuckKillSuccess();
             DuckzAnalytics.PlayerDied(cause, aliveSeconds, held);

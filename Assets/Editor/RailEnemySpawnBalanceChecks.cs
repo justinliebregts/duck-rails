@@ -34,8 +34,11 @@ public static class RailEnemySpawnBalanceChecks
                     foreach (var a in points) foreach (var b in points.Where(p => p != a))
                     { var delta = a.position - b.position; delta.y = 0; Check(delta.magnitude >= 14.999f, "Cross-quadrant spacing"); }
                     foreach (int type in Enumerable.Range(0, RailEnemySpawns.Names.Length))
-                        Check(types.Count(t => t == type) <= quota &&
-                            (points.Count < quota * 4 || types.Count(t => t == type) == quota), "Distributed type totals");
+                    {
+                        // Five types spread over 4*quota spawns: totals differ by at most one.
+                        int total = types.Count(t => t == type), even = points.Count / RailEnemySpawns.Names.Length;
+                        Check(total <= quota && total >= even && total <= even + 1, "Distributed type totals");
+                    }
                 }
         var root = new GameObject("Temporary enemy pool test");
         try

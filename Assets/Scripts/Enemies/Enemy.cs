@@ -143,6 +143,7 @@ namespace Game.AI
         public bool IsDormant { get; set; }
         public bool WantsPath => !IsDormant && _loco != null && _loco.WantsPath;
         public bool Seen => _seen;
+        internal bool HasRecentSighting => _seen || Time.time - _lastSeenTime <= loseSightTime;
         public Vector3 LastSeenPos => _lastSeenPos;
         public float DirectChaseDistance => directChaseDistance;
         public float StopDistance => stopDistance;
@@ -164,6 +165,8 @@ namespace Game.AI
         GroundLocomotion _ground;
         ZombieSmasherJump _jump;
         ZombieSpiderStalk _stalk;
+        ZombieHookAttack _hook;
+        internal bool SeekingHookPosition => _hook != null && _hook.SeekingPosition;
         public float IdleSpeedMultiplier => _stalk != null && _stalk.isActiveAndEnabled && _stalk.IsStalking
             ? _stalk.SpeedMultiplier : 1f;
         public bool IsJumping => _jump != null && _jump.IsJumping;
@@ -273,6 +276,7 @@ namespace Game.AI
             _ground = _loco as GroundLocomotion;
             _jump = GetComponent<ZombieSmasherJump>();
             _stalk = GetComponent<ZombieSpiderStalk>();
+            _hook = GetComponent<ZombieHookAttack>();
             _gait = GetComponent<IGaitDriver>();
             if (_gait != null) _gait.ExternalTick = true;
             _fovCos = Mathf.Cos(fovDegrees * 0.5f * Mathf.Deg2Rad);
@@ -311,6 +315,7 @@ namespace Game.AI
 
         public void ResetBrain()
         {
+            if (_hook != null) _hook.Interrupt();
             if (_gait is SpiderGait spider) spider.ResetRaise();
             _flareRetreat = _searchingFlareLocation = false;
             _flareThreat = null;
@@ -476,6 +481,8 @@ namespace Game.AI
             }
             _chaseCooldownRemaining = Mathf.Max(0f, _chaseCooldownRemaining - dt);
             if (perceive) Perceive(m);
+            if (_hook != null && _hook.isActiveAndEnabled && _hook.TickChase(m, _target, dt))
+                return;
             Think(m, dt);
             if (Boarding != null && Boarding.TickTraversal(m, dt)) return;
             if (_jump != null && _jump.isActiveAndEnabled && _jump.TickJump(this, m, dt))
@@ -581,9 +588,11 @@ namespace Game.AI
             if (_chaseCooldownRemaining > 0f) return;
             Vector3 eyePos = eye.position;
             Vector3 fwd = root.forward;
-            float bestSq = visionRange * visionRange;
+            float rangeSq = visionRange * visionRange;
+            float bestSq = rangeSq;
             float nearSq = nearSenseRadius * nearSenseRadius;
             int best = -1;
+            bool bestIsCompanion = false;
             Vector3 bestHead = default;
 
             for (int s = 0; s < EnemyManager.MaxTargets; s++)
@@ -593,13 +602,18 @@ namespace Game.AI
                 if (IsFlareProtected(headPos)) continue;
                 Vector3 d = headPos - eyePos;
                 float sq = d.sqrMagnitude;
-                if (sq > bestSq) continue;
+                // Hook can chase Duck, but only a human can be pulled. A nearby
+                // companion must not keep a visible player from ever being selected.
+                bool companion = _hook != null && m.TargetOwner(s) is PhotonPlayer player && player.IsCompanion;
+                if (companion && best >= 0 && !bestIsCompanion) continue;
+                if (sq > (bestIsCompanion && !companion ? rangeSq : bestSq)) continue;
                 float dist = Mathf.Sqrt(sq);
                 if (sq > nearSq && Vector3.Dot(fwd, d) < _fovCos * dist) continue;
                 if (dist > 0.01f && AIQueryProfile.VisionCast(eyePos, d / dist, out RaycastHit hit, dist, m.VisionMask)
                     && hit.distance < dist - 0.35f)
                     continue;
                 best = s;
+                bestIsCompanion = companion;
                 bestSq = sq;
                 bestHead = headPos;
             }
@@ -656,6 +670,7 @@ namespace Game.AI
                             break;
                         }
                     }
+                    if (SeekingHookPosition) break;
                     if (!_seen && Time.time - _lastSeenTime > loseSightTime)
                     {
                         EnterSearch(m);
@@ -1525,10 +1540,15 @@ namespace Game.AI
             SpawnHitBlood(velocity, hitPosition);
             if (!HasAuthority || root == null) return;
             GetComponent<RailCoalCarrier>()?.Hit();
+            if (_hook != null) _hook.Interrupt();
 
             Vector3 support = _climb != null && root.up.sqrMagnitude > 1e-6f ? root.up.normalized : Vector3.up;
             Vector3 dir = Vector3.ProjectOnPlane(velocity / speed, support);
-            if (dir.sqrMagnitude < 1e-6f) return;
+            if (dir.sqrMagnitude < 1e-6f)
+            {
+                if (_hook == null) return;
+                dir = -root.forward;
+            }
             dir.Normalize();
             EnemyManager hitManager = EnemyManager.Instance;
             LayerMask hitMask = hitManager != null ? hitManager.SurfaceMask : Physics.DefaultRaycastLayers;

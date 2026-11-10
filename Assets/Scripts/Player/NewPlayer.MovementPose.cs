@@ -14,6 +14,7 @@ public partial class NewPlayer
 
     void OnDisable()
     {
+        ClearLaunchLock();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         ResetDevelopmentMovement();
 #endif
@@ -49,6 +50,7 @@ public partial class NewPlayer
 
     void OnApplicationPause(bool paused)
     {
+        if (paused) ClearLaunchLock();
         if (paused) movementRenderCount = 0;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (paused) ResetDevelopmentMovement();

@@ -68,3 +68,7 @@ marker-prefab references were verified after saving. Unity compiled successfully
 The save emitted pre-existing CutePixel missing-glyph warnings for scene text;
 no font or text changes were made. Real-client/headset balance and performance remain
 pending; editor selection checks do not establish gameplay acceptance.
+
+## Five enemy types — November 10, 2026
+
+`RailHook` joins the seeded type permutation. Counts (4/8/12) and placement are unchanged. With five types, no quadrant repeats a type and each type's total differs by at most one (4 spawns use four of five types; the seeded order decides which). Earlier "equal totals of the four existing types" no longer applies; the checks assert the new rule.
