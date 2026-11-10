@@ -14,7 +14,9 @@ using UnityEngine.XR;
 [DefaultExecutionOrder(-30000)]
 public sealed class RailTransitionVeil : MonoBehaviour
 {
-    const float FadeInSeconds = .3f, FadeOutSeconds = .5f, ReadyHoldSeconds = .35f;
+    // Kept short: the hold and most of the fade-out add directly to the player's wait,
+    // and the fade-in delays private-run scene loads (public transfers hide it behind networking).
+    const float FadeInSeconds = .15f, FadeOutSeconds = .25f, ReadyHoldSeconds = .175f;
     const float PanelDistance = 2.2f, PanelWidth = 1.6f, PanelHeight = .8f;
     const int PanelPixelsWide = 1024, PanelPixelsHigh = 512;
     static readonly Vector3 HiddenRenderOrigin = new Vector3(0, -10000, 0);

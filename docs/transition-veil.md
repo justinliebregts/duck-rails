@@ -17,7 +17,7 @@ In-engine fades or canvases freeze with the app. Only compositor layers keep ren
 `Assets/Scripts/Gameplay/RailTransitionVeil.cs` (persistent, self-bootstrapping):
 
 - **Engages** when `PhotonSession.InWorldTransition` becomes true (a room request, a scene load, or a required scene that is not loaded yet). It engages only after the first world-ready state, so the Login flow keeps its own status UI.
-- **Releases** once `WorldReady` has held for 0.35 s, so route build and lighting loads also stay covered. Fade in takes 0.3 s and fade out 0.5 s.
+- **Releases** once `WorldReady` has held for 0.175 s, so route build and lighting loads also stay covered. Fade in takes 0.15 s and fade out 0.25 s. These were halved from 0.35 / 0.3 / 0.5 s on November 10 because the hold and most of the fade-out add directly to the player's wait, and the fade-in delays private-run scene loads. Public transfers hide the fade-in behind the Photon room change.
 - **Headset**: two `OVROverlay` layers (the Meta XR OpenXR feature is enabled):
   - an opaque black 8 px cubemap, `compositionDepth` 1;
   - a 1.6 × 0.8 m message panel, `compositionDepth` 0, placed 2.2 m ahead at engage time.
@@ -131,6 +131,22 @@ On a full normal route (4 blocks + midpoint + finale; 191,213 nodes; 1.73 M edge
 - shrunken boxes;
 - rotated frames with a 0.5 m inset;
 - an empty bounds list.
+
+### Departure timeline after both fixes
+
+Desktop editor sandbox; 4.83 s from departure to the veil fully faded (was ≈ 14.5 s):
+
+| Item | Time |
+|---|---|
+| Expedition scene swap: forced `GC.Collect` (547 ms) + GC marking (87 ms) + integrate | ≈ 0.72 s |
+| Route build (`RailWorld.Update`; filter ≈ 285 ms, block instantiation ≈ 76 ms) | 0.55 s |
+| Lighting companion loads, spread over frames | ≈ 0.15 s |
+| Editor-only `EditorLoop` (absent from player builds) | ≈ 1.2 s |
+| Veil fade-in, readiness hold and fade-out | ≈ 1.2 s |
+
+The remaining player-relevant main-thread stall is ≈ 1.3 s on PC. Quest timings remain unmeasured.
+
+After halving the veil timings, a desktop sandbox measured 4.08 s from departure to fully faded (was 4.83 s), and 0.47 s from world-ready to fully faded (was ≈ 0.86 s). Full cover was still reached one frame before the scene swap, and all long frames occurred at full cover. Comfort of the faster fades on a headset has not been reviewed.
 
 ## Next: shortening the rest of the load
 
