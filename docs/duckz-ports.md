@@ -296,7 +296,7 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   Source `Main.unity` spawn-list registration not applicable; Rails registers via `RailEnemySpawns.Register`.
 - Networking: hook state uses three PUN RPCs (`ReceiveHookState`, `CheckHookDefense`, `ReportHookDefense`); no raised
   events, so codes 101–117 are unaffected. `EnemyNetSync`'s 22-byte packet, spider lift byte and train/displaced flags
-  are not modified. Build partition suffix `-hook-defense-v3` appended to the AppVersion in `PhotonSession.cs`.
+  are not modified. No AppVersion change: the version is bumped every build.
 - b591543e: **not ported.** Rails has no gameplay warmup catalog/subsystem (no `GameplayWarmupCatalog`,
   `GameplayWarmupBatch`); importing it would be a separate decision.
 - Validation: project compiled; `ZombieHookChecks`, `RailEnemyChecks` (now five prefabs, hook has no boarding component),
