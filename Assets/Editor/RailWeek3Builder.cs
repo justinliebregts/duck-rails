@@ -309,7 +309,14 @@ public static class RailWeek3Builder
             var enemy = root.GetComponent<Enemy>();
             var coal = Box(enemy.Root != null ? enemy.Root : root.transform, "Carried coal", new Vector3(.35f, .65f, .35f), Vector3.one * .35f, Material("Coal"));
             Object.DestroyImmediate(coal.GetComponent<Collider>()); carrier.display = coal.transform;
-            Text(coal.transform, "COAL", Vector3.up * 1.1f, 2);
+            // Match the pickup's coal model rather than the placeholder cube.
+            var pickup = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/RailCoal.prefab");
+            if (pickup != null)
+            {
+                coal.GetComponent<MeshFilter>().sharedMesh = pickup.GetComponent<MeshFilter>().sharedMesh;
+                coal.GetComponent<MeshRenderer>().sharedMaterials = pickup.GetComponent<MeshRenderer>().sharedMaterials;
+                coal.transform.localScale = pickup.transform.localScale;
+            }
         }
         PrefabUtility.SaveAsPrefabAsset(root, path); PrefabUtility.UnloadPrefabContents(root);
     }
