@@ -1,0 +1,20 @@
+== main thread frames 18240-18660 (frames < 25 ms counted only) ==
+[20 ok] 18260:104 18261:37 [162 ok] 18424:28 [124 ok] 18549:214 18550:96 [3 ok] 18554:26 [1 ok] 18556:30 [1 ok] 18558:33 [7 ok] 18566:726 [1 ok] 18568:60 [2 ok] 18571:105 [2 ok] 18574:111 [1 ok] 18576:148 [17 ok] 18594:40 [1 ok] 18596:152 18597:157 18598:131 18599:136 18600:110 18601:111 18602:109 18603:59 18604:57 18605:99 18606:83 18607:32 18608:52 [52 ok]
+total 8686 ms
+
+== notable samples (main thread, >= 10 ms) ==
+18260 (104 ms): Loading.ReadObject 11 | Loading.ReadObjectThreaded 11
+18549 (214 ms): Loading.UpdatePreloading 141 | Application.LoadLevelAsync Integrate 140 | Loading.AwakeFromLoad 103 | Loading.ReadObject 18 | UnloadScene 11 | Instantiate 16
+18550 (96 ms): Loading.UpdatePreloading 85
+18554 (26 ms): Loading.UpdatePreloading 18 | RailBlockLightingLoader.Process() [Coroutine: MoveNext] 17
+18556 (30 ms): Loading.UpdatePreloading 24 | RailBlockLightingLoader.Process() [Coroutine: MoveNext] 23
+18558 (33 ms): Loading.UpdatePreloading 28 | RailBlockLightingLoader.Process() [Coroutine: MoveNext] 28
+18566 (726 ms): RailWorld.Update() 685 | Instantiate 164 | Instantiate.Awake 66 | Instantiate.Produce 55 | Instantiate.Copy 44 | GC.Collect 34 | RailBlockLightingLoader.Update() 25
+18568 (60 ms): Loading.UpdatePreloading 53 | RailBlockLightingLoader.Process() [Coroutine: MoveNext] 52
+18571 (105 ms): Loading.UpdatePreloading 98 | RailBlockLightingLoader.Process() [Coroutine: MoveNext] 97
+18574 (111 ms): Loading.UpdatePreloading 105 | RailBlockLightingLoader.Process() [Coroutine: MoveNext] 105
+18576 (148 ms): Loading.UpdatePreloading 117 | RailBlockLightingLoader.Process() [Coroutine: MoveNext] 117 | RailWorld.Update() 21
+18594 (40 ms): SRPBRender.ApplyShader 12 | Shader.CreateGPUProgram 11
+
+== threads, frame 18600 ==
+0:Main Thread  1:Render Thread  2:#0  3:#0  4:#0  5:#0  6:#490340612592  7:#490342832624  8:#490872457712  9:#492822591984  10:AssetGarbageCollectorHelper  11:AssetGarbageCollectorHelper  12:AssetGarbageCollectorHelper  13:AssetGarbageCollectorHelper  14:AsyncRead  15:Audio Mixer Thread  16:Audio Stream Thread  17:BatchDeleteObjects  18:Dispatcher  19:PreloadManager  20:UnityChoreographer  21:UnitySocketReader  22:UnitySocketWriter  23:Worker 0  24:Worker 0  25:Worker 0  26:Worker 1  27:Worker 1  28:Worker 10  29:Worker 11  30:Worker 12  31:Worker 13  32:Worker 14  33:Worker 15  34:Worker 2  35:Worker 2  36:Worker 3  37:Worker 3  38:Worker 4  39:Worker 5  40:Worker 6  41:Worker 7  42:Worker 8  43:Worker 9  

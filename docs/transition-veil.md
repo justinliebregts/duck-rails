@@ -148,6 +148,41 @@ The remaining player-relevant main-thread stall is ≈ 1.3 s on PC. Quest timing
 
 After halving the veil timings, a desktop sandbox measured 4.08 s from departure to fully faded (was 4.83 s), and 0.47 s from world-ready to fully faded (was ≈ 0.86 s). Full cover was still reached one frame before the scene swap, and all long frames occurred at full cover. Comfort of the faster fades on a headset has not been reviewed.
 
+### Quest 3 profile (November 10)
+
+Setup:
+
+- Development APK `duckrails_0.1.3_103_profile.apk` (IL2CPP, Development + ConnectWithProfiler, no deep profiling), built in 5 min 38 s and installed with `adb install -r`.
+- Unity Profiler connected over USB (`adb forward tcp:34999 localabstract:Unity-com.gunraiders.duckrails`).
+- The user performed one departure on the headset. Times are from a single run; thermal state and CPU and GPU clock levels were not controlled.
+
+Evidence: [main thread](validation/transition-veil/quest3-departure-main-thread-20261110.txt), [render thread](validation/transition-veil/quest3-departure-render-thread-20261110.txt).
+
+| Departure item (Quest 3) | Main-thread time |
+|---|---|
+| Expedition scene swap (`LoadLevelAsync Integrate`, `AwakeFromLoad`) | 214 + 96 ms. No large forced `GC.Collect`, unlike the PC editor. |
+| Route build (`RailWorld.Update`, incl. 164 ms block instantiation) | 726 ms |
+| Lighting companion scene loads | 4 frames of 60–148 ms, plus smaller frames |
+| GPU/compositor-bound frames right after ready (frames 18596–18608) | ≈ 1.4 s of 52–157 ms frames |
+
+In the GPU-bound frames, the render thread waits in `PlayerEndOfFrame` (685 ms) and `XR.Display.PopulateNextFrameDesc` (355 ms). Its own submission work is small (`DrawBuffersBatchMode` 96 ms, `CreateGraphicsPipelineImpl` 4 ms). The GPU is saturated for about 13 frames after the world becomes ready. The suspected cause is first-use uploads (textures, lightmaps, meshes) when the player is warped onto the train and block visibility changes. This is not confirmed: the Unity Profiler has no GPU timing for Quest here. Whether these frames fall under the veil's fade-out or after it was not determined.
+
+**Veil now waits for frames to settle.** The veil releases only after both of these hold:
+
+- the readiness hold (0.175 s) has passed;
+- 6 consecutive frames have each taken at most two display intervals. That is 27.8 ms at 72 Hz on the headset; desktop and the editor use a fixed 33 ms.
+
+A 4 s cap after world-ready guarantees release on slow devices and in the editor. `RailTransitionVeil.LastReleaseWaitSeconds` records the wait.
+
+Desktop validation:
+
+- **Normal departure:** frames were already fast, so the veil released at 0.18 s after ready (departure → faded 4.51 s).
+- **Forced test:** the veil was held on, then released into one second of artificial ~84 ms frames. It stayed fully black throughout and released 6 fast frames later, at 1.127 s. It previously would have released at 0.175 s, during the slow frames.
+
+**Not yet verified:** a Quest 3 departure. It should show the GPU-bound frames under full cover, followed by a smooth fade-out.
+
+Also observed in the compound, unrelated to the veil (its `onBeforeRender` hook returns immediately when idle): two `Application.InvokeOnBeforeRender` spikes of 45 ms and 133 ms. Their source is not identified.
+
 ## Next: shortening the rest of the load
 
 Proposed, not implemented:

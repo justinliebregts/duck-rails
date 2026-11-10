@@ -17,6 +17,11 @@ public sealed class RailTransitionVeil : MonoBehaviour
     // Kept short: the hold and most of the fade-out add directly to the player's wait,
     // and the fade-in delays private-run scene loads (public transfers hide it behind networking).
     const float FadeInSeconds = .15f, FadeOutSeconds = .25f, ReadyHoldSeconds = .175f;
+    // Quest 3 profiling: after the world is ready, the first frames that draw the newly visible
+    // blocks were GPU-bound for ~1.4 s (52–157 ms frames). Release only once frame times have
+    // settled, with a cap so a slow device or editor can never keep the player in the dark.
+    const int SettledFramesRequired = 6;
+    const float MaxSettleWaitSeconds = 4f;
     const float PanelDistance = 2.2f, PanelWidth = 1.6f, PanelHeight = .8f;
     const int PanelPixelsWide = 1024, PanelPixelsHigh = 512;
     static readonly Vector3 HiddenRenderOrigin = new Vector3(0, -10000, 0);
@@ -28,6 +33,8 @@ public sealed class RailTransitionVeil : MonoBehaviour
 
     bool everReady, latched, compositor;
     float alpha, readySince = -1;
+    int settledFrames;
+    public static float LastReleaseWaitSeconds { get; private set; } = -1;
     string title, detail;
     CanvasGroup screenGroup;
     TextMeshProUGUI screenTitle, screenDetail;
@@ -130,9 +137,19 @@ public sealed class RailTransitionVeil : MonoBehaviour
 #if UNITY_EDITOR
             if (EditorForce) ready = false;
 #endif
-            if (ready) { if (readySince < 0) readySince = now; }
-            else readySince = -1;
-            if (readySince >= 0 && now - readySince >= ReadyHoldSeconds) latched = false;
+            if (ready)
+            {
+                if (readySince < 0) { readySince = now; settledFrames = 0; }
+                settledFrames = Time.unscaledDeltaTime <= SettledFrameSeconds() ? settledFrames + 1 : 0;
+            }
+            else { readySince = -1; settledFrames = 0; }
+            float waited = readySince >= 0 ? now - readySince : 0;
+            if (readySince >= 0 && waited >= ReadyHoldSeconds &&
+                (settledFrames >= SettledFramesRequired || waited >= MaxSettleWaitSeconds))
+            {
+                latched = false;
+                LastReleaseWaitSeconds = waited;
+            }
             if (session != null) UpdateText(session);
         }
         float step = Time.unscaledDeltaTime / (latched ? FadeInSeconds : FadeOutSeconds);
@@ -151,6 +168,16 @@ public sealed class RailTransitionVeil : MonoBehaviour
             AnchorPanelInFrontOfHead();
         }
         UpdateText(session);
+    }
+
+    // Headset: a frame is settled at no more than two display intervals (27.8 ms at 72 Hz).
+    // Desktop/editor frames vary with the monitor and editor overhead, so use a fixed 33 ms.
+    float SettledFrameSeconds()
+    {
+        if (!compositor) return 1f / 30f;
+        float hz = OVRPlugin.systemDisplayFrequency;
+        if (float.IsNaN(hz) || hz < 30f) hz = 72f;
+        return 2f / hz;
     }
 
     static bool HeadsetPresent()

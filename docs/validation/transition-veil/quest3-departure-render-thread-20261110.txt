@@ -1,0 +1,24 @@
+frame 18594 render thread: DrawBuffersBatchMode 10 x10 | Semaphore.WaitForSignal 11 x14
+frame 18595 render thread: DrawBuffersBatchMode 11 x10
+frame 18596 render thread: XR.Display.PopulateNextFrameDesc 69 x1 | PlayerEndOfFrame 56 x1 | DrawBuffersBatchMode 10 x10
+frame 18597 render thread: PlayerEndOfFrame 109 x1 | XR.Display.PopulateNextFrameDesc 25 x1 | DrawBuffersBatchMode 9 x10 | Semaphore.WaitForSignal 10 x9
+frame 18598 render thread: PlayerEndOfFrame 86 x1 | Semaphore.WaitForSignal 33 x12
+frame 18599 render thread: PlayerEndOfFrame 117 x1 | Semaphore.WaitForSignal 10 x9
+frame 18600 render thread: PlayerEndOfFrame 91 x1 | Semaphore.WaitForSignal 10 x10
+frame 18601 render thread: PlayerEndOfFrame 93 x1
+frame 18602 render thread: PlayerEndOfFrame 92 x1
+frame 18603 render thread: PlayerEndOfFrame 40 x1 | Semaphore.WaitForSignal 9 x10
+frame 18604 render thread: XR.Display.PopulateNextFrameDesc 42 x1 | Semaphore.WaitForSignal 9 x11
+frame 18605 render thread: XR.Display.PopulateNextFrameDesc 85 x1
+frame 18606 render thread: XR.Display.PopulateNextFrameDesc 67 x1
+frame 18607 render thread: XR.Display.PopulateNextFrameDesc 17 x1
+frame 18608 render thread: XR.Display.PopulateNextFrameDesc 38 x1
+
+Render-thread self time by sample, frames 18594-18608:
+685 ms  PlayerEndOfFrame  (calls 8)
+355 ms  XR.Display.PopulateNextFrameDesc  (calls 9)
+169 ms  Semaphore.WaitForSignal  (calls 178)
+96 ms  DrawBuffersBatchMode  (calls 172)
+4 ms  CreateGraphicsPipelineImpl  (calls 5)
+1 ms  XR.Display.SubmitCurrentFrame  (calls 1)
+1 ms  MeshSkinning.GPUBatchedSkin  (calls 1)
