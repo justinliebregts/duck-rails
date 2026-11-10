@@ -1,5 +1,6 @@
 using System.Collections;
 using TMPro;
+using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR;
@@ -35,6 +36,9 @@ public sealed class RailTransitionVeil : MonoBehaviour
     float alpha, readySince = -1;
     int settledFrames;
     public static float LastReleaseWaitSeconds { get; private set; } = -1;
+    // Empty per-frame markers so profiler captures show whether a slow frame was under full cover.
+    static readonly ProfilerMarker CoveredMarker = new ProfilerMarker("RailTransitionVeil.Covered");
+    static readonly ProfilerMarker FadingMarker = new ProfilerMarker("RailTransitionVeil.Fading");
     string title, detail;
     CanvasGroup screenGroup;
     TextMeshProUGUI screenTitle, screenDetail;
@@ -149,12 +153,16 @@ public sealed class RailTransitionVeil : MonoBehaviour
             {
                 latched = false;
                 LastReleaseWaitSeconds = waited;
+                DuckzLog.Log("[TransitionVeil] Released " + waited.ToString("F2") + " s after world ready" +
+                    (settledFrames >= SettledFramesRequired ? "." : " (settle cap reached)."));
             }
             if (session != null) UpdateText(session);
         }
         float step = Time.unscaledDeltaTime / (latched ? FadeInSeconds : FadeOutSeconds);
         // Cap the per-frame step so a long stall does not skip the fade in either direction.
         alpha = Mathf.MoveTowards(alpha, latched ? 1 : 0, Mathf.Min(step, .2f));
+        if (alpha >= 1f) { CoveredMarker.Begin(); CoveredMarker.End(); }
+        else if (alpha > 0f) { FadingMarker.Begin(); FadingMarker.End(); }
         Apply();
     }
 

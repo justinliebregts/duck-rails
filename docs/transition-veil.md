@@ -179,7 +179,14 @@ Desktop validation:
 - **Normal departure:** frames were already fast, so the veil released at 0.18 s after ready (departure → faded 4.51 s).
 - **Forced test:** the veil was held on, then released into one second of artificial ~84 ms frames. It stayed fully black throughout and released 6 fast frames later, at 1.127 s. It previously would have released at 0.175 s, during the slow frames.
 
-**Not yet verified:** a Quest 3 departure. It should show the GPU-bound frames under full cover, followed by a smooth fade-out.
+**Quest 3 verification (second development APK, 2 min 57 s build).** The veil now emits empty per-frame profiler markers, `RailTransitionVeil.Covered` and `RailTransitionVeil.Fading`, so captures show its state. Per-frame trace: [veil states](validation/transition-veil/quest3-veil-states-20261110.csv). One user departure:
+
+- Every slow frame occurred while the veil was fully covered: scene swap 183 and 93 ms, route build 660 ms, and lighting loads of 47–140 ms.
+- The fade-out began 9 smooth frames after the last load frame.
+- From the fade-out onward (503 frames), the mean frame time was 14.1 ms. The worst frame was 35 ms, during the fade, and only 4 frames exceeded 25 ms.
+- The ≈ 1.4 s GPU-bound period from the first Quest capture did **not** occur in this run, so the settle wait added nothing here. Its cause, and whether it recurs (for example on a cold shader or pipeline cache, or a particular route), remain unknown. The settle hold stays in place to cover it if it does.
+
+The release log line uses `DuckzLog.Log`, which compiles only with `DUCKZ_DIAGNOSTICS`, so it did not appear in this build's logcat.
 
 Also observed in the compound, unrelated to the veil (its `onBeforeRender` hook returns immediately when idle): two `Application.InvokeOnBeforeRender` spikes of 45 ms and 133 ms. Their source is not identified.
 
