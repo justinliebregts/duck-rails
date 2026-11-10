@@ -342,6 +342,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3231596449161685809, guid: 63391b97355ef8749aa49670d5194662, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3286510063015890825, guid: 63391b97355ef8749aa49670d5194662, type: 3}
       propertyPath: m_fontSize
       value: 1.3
@@ -415,9 +419,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1073647899536887806, guid: 63391b97355ef8749aa49670d5194662, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 7025020821459933536, guid: 63391b97355ef8749aa49670d5194662, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 63391b97355ef8749aa49670d5194662, type: 3}
@@ -773,6 +774,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 6709986687492860840, guid: 5c617ee5aa424fb46b12b0cf183bbcaa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 4090106475272639146, guid: 5c617ee5aa424fb46b12b0cf183bbcaa, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 5c617ee5aa424fb46b12b0cf183bbcaa, type: 3}
@@ -1598,9 +1602,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 1673702497843922746, guid: 19b3219488c049649b7a68e87c552df1, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-    - targetCorrespondingSourceObject: {fileID: 4681827550397481182, guid: 19b3219488c049649b7a68e87c552df1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 7198845209823663468, guid: 19b3219488c049649b7a68e87c552df1, type: 3}

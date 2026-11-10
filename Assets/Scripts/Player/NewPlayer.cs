@@ -254,11 +254,14 @@ public partial class NewPlayer : MonoBehaviour
           // A warp between pose restoration and rendering must not be interpolated away.
           movementPoseRenderCancelled = true;
           // Warp destinations describe where the player stands, even after room-scale walking.
+          Vector3 standPoint = pos;
           Vector3 headOffset = headCollider.transform.position - transform.position;
           headOffset.y = 0f;
           pos -= headOffset;
           if (PassengerCabin != null) PassengerCabin.ReleasePassenger();
           // print("Warp: " + pos);
+          transform.position = pos;
+          pos.y += WarpFloorLift(standPoint);
           transform.position = pos;
           rb.position = pos;
           rb.linearVelocity = Vector3.zero;
@@ -275,6 +278,26 @@ public partial class NewPlayer : MonoBehaviour
           }
           lastPos = transform.position;
           OnWarp?.Invoke();
+        }
+
+        // The tracked head height at warp time is whatever the headset reports, which can be
+        // near the floor while it is being put on, while tracking settles after a scene load,
+        // or while the player crouches. Head and body sweeps that start inside the floor never
+        // detect it, leaving the player stuck. Lift the rig until both clear the floor under
+        // the destination; gravity settles any extra height.
+        const float WarpFloorMargin = 0.05f;
+        float WarpFloorLift(Vector3 standPoint) {
+          int mask = locomotionEnabledLayers.value | envMask.value;
+          // Start just above the destination so a train roof or canopy is never taken as floor.
+          Vector3 origin = standPoint + Vector3.up * 0.5f;
+          if (!Physics.Raycast(origin, Vector3.down, out RaycastHit floor, 1.5f, mask, QueryTriggerInteraction.Ignore))
+            return 0f;
+          float floorY = floor.point.y;
+          float headScale = Mathf.Abs(headCollider.transform.lossyScale.y);
+          float headBottom = headCollider.transform.position.y - headCollider.radius * headScale;
+          float bodyBottom = bodyMidpoint.position.y - bodyHalfHeight;
+          float lowest = Mathf.Min(headBottom, bodyBottom);
+          return Mathf.Max(0f, floorY + WarpFloorMargin - lowest);
         }
 
         public void ApplyPassengerDisplacement(Vector3 delta) {
