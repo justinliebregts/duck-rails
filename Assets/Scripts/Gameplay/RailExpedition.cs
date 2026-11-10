@@ -221,12 +221,31 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         }
         foreach (var p in next.players.Where(p => p.down))
         {
-            var rescuer = next.players.FirstOrDefault(r => !r.down && IsConnected(r.actor) && r.id != p.id &&
-                RescuePosition(p.actor, out var pos) && HandNear(r.actor, pos, .95f));
-            if (rescuer == null) { p.rescuer = ""; p.reviveAt = 0; }
-            else if (p.rescuer != rescuer.id || p.reviveAt <= 0) { p.rescuer = rescuer.id; p.reviveAt = now; }
-            else if (now - p.reviveAt >= RailRunState.ReviveSeconds)
-            { p.down = false; p.protectedUntil = now + RailRunState.ProtectionSeconds; p.reviveAt = 0; p.rescuer = ""; if (!ending) rescuer.revives++; }
+            // Prefer the current rescuer while still in reach, so a second helper never
+            // steals the slot. If the rescuer changes while someone else is still in reach,
+            // hand over without resetting progress; only losing everyone resets it.
+            RailParticipant rescuer = null;
+            if (RescuePosition(p.actor, out var pos))
+            {
+                bool Valid(RailParticipant r) => !r.down && IsConnected(r.actor) && r.id != p.id && HandNear(r.actor, pos, .95f);
+                var current = string.IsNullOrEmpty(p.rescuer) ? null : next.Player(p.rescuer);
+                rescuer = current != null && Valid(current) ? current : next.players.FirstOrDefault(Valid);
+            }
+            if (rescuer == null)
+            {
+                // Brief grace: a single dropped hand sample pauses progress instead of wiping it.
+                if (p.reviveAt <= 0) { p.rescuer = ""; p.reviveLostAt = 0; }
+                else if (p.reviveLostAt <= 0) p.reviveLostAt = now;
+                else if (now - p.reviveLostAt >= RailRunState.ReviveGraceSeconds) { p.rescuer = ""; p.reviveAt = 0; p.reviveLostAt = 0; }
+            }
+            else if (p.reviveAt <= 0) { p.rescuer = rescuer.id; p.reviveAt = now; p.reviveLostAt = 0; }
+            else
+            {
+                if (p.reviveLostAt > 0) { p.reviveAt += now - p.reviveLostAt; p.reviveLostAt = 0; } // pause during grace
+                p.rescuer = rescuer.id;
+                if (now - p.reviveAt >= RailRunState.ReviveSeconds)
+                { p.down = false; p.protectedUntil = now + RailRunState.ProtectionSeconds; p.reviveAt = 0; p.rescuer = ""; if (!ending) rescuer.revives++; }
+            }
         }
         if (ending)
         {

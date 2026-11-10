@@ -44,7 +44,7 @@ public sealed class RailRunState
         if (bridgeHeldAt > 0 && bridgeAt <= 0) bridgeAt = now;
     }
     // Initial hold-duration tuning; solo/enemy balance still needs playtesting.
-    public const double BridgeSeconds = 30, ReviveSeconds = 3, ProtectionSeconds = 3, FlareCooldown = 45, AllDownGrace = 5;
+    public const double BridgeSeconds = 30, ReviveSeconds = 3, ReviveGraceSeconds = .4,ProtectionSeconds = 3, FlareCooldown = 45, AllDownGrace = 5;
     public void Finish(double now, string cause, IEnumerable<string> aboard)
     {
         if (finished) return;
@@ -78,6 +78,6 @@ public sealed class RailParticipant
     public string id, name, rescuer;
     public int actor, coal, revives, downs, horns;
     public bool down, escaped;
-    public double protectedUntil, flareAt, reviveAt, hornAt;
+    public double protectedUntil, flareAt, reviveAt, hornAt, reviveLostAt;
     public Vector3 flarePosition;
 }

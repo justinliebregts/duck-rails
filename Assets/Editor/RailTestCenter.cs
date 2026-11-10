@@ -96,6 +96,7 @@ public sealed class RailTestCenter : EditorWindow
             if (GUILayout.Button("Two clients — launch expedition")) RailTestRunner.Start("two-clients");
             if (GUILayout.Button("Three clients — public sessions and network recovery")) RailTestRunner.Start("stability");
             if (GUILayout.Button("Three clients — expedition, shared bag and replay")) RailTestRunner.Start("expedition");
+            if (GUILayout.Button("Three clients — revive handover, dropout and overlap")) RailTestRunner.Start("revive");
         }
         GUILayout.Label(RailTestRunner.Status, EditorStyles.wordWrappedLabel);
         if (RailTestRunner.Running && GUILayout.Button("Stop test and restore setup")) RailTestRunner.Stop("Cancelled by user");
@@ -222,6 +223,7 @@ public static class RailTestRunner
             foreach (string path in Sources(suite)) if (File.Exists(path)) File.WriteAllText(path, "");
             if (suite == "stability") RailStabilityLiveChecks.Arm();
             else if (suite == "expedition") RailWeek3LiveChecks.Arm();
+            else if (suite == "revive") RailReviveLiveChecks.Arm();
             Status = "Launching " + suite;
             PlayCommand("Start");
         }
@@ -229,6 +231,7 @@ public static class RailTestRunner
     }
     static string[] Sources(string suite) => IsManual(suite) ? Array.Empty<string>() :
         suite == "stability" ? new[] { Root + "/Temp/rails-stability/main.txt", Root + "/Temp/rails-stability/player2.txt", Root + "/Temp/rails-stability/player3.txt" } :
+        suite == "revive" ? new[] { Root + "/Temp/rails-revive-main.txt", Root + "/Temp/rails-revive-player2.txt", Root + "/Temp/rails-revive-player3.txt" } :
         new[] { Root + "/Temp/rails-week3-main.txt", Root + "/Temp/rails-week3-player2.txt", Root + "/Temp/rails-week3-player3.txt" };
     static void Save() => File.WriteAllText(StatePath, JsonUtility.ToJson(run));
     static void Tick()
@@ -273,7 +276,7 @@ public static class RailTestRunner
             }
             var sources = Sources(run.suite); var texts = sources.Select(p => File.Exists(p) ? File.ReadAllText(p) : "").ToArray();
             for (int i = 0; i < sources.Length; i++) File.WriteAllText(Path.Combine(run.folder, Path.GetFileName(sources[i])), texts[i]);
-            string success = run.suite == "stability" ? "PASS: four public" : "PASS: route, curve";
+            string success = run.suite == "stability" ? "PASS: four public" : run.suite == "revive" ? "PASS: revive" : "PASS: route, curve";
             Status = run.suite + "\n" + string.Join("\n", texts.Select((t,i) => Path.GetFileName(sources[i]) + ": " + (t.Split('\n').LastOrDefault(s => !string.IsNullOrWhiteSpace(s)) ?? "Waiting for client")));
             if (texts.Any(t => t.Contains("FAIL ") || t.Contains("FAIL:")))
             {
@@ -305,7 +308,7 @@ public static class RailTestRunner
     static void Disarm()
     {
         Directory.CreateDirectory(Root + "/Temp");
-        RailCoalLiveChecks.Disarm(); RailWeek3LiveChecks.Disarm(); RailStabilityLiveChecks.Disarm(); RailMultiClientCleanupChecks.Disarm(); RailWeek2LiveChecks.Disarm();
+        RailCoalLiveChecks.Disarm(); RailWeek3LiveChecks.Disarm(); RailStabilityLiveChecks.Disarm(); RailMultiClientCleanupChecks.Disarm(); RailWeek2LiveChecks.Disarm(); RailReviveLiveChecks.Disarm();
     }
     static void Restore()
     {
