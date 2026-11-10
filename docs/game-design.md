@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 10: the train safe is removed. Gold pays only at the departure and midpoint shops, immediately, to connected crew. Escape and failure do not add another payout. See [gold economy](gold-economy.md).
+
 November 9 fog tuning: user-approved exponential-squared densities are night
 0.06, pre-dawn 0.05, and successful dawn 0.0125. Keep existing transition timing;
 Expedition's saved starting density matches night. Headset readability awaits review.
@@ -310,7 +312,7 @@ October 31 starting-station decision: every expedition begins at the midpoint of
 
 ## Resources and equipment
 
-October 31 confirmed economy decision: implement the [gold economy](gold-economy.md). One-time 100-coin starting wallet; departure and midpoint stores with seven standard gear types and Duckz pull-to-buy interaction; no free gear on the train. Shop deposits pay every connected crew member immediately. Only bars irreversibly deposited in the train safe pay at successful extraction, only to escaped participants. Safe count is visible; held, bagged and loose bars never cash out. Persistent coins and admin credits reuse the Duckz backend. This supersedes the earlier no-wallet and fresh-free-loadout directions. Prices and spawn counts remain initial tuning.
+October 31 confirmed economy decision: implement the [gold economy](gold-economy.md). One-time 100-coin starting wallet; departure and midpoint stores with seven standard gear types and Duckz pull-to-buy interaction; no free gear on the train. Shop deposits pay every connected crew member immediately. Held, bagged and loose bars never cash out. Persistent coins and admin credits reuse the Duckz backend. This supersedes the earlier no-wallet and fresh-free-loadout directions. November 10 removes the train safe and its escape-only payout. Prices and spawn counts remain initial tuning.
 
 Confirmed: coal scavenging, existing backpack/item interactions, and freely shared equipment.
 

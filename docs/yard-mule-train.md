@@ -1,5 +1,7 @@
 # Yard Mule train art — November 6, 2026
 
+November 10: the train safe module is removed. **Build Yard Mule** no longer searches for `TrainSafe` or shifts it inward. Furnace and radio placement is unchanged.
+
 ## Front-only furnace — November 6
 
 User selected the exterior front-nose coal opening **only**, for playtesting. This supersedes the earlier side-mounted furnace and proposed secondary onboard opening. Keep the existing low cockpit controls. No stop-only rule or automatic braking is added: physical access determines when a player can fuel it.

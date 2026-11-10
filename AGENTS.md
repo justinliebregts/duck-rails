@@ -26,7 +26,7 @@
 - Block art workflow: first prepare a top-down layout and get user confirmation; only then block out with rough Quackville materials. Keep the featured location mainly in the middle third, but distribute supporting scenery and secondary areas toward the block edges through the approach/departure thirds. Avoid empty outer thirds; preserve flat seams and railway clearance.
 - Implement and prove session architecture first, using actual moving-platform and shared-item state; then build the expedition loop.
 - Preserve existing locomotion, grabbing, backpack, voice, and moving-platform feel.
-- Reuse existing Duckz purchasing and wallet infrastructure. October 31: gameplay coins, gold deposits, two expedition shops and the train safe are authorized; keep them separate from real-money cosmetics. See docs/gold-economy.md.
+- Reuse existing Duckz purchasing and wallet infrastructure. October 31: gameplay coins, gold deposits and two expedition shops are authorized; keep them separate from real-money cosmetics. November 10: the train safe is removed. See docs/gold-economy.md.
 - Keep confirmed decisions separate from proposed defaults and unresolved questions. Do not silently promote a proposal into a requirement.
 - Update the design and milestone checklist when decisions change or deliverables are verified.
 - Test networked behavior across real clients and target headsets; a single editor instance is insufficient evidence.

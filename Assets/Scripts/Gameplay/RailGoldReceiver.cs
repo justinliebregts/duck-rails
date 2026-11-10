@@ -13,8 +13,7 @@ using UnityEngine;
 public sealed class RailGoldReceiver : MonoBehaviour, IOnEventCallback
 {
     const byte RewardEffectEvent = 109;
-    public int receiverId; // 0 safe, 1 departure shop, 2 midpoint shop
-    public bool isSafe;
+    public int receiverId; // 1 departure shop, 2 midpoint shop
     public BoxCollider intake;
     public TMP_Text label;
     public CoinShower coins;
@@ -41,9 +40,7 @@ public sealed class RailGoldReceiver : MonoBehaviour, IOnEventCallback
     {
         if (wallet == null && DuckzWallet.Instance != null)
         { wallet = DuckzWallet.Instance; wallet.OnRewardCredited += RewardCredited; }
-        if (label != null) label.text = isSafe
-            ? "SAFE  " + (RailExpedition.Instance?.State.SafeBars ?? 0) + " GOLD BARS\nDeposit only • Paid on escape"
-            : "SELL GOLD\nEveryone gets coins";
+        if (label != null) label.text = "SELL GOLD\nEveryone gets coins";
     }
     void OnTriggerStay(Collider other)
     {
@@ -77,8 +74,8 @@ public sealed class RailGoldReceiver : MonoBehaviour, IOnEventCallback
         state.consumed.Add(target); state.consumedSpawns.Add(token);
         if (view.InstantiationData is object[] data && data.Length >= 3 && data[data.Length - 1] is string marker)
             state.consumedMarkers.Add(marker);
-        state.gold.Add(new RailGoldDeposit { token = token, receiver = id, safe = receiver.isSafe,
-            recipients = receiver.isSafe ? Array.Empty<string>() : PhotonNetwork.PlayerList
+        state.gold.Add(new RailGoldDeposit { token = token, receiver = id,
+            recipients = PhotonNetwork.PlayerList
                 .Where(p => !p.IsInactive && !string.IsNullOrEmpty(p.UserId)).Select(p => p.UserId).ToArray() });
     }
 
@@ -87,25 +84,20 @@ public sealed class RailGoldReceiver : MonoBehaviour, IOnEventCallback
         using var sha = SHA256.Create();
         return BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(run + "|" + token + "|" + player))).Replace("-", "").ToLowerInvariant();
     }
-    public static bool Eligible(RailRunState state, RailGoldDeposit deposit, string player) => deposit.safe
-        ? state.finished && state.success && state.Player(player)?.escaped == true
-        : deposit.recipients != null && deposit.recipients.Contains(player);
+    public static bool Eligible(RailRunState state, RailGoldDeposit deposit, string player) =>
+        deposit.recipients != null && deposit.recipients.Contains(player);
 
     public static void PresentRewards(RailExpedition run)
     {
         string player = PhotonNetwork.LocalPlayer?.UserId;
         if (string.IsNullOrEmpty(player) || DuckzWallet.Instance == null) return;
         int shopIndex = 0;
-        // Safe rewards become eligible only after the immutable finish snapshot.
-        // Start their carry after all eligible shop sales, preserving both past
-        // receipts and the combined exact budget when gold is split between receivers.
-        int safeIndex = run.State.gold.Count(d => !d.safe && Eligible(run.State, d, player));
         int denominator = RailResourceBalance.GoldCount(RailRoute.Instance?.Selection?.resourceCrew ?? 1);
         foreach (var deposit in run.State.gold)
         {
             if (!Eligible(run.State, deposit, player)) continue;
             // Late arrivals count only their own eligible sales.
-            int index = deposit.safe ? ++safeIndex : ++shopIndex;
+            int index = ++shopIndex;
             var receiver = receivers.Find(r => r.receiverId == deposit.receiver);
             if (receiver == null) continue;
             string key = run.State.run + "|" + deposit.token + "|" + player;

@@ -47,7 +47,7 @@ public static class RailParkedHelicopterSetup
             var crate = oldCrate.gameObject;
             Object.DestroyImmediate(oldCrate);
             var receiver = crate.AddComponent<RailGoldReceiver>();
-            receiver.receiverId=2; receiver.isSafe=false;
+            receiver.receiverId=2;
             receiver.intake=crate.GetComponent<BoxCollider>();receiver.intake.isTrigger=true;
             receiver.coins=crate.GetComponent<CoinShower>();
             // Reuse the existing Rails label styling without replacing the cabin crate.

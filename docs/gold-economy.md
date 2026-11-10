@@ -1,16 +1,18 @@
 # Gold, shops and the train safe — October 31, 2026
 
+November 10, 2026: the train safe is removed. Gold pays only when a bar is deposited at the departure or midpoint shop, immediately, to each connected crew member, up to the wallet cap. Held, bagged and loose bars do not cash out. Escape, failure and who remains aboard do not create another payout. `TrainSafe.prefab`, the train placement and **Rebuild Prototype Safe** are gone. Matchmaking appends `-no-train-safe-v1`, so older clients cannot join these rooms. The backend deposit routes stay: shop sales already submit those signed receipts, and there was no safe-specific API.
+
 ## Confirmed rules
 
 - November 5 wallet limit: user confirmed a maximum of 2,000 coins. Rewards credit only available space; overflow is discarded. The watch shows a half-size grey `/2000` below the balance, with the balance yellow at maximum and its original color after spending.
 - Each account receives 100 coins once when its backend wallet is initialized. This is not a per-run allowance or a minimum balance.
 - Coins persist in the backend and buy only in-run equipment. Purchases remain spent after failure; shop earnings are credited immediately. There is no additional penalty to the existing wallet on failure.
+- November 10: the bridge finale has a third deposit crate (receiver ID 3, `Finale gold deposit` in `bridge-finale-v1.prefab`) beside the lower-bridge hold button, cloned from the helipad crate. It pays like the shops: immediately, to everyone connected at the sale. It has only an editor-time check so far (receiver wired to its own intake, label and coin shower); no run has reached it, and it has not been lit, baked or looked at in the scene.
 - Departure and midpoint shops each show one of every standard gear type: nail bat, frying pan, basic bag, helmet, flashlight, walkie-talkie and night vision. Bundle weapons, larger bags and cosmetics are excluded.
 - Reuse Duckz's exact `StoreWallItem` interaction: grab/pull, visible tether, server-authorized deduction and item handoff, snap-back on insufficient funds, then restocking. A display is not a one-purchase stock limit.
 - November 9 exception: one free flashlight per departing player spawns on the train; late joiners get no extra flashlight. Other equipment remains shop-bought. Current starting fuel is 50 (see resource-balance.md).
 - Depositing a bar at either shop grants the bar value up to each connected crew member's wallet limit. Every player sees coin streams to all credited recipients: their own stream lands in their watch, and other streams land at the recipients' bodies. New arrivals do not receive earlier shop sales.
-- The train safe accepts bars irreversibly and shows its bar count. It gives no immediate money. Only its recorded deposits pay on successful extraction, and only to participants recorded as escaped. Downed passengers aboard qualify; people left behind do not. Catch-up teleports do not alter eligibility.
-- Bars held in a hand, in a backpack or loose on the train never cash out automatically. A failed run pays nothing from the safe.
+- November 10: there is no train safe. Bars held in a hand, in a backpack or loose on the train never cash out. Escape and failure leave those bars unpaid. Shop credits already issued stay in the wallet.
 - Admin can inspect a wallet, grant/remove coins and inspect transactions, using the existing admin authorization.
 
 ## November 8 balance revision — implemented, rollout and acceptance pending
@@ -19,7 +21,7 @@ Approved effective workers E = 1 + (crew - 1) * 0.6. Each scavenging block spawn
 up to G = floor(10E) gold bars, each averaging 100/G coins per eligible recipient.
 Full collection pays 100 coins per recipient per block, independent of crew size.
 Departure roster is retained; integer payouts carry fractional value across eligible
-sales and then safe deposits. The new `/coins/deposit/scaled` API calculates credits
+shop sales. November 10 removes safe deposits, so the carry index counts shop sales only. The new `/coins/deposit/scaled` API calculates credits
 and retains receipt deduplication/caps; deployment is pending. Legacy queued rewards
 retain their old contract. See [resource balance](resource-balance.md) for tuning,
 validation and rollout details. This supersedes the earlier two-bar/100-coin tuning;
@@ -36,15 +38,13 @@ November 8: normal runs now contain four scavenging blocks (eight authored gold 
 ## Implementation and authoring
 
 - `Assets/DuckRails/Economy/RailShop.prefab`: shared seven-item store, using cloned Duckz wall displays and the existing purchase code. `RailStoreCatalog.asset` references train-compatible cargo variants.
-- `TrainSafe.prefab`: hollow safe with a front insertion slot, intake trigger, count label and the original Duckz `CoinShower`. Its nested instance is in `DuckRailsTrain.prefab`.
-- `GoldExchange.prefab`: Duckz gold crate visuals/effects with Rails shared-payout logic.
+- `GoldExchange.prefab`: Duckz gold crate visuals/effects with Rails shared-payout logic. November 10 removes `TrainSafe.prefab` and its train instance.
 - Every scavenging block variation has two `RailGoldSpawner` markers. Move those transforms in Prefab Mode; `RailSpawnSet.gold` is the authoritative spawn list. They do not replenish during a run.
-- `RailEconomyBuilder.Install` installs without rebuilding existing block layouts or train modules. Repeated installation preserves existing economy assets and authored marker positions. The Week 3 builder also installs economy content when rebuilding its generated scenes.
-- The explicit **Rebuild Prototype Safe** command overwrites the generated safe geometry and resets its train placement; do not use it to preserve later hand-edited safe art.
-- `RailExpedition` consumes bars and records receipts in the same room-state revision as the safe count/recipient list. Owner/spawn token/hold generation, intake bounds, player proximity and sample age are validated. Physical bars are destroyed only after committed consumption.
+- `RailEconomyBuilder.Install` installs shops and gold markers without rebuilding existing block layouts or placing anything on the train. Repeated installation preserves existing economy assets and authored marker positions. The Week 3 builder also installs economy content when rebuilding its generated scenes.
+- `RailExpedition` consumes bars and records shop receipts in the same room-state revision as the recipient list. Owner/spawn token/hold generation, intake bounds, player proximity and sample age are validated. Physical bars are destroyed only after committed consumption.
 - `DuckzWallet` persists pending rewards per account; deterministic per-run/bar/recipient IDs deduplicate retries. Balance mutations are serialized locally. The backend retains Duckz's player-row transaction locks, server prices, signed authenticated requests, caps and transaction ledger. It trusts authenticated game clients for gold awards as Duckz does; it is not a server simulation of Photon outcomes.
 - `BagInventory` chooses the existing Rails bag prefab in Rails rooms, so purchased bags retain moving-cargo synchronization and cleanup.
-- Networking partition is `session-v7`; restart all clients on the same build.
+- Networking partition appends `-no-train-safe-v1`; restart all clients on the same build.
 
 ## Backend and rollout
 
@@ -59,7 +59,7 @@ Apply `api/sql/create_duckrails_economy.sql` only to **duckrails_tencent_global*
 - Actual deployed first-account grant, repeat login, purchase, balance persistence and admin grant/removal.
 - Two or more authenticated clients: simultaneous deposits, non-master purchases/intake, visible per-recipient particles, master handoff, reconnect and repeated runs without duplicate credit or lost equipment.
 - Both shops: real hand pull, insufficient funds, restock, all seven items and basic bag contents/ownership.
-- Successful escape with a downed passenger and a player left behind; failure; held/loose/bagged bars excluded; safe count synchronized and no retrieval.
+- Successful escape with a downed passenger and a player left behind; failure; held, loose and bagged bars stay unpaid. November 10 removes the safe count and escape-only payout.
 - Quest 3 slot reach, shop item reach, labels/watch readability and particle performance; eight-player crowding and natural-run economic balance.
 
 Editor/unit evidence does not close these acceptance items. See the validation record below for checks actually run.

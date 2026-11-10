@@ -14,7 +14,6 @@ public sealed class RailRunState
     public bool finished, success;
     public string reason;
     public List<RailGoldDeposit> gold = new List<RailGoldDeposit>();
-    public int SafeBars => gold.Count(g => g.safe);
     public List<RailParticipant> players = new List<RailParticipant>();
     public List<int> consumed = new List<int>();
     public List<string> consumedSpawns = new List<string>();
@@ -61,7 +60,6 @@ public sealed class RailGoldDeposit
 {
     public string token;
     public int receiver;
-    public bool safe;
     public string[] recipients;
 }
 

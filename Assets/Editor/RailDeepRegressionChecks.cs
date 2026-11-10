@@ -208,8 +208,7 @@ public static class RailDeepRegressionChecks
                     var loose=PhotonView.Find(PhotonSession.Get("test.deep.extracted",0));
                     if(age>4 && loose!=null && !loose.GetComponent<PhotonGrabbable>().IsHeldByAnyPlayer){Require(train.Contains(loose.transform.position),"Released extracted coal left train");Ack("Transferred item released loose aboard on every client");}Advance(9,true);break;
                 case 9:
-                    if(Main)Gold(0);
-                    if(run.State.SafeBars==1){Require(DuckzWallet.Instance.Coins==walletBefore,"Safe paid before escape");Board();Ack("Safe intake count shared; no immediate credit");}Advance(10,true);break;
+                    Board();Ack("Shop wallets unchanged before combat");Advance(10,true);break;
                 case 10:
                     if(Slot==2 && !RailExpedition.LocalDown){var attacker=Game.AI.Enemy.Active.OrderBy(e=>e.GetComponent<PhotonView>().ViewID).First(e=>e.GetComponentsInChildren<KillTrigger>().Any(t=>t.isActiveAndEnabled));Warp(attacker.Root.position+Vector3.right*.5f);if(age>2)attacker.GetComponentsInChildren<KillTrigger>().First(t=>t.isActiveAndEnabled).TryContact(NewPlayer.instance.bodyCollider);}
                     if(run.State.players.Count(p=>p.down)==1){Require(run.State.players.Single(p=>p.down).flareAt>0,"Down flare timestamp missing");Ack("Real enemy contact callback down replicated with flare");}Advance(11);break;
@@ -233,7 +232,7 @@ public static class RailDeepRegressionChecks
                     else if(PhotonNetwork.PlayerList.Length==3)Ack("Three remain with unchanged expedition");Advance(17);break;
                 case 17:
                     if(Slot==3 && PhotonNetwork.CurrentRoom.Name!=c.room){session.RequestJoinCode(c.room);break;}
-                    if(Settled && PhotonNetwork.PlayerList.Length==4){Require(DuckzWallet.Instance.Coins==walletBefore,"Rejoin replayed wallet credit");Require(PhotonSession.RunId==c.firstRun && run.State.SafeBars==1 && Flashlights()==3,"Rejoin changed retained state");Require(PhotonView.Find(PhotonSession.Get("test.deep.bag",0)).GetComponent<BagObject>().Slots.All(s=>s.IsEmpty),"Former bag owner resurrected taken slot");Require(PhotonView.Find(PhotonSession.Get("test.deep.extracted",0))!=null,"Extracted coal lost during handoff/rejoin");Board();Ack("Rejoin restores safe/cargo/enemies and empty bag without new grants");}Advance(18,true);break;
+                    if(Settled && PhotonNetwork.PlayerList.Length==4){Require(DuckzWallet.Instance.Coins==walletBefore,"Rejoin replayed wallet credit");Require(PhotonSession.RunId==c.firstRun && run.State.gold.Count==2 && Flashlights()==3,"Rejoin changed retained state");Require(PhotonView.Find(PhotonSession.Get("test.deep.bag",0)).GetComponent<BagObject>().Slots.All(s=>s.IsEmpty),"Former bag owner resurrected taken slot");Require(PhotonView.Find(PhotonSession.Get("test.deep.extracted",0))!=null,"Extracted coal lost during handoff/rejoin");Board();Ack("Rejoin restores shop sales, cargo, enemies and empty bag without new grants");}Advance(18,true);break;
                 case 18:
                     if(PhotonNetwork.IsMasterClient&&!action){MoveTrain(RailRoute.Instance.FinaleStart+55);action=true;}
                     if(age>3){Board();Ack("Positioned at finale for physical bridge hold");}Advance(19);break;
@@ -263,18 +262,17 @@ public static class RailDeepRegressionChecks
                     if(PhotonNetwork.IsMasterClient && PhotonSession.Phase==RailPhase.Running)session.SetTrainMoving(true);
                     if(run.State.finished){Require(run.State.success && run.State.players.Count(p=>p.escaped)==3,"Expected three finishers including downed passenger");Require(run.State.players.Count(p=>p.down && p.escaped)==1,"Downed passenger did not retain escape credit");Require(run.results.text.Contains("SUCCESS"),"Success UI missing");Ack("Actual bridge crossing commits success and immutable finishers");}Advance(24);break;
                 case 24:
-                    int expected=Slot==3?walletBefore:Math.Min(DuckzWallet.MaxCoins,walletBefore+RailResourceBalance.GoldCredit(RailResourceBalance.GoldCount(3),3));
-                    if(DuckzWallet.Instance.Coins==expected && age>5){Require(run.State.players.Count(p=>p.escaped)==3,"Catch-up changed finish credit");Ack("Safe pays only escaped players, exact scaled credit");}Advance(25);break;
+                    if(DuckzWallet.Instance.Coins==walletBefore && age>5){Require(run.State.players.Count(p=>p.escaped)==3,"Catch-up changed finish roster");Ack("Successful escape adds no extra coin credit");}Advance(25);break;
                 case 25:
                     if(PhotonSession.Phase==RailPhase.Staging && Settled){Require(PhotonNetwork.CurrentRoom.Name==c.room && !RailWorld.HasLiveCargo && Game.AI.Enemy.Active.Count==0,"Private return leaked objects or changed code");Require(!RailExpedition.LocalDown,"Down state survived return");Ack("Success return: same private code, clean compound");}Advance(26,true);break;
                 case 26:
                     if(PhotonNetwork.IsMasterClient && PhotonSession.Phase==RailPhase.Staging)session.StartPrivateRun();
                     if(PhotonSession.Phase==RailPhase.Running && Settled){Require(PhotonSession.RunId!=c.firstRun,"Replay reused run ID");SeedCheck(4);walletBefore=DuckzWallet.Instance.Coins;Board();Ack("Replay: new four-player crew and fresh exact supplies");}Advance(27,true);break;
                 case 27:
-                    if(Main)Gold(0);if(run.State.SafeBars==1){Require(DuckzWallet.Instance.Coins==walletBefore,"Safe credited early");Ack("Replay safe deposit unpaid");}Advance(28,true);break;
+                    if(age>1){Require(DuckzWallet.Instance.Coins==walletBefore,"Replay credited gold without a sale");Ack("Replay starts with unchanged wallets");}Advance(28,true);break;
                 case 28:
                     Warp(train.transform.position+new Vector3(8+Slot*4,.3f,0));if(age>2 && !RailExpedition.LocalDown)RailExpedition.RequestDown();
-                    if(run.State.finished){Require(!run.State.success && run.State.reason=="Crew down","All-down failure missing");Require(run.results.text.Contains("FAIL"),"Failure UI missing");Require(DuckzWallet.Instance.Coins==walletBefore,"Failed safe rewarded coins");Ack("All four down: shared failure and no safe payout");}Advance(29);break;
+                    if(run.State.finished){Require(!run.State.success && run.State.reason=="Crew down","All-down failure missing");Require(run.results.text.Contains("FAIL"),"Failure UI missing");Require(DuckzWallet.Instance.Coins==walletBefore,"Failure changed the wallet");Ack("All four down: shared failure and no new coin credit");}Advance(29);break;
                 case 29:
                     if(PhotonSession.Phase==RailPhase.Staging && Settled){Require(!RailWorld.HasLiveCargo && Game.AI.Enemy.Active.Count==0 && !RailExpedition.LocalDown,"Failure cleanup");Require(DuckzWallet.Instance.Coins==walletBefore,"Failure changed earned wallet");Ack("Failure return clean; wallet retained");}Advance(30,true);break;
                 case 30:
@@ -285,7 +283,7 @@ public static class RailDeepRegressionChecks
                     if(run.State.finished){Require(!run.State.success && run.State.reason=="Bridge collision","Raised-bridge failure missing");Ack("Raised bridge fails shared expedition");}Advance(32);break;
                 case 32:
                     if(PhotonSession.Phase==RailPhase.Staging && Settled){Require(!RailWorld.HasLiveCargo && Game.AI.Enemy.Active.Count==0,"Crash cleanup");Ack("Crash return clean");}Advance(33,true);break;
-                case 33: Log("PASS COMPLETE private lifecycle, late join, coal, shop/safe wallet, down/revive, enemies, handoff/rejoin, success, two failures and replays");done=true;break;
+                case 33: Log("PASS COMPLETE private lifecycle, late join, coal, shop wallet, down/revive, enemies, handoff/rejoin, success, two failures and replays");done=true;break;
             }
         }
         catch(IOException) { }

@@ -343,10 +343,11 @@ November 3 art-test utility: implemented Page Down block skip using the existing
 
 Confirmed scope and validation are tracked in [gold-economy.md](gold-economy.md). This supersedes the old no-wallet and free train gear requirements.
 
-- [x] Local economy implementation and bounded validation: seven-item shops, gold spawners, train safe, persistent-reward queue, backend welcome grant/admin controls. Twelve editor suites (35 economy assertions), solo intake/pull checks, three-client expedition regression, Go tests and admin build passed. See the validation record for manual test setup and limits; this does not close deployed economy or headset acceptance.
+- [x] November 10: remove the train safe, its delayed escape payout, and the installer that placed it on the train. Shop deposits remain immediate for connected crew. The wallet deposit API is unchanged because shops already use it. Restart clients on the `-no-train-safe-v1` matchmaking suffix.
+- [x] Local economy implementation and bounded validation: seven-item shops, gold spawners, train safe, persistent-reward queue, backend welcome grant/admin controls. Twelve editor suites (35 economy assertions), solo intake/pull checks, three-client expedition regression, Go tests and admin build passed. See the validation record for manual test setup and limits; this does not close deployed economy or headset acceptance. The November 10 removal supersedes the train-safe part of this record.
 - [ ] Validate first-wallet 100 coins exactly once, persistent balance and admin credits against the deployed Rails backend.
 - [ ] Verify both shops with all seven standard gear types, physical pull line, success, insufficient funds and restocking on real clients/headsets.
-- [ ] Verify shared shop payouts, safe count/irreversible intake, escape-only safe payout, failure, loose/held exclusions, reconnect and master handoff.
+- [ ] Verify shared shop payouts, failure, loose/held exclusions, reconnect and master handoff.
 - [ ] Apply additive economy SQL and deploy API/admin images to Duck Rails; record production evidence separately.
 
 ## Planning basis

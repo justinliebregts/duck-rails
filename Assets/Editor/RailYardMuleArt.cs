@@ -347,7 +347,6 @@ public static class RailYardMuleArt
             p=assembly.furnace.transform.Find("Front firebox art")?new Vector3(0,0,5.08f):new Vector3(-1.05f,p.y,p.z);
             assembly.furnace.transform.localPosition=p;
             p=assembly.radio.localPosition;p.x=1.55f;assembly.radio.localPosition=p;
-            var safe=train.transform.Find("TrainSafe");if(safe){p=safe.localPosition;p.x=1.25f;safe.localPosition=p;}
             foreach(var point in assembly.supplyPoints){p=point.localPosition;p.x=Mathf.Clamp(p.x,-1.55f,1.55f);point.localPosition=p;}
             PrefabUtility.SaveAsPrefabAsset(train,Train);
         }

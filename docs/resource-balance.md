@@ -63,14 +63,12 @@ victory ride retains its sufficient-fuel grant.
 - Maximum recovered gold pays 100 coins per eligible player per block, or 400 across
   four scavenging blocks, before wallet-cap effects. Missing candidate capacity or
   uncollected gold reduces that amount; remaining bars are not revalued upward.
-- Existing shop/safe eligibility, failure, wallet-cap and purchase rules are retained.
+- Shop eligibility, failure, wallet-cap and purchase rules are retained. November 10 removes the train safe, so gold pays only through shop deposits.
 
 The integer wallet uses rational carry: eligible bar k credits
 floor(k * 100 / G) - floor((k - 1) * 100 / G). This avoids rounding every bar to the
-same integer. Carry continues across blocks for each recipient. Shops count only
-that recipient's eligible sales. On successful finish, safe receipts continue after
-that player's total eligible shop sales, so splitting gold between shops and safe
-does not lose an additional fraction or change already-issued shop receipts. A
+same integer. Carry continues across shop sales for each recipient. Shops count only
+that recipient's eligible sales. A
 partial run can leave less than one coin unpaid; fractions do not persist into the
 next run. Capped rewards retain existing discard behavior.
 
@@ -129,7 +127,7 @@ Cockpit evidence is in `docs/validation/yard-mule/cockpit-checks.txt`; route evi
 is in `docs/validation/test-block-order/editor-checks.txt`.
 
 Still required: deployed API/client integration, actual-client late join/reconnect/
-host migration and mixed shop/safe credit, physical coal intake, full-run feasibility,
+host migration and shop credit, physical coal intake, full-run feasibility,
 first-coal reachability, eight-player item performance and natural headset pacing.
 Record arrival/departure fuel, coal recovered/left, hauling time, gold recovered,
 skipped stops and failures before adjusting balance. Editor checks do not establish
