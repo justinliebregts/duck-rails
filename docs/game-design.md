@@ -1,5 +1,11 @@
 # Duck Rails — V1 game design
 
+November 10 train art: install the reviewed Blender shell into the existing train
+assembly. Keep driving, fuel display/state, horn, radio/table and furnace gameplay
+components separate and functional. The furnace opening is 25% taller downward,
+the side exhaust is half-width, front/dash/underside gaps are enclosed, and paired
+dash light strips are removed. See [Blender integration](yard-mule-train.md#blender-integration--november-10).
+
 November 10 railway art: use dull grey atlas-textured metal rails and wooden
 sleepers throughout all blocks, including Starting Station, midpoint shop and
 finale, with approximately 2 m sleeper centres. Preserve authored track routes

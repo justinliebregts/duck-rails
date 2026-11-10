@@ -213,6 +213,7 @@ public static class RailYardMuleArt
     [MenuItem("Duck Rails/Art/Build Yard Mule")]
     public static void Build()
     {
+        RailBlenderTrainImport.ProtectBlenderModel();
         if(Application.dataPath!="X:/Work/duck-rails/Assets"||EditorApplication.isPlaying)throw new InvalidOperationException("Duck Rails Edit Mode required");
         Directory.CreateDirectory(Folder);Directory.CreateDirectory(Evidence);AssetDatabase.Refresh();
         pixels=new Texture2D(AtlasSize,AtlasSize,TextureFormat.RGB24,false);glow=new Texture2D(AtlasSize,AtlasSize,TextureFormat.RGB24,false);

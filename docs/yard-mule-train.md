@@ -1,5 +1,98 @@
 # Yard Mule train art — November 6, 2026
 
+## Blender integration — November 10
+
+The user approved the reviewed model and authorized Unity integration. The
+existing `DuckRailsTrain.prefab` identity, nested gameplay modules, scene bindings,
+passenger carrier and network components are retained. Three new static mesh
+sections replace the old shell/furnace/housing renderers; the original objects
+remain disabled where needed for identity/reference preservation. Throttle,
+horn, fuel text/segments/gauge surround, and radio/table remain separate. Paired
+dash light strips are absent. All active train mesh renderers share a moving
+light-probe anchor at train-local `(0,0.5,0)` to prevent per-piece probe seams.
+This deliberately samples one location for cohesive ambient illumination;
+target-headset lighting and frame-time improvement still require measurement.
+
+`Assets/Editor/RailBlenderTrainImport.cs` installs the reviewed meshes from
+`Assets/DuckRails/Train/Blender/unity-integration.json`. This explicit Blender
+Z-up to Unity Y-up bridge preserves metre-scale positions, triangle winding,
+per-corner UVs and original Unity material assets without relying on FBX axis
+or embedded shader conversions. The source FBX is retained alongside the mesh
+assets. A new URP near-black material supplies the furnace lip. Blender source
+is `output/train-model/YardMule-Refined.blend`; run
+`Tools/Blender/export_train.py` in that file through Blender MCP for subsequent
+exports, then **Duck Rails > Art > Import Reviewed Blender Train**. Update the
+archival FBX in Assets from the output FBX when revising the model.
+
+Matching convex furnace colliders replace the disabled old box colliders;
+supplemental cowl and stepped lower-nose collision encloses the new body without
+closing the intake. Fire is lowered to follow the ember bed. The existing
+insertion anchor and acceptance half-extents `(0.90,0.22,0.50)` are preserved,
+as are particle budgets and smoke placement. Older checks assumed smaller
+acceptance bounds; rejection assertions now follow configured extents. Train
+navigation has been rebaked and all 489 boarding checks pass. Legacy Yard Mule,
+cockpit and furnace builders refuse to overwrite an installed Blender train.
+
+Validation: all 24 exact-geometry/material/integration checks, 43 modular checks,
+cockpit/fuel-bar checks, drive/session/Week 2 checks, hold-button and fingertip
+checks pass. Isolated Play Mode passes six actual coal-collider entries, a
+gravity-driven throw, transformed acceptance and clear sightlines. Expedition
+inherits the shell and retains its furnace/fuel-gauge bindings. See
+`docs/validation/blender-train/integration-checks.txt`, installed Unity renders
+in that directory, and `docs/validation/front-furnace/checks.txt`.
+
+The first actual two-client run passed stopped/moving deposits and exact fuel
+agreement, then failed a pickup immediately after handoff. Its evidence is
+retained as `coal-first-main.txt` / `coal-first-remote.txt`. The fixture now waits
+for `PhotonMasterHandoff.LocalAvailable` before attempting the first grip;
+ordinary gameplay is unchanged. Subsequent fixture repeats missed thrown coal
+and timed out (`coal-second-*` and `coal-third-*`); changing its high release aim
+to the middle of the downward-enlarged aperture did not establish a full pass.
+These failures remain recorded, not treated as successful regression evidence.
+
+With two real authenticated clients still connected and ownership settled, the
+non-master launched an owned coal chunk from outside the mouth through ordinary
+physics: it was consumed once and fuel rose exactly from 50 to 62.5. The retained
+drive component's GO action moved the train 56.6 m at 4 m/s with fuel consumption;
+STOP returned it to 0 m/s. Both installed horn/radio buttons published live hold
+leases and released them; horn audio played and the radio station speaker was
+present. See `settled-live-checks.txt`. This verifies those live component paths,
+not a complete handoff regression, headset grip/reach or voice intelligibility.
+
+The user reported Unity crashing/reopening during the final cleanup/preview
+request. The prefab, meshes, materials, graph and above evidence were already
+saved and the coal fixture had been disarmed. Crash cause is not established.
+
+## Blender model review — November 10
+
+User authorized a Blender cleanup of the existing layout: taller furnace aperture,
+thinner side exhaust, and closed dash/firebox gap. Radio/table and all interactive
+controls/display geometry must remain separate; remove the two small dash light
+strips. The plain dashboard housing remains structural bodywork.
+
+Review files: `output/train-model/YardMule-Refined.blend` (packed textures, hidden
+original reference and editable parts), `YardMule-Refined.fbx` (three static mesh
+sections only), `train-overview.png`, `dashboard-closeup.png`, and
+`model-checks.json`. Unity was used only to read/export the source prefab before
+the user requested Blender-only work. No Unity scenes, prefabs, collisions,
+interaction anchors, navigation, or builders were changed by this pass.
+
+The measured aperture vertical clearance increases from 0.4791 m to 0.5989 m
+(25%), downward to preserve the 0.43 m upper surface and existing sightline.
+The hollow stack shrinks from 0.48 m to 0.24 m wide/deep, retaining its height;
+the connecting duct now reaches the stack. A fitted cowl closes the roughly
+0.28 m dashboard/firebox break and connects the side cheeks. Export contains
+body, canopy/spotlight, and wheels; controls and radio are excluded. Original
+geometry is retained only in hidden reference collections, not the FBX.
+
+Blender geometry checks passed for finite coordinates, nondegenerate triangles,
+aperture ratio and excluded objects; textured overview and dashboard close-up
+were inspected. This is a review model, not an installed or performance-validated
+replacement. Unity light-probe behavior, FBX axis/material mapping, revised coal
+collision/acceptance, effect placement, navigation and target-device performance
+remain untested. Do not run legacy art builders over a future Blender integration
+without first adapting their ownership of generated geometry.
+
 November 10: the train safe module is removed. **Build Yard Mule** no longer searches for `TrainSafe` or shifts it inward. Furnace and radio placement is unchanged.
 
 ## Front-only furnace — November 6
@@ -79,3 +172,11 @@ Safety markers use an emission map on non-static renderers that do not contribut
 Initial appearance reference: [concept](validation/yard-mule/approved-concept.png). The first wide shell had 2,450 triangles across eight renderers sharing one material. Unity compilation and 45 modular-train checks passed. The narrower revision and current validation above supersede those dimensions and statistics.
 
 Unity mesh previews: [front](validation/yard-mule/front.png), [rear](validation/yard-mule/rear.png), [driver eye line](validation/yard-mule/driver.png). These isolate the shell and use preview lighting; they are not gameplay footage. Target-headset visibility, performance, natural boarding/grabbing, spotlight reach, and real-client moving-cargo acceptance remain separate from editor validation.
+
+November 10 Blender review follow-up: furnace surround and chamber leading edges now follow the sloping nose face, removing the projecting horizontal hood. The taller aperture is retained; chamber fronts sit 8 mm behind the trim to avoid coplanar overlap. Updated packed Blender source and FBX, verified nondegenerate triangles, and inspected output/train-model/furnace-flush.png. Unity remains untouched.
+
+November 10 lower-nose follow-up: enclosed the side/underside gap between chassis and front bumper in Blender, on both sides. Recessed center remains below the furnace floor; underside stays at the existing chassis bottom (-0.645 m). New enclosure is manifold, export triangles are nondegenerate, and output/train-model/enclosed-nose.png was visually checked. Updated Blender/FBX; no Unity operations.
+
+November 10 ceiling-finish follow-up: furnace ceiling underside now uses Firebrick; front lintel and concealed ceiling front face use a dedicated near-black Blender material. Ceiling leading edge recessed another 25 mm to remove the visible yellow sliver. Low-angle furnace-underside.png reviewed; Blender/FBX saved. New black material needs mapping during future Unity integration. No Unity operations.
+
+Post-restart verification passed in the confirmed Duck Rails editor: saved Blender integration, modular train bindings, cockpit/fuel display and 489 boarding checks. Exactly one drive/horn/radio control and all furnace references remain intact; coal fixture marker is absent. Editor remains in clean Login Edit Mode. See validation/blender-train/restart-checks.txt. The Play selector remains '4 Diagnostic Two Client'; the pre-test scenario SessionState was lost on restart, so no original selection was guessed. Console contains a startup PlayModeUserSettings serialization error ('You may not pass in objects that are already persistent'); no crash cause is established by this observation.

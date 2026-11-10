@@ -1,0 +1,24 @@
+PASS Exactly three Blender static mesh sections
+PASS Wheels uses metre-scale vertices without FBX axis/scale transforms
+PASS Wheels matches reviewed Blender positions and UVs exactly
+PASS Wheels retains triangle count
+PASS Wheels maps original Unity materials and black furnace lip
+PASS Wheels uses the shared moving probe anchor
+PASS Canopy and spotlight uses metre-scale vertices without FBX axis/scale transforms
+PASS Canopy and spotlight matches reviewed Blender positions and UVs exactly
+PASS Canopy and spotlight retains triangle count
+PASS Canopy and spotlight maps original Unity materials and black furnace lip
+PASS Canopy and spotlight uses the shared moving probe anchor
+PASS Train Body uses metre-scale vertices without FBX axis/scale transforms
+PASS Train Body matches reviewed Blender positions and UVs exactly
+PASS Train Body retains triangle count
+PASS Train Body maps original Unity materials and black furnace lip
+PASS Train Body uses the shared moving probe anchor
+PASS Legacy shell artwork disabled without removing collision/light identities
+PASS Legacy furnace artwork disabled
+PASS Legacy furnace collision disabled
+PASS Replacement furnace solids use valid convex mesh collision
+PASS Separate radio/table renderers retained
+PASS Live fuel segments retained separately
+PASS Gauge surround retained; paired dash light strips omitted
+PASS Fuel gauge retains CutePixel SDF

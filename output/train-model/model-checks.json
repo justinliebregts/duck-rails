@@ -1,0 +1,30 @@
+{
+  "meshes": {
+    "Train Body": {
+      "vertices": 1180,
+      "triangles": 1854,
+      "materials": 8
+    },
+    "Wheels": {
+      "vertices": 384,
+      "triangles": 704,
+      "materials": 1
+    },
+    "Canopy and spotlight": {
+      "vertices": 140,
+      "triangles": 228,
+      "materials": 1
+    }
+  },
+  "aperture_before_m": 0.4791226089000702,
+  "aperture_after_m": 0.5989032685756683,
+  "aperture_ratio": 1.2500000155504676,
+  "stack_width_before_m": 0.48,
+  "stack_width_after_m": 0.24,
+  "unity_integrated": false,
+  "checks": "finite vertices, nonzero triangle areas, aperture ratio, excluded interactive geometry, retained low ceiling passed",
+  "total_triangles": 2786,
+  "furnace_front": "Aligned with nose plane; chamber face recessed 8 mm behind rim to avoid coplanar overlap. Taller aperture retained.",
+  "lower_nose": "Closed manifold enclosure between chassis and bumper, both sides and underside; bottom -0.645 m matches chassis; recessed center stays below furnace floor.",
+  "furnace_ceiling_finish": "Brick underside, dedicated near-black lip material, leading ceiling edge recessed additional 25 mm; low-angle render inspected."
+}

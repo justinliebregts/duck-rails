@@ -124,6 +124,10 @@ public static class RailCoalLiveChecks
                 return;
             }
             if (age < 3) return;
+            // A master change deliberately locks grabs until the recovery barrier
+            // completes. Test the first eligible grip, not the fixed three-second
+            // timer racing that barrier on a slower editor.
+            if (!PhotonMasterHandoff.LocalAvailable) return;
             if (!PhotonNetwork.IsMasterClient)
             {
                 if (!grabbed)
@@ -145,7 +149,7 @@ public static class RailCoalLiveChecks
                         hand.HoldPoint.position = selected.transform.position;
                         Physics.SyncTransforms();
                         Require(hand.FindGrabCandidate() == selected, "Non-master selects coal with palm inside on first grip");
-                        Require(hand.TryGrab(hand.FindGrabCandidate()), "Non-master coal pickup attaches on first attempt");
+                        Require(hand.TryGrab(hand.FindGrabCandidate()), "Non-master coal pickup attaches on first attempt; canGrab=" + hand.CanGrab + ", holding=" + hand.IsHolding + ", available=" + PhotonMasterHandoff.LocalAvailable + ", itemAvailable=" + selected.CanBeGrabbed);
                     }
                     finally { hand.HoldPoint.localPosition = savedPalm; }
                     Log("Interior selection pickup accepted actor=" + PhotonNetwork.LocalPlayer.ActorNumber);
@@ -158,7 +162,10 @@ public static class RailCoalLiveChecks
                     // The current firebox has a ceiling and an open front.
                     // Place the held chunk outside that mouth, then throw it
                     // through the real collision geometry; no intake teleport.
-                    var releasePoint = run.furnace.position + run.furnace.forward * .72f + Vector3.up * .12f;
+                    // Aim through the middle of the revised aperture, which was
+                    // enlarged downwards. The former high aim could clip the
+                    // sloping lintel with a full-size, rotating chunk.
+                    var releasePoint = run.furnace.position + run.furnace.forward * .72f - Vector3.up * .08f;
                     // Editor polling is 10 Hz; lead the moving mouth when
                     // placing the rig, but release against its current pose.
                     var delta = releasePoint + RailTrain.Instance.Velocity * .12f - view.transform.position;

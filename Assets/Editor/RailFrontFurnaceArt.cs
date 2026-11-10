@@ -73,6 +73,7 @@ public static class RailFrontFurnaceArt
     [MenuItem("Duck Rails/Art/Build Front Only Furnace")]
     public static void Build()
     {
+        RailBlenderTrainImport.ProtectBlenderModel();
         if(Application.dataPath!="X:/Work/duck-rails/Assets"||EditorApplication.isPlaying)throw new Exception("Duck Rails Edit Mode required");
         Directory.CreateDirectory(Folder);Directory.CreateDirectory(Evidence);AssetDatabase.Refresh();
         yellow=Material("Yellow",new Color32(218,153,32,255));dark=Material("Iron",new Color32(40,44,48,255));

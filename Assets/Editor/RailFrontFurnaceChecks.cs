@@ -52,13 +52,13 @@ public static class RailFrontFurnaceChecks
             check(root.GetComponentsInChildren<RailFurnaceModule>().Length==1,"Exactly one front furnace");
             check(f.transform.localPosition==new Vector3(0,0,5.08f),"Firebox beyond front deck edge");
             check(!f.Contains(new Vector3(-1.05f,.7f,1.9f)),"Former onboard fueling position rejects coal");
-            foreach(var offset in new[]{new Vector3(0,.25f,0),new Vector3(.8f,0,0),new Vector3(0,0,-.4f),new Vector3(0,0,.4f)})
+            foreach(var offset in new[]{new Vector3(0,f.acceptanceHalfExtents.y+.05f,0),new Vector3(f.acceptanceHalfExtents.x+.05f,0,0),new Vector3(0,0,-f.acceptanceHalfExtents.z-.05f),new Vector3(0,0,f.acceptanceHalfExtents.z+.05f)})
                 check(!f.AcceptsSample(offset),"Reject outside chamber "+offset);
             check(f.AcceptsSample(Vector3.zero)&&f.AcceptsSample(new Vector3(.6f,.15f,.18f)),"Interior network samples accepted");
             for(int pose=0;pose<8;pose++)
             {
                 root.transform.SetPositionAndRotation(new Vector3(pose*3,pose*.2f,-pose*5),Quaternion.Euler(pose,pose*43,0));
-                check(f.Contains(f.insertion.position)&&f.AcceptsSample(new Vector3(.5f,.1f,.1f))&&!f.AcceptsSample(new Vector3(0,0,-.4f)),"Acceptance follows translated/rotated train pose "+pose);
+                check(f.Contains(f.insertion.position)&&f.AcceptsSample(new Vector3(.5f,.1f,.1f))&&!f.AcceptsSample(new Vector3(0,0,-f.acceptanceHalfExtents.z-.05f)),"Acceptance follows translated/rotated train pose "+pose);
             }
             root.transform.SetPositionAndRotation(Vector3.zero,Quaternion.identity);Physics.SyncTransforms();
             foreach(float x in new[]{-.8f,0,.8f})

@@ -51,12 +51,12 @@ public static class RailModularTrainChecks
             Check(controls.Single(c => c.action == RailControl.Action.Radio).transform.IsChildOf(a.radio), "Radio talk interaction moves with table");
             var f = a.furnace;
             Check(f.Contains(f.insertion.position), "Coal center accepted inside hollow chamber");
-            Check(!f.AcceptsSample(new Vector3(.7f, 0, 0)), "Coal outside mouth rejected even inside old radius");
+            Check(!f.AcceptsSample(new Vector3(f.acceptanceHalfExtents.x + .05f, 0, 0)), "Coal outside mouth rejected even inside old radius");
             Check(!f.AcceptsSample(new Vector3(0, .5f, 0)), "Coal above insertion volume rejected");
             var original = f.transform.localPosition; var orientation = f.transform.localRotation;
             f.transform.localPosition += new Vector3(.1f, .2f, -.5f); f.transform.localRotation = Quaternion.Euler(0, 75, 0);
             Check(f.Contains(f.insertion.TransformPoint(new Vector3(.25f, -.15f, .2f))) && f.AcceptsSample(new Vector3(.2f, 0, 0)), "Relocated/rotated furnace carries its acceptance volume");
-            Check(!f.AcceptsSample(new Vector3(.7f, 0, 0)), "Relocation keeps rejection boundary");
+            Check(!f.AcceptsSample(new Vector3(f.acceptanceHalfExtents.x + .05f, 0, 0)), "Relocation keeps rejection boundary");
             f.transform.localPosition = original; f.transform.localRotation = orientation;
             Physics.SyncTransforms();
             var solids = root.GetComponentsInChildren<Collider>(true).Where(c => !c.isTrigger).ToArray();

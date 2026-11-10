@@ -98,6 +98,7 @@ public static class RailCockpitArt
     [MenuItem("Duck Rails/Art/Build Integrated Cockpit")]
     public static void Build()
     {
+        RailBlenderTrainImport.ProtectBlenderModel();
         if(Application.dataPath!="X:/Work/duck-rails/Assets"||EditorApplication.isPlaying)throw new InvalidOperationException("Duck Rails Edit Mode required");
         Directory.CreateDirectory(Folder);AssetDatabase.Refresh();px=py=row=0;
         atlas=new Texture2D(AtlasSize,AtlasSize,TextureFormat.RGB24,false);emission=new Texture2D(AtlasSize,AtlasSize,TextureFormat.RGB24,false);

@@ -1,5 +1,16 @@
 # Duck Rails — execution plan
 
+- [x] November 10: prepare Blender train review model with taller furnace opening,
+  thinner exhaust, fitted dash/firebox cowl and three static mesh sections;
+  exclude radio/table and controls, remove paired dash light strips. Blender
+  geometry and rendered review checks pass. See [model review](yard-mule-train.md#blender-model-review--november-10).
+- [x] User reviewed and approved Blender train; integrate into the existing Unity
+  assembly with retained controls/fuel/horn/radio/furnace bindings. Exact geometry,
+  material mapping, control regressions, isolated physical coal entry and rebuilt
+  navigation/489 boarding checks pass. See [integration](yard-mule-train.md#blender-integration--november-10).
+- [ ] Validate the Blender train's probe transitions, natural physical interaction,
+  voice intelligibility and frame time on target headsets.
+
 - [x] November 10: apply shared atlas railway surfaces and consistent 2 m sleeper
   spacing across all 19 block prefabs; saved-asset and unchanged collision/track/
   navigation checks pass. See [railway surfaces](track-surfaces.md).

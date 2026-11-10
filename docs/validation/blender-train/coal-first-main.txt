@@ -1,0 +1,10 @@
+2026-11-10T22:16:48.8476228Z stage=0 actor=1 master=True
+2026-11-10T22:16:51.9529680Z Unique avatars 1:1001,2:2001
+2026-11-10T22:16:53.1246659Z stage=1 actor=1 master=True
+2026-11-10T22:16:58.1691518Z PASS stage=1 consumed=51 fuel=62.5 expected=62.5 removed=true
+2026-11-10T22:17:02.3748379Z stage=2 actor=1 master=True
+2026-11-10T22:17:06.6514420Z stage=3 actor=1 master=True
+2026-11-10T22:17:11.7050696Z PASS stage=3 consumed=42 fuel=69.675 expected=69.675 removed=true
+2026-11-10T22:17:15.8691290Z stage=4 actor=1 master=True
+2026-11-10T22:17:20.1013129Z stage=5 actor=1 master=True
+2026-11-10T22:17:23.1953251Z FAIL Non-master coal pickup attaches on first attempt
