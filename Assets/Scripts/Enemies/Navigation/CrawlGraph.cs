@@ -85,6 +85,8 @@ namespace Game.AI
         public bool ContainsCrawlPosition(Vector3 position)
         {
             if (_allowedBounds == null) return true;
+            // Without an inset the four probes equal the centre point.
+            if (_boundaryInset == 0f) return InsideBoundsUnion(position);
             return InsideBoundsUnion(position)
                 && InsideBoundsUnion(position + Vector3.right * _boundaryInset)
                 && InsideBoundsUnion(position - Vector3.right * _boundaryInset)
@@ -92,13 +94,23 @@ namespace Game.AI
                 && InsideBoundsUnion(position - Vector3.forward * _boundaryInset);
         }
 
+        // Union tests are "any box"; trying the last matching box first changes no result
+        // but makes spatially coherent queries (graph sweeps, crawl steps) mostly one test.
+        int _lastBox;
+        bool InsideBox(int i, Vector3 position)
+        {
+            Vector3 point = _boundaryWorldToLocal == null ? position : _boundaryWorldToLocal[i].MultiplyPoint3x4(position);
+            return _allowedBounds[i].Contains(point);
+        }
+
         bool InsideBoundsUnion(Vector3 position)
         {
-            for (int i = 0; i < _allowedBounds.Length; i++)
-            {
-                Vector3 point = _boundaryWorldToLocal == null ? position : _boundaryWorldToLocal[i].MultiplyPoint3x4(position);
-                if (_allowedBounds[i].Contains(point)) return true;
-            }
+            int count = _allowedBounds.Length;
+            if (count == 0) return false;
+            int first = _lastBox < count ? _lastBox : 0;
+            if (InsideBox(first, position)) return true;
+            for (int i = 0; i < count; i++)
+                if (i != first && InsideBox(i, position)) { _lastBox = i; return true; }
             return false;
         }
 
@@ -127,16 +139,24 @@ namespace Game.AI
         const float SegmentShortcutMargin = 1e-3f;
         bool SegmentInsideOneBox(Vector3 from, Vector3 to)
         {
-            for (int i = 0; i < _allowedBounds.Length; i++)
-            {
-                Vector3 a = from, b = to;
-                if (_boundaryWorldToLocal != null) { a = _boundaryWorldToLocal[i].MultiplyPoint3x4(from); b = _boundaryWorldToLocal[i].MultiplyPoint3x4(to); }
-                Vector3 min = _allowedBounds[i].min + Vector3.one * SegmentShortcutMargin;
-                Vector3 max = _allowedBounds[i].max - Vector3.one * SegmentShortcutMargin;
-                if (a.x >= min.x && a.y >= min.y && a.z >= min.z && a.x <= max.x && a.y <= max.y && a.z <= max.z &&
-                    b.x >= min.x && b.y >= min.y && b.z >= min.z && b.x <= max.x && b.y <= max.y && b.z <= max.z) return true;
-            }
+            int count = _allowedBounds.Length;
+            if (count == 0) return false;
+            int first = _lastBox < count ? _lastBox : 0;
+            if (SegmentInsideBox(first, from, to)) return true;
+            for (int i = 0; i < count; i++)
+                if (i != first && SegmentInsideBox(i, from, to)) { _lastBox = i; return true; }
             return false;
+        }
+
+        bool SegmentInsideBox(int i, Vector3 from, Vector3 to)
+        {
+            Vector3 a = from, b = to;
+            if (_boundaryWorldToLocal != null) { a = _boundaryWorldToLocal[i].MultiplyPoint3x4(from); b = _boundaryWorldToLocal[i].MultiplyPoint3x4(to); }
+            Vector3 min = _allowedBounds[i].min, max = _allowedBounds[i].max;
+            min.x += SegmentShortcutMargin; min.y += SegmentShortcutMargin; min.z += SegmentShortcutMargin;
+            max.x -= SegmentShortcutMargin; max.y -= SegmentShortcutMargin; max.z -= SegmentShortcutMargin;
+            return a.x >= min.x && a.y >= min.y && a.z >= min.z && a.x <= max.x && a.y <= max.y && a.z <= max.z &&
+                   b.x >= min.x && b.y >= min.y && b.z >= min.z && b.x <= max.x && b.y <= max.y && b.z <= max.z;
         }
 
         // Apply to the in-memory graph, preserving the baked asset and node IDs.
@@ -145,6 +165,7 @@ namespace Game.AI
             _allowedBounds = bounds;
             _boundaryWorldToLocal = worldToLocal;
             _boundaryInset = inset;
+            _lastBox = 0;
             _allowedNodes = new bool[NodeCount];
             for (int c = 0; c < ClusterCount; c++) ClusterNode[c] = -1;
             for (int n = 0; n < NodeCount; n++)
@@ -152,9 +173,10 @@ namespace Game.AI
                 _allowedNodes[n] = ContainsCrawlPosition(GetPosition(n));
                 if (_allowedNodes[n] && ClusterNode[NodeCluster[n]] < 0) ClusterNode[NodeCluster[n]] = n;
             }
-            var edges = new System.Collections.Generic.List<int>();
+            var edges = new System.Collections.Generic.List<int>(EdgeTarget.Length);
             var starts = new int[NodeCount + 1];
-            var clusterEdges = new System.Collections.Generic.SortedSet<long>();
+            // Collected unsorted, then sorted and de-duplicated once (same order as a SortedSet).
+            var clusterEdges = new System.Collections.Generic.List<long>();
             for (int n = 0; n < NodeCount; n++)
             {
                 starts[n] = edges.Count;
@@ -170,13 +192,17 @@ namespace Game.AI
             }
             starts[NodeCount] = edges.Count;
             EdgeStart = starts; EdgeTarget = edges.ToArray();
+            clusterEdges.Sort();
+            int unique = 0;
+            for (int i = 0; i < clusterEdges.Count; i++)
+                if (unique == 0 || clusterEdges[i] != clusterEdges[unique - 1]) clusterEdges[unique++] = clusterEdges[i];
             ClusterEdgeStart = new int[ClusterCount + 1];
-            ClusterEdgeTarget = new int[clusterEdges.Count];
-            int index = 0;
-            foreach (long edge in clusterEdges)
+            ClusterEdgeTarget = new int[unique];
+            for (int index = 0; index < unique; index++)
             {
+                long edge = clusterEdges[index];
                 ClusterEdgeStart[(int)(edge >> 32) + 1]++;
-                ClusterEdgeTarget[index++] = (int)(edge & 0xffffffff);
+                ClusterEdgeTarget[index] = (int)(edge & 0xffffffff);
             }
             for (int c = 1; c <= ClusterCount; c++) ClusterEdgeStart[c] += ClusterEdgeStart[c - 1];
         }

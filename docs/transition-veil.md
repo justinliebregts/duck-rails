@@ -108,11 +108,35 @@ Timing each step of the route build in Play Mode isolated the stall:
 
 In every case, node permissions, `EdgeStart` and `EdgeTarget` were identical. Enemy navigation behaviour was not separately play-tested.
 
+### Bake-time filtering considered; exact runtime tightening instead
+
+Each block's own baked graph was checked against its own enemy bounds. Every scavenging block and the midpoint helipad lie completely inside. The bridge finale has 188 of 63,975 nodes and 1,644 of 562,774 edges outside its box, and none of those are kept through a neighbour's box. The runtime filter therefore removes almost nothing.
+
+Moving the filter into the bake was rejected:
+
+- It would need a per-block "verified inside" flag that goes stale silently when a graph is rebaked or `enemyBounds` changes.
+- It would not remove the bookkeeping cost (≈340 ms of the 981 ms on a full route).
+
+Exact runtime changes instead:
+
+- With no inset, the position test checks one point instead of five identical probes.
+- Union and segment tests try the last matching box first. This is "any box" semantics, so no result changes.
+- Cluster links are collected in a list, sorted and de-duplicated once, instead of a `SortedSet`.
+
+On a full normal route (4 blocks + midpoint + finale; 191,213 nodes; 1.73 M edges), the filter now takes 285 ms. It took 981 ms with only the segment shortcut and 13,199 ms originally.
+
+**Equivalence check:** the outputs were compared against a reimplementation of the original algorithm: node permissions, `EdgeStart`, `EdgeTarget`, `ClusterNode`, `ClusterEdgeStart` and `ClusterEdgeTarget`. They were identical in four cases:
+
+- real bounds, including the finale removals;
+- shrunken boxes;
+- rotated frames with a 0.5 m inset;
+- an empty bounds list.
+
 ## Next: shortening the rest of the load
 
 Proposed, not implemented:
 
-- Spread the remaining ~1.2 s route build across frames, or move graph restriction off the main thread (`EnsureReady` already gates readiness).
+- The route build was 1.16 s before the tightening above; re-profile it. If it is still significant, spread it across frames (`EnsureReady` already gates readiness).
 - Instantiate blocks across frames (`Object.InstantiateAsync`, Unity 6.3).
 - Load Expedition additively, unload Compound separately, and defer `UnloadUnusedAssets` until under the veil.
 - Preload Expedition with `allowSceneActivation = false` during boarding. Note that Unity holds other async scene loads until activation.
