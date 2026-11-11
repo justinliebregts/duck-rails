@@ -711,6 +711,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8855905167483463143, guid: d220eb81ab49e50449cdfb3f1c22d3b6, type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: NaN
+      objectReference: {fileID: 0}
+    - target: {fileID: 8855905167483463143, guid: d220eb81ab49e50449cdfb3f1c22d3b6, type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 2.0552676e+17
+      objectReference: {fileID: 0}
+    - target: {fileID: 8855905167483463143, guid: d220eb81ab49e50449cdfb3f1c22d3b6, type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: 4.5915e-41
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1381,6 +1393,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 0}
     - targetCorrespondingSourceObject: {fileID: 6709986687492860840, guid: 5c617ee5aa424fb46b12b0cf183bbcaa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+    - targetCorrespondingSourceObject: {fileID: 4090106475272639146, guid: 5c617ee5aa424fb46b12b0cf183bbcaa, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
   m_SourcePrefab: {fileID: 100100000, guid: 5c617ee5aa424fb46b12b0cf183bbcaa, type: 3}
