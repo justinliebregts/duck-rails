@@ -81,7 +81,7 @@ public static class DeathLifecycleChecks
         pool.Release(second.gameObject);
         var late = DeathFlare.SpawnAfterDeath(flarePrefab, point, 10);
         Check(late.IsBurning && (bool)Get(late, "launched"), "Delayed event catches up"); pool.Release(late.gameObject);
-        Check(DeathFlare.SpawnAfterDeath(flarePrefab, point, 30) == null, "Expired network event ignored");
+        Check(DeathFlare.SpawnAfterDeath(flarePrefab, point, DeathFlare.DeathLaunchDelay + DeathFlare.Lifetime) == null, "Expired network event ignored");
         var held = new DeathFlare[9];
         for (int i = 0; i < held.Length; i++) held[i] = DeathFlare.Spawn(flarePrefab, point + Vector3.right * i);
         Check(pool.ActiveCount == 9 && pool.OverflowCreates == 1 && held[0].IsBurning, "Overflow preserves all live protection");
