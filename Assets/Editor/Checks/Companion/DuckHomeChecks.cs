@@ -128,6 +128,9 @@ public static class DuckHomeChecks
         humanObject.AddComponent<PhotonView>();
         var human = humanObject.AddComponent<PhotonPlayer>();
         human.photonView.OwnerActorNr = 7;
+        // Rails: PhotonPlayer.ForActor only resolves remote avatars that have received a pose.
+        Set(human, "_hasPose", true);
+        Set(human, "_lastPoseRealtime", Time.realtimeSinceStartupAsDouble);
         if (!PhotonPlayer.Active.Contains(human)) PhotonPlayer.Active.Add(human);
         duck.Follow(7);
         Check(duck.Mode == DuckCompanion.CompanionMode.Following && duck.TargetActor == 7,
@@ -334,6 +337,8 @@ public static class DuckHomeChecks
         other.photonView.OwnerActorNr = 8;
         typeof(PhotonView).GetProperty("IsMine").SetValue(other.photonView, true);
         other.BindSources(head, head, head);
+        Set(other, "_hasPose", true);
+        Set(other, "_lastPoseRealtime", Time.realtimeSinceStartupAsDouble);
         PhotonPlayer.Active.Add(other);
         Set(duck.Dialogue, "preparing", true);
         duck.AttendConversation(8);
