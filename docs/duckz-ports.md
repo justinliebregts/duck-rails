@@ -345,7 +345,7 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   `PlayerKnockbackChecks` (live PUN), `RecurringAllocationChecks`, `ZombieHookImpactChecks` (isolated batch Play Mode only).
 - Remaining: run those batch checks; two-client hook/melee blood and spark parity, unfocused desktop observer, Quest cost of 32 pooled hit
   bursts; decide whether to import a warmup catalog. No diagnostic reports inspected; source Duckz untouched.
-- Destination commit: not committed yet.
+- Destination commit: `1ea23d07f`.
 
 ## Enemy tuning group — 22262f75, 98ec9f5b, 6f4c3cba
 
@@ -370,4 +370,4 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
 - Validation: compiled, empty Console; `EnemyRetreatChecks`, `RailEnemyBoardingChecks`, `SpiderFlareChecks` passed. Not run: `SmasherRetreatJumpChecks`,
   `DeathLifecycleChecks`, `FlareJoinNetworkChecks` (network, needs Play Mode).
 - Remaining: two-client late-join flare test (incl. master handoff and joining aboard a moving train), hook/smasher flare behavior, balance feel of new speeds.
-- Destination commit: the commit introducing this entry (see Git history).
+- Destination commit: `1ea23d07f`.
