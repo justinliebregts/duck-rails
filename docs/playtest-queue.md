@@ -44,7 +44,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ## Pending
 
 ### Pause menu present in Compound and Expedition — queued 2026-11-11
-- Commit(s): uncommitted
+- Commit(s): 5aaa6ffdb
 - Changed: PauseMenu.prefab and the CameraTablet it uses are now in Compound.unity and Expedition.unity. Before this they were only in the unused Main.unity, so P/Start opened nothing. `PhotonSession.JoinOpenRoom` now does nothing while in a room (Duckz behaviour). Before this, closing the menu left the current room for a random compound.
 - Setup: one client. Compound, then depart into an Expedition (train moving). Desktop keyboard in the editor.
 - Check: P opens the menu about 1.2 m in front of the head. It can be grabbed, and its Players/Rooms/Settings/Camera pages work. The Camera page opens the tablet above the menu. Pressing P again closes it, and the client stays in the same room (same room code, no "Leaving room..."). The test panel's GAME MENU button opens it. Dying closes it.
