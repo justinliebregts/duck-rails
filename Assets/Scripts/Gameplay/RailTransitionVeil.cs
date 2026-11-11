@@ -50,8 +50,34 @@ public sealed class RailTransitionVeil : MonoBehaviour
     OVROverlay cubeLayer, panelLayer;
     Pose panelTrackingPose;
 
+    // Owners that keep the veil up after the world is ready (ExpeditionRenderWarmup).
+    static readonly System.Collections.Generic.List<Object> holds = new System.Collections.Generic.List<Object>();
+    public static bool Held
+    {
+        get
+        {
+            for (int i = holds.Count - 1; i >= 0; i--) if (holds[i] == null) holds.RemoveAt(i);
+            return holds.Count > 0;
+        }
+    }
+
+    /// <summary>Keeps the veil up while an owner prepares the scene. A hold placed before the first
+    /// world is ready (late join from Login) covers immediately instead of fading in.</summary>
+    public static void SetHold(Object owner, bool hold)
+    {
+        if (!hold) { holds.Remove(owner); return; }
+        if (owner == null) return;
+        if (!holds.Contains(owner)) holds.Add(owner);
+        if (instance == null || instance.latched) return;
+        var session = PhotonSession.Instance;
+        if (session == null) return;
+        instance.Engage(session);
+        instance.alpha = 1;
+        instance.Apply();
+    }
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-    static void ResetStatics() { instance = null; }
+    static void ResetStatics() { instance = null; holds.Clear(); }
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Bootstrap()
     {
@@ -130,8 +156,10 @@ public sealed class RailTransitionVeil : MonoBehaviour
         float now = Time.unscaledTime;
         bool ready = session != null && session.WorldReady && !session.InWorldTransition;
         if (ready) everReady = true;
+        bool held = Held;
         // The login flow has its own status presentation; only veil in-game transitions.
-        if (!latched && everReady && session != null && session.InWorldTransition) Engage(session);
+        if (!latched && session != null && ((everReady && session.InWorldTransition) || held)) Engage(session);
+        ready &= !held; // A hold delays the ready hold/settle wait until it is released.
 #if UNITY_EDITOR
         if (EditorForce && !latched && session != null) Engage(session);
         if (EditorForce) readySince = -1;
@@ -196,10 +224,12 @@ public sealed class RailTransitionVeil : MonoBehaviour
 
     void UpdateText(PhotonSession session)
     {
+        bool held = Held;
         string nextTitle = session.RecoveringConnection ? "RECONNECTING"
-            : session.HeadingToExpedition ? "ALL ABOARD"
+            : session.HeadingToExpedition || held ? "ALL ABOARD"
             : GameScenes.IsLoaded(GameScenes.Expedition) ? "HEADING HOME" : "LOADING";
-        string nextDetail = session.HeadingToExpedition && !session.RecoveringConnection
+        string nextDetail = held && session.WorldReady && !session.RecoveringConnection ? "Getting the train ready..."
+            : session.HeadingToExpedition && !session.RecoveringConnection
             ? "The train is departing...\n" + session.Status : session.Status;
         if (nextTitle == title && nextDetail == detail) return;
         title = nextTitle; detail = nextDetail;

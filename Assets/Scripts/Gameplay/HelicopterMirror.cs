@@ -227,37 +227,10 @@ public class HelicopterMirror : MonoBehaviour
         go.transform.SetParent(mount.parent, false);
         go.transform.SetPositionAndRotation(mount.position, mount.rotation);
 
-        _camera = go.AddComponent<Camera>();
-        _camera.enabled = false;
-        _camera.clearFlags = CameraClearFlags.Skybox;
-        _camera.backgroundColor = new Color(0.45f, 0.55f, 0.65f, 1f);
-        _camera.nearClipPlane = 0.05f;
-        _camera.farClipPlane = farClip;
-        _camera.fieldOfView = fieldOfView > 1f ? fieldOfView : 70f;
-        _camera.aspect = 1f;
-        _camera.allowHDR = false;
-        _camera.allowMSAA = false;
-        _camera.useOcclusionCulling = false;
-        _camera.stereoTargetEye = StereoTargetEyeMask.None;
-        // UI stays out. Environment is back in, along with ducks and held items.
-        // Eye overlays sit on their own layer so this outside view does not draw them.
-        _camera.cullingMask = ~(1 << 5);
-        int eyeOverlay = LayerMask.NameToLayer("EyeOverlay");
-        if (eyeOverlay >= 0)
-            _camera.cullingMask &= ~(1 << eyeOverlay);
-        _camera.depth = -50f;
-
-        var data = go.AddComponent<UniversalAdditionalCameraData>();
-        data.renderType = CameraRenderType.Base;
-        data.renderShadows = false;
-        data.renderPostProcessing = false;
-        data.requiresDepthOption = CameraOverrideOption.Off;
-        data.requiresColorOption = CameraOverrideOption.Off;
-        data.allowXRRendering = false;
-
+        _camera = AddFeedCamera(go, fieldOfView, farClip);
         go.AddComponent<HelicopterMirrorCamera>();
 
-        _texture = NewTexture();
+        _texture = NewFeedTexture(resolution);
         _camera.targetTexture = _texture;
 
         Material source = _screen != null ? _screen.sharedMaterial : null;
@@ -270,7 +243,41 @@ public class HelicopterMirror : MonoBehaviour
             _screen.sharedMaterial = _screenMaterial;
     }
 
-    RenderTexture NewTexture()
+    /// <summary>The feed camera setup, shared with ExpeditionRenderWarmup so its warm draws
+    /// use the same render path (mono, no MSAA/HDR/depth/shadows) as the real screen.</summary>
+    internal static Camera AddFeedCamera(GameObject go, float fieldOfView, float farClip)
+    {
+        var camera = go.AddComponent<Camera>();
+        camera.enabled = false;
+        camera.clearFlags = CameraClearFlags.Skybox;
+        camera.backgroundColor = new Color(0.45f, 0.55f, 0.65f, 1f);
+        camera.nearClipPlane = 0.05f;
+        camera.farClipPlane = farClip;
+        camera.fieldOfView = fieldOfView > 1f ? fieldOfView : 70f;
+        camera.aspect = 1f;
+        camera.allowHDR = false;
+        camera.allowMSAA = false;
+        camera.useOcclusionCulling = false;
+        camera.stereoTargetEye = StereoTargetEyeMask.None;
+        // UI stays out. Environment is back in, along with ducks and held items.
+        // Eye overlays sit on their own layer so this outside view does not draw them.
+        camera.cullingMask = ~(1 << 5);
+        int eyeOverlay = LayerMask.NameToLayer("EyeOverlay");
+        if (eyeOverlay >= 0)
+            camera.cullingMask &= ~(1 << eyeOverlay);
+        camera.depth = -50f;
+
+        var data = go.AddComponent<UniversalAdditionalCameraData>();
+        data.renderType = CameraRenderType.Base;
+        data.renderShadows = false;
+        data.renderPostProcessing = false;
+        data.requiresDepthOption = CameraOverrideOption.Off;
+        data.requiresColorOption = CameraOverrideOption.Off;
+        data.allowXRRendering = false;
+        return camera;
+    }
+
+    internal static RenderTexture NewFeedTexture(int resolution)
     {
         int edge = Mathf.Clamp(resolution, 64, 512);
         var texture = new RenderTexture(edge, edge, 16, RenderTextureFormat.Default);

@@ -18,8 +18,27 @@ public sealed class LightEmissionState
     bool initialized;
     bool current;
 
+    // Live states, so ExpeditionRenderWarmup can prepare both the lit and unlit materials.
+    static readonly List<LightEmissionState> live = new List<LightEmissionState>();
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics() => live.Clear();
+
+    /// <summary>Adds each renderer with both its light-on and light-off material sets.</summary>
+    internal static void AppendStates(List<KeyValuePair<Renderer, Material[]>> into)
+    {
+        foreach (LightEmissionState state in live)
+            foreach (Entry entry in state.entries)
+                if (entry.renderer != null)
+                {
+                    into.Add(new KeyValuePair<Renderer, Material[]>(entry.renderer, entry.on));
+                    into.Add(new KeyValuePair<Renderer, Material[]>(entry.renderer, entry.off));
+                }
+    }
+
     public LightEmissionState(Component owner)
     {
+        live.Add(this);
         foreach (Renderer renderer in owner.GetComponentsInChildren<Renderer>(true))
         {
             Material[] original = renderer.sharedMaterials;
@@ -60,6 +79,7 @@ public sealed class LightEmissionState
 
     public void Dispose()
     {
+        live.Remove(this);
         // Restore references before destroying the runtime-only variants.
         foreach (Entry entry in entries)
             if (entry.renderer != null)

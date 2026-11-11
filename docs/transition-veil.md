@@ -198,5 +198,16 @@ Proposed, not implemented:
 - Instantiate blocks across frames (`Object.InstantiateAsync`, Unity 6.3).
 - Load Expedition additively, unload Compound separately, and defer `UnloadUnusedAssets` until under the veil.
 - Preload Expedition with `allowSceneActivation = false` during boarding. Note that Unity holds other async scene loads until activation.
-- Warm up Expedition shader variants.
+- ~~Warm up Expedition shader variants.~~ Implemented 2026-11-11; see below.
 - Run one `Tetrahedralize` after all lighting companions load.
+
+## Expedition render warmup (2026-11-11)
+
+Written for Rails from scratch, not a port of Duckz `295fb465`; it has no build-time catalog. `Assets/Scripts/Gameplay/ExpeditionRenderWarmup.cs` starts when the Expedition scene loads and keeps the veil up with `RailTransitionVeil.SetHold`. The veil releases only after the hold ends and the usual ready hold and settle wait have passed. A hold placed before the first world is ready, for example a late joiner arriving from Login, covers at once with no fade, titled ALL ABOARD.
+
+- **Gathers:** every distinct render state from three sources: the loaded scene's `MeshRenderer`s, including disabled ones such as the helicopter TV screen; every `RailRoute.catalog` block prefab, including blocks not chosen for the run, with lightmapped status taken from their `RailBakedBlockLighting` bindings; and the lit and unlit material sets of live helmets and flashlights (`LightEmissionState.AppendStates`). A state is defined by its shader, keywords, render queue, blend/cull/z values, mesh vertex layout and topology, lightmapped flag, and instanced flag. A material with GPU instancing enabled also gets an instanced state, drawn as two copies with a property block.
+- **Draws:** 32 states per batch as tiny proxies 0.2 m beyond the viewer camera's near plane. Each batch draws for one frame with every enabled non-directional realtime light hidden, which is the night baseline. It then draws one frame with a temporary per-pixel, unshadowed spot light. That light selects the URP `_ADDITIONAL_LIGHTS` variant the flashlights use, since they are unshadowed and cookie-free. Lights are hidden only for the warm cameras: they are switched off in `beginCameraRendering`, before culling, and back on in `endCameraRendering`.
+- **Helicopter TV:** a second camera built by `HelicopterMirror.AddFeedCamera`/`NewFeedTexture` draws the same proxies into a 256² feed texture. That gives the TV's render path: mono, no MSAA, HDR, depth or shadows.
+- **Bounds:** waits up to 20 s for `RailRoute.Ready`, then warms for up to 15 s. A second pass after `WorldReady` picks up cargo from the room snapshot. Warmed states are remembered for the process, so a second expedition only prepares states it hasn't seen.
+- **Not covered:** skinned meshes (ducks, enemies), particles, and post-load objects that use states not already seen. Nothing gameplay-related is moved, enabled or networked.
+- **Validation (2026-11-11):** compiles in Unity 6000.3.24f1 with an empty Console. At that point, the catalog held 18 block prefabs, 151 materials (150 URP Lit plus the TV screen) and 176 material/layout pairs. Play Mode and Quest have not been run; see the playtest queue.

@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Expedition render warmup: flashlight and helicopter TV first use — queued 2026-11-11
+- Commit(s): uncommitted
+- Changed: on every Expedition load, the transition veil stays up while `ExpeditionRenderWarmup` draws each scene and catalog render state with lights off and with a warm spot light, through the viewer camera and a copy of the helicopter feed camera. See docs/transition-veil.md.
+- Cheap checks: compiles, Console empty. Not run in Play Mode.
+- Setup: Compound → private run departure, one desktop client in DUCKZ_DIAGNOSTICS, then a second departure in the same session; one late join aboard a running train from Login.
+- Check: log `[ExpeditionWarmup] Prepared N render states...` with N > 0 on the first departure, no "time limit", and far fewer states on the second departure. Veil reads ALL ABOARD / "Getting the train ready...", then releases. A late joiner sees no uncovered Expedition frame before the veil. No leftover "Warm proxies" object or extra camera after release. Scene lights such as the helicopter light come back on afterwards. Editor-only: proxies visible in the Scene view during the warmup is fine.
+- Needs human: Quest development build profiled on a cold shader cache. Confirm the first flashlight or helmet light-on and the first helicopter TV view produce no shader or pipeline-creation spikes, and record the added veil time.
+- Priority: normal
+
 ### Compound Discord button — queued 2026-11-11
 - Commit(s): uncommitted
 - Changed: local JOIN DISCORD physical button with a "Join the Discord!" heading on the inner right partition of the Station Info nook; opens https://discord.gg/sfyvhahnDW.
