@@ -45,7 +45,6 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
     /// <summary>Editor always; development builds only for backend admins (client-side check, not a security boundary).</summary>
     public static bool Available => RailDiagnostics.Development &&
         (Application.isEditor || (PlayerSession.Instance != null && PlayerSession.Instance.IsAdmin));
-    public static bool OwnsMenuInput => Instance != null && Available && GR.Player.instance != null;
     void Awake() { Instance = this; }
     void OnDisable() { Close(); }
     void OnDestroy() { if (panel != null) Destroy(panel); if (toast != null) Destroy(toast.gameObject); if (panelMaterial != null) Destroy(panelMaterial); if (buttonMaterial != null) Destroy(buttonMaterial); if (Instance == this) Instance = null; RailTestTools.RestoreNetwork(); }
@@ -56,7 +55,8 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (player == null) { Close(); return; }
         if (!Available) Close();
         else if (IsOpen && desktopOpen != KeyboardMode) { Close(); Toggle(); }
-        if (Available && player.ReturnButtonPress_Left(ButtonName.Thumbstick).wasPressed || (RailDesktopInput.GetKeyDown(KeyCode.P) && !DuckCompanionDebug.IsTyping)) Toggle();
+        // Only L3 or the editor Game-view overlay button opens the panel.
+        if (Available && player.ReturnButtonPress_Left(ButtonName.Thumbstick).wasPressed) Toggle();
         if (desktopOpen && RailDesktopInput.GetKeyDown(KeyCode.Escape)) Close();
         if (desktopOpen) { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
         if (!RailTestTools.Allowed) RailTestTools.RestoreNetwork();

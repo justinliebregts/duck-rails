@@ -15,7 +15,7 @@ October 30, 2026. Justin requested one gameplay rig for Quest Link/headset use a
 - Hold **Q** to reach left, **E** to reach right, or both together. Release to bring the corresponding hand back. Aim with the mouse; the hands reach through space, without raycast acquisition.
 - Hold **right mouse** for both grips. Hold **left mouse** for both triggers. Releasing releases the corresponding button on both hands.
 - Mouse wheel adjusts forward reach (0.25–1.1 metres). **Z/X** rolls both wrists. **1/2** supply left controller X/Y; **3/4** supply right A/B.
-- **P** opens the forearm diagnostic panel. Touch its buttons with the other hand. **Tab** retains the session/testing tools. **Esc** frees the cursor; click to recapture without pressing a trigger. **F1** displays controls.
+- The Editor Game-view **Open test panel** button (or L3 on a controller) opens the forearm diagnostic panel; **P** opens the pause menu. Touch its buttons with the other hand. **Tab** retains the session/testing tools. **Esc** frees the cursor; click to recapture without pressing a trigger. **F1** displays controls.
 
 For the train lever, T toggles the keyboard shortcut in either input mode. Physical control also remains available: reach the handle, grip with right mouse, then increase forward reach with the wheel; release right mouse to brake. Horn, radio and keypad buttons use the actual fingertip colliders, just as in VR. Keyboard mode does not use the old E-to-toggle or mouse-to-click world control paths.
 

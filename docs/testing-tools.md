@@ -71,7 +71,7 @@ Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, w
 ## In-game panel
 
 ### Admin gate and L3 toggle — November 11
-In VR the test panel now opens and closes with **L3** (click the left thumbstick), not the left menu button. The menu buttons always open the normal pause menu. On desktop, P still opens the panel when it is available. The panel is always available in the Editor. In development builds it is available only when `PlayerSession.IsAdmin` is true. That flag comes from `GET admin/check` against the backend `admin_privileges` table after sign-in. This is a client-side convenience gate, not a security boundary. Release builds still exclude the panel. The old admin-only L3 gold-bar dropper (`GoldBarDropper`) was removed. Unity compilation passed; live headset checks are queued in [playtest-queue.md](playtest-queue.md).
+In VR the test panel now opens and closes with **L3** (click the left thumbstick), not the left menu button. The menu buttons and P always open the normal pause menu. The only ways to open the panel are L3 and, in the Editor, the Game-view **Open test panel** button. In keyboard mode, Esc or the panel's Close button hides it. This replaces the earlier P shortcuts described below. The panel is always available in the Editor. In development builds it is available only when `PlayerSession.IsAdmin` is true. That flag comes from `GET admin/check` against the backend `admin_privileges` table after sign-in. This is a client-side convenience gate, not a security boundary. Release builds still exclude the panel. The old admin-only L3 gold-bar dropper (`GoldBarDropper`) was removed. Unity compilation passed; live headset checks are queued in [playtest-queue.md](playtest-queue.md).
 
 ### VR press withdrawal — November 8
 
@@ -123,7 +123,7 @@ November 4 validation: compilation and 29 diagnostic regression checks passed. A
 
 In the Editor or a **Development Build**, press the left controller's existing game-menu input (`ButtonName.Start`, mapped to `OVRInput.RawButton.Start`) to show/hide the panel. In VR it follows the left forearm, with its center 32 cm above the wrist in the viewing direction's up axis and 10 cm toward the eyes, and faces the head. This moves the lower edge clear of the wrist instead of placing the panel across the arm. DuckPlayer's actual fingertip colliders press the buttons; no controller ray or grip is required. Headset comfort and reach still need validation.
 
-In **Keyboard mode**, **P** opens a centered, scrollable screen GUI with mouse buttons for reporting, status, network simulation and test shortcuts. Mouse look, movement, grabbing and throttle input are suppressed while it is open. **P**, **Esc** or **Close** hides it; click back into the game to resume mouse look. F2 switching chooses the corresponding screen or wrist interface. The GUI detects the real DuckPlayer's `SimulatedRigInput`, as well as the legacy desktop fixture. Diagnostic controls remain usable while downed or while world loading blocks ordinary gameplay input; the multiplayer simulation is not paused.
+In **Keyboard mode**, the Editor's **Open test panel** button (P before November 11) opens a centered, scrollable screen GUI with mouse buttons for reporting, status, network simulation and test shortcuts. Mouse look, movement, grabbing and throttle input are suppressed while it is open. **Esc** or **Close** hides it; click back into the game to resume mouse look. F2 switching chooses the corresponding screen or wrist interface. The GUI detects the real DuckPlayer's `SimulatedRigInput`, as well as the legacy desktop fixture. Diagnostic controls remain usable while downed or while world loading blocks ordinary gameplay input; the multiplayer simulation is not paused.
 
 - **Report Bug** saves a report ID and up to 60 one-second state samples, recent diagnostic events, current route, build identifier, ownership, bag contents, connection state and reproduction preset. Manual presses have a five-second cooldown.
 - **Game Menu** opens the existing room/settings menu. The arm panel does not pause the multiplayer simulation.
@@ -155,7 +155,7 @@ Automatic uploads use the existing authenticated game session at `POST /api/v1/d
 
 Open **Duck Rails > Test Center**:
 
-**Manual sandbox** launches one authenticated client directly into a temporary private expedition. Press P to open its panel, and use the Test Center's Stop button when finished.
+**Manual sandbox** launches one authenticated client directly into a temporary private expedition. Use the Game view's **Open test panel** button (or L3) to open its panel, and use the Test Center's Stop button when finished.
 
 1. **Quick regression** runs the existing session, desktop, quick-start, Week 2, Week 3, drive, fingertip, hold and avatar checks, plus diagnostic checks. It collects a result for every suite even if one fails.
 2. **Two clients — launch expedition** launches the main editor and Player2 through normal authentication directly into the same expedition using the existing quick-start room `11111`. This is manual play: no coal grab/release, master handoff, automated fixture or timeout. Existing test settings and reproduction presets are preserved; tools restricted to private rooms retain that restriction in this quick-start expedition. Stop when finished.

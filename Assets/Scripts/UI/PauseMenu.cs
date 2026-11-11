@@ -92,8 +92,6 @@ public class PauseMenu : MonoBehaviour
     }
 
     private void Update() {
-        // The test panel opens with L3; it only claims the desktop P key.
-        bool panelOwnsKey = RailDiagnosticPanel.OwnsMenuInput;
         if (GR.Player.instance == null)
             return;
         if (GR.Player.instance.IsDead) {
@@ -103,7 +101,7 @@ public class PauseMenu : MonoBehaviour
         bool wasPressed = false;
         if ((GR.Player.instance.ReturnButtonPress_Left(ButtonName.Start).wasPressed || GR.Player.instance.ReturnButtonPress_Right(ButtonName.Start).wasPressed)
 #if UNITY_EDITOR || UNITY_STANDALONE
-            || (!panelOwnsKey && RailDesktopInput.GetKeyDown(KeyCode.P))
+            || RailDesktopInput.GetKeyDown(KeyCode.P)
 #endif
             ) {
             wasPressed = true;
