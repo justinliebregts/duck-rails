@@ -1,5 +1,13 @@
 # Final escape block — concept V1
 
+## First-hold tower defenders — November 11
+
+The first valid bridge-button hold now activates exactly two finale enemies, one in each lookout tower. Reuses the retained `bridgeAt` trigger and master-only room-object spawning with run/marker deduplication; release/repress does not request another wave. The two active markers are at block-local (-34, 8.05, 74) and (34, 8.05, 74), facing inward. Four former candidates remain disabled for reference; six retained candidates, two eligible, two per run. This replaces the five-enemy finale selection; ordinary scavenging counts are unchanged.
+
+Both default to `RailZombie`. Select either named tower marker under `Enemy Spawns` and change **Rail Enemy Spawner > Enemy Type** to tune it. Random uses the seeded mix. The override applies to fixed finale/authoring selection, not scavenging crew selection. Updated clients use the `-tower-finale-v1` matchmaking suffix.
+
+EditMode checks passed: four floor-support corners and body clearance per tower, nearby baked ground nodes and connected ground paths to the button, 100 seeds on both saved prefab and live Expedition instance, retained first-hold serialization/reset and all 17 bridge-hold checks. Compilation completed; Console contained an unrelated Unity Connect token-exchange error. No navigation/lighting rebake or Expedition scene save was needed. Live multiplayer, repeat presses, host handoff, late join and headset defense balance are **queued for playtest**, not verified.
+
 ## Loot placement — November 10
 
 Added 28 coal and 26 gold candidates to the empty pools: eight truck beds on the approach, both south/north bastions, side patrol walls and lookout towers. All are before the bridge finish line. Retained fixed **6 coal / 2 gold per run** and existing enemy candidates. Six proposed fortress points were rejected for obstruction. No geometry, navigation or lighting rebuild was needed.

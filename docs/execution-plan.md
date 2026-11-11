@@ -792,3 +792,4 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] Invisible ±48 m side walls on every block, a per-block kill floor, local last-ground recovery (never downs), and deletion of loose cargo below the floor. Compiles; EditMode check across all 19 block prefabs passes. See [player bounds](player-bounds.md).
 - [ ] Play Mode and two-client acceptance (queued for playtest), plus a headset check of how wall contact and the warp feel.
+- [ ] November 11: playtest the two fixed finale tower defenders on first bridge hold, including repeat presses, late join, host handoff and fresh-run reset. Placement, seeded selection and bridge EditMode checks pass; see `docs/final-escape-layout.md` and the playtest queue.

@@ -111,6 +111,12 @@ public static class RailSpawnPool
             for (int i = 0; i < mix.Length; i++) mix[i] = rng.Next(RailEnemySpawns.Names.Length);
         for (int i = mix.Length - 1; i > 0; i--)
         { int j = rng.Next(i + 1); (mix[i], mix[j]) = (mix[j], mix[i]); }
+        for (int i = 0; i < chosen.Length; i++)
+        {
+            var spawner = chosen[i].GetComponent<RailEnemySpawner>();
+            int fixedType = spawner != null ? (int)spawner.enemyType : -1;
+            if (fixedType >= 0 && fixedType < RailEnemySpawns.Names.Length) mix[i] = fixedType;
+        }
         points.AddRange(chosen); types.AddRange(mix);
     }
 }

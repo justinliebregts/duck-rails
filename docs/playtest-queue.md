@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### First-hold finale tower defenders — queued 2026-11-11
+- Commit(s): uncommitted
+- Changed: finale selects exactly two fixed tower spawns, both regular zombies by default; marker Enemy Type dropdown supports tuning. Existing retained first-hold trigger and room-owned deduplication remain. Clients require the `-tower-finale-v1` matchmaking suffix.
+- Setup: two updated clients; use the bridge approach shortcut, then physically hold the button. Repeat with non-master operator, master handoff and late join during a paused hold; start a fresh expedition afterward.
+- Check: no finale enemies before first valid hold; exactly one appears on each tower floor afterward and can approach the button. Release/repress and simultaneous holds add no enemies. Both peers and late joiner agree on the same two objects; handoff adds none. Bridge still pauses/resumes/completes normally; fresh run allows a new pair. Existing scavenging enemy counts stay unchanged.
+- Cheap checks: compilation; 100 seeds each on saved prefab/live Expedition instance; floor support, clearance, baked ground paths to button; first-hold state serialization/reset; all 17 bridge hold checks passed. Console had an unrelated Unity Connect token-exchange error.
+- Needs human: tower spawn presentation and defense difficulty in headset.
+- Priority: normal
+
 ### Midpoint and finale loot — queued 2026-11-10
 - Commit(s): uncommitted
 - Changed: midpoint has 21 coal / 21 gold candidate markers; finale has 28 / 26. Each selects fixed 6 coal / 2 gold. Route now includes midpoint loot; updated clients require the `-special-loot-v1` matchmaking suffix.

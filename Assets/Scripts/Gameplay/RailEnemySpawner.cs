@@ -3,6 +3,10 @@ using UnityEngine;
 /// <summary>Authored candidate only; the route selects and network-spawns enemies.</summary>
 public sealed class RailEnemySpawner : MonoBehaviour
 {
+    public enum EnemyType { Random = -1, Zombie = 0, Bomber = 1, Smasher = 2, Spider = 3, Hook = 4 }
+    [Tooltip("Fixed finale/authoring encounter type. Random keeps the seeded mix; scavenging crew selection uses its own mix.")]
+    public EnemyType enemyType = EnemyType.Random;
+
     void OnDrawGizmos()
     {
         if (Application.isPlaying || GetComponent<RailSpawnMarker>() != null) return;

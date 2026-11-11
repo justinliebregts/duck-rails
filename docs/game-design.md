@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 11 finale: the first valid bridge-button hold spawns one enemy in each lookout tower, exactly two per expedition instead of the prior five-enemy finale selection. Both initially use the regular zombie/minion, with per-marker type selection. Repeated presses do not add waves. See [tower defenders](final-escape-layout.md#first-hold-tower-defenders--november-11). Editor checks pass; gameplay acceptance is queued.
+
 November 10: user requested coal/gold spawners at the midpoint shop and finale.
 Both now have authored candidate pools. Initial tuning uses fixed 6 coal / 2 gold
 per special block; ordinary scavenging crew scaling is unchanged. See
