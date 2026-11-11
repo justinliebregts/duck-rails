@@ -92,7 +92,7 @@ public sealed class RailTestCenter : EditorWindow
         using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode || RailTestRunner.Running || !CurrentPlayer.IsMainEditor))
         {
             if (GUILayout.Button("Quick regression — game rules and VR contact fixtures")) RailTestRunner.Quick();
-            if (GUILayout.Button("Manual sandbox — one private client, P opens test panel")) RailTestRunner.Start("sandbox");
+            if (GUILayout.Button("Manual sandbox — one private client, top-right button opens test panel")) RailTestRunner.Start("sandbox");
             if (GUILayout.Button("Two clients — launch expedition")) RailTestRunner.Start("two-clients");
             if (GUILayout.Button("Three clients — public sessions and network recovery")) RailTestRunner.Start("stability");
             if (GUILayout.Button("Three clients — expedition, shared bag and replay")) RailTestRunner.Start("expedition");
@@ -244,13 +244,13 @@ public static class RailTestRunner
             if (run.suite == "two-clients")
             {
                 Status = "Manual two-client expedition — " + (PhotonSession.Instance != null ? PhotonSession.Instance.Status : "Starting login scenes...") +
-                    "\nP opens the test panel. Stop when finished.";
+                    "\nThe Game-view button or L3 opens the test panel. Stop when finished.";
                 return;
             }
             if (run.suite == "sandbox")
             {
                 Status = "Manual private sandbox — " + (PhotonSession.Instance != null ? PhotonSession.Instance.Status : "Starting login scene...") +
-                    "\nElapsed: " + (DateTime.UtcNow - DateTime.Parse(run.started).ToUniversalTime()).TotalSeconds.ToString("F0") + "s. P opens the test panel once loaded.";
+                    "\nElapsed: " + (DateTime.UtcNow - DateTime.Parse(run.started).ToUniversalTime()).TotalSeconds.ToString("F0") + "s. The Game-view button or L3 opens the test panel once loaded.";
                 var session = PhotonSession.Instance;
                 if (run.state == "sandbox-starting" && session != null && PhotonSession.Phase == RailPhase.Departing)
                 { run.state = "sandbox-departing"; Save(); }
