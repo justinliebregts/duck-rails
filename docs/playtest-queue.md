@@ -44,7 +44,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ## Pending
 
 ### Stranded non-master leaves the ending train — queued 2026-11-11
-- Commit(s): uncommitted
+- Commit(s): d9ab4c4fc
 - Changed: a client still in a public expedition during `Returning` that cannot follow the crew leaves on its own. This covers a client missing from `rails.users`, an expired transfer window, or a crew handoff that stopped without arriving. It goes to the crew's known destination, then its previous compound, then any compound. Reported: three-player win, one non-master stayed aboard forever.
 - Setup: 3 clients, public departure, simulate success. (a) Normal return: all three reach one compound. (b) Disconnect one non-master during Ending and rejoin after the return token is committed. (c) Block one client's crew-return control connection (for example, invalid auth) so its handoff expires.
 - Check: (a) unchanged crew return. (b) and (c): the stranded client leaves the expedition within about 5 s of being stranded and lands in a compound (the crew's compound when known). No client remains on the train beyond about 100 s after the results countdown.
