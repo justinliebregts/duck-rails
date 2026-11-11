@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Pause menu present in Compound and Expedition — queued 2026-11-11
+- Commit(s): uncommitted
+- Changed: PauseMenu.prefab and the CameraTablet it uses are now in Compound.unity and Expedition.unity. Before this they were only in the unused Main.unity, so P/Start opened nothing. `PhotonSession.JoinOpenRoom` now does nothing while in a room (Duckz behaviour). Before this, closing the menu left the current room for a random compound.
+- Setup: one client. Compound, then depart into an Expedition (train moving). Desktop keyboard in the editor.
+- Check: P opens the menu about 1.2 m in front of the head. It can be grabbed, and its Players/Rooms/Settings/Camera pages work. The Camera page opens the tablet above the menu. Pressing P again closes it, and the client stays in the same room (same room code, no "Leaving room..."). The test panel's GAME MENU button opens it. Dying closes it.
+- Needs human: Start button on a Quest controller, and the poke/grab feel in a headset.
+- Priority: normal
+
 ### Test panel on L3, admin-gated — queued 2026-11-11
 - Commit(s): 7ae3a4e70, d46433b7b
 - Changed: in VR the test panel toggles on L3 instead of the left menu button. Menu buttons always open the pause menu. The panel needs the Editor or a backend admin in development builds. GoldBarDropper is removed.

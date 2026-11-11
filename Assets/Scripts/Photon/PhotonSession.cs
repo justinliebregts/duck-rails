@@ -175,7 +175,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!RailSessionRules.IsCode(code)) { FailInput("Enter exactly five digits."); return; }
         Begin(Request.JoinPrivate, code);
     }
-    public void JoinOpenRoom() { if (!HasRoomRequest) Begin(Request.Random); }
+    // Duckz semantics: only reconnect when offline; never leave the current room.
+    public void JoinOpenRoom() { if (!PhotonNetwork.InRoom && !HasRoomRequest) Begin(Request.Random); }
     public void LeaveCurrentRoom() => Begin(Request.Random);
     public bool HasCurrentRoom(out string code, out bool isPublic)
     {
