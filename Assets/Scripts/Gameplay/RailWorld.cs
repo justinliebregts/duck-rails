@@ -12,7 +12,7 @@ public sealed class RailWorld : MonoBehaviour
     public static RailWorld Instance { get; private set; }
     public GameObject compound, expedition;
     public BoxCollider boardingTrigger;
-    public Transform compoundSpawn, privateTerminal;
+    public Transform compoundSpawn;
     public RailTrain train;
     public TMP_Text departureBoard;
     public GameObject batPrefab, bagPrefab;
@@ -113,7 +113,7 @@ public sealed class RailWorld : MonoBehaviour
             session.SetBoarding(onPlatform);
             int[] roster = PhotonSession.Get(RailSessionRules.Roster, Array.Empty<int>());
             double deadline = PhotonSession.Get(RailSessionRules.Deadline, 0d);
-            departureBoard.text = PhotonSession.IsPrivate ? "PRIVATE CREW\nCode " + room + "\nMaster starts at the terminal"
+            departureBoard.text = PhotonSession.IsPrivate ? "PRIVATE CREW\nCode " + room
                 : "PUBLIC DEPARTURE\n" + roster.Length + " / 8 aboard\n" +
                     (deadline > 0 ? Math.Max(0, Math.Ceiling(deadline - PhotonNetwork.Time)) + " seconds" : "Step onto the platform") +
                     (onPlatform && roster.Length == 8 && !roster.Contains(PhotonNetwork.LocalPlayer.ActorNumber) ? "\nFULL — wait for the next departure" : "");
@@ -230,8 +230,8 @@ public sealed class RailWorld : MonoBehaviour
         GUILayout.BeginArea(new Rect(20, 145, 370, 420), GUI.skin.box);
         GUILayout.Label("SESSION CONTROLS");
         GUI.enabled = session.WorldReady;
-        bool nearTerminal = privateTerminal != null && GR.Player.instance != null && Vector3.Distance(GR.Player.instance.HeadCenteredGameplayPosition(GR.Player.instance.transform.position), privateTerminal.position) < 4;
-        if (!PhotonSession.OnTrain && nearTerminal)
+        // Mirrors the pause-menu Room page. Private runs start from the departure-gate button.
+        if (!PhotonSession.OnTrain)
         {
             GUILayout.Label("Five-digit code: create private or join any room");
             code = GUILayout.TextField(code, 5);
@@ -240,13 +240,8 @@ public sealed class RailWorld : MonoBehaviour
             if (GUILayout.Button("Join")) session.RequestJoinCode(code);
             GUILayout.EndHorizontal();
         }
-        else if (!PhotonSession.OnTrain) GUILayout.Label("Walk to the private terminal to Create or Join.");
         if (PhotonSession.IsPrivate && PhotonSession.Phase == RailPhase.Staging)
-        {
-            GUI.enabled = session.WorldReady && PhotonNetwork.IsMasterClient;
-            if (GUILayout.Button("Start expedition")) session.StartPrivateRun();
-            GUILayout.Label("Master: " + PhotonNetwork.MasterClient?.NickName);
-        }
+            GUILayout.Label("Owner: " + PhotonNetwork.MasterClient?.NickName + " launches at the departure gate.");
         if (PhotonSession.Phase == RailPhase.Running)
         {
             GUILayout.Label("Fuel: " + PhotonSession.CurrentFuel.ToString("0.0") + "   Stops: 5 + bridge");

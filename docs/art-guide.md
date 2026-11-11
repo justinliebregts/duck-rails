@@ -124,7 +124,7 @@ These are proposed visual identifiers. Place decorative landmarks within the exi
 
 ### Compound, bridge and dawn
 
-Use the same railway identity in the compound. Public departure needs an unmistakable platform boundary, readable occupancy and countdown. The private terminal needs separate Create and Join actions and a readable five-digit code. Keep the shopping area visually secondary to meeting and boarding.
+Use the same railway identity in the compound. Public departure needs an unmistakable platform boundary, readable occupancy and countdown. Private Create and Join live in the pause menu (November 11); the gate shows a readable owner launch prompt. Keep the shopping area visually secondary to meeting and boarding.
 
 The bridge silhouette must visibly obstruct the route while raised. Advance warning signs, the external control, lowering motion and fully open passage must agree. Preserve manual braking and the established crash outcome. Design the tunnel to conceal the lighting transition, then reveal a broad dawn view that leaves room to watch the crew. The train remains the setting for shared relief and results.
 

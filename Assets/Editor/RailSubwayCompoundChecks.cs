@@ -67,10 +67,12 @@ public static class RailSubwayCompoundChecks
         for(int i=0;i<5;i++) check(Physics.Raycast(new Vector3(-2.8f+i*1.4f,3,-11),Vector3.back,3,mask),"Stair barricade sealed across width "+i);
         check(world.boardingTrigger.isTrigger && world.boardingTrigger.bounds.Contains(new Vector3(0,.5f,8)),"Boarding trigger includes low duck body");
         check(!world.boardingTrigger.bounds.Contains(world.compoundSpawn.position),"Spawn is outside departure trigger");
-        var keypad=world.compound.GetComponentInChildren<RailPrivateTerminal>();
-        check(keypad!=null && keypad.create!=null && keypad.join!=null && keypad.start!=null && keypad.leave!=null,"Existing private terminal bindings retained");
-        check(keypad!=null && keypad.create.onPressed.GetPersistentEventCount()>0 && keypad.join.onPressed.GetPersistentEventCount()>0,"Existing keypad events retained");
-        check(world.departureBoard!=null && world.privateTerminal!=null && world.compoundSpawn!=null,"World presentation references retained");
+        var launch=world.compound.GetComponentInChildren<RailLaunchButton>(true);
+        check(launch!=null && launch.button!=null && launch.prompt!=null,"Private launch button and owner prompt bound");
+        check(world.compound.transform.Find("Private keypad")==null && world.compound.transform.Find("Private terminal")==null,"Private keypad removed (pause menu owns create/join)");
+        var hint=world.compound.transform.Find(RailLaunchButtonBuilder.HintName);
+        check(hint!=null && hint.GetComponent<TMPro.TMP_Text>().text==RailLaunchButtonBuilder.HintText,"Pause-menu private room hint present");
+        check(world.departureBoard!=null && world.compoundSpawn!=null,"World presentation references retained");
         var textures=AssetDatabase.FindAssets("t:Texture2D",new[]{RailSubwayCompoundBuilder.Folder}).Select(AssetDatabase.GUIDToAssetPath);
         check(textures.All(p=>((TextureImporter)AssetImporter.GetAtPath(p)).filterMode==FilterMode.Point),"Pixel textures use Point filtering");
         log.AppendLine("Renderers: "+root.GetComponentsInChildren<Renderer>().Length+"; colliders: "+root.GetComponentsInChildren<Collider>().Length+"; provisional live lights: "+root.GetComponentsInChildren<Light>().Length);

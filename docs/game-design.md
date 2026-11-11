@@ -425,6 +425,7 @@ Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets 
 - Successful creation enters private staging; friends can arrive before or after departure.
 - Private session remains the same Photon room through staging, run, results, and return so its code persists while alive.
 - The creator is initially Master Client and starts the expedition manually. Responsibilities pass to another connected player when the Master Client leaves.
+- November 11 confirmed change: private create/join moves to the pause-menu Room page; the physical keypad is removed and the wall instead says "Want to create a private room? Do so from the pause menu". The owner (Master Client) starts by pressing a **Launch Expedition** button on the departure gate under "<username>, push to start!"; there is no Start button elsewhere. During an expedition the Room page shows only the room code and **Back to Compound**, which takes only that player to a random public compound (creating one if none is open).
 - When the last connected player leaves, the room closes immediately and releases its code. No empty-room recovery window.
 
 ### Confirmed compound entry and public return

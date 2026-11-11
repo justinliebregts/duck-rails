@@ -103,11 +103,8 @@ public static class RailSceneBuilder
         flashlight.transform.position = new Vector3(-2.25f, .05f, -6.75f);
         flashlight.GetComponent<PhotonView>().sceneViewId = 900;
         PrefabUtility.RecordPrefabInstancePropertyModifications(flashlight.GetComponent<PhotonView>());
-        var terminal = Box("Private terminal", root, new Vector3(-9, 1, 0), new Vector3(2.5f, 2, 1), teal);
-        world.privateTerminal = terminal.transform;
-        Text("Private instructions", root, "PRIVATE EXPEDITIONS\nTab: Create / Join\nChoose a five-digit code", new Vector3(-9, 3, 1), .65f);
         Text("Controls", root, "WASD move • Mouse grip\nSpace jump • Tab controls", new Vector3(8, 2, 0), .65f);
-        RailPrivateTerminalBuilder.Install(world);
+        RailLaunchButtonBuilder.Install(world);
         var gm = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Manager/GameManager.prefab"));
         gm.transform.position = Vector3.zero;
         var manager = gm.GetComponent<GameManager>(); manager.respawnPoint = spawn;

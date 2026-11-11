@@ -288,7 +288,7 @@ public static class RailWeek3Builder
         var serialized = new SerializedObject(manager); serialized.FindProperty("surfaceMask").intValue = 1 << 6; serialized.FindProperty("visionMask").intValue = 1 << 6; serialized.FindProperty("maxEnemies").intValue = 0; serialized.ApplyModifiedPropertiesWithoutUndo();
         run.coalPoints = Array.Empty<Transform>(); run.enemyPoints = Array.Empty<Transform>();
         Text(world.train.transform, "FIVE STOPS → BRIDGE → DAWN\nRelease coal into furnace. Hold a hand near a downed duck for 3 seconds.\nBrake at the bridge. Hold the outside button to lower. Release pauses progress.", new Vector3(0, 2.1f, -4.4f), 1.1f).transform.localRotation = Quaternion.Euler(0, 180, 0);
-        Object.DestroyImmediate(world.compound); world.compound = null; world.boardingTrigger = null; world.departureBoard = null; world.privateTerminal = null;
+        Object.DestroyImmediate(world.compound); world.compound = null; world.boardingTrigger = null; world.departureBoard = null;
         RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat; RenderSettings.ambientLight = new Color(.36f, .42f, .5f); RenderSettings.fogDensity = .012f;
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/Expedition.unity");
         // Compound keeps the user's social layout and VR terminal, without expedition scenery.

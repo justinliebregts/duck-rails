@@ -91,10 +91,8 @@ public static class RailSubwayCompoundBuilder
         world.departureBoard.rectTransform.sizeDelta = new Vector2(5.5f, 2.1f);
         world.departureBoard.enableAutoSizing = true;
         world.departureBoard.fontSizeMin = 1; world.departureBoard.fontSizeMax = 6;
-        world.privateTerminal.position = new Vector3(-4.9f, .8f, 8.3f);
-        world.privateTerminal.localScale = new Vector3(2.5f, 1.6f, .4f);
-        var keypad = parent.Find("Private keypad");
-        if (keypad != null) { keypad.position = new Vector3(-4.9f,-.26f,8.04f); keypad.rotation = Quaternion.identity; }
+        // Private create/join lives in the pause menu; the gate gets the owner's launch button.
+        RailLaunchButtonBuilder.Install(world);
         world.compoundSpawn.position = new Vector3(0,.2f,-6.7f);
         var gm = UnityEngine.Object.FindAnyObjectByType<GameManager>();
         if (gm != null) { gm.respawnPoint = world.compoundSpawn; EditorUtility.SetDirty(gm); }

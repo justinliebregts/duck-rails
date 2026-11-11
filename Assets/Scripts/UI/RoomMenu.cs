@@ -12,8 +12,12 @@ public class RoomMenu : MonoBehaviour
     [Tooltip("Seconds after a room button is accepted before another room button press counts.")]
     public float buttonDelay = 0.3f;
 
+    const string BackToCompoundName = "BackToCompound";
+
     TMP_Text currentRoomCode;
     TMP_Text enteredRoomCodeText;
+    // Expedition mode shows only the room code and Back to Compound.
+    bool? expeditionMode;
     PhotonSession listened;
     string typed = "";
     bool showingFailure;
@@ -27,6 +31,7 @@ public class RoomMenu : MonoBehaviour
         Bind("CreatePublic", CreatePublic);
         Bind("CreatePrivate", CreatePrivate);
         Bind("EnterRoomCode", EnterCode);
+        Bind(BackToCompoundName, BackToCompound);
         for (int i = 0; i <= 9; i++) {
             int digit = i;
             Bind("Numbers/" + digit, () => AppendDigit(digit));
@@ -35,6 +40,33 @@ public class RoomMenu : MonoBehaviour
 
     void OnEnable() {
         Listen(PhotonSession.Instance);
+        expeditionMode = null;
+        ApplyMode();
+    }
+
+    void Update() {
+        ApplyMode();
+    }
+
+    static bool InExpedition => PhotonSession.IsRailsRoom && PhotonSession.OnTrain;
+
+    void ApplyMode() {
+        bool expedition = InExpedition;
+        if (expeditionMode == expedition) {
+            return;
+        }
+
+        expeditionMode = expedition;
+        foreach (Transform child in transform) {
+            bool shown = child.name == BackToCompoundName ? expedition
+                : enteredRoomCodeText != null && child == enteredRoomCodeText.transform || !expedition;
+            child.gameObject.SetActive(shown);
+        }
+
+        if (expedition) {
+            typed = "";
+            showingFailure = false;
+        }
         RefreshCurrentRoom();
         RefreshEntered();
     }
@@ -84,6 +116,18 @@ public class RoomMenu : MonoBehaviour
 
         button.momentary = true;
         button.pressedIn.AddListener(action);
+    }
+
+    // Leave the expedition alone (the crew stays aboard) and join a random public
+    // compound; PhotonSession creates a fresh compound when none is open.
+    void BackToCompound() {
+        if (!InExpedition || !AcceptButtonPress()) {
+            return;
+        }
+
+        PhotonSession session = PhotonSession.Ensure();
+        Listen(session);
+        session.RequestJoinRandom();
     }
 
     void JoinRandom() {
@@ -136,7 +180,7 @@ public class RoomMenu : MonoBehaviour
     }
 
     void AppendDigit(int digit) {
-        if (Time.time < nextDigitTime) {
+        if (InExpedition || Time.time < nextDigitTime) {
             return;
         }
 
@@ -165,6 +209,7 @@ public class RoomMenu : MonoBehaviour
 
     void OnRoomMembershipChanged() {
         RefreshCurrentRoom();
+        RefreshEntered();
     }
 
     void ShowFailure(string message) {
@@ -180,8 +225,9 @@ public class RoomMenu : MonoBehaviour
         }
 
         PhotonSession session = PhotonSession.Instance;
-        if (session != null && session.HasCurrentRoom(out string code, out bool isPublic)) {
-            currentRoomCode.text = RoomCodePrefix + code + (isPublic ? " Public" : " Private");
+        if (session != null && session.HasCurrentRoom(out string code, out _)) {
+            // Public expeditions are public too; only code-created rooms are private.
+            currentRoomCode.text = RoomCodePrefix + code + (PhotonSession.IsPrivate ? " Private" : " Public");
         } else {
             currentRoomCode.text = "Not in a room";
         }
@@ -189,6 +235,13 @@ public class RoomMenu : MonoBehaviour
 
     void RefreshEntered() {
         if (enteredRoomCodeText == null || showingFailure) {
+            return;
+        }
+
+        if (expeditionMode == true) {
+            PhotonSession session = PhotonSession.Instance;
+            enteredRoomCodeText.text = session != null && session.HasCurrentRoom(out string code, out _)
+                ? RoomCodePrefix + code : "Not in a room";
             return;
         }
 

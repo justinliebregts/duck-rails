@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Pause-menu rooms, gate launch button, keypad removed — queued 2026-11-11
+- Commit(s): uncommitted
+- Changed: pause-menu Room page now has two modes. In Compound it keeps the code keypad, Join Room Code, Join Random, Create Public and Create Private. In an expedition (`OnTrain`) it shows only "Room Code: <code>" and **Back to Compound**. That button makes this client alone leave and join a random public compound, or create one if none is open; the crew stays aboard. The physical private keypad and its terminal box are gone from Compound. A wall text says "Want to create a private room? Do so from the pause menu". In private staging, the departure gate shows "<owner>, push to start!" above a **LAUNCH EXPEDITION** button. Only the Master Client can press it, and it calls `StartPrivateRun`. The Tab desktop menu lost its terminal-distance gate and its Start button.
+- Setup: 2 clients. (a) Client A, Compound: pause menu > Room > type five digits > Create Private Room. Client B joins that code from its pause menu. (b) Both look at the gate. B presses the button, then A presses it. (c) In the expedition, B opens Room and presses Back to Compound. (d) Repeat (c) from a public expedition with no public compound open.
+- Check: (a) both are in the same private staging room. The gate shows A's name and B sees the same prompt. The public countdown text and launch button are hidden in public compounds. (b) B's press does nothing. A's press departs both clients. (c) Room page shows only the code and Back to Compound, with no keypad. B lands alone in a public compound and A stays on the train. (d) A fresh compound is created. The wall hint is readable from the spawn area. After a Master handoff in staging, the prompt names the new owner.
+- Cheap checks: compile clean, no Console errors. RailSubwayCompoundChecks passed, including the new launch-button, keypad-removed and hint checks. Wall and Room-page layout were previewed with editor cameras.
+- Needs human: launch-button poke feel and hint readability at duck height in a headset.
+- Priority: normal
+
 ### Pause menu present in Compound and Expedition — queued 2026-11-11
 - Commit(s): 5aaa6ffdb
 - Changed: PauseMenu.prefab and the CameraTablet it uses are now in Compound.unity and Expedition.unity. Before this they were only in the unused Main.unity, so P/Start opened nothing. `PhotonSession.JoinOpenRoom` now does nothing while in a room (Duckz behaviour). Before this, closing the menu left the current room for a random compound.
