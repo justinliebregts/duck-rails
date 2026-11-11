@@ -1,5 +1,23 @@
 # Final escape block — concept V1
 
+## Batch level polish — November 11
+
+Tunnel corrections after review: restore floor/drawbridge visibility after bake exports, then include the static 70×50 m far bank in lightmapping with probe fallback disabled. A single warm probe had coloured the whole grass surface. Local entrance illumination now bakes onto the bank; the user's current 22 lights are preserved, including five tunnel point lights. One finale bake/export, 1,741 bindings installed into Expedition and 23 scoped editor checks pass. Actual night-to-dawn/headset review remains queued; see checklist items 22–23.
+
+Authorized follow-up items 17–21 are installed: finer ground subdivision and lightmap scale, two 0.2 m-thick middle slabs, four independently movable floodlight groups, a dark bank edge with overlapping faces removed, and both low perimeter walls continued to Z80. One coordinated lighting bake/export, 72,503-node navigation bake and 1,862 editor checks pass. No Play Mode; gameplay/headset acceptance remains queued. [Follow-up evidence and views](level-polish-batch.md#follow-up-execution-result--november-11).
+
+The user approved [this measured proposal](../output/level-polish-batch/layout-review.png) and execution of all 16 collected requests. The current prefab was adapted without running the original whole-block builder. Existing traffic/post changes and the two first-hold tower defenders are retained.
+
+All ten stair flights are now smooth ramps. South access turns inward (4 m run / 2 m rise); upper ramps shorten to 8 m run / 4 m rise. Middle ramps retain 8 m runs and river recovery retains both 19.5 m switchbacks per side. Sixty-four recovery posts extend onto the ramps with unchanged handrail tops. Eight climb blocks, fourteen crates in twelve asymmetric groups, two low approach walls, joined concrete surfaces, four three-lamp floodlight arrays and ten emissive red warning caps are installed. The fixtures add fourteen baked spotlights (eighteen total including retained samples).
+
+The manmade tunnel retains its clear envelope and Z120–160 timing footprint, surrounded by grounded faceted cliffs extending into the side hills. Valley water is a single continuous recessed surface at Y-0.25 with a solid bed approximately Y-0.6; the previous underlying flat slab is removed from the valley. Four cottage gables are closed and the victory railway has a gravel bed. No train, route, bridge-hold, networking or enemy-behavior code changed.
+
+Retained 28 coal / 26 gold / six enemy candidates, with two active tower markers and 6 coal / 2 gold / 2 enemies per run. Only the two coal candidates formerly on the shortened upper stair runs move to adjacent flat roofs (X±23, Y4.2, Z62); identities and pool order remain.
+
+Navigation rebaked (72,306 nodes); both tower markers have nearby ground nodes and floor-only paths to the button. Lighting baked/exported and Expedition bindings installed (1,740 receivers). 1,375 scoped geometry/spawn checks and 398 final bridge-sweep/clearance/reference checks pass. Console error query is empty; captures retain a pre-existing CutePixel missing-em-dash warning. Review images use neutral temporary lighting except `baked-fortress.png`, which uses actual bake-scene lighting. Comparable serialized mesh counts are 37,992 triangles / 1,900 renderers versus 32,274 / 2,009 before: fewer renderer objects but 5,718 more triangles, primarily the recessed ground. This is not device performance evidence.
+
+Implementation and detailed evidence: [batch checklist](level-polish-batch.md#execution-result--november-11). Gameplay, headset traversal/readability, multiplayer and Quest performance are **queued for playtest**. No Play Mode was entered.
+
 ## First-hold tower defenders — November 11
 
 The first valid bridge-button hold now activates exactly two finale enemies, one in each lookout tower. Reuses the retained `bridgeAt` trigger and master-only room-object spawning with run/marker deduplication; release/repress does not request another wave. The two active markers are at block-local (-34, 8.05, 74) and (34, 8.05, 74), facing inward. Four former candidates remain disabled for reference; six retained candidates, two eligible, two per run. This replaces the five-enemy finale selection; ordinary scavenging counts are unchanged.

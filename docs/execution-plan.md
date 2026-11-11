@@ -1,5 +1,14 @@
 # Duck Rails — execution plan
 
+- [x] November 11 whole-bank lighting correction: lightmap the static tunnel bank instead of sampling one probe across it; preserve all 22 current lights. Finale baked/exported, 1,741 bindings installed and 23 editor checks pass. Night-to-dawn/headset appearance remains queued; see [item 23](level-polish-batch.md).
+
+- [x] November 11 finale tunnel-floor visibility correction: restored bake-excluded renderers and fixed prepare/export visibility persistence; 24 editor checks pass across prefab, bake scene reload and Expedition. Actual client/headset tunnel crossing remains queued. See item 22 in [batch checklist](level-polish-batch.md).
+
+- [x] November 11 finale follow-ups 17–21: improve ground bake detail, thin the middle ramps, group four floodlights, fix/darken the bank lip and extend outer walls to the water. One lighting/navigation pass and 1,862 scoped editor checks pass. [Evidence](level-polish-batch.md#follow-up-execution-result--november-11); headset/gameplay/performance acceptance remains queued below.
+
+- [x] November 11: implement all 16 approved bridge-finale-v1 polish items; preserve existing local edits, bridge controls and spawn counts. Navigation and lighting baked/exported, Expedition bindings installed, 1,375 geometry/spawn checks and 398 final clearance/reference checks pass. See [batch evidence](level-polish-batch.md#execution-result--november-11).
+- [ ] Playtest finale ramps/recovery, climb blocks, crate routes, lighting, cliff/valley sightlines, shifted coal reach, multiplayer and Quest performance. **Queued for playtest**, not accepted from editor checks.
+
 - [x] November 11: install approved Farm northeast pond/playground replacement, redistribute 14 coal/14 gold candidates and author six paddock enemy candidates. Net 43,104 fewer triangles (21.5% of Farm); navigation and lighting baked/exported; scoped geometry/spawn/export checks pass. See [Farm evidence](farm-silos-layout.md#northeast-paddock-polish--november-11-2026).
 - [ ] Playtest Farm paddock climbing/slide, shallow pond and loose-item recovery, enemy pursuit, peer/late-join consistency and Quest performance. Queued; editor checks do not complete acceptance.
 

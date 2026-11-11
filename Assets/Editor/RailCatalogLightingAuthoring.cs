@@ -32,8 +32,19 @@ public static class RailCatalogLightingAuthoring
     {
         if(t.GetComponentInParent<Helicopter>(true)!=null) return true;
         for(var p=t;p!=null&&p!=root;p=p.parent)
-            if(p.name=="Bridge hinge" || p.name.StartsWith("Spawn variation") || p.name=="Far bank" || p.name=="Exit rail" || p.name=="DAWN")return true;
+            if(p.name=="Bridge hinge" || p.name.StartsWith("Spawn variation") || p.name=="Exit rail" || p.name=="DAWN")return true;
         return false;
+    }
+    // Exclusions are temporary bake state, never the saved runtime/preview state.
+    static void SetBakeVisibility(RailBakedBlockLighting root, bool baking)
+    {
+        foreach(var renderer in root.GetComponentsInChildren<Renderer>(true))
+        {
+            if(!Excluded(renderer.transform,root.transform))continue;
+            var source=PrefabUtility.GetCorrespondingObjectFromSource(renderer);
+            renderer.enabled=baking?false:(source!=null?source.enabled:true);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(renderer);
+        }
     }
     [MenuItem("Duck Rails/Lighting/All Blocks/Bake Missing Samples")]
     public static void StartBatch() => StartBatch(false);
@@ -98,7 +109,12 @@ public static class RailCatalogLightingAuthoring
     }
     public static void Prepare(string path)
     {
-        if(File.Exists(BakePath(path))){EditorSceneManager.OpenScene(BakePath(path));return;}
+        if(File.Exists(BakePath(path)))
+        {
+            var existing=EditorSceneManager.OpenScene(BakePath(path));
+            SetBakeVisibility(Object.FindFirstObjectByType<RailBakedBlockLighting>(),true);
+            EditorSceneManager.SaveScene(existing);return;
+        }
         Directory.CreateDirectory(Folder(path));AssetDatabase.Refresh();
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
         var root=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(path));
@@ -140,7 +156,7 @@ public static class RailCatalogLightingAuthoring
         var lighting=root.GetComponent<RailBakedBlockLighting>()??root.AddComponent<RailBakedBlockLighting>();lighting.lightingScene=Payload(path);
         PrefabUtility.ApplyPrefabInstance(root,InteractionMode.AutomatedAction);
         // Keep the moving bridge and dawn-side pieces out of both lightmaps and baked shadows.
-        foreach(var r in root.GetComponentsInChildren<Renderer>())if(Excluded(r.transform,root.transform))r.enabled=false;
+        SetBakeVisibility(root.GetComponent<RailBakedBlockLighting>(),true);
         var probes=new GameObject("Block baked probes").AddComponent<LightProbeGroup>();var points=new List<Vector3>();Physics.SyncTransforms();
         float farEdge=root.GetComponent<RailBlock>().length-1;
         for(float z=1;z<=farEdge;z+=10)
@@ -171,15 +187,14 @@ public static class RailCatalogLightingAuthoring
         var bindings=root.GetComponentsInChildren<MeshRenderer>().Where(r=>!Excluded(r.transform,root.transform)&&r.lightmapIndex>=0&&r.lightmapIndex<LightmapSettings.lightmaps.Length)
             .Select(r=>new RailBakedBlockLighting.Binding{renderer=r,color=LightmapSettings.lightmaps[r.lightmapIndex].lightmapColor,scaleOffset=r.lightmapScaleOffset}).ToArray();
         if(bindings.Length==0||LightmapSettings.lightProbes==null||LightmapSettings.lightProbes.count==0)throw new InvalidOperationException("Missing receivers/probes");
-        // Restore authoring-only visibility overrides before applying prefab data.
-        foreach(var renderer in root.GetComponentsInChildren<Renderer>())if(Excluded(renderer.transform,root.transform))PrefabUtility.RevertObjectOverride(renderer,InteractionMode.AutomatedAction);
-        // Reverting a renderer can refresh its prefab instance; write bindings afterwards.
+        // Explicitly record/restore only visibility; retain authored material and renderer edits.
+        SetBakeVisibility(root,false);
         root.bindings=bindings;
         PrefabUtility.RecordPrefabInstancePropertyModifications(root);PrefabUtility.ApplyPrefabInstance(root.gameObject,InteractionMode.AutomatedAction);
         if(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<RailBakedBlockLighting>().bindings.Length!=bindings.Length)
             throw new InvalidOperationException("Prefab binding export did not persist: "+path);
-        // Reapply bake-only exclusions to the saved authoring scene for future rebakes.
-        foreach(var renderer in root.GetComponentsInChildren<Renderer>())if(Excluded(renderer.transform,root.transform))renderer.enabled=false;
+        // Leave the saved authoring scene visible for inspection. Prepare hides exclusions
+        // again immediately before the next bake, while bindings still exclude them.
         var scene=SceneManager.GetActiveScene();EditorSceneManager.SaveScene(scene);
         EditorSceneManager.SaveScene(scene,Payload(path),true);scene=EditorSceneManager.OpenScene(Payload(path));
         foreach(var go in scene.GetRootGameObjects())if(go.GetComponent<LightProbeGroup>()==null)Object.DestroyImmediate(go);
@@ -193,6 +208,17 @@ public static class RailCatalogLightingAuthoring
     {
         if(EditorApplication.isPlaying||Lightmapping.isRunning||paths!=null)throw new InvalidOperationException("Finish Play Mode/bake first.");
         foreach(var path in Prefabs){EditorSceneManager.OpenScene(BakePath(path));Export(path);}
+    }
+
+    [MenuItem("Duck Rails/Lighting/All Blocks/Re-export Open Block And Keep Open")]
+    public static void ReexportOpen()
+    {
+        if(EditorApplication.isPlaying||Lightmapping.isRunning||paths!=null)throw new InvalidOperationException("Finish Play Mode/bake first.");
+        var scene=SceneManager.GetActiveScene();
+        if(scene.isDirty)throw new InvalidOperationException("Save scene edits first.");
+        var path=Prefabs.SingleOrDefault(p=>BakePath(p)==scene.path);
+        if(path==null)throw new InvalidOperationException("Open a saved block bake scene first.");
+        try{Export(path);}finally{EditorSceneManager.OpenScene(BakePath(path));}
     }
 
     [MenuItem("Duck Rails/Lighting/All Blocks/Bake Open Block")]

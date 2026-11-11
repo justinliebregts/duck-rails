@@ -1,0 +1,13 @@
+using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using UnityEngine.Rendering;using System.IO;using Object=UnityEngine.Object;
+internal class CommandScript:IRunCommand {
+ public void Execute(ExecutionResult result){RailCanyon.Guard();string previous=SceneManager.GetActiveScene().path;var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
+ try {var root=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(RailFinaleFort.PrefabPath));string phase=root.transform.Find("Env/November 11 polish")?"after":"before";
+ RenderSettings.fog=false;RenderSettings.skybox=null;RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=new Color(.65f,.65f,.65f);RenderSettings.ambientIntensity=1.3f;
+ foreach(var r in root.GetComponentsInChildren<Renderer>()){r.lightmapIndex=-1;r.enabled=true;}
+ var sun=new GameObject("Temporary review sun").AddComponent<Light>();sun.type=LightType.Directional;sun.intensity=1.3f;sun.transform.rotation=Quaternion.Euler(48,30,0);
+ var cam=new GameObject("Temporary review camera").AddComponent<Camera>();cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new(.47f,.58f,.65f);cam.farClipPlane=600;cam.nearClipPlane=.1f;cam.fieldOfView=65;
+ Shot("fortress",new(0,52,-10),new(0,3,53));Shot("cliff",new(-65,40,75),new(0,9,143));Shot("valley",new(45,35,224),new(12,0,253));Shot("north-seams",new(-45,15,89),new(-25,3,72));
+ void Shot(string name,Vector3 pos,Vector3 target){cam.transform.SetPositionAndRotation(pos,Quaternion.LookRotation(target-pos));var rt=new RenderTexture(1440,1000,24);var tex=new Texture2D(1440,1000,TextureFormat.RGB24,false);var prev=RenderTexture.active;try{cam.targetTexture=rt;cam.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1440,1000),0,0);tex.Apply();File.WriteAllBytes("output/level-polish-batch/"+phase+"-"+name+".png",tex.EncodeToPNG());}finally{cam.targetTexture=null;RenderTexture.active=prev;Object.DestroyImmediate(tex);rt.Release();Object.DestroyImmediate(rt);}}
+ result.Log("Saved "+phase+" review captures; temporary neutral lighting, not gameplay-lighting proof.");
+ }finally{EditorSceneManager.OpenScene(previous);}}
+}

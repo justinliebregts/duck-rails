@@ -1,0 +1,18 @@
+17 editor checks passed. Crate material/transform/behaviour unchanged; new lightmap UVs and static GI only.
+PASS dedicated render mesh; original collision mesh retained
+PASS source FBX retained for collision
+PASS shared FBX unchanged
+PASS complete lightmap UVs
+PASS geometry counts unchanged
+PASS geometry bounds unchanged
+PASS stationary mesh contributes GI
+PASS stationary mesh uses lightmaps
+PASS crate exported lightmap binding present
+PASS deposit references retained
+PASS pre-existing unassigned reward-text fields unchanged (confirmed against baseline)
+PASS dynamic text not marked GI static
+PASS intake remains trigger
+PASS crate binding installed in Expedition
+PASS reopened authoring crate has atlas assignment
+PASS compilation clean
+PASS no Play Mode

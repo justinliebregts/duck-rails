@@ -1,0 +1,20 @@
+using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.Rendering;using System.Linq;using System.IO;using System.Collections.Generic;
+internal class CommandScript:IRunCommand{public void Execute(ExecutionResult r){
+RailCanyon.Guard();var log=new List<string>();int count=0;void Check(bool value,string message){count++;if(!value)throw new System.Exception(message);log.Add("PASS "+message);}
+string[] Lights(GameObject root)=>root.GetComponentsInChildren<Light>().Select(l=>l.name+"|"+l.transform.position.ToString("F5")+"|"+l.transform.rotation.ToString("F5")+"|"+l.type+"|"+l.lightmapBakeType+"|"+l.intensity+"|"+l.range+"|"+l.spotAngle+"|"+l.color.ToString("F5")).ToArray();
+var before=File.ReadAllLines("output/level-polish-batch/followup/tunnel-lights-before.txt");
+var asset=AssetDatabase.LoadAssetAtPath<GameObject>(RailFinaleFort.PrefabPath);
+var sceneRoot=Object.FindFirstObjectByType<RailBlock>();
+Check(before.SequenceEqual(Lights(sceneRoot.gameObject)),"all authored scene light transforms and settings retained");
+Check(before.SequenceEqual(Lights(asset)),"all light edits persisted in prefab");
+var bank=RailBlock.FindEnvironment(asset.transform,"Far bank").GetComponent<MeshRenderer>();var lighting=asset.GetComponent<RailBakedBlockLighting>();
+Check(bank.enabled,"saved bank visible");Check(bank.lightProbeUsage==LightProbeUsage.Off,"bank probe fallback disabled");
+Check(bank.receiveGI==ReceiveGI.Lightmaps,"bank receives lightmaps");Check(GameObjectUtility.AreStaticEditorFlagsSet(bank.gameObject,StaticEditorFlags.ContributeGI),"bank contributes GI");
+Check(lighting.bindings.Any(b=>b.renderer==bank&&b.color),"bank has exported texture binding");
+Check(lighting.bindings.All(b=>b.renderer&&b.color),"all exported bindings valid");
+Check(RailBlock.FindEnvironment(asset.transform,"Bridge hinge").GetComponentsInChildren<Renderer>(true).All(x=>x.enabled),"bridge visibility retained");
+Physics.SyncTransforms();foreach(float x in new[]{-4f,0,4f})foreach(int z in new[]{121,140,159})Check(Physics.Raycast(new(x,1,z),Vector3.down,out var hit,2,1<<6)&&Mathf.Abs(hit.point.y)<.01f,"floor collision "+x+","+z);
+RailCatalogLightingChecks.InstallFinale();var route=Object.FindFirstObjectByType<RailRoute>();var target=RailBlock.FindEnvironment(route.finaleRoot,"Far bank").GetComponent<MeshRenderer>();Check(target.enabled&&target.lightProbeUsage==LightProbeUsage.Off,"Expedition bank visible with no probe fallback");Check(route.finaleRoot.GetComponent<RailBakedBlockLighting>().bindings.Any(b=>b.renderer==target&&b.color),"Expedition bank binding installed");
+EditorSceneManager.OpenScene(RailFinaleFort.BakeScene);Check(RailBlock.FindEnvironment(Object.FindFirstObjectByType<RailBlock>().transform,"Far bank").GetComponent<Renderer>().enabled,"bank visible after scene reload");
+Check(!EditorUtility.scriptCompilationFailed,"compilation clean");Check(!EditorApplication.isPlaying,"no Play Mode");
+log.Insert(0,count+" EditMode checks passed; "+lighting.bindings.Length+" bindings; "+before.Length+" lights preserved.");File.WriteAllLines("output/level-polish-batch/followup/bank-light-checks.txt",log);r.Log(string.Join("\n",log));}}

@@ -1,0 +1,22 @@
+using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using System;using System.IO;using System.Linq;using System.Collections.Generic;using Object=UnityEngine.Object;
+internal class CommandScript:IRunCommand{
+public void Execute(ExecutionResult result){RailCanyon.Guard();EditorSceneManager.OpenScene(RailFinaleFort.BakeScene);var root=Object.FindFirstObjectByType<RailBlock>();var polish=root.transform.Find("Env/November 11 polish");Physics.SyncTransforms();var log=new List<string>();int checks=0,fail=0;
+void Check(bool ok,string msg){checks++;if(!ok){fail++;log.Add("FAIL "+msg);}}
+bool Floor(Vector3 p,float distance=.6f){return Physics.Raycast(p+Vector3.up*.25f,Vector3.down,out var h,distance,1<<6,QueryTriggerInteraction.Ignore)&&h.collider.transform.IsChildOf(root.transform);}
+Check(root.id=="bridge-finale-v1"&&root.length==300,"identity/length");Check(root.coalCount==6&&root.goldCount==2&&root.enemyCount==2,"per-run counts");
+Check(root.spawnCandidates.coal.Length==28&&root.spawnCandidates.gold.Length==26&&root.spawnCandidates.enemies.Length==6,"candidate counts");
+Check(!root.GetComponentsInChildren<Transform>(true).Any(t=>t.name=="Concrete stair tread"||t.name=="River recovery tread"),"all stair treads removed");
+Check(polish.GetComponentsInChildren<Light>().Length==14,"four floodlights plus ten red spotlights");Check(polish.GetComponentsInChildren<Light>().All(l=>l.type==LightType.Spot&&l.lightmapBakeType==LightmapBakeType.Baked),"new lights baked spots");
+foreach(var kind in new[]{RailSpawnKind.Coal,RailSpawnKind.Gold,RailSpawnKind.Enemy}){for(int seed=0;seed<100;seed++){var selected=RailSpawnPool.Select(root,kind,seed);Check(selected.Length==RailSpawnPool.Count(root,kind)&&selected.Distinct().Count()==selected.Length,"selection "+kind+" seed "+seed);}
+foreach(var marker in RailSpawnPool.Available(root,kind)){
+float r=kind==RailSpawnKind.Enemy?.3f:.15f;
+foreach(float x in new[]{-r,r})foreach(float z in new[]{-r,r})Check(Floor(marker.position+new Vector3(x,0,z)),"marker support "+marker.name+" "+x+","+z);
+var overlaps=Physics.OverlapBox(marker.position+Vector3.up*(kind==RailSpawnKind.Enemy?.8f:.2f),new Vector3(r,kind==RailSpawnKind.Enemy?.65f:.12f,r),Quaternion.identity,1<<6,QueryTriggerInteraction.Ignore).Where(c=>c.transform.IsChildOf(polish)).ToArray();Check(overlaps.Length==0,"new geometry obstructs "+marker.name+": "+string.Join(",",overlaps.Select(c=>c.name)));}}
+foreach(int s in new[]{-1,1}){
+foreach(var pair in new[]{new[]{new Vector3(s*8,0,40),new Vector3(s*12,2,40)},new[]{new Vector3(s*27,2,48),new Vector3(s*27,4,56)},new[]{new Vector3(s*26,4,64),new Vector3(s*26,8,72)},new[]{new Vector3(s*16,-11.5f,88.5f),new Vector3(s*35.5f,-5.75f,88.5f)},new[]{new Vector3(s*35.5f,-5.75f,83),new Vector3(s*16,0,83)}}){for(int i=0;i<=12;i++){var p=Vector3.Lerp(pair[0],pair[1],(i+.05f)/12.1f);Check(Floor(p,.5f),"ramp support "+p);var hit=Physics.OverlapCapsule(p+Vector3.up*.5f,p+Vector3.up*1.6f,.22f,1<<6,QueryTriggerInteraction.Ignore);Check(!hit.Any(c=>c.transform.IsChildOf(root.transform)),"ramp body clearance "+p+": "+string.Join(",",hit.Select(c=>c.name)));}}
+}
+for(int z=112;z<300;z+=2){foreach(float x in new[]{-2.4f,0,2.4f}){var hit=Physics.OverlapBox(new(x,3.25f,z),new(.12f,3.05f,.4f),Quaternion.identity,1<<6,QueryTriggerInteraction.Ignore);Check(!hit.Any(c=>c.transform.IsChildOf(polish)),"new geometry train clearance "+x+","+z);}}
+for(int z=200;z<258;z+=4){float x=17+4*Mathf.Sin(z*.09f);Check(Physics.Raycast(new(x,1,z),Vector3.down,out var h,3,1<<6)&&h.point.y<-.4f,"stream has depressed solid bed at "+z);}
+foreach(var mf in polish.GetComponentsInChildren<MeshFilter>()){Check(mf.sharedMesh!=null,"mesh "+mf.name);Check(mf.sharedMesh.uv2.Length==mf.sharedMesh.vertexCount,"lightmap UV "+mf.name);}
+log.Insert(0,checks+" checks; "+fail+" failures. Editor-only; no Play Mode.");File.WriteAllLines("output/level-polish-batch/geometry-checks.txt",log);result.Log(string.Join("\n",log));}
+}

@@ -1,0 +1,22 @@
+using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using System.IO;using System.Linq;using System.Collections.Generic;
+internal class CommandScript:IRunCommand{public void Execute(ExecutionResult r){
+RailCanyon.Guard();var log=new List<string>();int count=0;void Check(bool value,string message){count++;if(!value)throw new System.Exception(message);log.Add("PASS "+message);}
+Renderer Bank(GameObject g)=>RailBlock.FindEnvironment(g.transform,"Far bank").GetComponent<Renderer>();
+var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(RailFinaleFort.PrefabPath);
+Check(Bank(prefab).enabled,"saved prefab tunnel ground visible");
+RailCatalogLightingAuthoring.Prepare(RailFinaleFort.PrefabPath);
+Check(!Bank(Object.FindFirstObjectByType<RailBlock>().gameObject).enabled,"floor excluded only during bake preparation");
+Check(Bank(prefab).enabled,"bake preparation leaves prefab floor visible");
+RailCatalogLightingAuthoring.ReexportOpen();
+var root=Object.FindFirstObjectByType<RailBlock>();
+Check(Bank(root.gameObject).enabled,"reopened bake scene floor visible after export");
+Check(Bank(prefab).enabled,"prefab floor visible after export");
+Check(RailBlock.FindEnvironment(prefab.transform,"Bridge hinge").GetComponentsInChildren<Renderer>(true).All(x=>x.enabled),"moving bridge visible after export");
+Physics.SyncTransforms();foreach(float x in new[]{-4f,0,4f})foreach(int z in new[]{121,130,140,150,159})Check(Physics.Raycast(new(x,1,z),Vector3.down,out var hit,2,1<<6)&&Mathf.Abs(hit.point.y)<.01f,"floor collision "+x+","+z);
+RailCatalogLightingChecks.InstallFinale();var route=Object.FindFirstObjectByType<RailRoute>();
+Check(RailBlock.FindEnvironment(route.finaleRoot,"Far bank").GetComponent<Renderer>().enabled,"Expedition tunnel floor visible");
+Check(RailBlock.FindEnvironment(route.finaleRoot,"Bridge hinge").GetComponentsInChildren<Renderer>(true).All(x=>x.enabled),"Expedition bridge visible");
+EditorSceneManager.OpenScene(RailFinaleFort.BakeScene);
+Check(Bank(Object.FindFirstObjectByType<RailBlock>().gameObject).enabled,"floor visible after second scene reload");
+log.Insert(0,count+" EditMode checks passed. Existing lighting re-exported; no rebake or Play Mode.");
+File.WriteAllLines("output/level-polish-batch/followup/tunnel-floor-checks.txt",log);r.Log(string.Join("\n",log));}}

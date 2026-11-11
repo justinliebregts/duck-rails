@@ -1,5 +1,17 @@
 # Duck Rails — V1 game design
 
+November 11 finale follow-up: retain ramp routes but make the two middle connections thin concrete slabs; extend the low outer walls to the north water edge and darken/fix the bank lip. Ground lighting detail and four movable floodlight groups are installed with renewed baked lighting/navigation. Editor checks pass; **queued for playtest**. See [follow-up evidence](level-polish-batch.md#follow-up-execution-result--november-11).
+
+November 11 finale polish: user approved the combined layout in
+`output/level-polish-batch/layout-review.png`. All finale stairs become ramps,
+with inward-facing shorter south access, shorter upper runs and retained river
+recovery routes. Add climb blocks, asymmetric supply crates, low approach walls,
+emissive warning caps and inward baked floodlights. Replace the tunnel's block
+silhouette with a grounded cliff joined to the valley hills; recess the valley
+stream and add track ballast/closed cottage gables. Route, hold control, networking
+and per-run counts remain unchanged. Installed and editor-checked; **queued for
+playtest**. See [batch evidence](level-polish-batch.md#execution-result--november-11).
+
 November 11 Farm polish: approved northeast corn replacement with a shallow pond,
 dense horsetail clumps and a three-platform playground linked by two bridges.
 The swing frame stays empty and static. Redistribute loot around the new features
