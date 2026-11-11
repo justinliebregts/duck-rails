@@ -44,7 +44,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ## Pending
 
 ### Expedition render warmup: flashlight and helicopter TV first use — queued 2026-11-11
-- Commit(s): uncommitted
+- Commit(s): 1adf32ebe
 - Changed: on every Expedition load, the transition veil stays up while `ExpeditionRenderWarmup` draws each scene and catalog render state with lights off and with a warm spot light, through the viewer camera and a copy of the helicopter feed camera. See docs/transition-veil.md.
 - Cheap checks: compiles, Console empty. Not run in Play Mode.
 - Setup: Compound → private run departure, one desktop client in DUCKZ_DIAGNOSTICS, then a second departure in the same session; one late join aboard a running train from Login.
