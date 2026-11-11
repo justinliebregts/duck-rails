@@ -245,8 +245,10 @@ public class PauseMenu : MonoBehaviour
         if (body != null) {
             body.position = position;
             body.rotation = rotation;
-            body.linearVelocity = Vector3.zero;
-            body.angularVelocity = Vector3.zero;
+            if (!body.isKinematic) {
+                body.linearVelocity = Vector3.zero;
+                body.angularVelocity = Vector3.zero;
+            }
             body.useGravity = false;
             body.isKinematic = true;
         }
