@@ -19489,6 +19489,59 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &880124799344922404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4320471542902751628}
+  - component: {fileID: 166063824930020137}
+  m_Layer: 0
+  m_Name: River water volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4320471542902751628
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880124799344922404}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -11.975, z: 95}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4080341136990550288}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &166063824930020137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 880124799344922404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420649ead940c94428e93d1fb0d8a730, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.WaterVolume
+  size: {x: 100, y: 1.0500002, z: 30}
+  waterSurface: {fileID: 11400000, guid: e784153c09a24dd981b3962aa8a4b41c, type: 2}
+  enterSound: {fileID: 11400000, guid: 63bd9f6203fa9ac47988e2984a24bcb3, type: 2}
+  exitSound: {fileID: 11400000, guid: 7f22018a99167aa4f9d07de12ffb6cd3, type: 2}
+  bubblesSound: {fileID: 11400000, guid: 5d1f464f42bba5746bd2e9ad4d1a6888, type: 2}
+  bubbleInterval: 8
+  underwaterCutoffHz: 900
+  fogColor: {r: 0.1, g: 0.32, b: 0.38, a: 1}
+  fogDensity: 0.35
 --- !u!1 &885550382623380699
 GameObject:
   m_ObjectHideFlags: 0
@@ -89850,6 +89903,7 @@ Transform:
   - {fileID: 5767891872543879531}
   - {fileID: 5506173554525858047}
   - {fileID: 7974658636052354954}
+  - {fileID: 4320471542902751628}
   m_Father: {fileID: 1489567881909004633}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3830265639656744597
