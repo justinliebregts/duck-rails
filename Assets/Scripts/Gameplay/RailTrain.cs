@@ -31,10 +31,34 @@ public sealed class RailTrain : MonoBehaviour
         cabin.MoveCabin(next, rotation, initialized);
         initialized = true;
     }
+    // Local-space half extents / vertical range for the two aboard tests.
+    const float TightX = 2.45f, TightZ = 4.9f, TightMinY = -.1f, TightMaxY = 2.8f;
+    [Header("Padded 'still with the train' box (train local space; yellow gizmo when selected)")]
+    [Tooltip("Local-space min corner (x = left, y = below deck, z = behind).")]
+    public Vector3 paddedMin = new Vector3(-4.5f, -3f, -9f);
+    [Tooltip("Local-space max corner (x = right, y = above deck, z = in front).")]
+    public Vector3 paddedMax = new Vector3(4.5f, 6f, 9f);
     public bool Contains(Vector3 point)
     {
         Vector3 local = transform.InverseTransformPoint(point);
-        return Mathf.Abs(local.x) < 2.45f && Mathf.Abs(local.z) < 4.9f && local.y > -.1f && local.y < 2.8f;
+        return Mathf.Abs(local.x) < TightX && Mathf.Abs(local.z) < TightZ && local.y > TightMinY && local.y < TightMaxY;
+    }
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.matrix = transform.localToWorldMatrix;
+        Gizmos.color = Color.green; // Contains(): horns, boarding, cargo
+        Gizmos.DrawWireCube(new Vector3(0, (TightMinY + TightMaxY) / 2, 0), new Vector3(TightX * 2, TightMaxY - TightMinY, TightZ * 2));
+        Gizmos.color = Color.yellow; // ContainsPadded(): escaped / rescue teleport
+        Gizmos.DrawWireCube((paddedMin + paddedMax) / 2, paddedMax - paddedMin);
+    }
+    /// <summary>Forgiving "still with the train" test: covers hanging off the sides by hand, standing on the
+    /// nose or roof. Used for who escapes at the finish and for the end-of-run rescue teleport, so both agree.
+    /// Horns, enemy boarding and cargo keep the tight Contains.</summary>
+    public bool ContainsPadded(Vector3 point)
+    {
+        Vector3 local = transform.InverseTransformPoint(point);
+        return local.x > paddedMin.x && local.x < paddedMax.x && local.y > paddedMin.y && local.y < paddedMax.y &&
+               local.z > paddedMin.z && local.z < paddedMax.z;
     }
     public Vector3 AboardPoint(int actor) => transform.TransformPoint(new Vector3((actor % 3 - 1) * 1.1f, .35f, -2));
     public static bool TryLocalFrame(out int arrival, out int pad, out Transform frame)

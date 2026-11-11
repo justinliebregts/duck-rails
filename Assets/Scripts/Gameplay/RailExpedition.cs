@@ -264,7 +264,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (train != null && train.transform.position.z + 5 >= bridgeZ)
         {
             if (next.BridgeProgress(now) < 1) next.Finish(now, "Bridge collision", Array.Empty<string>());
-            else next.Finish(now, "Bridge crossed", next.players.Where(p => IsConnected(p.actor) && Position(p.actor, out var point) && train.Contains(point)).Select(p => p.id));
+            else next.Finish(now, "Bridge crossed", next.players.Where(p => IsConnected(p.actor) && Position(p.actor, out var point) && train.ContainsPadded(point)).Select(p => p.id));
         }
         if (!next.finished && next.allDownAt > 0 && now - next.allDownAt >= RailRunState.AllDownGrace)
             next.Finish(now, "Crew down", Array.Empty<string>());
@@ -445,7 +445,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
                 (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
                 string.Join("\n", State.players.Select(p => Safe(p.name) + " — " + (p.escaped ? "Escaped" : "Didn't make it") + "\n<size=65%>Coal " + p.coal + "   Revives " + p.revives + "   Downs " + p.downs + "   Honks " + p.horns + "  •  " + Award(p) + "</size>"));
-            bool localAboard = Position(PhotonNetwork.LocalPlayer.ActorNumber, out var localPoint) && RailTrain.Instance.Contains(localPoint);
+            bool localAboard = Position(PhotonNetwork.LocalPlayer.ActorNumber, out var localPoint) && RailTrain.Instance.ContainsPadded(localPoint);
             if (caughtRun != State.run)
             { caughtRun = State.run; if (GR.Player.instance != null && !localAboard) TeleportAboard(); }
             if (GR.Player.instance != null && !localAboard)

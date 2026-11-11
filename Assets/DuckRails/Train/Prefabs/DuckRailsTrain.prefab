@@ -198,6 +198,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailTrain
   cabin: {fileID: 5891079003266249758}
   origin: {x: 0, y: 1, z: 70}
+  paddedMin: {x: -2.7, y: -0.9, z: -5.5}
+  paddedMax: {x: 2.7, y: 4, z: 6.5}
 --- !u!114 &1552218099253432840
 MonoBehaviour:
   m_ObjectHideFlags: 0
