@@ -180,11 +180,12 @@ namespace Game.AI
         bool FleshEntry(Vector3 from, Vector3 direction, float distance, PhotonPlayer avatar, Enemy other,
             out float hit, LocalBodyDriver rig = null)
         {
+            if (other != null) other.PrepareSwingPose();
             bool Overlap(float d)
             {
                 Vector3 end = from + direction * d;
                 if (avatar != null) return avatar.OverlapsHook(from, end, tipRadius);
-                if (other != null) return other.OverlapsSwing(from, end, tipRadius);
+                if (other != null) return other.OverlapsPreparedSwing(from, end, tipRadius);
                 return PhotonPlayer.OverlapsOfflineHook(rig, from, end, tipRadius);
             }
             hit = distance;

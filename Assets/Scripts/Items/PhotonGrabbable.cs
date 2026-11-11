@@ -655,7 +655,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         }
         if (IsHeld)
             _thrownIgnore = null;
-        else if (_thrownIgnore != null && !OverlapsEnemy(_thrownIgnore, count, radius))
+        else if (_thrownIgnore != null && (_thrownIgnore.IsDormant || !OverlapsEnemy(_thrownIgnore, count, radius)))
             _thrownIgnore = null;
 
         float gateDistance = SwingMotionGate * dt;
@@ -668,6 +668,18 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
 
         using var combatSample = CombatMarker.Auto();
         List<Enemy> enemies = Enemy.Active;
+        ThrownHit firstHit = default, firstSoundOnly = default;
+        Bounds sweep = default;
+        if (!companionOnly && enemies.Count > 0)
+        {
+            sweep = new Bounds(_samplePrev[0], Vector3.zero);
+            for (int i = 0; i < count; i++)
+            {
+                sweep.Encapsulate(_samplePrev[i]);
+                sweep.Encapsulate(_sampleNow[i]);
+            }
+            sweep.Expand(radius * 2f);
+        }
         for (int e = 0; !companionOnly && e < enemies.Count; e++)
         {
             Enemy enemy = enemies[e];
@@ -676,6 +688,15 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             if (enemy.SwingLocked && (itemSounds == null || !itemSounds.FleshImpactReady)) continue;
             float minDistance = enemy.MinHitSpeed * dt;
             float minDistanceSq = minDistance * minDistance;
+            if (maxDistanceSq < minDistanceSq || !enemy.WithinSwingReach(sweep)) continue;
+            enemy.PrepareSwingPose();
+            if (!IsHeld)
+            {
+                // A locked zombie can play flesh audio but cannot consume the throw.
+                if (enemy.SwingLocked) FindEarlierThrow(enemy, count, radius, minDistanceSq, ref firstSoundOnly);
+                else FindEarlierThrow(enemy, count, radius, minDistanceSq, ref firstHit);
+                continue;
+            }
             bool hit = false;
             float bestSq = 0f;
             Vector3 bestDelta = default;
@@ -685,33 +706,62 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
                 Vector3 delta = _sampleNow[i] - _samplePrev[i];
                 float distanceSq = delta.sqrMagnitude;
                 if (distanceSq < minDistanceSq || (hit && distanceSq < bestSq)) continue;
-                if (!enemy.OverlapsSwing(_samplePrev[i], _sampleNow[i], radius)) continue;
+                if (!enemy.OverlapsPreparedSwing(_samplePrev[i], _sampleNow[i], radius)) continue;
                 hit = true;
                 bestSq = distanceSq;
                 bestDelta = delta;
                 hitPosition = _sampleNow[i];
             }
             if (!hit) continue;
-            hitPosition = enemy.HitBloodPosition(hitPosition - bestDelta, hitPosition, radius);
+            hitPosition = enemy.SwingContact(hitPosition - bestDelta, hitPosition, radius, out _, out _);
             if (itemSounds != null) itemSounds.PlayFleshImpact(hitPosition, -bestDelta);
             if (enemy.SwingLocked) continue;
             enemy.LockSwing();
             Vector3 velocity = bestDelta / dt;
-            if (IsHeld)
-            {
-                enemy.SubmitSwing(velocity, knockbackScale, hitPosition);
-                VibrationManager.instance?.TriggerHeldItemHit(Holder);
-            }
-            else
-            {
-                enemy.SubmitThrownHit(velocity, hitPosition);
-                DeflectThrown(enemy, radius, velocity);
-                break;
-            }
+            enemy.SubmitSwing(velocity, knockbackScale, hitPosition);
+            VibrationManager.instance?.TriggerHeldItemHit(Holder);
         }
+        if (firstHit.enemy != null || firstSoundOnly.enemy != null)
+            ApplyThrownHit(firstHit, firstSoundOnly, dt);
 
         TickPlayerSwings(count, dt, radius, companionOnly);
         StoreSamples(count);
+    }
+
+    struct ThrownHit
+    {
+        public Enemy enemy;
+        public Enemy.SweepContact contact;
+        public Vector3 delta;
+    }
+
+    // All sample paths span the same frame, even when a rotating bat's tip
+    // travels farther than its grip. Compare entry fractions across all targets.
+    void FindEarlierThrow(Enemy enemy, int count, float radius, float minDistanceSq, ref ThrownHit best)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            if (best.enemy != null && best.contact.fraction == 0f) return;
+            Vector3 from = _samplePrev[i], to = _sampleNow[i];
+            Vector3 delta = to - from;
+            if (delta.sqrMagnitude < minDistanceSq) continue;
+            float limit = best.enemy != null ? best.contact.before : 1f;
+            if (!enemy.TrySwingContact(from, to, radius, limit, out var contact)) continue;
+            best = new ThrownHit { enemy = enemy, contact = contact, delta = delta };
+        }
+    }
+
+    void ApplyThrownHit(ThrownHit hit, ThrownHit soundOnly, float dt)
+    {
+        ThrownHit audible = hit;
+        if (soundOnly.enemy != null && (hit.enemy == null || soundOnly.contact.fraction < hit.contact.fraction))
+            audible = soundOnly;
+        if (itemSounds != null) itemSounds.PlayFleshImpact(audible.contact.position, -audible.delta);
+        if (hit.enemy == null) return;
+        hit.enemy.LockSwing();
+        Vector3 velocity = hit.delta / dt;
+        hit.enemy.SubmitThrownHit(velocity, hit.contact.position);
+        DeflectThrown(hit.enemy, hit.contact.normal, hit.contact.separation, velocity);
     }
 
     // Use the same shape on the item owner and on remote held copies.
@@ -775,18 +825,18 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
 
     bool OverlapsEnemy(Enemy enemy, int count, float radius)
     {
+        enemy.PrepareSwingPose();
         for (int i = 0; i < count; i++)
-            if (enemy.OverlapsSwing(_samplePrev[i], _sampleNow[i], radius))
+            if (enemy.OverlapsPreparedSwing(_samplePrev[i], _sampleNow[i], radius))
                 return true;
         return false;
     }
 
-    void DeflectThrown(Enemy enemy, float itemRadius, Vector3 incoming)
+    void DeflectThrown(Enemy enemy, Vector3 normal, float penetration, Vector3 incoming)
     {
         _thrownIgnore = enemy;
         if (rb == null || rb.isKinematic) return;
 
-        enemy.ThrownBodyContact(rb.position, itemRadius, out Vector3 normal, out float penetration);
         if (penetration > 0f)
             rb.position += normal * (penetration + ThrowSeparateSkin);
 

@@ -15,7 +15,7 @@ namespace Game.AI
     /// authority and ApplyRemote elsewhere, then ticks the gait and AimHead.
     /// Root motion comes from IEnemyLocomotion; gait poses the body.
     /// </summary>
-    public class Enemy : MonoBehaviour
+    public partial class Enemy : MonoBehaviour
     {
         public enum State : byte { Wander, Chase, Search, Retreat }
 
@@ -267,6 +267,7 @@ namespace Game.AI
             if (_body != null) _body.isKinematic = true;
             _capsule = root.GetComponent<CapsuleCollider>();
             _legs = GetComponentsInChildren<SpiderLeg>(true);
+            AllocateSwingPose();
             _vocal = GetComponent<IEnemyHitVocal>();
             _loco = GetComponent<IEnemyLocomotion>();
             Boarding = GetComponent<RailEnemyBoarding>();
@@ -796,76 +797,6 @@ namespace Game.AI
             }
             _stunTimer -= dt;
             if (_stunTimer <= 0f) ClearStun();
-        }
-
-        /// <summary>Horizontal push out of the body. Penetration is how far the point sits inside the body plus the item radius.</summary>
-        public void ThrownBodyContact(Vector3 point, float itemRadius, out Vector3 normal, out float penetration)
-        {
-            Vector3 up = root != null && root.up.sqrMagnitude > 1e-6f ? root.up.normalized : Vector3.up;
-            Vector3 center = root != null ? root.position + up * (bodyHeight * 0.5f) : point;
-            Vector3 away = Vector3.ProjectOnPlane(point - center, up);
-            if (away.sqrMagnitude < 1e-6f)
-                away = root != null ? Vector3.ProjectOnPlane(root.forward, up) : Vector3.forward;
-            if (away.sqrMagnitude < 1e-6f) away = Vector3.forward;
-            normal = away.normalized;
-            float inside = bodyRadius + itemRadius - away.magnitude;
-            penetration = inside > 0f ? inside : 0f;
-        }
-
-        public bool OverlapsSwing(Vector3 from, Vector3 to, float sweepRadius)
-        {
-            if (root == null) return false;
-            Vector3 up = root.up.sqrMagnitude > 1e-6f ? root.up.normalized : Vector3.up;
-            Vector3 bodyEnd = root.position + up * bodyHeight;
-            if (SegmentsWithin(from, to, root.position, bodyEnd, sweepRadius + bodyRadius))
-                return true;
-            // The spider's lethal head follows its raised pose; defensive weapon
-            // sweeps must still be able to hit that same visible head.
-            if (_gait is SpiderGait && head != null
-                && SegmentsWithin(from, to, head.position, head.position + head.forward * .235f, sweepRadius + bodyRadius))
-                return true;
-            float limbReach = sweepRadius + limbRadius;
-            for (int i = 0; i < _legs.Length; i++)
-            {
-                SpiderLeg leg = _legs[i];
-                if (leg == null) continue;
-                if (SegmentsWithin(from, to, leg.HipWorld, leg.FootWorld, limbReach))
-                    return true;
-            }
-            return false;
-        }
-
-        // Visual placement only, after the existing sweep accepts a hit. Prefix overlap
-        // is monotonic even across multiple limbs; bounded refinement needs no allocations.
-        public Vector3 HitBloodPosition(Vector3 from, Vector3 to, float sweepRadius)
-        {
-            Vector3 delta = to - from;
-            float length = delta.magnitude;
-            if (root == null || length < 1e-6f) return to;
-            Vector3 direction = delta / length;
-            if (OverlapsSwing(from, from, sweepRadius))
-            {
-                // A later swing can begin inside. Back up beyond all collision shapes.
-                float reach = bodyHeight + bodyRadius;
-                if (_gait is SpiderGait && head != null)
-                    reach = Mathf.Max(reach, Vector3.Distance(root.position, head.position) + .235f + bodyRadius);
-                for (int i = 0; i < _legs.Length; i++)
-                {
-                    SpiderLeg leg = _legs[i];
-                    if (leg == null) continue;
-                    reach = Mathf.Max(reach, Mathf.Max(Vector3.Distance(root.position, leg.HipWorld),
-                        Vector3.Distance(root.position, leg.FootWorld)) + limbRadius);
-                }
-                from -= direction * (Vector3.Distance(from, root.position) + reach + sweepRadius + 0.02f);
-            }
-            float low = 0f, high = 1f;
-            for (int i = 0; i < 12; i++)
-            {
-                float middle = (low + high) * 0.5f;
-                if (OverlapsSwing(from, Vector3.LerpUnclamped(from, to, middle), sweepRadius)) high = middle;
-                else low = middle;
-            }
-            return Vector3.LerpUnclamped(from, to, low) - direction * 0.02f;
         }
 
         public void LockSwing() => _localSwingLock = Time.time + hitCooldown;
@@ -1878,6 +1809,10 @@ namespace Game.AI
             float c = Vector3.Dot(v, v);
             float d = Vector3.Dot(u, w);
             float e = Vector3.Dot(v, w);
+            // A head or belly sphere has a zero-length axis. Project onto the
+            // entire swing so a fast weapon can cross it between samples.
+            if (c < 1e-12f)
+                return (w + u * (a > 0f ? Mathf.Clamp01(-d / a) : 0f)).sqrMagnitude <= radius * radius;
             float denom = a * c - b * b;
             float sN;
             float sD = denom;
@@ -1974,6 +1909,7 @@ namespace Game.AI
             Gizmos.DrawWireSphere(root.position, 0.25f);
             Gizmos.DrawRay(root.position, root.forward * 0.5f);
             DrawVisionGizmo(stateColor);
+            DrawSwingShapes();
             ClimbLocomotion climb = _climb != null ? _climb : GetComponent<ClimbLocomotion>();
             if (climb != null) { climb.DrawPathGizmos(); return; }
             GroundLocomotion ground = _ground != null ? _ground : GetComponent<GroundLocomotion>();

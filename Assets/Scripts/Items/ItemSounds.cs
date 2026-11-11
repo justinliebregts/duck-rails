@@ -232,6 +232,7 @@ public class ItemSounds : MonoBehaviour
         if (enemy != null || player != null)
         {
             // Flesh never also plays the generic drop sound, even when unassigned or cooling down.
+            if (enemy != null && enemy.IsDormant) return;
             if (player != null && (player.IsDead ||
                 (view != null && player.photonView != null && view.OwnerActorNr == player.photonView.OwnerActorNr)))
                 return;

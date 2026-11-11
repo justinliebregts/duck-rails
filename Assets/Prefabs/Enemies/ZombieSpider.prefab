@@ -304,6 +304,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2c5c581189bea64aa620a9a84439631, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.AI.Enemy
+  swingReach: 2.8
+  hitShapes:
+  - start: {fileID: 6668573339783830073}
+    end: {fileID: 6668573339783830073}
+    startOffset: {x: 2.9746436e-15, y: -0.4301773, z: -0.021737128}
+    endOffset: {x: -1.7838205e-15, y: 0.2601063, z: 0.013027072}
+    radius: 0.29
+  - start: {fileID: 1779785660026163932}
+    end: {fileID: 1779785660026163932}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: -1.9852335e-21, y: -0.000000014901161, z: 0.23500007}
+    radius: 0.23
+  - start: {fileID: 63591155912446666}
+    end: {fileID: 775200605242947307}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.092
+  - start: {fileID: 775200605242947307}
+    end: {fileID: 2233541024295869843}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.075
+  - start: {fileID: 3371041291177881180}
+    end: {fileID: 5735797112244665032}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.092
+  - start: {fileID: 5735797112244665032}
+    end: {fileID: 7723608236043999863}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.075
+  - start: {fileID: 8432303670473072176}
+    end: {fileID: 8680619334346501914}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.092
+  - start: {fileID: 8680619334346501914}
+    end: {fileID: 5520102684019397283}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.075
+  - start: {fileID: 9084826203399209714}
+    end: {fileID: 490537339898470321}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.092
+  - start: {fileID: 490537339898470321}
+    end: {fileID: 5802766111011955629}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.075
   root: {fileID: 6985187784059606338}
   eye: {fileID: 6985187784059606338}
   head: {fileID: 1779785660026163932}

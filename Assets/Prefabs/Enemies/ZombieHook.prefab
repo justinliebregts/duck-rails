@@ -368,6 +368,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2c5c581189bea64aa620a9a84439631, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.AI.Enemy
+  swingReach: 2.5
+  hitShapes:
+  - start: {fileID: 767792668928263294}
+    end: {fileID: 767792668928263294}
+    startOffset: {x: 0, y: 0.1499994, z: 0.016000109}
+    endOffset: {x: 0, y: 0.3199994, z: 0.016000146}
+    radius: 0.205
+  - start: {fileID: 8023119890309401232}
+    end: {fileID: 0}
+    startOffset: {x: -5.074039e-11, y: 0.096874006, z: 0.09265779}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.216
+  - start: {fileID: 7721815270848959060}
+    end: {fileID: 3746263171658182382}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.08
+  - start: {fileID: 3746263171658182382}
+    end: {fileID: 5262171141978291882}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.079
+  - start: {fileID: 6387782333376278608}
+    end: {fileID: 667055647896573999}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.08
+  - start: {fileID: 667055647896573999}
+    end: {fileID: 3242179629943229721}
+    startOffset: {x: 0, y: 0, z: 0}
+    endOffset: {x: 0, y: 0, z: 0}
+    radius: 0.079
   root: {fileID: 89497403811385472}
   eye: {fileID: 8023119890309401232}
   head: {fileID: 8023119890309401232}

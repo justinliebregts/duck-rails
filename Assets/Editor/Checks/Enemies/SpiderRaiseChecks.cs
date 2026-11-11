@@ -89,7 +89,9 @@ public static partial class SpiderRaiseChecks
     {
         using var r = new Rig();
         Check(r.kill.transform.parent == r.head, "Kill trigger must be a direct head child");
-        Check(r.kill.center == new Vector3(0, 0, .235f), "Mouth collider placement");
+        Vector3 mouth = r.kill.transform.TransformPoint(r.kill.center);
+        Check(Vector3.Dot(mouth - r.head.position, r.head.forward) > .15f
+            && r.enemy.OverlapsSwing(mouth, mouth, 0f), "Visible mouth accepts a defensive hit");
         foreach (Vector3 p in new[] { new Vector3(0, .7f, .8f), new Vector3(0, 1f, .8f), new Vector3(0, 2f, 1.001f), new Vector3(0, -2f, .5f), new Vector3(float.NaN, 2, 0), new Vector3(0, float.PositiveInfinity, 0) })
         {
             Target(p); r.Settle(); Check(r.gait.RaiseHeight == 0 && r.gait.RaiseLevel == 0, "Invalid/low/far target raised: " + p);

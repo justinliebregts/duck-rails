@@ -309,8 +309,7 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
 ## Hook impact and blood group — 67116b71, 1a71d7fa, 589c7bf0, 161dfe62, 91134b24, d54ee62b, 0d60a7bb, 91613bff
 
 - Status: implemented; editor compiled with an empty error Console and the asset wiring was read back
-  through Unity MCP (target `X:/Work/duck-rails/Assets`) on November 10, 2026. The Play Mode / two-client
-  checks below have **not** been run. Real-client/headset acceptance pending.
+  through Unity MCP (target `X:/Work/duck-rails/Assets`) on November 10, 2026. Headless batch and in-process two-client checks passed (see Validation). Real-client/headset acceptance pending.
 - Source SHAs (full): `67116b7140a0493024f6be69851457edd5a65c6c` (pooled blood sprays with impact sounds),
   `1a71d7fa3d5848768cffd354c58e07ba47945c0b` (prewarmed hook sparks + pooled blood on confirmed hook impacts),
   `589c7bf0dcda6734a5427c260661028ee5b9d5f7` (remote hook visuals on unfocused desktop clients),
@@ -341,10 +340,16 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   catalog assertion was dropped from the ported check. No new Photon event codes; the sound event (101) just gains an optional field,
   and the AppVersion is auto-bumped, so mixed builds are not an issue.
 - Validation: compile clean; every `impactParticles` and the hook `sparkPrefab` (incl. `RailHook`) resolve; the four enemy prefabs no longer
-  expose `hitBloodPrefab`. Edit diffs for the checks match the source stat line for line. Not run: `BloodEffectChecks`, `MeleeGraceChecks`,
-  `PlayerKnockbackChecks` (live PUN), `RecurringAllocationChecks`, `ZombieHookImpactChecks` (isolated batch Play Mode only).
-- Remaining: run those batch checks; two-client hook/melee blood and spark parity, unfocused desktop observer, Quest cost of 32 pooled hit
-  bursts; decide whether to import a warmup catalog. No diagnostic reports inspected; source Duckz untouched.
+  expose `hitBloodPrefab`. Headless batch runs in the ignored disposable copy `tmp/duckz-port-validation` (Unity 6000.3.24f1, synced
+  Assets/Packages/ProjectSettings; XR loaders emptied in the copy only, since headless OpenXR otherwise crashes with
+  `XR_ERROR_GRAPHICS_DEVICE_INVALID`): `PlayerKnockbackChecks` PASS (310 assertions, 32 live PUN player hits between two in-process
+  clients, plus the new Duck impact check from both master and client: one sound and one blood burst per peer, position and direction
+  reproduced, single retreat), `ZombieHookImpactChecks` PASS (spark preview, warmup, overlapping bursts, expiry, tether cover, Duck, held pan, blood reuse),
+  `BloodEffectChecks` PASS (1000 pooled hits, zero new objects or managed bytes), `MeleeGraceChecks` logged "passed" (process exit code 127 unexplained).
+  A startup `ArgumentOutOfRangeException` in `UnityEditor.Search` appears in the logs and is unrelated. Logs:
+  [validation/hook-blood-port](validation/hook-blood-port/). Not run: `RecurringAllocationChecks`.
+- Remaining: separate-process two-client `-hookFxRoom` run (needs a second project copy), unfocused desktop observer, real clients/headsets, Quest cost of 32 pooled hit bursts;
+  decide whether to import a warmup catalog. No diagnostic reports inspected; source Duckz untouched.
 - Destination commit: `1ea23d07f`.
 
 ## Enemy tuning group — 22262f75, 98ec9f5b, 6f4c3cba
@@ -371,3 +376,15 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   `DeathLifecycleChecks`, `FlareJoinNetworkChecks` (network, needs Play Mode).
 - Remaining: two-client late-join flare test (incl. master handoff and joining aboard a moving train), hook/smasher flare behavior, balance feel of new speeds.
 - Destination commit: `1ea23d07f`.
+
+## Zombie hit shapes group — dcd2f9e1, 62ea1a73
+
+- Status: implemented; compiled with an empty error Console and editor checks passed November 10, 2026. Disposable-batch suites and `GrabbablePlayChecks` were still running/pending at commit time (see Validation). Real-client/headset acceptance pending (queued for playtest).
+- Source SHAs (full): `dcd2f9e1132f66c798bb1780f9189a2a67e51554` (hit shapes fitted to animated bones; thrown items resolve by first contact),
+  `62ea1a739c4bc1e3ea5242b0a38a3193fe08388f` (Spider head hit radius 0.3 → 0.23 m).
+- Destination: new `Scripts/Enemies/Enemy.HitShapes.cs` (source GUID kept; `Enemy` is now `partial`; old `OverlapsSwing`/`HitBloodPosition`/`ThrownBodyContact` moved out of `Enemy.cs`, public API kept), zero-length-axis fix in `SegmentsWithin`, `ItemSounds` dormant-enemy early return, `ZombieHookAttack.Contacts` uses the prepared pose, `PhotonGrabbable` first-contact thrown resolution (`ThrownHit`, `FindEarlierThrow`, `ApplyThrownHit`), the five `Prefabs/Enemies/Zombie*.prefab` (`swingReach` + `hitShapes`; Hook included), checks `ZombieHitShapeChecks` (new), `SpiderRaiseChecks`, `GrabbablePlayChecks`.
+- Adaptations: hunks merged by hand. Rails' `SubmitSwing(velocity, knockbackScale, hitPosition)` and RailCargo/holder-activity code in `PhotonGrabbable` kept. Prefab patches applied cleanly (fileIDs match); `Resources/Rails/*` variants carry no overrides.
+- Not ported: `EnemyHitBehaviorChecks` edits. That check does not exist in Rails (source-only snapshot/network harness), so it was not imported.
+- Validation: editor `ZombieHitShapeChecks`, `HitBloodChecks`, `ZombieHookChecks`, `EnemyRetreatChecks`, `RailEnemyChecks` passed. In the disposable copy (`tmp/duckz-port-validation`, batch runner `HitShapePortBatch`, copy only): `ZombieHitShapeChecks`, `SpiderRaiseChecks` (5000 assertions) and `HitBloodChecks` passed; `PickupRecoveryChecks` alone passed (298 assertions). The remaining recovery suites and `PhotonGrabbableChecks` (second run, with the known order-dependent `PickupRecoveryChecks` round-robin failure expected) and `GrabbablePlayChecks` (Play Mode) are **not yet recorded**; update this entry with results.
+- Remaining: record those results; throw/grab feel on headsets, two-client thrown-hit parity.
+- Destination commit: the commit introducing this entry (see Git history).
