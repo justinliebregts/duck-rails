@@ -91,3 +91,7 @@ Select the runtime Audio Manager for active/capacity, ambience/limit, peak use, 
 Tests under `Assets/Tests/Audio` cover ambience caps, gameplay reclamation, protected gameplay loops, normal priority stealing, per-event replacement, stale handles, fades, ownership, distance/zone transitions, listener loss, and rotated/scaled zone boundaries. Run in Unity's Play Mode Test Runner. Multiplayer listening, reverb interaction, and CPU/voice/memory budgets still need a busy-scene Quest test.
 
 **Tools > DuckZ > Authoring > Audio > Create Starter Assets** recreates missing starter content and wires the spider prefab; it preserves existing SoundEvent settings. Runtime code is in the Game.Audio assembly; editor preview/setup and test assemblies do not ship in the player.
+
+## Water
+
+A `WaterVolume` (box, top face = surface) makes footsteps and hand hits under it use the Water surface and, when the head goes under, adds a splash, listener low-pass, fog tint and bubbles. See [docs/water.md](../../docs/water.md).

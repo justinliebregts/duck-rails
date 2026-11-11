@@ -1347,7 +1347,7 @@ public partial class NewPlayer : MonoBehaviour
 
         static void PlaySurfaceSound(Game.Audio.SurfaceSoundSet set, Collider hitCollider, Vector3 position, float volume)
         {
-            var sound = set != null ? set.Resolve(hitCollider) : null;
+            var sound = set != null ? set.Resolve(hitCollider, position) : null;
             if (sound == null || Game.Audio.AudioManager.instance == null) return;
             Game.Audio.AudioManager.instance.Play(sound, position, volume);
         }

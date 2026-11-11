@@ -27,5 +27,6 @@ namespace Game.Audio
         }
 
         public SoundEvent Resolve(Collider collider) => Resolve(AudioSurface.TypeOf(collider));
+        public SoundEvent Resolve(Collider collider, Vector3 point) => Resolve(AudioSurface.TypeAt(collider, point));
     }
 }

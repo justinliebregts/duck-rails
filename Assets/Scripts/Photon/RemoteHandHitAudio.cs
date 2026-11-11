@@ -71,7 +71,7 @@ public sealed class RemoteHandHitAudio : MonoBehaviour
         state.offTime = 0f;
 
         SurfaceType surface = null;
-        for (int i = 0; i < count && surface == null; i++) surface = AudioSurface.TypeOf(overlaps[i]);
+        for (int i = 0; i < count && surface == null; i++) surface = AudioSurface.TypeAt(overlaps[i], position);
         var sound = sounds.Resolve(surface);
         if (sound == null || AudioManager.instance == null) return;
         float t = Mathf.InverseLerp(minSpeed, fullVolumeSpeed, state.speed);

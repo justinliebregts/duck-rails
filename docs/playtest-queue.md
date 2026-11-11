@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Water volumes: wet steps and head underwater — queued 2026-11-10
+- Commit(s): uncommitted
+- Changed: new WaterVolume (box, top face = surface). Footsteps/hand hits below the surface use the Water surface; head under the surface plays splash in/out, muffles audio (listener low-pass), tints with fog and plays bubbles every ~8 s. Lake in lakeside-campground-v1; shallow wading strip over the finale Ravine floor. See [water](water.md).
+- Setup: one desktop client and one headset, campground first. Walk into the lake from the dock/shore, duck head under in the deep middle (bed Y=-2, surface Y=-0.79) and come back up. Repeat while a second client talks nearby. Finale: fall into the river and walk to the recovery stairs.
+- Check: wet footsteps and hand slaps in the lake and river; splash in, muffled audio plus teal fog, bubbles after ~8 s, splash out and a clean restore of fog/audio when surfacing (also after teleport/fall recovery while submerged). Pass: no Console errors, fog returns to the block's original look. Finale head stays dry.
+- Needs human: how the muffle, fog tint and splash levels feel in a headset; Quest cost of fog.
+- Priority: normal
+
 ### Player walls and fall recovery — queued 2026-11-10
 - Commit(s): uncommitted
 - Changed: invisible ±48 m block side walls; local last-ground recovery below the kill floor or past a wall (no down); loose RailCargo below the kill floor is PhotonNetwork.Destroyed. See [player bounds](player-bounds.md).

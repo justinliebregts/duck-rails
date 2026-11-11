@@ -27,7 +27,12 @@ namespace Game.Audio
                 groundMask, QueryTriggerInteraction.Ignore))
             {
                 point = hit.point;
-                surface = AudioSurface.TypeOf(hit.collider);
+                surface = AudioSurface.TypeAt(hit.collider, point);
+            }
+            else
+            {
+                // No ground within reach (e.g. a deep lake bed): wet if the contact point is under a water surface.
+                surface = AudioSurface.TypeAt(null, point);
             }
             var sound = sounds.Resolve(surface);
             if (sound == null || AudioManager.instance == null) return;
