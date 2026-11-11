@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Train aboard margin: escaped and end-of-run teleport — queued 2026-11-11
+- Commit(s): 84985d551
+- Changed: `RailTrain.ContainsPadded()` (Inspector-tunable `paddedMin`/`paddedMax`, yellow gizmo when selected) now decides who "Escaped" at the bridge finish and whether the end-of-run rescue teleport fires. Horns, boarding and cargo keep the tight `Contains()`.
+- Cheap checks: compiles; fields read back on the train prefab instance. Not run in Play Mode.
+- Setup: private run to a successful bridge crossing, one desktop client (plus a second client if available).
+- Check: a player hanging off the side by hand, or standing on the front of the train, at the finish is listed "Escaped" and is not teleported. A player on the ground well away from the train still reads "Didn't make it" and is teleported to the deck.
+- Needs human: hanging off the side by hand in VR.
+- Priority: normal
+
 ### Expedition render warmup: flashlight and helicopter TV first use — queued 2026-11-11
 - Commit(s): 1adf32ebe
 - Changed: on every Expedition load, the transition veil stays up while `ExpeditionRenderWarmup` draws each scene and catalog render state with lights off and with a warm spot light, through the viewer camera and a copy of the helicopter feed camera. See docs/transition-veil.md.
