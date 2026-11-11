@@ -1,0 +1,15 @@
+﻿# GrabbablePlayChecks.Run — 2026-11-10, Unity 6000.3.24f1, disposable copy tmp/duckz-port-validation (synced to main), separate batch Play Mode process
+
+## Before fix (grabbable-2.log) — exit 1
+Exception: Actual grab: handCanGrab=False canBe=True activeEnabled=True avail=False down=False remoteHeld=False
+
+## After fixture focus grant (grabbable-3.log) — exit 0
+PASS First forearm hit, rear spawned first=False
+PASS First forearm hit, rear spawned first=True
+PASS Front on cooldown allows the rear hit
+PASS Dormant belly causes no hit, sound or deflection
+PASS Throw through dormant belly reaches rear zombie
+PASS Respawned Bomber shape 0
+PASS Respawned Bomber shape 2
+PASS Respawned Bomber shape 3
+GrabbablePlayChecks: ALL PASSED; idle and moving held/thrown items, frontmost contact in both spawn orders, dormant and respawned Bomber

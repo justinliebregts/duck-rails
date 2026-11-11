@@ -46,10 +46,11 @@ public static class GrabbablePlayChecks
         var view = item.GetComponent<PhotonView>(); typeof(PhotonView).GetProperty("IsMine").SetValue(view, true);
         view.OwnerActorNr = PhotonNetwork.LocalPlayer.ActorNumber;
         var handGo = new GameObject("Moving hand"); var hand = handGo.AddComponent<PlayerHand>(); hand.enabled = false;
-        item.transform.position = new Vector3(-1, .5f, 0); item.Grab(hand);
+        item.transform.position = new Vector3(-1, .5f, 0); GrantInputFocus(); item.Grab(hand);
         // OnDisable intentionally cancels the hold. Keep the real lifecycle active
         // while checking idle/restarted sweeps; disabling here invalidates the grab.
-        Check(item.IsHeld, "Actual grab");
+        Check(item.IsHeld, $"Actual grab: handCanGrab={hand.CanGrab} canBe={item.CanBeGrabbed} activeEnabled={item.isActiveAndEnabled} " +
+            $"avail={PhotonMasterHandoff.LocalAvailable} down={RailExpedition.LocalDown} remoteHeld={item.IsHeldByAnyPlayer}");
         var swing = (Action)Delegate.CreateDelegate(typeof(Action), item, typeof(PhotonGrabbable).GetMethod("TickSwing", P));
         swing(); PhotonGrabbable.ResetProfiling();
         for (int i = 0; i < 10; i++) { yield return null; swing(); }
@@ -76,6 +77,15 @@ public static class GrabbablePlayChecks
         }
         Check(failures.Count == 0, string.Join("\n", failures));
         Debug.Log("GrabbablePlayChecks: ALL PASSED; idle and moving held/thrown items, frontmost contact in both spawn orders, dormant and respawned Bomber");
+    }
+
+    // Rails: grabs require PhotonMasterHandoff input focus, which an unfocused batch
+    // process lacks once PhotonSession exists. Grant it as the other Rails fixtures do.
+    static void GrantInputFocus()
+    {
+        foreach (var handoff in UnityEngine.Object.FindObjectsByType<PhotonMasterHandoff>(FindObjectsSortMode.None))
+            typeof(PhotonMasterHandoff).GetField("focused", P).SetValue(handoff, true);
+        Check(PhotonMasterHandoff.LocalAvailable, "Fixture could not grant input focus");
     }
 
     static Enemy Spawn(string type)
