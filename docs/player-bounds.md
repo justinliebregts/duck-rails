@@ -13,7 +13,7 @@ November 10 decision (user): blocks get invisible side walls plus last-ground fa
 ## Validation
 
 - November 10: compiles with an empty Console. EditMode prefab check across all 19 RailBlock prefabs passes: 2 walls each, track and all coal/gold/enemy spawn candidates inside the walls, all spawns above the kill floor.
-- Not yet run: Play Mode, multi-client, headset. See the [playtest queue](playtest-queue.md) entry "Player walls and fall recovery".
+- November 11 live MPPM run (2 desktop clients): walls, below-floor and lateral recovery, repeat-fall step-back, moving-train recovery and below-floor item removal behaved as designed; see the [playtest queue](playtest-queue.md) results. Headset feel and wall climbing are unverified.
 
 ## Known limits
 

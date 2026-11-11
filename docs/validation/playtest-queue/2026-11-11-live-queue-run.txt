@@ -1,0 +1,90 @@
+Playtest queue run 2026-11-11 — live MPPM evidence (Unity 6000.3.24f1)
+Clients: main editor (DuckPlayer simulated rig, account "lebo") + MPPM Player2 ("David"), real Photon cloud + backend.
+Driving: main via Unity MCP RunCommand; Player2 via Assets/Editor/RailRemoteBridge.cs (file-driven RunCommand in the
+virtual player). Buttons were pressed through their own Press()/Release() paths (PauseMenuButton, PressableButton),
+not raw Unity events, except where noted. Key P/L3/Start were NOT simulated (an unfocused editor drops injected input).
+Tested on main at f7aeaf8de + fix 1f1203b1c (pause menu) + uncommitted help-text fix; working tree also had unrelated
+uncommitted train/bridge-finale prefab edits.
+
+== Pause menu present in Compound and Expedition (5aaa6ffdb) ==
+Compound, public room 31482/78552:
+  TogglePause -> open=True, menu 0.5 m in front of head (prefab distance 0.5, same as Duckz; queue text said 1.2), dy -0.15
+  Grabbable + Rigidbody present. Page buttons Press(): Players/Room/Settings/Camera each show only their page.
+  Camera page Open -> tablet active, 0.45 m above menu; Close -> inactive.
+  FAIL-then-fixed: opening the tablet logged 2x "Setting linear/angular velocity of a kinematic body is not supported".
+    Fix 1f1203b1c guards SnapTabletBody like StopMenuBody. Re-run: no warnings.
+  Close (TogglePause) -> roomBefore=78552 roomNow=78552 hasRequest=False status=Ready (no "Leaving room...").
+  OpenFromDiagnostics (GAME MENU button path) -> open; CloseForDeath -> closed, mesh inactive.
+Expedition, private 48213 running, onTrain=True:
+  open=True, pages switch, Room page shows only "Room Code: 48213" + BackToCompound; close keeps room 48213, status Ready.
+
+== Pause-menu rooms, gate launch button, keypad removed (d480df22a) ==
+(a) main keypad 4-8-2-1-3 -> "Room Code: 48213" -> CreatePrivate -> Staging private. Player2 keypad + Join Room Code -> room 48213 Staging.
+    Player2 gate: btnActive=True interactable=False prompt "lebo, push to start!". Public compound gate: btnActive=False promptActive=False.
+    Compound: RailPrivateTerminal absent; hint "Want to create a private room?\nDo so from the pause menu" (CutePixel SDF) at (-4.9,1.0,8.37).
+(b) Player2 Press() -> returned False, phase Staging. Forced onPressed.Invoke() on Player2 -> still Staging (master guard in Launch).
+    main Press() -> True; both clients Expedition/Running in 48213 ~50 s later.
+(c) Player2 Room page in expedition: only EnteredRoomCodeText "Room Code: 48213" + BackToCompound. Back -> Player2 alone in new public
+    compound 95377; main still Expedition/Running 48213, onTrain=True. Main Back -> joined Player2's open compound 95377.
+(d) Public departure (both on platform) -> expedition 57956 public. Player2 Back -> fresh compound 30481 (players=1); main stayed aboard.
+Handoff: Player2 created 61724, main joined, Player2 (owner) JoinRandom -> main master, prompt "lebo, push to start!" interactable=True.
+
+== Test panel on L3, admin-gated (7ae3a4e70, d46433b7b) — editor part ==
+  Available=True in editor, KeyboardMode=True. Toggle() (overlay button path) open -> desktopOpen=True, Toggle() -> closed.
+  Pause menu not opened by the panel toggles. GoldBarDropper object absent.
+  Not exercised: L3 / menu buttons (no controller input; simulated rig has no Start/L3), Esc, VR-mode panel, dev-build admin gate.
+  Found: help overlay and Test Center still said "P diagnostic panel"/"P opens the test panel"; text updated.
+
+== Expedition run 1: private 33719, Test Block Order canyon-v1, lakeside-campground-v1 ==
+Midpoint and finale loot (2b8c0d3e8):
+  Both clients: midpoint 6 coal / 2 gold, finale 6 coal / 2 gold. Identical ViewIDs, spawn tokens and positions on both
+  (16 items listed); all sleeping, resting on Roof/Foundation/Work bench/Ground/bastion decks/stair tread/cargo bed.
+  Player2 leave+rejoin, main(master) leave (handoff to Player2) + late rejoin: same 16 items, no duplicates
+  (only gold 19 on the finale cargo bed varied 1 cm in Y).
+Gold crate depositor-only payout (a38008a7b): receivers present 2 (midpoint) and 3 (finale); label "SELL GOLD | +100 coins per bar" CutePixel.
+  master main bar 4 @ receiver 2: main 269 -> 369, Player2 166 unchanged, recipients=[main].
+  non-master Player2 bar 5 @ receiver 3: Player2 166 -> 266, main 369 unchanged; Player2 saw "+100" CutePixel at the crate.
+  Player2 bar 6 @ receiver 3 with main 3 m away: main saw "+100" CutePixel at the crate, main wallet unchanged; Player2 266 -> 366.
+  Player2 rejoin: wallet stays 366 (no replay). Main late join: wallet stays 369; late joiner (non-master) bar 7 @ receiver 2: main 369 -> 469,
+  Player2 366 unchanged. 4 deposits, each with exactly one recipient.
+Player walls and fall recovery (1f35eb82b):
+  Walls at x=+48.00/-48.00 (Environment) on canyon, campground, midpoint; no Environment hit along the track line.
+  Canyon fall to y=-40 (floor -29): recovered to (20,-13.29,229.94) ~0.27 s game time after the drop, not downed.
+  Seeded distinct history x=4..24: fall 1 -> x=24, second fall within 6 s -> x=20 (repeat=1), not downed.
+  Lateral x=52 -> recovered to last ground. Coal 20 and gold 8 moved below the kill floor -> destroyed on both clients.
+  Moving train (run 2, train 845 -> 870 m): fall below floor -> recovered aboard at the stored train-local (0,-1.11,-2.06).
+Water volumes (3a3056c87):
+  Lake bed deepest -2.00 at (-32,455). Crouched in lake: headY -1.52, HeadSubmerged=True, listener low-pass enabled 900 Hz,
+  fog Exponential 0.35 RGBA(0.10,0.32,0.38); TypeAt(feet)=Water.
+  Teleport to shore while submerged: HeadSubmerged=False, low-pass component removed, fog restored exactly
+  (ExponentialSquared 0.06 RGBA(0.008,0.008,0.004)). Finale river floor (Ravine, y -11.5): TypeAt=Water, head not submerged,
+  no fall recovery fired, fog unchanged. Sounds/bubbles not audible-checked.
+First-hold finale tower defenders (0a062e440):
+  Run 1 ended "Bridge collision" before a hold: test artifact (a GO request from an injected simulated throttle press was
+  re-applied after the Bridge shortcut). Not a gameplay fix target.
+  Run 2 (private, 4 random blocks, base 16 enemies, defender points 16/17 Zombie at (-34,8.1,924)/(34,8.1,924)):
+    before hold: 16 enemy views, no defenders. Player2 (non-master) holds from the button balcony -> bridge lowering;
+    defenders enemy-16 view 136 and enemy-17 view 137 (RailZombie) on both clients, walking down from the towers.
+    Release -> paused at 0.791. Master (main) leaves -> Player2 master: still 18 views, same 136/137.
+    Main late join during paused hold: same 136/137, 18 views; enemy-17 reached the button balcony (0.2,8.0,920.2).
+    Simultaneous holds (main + Player2): progress 1.0, still 18 views. Train GO -> "Bridge crossed", success=True.
+  Run 3 (fresh): 16 views before hold; first hold -> new pair views 18/19 at the tower floors (+-34, 8.0, 924); release + repress -> 18 views.
+Console: only startup errors (Meta XR ErrorFormFactorUnavailable, MRUK global context, LCK graphics API) and known
+warnings (Photon Voice mic rate, CutePixel missing U+2014/U+2022, canyon gold pool shortfall).
+
+== Stranded non-master leaves the ending train (d9ab4c4fc) — 2 clients, not 3 ==
+Public departures from a public compound (both on the platform); success committed by the master with the same state
+RailTestTools.SimulateSuccess writes (that tool is private-only), via RailRemoteBridge.Commit.
+(b) Player2 PhotonNetwork.Disconnect() 3.7 s before the Ending deadline, rejoin held 20 s: the only crew member (main)
+    left, so the expedition room closed; Player2's rejoin got "Room not found" and it fell back into main's compound 49721.
+    Nobody stayed aboard, but this did not exercise the in-room stranded path (needs a 3rd client keeping the room alive).
+Accidental case (crew-return handoff never started): Player2 (master, listed in rails.users) threw in
+    RailCrewReturn..ctor -> LoadBalancingPeer.ConfigUnitySockets -> Type.GetType -> UnityEditor.Macros AssemblyResolver ->
+    DirectoryNotFoundException 'Library\VP\mppm27a0029e\Library\ScriptAssemblies' (MPPM clone environment; the same
+    exception appears at clone startup, before any bridge command). crewReturn stayed null and followedTransfer blocked a retry.
+    Player2 stayed aboard alone in Returning for ~90 s, then left when rails.transferUntil expired (StrandedAfterReturn
+    now > transferUntil) and landed in the crew's compound 59233 with main. Within the ~100 s limit.
+    Environment fix: created the empty clone folder; no further occurrences.
+(c) Player2 (non-master) control connection cut at the return token (client ConnectingToNameServer; retry disabled, expiry
+    forced to 4 s): Player2 left the train and joined main in compound 45426 (poll ~10 s after the block already showed it there).
+(a) Clean public return: Returning -> Player2 joined fresh crew compound 21559 within ~6 s; main in the same room, players=2.

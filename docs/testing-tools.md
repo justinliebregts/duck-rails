@@ -1,5 +1,19 @@
 # Duck Rails testing tools
 
+## Driving MPPM virtual players from an agent — November 11, 2026
+
+Unity MCP only reaches the main editor. `Assets/Editor/RailRemoteBridge.cs` (editor-only, inert unless used) lets an agent drive the Multiplayer Play Mode virtual players. Each virtual player polls `Temp/rails-remote/<tag>-in.cs` in the main project, where `<tag>` is its first MPPM player tag (e.g. `Player2`). The file's first line must be `// id: <unique>`, and the rest is a normal Unity MCP `CommandScript`. The player compiles and runs it with the Unity AI Assistant RunCommand builder and writes the logs to `<tag>-out.txt`. A new id runs the script once.
+
+- Command scripts may not import `System.Reflection` and cannot reference Photon's `Hashtable`. Use `RailRemoteBridge.Get/Set/Call(target, "member", ...)` for private members and `RailRemoteBridge.Commit(key, value, ...)` for room properties. Use `FindObjectsByType<PhotonView>` instead of `PhotonNetwork.PhotonViewCollection`.
+- Launch clients by selecting a scenario on the PlayModeManager (`ActivePlayModeConfig`, `Start`/`Stop`, as `RailTestRunner` does). Set `RailEditorQuickStart.Enabled = false` to land in the Compound.
+- Press buttons through `PauseMenuButton.Press()` and `PressableButton.Press()/Release()`, not raw UnityEvents. Keyboard, L3 and Start cannot be injected while the editor is unfocused (Input System focus rules), so call the method the key triggers and leave the binding to a human.
+- Editing any script during Play stops Play and recompiles on this machine. Batch code fixes between runs.
+- Game time in an unfocused editor runs several times faster than wall-clock gaps between commands. Seed state (e.g. via `Set`) instead of relying on timed waits.
+- Simulated-rig throttle injection (`SimulatedRigInput.InjectedInput.throttle`) toggles GO and can leave a GO request pending that fires later. Prefer `PhotonSession.SetTrainMoving` or the test-panel shortcuts.
+- MPPM clone gotcha: a virtual player can lack `Library/VP/<clone>/Library/ScriptAssemblies`. Unity's Macros type resolver then throws `DirectoryNotFoundException` from any `Type.GetType`, including Photon's `LoadBalancingPeer` constructor, which breaks `RailCrewReturn` in that clone. Create the empty folder. This is editor-only; player builds are unaffected.
+
+Used for the [November 11 queue run](playtest-queue.md); evidence in `docs/validation/playtest-queue/2026-11-11-live-queue-run.txt`.
+
 ## Private startup timeout and sandbox retry — November 9, 2026
 
 Reproduced a private launch returning to staging with Test Center idle and the

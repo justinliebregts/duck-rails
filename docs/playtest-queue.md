@@ -43,78 +43,28 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
-### Pause-menu rooms, gate launch button, keypad removed — queued 2026-11-11
-- Commit(s): d480df22a
-- Changed: pause-menu Room page now has two modes. In Compound it keeps the code keypad, Join Room Code, Join Random, Create Public and Create Private. In an expedition (`OnTrain`) it shows only "Room Code: <code>" and **Back to Compound**. That button makes this client alone leave and join a random public compound, or create one if none is open; the crew stays aboard. The physical private keypad and its terminal box are gone from Compound. A wall text says "Want to create a private room? Do so from the pause menu". In private staging, the departure gate shows "<owner>, push to start!" above a **LAUNCH EXPEDITION** button. Only the Master Client can press it, and it calls `StartPrivateRun`. The Tab desktop menu lost its terminal-distance gate and its Start button.
-- Setup: 2 clients. (a) Client A, Compound: pause menu > Room > type five digits > Create Private Room. Client B joins that code from its pause menu. (b) Both look at the gate. B presses the button, then A presses it. (c) In the expedition, B opens Room and presses Back to Compound. (d) Repeat (c) from a public expedition with no public compound open.
-- Check: (a) both are in the same private staging room. The gate shows A's name and B sees the same prompt. The public countdown text and launch button are hidden in public compounds. (b) B's press does nothing. A's press departs both clients. (c) Room page shows only the code and Back to Compound, with no keypad. B lands alone in a public compound and A stays on the train. (d) A fresh compound is created. The wall hint is readable from the spawn area. After a Master handoff in staging, the prompt names the new owner.
-- Cheap checks: compile clean, no Console errors. RailSubwayCompoundChecks passed, including the new launch-button, keypad-removed and hint checks. Wall and Room-page layout were previewed with editor cameras.
-- Needs human: launch-button poke feel and hint readability at duck height in a headset.
+### Pause menu and rooms: headset buttons and feel (5aaa6ffdb, d480df22a) — queued 2026-11-11, manual-only
+- Commit(s): 5aaa6ffdb, d480df22a; fix 1f1203b1c (automated part PASSED 2026-11-11, see Results)
+- Check: Start button on a Quest controller and the P key open/close the menu (key input was not simulated). Poke/grab feel of the menu, keypad and gate LAUNCH EXPEDITION button. Hint readability at duck height.
+- Needs human: all of the above.
 - Priority: normal
 
-### Pause menu present in Compound and Expedition — queued 2026-11-11
-- Commit(s): 5aaa6ffdb
-- Changed: PauseMenu.prefab and the CameraTablet it uses are now in Compound.unity and Expedition.unity. Before this they were only in the unused Main.unity, so P/Start opened nothing. `PhotonSession.JoinOpenRoom` now does nothing while in a room (Duckz behaviour). Before this, closing the menu left the current room for a random compound.
-- Setup: one client. Compound, then depart into an Expedition (train moving). Desktop keyboard in the editor.
-- Check: P opens the menu about 1.2 m in front of the head. It can be grabbed, and its Players/Rooms/Settings/Camera pages work. The Camera page opens the tablet above the menu. Pressing P again closes it, and the client stays in the same room (same room code, no "Leaving room..."). The test panel's GAME MENU button opens it. Dying closes it.
-- Needs human: Start button on a Quest controller, and the poke/grab feel in a headset.
+### Test panel on L3, admin-gated: controllers and dev builds (7ae3a4e70, d46433b7b) — queued 2026-11-11, manual-only
+- Commit(s): 7ae3a4e70, d46433b7b; help-text fix aeb8c3051 (editor toggle PASSED 2026-11-11, see Results)
+- Check: Editor VR rig: L3 opens/closes the wrist panel and the menu button opens the pause menu. Esc closes the keyboard panel. Dev build: admin L3 opens the panel after sign-in; non-admin L3 does nothing and the menu button opens the pause menu; no gold bar drops on L3.
+- Needs human: controllers, admin and non-admin accounts on a headset.
 - Priority: normal
 
-### Test panel on L3, admin-gated — queued 2026-11-11
-- Commit(s): 7ae3a4e70, d46433b7b
-- Changed: in VR the test panel toggles on L3 instead of the left menu button. Menu buttons always open the pause menu. The panel needs the Editor or a backend admin in development builds. GoldBarDropper is removed.
-- Setup: Editor VR rig, single client; then development build on headset with an admin account and a non-admin account.
-- Check: Editor: L3 opens/closes the wrist panel, menu button and P open the pause menu (not the panel), the Game-view overlay button opens the panel in keyboard and VR modes, Esc/Close hides the keyboard panel. Dev build admin: L3 opens panel after sign-in. Dev build non-admin: L3 does nothing, menu button opens pause menu. No gold bar drops on L3.
-- Needs human: headset admin/non-admin accounts.
+### Stranded return: three clients and the original repro (d9ab4c4fc) — queued 2026-11-11, manual-only
+- Commit(s): d9ab4c4fc (2-client cases PASSED 2026-11-11, see Results)
+- Check: with 3 clients (so the expedition room stays open), disconnect a non-master during Ending and rejoin after the return token; it must leave within about 5 s. Confirm the original three-player headset win no longer leaves anyone aboard.
+- Needs human: headset repro. The 3-client rejoin case can be run with the bridge (see testing-tools) when a third account is configured.
 - Priority: normal
 
-### Stranded non-master leaves the ending train — queued 2026-11-11
-- Commit(s): d9ab4c4fc
-- Changed: a client still in a public expedition during `Returning` that cannot follow the crew leaves on its own. This covers a client missing from `rails.users`, an expired transfer window, or a crew handoff that stopped without arriving. It goes to the crew's known destination, then its previous compound, then any compound. Reported: three-player win, one non-master stayed aboard forever.
-- Setup: 3 clients, public departure, simulate success. (a) Normal return: all three reach one compound. (b) Disconnect one non-master during Ending and rejoin after the return token is committed. (c) Block one client's crew-return control connection (for example, invalid auth) so its handoff expires.
-- Check: (a) unchanged crew return. (b) and (c): the stranded client leaves the expedition within about 5 s of being stranded and lands in a compound (the crew's compound when known). No client remains on the train beyond about 100 s after the results countdown.
-- Needs human: confirming the original headset repro no longer happens.
-- Priority: normal
-
-### First-hold finale tower defenders — queued 2026-11-11
-- Commit(s): uncommitted
-- Changed: finale selects exactly two fixed tower spawns, both regular zombies by default; marker Enemy Type dropdown supports tuning. Existing retained first-hold trigger and room-owned deduplication remain. Clients require the `-tower-finale-v1` matchmaking suffix.
-- Setup: two updated clients; use the bridge approach shortcut, then physically hold the button. Repeat with non-master operator, master handoff and late join during a paused hold; start a fresh expedition afterward.
-- Check: no finale enemies before first valid hold; exactly one appears on each tower floor afterward and can approach the button. Release/repress and simultaneous holds add no enemies. Both peers and late joiner agree on the same two objects; handoff adds none. Bridge still pauses/resumes/completes normally; fresh run allows a new pair. Existing scavenging enemy counts stay unchanged.
-- Cheap checks: compilation; 100 seeds each on saved prefab/live Expedition instance; floor support, clearance, baked ground paths to button; first-hold state serialization/reset; all 17 bridge hold checks passed. Console had an unrelated Unity Connect token-exchange error.
-- Needs human: tower spawn presentation and defense difficulty in headset.
-- Priority: normal
-
-### Gold crate depositor-only payout, Duckz shower and sound — queued 2026-11-11
-- Commit(s): uncommitted
-- Changed: shop/crate deposit pays 100 coins to the depositor only; crate plays the 100-coin Duckz shower and the bar's deposit sound. Others are not credited, observers see coins fly into the depositor.
-- Setup: two or more clients on a run; deposit one bar at the departure shop and the helipad, from the master and a non-master; also a late joiner deposit.
-- Check: depositor's wallet +100 (or up to cap) and watch counts up; other wallets unchanged; depositor sees 100 coins land in the watch, others see them fly into the depositor's body; deposit sound audible to all near the crate; floating "+100" text rises at the crate for everyone (CutePixel font); label reads "+100 coins per bar"; no repeat on reconnect. Compare against Duckz gold crate.
-- Needs human: shower/sound feel in headset; economy balance (100 per bar is far above the old budget).
-- Priority: normal
-
-### Midpoint and finale loot — queued 2026-11-10
-- Commit(s): uncommitted
-- Changed: midpoint has 21 coal / 21 gold candidate markers; finale has 28 / 26. Each selects fixed 6 coal / 2 gold. Route now includes midpoint loot; updated clients require the `-special-loot-v1` matchmaking suffix.
-- Setup: two updated clients on a normal expedition; inspect midpoint and finale before crossing the finish line. Repeat with late join and master handoff.
-- Check: six coal and two gold at each special block, matching objects/poses on both clients; no duplication after handoff/rejoin. Items settle on intended surfaces, remain grabbable, and coal works in the furnace. Midpoint gold pays only through the existing shop intake. Preserve normal scavenging crew scaling and existing finale enemies/bridge behavior.
-- Needs human: placement taste, roof/tower reach, tree-root visibility and resource balance in a headset.
-- Priority: normal
-
-### Water volumes: wet steps and head underwater — queued 2026-11-10
-- Commit(s): uncommitted
-- Changed: new WaterVolume (box, top face = surface). Footsteps/hand hits below the surface use the Water surface; head under the surface plays splash in/out, muffles audio (listener low-pass), tints with fog and plays bubbles every ~8 s. Lake in lakeside-campground-v1; shallow wading strip over the finale Ravine floor. See [water](water.md).
-- Setup: one desktop client and one headset, campground first. Walk into the lake from the dock/shore, duck head under in the deep middle (bed Y=-2, surface Y=-0.79) and come back up. Repeat while a second client talks nearby. Finale: fall into the river and walk to the recovery stairs.
-- Check: wet footsteps and hand slaps in the lake and river; splash in, muffled audio plus teal fog, bubbles after ~8 s, splash out and a clean restore of fog/audio when surfacing (also after teleport/fall recovery while submerged). Pass: no Console errors, fog returns to the block's original look. Finale head stays dry.
-- Needs human: how the muffle, fog tint and splash levels feel in a headset; Quest cost of fog.
-- Priority: normal
-
-### Player walls and fall recovery — queued 2026-11-10
-- Commit(s): uncommitted
-- Changed: invisible ±48 m block side walls; local last-ground recovery below the kill floor or past a wall (no down); loose RailCargo below the kill floor is PhotonNetwork.Destroyed. See [player bounds](player-bounds.md).
-- Setup: two clients on a normal route. Desktop client walks into a side wall on two different blocks. Then use a test teleport or fixture to drop each client below the floor: off the block ground, from the train while it moves, and twice within 6 s. Throw coal, a gold bar and a dropped bag below the floor (e.g. canyon or past a seam).
-- Check: walls block walking and throws at |x| = 48 but not the track or seams. A fall returns the player within about 0.5 s to their last ground spot (train-relative if it was the train), with no down and no revive. A repeat fall steps further back. Items below the floor disappear on both clients with no Console errors or recovery retries. The victory ride still returns players aboard after 2 s. No new recurring allocations.
-- Needs human: headset feel of wall contact and the instant warp; hand-climbing the invisible wall.
+### Finale defenders, loot, gold crate, water, walls: headset feel (0a062e440, 2b8c0d3e8, a38008a7b, 3a3056c87, 1f35eb82b) — queued 2026-11-11, manual-only
+- Commit(s): as listed (automated parts PASSED 2026-11-11, see Results)
+- Check: tower spawn presentation and defense difficulty; loot placement taste, roof/tower reach, resource balance; coin shower into the depositor, deposit sound and +100 text as seen by others; water splash/bubble/muffle levels and teal fog in a headset, Quest fog cost; invisible-wall contact, hand-climbing the wall and the instant fall-recovery warp. Economy balance at 100 coins per bar.
+- Needs human: all of the above.
 - Priority: normal
 
 ### Zombie hit shapes: in-game throws and swings (dcd2f9e1, 62ea1a73) — queued 2026-11-10, manual-only
@@ -143,6 +93,19 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 
 ## Results
+
+### Queue run 2026-11-11 — live multi-client portions (Unity 6000.3.24f1, MPPM, tested at f7aeaf8de + fixes)
+Two real clients: the main editor and the MPPM Player2, on the Photon cloud and backend, with the desktop simulated rig. Unity MCP drove the main editor. Player2 was driven through the new test-only `RailRemoteBridge`; see [testing tools](testing-tools.md). Buttons used their own `Press()` paths. P, L3 and Start were not simulated: an unfocused editor drops injected key input. Full evidence: [2026-11-11 live run](validation/playtest-queue/2026-11-11-live-queue-run.txt). The working tree also had unrelated uncommitted train/bridge-finale prefab edits.
+
+- **Pause menu in Compound and Expedition — PASS** (automated part), after one fix. The menu opens 0.5 m in front of the head (the prefab value, same as Duckz; the entry said 1.2 m). It is grabbable and all four pages switch. The camera tablet opens above the menu and closes. Closing keeps the same room in Compound and Expedition. The GAME MENU path opens it and death closes it. FAIL first: opening the tablet logged two kinematic-velocity warnings. Fixed in `1f1203b1c`; the re-run was clean.
+- **Pause-menu rooms, gate launch button, keypad removed — PASS** (automated part). (a) The keypad create/join put both clients in private staging 48213, and both gates show "lebo, push to start!". The gate is hidden in public compounds. The terminal is gone and the CutePixel hint is present. (b) The non-master's press was refused, even with a forced event. The owner's press departed both clients. (c) In an expedition the Room page shows only the code and Back to Compound. Back moved Player2 alone; main stayed aboard. (d) From a public expedition with no compound open, a fresh compound was created. After a staging owner handoff, the prompt names the new owner.
+- **Test panel on L3 — PASS** (editor toggle only). The overlay-button path `Toggle()` opens and closes the panel without opening the pause menu, and GoldBarDropper is gone. Stale "P opens the test panel" help text was fixed in `aeb8c3051`. L3, the menu button, Esc and dev builds remain manual.
+- **Midpoint and finale loot — PASS** (automated part). Each special block has 6 coal and 2 gold on both clients, with identical ViewIDs, tokens and poses, resting on real surfaces. After a Player2 rejoin, a master handoff and a late rejoin, the loot is the same with no duplicates.
+- **Gold crate depositor-only payout — PASS** (automated part). Master, non-master and late-joiner deposits each paid +100 to the depositor only, with one recipient each. The observer saw "+100" in CutePixel at the crate. No replay after a rejoin or late join. The shower and sound were not audible-checked.
+- **Player walls and fall recovery — PASS** (automated part). Walls sit at ±48 m on three blocks, with none on the track line. Below-floor falls recover in about 0.27 s of game time, with no down. A repeat fall within 6 s steps back one entry. Lateral recovery works past the wall. A fall from the moving train returns the player to the stored train-local spot. Coal and gold below the floor are destroyed on both clients.
+- **Water volumes — PASS** (automated part). With the head under the lake: Water surface, a 900 Hz low-pass and the teal exponential fog. Teleporting out while submerged restores the exact original fog and removes the filter. In the finale river the floor is Water and the head stays dry.
+- **First-hold finale tower defenders — PASS** (automated part). There are no defenders before the first hold. A non-master hold spawned exactly one RailZombie per tower, with the same views on both clients, and they walk to the button. The pair is unchanged after release, repress, a master handoff, a late join during the paused hold, and simultaneous holds. The bridge paused, resumed and completed, and a fresh run spawned a new pair. One earlier run ended "Bridge collision": a test artifact from an injected simulated throttle press.
+- **Stranded non-master leaves the ending train — PASS** (2 clients, not 3). (a) A normal public return puts both clients in one fresh compound in about 6 s. (c) Cutting the client's crew-return control connection at the token made it leave and join the crew's compound. (b) The disconnect/rejoin case could not keep the room open with 2 clients: Player2's rejoin hit "Room not found" and it fell back into the crew's compound. Separately, an MPPM-only exception killed one handoff before it started. That client rode the train for about 90 s, then the new safety net moved it into the crew's compound, within the ~100 s limit. The clone was missing `Library/ScriptAssemblies`; that environment issue is fixed (see testing tools).
 
 ### Queue run 2026-11-10 — automated portions (Unity 6000.3.24f1, batch, tested at HEAD 5b21d0009 + fixture fixes)
 Run in the ignored disposable copies `tmp/duckz-port-validation` and `-2` (synced to `main`), separate batch processes. Manual/headset parts were not run and remain in Pending.

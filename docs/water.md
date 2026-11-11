@@ -14,4 +14,4 @@ November 10, 2026. Local audio/visual feedback for water; no swimming, drowning 
 - `bridge-finale-v1`: `River water volume` over the Ravine collider, top 5 cm above the solid river floor (Y -11.45). The river surface is the floor, so this gives wet footsteps only; the head stays dry. Making the river deep needs a decision on the recovery design (see [final escape layout](final-escape-layout.md)).
 
 ## Status
-Compiles with no new Console errors; the box maths was checked in Edit Mode. Play Mode, headset feel and Quest cost are queued in [playtest-queue.md](playtest-queue.md); nothing is verified in play.
+Compiles with no new Console errors; the box maths was checked in Edit Mode. November 11 live MPPM run: submerging, teleporting out while submerged (exact fog restore) and the finale river (wet floor, dry head) behaved as designed, see the [playtest queue](playtest-queue.md) results. Sound levels, headset feel and Quest fog cost are still unverified.
