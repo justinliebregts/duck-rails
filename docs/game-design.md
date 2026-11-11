@@ -1,5 +1,11 @@
 # Duck Rails — V1 game design
 
+November 11 Farm polish: approved northeast corn replacement with a shallow pond,
+dense horsetail clumps and a three-platform playground linked by two bridges.
+The swing frame stays empty and static. Redistribute loot around the new features
+and include enemy candidates; preserve crew-scaled per-run counts. Installed and
+editor-checked; headset/gameplay acceptance is queued. See [Farm paddock](farm-silos-layout.md#northeast-paddock-polish--november-11-2026).
+
 November 11 finale: the first valid bridge-button hold spawns one enemy in each lookout tower, exactly two per expedition instead of the prior five-enemy finale selection. Both initially use the regular zombie/minion, with per-marker type selection. Repeated presses do not add waves. See [tower defenders](final-escape-layout.md#first-hold-tower-defenders--november-11). Editor checks pass; gameplay acceptance is queued.
 
 November 10: user requested coal/gold spawners at the midpoint shop and finale.

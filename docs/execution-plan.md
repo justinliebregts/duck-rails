@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 11: install approved Farm northeast pond/playground replacement, redistribute 14 coal/14 gold candidates and author six paddock enemy candidates. Net 43,104 fewer triangles (21.5% of Farm); navigation and lighting baked/exported; scoped geometry/spawn/export checks pass. See [Farm evidence](farm-silos-layout.md#northeast-paddock-polish--november-11-2026).
+- [ ] Playtest Farm paddock climbing/slide, shallow pond and loose-item recovery, enemy pursuit, peer/late-join consistency and Quest performance. Queued; editor checks do not complete acceptance.
+
 - [ ] November 11: validate the compound rating button on Quest (native review UI, cancel/return, failure retry, physical reach) and inspect the replaceable instruction PNG. See [rating station](subway-compound.md#rating-station--november-11-2026).
 
 - [x] November 10: add midpoint (21 coal / 21 gold) and finale (28 / 26) candidate pools; route includes fixed 6 coal / 2 gold at each. Footprint/clearance, saved references, 100 seeds per pool and assembled eight-player route checks pass. See [evidence](validation/special-block-loot.txt).

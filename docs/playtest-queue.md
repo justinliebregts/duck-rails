@@ -43,6 +43,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Farm northeast pond and playground — queued 2026-11-11
+- Commit(s): uncommitted
+- Changed: replace northeast corn with shallow pond, 108 horsetail stems, three playground platforms/two bridges, static slide/ladders, empty swing frame and hay/cart/fence dressing. Net whole-Farm reduction 43,104 triangles (21.5%). Reposition 14 coal/14 gold and two enemies; append four enemy candidates. Per-run counts unchanged.
+- Cheap checks: compile, navigation bake, lighting bake/export and scoped saved references; loot footprint/clearance, enemy navigation/bounds, sampled deck/pond collision, 800 enemy crew/seed selections and 200 maximum-crew loot selections pass. See `docs/validation/farm-paddock/`. Broader catalogue lighting check has unrelated helipad light-count failure.
+- Setup: private test order containing Farm, one desktop client then two authenticated clients with late join; Quest review separately.
+- Check: reach all three platforms via ladders/bridges/slide without snags; traverse pond banks and recover loose items from its 0.38 m depression; inspect hay/cart loot support and natural reach. Enemies can approach/pursue through this area without trapping on new geometry. Peers and late joiners reconstruct matching candidate selections. Swing frame has no hanging parts or simulated physics. Review night/flashlight readability and measure Quest CPU/GPU time against the prior cornfield.
+- Needs human: hand climbing, slide and shallow-water feel, loot reach/readability, headset performance.
+- Priority: normal
+- Mode: fix-on-fail
+
 ### Train aboard margin: escaped and end-of-run teleport — queued 2026-11-11
 - Commit(s): 84985d551
 - Changed: `RailTrain.ContainsPadded()` (Inspector-tunable `paddedMin`/`paddedMax`, yellow gizmo when selected) now decides who "Escaped" at the bridge finish and whether the end-of-run rescue teleport fires. Horns, boarding and cargo keep the tight `Contains()`.

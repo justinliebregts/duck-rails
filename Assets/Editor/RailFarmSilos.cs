@@ -27,6 +27,8 @@ public static partial class RailFarmSilos
     [MenuItem("Duck Rails/Authoring/Farm Silos/Install approved farm")]
     public static void Install()
     {
+        var existing=AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+        if(existing&&existing.transform.Find("Env/"+RailFarmPaddock.RootName))throw new InvalidOperationException("Farm has an approved paddock polish pass. Edit its prefab; a full farm rebuild would erase it.");
         Guard();Directory.CreateDirectory(Folder+"/Meshes");AssetDatabase.Refresh();meshes.Clear();Materials();
         cube=AssetDatabase.LoadAssetAtPath<Mesh>("Assets/DuckRails/Lighting/Blocks/"+Id+"/Cube Block UV.asset");
         if(!cube)throw new Exception("Missing UV cube");octa=Octa();

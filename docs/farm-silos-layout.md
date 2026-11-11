@@ -1,5 +1,19 @@
 # Farm Silos layout
 
+## Northeast paddock polish — November 11, 2026
+
+User approved replacing only the northeast cornfield with the [reviewed pond/playground concept](validation/farm-paddock/approved-concept.png). Installed under `Env/Northeast pond and playground` in the existing Farm prefab; the other two cornfields and all existing buildings remain. Three raised platforms (two roofed towers) connect via two bridges, with a static slide, two climbing ladders, and an empty swing frame (no chains, seats, joints or physics). Hay stacks, broken fencing and a cart dress the paths. The pond is a shallow ground depression, maximum 0.38 m below the surrounding ground, with an inexpensive opaque water surface and six dense horsetail clusters (108 stems). Vegetation has no collision or shadow casting. Water adds no swimming or physics system.
+
+Measured against the user's current saved prefab: removed field **48,132 triangles**, replacement **5,028 triangles / 14 renderers**. Whole Farm **200,317 → 157,213 triangles**, a **43,104 / 21.5% reduction**. This is authored geometry, not measured headset frame time. Existing Quackville materials are reused/adapted; broad opaque surfaces avoid transparent foliage/water overdraw.
+
+Redistributed the field's existing **14 coal and 14 gold candidates** among decks/bridges, hay stacks, cart and pond-edge discoveries. Repositioned its two enemy candidates and appended four, giving **six paddock enemy candidates**. Whole-block pools are **100 coal / 100 gold / 22 enemies**; per-run settings and crew scaling are unchanged. Markers retain native prefab connections and registration. Placement is ready for inspection; it does not guarantee these landmarks are all selected in a run.
+
+Offline navigation rebaked (25,064 nodes); Farm lighting rebaked/exported with 896 valid static receiver bindings. Editor checks passed for all 28 loot footprints, 34 spawn clearance envelopes plus a positive overlap control, six enemy navigation/bounds positions, sampled deck support/headroom and pond depth, 800 enemy selections (all crew sizes, 100 seeds, exact quotas and 15 m spacing), and 200 maximum-crew loot selections. Saved Farm lightmap references and companion build registration pass. The broader catalogue lighting checker stops on its unrelated outdated four-light assumption for the midpoint helipad; it is not reported as passing.
+
+[Unity daylight review](validation/farm-paddock/unity-preview.png) · [geometry counts](validation/farm-paddock/geometry.txt) · [checks and limits](validation/farm-paddock/checks.txt) · [clearance](validation/farm-paddock/clearance.txt) · [preservation](validation/farm-paddock/preservation.txt). Preview uses temporary daylight and is not final night-lighting acceptance. **Queued for playtest:** natural climbing/slide feel, pond traversal and loot recovery, enemy pursuit, late join and Quest performance.
+
+Authoring: `Assets/Editor/RailFarmPaddock.cs` is a one-time scoped installer and refuses to overwrite an installed paddock. Edit the saved prefab for subsequent polish. The old full Farm installer now refuses to erase this pass; corn-only updates skip the replaced field. No other blocks were rebuilt. The user's existing Expedition edits were saved with explicit authorization before scene isolation.
+
 ## Spawn placement first pass — November 8, 2026
 
 User requested approximately 100 coal, 100 gold and 18 enemies, with substantial loot hidden inside corn, plus house/buildings/roofs/trees/props. Replaced 42 old markers with exactly 100 coal, 100 gold and 18 enemy prefab candidates. Retained per-run counts 6/2/5 and existing seeded selection.

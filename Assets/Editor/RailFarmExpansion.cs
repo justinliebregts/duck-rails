@@ -69,9 +69,9 @@ public static partial class RailFarmSilos
         Guard(); meshes.Clear(); Materials();
         var scene=UnityEditor.SceneManagement.EditorSceneManager.OpenScene(BakeScene);
         var b=Object.FindFirstObjectByType<RailBlock>();
-        var p=b.transform.Find(RootName+"/Fields and orchard");
+        var p=b.transform.Find("Env/"+RootName+"/Fields and orchard")??b.transform.Find(RootName+"/Fields and orchard");
         foreach(var t in p.Cast<Transform>().Where(t=>t.name.StartsWith("Corn field ")).ToArray())Object.DestroyImmediate(t.gameObject);
-        var plant=CornPlant();for(int i=0;i<CornAreas.Length;i++)DenseCorn(p,i,plant);
+        var plant=CornPlant();for(int i=0;i<CornAreas.Length;i++)if(i!=2||!b.transform.Find("Env/"+RailFarmPaddock.RootName))DenseCorn(p,i,plant);
         PrefabUtility.ApplyPrefabInstance(b.gameObject,InteractionMode.AutomatedAction);
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
         UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
