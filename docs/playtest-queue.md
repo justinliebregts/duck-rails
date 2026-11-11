@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Zombie hit shapes + first-contact throws (dcd2f9e1, 62ea1a73) — queued 2026-11-10
+- Commit(s): f073d29a4
+- Changed: zombie hit shapes follow animated bones (all five enemies); thrown items hit the earliest-contacted enemy; Spider head hit radius 23 cm.
+- Setup: fix the `GrabbablePlayChecks` fixture (it fails at "Actual grab", also before this port), then run it in a disposable batch; then 1 client in Play Mode: throw/swing bat and gold bar at each enemy type, including crowded pairs and a locked (just-hit) zombie.
+- Check: `GrabbablePlayChecks` passes incl. frontmost contact in both spawn orders; hits land on visible limbs/head; a throw hits the nearer of two zombies; deflect direction sane; held-swing feel unchanged.
+- Needs human: throw and grab feel, hit-shape fit on animated enemies in headset.
+- Priority: normal
+
 ### Enemy tuning + late-join flares (22262f75, 98ec9f5b, 6f4c3cba) — queued 2026-11-10
 - Commit(s): see git log "Port Duckz enemy tuning group"
 - Changed: speeds rebalanced, retreat 4–12 s, all zombies fear 40 s flares, flares restored for late joiners, smaller kill triggers, slower spider stalk.
