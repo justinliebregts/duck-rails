@@ -1,5 +1,21 @@
 # Subway compound blockout
 
+## Discord station — November 11, 2026
+
+A local **JOIN DISCORD** physical button with a "Join the Discord!" TextMeshPro
+heading sits on the inner right partition of the Station Info nook, facing the
+rating station across the bench. It reuses `PressableButton`; `RailDiscordLink`
+opens `https://discord.gg/sfyvhahnDW` with `Application.OpenURL` (Quest browser on
+headset), ignoring repeat presses for 3 seconds. No networking or room change.
+
+The editable prefab is `Assets/DuckRails/Compound/Discord/DiscordStation.prefab`
+(change the invite on its `RailDiscordLink.inviteUrl`). `Duck Rails > Compound >
+Install Discord Station` installs it under `Compound Geometry` only when absent and
+validates the callback, URL and CutePixel SDF labels. Validation: installed through
+Unity MCP in the open editor, validation passed, no Console errors; a scene camera
+capture confirmed placement and readability. Browser launch on desktop/Quest and
+headset reach are queued for playtest.
+
 ## Rating station — November 11, 2026
 
 The compound has a local **RATE GAME** physical button beside a world-space PNG

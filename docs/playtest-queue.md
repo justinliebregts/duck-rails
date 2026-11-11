@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Compound Discord button — queued 2026-11-11
+- Commit(s): uncommitted
+- Changed: local JOIN DISCORD physical button with a "Join the Discord!" heading on the inner right partition of the Station Info nook; opens https://discord.gg/sfyvhahnDW.
+- Cheap checks: installed via Unity MCP, installer validation (callback, URL, CutePixel labels) passed, no Console errors; camera capture shows readable placement.
+- Setup: Compound, one desktop client and a Quest client.
+- Check: desktop click opens the invite in the default browser; headset touch opens it in the Quest browser. Repeated contact within 3 s opens it once. Returning to the game leaves the session usable; no room transition.
+- Needs human: Quest browser launch/return, headset reach and readability at duck height.
+- Priority: normal
+
 ### Compound rating button and instruction PNG — queued 2026-11-11
 - Commit(s): uncommitted
 - Changed: local RATE GAME physical button and replaceable 1024 × 768 PNG canvas in the Station Info nook; Quest requests native Meta rating/review UI, desktop opens the configured app's store listing.
