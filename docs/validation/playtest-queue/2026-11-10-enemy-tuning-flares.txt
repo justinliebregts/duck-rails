@@ -1,0 +1,51 @@
+﻿# Enemy tuning + late-join flares — playtest queue run 2026-11-10, Unity 6000.3.24f1, disposable copies tmp/duckz-port-validation(-2) synced to main
+
+## DeathLifecycleChecks.Run — attempt 1 exit 1
+Exception: Expired network event ignored
+## attempt 2 (after 98ec9f5b hunk) exit 1
+Exception: explicit follow command acquires the requesting player
+## attempt 3 (pose for follow target) exit 1
+Exception: latest accepted speaker receives attention after current reply
+## attempt 4 (pose for second speaker) exit 0
+Death effects PASS: immediate launch, age catchup, expiry, light reset, protection, overflow and bomber revisions
+Ragdoll reuse/parking and flare sender guard PASS
+Death launch checks passed: four prefab profiles, variation, separate tracking clamp, hands, reuse, dead-only stream, remote launch and duplicate rejection.
+Ragdoll checks passed: three deaths, distant spawn, impossible hand target, bone resets, hip rotation, Smasher launch into wall and 720 physics steps.
+MeleeGraceChecks passed.
+ALL DUCK HOME CHECKS PASSED
+KillTrigger multiple-contact death/listener guard PASS
+DeathLifecycleChecks: ALL PASSED
+
+## SmasherRetreatJumpChecks.Run — passed (Run does not exit itself; process stopped after the pass line)
+SmasherRetreatJumpChecks: ALL PASSED
+
+## FlareJoinNetworkChecks — two batch editors, real Photon cloud, run 0f669a25 (first attempt: guest copy died in first-open package resolution; rerun after warming the copy)
+### host exit 0
+FLARE CHECK host connect
+FLARE CHECK host joined
+FLARE CHECK host guest connected
+FLARE CHECK host human flare burning
+FLARE CHECK host companion checkpoint
+FLARE CHECK host guest joined
+FLARE CHECK host RPC and property deduplication
+FLARE CHECK host flare above takeoff
+FLARE CHECK host observer received airborne retreat
+FLARE CHECK host left
+FLARE CHECK host successor landed
+FLARE CHECK host joined during burn
+FLARE CHECK host left again
+FLARE CHECK host original deadlines
+FLARE CHECK host rejoined
+FLARE LIVE PASS host
+### guest exit 0
+FLARE CHECK guest connect
+FLARE CHECK guest two overlapping deaths
+FLARE CHECK guest joined
+FLARE CHECK guest remote avatar
+FLARE CHECK guest RPC and property deduplication
+FLARE CHECK guest airborne observer
+FLARE CHECK guest replacement master
+FLARE CHECK guest independent first expiry
+FLARE CHECK guest all effects and room records expired
+FLARE CHECK guest subsequent join
+FLARE LIVE PASS guest

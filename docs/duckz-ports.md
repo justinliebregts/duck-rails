@@ -372,14 +372,16 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
 - Late-join flares: death flares are now recorded in Photon room properties (`deathFlare:*` keys, master publishes, expires at lifetime), so
   players joining later, including aboard the train, restore active flares. Flare positions are still world-space at death time; **not yet reconciled with
   train motion** (a flare dropped on a moving train is not train-relative).
-- Validation: compiled, empty Console; `EnemyRetreatChecks`, `RailEnemyBoardingChecks`, `SpiderFlareChecks` passed. Not run: `SmasherRetreatJumpChecks`,
-  `DeathLifecycleChecks`, `FlareJoinNetworkChecks` (network, needs Play Mode).
-- Remaining: two-client late-join flare test (incl. master handoff and joining aboard a moving train), hook/smasher flare behavior, balance feel of new speeds.
+- Validation: compiled, empty Console; `EnemyRetreatChecks`, `RailEnemyBoardingChecks`, `SpiderFlareChecks` passed. Playtest queue run November 10
+  (disposable batch): `SmasherRetreatJumpChecks` PASS, `DeathLifecycleChecks` PASS after porting the missed 98ec9f5b check hunk (`136fe60ea`) and seeding
+  poses in the imported `DuckHomeChecks` fixture (`8005743a5`), `FlareJoinNetworkChecks` PASS on both of two batch editors over real Photon (late join,
+  master handoff mid smasher fall, publisher leaving, expiry). [Evidence](validation/playtest-queue/2026-11-10-enemy-tuning-flares.txt)
+- Remaining: real-game two-client late join (ground and aboard a moving train), hook flare behavior in game, balance feel of new speeds.
 - Destination commit: `1ea23d07f`.
 
 ## Zombie hit shapes group — dcd2f9e1, 62ea1a73
 
-- Status: implemented; compiled with an empty error Console, editor checks and the disposable-batch suites passed November 10, 2026 (exceptions below). `GrabbablePlayChecks` could not be validated. Real-client/headset acceptance pending (queued for playtest: "Zombie hit shapes + first-contact throws").
+- Status: implemented; compiled with an empty error Console, editor checks and the disposable-batch suites passed November 10, 2026 (exceptions below). `GrabbablePlayChecks` passed after a fixture fix (playtest queue run). Real-client/headset acceptance pending (queued for playtest: "Zombie hit shapes + first-contact throws").
 - Source SHAs (full): `dcd2f9e1132f66c798bb1780f9189a2a67e51554` (hit shapes fitted to animated bones; thrown items resolve by first contact),
   `62ea1a739c4bc1e3ea5242b0a38a3193fe08388f` (Spider head hit radius 0.3 → 0.23 m).
 - Destination: new `Scripts/Enemies/Enemy.HitShapes.cs` (source GUID kept; `Enemy` is now `partial`; old `OverlapsSwing`/`HitBloodPosition`/`ThrownBodyContact` moved out of `Enemy.cs`, public API kept), zero-length-axis fix in `SegmentsWithin`, `ItemSounds` dormant-enemy early return, `ZombieHookAttack.Contacts` uses the prepared pose, `PhotonGrabbable` first-contact thrown resolution (`ThrownHit`, `FindEarlierThrow`, `ApplyThrownHit`), the five `Prefabs/Enemies/Zombie*.prefab` (`swingReach` + `hitShapes`; Hook included), checks `ZombieHitShapeChecks` (new), `SpiderRaiseChecks`, `GrabbablePlayChecks`.
@@ -387,7 +389,9 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
 - Not ported: `EnemyHitBehaviorChecks` edits. That check does not exist in Rails (source-only snapshot/network harness), so it was not imported.
 - Validation: editor `ZombieHitShapeChecks`, `HitBloodChecks`, `ZombieHookChecks`, `EnemyRetreatChecks`, `RailEnemyChecks` passed. Disposable copy (`tmp/duckz-port-validation`, runner `HitShapePortBatch`, copy only), one process, in order: `ZombieHitShapeChecks` PASS, `SpiderRaiseChecks` PASS (5000 assertions), `HitBloodChecks` PASS, `PickupRecoveryChecks` (alone) PASS, `HeldItemRecoveryChecks` PASS twice, `RoomObjectRecoveryChecks` PASS, `PickupRecoveryChecks` (later) FAIL "round-robin retry budget" (known order dependency, not a regression), `PhotonGrabbableChecks` PASS.
   `GrabbablePlayChecks.Run` (separate batch Play Mode process) **fails at "Actual grab"** (`item.Grab(hand)` in the fixture, before any ported combat code). The pre-port code and pre-port check fail identically in the same copy, so this is a pre-existing Rails fixture problem, not caused by the port. Consequence: the ported first-contact throw assertions in that check were **never executed**; do not treat throw/frontmost-contact behavior as validated. Needs the fixture fixed (likely Rails grab preconditions) before it can run.
-- Remaining: fix the `GrabbablePlayChecks` fixture and run it; throw/grab feel on headsets; two-client thrown-hit parity. A stale `MeleeGraceChecks` batch Unity (from the hook-blood port) was holding the disposable copy and was killed with the user's OK before these runs.
+  Playtest queue run November 10: fixture fixed (`b76f4618f`, grants `PhotonMasterHandoff` input focus to the unfocused batch process); `GrabbablePlayChecks.Run`
+  now PASS incl. frontmost forearm contact in both spawn orders, cooldown front, dormant/respawned Bomber. [Evidence](validation/playtest-queue/2026-11-10-grabbable-play-checks.txt)
+- Remaining: in-game hit-shape fit and throw/grab feel on headsets; two-client thrown-hit parity. A stale `MeleeGraceChecks` batch Unity (from the hook-blood port) was holding the disposable copy and was killed with the user's OK before these runs.
 - Destination commit: the commit introducing this entry (see Git history).
 
 ## ZombieHook pull group — 6f27966d, 7b5dad14

@@ -43,24 +43,24 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
-### Zombie hit shapes + first-contact throws (dcd2f9e1, 62ea1a73) — queued 2026-11-10
-- Commit(s): f073d29a4
+### Zombie hit shapes: in-game throws and swings (dcd2f9e1, 62ea1a73) — queued 2026-11-10, manual-only
+- Commit(s): f073d29a4; fixture fixed in b76f4618f (automated part PASSED, see Results)
 - Changed: zombie hit shapes follow animated bones (all five enemies); thrown items hit the earliest-contacted enemy; Spider head hit radius 23 cm.
-- Setup: fix the `GrabbablePlayChecks` fixture (it fails at "Actual grab", also before this port), then run it in a disposable batch; then 1 client in Play Mode: throw/swing bat and gold bar at each enemy type, including crowded pairs and a locked (just-hit) zombie.
-- Check: `GrabbablePlayChecks` passes incl. frontmost contact in both spawn orders; hits land on visible limbs/head; a throw hits the nearer of two zombies; deflect direction sane; held-swing feel unchanged.
-- Needs human: throw and grab feel, hit-shape fit on animated enemies in headset.
+- Setup: 1 client in Play Mode (headset preferred): throw/swing bat and gold bar at each enemy type, including crowded pairs and a locked (just-hit) zombie.
+- Check: hits land on visible limbs/head; a throw hits the nearer of two zombies; deflect direction sane; held-swing feel unchanged.
+- Needs human: all of the above (visual fit on animated enemies), throw and grab feel in headset.
 - Priority: normal
 
-### Enemy tuning + late-join flares (22262f75, 98ec9f5b, 6f4c3cba) — queued 2026-11-10
-- Commit(s): see git log "Port Duckz enemy tuning group"
+### Enemy tuning + late-join flares: in-game (22262f75, 98ec9f5b, 6f4c3cba) — queued 2026-11-10, manual-only
+- Commit(s): 1ea23d07f; fixture fixes 136fe60ea, 8005743a5 (automated part PASSED, see Results)
 - Changed: speeds rebalanced, retreat 4–12 s, all zombies fear 40 s flares, flares restored for late joiners, smaller kill triggers, slower spider stalk.
-- Setup: 2 clients; run `FlareJoinNetworkChecks`, `DeathLifecycleChecks`, `SmasherRetreatJumpChecks`; then manual: client A dies (flare), client B joins late (also aboard a moving train).
-- Check: B sees the active flare with correct remaining life; enemies of every type avoid it; flare expires ~40 s; master handoff keeps it; smasher/hook behave near flares.
-- Needs human: speed/kill-trigger feel in headset.
+- Setup: 2 real game clients: client A dies (flare), client B joins late, once on the ground and once aboard a moving train.
+- Check: B sees the active flare with correct remaining life; enemies of every type avoid it; flare expires ~40 s. Known gap: flares are world-space, so one dropped on a moving train is left behind (not train-relative); record what B sees, do not treat as a fix target here.
+- Needs human: speed/kill-trigger feel in headset; real-game late join (not covered by the batch fixture, which uses inert avatars).
 - Priority: normal
 
-### ZombieHook pull: no snapback, hands/gear clear of surfaces (6f27966d, 7b5dad14) — queued 2026-11-10
-- Commit(s): see git log "Port Duckz ZombieHook pull"
+### ZombieHook pull: no snapback, hands/gear clear of surfaces (6f27966d, 7b5dad14) — queued 2026-11-10, manual-only
+- Commit(s): see git log "Port Duckz ZombieHook pull"; batch fixture re-run on HEAD 2026-11-10 PASS (see Results)
 - Changed: hook pulls no longer snap the VR player back; while pulled, hands, held weapons/items and a hand-held bag stay out of floors and walls (locally and as sent to others), releases mid-pull drop instead of fling, and observers keep dropped items above the floor.
 - Setup: 2 clients (A in headset). Force `RailHook` spawns. Pull A (1) on the ground near a wall, (2) standing on the moving train, including near the cabin walls/rear, (3) on a curve. Repeat with bare hands, nail bat, gold bar, and a hand-held bag; release the item mid-pull once inside and once outside the train cargo volume.
 - Check: no rewind after the pull; no hand/bat/bag visibly inside geometry for A or B; train travel neither lost nor added; item released on the train becomes cargo and rides along, one released off it falls in place; B never sees a dropped bat tip through the floor.
@@ -70,7 +70,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Results
 
-_(empty)_
+### Queue run 2026-11-10 — automated portions (Unity 6000.3.24f1, batch, tested at HEAD 5b21d0009 + fixture fixes)
+Run in the ignored disposable copies `tmp/duckz-port-validation` and `-2` (synced to `main`), separate batch processes. Manual/headset parts were not run and remain in Pending.
+
+- **Zombie hit shapes — `GrabbablePlayChecks`: PASS** (1 process). Initially FAIL at "Actual grab": `PhotonMasterHandoff` exists in Play Mode and the unfocused batch process has no input focus (`handCanGrab=False avail=False`). Fixture-only fix `b76f4618f` grants focus as `ZombieHookPullChecks` does. Re-run passed: idle/moving held and thrown sweeps, frontmost forearm contact in both spawn orders, cooldown front lets rear take the hit, dormant/respawned Bomber. [Evidence](validation/playtest-queue/2026-11-10-grabbable-play-checks.txt)
+- **Enemy tuning + late-join flares: PASS** (fixtures).
+  - `DeathLifecycleChecks` (1 process): FAIL ×3 then PASS. (1) "Expired network event ignored": the port missed 98ec9f5b's second check hunk (30 s is no longer expired with a 40 s lifetime); fixed `136fe60ea` with the source expression. (2,3) `DuckHomeChecks` follow/conversation assertions: Rails `PhotonPlayer.ForActor` only resolves remote avatars with a received pose (d7ddf37db), the imported fixture never gave its players one. Fails identically when run alone, so it predates the port. Fixture-only fix `8005743a5`. No production code changed.
+  - `SmasherRetreatJumpChecks` (1 process): PASS ("ALL PASSED"; `Run` does not exit by itself, process stopped after the pass).
+  - `FlareJoinNetworkChecks` (2 batch editors, real Photon cloud): host and guest PASS: late join reconstructs both flares once with original launch time, RPC/property dedup, master leaves mid-smasher-fall and the successor lands it once while respecting the flare, flares survive the publisher leaving, independent expiry, expired deaths never replay. First attempt BLOCKED by the second copy failing its first-open package resolution; passed after warming it.
+  - [Evidence](validation/playtest-queue/2026-11-10-enemy-tuning-flares.txt)
+- **ZombieHook pull — `ZombieHookPullChecks` re-run on HEAD: PASS** (24 pull + 6 surface cases, same values as the port run). Everything else in that entry is headset/two-client. [Evidence](validation/playtest-queue/2026-11-10-hook-pull.txt)
 
 ## Dropped
 
