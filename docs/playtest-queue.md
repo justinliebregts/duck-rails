@@ -44,7 +44,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ## Pending
 
 ### Test panel on L3, admin-gated — queued 2026-11-11
-- Commit(s): 7ae3a4e70
+- Commit(s): 7ae3a4e70, d46433b7b
 - Changed: in VR the test panel toggles on L3 instead of the left menu button. Menu buttons always open the pause menu. The panel needs the Editor or a backend admin in development builds. GoldBarDropper is removed.
 - Setup: Editor VR rig, single client; then development build on headset with an admin account and a non-admin account.
 - Check: Editor: L3 opens/closes the wrist panel, menu button and P open the pause menu (not the panel), the Game-view overlay button opens the panel in keyboard and VR modes, Esc/Close hides the keyboard panel. Dev build admin: L3 opens panel after sign-in. Dev build non-admin: L3 does nothing, menu button opens pause menu. No gold bar drops on L3.
