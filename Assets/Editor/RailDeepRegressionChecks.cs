@@ -148,8 +148,8 @@ public static class RailDeepRegressionChecks
                     Advance(4);break;
                 case 4:
                     if(Slot==3){Require(DuckzWallet.Instance.Coins==walletBefore,"Absent player credited sale");Ack("Absent account received no sale");break;}
-                    int credit=RailResourceBalance.GoldCredit(RailResourceBalance.GoldCount(3),1);
-                    if(DuckzWallet.Instance.Coins==Math.Min(DuckzWallet.MaxCoins,walletBefore+credit)){Require(run.State.gold[0].recipients.Length==3,"Shop recipient count");Ack("Server wallet credited exact scaled amount");}
+                    if(Slot!=0){Require(DuckzWallet.Instance.Coins==walletBefore,"Non-depositor credited");if(age>4)Ack("Only the depositor is paid");Advance(5);break;}
+                    if(DuckzWallet.Instance.Coins==Math.Min(DuckzWallet.MaxCoins,walletBefore+100)){Require(run.State.gold[0].recipients.Length==1,"Shop recipient count");Ack("Server wallet credited 100 coins to the depositor");}
                     Advance(5);break;
                 case 5:
                     if(Slot==3 && PhotonNetwork.CurrentRoom.Name!=c.room){session.RequestJoinCode(c.room);break;}
@@ -160,10 +160,10 @@ public static class RailDeepRegressionChecks
                     if(age>4){beforeFuel=PhotonSession.CurrentFuel;walletBefore=DuckzWallet.Instance.Coins;Ack("Stable wallets after late join");}Advance(34,true);break;
                 case 34:
                     if(Slot==3)Gold(2);
-                    if(run.State.gold.Count==2){Require(run.State.gold[1].recipients.Length==4,"Second shop recipient count");Ack("Late entrant sold to second physical shop; four recipients");}Advance(35,true);break;
+                    if(run.State.gold.Count==2){Require(run.State.gold[1].recipients.Length==1,"Second shop recipient count");Ack("Late entrant sold to second physical shop; one recipient");}Advance(35,true);break;
                 case 35:
-                    int shopExpected=Math.Min(DuckzWallet.MaxCoins,walletBefore+RailResourceBalance.GoldCredit(RailResourceBalance.GoldCount(3),Slot==3?1:2));
-                    if(DuckzWallet.Instance.Coins==shopExpected && age>4){Board();Ack("Second shop credited all four actual wallets, per-player remainder correct");}Advance(7,true);break;
+                    int shopExpected=Math.Min(DuckzWallet.MaxCoins,walletBefore+(Slot==3?100:0));
+                    if(DuckzWallet.Instance.Coins==shopExpected && age>4){Board();Ack("Second shop credited only the late depositor");}Advance(7,true);break;
                 case 7:
                     if(Slot==1)
                     {

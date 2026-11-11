@@ -52,6 +52,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: tower spawn presentation and defense difficulty in headset.
 - Priority: normal
 
+### Gold crate depositor-only payout, Duckz shower and sound — queued 2026-11-11
+- Commit(s): uncommitted
+- Changed: shop/crate deposit pays 100 coins to the depositor only; crate plays the 100-coin Duckz shower and the bar's deposit sound. Others are not credited, observers see coins fly into the depositor.
+- Setup: two or more clients on a run; deposit one bar at the departure shop and the helipad, from the master and a non-master; also a late joiner deposit.
+- Check: depositor's wallet +100 (or up to cap) and watch counts up; other wallets unchanged; depositor sees 100 coins land in the watch, others see them fly into the depositor's body; deposit sound audible to all near the crate; floating "+100" text rises at the crate for everyone (CutePixel font); label reads "+100 coins per bar"; no repeat on reconnect. Compare against Duckz gold crate.
+- Needs human: shower/sound feel in headset; economy balance (100 per bar is far above the old budget).
+- Priority: normal
+
 ### Midpoint and finale loot — queued 2026-11-10
 - Commit(s): uncommitted
 - Changed: midpoint has 21 coal / 21 gold candidate markers; finale has 28 / 26. Each selects fixed 6 coal / 2 gold. Route now includes midpoint loot; updated clients require the `-special-loot-v1` matchmaking suffix.

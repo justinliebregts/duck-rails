@@ -268,6 +268,10 @@ MonoBehaviour:
   intake: {fileID: 6879305490479489820}
   label: {fileID: 1069137037465853668}
   coins: {fileID: 6932407172648442494}
+  goldTextSpawn: {fileID: 6932407172648442467}
+  goldTextFont: {fileID: 11400000, guid: 2a9e4b84460fc644e86fff0c9e6b1da0, type: 2}
+  goldTextMaterial: {fileID: 2100000, guid: f36f24f9219f4143bfd917d0f4cd1772, type: 2}
+  goldTextEffect: {fileID: 11400000, guid: 83eba2cdb6af495c9f9096cca7982375, type: 2}
 --- !u!4 &2516947422058099113 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9218142578650277575, guid: 5a733cd983ff77c4ca4e3564999909ff, type: 3}
@@ -276,6 +280,11 @@ Transform:
 --- !u!65 &6879305490479489820 stripped
 BoxCollider:
   m_CorrespondingSourceObject: {fileID: 178075153273287794, guid: 5a733cd983ff77c4ca4e3564999909ff, type: 3}
+  m_PrefabInstance: {fileID: 6701520681357662062}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6932407172648442467 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4410235790011223309, guid: 5a733cd983ff77c4ca4e3564999909ff, type: 3}
   m_PrefabInstance: {fileID: 6701520681357662062}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &6932407172648442494 stripped

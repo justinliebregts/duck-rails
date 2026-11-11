@@ -383,6 +383,10 @@ MonoBehaviour:
   intake: {fileID: 5179288760867425852}
   label: {fileID: 4159020083575514703}
   coins: {fileID: 8695447932403791710}
+  goldTextSpawn: {fileID: 8695447932403791683}
+  goldTextFont: {fileID: 11400000, guid: 2a9e4b84460fc644e86fff0c9e6b1da0, type: 2}
+  goldTextMaterial: {fileID: 2100000, guid: f36f24f9219f4143bfd917d0f4cd1772, type: 2}
+  goldTextEffect: {fileID: 11400000, guid: 83eba2cdb6af495c9f9096cca7982375, type: 2}
 --- !u!4 &1012596315085400232 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 399051050498311414, guid: b3ef1b7ddf2f20442bd4050fe6f637d6, type: 3}
@@ -428,6 +432,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RailParkedHelicopter
   engineSound: {fileID: 3504362410236503696}
   rotorWash: {fileID: 2440501266101911868}
+--- !u!4 &8695447932403791683 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8298075800774581021, guid: b3ef1b7ddf2f20442bd4050fe6f637d6, type: 3}
+  m_PrefabInstance: {fileID: 829999523294751838}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8695447932403791710 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8298075800774580992, guid: b3ef1b7ddf2f20442bd4050fe6f637d6, type: 3}

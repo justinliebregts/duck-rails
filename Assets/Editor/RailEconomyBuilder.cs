@@ -74,7 +74,7 @@ public static class RailEconomyBuilder
             var r = go.AddComponent<RailGoldReceiver>();
             r.receiverId = 1;
             r.coins = go.GetComponent<CoinShower>(); r.intake = go.GetComponent<BoxCollider>(); r.intake.isTrigger = true;
-            r.label = Label(go.transform, "SELL GOLD\nEveryone gets coins", new Vector3(0, 2.1f, -.2f), new Vector2(3, .7f), 1.1f);
+            r.label = Label(go.transform, "SELL GOLD\n+100 coins per bar", new Vector3(0, 2.1f, -.2f), new Vector2(3, .7f), 1.1f);
             return PrefabUtility.SaveAsPrefabAsset(go, path);
         }
         finally { Object.DestroyImmediate(go); }
