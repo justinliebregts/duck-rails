@@ -1,0 +1,27 @@
+2026-11-10 — Unity 6000.3.24f1, verified X:/Work/duck-rails/Assets, Edit Mode only.
+
+PASS: midpoint 21 coal / 21 gold; finale 28 coal / 26 gold candidates.
+PASS: full renderer/box-collider runtime envelopes, Environment support rays,
+four footprint corners, 0.05m support gap, overlap clearance with solid positive
+control, 1.8m same-type / 0.8m cross-type candidate separation.
+Six fortress proposals rejected for obstruction before mutation.
+PASS: all 96 saved candidates active, unique and linked to native marker prefabs.
+PASS: 100 seeds per type/block (400 selections), fixed counts 6 coal / 2 gold.
+PASS: actual Build in an isolated preview scene, crew=8, seed=73:
+  midpoint: 6 coal / 2 gold; finale: 6 coal / 2 gold;
+  full route: 136 coal / 212 gold; deterministic transformed markers match.
+Scavenging maxima remain 31 coal / 52 gold per block. These two special blocks
+use fixed counts, not scavenging scaling; their smaller pools are intentional.
+PASS: existing unsaved Expedition inherits both new pools; scene not saved.
+PASS: existing prefab object IDs retained; geometry/component/lighting/graph
+records unchanged except root/group children and RailBlock loot fields.
+Unity also serializes existing default playerHalfWidth=48. Concurrent water-volume
+work in the finale is excluded from the loot commit. Nested instance document
+ordering changes only.
+PASS: script compilation and Console error/exception query (zero entries).
+
+Reproduction: run special-block-loot-command.cs.txt through Unity MCP with
+Apply=false for nonmutating placement checks. Apply=true refuses existing pools.
+Run special-block-loot-route-check.cs.txt for isolated assembled-route checks.
+Finale left open in Prefab Mode. No Play Mode, multiplayer or headset validation.
+Settling, physical reach, balance and peer lifecycle are queued in playtest-queue.md.

@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Midpoint and finale loot — queued 2026-11-10
+- Commit(s): uncommitted
+- Changed: midpoint has 21 coal / 21 gold candidate markers; finale has 28 / 26. Each selects fixed 6 coal / 2 gold. Route now includes midpoint loot; updated clients require the `-special-loot-v1` matchmaking suffix.
+- Setup: two updated clients on a normal expedition; inspect midpoint and finale before crossing the finish line. Repeat with late join and master handoff.
+- Check: six coal and two gold at each special block, matching objects/poses on both clients; no duplication after handoff/rejoin. Items settle on intended surfaces, remain grabbable, and coal works in the furnace. Midpoint gold pays only through the existing shop intake. Preserve normal scavenging crew scaling and existing finale enemies/bridge behavior.
+- Needs human: placement taste, roof/tower reach, tree-root visibility and resource balance in a headset.
+- Priority: normal
+
 ### Water volumes: wet steps and head underwater — queued 2026-11-10
 - Commit(s): uncommitted
 - Changed: new WaterVolume (box, top face = surface). Footsteps/hand hits below the surface use the Water surface; head under the surface plays splash in/out, muffles audio (listener low-pass), tints with fog and plays bubbles every ~8 s. Lake in lakeside-campground-v1; shallow wading strip over the finale Ravine floor. See [water](water.md).

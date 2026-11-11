@@ -1,0 +1,39 @@
+using System;
+using System.Linq;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+internal class CommandScript : IRunCommand
+{
+    public void Execute(ExecutionResult result)
+    {
+        if(Application.dataPath.Replace('\\','/')!="X:/Work/duck-rails/Assets")throw new Exception("Wrong project");
+        var scene=EditorSceneManager.NewPreviewScene();
+        try
+        {
+            var go=new GameObject("Loot route fixture");UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(go,scene);
+            var route=go.AddComponent<RailRoute>();
+            route.catalog=new[]{"convenience-store-v1","farm-silos-v1","container-yard-v1","skyscraper-works-v1"}.Select(id=>AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/"+id+".prefab").GetComponent<RailBlock>()).ToArray();
+            var data=new GameObject("Inactive gameplay");data.transform.SetParent(go.transform);data.SetActive(false);
+            route.expedition=data.AddComponent<RailExpedition>();route.manager=data.AddComponent<Game.AI.EnemyManager>();
+            RailBlock Load(string path)=>((GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(path),scene)).GetComponent<RailBlock>();
+            route.startingStation=Load("Assets/DuckRails/StartingStation.prefab");
+            route.finale=Load("Assets/DuckRails/Blocks/bridge-finale-v1.prefab");route.finaleRoot=route.finale.transform;
+            route.midpointBlock=Load("Assets/DuckRails/Blocks/midpoint-helipad-v1.prefab");
+            var state=RailRoute.ChooseNormal("special-loot-check",route.catalog,73);state.resourceCrew=8;
+            route.Build(state);
+            foreach(var b in new[]{route.midpointBlock,route.finale})
+            {
+                var coal=route.expedition.coalPoints.Where(t=>t.IsChildOf(b.transform)).ToArray();
+                var gold=route.expedition.goldPoints.Where(t=>t.IsChildOf(b.transform)).ToArray();
+                if(coal.Length!=6||gold.Length!=2)throw new Exception(b.id+" route count");
+                if(!coal.SequenceEqual(RailSpawnPool.Select(b,RailSpawnKind.Coal,state.enemySeed))||!gold.SequenceEqual(RailSpawnPool.Select(b,RailSpawnKind.Gold,state.enemySeed)))throw new Exception("Seed reconstruction mismatch");
+                if(coal.Any(t=>t.position.z<b.transform.position.z)||gold.Any(t=>t.position.z<b.transform.position.z))throw new Exception("World placement mismatch");
+                result.Log("PASS assembled eight-player route "+b.id+": 6 coal / 2 gold, matching deterministic world markers");
+            }
+            if(route.expedition.coalPoints.Length!=4*RailResourceBalance.CoalCount(8)+12 || route.expedition.goldPoints.Length!=4*RailResourceBalance.GoldCount(8)+4)throw new Exception("Full route counts");
+            result.Log("PASS full route: "+route.expedition.coalPoints.Length+" coal / "+route.expedition.goldPoints.Length+" gold; scavenging scaling preserved");
+        }
+        finally {EditorSceneManager.ClosePreviewScene(scene);}
+    }
+}

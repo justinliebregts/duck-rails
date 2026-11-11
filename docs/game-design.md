@@ -1,5 +1,11 @@
 # Duck Rails — V1 game design
 
+November 10: user requested coal/gold spawners at the midpoint shop and finale.
+Both now have authored candidate pools. Initial tuning uses fixed 6 coal / 2 gold
+per special block; ordinary scavenging crew scaling is unchanged. See
+[midpoint](helipad-shop.md#loot-placement--november-10) and
+[finale](final-escape-layout.md#loot-placement--november-10). Balance awaits playtest.
+
 November 10 train art: install the reviewed Blender shell into the existing train
 assembly. Keep driving, fuel display/state, horn, radio/table and furnace gameplay
 components separate and functional. The furnace opening is 25% taller downward,

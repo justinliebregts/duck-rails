@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 10: add midpoint (21 coal / 21 gold) and finale (28 / 26) candidate pools; route includes fixed 6 coal / 2 gold at each. Footprint/clearance, saved references, 100 seeds per pool and assembled eight-player route checks pass. See [evidence](validation/special-block-loot.txt).
+- [ ] Inspect special-block loot placement and playtest physical settling, reach, balance, late joining and host handoff.
+
 - [x] November 10: prepare Blender train review model with taller furnace opening,
   thinner exhaust, fitted dash/firebox cowl and three static mesh sections;
   exclude radio/table and controls, remove paired dash light strips. Blender

@@ -1,5 +1,11 @@
 # Midpoint helipad shop — November 9, 2026
 
+## Loot placement — November 10
+
+Added 21 coal and 21 gold candidates around the hut workbench/interior/roof, fuel bund, pad corner and tree roots on both sides. Initial tuning is **6 coal / 2 gold per run**, independent of crew size, matching the finale's fixed-count treatment. These are supplementary service-stop supplies; the four scavenging blocks retain crew scaling. The historical no-resource description below is superseded.
+
+`RailRoute` now includes midpoint loot in the expedition's seeded resource lists. Updated clients use the `-special-loot-v1` matchmaking suffix to avoid mixing incompatible loot manifests. No enemies were added. See [placement and route evidence](validation/special-block-loot.txt). Physical settling, reach, balance and multiplayer acceptance are queued for playtest.
+
 The live Expedition scene now references `Assets/DuckRails/Blocks/midpoint-helipad-v1.prefab` through `RailRoute.midpointBlock`. The old scene-owned Midpoint Shop and the size-only midpoint-shop-preview prefab are removed. The helipad preview was promoted with its GUID preserved. `RailShop.prefab` is retained because the departure station still uses it.
 
 ## Route

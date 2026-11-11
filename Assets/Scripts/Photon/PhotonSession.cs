@@ -110,7 +110,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
         // Spawn-aware ownership bootstrap and corroborated pickup repair require matching peers.
-        settings.AppVersion = source.AppVersion + "-rails-pickup-v3-spawn-pools-v1-resources-v1-enemy-quadrants-v1-helipad-v1-no-train-safe-v1";
+        settings.AppVersion = source.AppVersion + "-rails-pickup-v3-spawn-pools-v1-resources-v1-enemy-quadrants-v1-helipad-v1-no-train-safe-v1-special-loot-v1";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;

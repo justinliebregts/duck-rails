@@ -1,0 +1,116 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+
+internal class CommandScript : IRunCommand
+{
+    const bool Apply = false;
+    struct Point { public RailSpawnKind kind; public Vector3 position; public string name; }
+    Bounds Envelope(RailSpawnKind kind)
+    {
+        var p=AssetDatabase.LoadAssetAtPath<GameObject>(kind==RailSpawnKind.Coal?"Assets/Resources/Rails/RailCoal.prefab":"Assets/DuckRails/Economy/RailGoldBar.prefab");
+        var rr=p.GetComponentsInChildren<Renderer>(); var b=rr[0].bounds;
+        foreach(var r in rr.Skip(1)) b.Encapsulate(r.bounds);
+        b.center-=p.transform.position;
+        foreach(var box in p.GetComponentsInChildren<BoxCollider>())
+            for(int x=-1;x<=1;x+=2) for(int y=-1;y<=1;y+=2) for(int z=-1;z<=1;z+=2)
+                b.Encapsulate(box.transform.TransformPoint(box.center+Vector3.Scale(box.size*.5f,new Vector3(x,y,z)))-p.transform.position);
+        return b;
+    }
+    public void Execute(ExecutionResult result)
+    {
+        if(Application.dataPath.Replace('\\','/')!="X:/Work/duck-rails/Assets" || EditorApplication.isPlaying) throw new Exception("Wrong project/state");
+        var prior=PrefabStageUtility.GetCurrentPrefabStage();
+        if(prior!=null && prior.scene.isDirty) throw new Exception("Unsaved prefab stage");
+        foreach(string id in new[]{"midpoint-helipad-v1","bridge-finale-v1"})
+        {
+            var stage=PrefabStageUtility.OpenPrefab("Assets/DuckRails/Blocks/"+id+".prefab");
+            var root=stage.prefabContentsRoot; var block=root.GetComponent<RailBlock>();
+            var physics=stage.scene.GetPhysicsScene(); Physics.SyncTransforms();
+            int mask=LayerMask.GetMask("Environment");
+            var solids=root.GetComponentsInChildren<Collider>().Where(c=>c.enabled&&!c.isTrigger&&((1<<c.gameObject.layer)&mask)!=0).ToArray();
+            var overlaps=new Collider[128];
+            var control=solids.First(c=>c is BoxCollider && c.bounds.size.x>10);
+            if(physics.OverlapBox(control.bounds.center,Vector3.one*.02f,overlaps,Quaternion.identity,mask,QueryTriggerInteraction.Ignore)==0) throw new Exception("Physics positive control failed");
+            var points=new List<Point>(); var rejected=new List<string>();
+            void Add(RailSpawnKind kind,Vector3 sample,string name)
+            {
+                var env=Envelope(kind);
+                if(!physics.Raycast(sample,Vector3.down,out var hit,3,mask,QueryTriggerInteraction.Ignore)||hit.normal.y<.98f) {rejected.Add(name+" no flat support");return;}
+                var pos=hit.point+Vector3.up*(.05f-env.min.y);
+                if(points.Any(p=>Vector3.Distance(p.position,pos)<(p.kind==kind?1.8f:.8f))) {rejected.Add(name+" spacing");return;}
+                foreach(int x in new[]{-1,1}) foreach(int z in new[]{-1,1})
+                {
+                    var corner=hit.point+new Vector3(x*env.extents.x,.15f,z*env.extents.z);
+                    if(!physics.Raycast(corner,Vector3.down,out var foot,.3f,mask,QueryTriggerInteraction.Ignore)||Mathf.Abs(foot.point.y-hit.point.y)>.025f) {rejected.Add(name+" footprint");return;}
+                }
+                if(physics.OverlapBox(pos+env.center,env.extents,overlaps,Quaternion.identity,mask,QueryTriggerInteraction.Ignore)>0) {rejected.Add(name+" obstruction");return;}
+                points.Add(new Point{kind=kind,position=pos,name=name});
+            }
+            if(id.StartsWith("midpoint"))
+            {
+                foreach(var k in new[]{RailSpawnKind.Coal,RailSpawnKind.Gold})
+                {
+                    bool gold=k==RailSpawnKind.Gold; float shift=gold?1f:-1f;
+                    Add(k,new Vector3(-40+shift,1.5f,6.2f),"Hut workbench");
+                    Add(k,new Vector3(-40+shift,1,9),"Hut inner corner");
+                    Add(k,new Vector3(-40+shift,4,8),"Hut roof climb");
+                    Add(k,new Vector3(-26+shift,1,56),"Behind fuel bund");
+                    Add(k,new Vector3(-31,1,53+shift),"Fuel tank service side");
+                    Add(k,new Vector3(-35+shift,1,42),"Pad rear corner");
+                    foreach(var tree in root.GetComponentsInChildren<Transform>().Where(t=>t.name=="Pine" && t.position.x>0).Take(12))
+                        Add(k,tree.position+new Vector3(shift,1,gold?.5f:-.5f),"East pine "+tree.position.z.ToString("F1"));
+                    foreach(var tree in root.GetComponentsInChildren<Transform>().Where(t=>t.name=="Pine" && t.position.x<0 && t.position.z>15).Where((t,i)=>i%2==0))
+                        Add(k,tree.position+new Vector3(1.2f,1,shift),"West perimeter pine "+tree.position.z.ToString("F0"));
+                }
+            }
+            else
+            {
+                foreach(var k in new[]{RailSpawnKind.Coal,RailSpawnKind.Gold})
+                {
+                    float shift=k==RailSpawnKind.Gold?1f:-1f;
+                    foreach(var bed in solids.Where(c=>c.name=="Cargo bed"))
+                        Add(k,bed.transform.TransformPoint(new Vector3(0,0,shift*.3f))+Vector3.up*.7f,"Traffic truck "+bed.transform.parent.name);
+                    foreach(float side in new[]{-1f,1f})
+                    {
+                        foreach(float x in new[]{17f,27f}) foreach(float z in new[]{38f,45f})
+                            Add(k,new Vector3(side*x,3,z+shift),"South bastion "+side+" "+x+" "+z);
+                        foreach(float x in new[]{17f,27f}) foreach(float z in new[]{63f,69f})
+                            Add(k,new Vector3(side*x,5,z+shift),"North bastion "+side+" "+x+" "+z);
+                        foreach(float z in new[]{47f,57f}) Add(k,new Vector3(side*33,5,z+shift),"Patrol wall "+side+" "+z);
+                        Add(k,new Vector3(side*34,9,74+shift),"Lookout tower "+side);
+                    }
+                }
+            }
+            foreach(var k in new[]{RailSpawnKind.Coal,RailSpawnKind.Gold}) result.Log(id+" validated "+k+" candidates="+points.Count(p=>p.kind==k));
+            result.Log("Rejected: "+string.Join("; ",rejected));
+            if(!Apply) continue;
+            if(RailSpawnPool.Candidates(block,RailSpawnKind.Coal).Length!=0||RailSpawnPool.Candidates(block,RailSpawnKind.Gold).Length!=0) throw new Exception("Existing loot: refusing duplicate pass");
+            result.RegisterObjectModification(block);
+            RailSpawnPool.Migrate(block);
+            foreach(var kind in new[]{RailSpawnKind.Coal,RailSpawnKind.Gold})
+            {
+                var parent=root.transform.Find(kind+" Spawns");
+                if(parent==null){var group=new GameObject(kind+" Spawns");result.RegisterObjectCreation(group);UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(group,stage.scene);group.transform.SetParent(root.transform,false);parent=group.transform;}
+                var created=new List<Transform>();
+                foreach(var p in points.Where(p=>p.kind==kind))
+                {
+                    var go=RailSpawnerPrefabs.Instantiate(kind,stage.scene);result.RegisterObjectCreation(go);
+                    go.transform.SetParent(parent,false); go.transform.position=p.position;
+                    go.name=kind+" "+(created.Count+1).ToString("D2")+" "+p.name;
+                    PrefabUtility.RecordPrefabInstancePropertyModifications(go);PrefabUtility.RecordPrefabInstancePropertyModifications(go.transform);
+                    created.Add(go.transform);
+                }
+                RailSpawnPool.SetPoints(block.spawnCandidates,kind,created.ToArray());
+            }
+            block.coalCount=6;block.goldCount=2;
+            EditorUtility.SetDirty(block);EditorSceneManager.MarkSceneDirty(stage.scene);
+            PrefabUtility.SaveAsPrefabAsset(root,stage.assetPath);
+            stage.ClearDirtiness();
+            result.Log("Saved "+stage.assetPath);
+        }
+    }
+}

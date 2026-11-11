@@ -154,6 +154,9 @@ public sealed class RailRoute : MonoBehaviour
         }
         int middle = MidpointBlockIndex(count);
         midpointBlock.transform.position = state.placements[middle] + Vector3.forward * Blocks[middle].length;
+        // The short service stop uses its authored counts, like the finale.
+        coal.AddRange(RailSpawnPool.Select(midpointBlock, RailSpawnKind.Coal, state.enemySeed));
+        gold.AddRange(RailSpawnPool.Select(midpointBlock, RailSpawnKind.Gold, state.enemySeed));
         distance += midpointBlock.TrackLength;
         graphs.Add(Game.AI.CrawlGraph.Load(midpointBlock.graph)); offsets.Add(midpointBlock.transform.position);
         FinaleStart = distance;

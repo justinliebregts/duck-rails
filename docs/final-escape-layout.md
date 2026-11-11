@@ -1,5 +1,11 @@
 # Final escape block — concept V1
 
+## Loot placement — November 10
+
+Added 28 coal and 26 gold candidates to the empty pools: eight truck beds on the approach, both south/north bastions, side patrol walls and lookout towers. All are before the bridge finish line. Retained fixed **6 coal / 2 gold per run** and existing enemy candidates. Six proposed fortress points were rejected for obstruction. No geometry, navigation or lighting rebuild was needed.
+
+Saved markers, physical envelopes, 100 seeds per loot type and an assembled eight-player route pass EditMode checks; see [evidence](validation/special-block-loot.txt). The finale is left open in Prefab Mode for inspection. Physical settling, reach, balance and real-client acceptance remain queued for playtest. Gold still pays only at shop deposits; no finale payout or train safe was added.
+
 ## Steel drawbridge and river recovery — November 6
 
 User requested finished bridge geometry, walls closing the exposed riverbank gaps, and escape stairs on the fortress bank only. Installed in the existing finale prefab and synchronized Expedition scene.
