@@ -402,6 +402,7 @@ Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets 
 
 ### Confirmed
 - Compound is a social room for mingling, cosmetics, shopping, and meeting friends.
+- November 11: provide a local rating-page button in the compound with a replaceable PNG instruction canvas beside it. See [rating station](subway-compound.md#rating-station--november-11-2026); headset/store acceptance remains queued.
 - The social room is NOT automatically the expedition group.
 - Public departure platform counts down and takes only its occupants, up to eight.
 - People outside the platform cannot hold up departure.

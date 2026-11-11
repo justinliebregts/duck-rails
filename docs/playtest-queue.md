@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Compound rating button and instruction PNG — queued 2026-11-11
+- Commit(s): uncommitted
+- Changed: local RATE GAME physical button and replaceable 1024 × 768 PNG canvas in the Station Info nook; Quest requests native Meta rating/review UI, desktop opens the configured app's store listing.
+- Cheap checks: Unity 6000.3.24f1 compiled and installed in batch Edit Mode, exit 0; callback, texture, canvas and font references passed; no C# errors or exceptions. Scene diff limited to the new instance.
+- Setup: Compound, one desktop client and a Quest client authenticated through the normal login flow.
+- Check: desktop click opens Duck Rails' store listing; headset touch requests the native rating UI without an eligibility precheck. Cancel/close returns to usable gameplay. Failures display a retry message, repeated contact does not repeatedly launch requests, and no room transition or reward occurs. Replace PNG while preserving its .meta and confirm the saved canvas picks up the new art.
+- Needs human: actual Meta review-page launch/cancel, headset reach/readability and normal session recovery after system UI. Do not submit a rating as part of testing.
+- Priority: normal
+
 ### Pause menu and rooms: headset buttons and feel (5aaa6ffdb, d480df22a) — queued 2026-11-11, manual-only
 - Commit(s): 5aaa6ffdb, d480df22a; fix 1f1203b1c (automated part PASSED 2026-11-11, see Results)
 - Check: Start button on a Quest controller and the P key open/close the menu (key input was not simulated). Poke/grab feel of the menu, keypad and gate LAUNCH EXPEDITION button. Hint readability at duck height.

@@ -1,5 +1,7 @@
 # Duck Rails — execution plan
 
+- [ ] November 11: validate the compound rating button on Quest (native review UI, cancel/return, failure retry, physical reach) and inspect the replaceable instruction PNG. See [rating station](subway-compound.md#rating-station--november-11-2026).
+
 - [x] November 10: add midpoint (21 coal / 21 gold) and finale (28 / 26) candidate pools; route includes fixed 6 coal / 2 gold at each. Footprint/clearance, saved references, 100 seeds per pool and assembled eight-player route checks pass. See [evidence](validation/special-block-loot.txt).
 - [ ] Inspect special-block loot placement and playtest physical settling, reach, balance, late joining and host handoff.
 

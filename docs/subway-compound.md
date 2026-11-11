@@ -1,5 +1,33 @@
 # Subway compound blockout
 
+## Rating station — November 11, 2026
+
+The compound has a local **RATE GAME** physical button beside a world-space PNG
+instruction canvas on the inner left wall of the Station Info nook. It reuses
+`PressableButton` for VR touch and desktop aiming/clicking. On Quest it requests
+the initialized Meta SDK's native rating/review UI; desktop opens the configured
+Meta app's store listing. Failure shows a retry message and does not change the
+room. No rewards or submitted-review tracking are attached.
+
+Replace `Assets/DuckRails/Compound/Rating/RateGameInstructions.png` with your art,
+keeping its `.meta` file. The canvas updates automatically. Use 1024 × 768 (4:3)
+to retain the current proportions, or assign another texture to the prefab's
+`Instructions PNG - replace texture` RawImage. The editable prefab is
+`Assets/DuckRails/Compound/Rating/RateGameStation.prefab`; its instance is under
+`Compound Geometry` in `Assets/Scenes/Compound.unity`.
+
+`Duck Rails > Compound > Install Rating Station` installs the saved prefab only
+when absent and preserves subsequent art/placement edits. The placeholder uses
+the CutePixel font source and all live labels use CutePixel SDF.
+Quest store launch, return, physical reach and readability are queued for playtest.
+Validation: Unity 6000.3.24f1 batch Edit Mode compilation and installation passed
+with exit code 0, no C# errors or exceptions. The station's persistent callback,
+PNG reference, world-space canvas and CutePixel labels passed setup checks;
+the scene diff contains only the new station instance. Unity MCP was unavailable;
+the existing project-scoped relay configuration was checked and CLI validation
+targeted `X:/Work/duck-rails`. No Play Mode or review submission was performed.
+The SDK integration follows [Meta's rating/review documentation](https://developers.meta.com/vr/documentation/unity/ps-rate-and-review/).
+
 ## Material concept — November 4, 2026
 
 The user approved this concept for implementation. `RailCompoundMaterials` adds **Duck Rails > Compound > Materials > Apply Quackville depot treatment** for the open Compound scene. It maps existing box surfaces to shared depot materials, preserves bounds/colliders and lightmap UV charts, and applies only mesh/material properties to the outer subway prefab. Text, emissive lenses, see-through guards and shallow water retain their existing treatment. Original atlas files and depot materials are reused unchanged. After applying, rebake with **Compound > Lighting > Bake Sample**. This is a surface pass; geometry refinement and target-headset acceptance remain separate.
