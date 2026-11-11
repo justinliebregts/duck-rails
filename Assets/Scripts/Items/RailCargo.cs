@@ -14,8 +14,9 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
     Rigidbody body;
     PhotonGrabbable item;
     BagObject bag;
+    HeadEquipment headEquipment;
     PhotonTransformView transformSync;
-    bool attached, received, previousLoose, preparedRelease;
+    bool attached, received, previousLoose, preparedRelease, removed;
     Vector3 localPose;
     Quaternion localRotation;
     string run;
@@ -32,6 +33,7 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
             photonView.Synchronization = ViewSynchronization.UnreliableOnChange;
         body = GetComponent<Rigidbody>(); item = GetComponent<PhotonGrabbable>();
         bag = GetComponent<BagObject>(); transformSync = GetComponent<PhotonTransformView>();
+        headEquipment = GetComponent<HeadEquipment>();
         previousLoose = Loose;
     }
     void OnEnable() => Active.Add(this);
@@ -79,6 +81,15 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
     }
     void LateUpdate()
     {
+        // Loose cargo below the block floor is unrecoverable; its authority removes it from the room.
+        if (!removed && photonView.IsMine && Loose && !Predicting && PhotonNetwork.InRoom && PhotonSession.IsRailsRoom
+            && (headEquipment == null || !headEquipment.IsEquipped) && RailPlayerBounds.BelowFloor(transform.position))
+        {
+            removed = true;
+            DuckzLog.Log($"[Rails] Removing {name} (view {photonView.ViewID}) below the block floor at {transform.position}", this);
+            PhotonNetwork.Destroy(gameObject);
+            return;
+        }
         var train = RailTrain.Instance;
         if (Simulates)
         {

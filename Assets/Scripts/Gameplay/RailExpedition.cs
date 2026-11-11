@@ -566,7 +566,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     void TeleportAboard()
     {
         if (GR.Player.instance == null || RailTrain.Instance == null) return;
-        Vector3 position = RailTrain.Instance.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 3 - 1) * 1.1f, .35f, -2));
+        Vector3 position = RailTrain.Instance.AboardPoint(PhotonNetwork.LocalPlayer.ActorNumber);
         var desktop = GR.Player.instance.GetComponent<DesktopPlayer>();
         if (desktop != null) desktop.Teleport(position, Quaternion.identity, true); else NewPlayer.instance?.Warp(position, Quaternion.identity);
         fallAt = 0;

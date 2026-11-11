@@ -176,6 +176,7 @@ public sealed class RailRoute : MonoBehaviour
         {
             var visibility = GetComponent<RailBlockVisibility>() ?? gameObject.AddComponent<RailBlockVisibility>();
             visibility.Rebuild(this);
+            if (GetComponent<RailPlayerBounds>() == null) gameObject.AddComponent<RailPlayerBounds>();
         }
     }
     public void Sample(float distance, out Vector3 position, out Quaternion rotation)
@@ -228,4 +229,16 @@ public sealed class RailRoute : MonoBehaviour
         return new Bounds(finaleRoot.position + finale.enemyBounds.center, finale.enemyBounds.size);
     }
     public bool IsEncounter(Vector3 position) => EnemyBounds(position).Contains(position);
+    // Player walls, fall recovery and below-floor cargo removal. Allocation-free; called per item per frame.
+    public bool TryPlayerArea(Vector3 position, out RailBlock block)
+    {
+        block = null;
+        if (InFootprint(startingStation, position)) block = startingStation;
+        for (int i = 0; block == null && i < Blocks.Count; i++) if (InFootprint(Blocks[i], position)) block = Blocks[i];
+        if (block == null && InFootprint(midpointBlock, position)) block = midpointBlock;
+        if (block == null && InFootprint(finale, position)) block = finale;
+        return block != null;
+    }
+    static bool InFootprint(RailBlock block, Vector3 position) => block != null &&
+        position.z >= block.transform.position.z && position.z < block.transform.position.z + block.length;
 }

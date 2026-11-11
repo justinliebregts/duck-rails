@@ -36,6 +36,7 @@ public sealed class RailTrain : MonoBehaviour
         Vector3 local = transform.InverseTransformPoint(point);
         return Mathf.Abs(local.x) < 2.45f && Mathf.Abs(local.z) < 4.9f && local.y > -.1f && local.y < 2.8f;
     }
+    public Vector3 AboardPoint(int actor) => transform.TransformPoint(new Vector3((actor % 3 - 1) * 1.1f, .35f, -2));
     public static bool TryLocalFrame(out int arrival, out int pad, out Transform frame)
     {
         arrival = int.MaxValue; pad = 0;

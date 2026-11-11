@@ -784,3 +784,8 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] Port Duckz 73b78c46, 7ed6d880, 2719d1a1 (editor checks pass; see [port evidence](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e)). b591543e not applicable (no Rails warmup catalog).
 - [ ] Two-client and headset acceptance for the hook (defense handshake, master handoff, Quest cost).
+
+## Player walls and fall recovery — November 10, 2026
+
+- [x] Invisible ±48 m side walls on every block, a per-block kill floor, local last-ground recovery (never downs), and deletion of loose cargo below the floor. Compiles; EditMode check across all 19 block prefabs passes. See [player bounds](player-bounds.md).
+- [ ] Play Mode and two-client acceptance (queued for playtest), plus a headset check of how wall contact and the warp feel.

@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Player walls and fall recovery — queued 2026-11-10
+- Commit(s): uncommitted
+- Changed: invisible ±48 m block side walls; local last-ground recovery below the kill floor or past a wall (no down); loose RailCargo below the kill floor is PhotonNetwork.Destroyed. See [player bounds](player-bounds.md).
+- Setup: two clients on a normal route. Desktop client walks into a side wall on two different blocks. Then use a test teleport or fixture to drop each client below the floor: off the block ground, from the train while it moves, and twice within 6 s. Throw coal, a gold bar and a dropped bag below the floor (e.g. canyon or past a seam).
+- Check: walls block walking and throws at |x| = 48 but not the track or seams. A fall returns the player within about 0.5 s to their last ground spot (train-relative if it was the train), with no down and no revive. A repeat fall steps further back. Items below the floor disappear on both clients with no Console errors or recovery retries. The victory ride still returns players aboard after 2 s. No new recurring allocations.
+- Needs human: headset feel of wall contact and the instant warp; hand-climbing the invisible wall.
+- Priority: normal
+
 ### Zombie hit shapes: in-game throws and swings (dcd2f9e1, 62ea1a73) — queued 2026-11-10, manual-only
 - Commit(s): f073d29a4; fixture fixed in b76f4618f (automated part PASSED, see Results)
 - Changed: zombie hit shapes follow animated bones (all five enemies); thrown items hit the earliest-contacted enemy; Spider head hit radius 23 cm.

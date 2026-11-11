@@ -16,6 +16,9 @@ public sealed class RailBlock : MonoBehaviour
     public Bounds enemyBounds = new Bounds(new Vector3(23, 4, 80), new Vector3(28, 12, 70));
     // Optional above-ground rail exclusion for blocks whose navigation crosses below the track.
     public Bounds enemySurfaceRailExclusion;
+    [Tooltip("Invisible player walls stand at +/- this local X for the full block length. Zero disables walls and lateral fall recovery.")]
+    [Min(0)] public float playerHalfWidth = 48;
+    void Awake() { if (Application.isPlaying) RailPlayerBounds.BuildWalls(this); }
 
     public Vector3 ConstrainEnemyPosition(Vector3 world)
     {

@@ -471,6 +471,9 @@ November 1 confirmed change: the external bridge button requires a continuous ph
 - Confirmed October 29: downed passengers earn the same escape credit as other onboard players. There is no dead state.
 - Week 2 default: connected late arrivals can escape under the same onboard rule; disconnected participants remain on the board but do not escape. New joins remain closed during ending/return.
 
+### Block edges and falling
+- Confirmed November 10: invisible side walls on every block, plus last-ground fall recovery. Falling off or below a block never downs a player; it returns them to their last solid ground. Loose items that fall below ground are deleted from the network. Visible edge art may be added during block art passes. See [player bounds](player-bounds.md).
+
 ### Victory ride and results
 - Players can walk around, talk, and honk while the train drives automatically.
 - Jumping/falling off during this ride returns the player aboard after two seconds without downing a standing player or reviving a downed player. This never revokes an earned finish or grants a non-finisher credit. Teammates can still revive downed players during the ride; the recorded results remain unchanged.

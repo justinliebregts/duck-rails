@@ -219,6 +219,7 @@ public class DesktopPlayer : MonoBehaviour
         _controller.enabled = true;
     }
 
+    public bool IsGrounded => _controller != null && _controller.isGrounded;
     public Vector3 PassengerAnchor => transform.TransformPoint(_controller.center);
     public Vector3 PassengerFoot => PassengerAnchor - Vector3.up * (_controller.height * 0.5f * Mathf.Abs(transform.lossyScale.y));
     public float PassengerRadius => _controller.radius * Mathf.Max(Mathf.Abs(transform.lossyScale.x), Mathf.Abs(transform.lossyScale.z));
