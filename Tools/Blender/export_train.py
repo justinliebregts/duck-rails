@@ -45,6 +45,7 @@ gauge = [polygon for polygon in reference.data.polygons
          if -.83 < polygon.center.x < -.13 and polygon.center.y < 4.65]
 data = dict(visuals=[mesh_data(obj) for obj in export.objects],
             parts=[mesh_data(obj) for obj in bpy.data.collections['Train Working Model'].objects],
+            railLowering=bpy.data.collections['Train Working Model'].get('rail_lowering', 0.0),
             controlTrim=mesh_data(reference, gauge))
 target = repo / 'Assets/DuckRails/Train/Blender/unity-integration.json'
 target.write_text(json.dumps(data), encoding='utf-8')

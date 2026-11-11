@@ -21,7 +21,7 @@ public static class RailBlenderTrainImport
         public int[] triangles, triangleMaterials;
         public string[] materials;
     }
-    [Serializable] public class Model { public Part[] visuals, parts; public Part controlTrim; }
+    [Serializable] public class Model { public Part[] visuals, parts; public Part controlTrim; public float railLowering; }
 
     public static bool Installed => AssetDatabase.LoadAssetAtPath<GameObject>(RailYardMuleArt.Train)?.transform.Find(VisualRoot) != null;
     public static void ProtectBlenderModel()
@@ -141,10 +141,23 @@ public static class RailBlenderTrainImport
             var furnaceCollision = Child(assembly.furnace.transform, "Blender furnace collision");
             foreach (var old in assembly.furnace.transform.Find("Front firebox art").GetComponentsInChildren<Collider>(true)) old.enabled = false;
             var source = model.parts.ToDictionary(p => p.name);
+            var deck = root.transform.Find("Hull and deck/Deck collision slab").GetComponent<BoxCollider>();
+            float deckHeight = source["Single wood deck"].vertices[0].y;
+            var deckTop = deck.transform.TransformPoint(deck.center + Vector3.up * deck.size.y * .5f);
+            deck.transform.position += root.transform.up * (deckHeight - root.transform.InverseTransformPoint(deckTop).y);
+            var rails = root.transform.Find("Side rails - rear stays open");
+            if (rails) { var position = rails.localPosition; position.y = -model.railLowering; rails.localPosition = position; }
+            var bumper = root.transform.Find("Yard Mule shell/Hazard bumper").GetComponent<BoxCollider>();
+            var bumperMatrix = bumper.transform.worldToLocalMatrix * root.transform.localToWorldMatrix;
+            var bumperPoints = source["Hazard bumper"].vertices.Select(bumperMatrix.MultiplyPoint3x4).ToArray();
+            var bumperBounds = new Bounds(bumperPoints[0], Vector3.zero);
+            foreach (var point in bumperPoints) bumperBounds.Encapsulate(point);
+            bumper.center = bumperBounds.center; bumper.size = bumperBounds.size;
             string[] furnaceSolids = { "Chamber floor", "Chamber ceiling", "Closed rear", "Chamber side -1", "Chamber side 1", "Mouth sill", "Mouth lintel", "Mouth jamb -1", "Mouth jamb 1", "Low exhaust duct", "Stack X -1", "Stack X 1", "Stack Z -1", "Stack Z 1", "Stack collar" };
             foreach (var name in furnaceSolids)
                 Convex(furnaceCollision, source[name], assembly.furnace.transform.worldToLocalMatrix * root.transform.localToWorldMatrix, name);
             var collision = Child(root.transform, "Blender supplemental collision");
+            Box(collision, "Cockpit furnace cover", new Vector3(0, .07f, 4.98f), new Vector3(2.16f, .72f, .2f));
             Convex(collision, source["Dash to furnace cowl"], Matrix4x4.identity, "Dash to furnace cowl");
             // Separate left/right pieces avoid a convex hull bridging the cockpit approach.
             var transition = source["Cowl side transitions"];
@@ -181,6 +194,10 @@ public static class RailBlenderTrainImport
         var shell = root.transform.Find(VisualRoot);
         check(shell && shell.GetComponentsInChildren<MeshRenderer>().Length == 3, "Exactly three Blender static mesh sections");
         var model = JsonUtility.FromJson<Model>(File.ReadAllText(Folder + "/unity-integration.json"));
+        var parts = model.parts.ToDictionary(p => p.name);
+        check(Mathf.Abs(parts["Boarding rails"].vertices.Min(v => v.y) + .075f) < .0001f, "Side rail bases seat into deck edging");
+        check(Mathf.Abs(root.transform.Find("Side rails - rear stays open").localPosition.y + model.railLowering) < .0001f, "Rail collision follows lowered artwork");
+        check(parts["Hazard bumper"].vertices.Max(v => v.y) > parts["Nose left"].vertices.Min(v => v.y) + .007f, "Bumper top separated from nose underside");
         foreach (var p in model.visuals)
         {
             var t = shell.Find(p.name); var mesh = t.GetComponent<MeshFilter>().sharedMesh;
