@@ -26,7 +26,7 @@ public class ItemSounds : MonoBehaviour
     [Min(0f)] [SerializeField] float impactSoundCooldown = 0.1f;
     [Tooltip("Sound for striking zombies or other players, held or thrown. Leave empty to disable.")]
     [SerializeField] SoundEvent fleshImpact;
-    [Tooltip("Minimum interval between flesh impacts, shared by swept hits and physics contacts.")]
+    [Tooltip("Minimum interval between flesh impact sounds and their blood bursts, shared by sweeps and physics contacts.")]
     [Min(0.01f)] [SerializeField] float fleshImpactCooldown = 0.1f;
     [Header("Items that can be worn")]
     [SerializeField] SoundEvent equip;
@@ -57,17 +57,17 @@ public class ItemSounds : MonoBehaviour
     readonly List<Collider> releaseContacts = new List<Collider>();
     float nextImpactTime = float.NegativeInfinity;
     float nextFleshImpactTime = float.NegativeInfinity;
-    public bool HasFleshImpact => fleshImpact != null;
+    public bool FleshImpactReady => isActiveAndEnabled && fleshImpact != null && Time.time >= nextFleshImpactTime;
 
     /// <summary>Called for a qualifying strike, including worn headbutts, independently of target knockback cooldowns.</summary>
-    public void PlayFleshImpact(Vector3 position)
+    public void PlayFleshImpact(Vector3 position, Vector3 direction)
     {
-        if (!isActiveAndEnabled || fleshImpact == null || Time.time < nextFleshImpactTime ||
+        if (!FleshImpactReady ||
             (PhotonNetwork.InRoom && view != null && !view.IsMine) ||
             (grabbable != null && grabbable.IsStashed))
             return;
         nextFleshImpactTime = Time.time + Mathf.Max(0.01f, fleshImpactCooldown);
-        RoomRpc.PlaySound(fleshImpact, position);
+        RoomRpc.PlaySound(fleshImpact, position, direction);
     }
     float nextSwingTime = float.NegativeInfinity;
     bool hasSwingSample;
@@ -160,6 +160,8 @@ public class ItemSounds : MonoBehaviour
 
     void Awake()
     {
+        if (fleshImpact != null && fleshImpact.ImpactParticles != null)
+            BloodEffectPool.Get().PrewarmHits(fleshImpact.ImpactParticles);
         body = GetComponent<Rigidbody>();
         grabbable = GetComponent<Grabbable>();
         bag = GetComponent<BagObject>();
@@ -235,7 +237,12 @@ public class ItemSounds : MonoBehaviour
                 return;
             float minSpeed = enemy != null ? enemy.MinHitSpeed : player.MinHitSpeed;
             if (speed >= minSpeed && collision.contactCount > 0)
-                PlayFleshImpact(collision.GetContact(0).point);
+            {
+                var contact = collision.GetContact(0);
+                Vector3 incoming = collision.relativeVelocity;
+                if (Vector3.Dot(incoming, contact.normal) > 0f) incoming = -incoming;
+                PlayFleshImpact(contact.point, enemy != null ? -incoming : incoming);
+            }
             return;
         }
         if (Get(ItemSound.Drop) == null) return;

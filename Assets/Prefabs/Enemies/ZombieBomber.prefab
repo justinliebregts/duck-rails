@@ -52,8 +52,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.73029107, y: 0.8768283, z: 0.47715986}
-  m_Center: {x: 0, y: 0.2850231, z: 0.2943437}
+  m_Size: {x: 0.66417015, y: 0.8738341, z: 0.46870115}
+  m_Center: {x: 0, y: 0.3244129, z: 0.29011446}
 --- !u!114 &7377706064869904593
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -351,17 +351,16 @@ MonoBehaviour:
   tumbleSpeed: 2
   recoverSpeed: 1.25
   maxFlightTime: 4
-  retreatTime: 3
-  retreatTimeMax: 9
+  retreatTime: 4
+  retreatTimeMax: 12
   retreatAfterKill: 0
-  flareFearRadius: 0
+  flareFearRadius: 6
   retreatSpeed: 5
   retreatLookAtPlayer: 1
   throwStunDuration: 1
   throwShoveDistance: 0.35
   headShakeAngle: 25
   headShakeCycles: 3
-  hitBloodPrefab: {fileID: 1489431029902184, guid: b4154b993818cf9448b5f96bd3c35a8a, type: 3}
   fallRecoveryDelay: 20
 --- !u!114 &8254932332637812946
 MonoBehaviour:
@@ -375,8 +374,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5690fc5d228146749967dc95a1e4905e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Game.AI.GroundLocomotion
-  walkSpeed: 2
-  chaseSpeed: 4
+  walkSpeed: 2.5
+  chaseSpeed: 3.6
   turnSpeed: 180
   arriveRadius: 0.3
   snapProbe: 0.5

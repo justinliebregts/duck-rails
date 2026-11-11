@@ -447,7 +447,7 @@ namespace Game.AI
 
             ApplyMovementPose(enemy, pos, dt, turnSpeed);
 
-            UpdateStuck(enemy, m, dt, pos);
+            UpdateStuck(enemy, m, dt, root.position);
         }
 
         // Root poses are written directly to a kinematic rigidbody, so collision
@@ -976,6 +976,15 @@ namespace Game.AI
         void ApplyMovementPose(Enemy enemy, Vector3 next, float dt, float yawSpeed)
         {
             Transform root = enemy.Root;
+            if (!enemy.AllowsFlareMovement(root.position, next))
+            {
+                // Waiting at the flare boundary is intentional and must not trigger a stuck respawn.
+                _hasSupport = false;
+                _stalled = false;
+                _stuckTimer = 0f;
+                _escapeTimer = 0f;
+                return;
+            }
             Vector3 moved = Vector3.ProjectOnPlane(next - root.position, Vector3.up);
             // A blocked desired direction can change with every new path. Only
             // actual travel should turn the rig; ignore contact-scale motion.

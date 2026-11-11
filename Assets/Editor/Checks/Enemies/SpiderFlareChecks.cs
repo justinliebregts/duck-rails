@@ -38,6 +38,7 @@ public static class SpiderFlareChecks
             Check(enemy.IsFlareProtected(Vector3.zero), "Low active flare must protect");
             Check(!enemy.AllowsFlareMovement(new Vector3(-8, 2, 0), new Vector3(8, 2, 0)), "Movement cannot cross a flare sphere");
             Check(enemy.AllowsFlareMovement(Vector3.zero, Vector3.back), "Escape movement is allowed");
+            CheckGroundMovement(flareObject.transform.position);
             var remembered = new Vector3(12, 0, 0);
             Set(enemy, "_lastSeenPos", remembered);
             Check((bool)Call(enemy, "TickFlareFear", manager, 0.1f), "Nearby flare must interrupt AI");
@@ -79,5 +80,24 @@ public static class SpiderFlareChecks
             UnityEngine.Object.DestroyImmediate(flareObject);
             UnityEngine.Object.DestroyImmediate(managerObject);
         }
+    }
+
+    static void CheckGroundMovement(Vector3 flare)
+    {
+        var actor = new GameObject("Ground flare check");
+        try
+        {
+            var ground = actor.AddComponent<GroundLocomotion>();
+            var enemy = actor.AddComponent<Enemy>();
+            Call(enemy, "Awake");
+            Vector3 start = flare + Vector3.left * 8f;
+            actor.transform.position = start;
+            Call(ground, "ApplyMovementPose", enemy, flare + Vector3.right * 8f, .1f, 90f);
+            Check(actor.transform.position == start, "Ground step cannot cross a flare between safe endpoints");
+            actor.transform.position = flare + Vector3.left * 3f;
+            Call(ground, "ApplyMovementPose", enemy, start, .1f, 90f);
+            Check(actor.transform.position == start, "Ground zombie can walk out of the flare");
+        }
+        finally { UnityEngine.Object.DestroyImmediate(actor); }
     }
 }

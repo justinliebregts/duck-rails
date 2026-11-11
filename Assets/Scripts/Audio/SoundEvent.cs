@@ -7,6 +7,9 @@ namespace Game.Audio
     public sealed class SoundEvent : ScriptableObject
     {
         [SerializeField] AudioClip[] clips = new AudioClip[0];
+        [Tooltip("Optional particles spawned with this positional room sound.")]
+        [SerializeField] GameObject impactParticles;
+        public GameObject ImpactParticles => impactParticles;
         [SerializeField] bool avoidImmediateRepeat = true;
         [SerializeField, MinMaxRange(0.5f, 1.5f)] Vector2 pitchRange = new Vector2(0.95f, 1.05f);
         [SerializeField, MinMaxRange(0f, 1f)] Vector2 volumeRange = Vector2.one;

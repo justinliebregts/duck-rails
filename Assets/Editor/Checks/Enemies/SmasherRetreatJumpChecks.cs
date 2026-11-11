@@ -17,6 +17,8 @@ public static class SmasherRetreatJumpChecks
         if (!Application.isBatchMode) throw new InvalidOperationException("Batch mode only.");
         foreach (bool kill in new[] { false, true }) BusEscape(kill);
         RejectedEscape(false); RejectedEscape(true);
+        FlareJump();
+        FlareEscapeFromRoof();
         Debug.Log("SmasherRetreatJumpChecks: ALL PASSED");
     }
 
@@ -95,6 +97,76 @@ public static class SmasherRetreatJumpChecks
         for (int i = 0; i < 100; i++)
             Check(!jump.TryStartRetreatJump(enemy, manager.SurfaceMask, Vector3.right), "Repeated ticks do not rescan");
         Check((float)Get(jump, "_nextRetreatCheck") == deadline, "Retry deadline is not renewed each frame");
+    }
+
+    static void FlareJump()
+    {
+        Setup(out var enemy, out var jump, out var manager);
+        Box(new Vector3(11, 1.5f, 0), new Vector3(4, 3, 4));
+        Set(enemy, "_lastSeenPos", new Vector3(11, 4.7f, 0));
+        enemy.SetRemoteState(Enemy.State.Chase);
+        Physics.SyncTransforms();
+        var flare = new GameObject("Moving flare").AddComponent<DeathFlare>();
+        try
+        {
+            Call(flare, "OnEnable");
+            Call(flare, "Initialize", 0f);
+            flare.transform.position = new Vector3(11, -2.5f, 0);
+            Check(!enemy.IsFlareProtected(enemy.Root.position), "Takeoff is outside flare range");
+            Check(!enemy.IsFlareProtected(enemy.LastSeenPos), "Target is visible above the flare sphere");
+            Check(!(bool)Call(jump, "TryPlan", enemy, manager.SurfaceMask), "Protected roof blocks chase jump");
+
+            flare.transform.position += Vector3.up * 30f;
+            jump.TickJump(enemy, manager, .02f);
+            Set(jump, "_nextCheck", Time.time);
+            Check(jump.TickJump(enemy, manager, .25f) && jump.IsJumping, "High flare permits a clear jump");
+            var airborne = enemy.Root.position;
+            flare.transform.position = airborne + Vector3.right * 2f;
+            int landings = 0;
+            jump.Landed += () => landings++;
+            enemy.TickAuthority(manager, .02f, false);
+            Check(enemy.CurrentState == Enemy.State.Retreat && jump.IsFalling, "Flare intercepts active chase arc");
+            for (int i = 0; i < 200 && jump.IsJumping; i++) enemy.TickAuthority(manager, .02f, false);
+            Check(!jump.IsJumping && landings == 1 && enemy.Root.position.y < .1f,
+                "Smasher falls to the floor and lands once during flare retreat");
+            Check(Mathf.Abs(enemy.Root.position.x - airborne.x) < .01f, "Fall stops travel toward flare");
+            enemy.TickAuthority(manager, .02f, false);
+            Check(enemy.CurrentState == Enemy.State.Retreat, "Grounded smasher continues flare retreat");
+        }
+        finally
+        {
+            Call(flare, "OnDisable");
+            UnityEngine.Object.DestroyImmediate(flare.gameObject);
+        }
+    }
+
+    static void FlareEscapeFromRoof()
+    {
+        Setup(out var enemy, out var jump, out var manager);
+        Box(new Vector3(0, 1.25f, 0), new Vector3(3, 2.5f, 10));
+        enemy.Teleport(Vector3.up * 2.5f, Quaternion.identity);
+        Physics.SyncTransforms();
+        var flare = new GameObject("Flare on roof").AddComponent<DeathFlare>();
+        try
+        {
+            Call(flare, "OnEnable");
+            Call(flare, "Initialize", 0f);
+            flare.transform.position = enemy.Root.position + Vector3.left * 2f;
+            for (int i = 0; i < 100 && !jump.IsJumping; i++) enemy.TickAuthority(manager, .02f, false);
+            Check(jump.IsJumping, "Stranded smasher can jump away from roof flare");
+            for (int i = 0; i < 200 && jump.IsJumping; i++)
+            {
+                var previous = enemy.Root.position;
+                enemy.TickAuthority(manager, .02f, false);
+                Check(enemy.AllowsFlareMovement(previous, enemy.Root.position), "Escape arc stays clear of flare");
+            }
+            Check(!jump.IsJumping && enemy.Root.position.y < .1f, "Flare escape lands off the roof");
+        }
+        finally
+        {
+            Call(flare, "OnDisable");
+            UnityEngine.Object.DestroyImmediate(flare.gameObject);
+        }
     }
 
     static void Box(Vector3 position, Vector3 size)

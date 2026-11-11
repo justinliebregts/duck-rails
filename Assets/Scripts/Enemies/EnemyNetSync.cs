@@ -209,7 +209,6 @@ namespace Game.AI
                     frame != null ? frame.InverseTransformPoint(_enemy.Root.position) : _enemy.Root.position,
                     frame != null ? Quaternion.Inverse(frame.rotation) * _enemy.Root.rotation : _enemy.Root.rotation, frame != null);
             }
-            else _enemy.ReceiveRemoteHitEffect(velocity, hitPosition);
         }
 
         public void SubmitThrownHit(Vector3 throwVelocity, Vector3 hitPosition)

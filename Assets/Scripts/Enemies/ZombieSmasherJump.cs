@@ -55,6 +55,7 @@ namespace Game.AI
         public bool HasWanderExit => _hasWanderExit;
         public Vector3 WanderTakeoff => _wanderTakeoff;
         GroundLocomotion _ground;
+        Enemy _enemy;
         RailEnemyBounds _railsBounds;
         Vector3 _start, _end, _position;
         Vector3 _landingPoint, _landingNormal;
@@ -75,6 +76,7 @@ namespace Game.AI
         void Awake()
         {
             _ground = GetComponent<GroundLocomotion>();
+            _enemy = GetComponent<Enemy>();
             _railsBounds = GetComponent<RailEnemyBounds>();
             _checkPhase = nextCheckPhase;
             nextCheckPhase = (nextCheckPhase + 1) % JumpCheckPhases;
@@ -600,7 +602,7 @@ namespace Game.AI
         bool TryPlan(Enemy enemy, LayerMask mask)
         {
             _start = enemy.Root.position;
-            if (!_ground.HasGroundSupport(_start, mask)) return false;
+            if (enemy.IsFlareProtected(enemy.LastSeenPos) || !_ground.HasGroundSupport(_start, mask)) return false;
             if (!Physics.Raycast(enemy.LastSeenPos + Vector3.up * 0.1f, Vector3.down,
                 out RaycastHit target, Mathf.Max(0.1f, targetSurfaceProbe), mask, QueryTriggerInteraction.Ignore)
                 || !CrawlGraph.IsWalkableGround(target.normal)) return false;
@@ -794,6 +796,7 @@ namespace Game.AI
         bool ClearSegment(Vector3 from, Vector3 to, LayerMask mask)
         {
             if (!AllowsRailsPoint(to) || RailTrainObstacle.BlocksSegment(from, to)) return false;
+            if (!_enemy.AllowsFlareMovement(from, to)) return false;
             Capsule(to, out Vector3 bottom, out Vector3 top, out float radius);
             return !Physics.CheckCapsule(bottom, top, radius, mask, QueryTriggerInteraction.Ignore)
                 && !Sweep(from, to - from, mask, out _);

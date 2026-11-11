@@ -305,3 +305,69 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
   and is not claimed.
 - Remaining: two-client/headset hook tests, block-by-block clearance for the hook's firing lane, Quest cost, balance review.
   Out of scope: impact sparks/blood, player pull fixes, later tuning commits.
+
+## Hook impact and blood group — 67116b71, 1a71d7fa, 589c7bf0, 161dfe62, 91134b24, d54ee62b, 0d60a7bb, 91613bff
+
+- Status: implemented; editor compiled with an empty error Console and the asset wiring was read back
+  through Unity MCP (target `X:/Work/duck-rails/Assets`) on November 10, 2026. The Play Mode / two-client
+  checks below have **not** been run. Real-client/headset acceptance pending.
+- Source SHAs (full): `67116b7140a0493024f6be69851457edd5a65c6c` (pooled blood sprays with impact sounds),
+  `1a71d7fa3d5848768cffd354c58e07ba47945c0b` (prewarmed hook sparks + pooled blood on confirmed hook impacts),
+  `589c7bf0dcda6734a5427c260661028ee5b9d5f7` (remote hook visuals on unfocused desktop clients),
+  `161dfe62066145514dc1302df9d25f46895ce4cc`, `91134b24e415fd65d79ab9baa96d6b004cc03c0a`,
+  `d54ee62b52e617c2947b0ce7babd6c6bcd3b76db`, `0d60a7bb645a5b0e3e5617a6a24093b7953286f5`,
+  `91613bffbeeb0b97517f6adf09d828e8f9b1a402` (spark material/prefab/preview tuning; ported as the final state at 91613bff).
+- Behavior: weapon/item flesh-impact `SoundEvent`s now carry optional `impactParticles`. `RoomRpc.PlaySound` sends the
+  impact direction (third array element only when particles exist) and every peer plays the pooled
+  `BloodEffectPool.SpawnHit` burst with the sound, replacing per-enemy/per-player `hitBloodPrefab` instantiation and the
+  separate blood RPC (`ReceiveItemHitBlood` stays as an empty stub for old builds; `ReceiveRemoteHitEffect` removed).
+  Hook solid hits emit from a shared prewarmed spark system (cap 32, 5 per hit); flesh hits use the hook flesh sound's
+  blood. A chain crossing a body now reports flesh rather than solid. Remote hook presentation continues on an unfocused
+  desktop client (`CanPresentRemoteActions`), and a local focus change invalidates local hook shots.
+- Destination: `Scripts/Audio/SoundEvent.cs`, `Photon/{RoomRpc,PhotonPlayer,PhotonMasterHandoff}.cs`, `Items/{ItemSounds,PhotonGrabbable}.cs`,
+  `Enemies/{Enemy,EnemyNetSync,EnemyManager,ZombieHookAttack,ZombieHookAttack.Contacts}.cs`, `Environment/BloodEffectPool.cs`;
+  `impactParticles` set on the six weapon/item flesh events plus `ZombieHook_ChainHookFleshImpact`, all pointing at existing
+  `BloodSplatPFX` (GUID `b4154b99…` reused, nothing duplicated); `hitBloodPrefab` removed from the four non-hook enemy
+  prefabs and `PhotonPlayer.prefab`; new `Prefabs/Effects/HookImpactSparks.prefab`, `Materials/Effects/HookSpark.{mat,png}`
+  (source GUIDs kept, none collide in Rails; shader GUID `f0b4e4b6…` exists here); checks
+  `Editor/Checks/{Effects/BloodEffectChecks,Items/MeleeGraceChecks,Items/PlayerKnockbackChecks,Performance/RecurringAllocationChecks}.cs`
+  updated and `Enemies/ZombieHookImpactChecks.cs` added.
+- Adaptations: `ZombieHook.prefab` already held the `sparkPrefab` reference from the earlier hook port (dangling until now), so it
+  needed no edit; `RailHook` inherits it as a variant. PhotonMasterHandoff was merged by hand: Rails' `LocalAvailable` already
+  ignores focus in keyboard play, so `CanPresentRemoteActions` is `InputAvailable ||` the Duckz expression, which keeps it a
+  superset of `LocalAvailable`; clock-skew, startup-barrier and holder-check partials are untouched. `PhotonPlayer.CanReceiveHookReleasedAt`
+  now also requires `LocalAvailable`. The Duckz `GameplayWarmupCatalog` entry (1a71d7fa) is **not ported**: Rails has no such catalog
+  (same reason as `b591543e`); the spark system is warmed by an explicit emit-and-clear at enemy prewarm instead, and the
+  catalog assertion was dropped from the ported check. No new Photon event codes; the sound event (101) just gains an optional field,
+  and the AppVersion is auto-bumped, so mixed builds are not an issue.
+- Validation: compile clean; every `impactParticles` and the hook `sparkPrefab` (incl. `RailHook`) resolve; the four enemy prefabs no longer
+  expose `hitBloodPrefab`. Edit diffs for the checks match the source stat line for line. Not run: `BloodEffectChecks`, `MeleeGraceChecks`,
+  `PlayerKnockbackChecks` (live PUN), `RecurringAllocationChecks`, `ZombieHookImpactChecks` (isolated batch Play Mode only).
+- Remaining: run those batch checks; two-client hook/melee blood and spark parity, unfocused desktop observer, Quest cost of 32 pooled hit
+  bursts; decide whether to import a warmup catalog. No diagnostic reports inspected; source Duckz untouched.
+- Destination commit: not committed yet.
+
+## Enemy tuning group — 22262f75, 98ec9f5b, 6f4c3cba
+
+- Status: implemented; Unity editor checks passed November 10, 2026. Real-client/headset acceptance pending (queued for playtest).
+- Source SHAs (full): `22262f75960d59b8aafd625298a0cd6f4a61be36` (speed rebalance, retreat 4–12 s),
+  `98ec9f5ba49b75dcc23e120cf3afd3150ed12226` (all zombies fear 40 s flares; late-join flare restore),
+  `6f4c3cba9325db190b08d58d84706266bf722828` (smaller kill triggers, slower spider stalk).
+- Intentionally not ported from the same range: `cad672e0` (Main.unity max zombies), `63914895` (starting-bus climb block, Quackville
+  crawl graph), `b4e09c75` (room-size population scaling; conflicts with the Rails November 8 spawn balance).
+- Decision: retreat 4–12 s deliberately supersedes the 3–9 s of `43dc293e`; `game-design.md` updated.
+- Destination: `Enemies/{Enemy,GroundLocomotion,ZombieHookAttack,ZombieSmasherJump}.cs`, `Photon/{PhotonPlayer,PhotonRoomFlares(new)}.cs`,
+  `Player/Player.cs`, `Utility/DeathFlare.cs`, the five `Prefabs/Enemies/Zombie*.prefab`, `Prefabs/Effects/DeathFlare.prefab`, checks
+  `EnemyRetreatChecks`, `SpiderFlareChecks`, `SmasherRetreatJumpChecks`, `DeathLifecycleChecks`, new `Networking/FlareJoinNetworkChecks`.
+- Adaptations: Rails prefabs were on older Duckz values, so speeds/stalk multiplier use the source's final absolute values (Bomber 2.5/3.6,
+  Minion 2.6/4.4, Smasher 3.8/5.5, Spider 3.3/4.2, stalk 0.4; Hook already matched). Kill-trigger colliders: Bomber/Minion/Smasher take the source's new
+  values; the Rails spider trigger (head-following, from `eb52afd5`) was scaled by the source's shrink ratios instead. Hook collider/flare radius were already
+  at the final state. Hook retreat set to 4–12 s. Rails `DeathFlare.DeathLaunchDelay` is 0 (source 2), kept. No serialized overrides of these fields on
+  Rails variants (`Resources/Rails/*`) or scenes. `EnemyNetSync` packet, boarding rules, crawl graphs and spawn balance untouched; no new RPCs or event codes.
+- Late-join flares: death flares are now recorded in Photon room properties (`deathFlare:*` keys, master publishes, expires at lifetime), so
+  players joining later, including aboard the train, restore active flares. Flare positions are still world-space at death time; **not yet reconciled with
+  train motion** (a flare dropped on a moving train is not train-relative).
+- Validation: compiled, empty Console; `EnemyRetreatChecks`, `RailEnemyBoardingChecks`, `SpiderFlareChecks` passed. Not run: `SmasherRetreatJumpChecks`,
+  `DeathLifecycleChecks`, `FlareJoinNetworkChecks` (network, needs Play Mode).
+- Remaining: two-client late-join flare test (incl. master handoff and joining aboard a moving train), hook/smasher flare behavior, balance feel of new speeds.
+- Destination commit: the commit introducing this entry (see Git history).

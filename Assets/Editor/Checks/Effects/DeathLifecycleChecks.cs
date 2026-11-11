@@ -73,7 +73,7 @@ public static class DeathLifecycleChecks
         Check(first.IsBurning && DeathFlare.FindNear(first.transform.position, 2) == first, "Burning flare protects");
         Check(!DeathFlare.AllowsMovement(first.transform.position + Vector3.right * 2, first.transform.position, 1), "Flare blocks approach");
         first.GetComponentInChildren<Light>().intensity = .01f;
-        Set(first, "landed", true); Set(first, "started", Time.unscaledTimeAsDouble - 31); Call(first, "Update");
+        Set(first, "landed", true); Set(first, "started", Time.unscaledTimeAsDouble - DeathFlare.Lifetime - 1); Call(first, "Update");
         Check(!first.gameObject.activeSelf && pool.ActiveCount == 0, "Expiry returns effect");
         var second = DeathFlare.SpawnAfterDeath(flarePrefab, point + Vector3.right);
         Check(second == first && !(bool)Get(second, "landed") && (bool)Get(second, "launched"), "Flare reuses/reset flight");

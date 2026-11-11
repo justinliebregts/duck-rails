@@ -191,6 +191,32 @@ public static class BloodEffectChecks
         pool.Tick(Time.time);
         Check(pool.ActiveDecals > 0, "Actual impact activates pooled decal");
         Debug.Log("Blood real particle collision PASS: " + pool.CollisionEvents + " collision events");
+        var hit = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Effects/BloodSplatPFX.prefab");
+        pool.PrewarmHits(hit);
+        int warmedCount = pool.CreatedObjects;
+        for (int i = 0; i < BloodEffectPool.HitCapacity * 2; i++)
+            pool.SpawnHit(hit, Vector3.zero, Quaternion.identity);
+        long startBytes = GC.GetAllocatedBytesForCurrentThread();
+        for (int i = 0; i < 1000; i++)
+        {
+            pool.SpawnHit(hit, Vector3.right * i, Quaternion.identity);
+            pool.Tick(Time.time);
+        }
+        long hitBytes = GC.GetAllocatedBytesForCurrentThread() - startBytes;
+        Check(pool.CreatedObjects == warmedCount && hitBytes == 0, $"Repeated hit bursts: {hitBytes} managed bytes, {pool.CreatedObjects - warmedCount} new objects");
+        int liveHits = 0;
+        foreach (Transform child in pool.transform)
+        {
+            if (child.name != hit.name + "(Clone)" || !child.gameObject.activeSelf) continue;
+            Check(child.position.x >= 1000 - BloodEffectPool.HitCapacity, "Simultaneous hits recycle the oldest spray first");
+            liveHits++;
+        }
+        Check(liveHits == BloodEffectPool.HitCapacity, "Rapid hits respect the local burst limit");
+        float finishAt = Time.time + 3.5f;
+        while (Time.time < finishAt) { pool.Tick(Time.time); yield return null; }
+        foreach (Transform child in pool.transform)
+            Check(child.name != hit.name + "(Clone)", "Finished hit returns to inactive storage");
+        Debug.Log("Blood hit pool PASS: 1000 bursts after warmup, zero new effect objects or managed bytes");
         UnityEngine.Object.DestroyImmediate(pool.gameObject);
         Check(BloodEffectPool.Get().CreatedObjects == 0, "Scene-owned pool can rebuild after teardown");
         Debug.Log("BloodEffectChecks: ALL PASSED");

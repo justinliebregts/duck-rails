@@ -19,6 +19,9 @@ namespace Game.AI
         [SerializeField] Transform hookHead, hookPoint;
         [SerializeField] MeshFilter chain;
         [SerializeField] SoundEvent throwSound, solidSound, fleshSound;
+        [SerializeField] ParticleSystem sparkPrefab;
+        static ParticleSystem sharedSparks;
+        const int SparksPerHit = 5;
         [SerializeField, Min(0.1f)] float range = 20f, flightTime = 0.6f;
         [SerializeField, Min(0f)] float windup = 0.3f, cooldown = 4f;
         [SerializeField, Min(0.05f)] float reelTime = 0.22f;
@@ -46,7 +49,7 @@ namespace Game.AI
         Object aimedOwner;
         float readyAt, probeAt, seekUntil;
         int flank;
-        bool hasBoundary;
+        bool hasBoundary, presentationAvailable;
         bool Authority => !PhotonNetwork.InRoom || photonView.IsMine;
         bool Networked => PhotonNetwork.InRoom && photonView.ViewID != 0;
         static int Now => PhotonNetwork.InRoom ? PhotonNetwork.ServerTimestamp : unchecked((int)(Time.timeAsDouble * 1000));
@@ -62,6 +65,22 @@ namespace Game.AI
             chainRenderer = chain.GetComponent<MeshRenderer>();
             SetChainVisible(false);
             chainRenderer.enabled = true;
+            PrewarmImpacts();
+        }
+
+        internal void PrewarmImpacts()
+        {
+            if (fleshSound != null && fleshSound.ImpactParticles != null)
+                BloodEffectPool.Get().PrewarmHits(fleshSound.ImpactParticles);
+            if (sharedSparks != null || sparkPrefab == null) return;
+            // Scene-owned so pooling or disabling an individual zombie cannot clip a burst.
+            sharedSparks = Instantiate(sparkPrefab);
+            // The prefab's burst drives Scene preview. Confirmed impacts emit explicitly on this copy.
+            var emission = sharedSparks.emission;
+            emission.enabled = false;
+            sharedSparks.Emit(sharedSparks.main.maxParticles);
+            sharedSparks.Simulate(0.01f, false, false, false);
+            sharedSparks.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
 
         public override void OnEnable()
@@ -71,6 +90,7 @@ namespace Game.AI
             PhotonMasterHandoff.LocalAvailabilityChanged += OnLocalAvailabilityChanged;
             hasBoundary = Networked;
             acceptAfter = Now;
+            presentationAvailable = PhotonMasterHandoff.CanPresentRemoteActions;
             readyAt = probeAt = seekUntil = 0f;
         }
 
@@ -105,6 +125,11 @@ namespace Game.AI
                 return false;
             }
             manager.TryGetTarget(slot, out Vector3 aim);
+            if (enemy.IsFlareProtected(aim))
+            {
+                AbandonAim();
+                return false;
+            }
             Vector3 shoulder = arm.RootPos;
             if (phase == Phase.Aim)
             {
@@ -358,6 +383,9 @@ namespace Game.AI
         void OnLocalAvailabilityChanged()
         {
             if (!Networked) return;
+            bool couldPresent = presentationAvailable;
+            presentationAvailable = PhotonMasterHandoff.CanPresentRemoteActions;
+            if (!Authority && couldPresent && presentationAvailable) return;
             hasBoundary = true;
             acceptAfter = Now;
             if (Authority && phase != Phase.Idle) CancelShot();
@@ -416,7 +444,7 @@ namespace Game.AI
             bool liveResult = (phase == Phase.Flight || (phase == Phase.Aim && contact == (byte)Contact.Silent)) &&
                 unchecked(version - revision) == 1 && !Expired(phase, since);
             revision = version;
-            if (!PhotonMasterHandoff.LocalAvailable || Expired(next, timestamp))
+            if (!PhotonMasterHandoff.CanPresentRemoteActions || Expired(next, timestamp))
             {
                 Stow();
                 return;
@@ -464,6 +492,7 @@ namespace Game.AI
                 }
             }
             if (snapshot) return;
+            if (next == Phase.Reel && contact != Contact.Silent) PlayImpact(contact, from);
             SoundEvent sound = next == Phase.Flight ? throwSound : contact == Contact.Flesh ? fleshSound :
                 contact == Contact.Solid ? solidSound : null;
             if (sound != null && AudioManager.instance != null) AudioManager.instance.Play(sound, from);
@@ -473,6 +502,25 @@ namespace Game.AI
                 if (local != null && local.photonView.ViewID == victim && !local.IsDead)
                     PhotonPlayer.ApplyLocalHookPull(pull);
             }
+        }
+
+        void PlayImpact(Contact contact, Vector3 point)
+        {
+            // Reel carries the controller's starting rotation and contact point, even for
+            // a remote item block. Face the burst back along the incoming hook.
+            Vector3 outward = -(phaseRotation * hookAxis);
+            Quaternion facing = Quaternion.LookRotation(outward,
+                Mathf.Abs(outward.y) > 0.99f ? Vector3.forward : Vector3.up);
+            if (contact == Contact.Solid && sharedSparks != null)
+            {
+                int count = Mathf.Min(SparksPerHit, sharedSparks.main.maxParticles - sharedSparks.particleCount);
+                if (count <= 0) return;
+                sharedSparks.transform.SetPositionAndRotation(point, facing);
+                if (!sharedSparks.isPlaying) sharedSparks.Play(false);
+                sharedSparks.Emit(count);
+            }
+            else if (contact == Contact.Flesh && fleshSound != null && fleshSound.ImpactParticles != null)
+                BloodEffectPool.Get().SpawnHit(fleshSound.ImpactParticles, point, facing);
         }
 
         public override void OnPlayerEnteredRoom(Player peer)

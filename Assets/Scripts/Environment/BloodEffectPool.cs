@@ -6,6 +6,7 @@ using UnityEngine;
 public sealed class BloodEffectPool : MonoBehaviour
 {
     public const int BurstCapacity = 8;
+    public const int HitCapacity = 32;
     public const int DecalCapacity = 64;
     public const int QueueCapacity = 64;
     [Range(1, 16)] public int decalsPerFrame = 4;
@@ -21,10 +22,13 @@ public sealed class BloodEffectPool : MonoBehaviour
     static readonly ProfilerMarker ActivateMarker = new ProfilerMarker("Blood.ActivateDecals");
     static readonly ProfilerMarker CleanupMarker = new ProfilerMarker("Blood.Cleanup");
     readonly Slot[] bursts = new Slot[BurstCapacity];
+    readonly Slot[] hits = new Slot[HitCapacity];
     readonly Slot[] decals = new Slot[DecalCapacity];
     readonly Impact[] pending = new Impact[QueueCapacity];
     int pendingHead, pendingCount;
     bool warmed;
+    bool hasActiveHits;
+    ulong nextUse;
     Transform inactiveRoot;
 
     sealed class Slot
@@ -35,7 +39,8 @@ public sealed class BloodEffectPool : MonoBehaviour
         public Transform surface;
         public Vector3 localPosition, localScale;
         public Quaternion localRotation;
-        public float expiry, started;
+        public float expiry;
+        public ulong lastUse;
         public bool active, surfaceHidden;
     }
 
@@ -91,7 +96,23 @@ public sealed class BloodEffectPool : MonoBehaviour
         return slot;
     }
 
-    Slot Acquire(Slot[] slots, GameObject prefab, float now)
+    public void PrewarmHits(GameObject prefab)
+    {
+        if (prefab == null || hits[hits.Length - 1] != null) return;
+        for (int i = 0; i < hits.Length; i++)
+            if (hits[i] == null) hits[i] = Create(prefab);
+    }
+
+    public void SpawnHit(GameObject prefab, Vector3 position, Quaternion rotation)
+    {
+        using var sample = SpawnMarker.Auto();
+        var slot = Acquire(hits, prefab);
+        slot.effect.transform.SetPositionAndRotation(position, rotation);
+        Play(slot);
+        hasActiveHits = true;
+    }
+
+    Slot Acquire(Slot[] slots, GameObject prefab)
     {
         int selected = -1;
         for (int i = 0; i < slots.Length; i++)
@@ -103,7 +124,7 @@ public sealed class BloodEffectPool : MonoBehaviour
         {
             selected = 0;
             for (int i = 1; i < slots.Length; i++)
-                if (slots[i].started < slots[selected].started) selected = i;
+                if (slots[i].lastUse < slots[selected].lastUse) selected = i;
             if (slots == decals) RecycledDecals++;
             Release(slots[selected]);
         }
@@ -117,7 +138,7 @@ public sealed class BloodEffectPool : MonoBehaviour
         }
         slot.active = true;
         slot.surfaceHidden = false;
-        slot.started = now;
+        slot.lastUse = ++nextUse;
         slot.effect.transform.SetParent(transform, false);
         slot.effect.transform.localScale = prefab.transform.localScale;
         return slot;
@@ -138,7 +159,7 @@ public sealed class BloodEffectPool : MonoBehaviour
     {
         using var sample = SpawnMarker.Auto();
         Prewarm(prefab);
-        var slot = Acquire(bursts, prefab, now);
+        var slot = Acquire(bursts, prefab);
         slot.expiry = now + 10f;
         slot.effect.transform.SetPositionAndRotation(position, Quaternion.identity);
         if (slot.spawner != null) slot.spawner.Begin(this, now + 20f);
@@ -166,6 +187,19 @@ public sealed class BloodEffectPool : MonoBehaviour
     {
         using (CleanupMarker.Auto())
         {
+            if (hasActiveHits)
+            {
+                hasActiveHits = false;
+                foreach (var slot in hits)
+                {
+                    if (slot == null || !slot.active) continue;
+                    bool alive = false;
+                    foreach (var ps in slot.systems)
+                        if (ps.IsAlive(false)) { alive = true; break; }
+                    if (alive) hasActiveHits = true;
+                    else Release(slot);
+                }
+            }
             foreach (var slot in bursts)
                 if (slot != null && slot.active && now >= slot.expiry) Release(slot);
             foreach (var slot in decals)
@@ -185,7 +219,7 @@ public sealed class BloodEffectPool : MonoBehaviour
                 pendingHead = (pendingHead + 1) % QueueCapacity;
                 pendingCount--;
                 if (hit.surface == null || hit.prefab == null || now >= hit.expiry) continue;
-                var slot = Acquire(decals, hit.prefab, now);
+                var slot = Acquire(decals, hit.prefab);
                 slot.surface = hit.surface;
                 slot.localPosition = hit.localPosition;
                 slot.localRotation = hit.localRotation;

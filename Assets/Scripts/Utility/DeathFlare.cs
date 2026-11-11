@@ -57,7 +57,7 @@ public sealed class DeathFlare : MonoBehaviour
         }
         return true;
     }
-    public const float Lifetime = 30f;
+    public const float Lifetime = 40f;
     public const float DeathLaunchDelay = 0f;
     [SerializeField, Min(0f)] float launchHeight = 24f;
     [SerializeField, Min(0.01f)] float launchDuration = 1.25f;
@@ -75,6 +75,7 @@ public sealed class DeathFlare : MonoBehaviour
     ParticleSystem[] waitingParticles;
     DeathEffectPool pool;
     bool prepared;
+    internal string RoomEventKey { get; set; }
     float authoredIntensity;
     AudioHandle launchAudio;
 
@@ -94,6 +95,7 @@ public sealed class DeathFlare : MonoBehaviour
             prepared = true;
         }
         initialized = launched = landed = false;
+        RoomEventKey = null;
         previousAge = 0f;
         launchAudio.Stop();
         if (flareLight != null) { flareLight.intensity = authoredIntensity; flareLight.enabled = false; }

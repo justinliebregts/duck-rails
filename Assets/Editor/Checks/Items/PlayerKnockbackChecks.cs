@@ -25,6 +25,8 @@ public static class PlayerKnockbackChecks
     static GR.Player human;
     static DesktopPlayer desktop;
     static int checks, received, sent, accepted;
+    static int impactPackets;
+    static LoadBalancingClient lastImpactReceiver;
     static Vector3 deliveredVelocity;
     static bool useDesktop;
     static Exception receiveError;
@@ -80,18 +82,24 @@ public static class PlayerKnockbackChecks
     }
     static void OnEvent(LoadBalancingClient peer, EventData data)
     {
-        if (data.Code != 200) return;
+        if (data.Code != 200 && data.Code != 101) return;
         try
         {
             Select(peer);
+            if (data.Code == 101)
+            {
+                typeof(RoomRpc).GetMethod("OnEvent", BindingFlags.Static | BindingFlags.NonPublic)
+                    .Invoke(null, new object[] { data });
+                impactPackets++;
+                lastImpactReceiver = peer;
+                return;
+            }
             var rpc = (Hashtable)data.CustomData;
             int target = (int)rpc[(byte)0];
             var victim = PhotonView.Find(target).GetComponent<PhotonPlayer>();
             float before = Get<float>(victim, "_nextItemHitTime");
             typeof(PhotonNetwork).GetMethod("ExecuteRpc", BindingFlags.Static | BindingFlags.NonPublic)
                 .Invoke(null, new object[] { rpc, peer.CurrentRoom.GetPlayer(data.Sender) });
-            // Blood is broadcast by the receiver as a separate two-argument RPC.
-            // Dispatch it too, but count only three-argument ReceiveItemHit calls.
             if (!(rpc[(byte)4] is object[] args) || args.Length != 3) return;
             received++;
             if (Get<float>(victim, "_nextItemHitTime") > before) accepted++;
@@ -110,8 +118,6 @@ public static class PlayerKnockbackChecks
         view.OwnerActorNr = peer.LocalPlayer.ActorNumber; view.ControllerActorNr = view.OwnerActorNr;
         views.Add(view); PhotonPlayer.Active.Add(p);
         Set(p, "_hasPose", true);
-        // Prevent unrelated audio/visual services; retain authored hit volumes/settings.
-        Set(p, "hitBloodPrefab", null);
         return p;
     }
     static PhotonGrabbable Weapon(string name, LoadBalancingClient owner)
@@ -225,13 +231,70 @@ public static class PlayerKnockbackChecks
         Set(weapon, "holder", null); if (handObject != null) Object.DestroyImmediate(handObject);
         Debug.Log($"KNOCKBACK live PASS {weapon.name}, actor {sender.LocalPlayer.ActorNumber}->{receiver.LocalPlayer.ActorNumber}, {(useDesktop ? "desktop" : "VR")}, held={held}, swing={speed}, launch={deliveredVelocity.magnitude:F3}");
     }
+    static void DuckImpacts(LoadBalancingClient sender, string itemPath)
+    {
+        Select(a);
+        var duck = Object.Instantiate(Resources.Load<GameObject>("DuckCompanion"));
+        objects.Add(duck);
+        var avatar = duck.GetComponent<PhotonPlayer>();
+        var target = avatar.photonView;
+        target.ViewID = 501 + impactPackets;
+        target.OwnerActorNr = 0;
+        target.ControllerActorNr = a.LocalPlayer.ActorNumber;
+        views.Add(target);
+
+        Select(sender);
+        var item = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(itemPath)).GetComponent<PhotonGrabbable>();
+        objects.Add(item.gameObject);
+        var view = item.GetComponent<PhotonView>();
+        view.ViewID = sender.LocalPlayer.ActorNumber * PhotonNetwork.MAX_VIEW_IDS + 200 + impactPackets;
+        view.OwnerActorNr = view.ControllerActorNr = sender.LocalPlayer.ActorNumber;
+        views.Add(view);
+        item.NotifyPlayerThrown();
+        var hurtbox = duck.GetComponent<CapsuleCollider>();
+        var body = item.GetComponent<Rigidbody>();
+        body.isKinematic = false;
+        body.position = duck.transform.TransformPoint(hurtbox.center);
+        body.linearVelocity = Vector3.right * 5f;
+        Physics.SyncTransforms();
+
+        var sounds = item.GetComponent<ItemSounds>();
+        string burstName = sounds.Get(ItemSound.FleshImpact).ImpactParticles.name + "(Clone)";
+        var pool = BloodEffectPool.Get();
+        int BurstsAt(Vector3 hitPosition)
+        {
+            int count = 0;
+            foreach (Transform child in pool.transform)
+                if (child.name == burstName && child.gameObject.activeSelf
+                    && Vector3.Distance(child.position, hitPosition) < .001f && Vector3.Dot(child.forward, Vector3.right) > .999f) count++;
+            return count;
+        }
+        var audio = Game.Audio.AudioManager.instance;
+        Vector3 contact = hurtbox.ClosestPoint(body.worldCenterOfMass);
+        int voices = audio.ActiveCount, bursts = BurstsAt(contact), packets = impactPackets;
+        Call(item, "OnTriggerEnter", hurtbox);
+        Call(item, "OnTriggerEnter", hurtbox);
+        Check(audio.ActiveCount == voices+1 && BurstsAt(contact) == bursts+1, "One local sound and blood burst per throw");
+        Pump(() => impactPackets == packets+1 && avatar.Companion.State == DuckCompanion.Activity.Retreating, "Duck impact and retreat");
+        Check(lastImpactReceiver != sender && audio.ActiveCount == voices+2 && BurstsAt(contact) == bursts+2, "Remote client plays one sound and reproduces contact position and direction");
+        double retreatEnd = Get<double>(avatar.Companion, "retreatUntil");
+        Select(sender);
+        Check(avatar.SwingLocked && Mathf.Abs(Get<float>(sounds, "nextFleshImpactTime") - Time.time - 0.1f) < .001f, "Sound can repeat before Duck reacts again");
+        Set(sounds, "nextFleshImpactTime", Time.time); // The network pump runs inside one Unity frame.
+        Call(item, "OnTriggerEnter", hurtbox);
+        Pump(() => impactPackets == packets+2, "repeat Duck impact");
+        Check(lastImpactReceiver != sender && audio.ActiveCount == voices+4 && BurstsAt(contact) == bursts+4, "Both peers play the second pair exactly once");
+        Check(Get<double>(avatar.Companion, "retreatUntil") == retreatEnd, "Second hit does not restart Duck's retreat");
+        Debug.Log("Duck network impact PASS: two pairs per peer, single retreat; hitter is master=" + (sender == a));
+    }
+
     static void Execute()
     {
         original = PhotonNetwork.NetworkingClient;
         int result = 1;
         try
         {
-            checks = received = sent = accepted = 0; views.Clear(); objects.Clear();
+            checks = received = sent = accepted = impactPackets = 0; views.Clear(); objects.Clear();
             a = new LoadBalancingClient(ConnectionProtocol.Udp); b = new LoadBalancingClient(ConnectionProtocol.Udp);
             typeof(PhotonCustomTypes).GetMethod("Register", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, null);
             string id = Guid.NewGuid().ToString("N");
@@ -281,7 +344,10 @@ public static class PlayerKnockbackChecks
                 }
                 desktop.enabled = false; useDesktop = false;
             }
-            Debug.Log($"PlayerKnockbackChecks PASS: {checks} assertions, {sent} live PUN hits, {accepted} accepted; both weapons, both master/client directions, desktop/VR, held/thrown, lag/jitter/loss, receiver guards and launch boundaries.");
+            int playerHits = accepted;
+            DuckImpacts(b, "Assets/Prefabs/Items/ItemFlashlight.prefab");
+            DuckImpacts(a, "Assets/Prefabs/Weapons/WeaponFryPan.prefab");
+            Debug.Log($"PlayerKnockbackChecks PASS: {checks} assertions, {sent} live PUN player hits, {playerHits} accepted; both weapons, both master/client directions, desktop/VR, held/thrown, lag/jitter/loss, Duck impact playback, receiver guards and launch boundaries.");
             result = 0;
         }
         catch (Exception e) { Debug.LogException(e); }

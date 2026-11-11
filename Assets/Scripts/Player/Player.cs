@@ -142,8 +142,7 @@ namespace GR {
             DuckzAnalytics.PlayerDied(cause, aliveSeconds, held);
             Vector3 deathOrigin = DeathEffectOrigin();
             Vector3 flarePosition = deathOrigin + Vector3.up * 0.35f;
-            DeathFlare.SpawnAfterDeath(deathFlarePrefab, flarePosition);
-            PhotonPlayer.BroadcastDeathFlare(flarePosition);
+            PhotonPlayer.SpawnDeathFlare(deathFlarePrefab, flarePosition);
             playerHUD.EnableDeathEffect();
             StartCoroutine(Respawn(killer, attempt));
             Vector3 decalSpawnPos = deathOrigin;

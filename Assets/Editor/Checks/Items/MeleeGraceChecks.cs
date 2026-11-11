@@ -67,7 +67,8 @@ public static class MeleeGraceChecks
         Set(enemy, "_localMeleeGraceUntil", 0f);
         enemy.SubmitThrownHit(Vector3.right * enemy.MinHitSpeed);
         Check(!enemy.ProtectsLocalPlayer, "threshold-only throw grants no protection");
-        enemy.ReceiveRemoteHitEffect(Vector3.right * 9, default);
+        var impact = UnityEditor.AssetDatabase.LoadAssetAtPath<Game.Audio.SoundEvent>("Assets/Audio/Events/Impact/FleshImpact_Items.asset");
+        RoomRpc.PlaySound(impact, Vector3.zero, Vector3.left);
         enemy.SubmitThrownHit(Vector3.right * 9);
         Check(enemy.ProtectsLocalPlayer, "throw protects hitter and remote feedback does not consume local cooldown");
         Set(enemy, "_localMeleeGraceUntil", 0f);

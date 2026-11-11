@@ -49,12 +49,13 @@ public static class RoomRpc
     }
 
     /// <summary>Plays a sound at a position here and for everyone else in the room. Sounds are matched by asset name, so names must be unique.</summary>
-    public static void PlaySound(SoundEvent sound, Vector3 position)
+    public static void PlaySound(SoundEvent sound, Vector3 position, Vector3 impactDirection = default)
     {
         if (sound == null) return;
-        Play(sound, position);
+        Play(sound, position, impactDirection);
         if (PhotonNetwork.InRoom)
-            PhotonNetwork.RaiseEvent(PlaySoundCode, new object[] { sound.name, position },
+            PhotonNetwork.RaiseEvent(PlaySoundCode, sound.ImpactParticles != null
+                ? new object[] { sound.name, position, impactDirection } : new object[] { sound.name, position },
                 new RaiseEventOptions { Receivers = ReceiverGroup.Others }, SendOptions.SendReliable);
     }
 
@@ -139,7 +140,7 @@ public static class RoomRpc
         if (e.Code == PlaySoundCode)
         {
             if (data[0] is string name && data[1] is Vector3 position && TryFind(name, out SoundEvent sound))
-                Play(sound, position);
+                Play(sound, position, data.Length > 2 && data[2] is Vector3 direction ? direction : default);
         }
         else if (e.Code == GoldDepositedCode)
         {
@@ -164,9 +165,15 @@ public static class RoomRpc
         return false;
     }
 
-    static void Play(SoundEvent sound, Vector3 position)
+    static void Play(SoundEvent sound, Vector3 position, Vector3 impactDirection)
     {
-        if (AudioManager.instance != null)
-            AudioManager.instance.Play(sound, position);
+        var audio = AudioManager.instance;
+        if (audio == null) return;
+        var playback = audio.Play(sound, position);
+        if (sound.ImpactParticles == null || !playback.IsPlaying) return;
+        Vector3 direction = impactDirection.normalized;
+        Quaternion rotation = direction == Vector3.zero ? Quaternion.identity :
+            Quaternion.LookRotation(direction, Mathf.Abs(direction.y) > 0.99f ? Vector3.forward : Vector3.up);
+        BloodEffectPool.Get().SpawnHit(sound.ImpactParticles, position, rotation);
     }
 }

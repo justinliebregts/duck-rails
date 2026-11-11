@@ -68,7 +68,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     [SerializeField] float fullHitSpeed = 9f;
     [SerializeField] float lift = 0.55f;
     [SerializeField] float hitCooldown = 0.25f;
-    [SerializeField] GameObject hitBloodPrefab;
     float _nextItemHitTime;
     [SerializeField] float headRadius = 0.15f;
     [SerializeField] float bodyRadius = 0.15f;
@@ -125,7 +124,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     }
 
     internal bool CanReceiveHookReleasedAt(int release) =>
-        !IsDead && (!hasHookReset || unchecked(release - lastHookReset) > 0);
+        PhotonMasterHandoff.LocalAvailable && !IsDead && (!hasHookReset || unchecked(release - lastHookReset) > 0);
 
     public static void BroadcastDeathBlood(Vector3 position, int seed)
     {
@@ -142,21 +141,37 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public static void BroadcastDeathFlare(Vector3 position)
+    public static void SpawnDeathFlare(DeathFlare prefab, Vector3 position)
     {
-        if (!PhotonNetwork.InRoom) return;
         PhotonPlayer player = Local;
-        if (player != null && player.photonView.ViewID != 0)
-            player.photonView.RPC(nameof(ReceiveDeathFlare), RpcTarget.Others, position, PhotonNetwork.Time);
+        if (player != null) player.EmitDeathFlare(prefab, position);
+        else DeathFlare.SpawnAfterDeath(prefab, position);
+    }
+
+    void EmitDeathFlare(DeathFlare prefab, Vector3 position)
+    {
+        if (!PhotonNetwork.InRoom || photonView.ViewID == 0)
+        {
+            DeathFlare.SpawnAfterDeath(prefab, position);
+            return;
+        }
+        double diedAt = PhotonNetwork.Time;
+        RecordDeathFlare(prefab, position, diedAt);
+        photonView.RPC(nameof(ReceiveDeathFlare), RpcTarget.Others, position, diedAt);
+    }
+
+    void RecordDeathFlare(DeathFlare prefab, Vector3 position, double diedAt)
+    {
+        if (!(diedAt >= 0d && diedAt < TimestampPeriod)) return;
+        int stamp = unchecked((int)(long)System.Math.Round(diedAt * 1000d));
+        PhotonRoomFlares.Ready(prefab)?.Receive(photonView.ViewID, stamp, position);
     }
 
     [PunRPC]
     void ReceiveDeathFlare(Vector3 position, double diedAt, PhotonMessageInfo info)
     {
         if (info.Sender != (IsCompanion ? photonView.Controller : photonView.Owner)) return;
-        if (double.IsNaN(diedAt) || double.IsInfinity(diedAt)) return;
-        float age = (float)System.Math.Max(0d, PhotonNetwork.Time - diedAt);
-        DeathFlare.SpawnAfterDeath(deathFlarePrefab, position, age);
+        RecordDeathFlare(deathFlarePrefab, position, diedAt);
     }
 
     [PunRPC]
@@ -171,9 +186,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     {
         if (Companion == null || !Companion.HasAuthority) return;
         Vector3 flarePosition = transform.position + Vector3.up * 0.35f;
-        DeathFlare.SpawnAfterDeath(deathFlarePrefab, flarePosition);
-        if (photonView.ViewID != 0)
-            photonView.RPC(nameof(ReceiveDeathFlare), RpcTarget.Others, flarePosition, PhotonNetwork.Time);
+        EmitDeathFlare(deathFlarePrefab, flarePosition);
         // Match the human player's placement, prefab and deterministic particle burst.
         Vector3 position = transform.position;
         if (Physics.Raycast(position + Vector3.up * 0.2f, Vector3.down, out RaycastHit hit,
@@ -304,6 +317,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
 
     void Start()
     {
+        if (IsLocalHuman) PhotonRoomFlares.Ready(deathFlarePrefab);
         if (!IsLocalHuman) PrepareDeathRagdoll();
         if (IsLocalHuman)
         {
@@ -1015,29 +1029,16 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         PhotonPlayer attacker = ForActor(actor);
         if (attacker == null || attacker.IsDead || attacker == this) return false;
         _nextItemHitTime = Time.time + hitCooldown;
-        SpawnItemHitBlood(velocity, hitPosition);
-        if (PhotonNetwork.InRoom && photonView.ViewID != 0)
-            photonView.RPC(nameof(ReceiveItemHitBlood), RpcTarget.Others, velocity, hitPosition);
+
         if (IsCompanion) Companion.ReactToPlayerHit(actor, velocity);
         else if (TryLaunchVelocity(velocity, launchSpeed, out Vector3 launch)) ReceiveWeaponLaunch(launch);
         return true;
     }
 
+    // Older builds in the same room send this in addition to the impact sound.
+    // The sound already shows the burst on this client.
     [PunRPC]
-    void ReceiveItemHitBlood(Vector3 velocity, Vector3 hitPosition, PhotonMessageInfo info)
-    {
-        if (info.Sender != (IsCompanion ? photonView.Controller : photonView.Owner)) return;
-        SpawnItemHitBlood(velocity, hitPosition);
-    }
-
-    void SpawnItemHitBlood(Vector3 velocity, Vector3 hitPosition)
-    {
-        if (hitBloodPrefab == null || velocity.sqrMagnitude < 1e-8f) return;
-        Vector3 dir = velocity.normalized;
-        Vector3 spin = Mathf.Abs(dir.y) > 0.99f ? Vector3.forward : Vector3.up;
-        Instantiate(hitBloodPrefab, hitPosition, Quaternion.LookRotation(dir, spin));
-    }
-
+    void ReceiveItemHitBlood(Vector3 velocity, Vector3 hitPosition, PhotonMessageInfo info) { }
     [PunRPC]
     public void ReceiveWeaponLaunch(Vector3 velocity)
     {

@@ -673,7 +673,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             Enemy enemy = enemies[e];
             if (enemy == null) continue;
             if (!IsHeld && enemy == _thrownIgnore) continue;
-            if (enemy.SwingLocked && (itemSounds == null || !itemSounds.HasFleshImpact)) continue;
+            if (enemy.SwingLocked && (itemSounds == null || !itemSounds.FleshImpactReady)) continue;
             float minDistance = enemy.MinHitSpeed * dt;
             float minDistanceSq = minDistance * minDistance;
             bool hit = false;
@@ -692,11 +692,11 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
                 hitPosition = _sampleNow[i];
             }
             if (!hit) continue;
-            if (itemSounds != null) itemSounds.PlayFleshImpact(hitPosition);
+            hitPosition = enemy.HitBloodPosition(hitPosition - bestDelta, hitPosition, radius);
+            if (itemSounds != null) itemSounds.PlayFleshImpact(hitPosition, -bestDelta);
             if (enemy.SwingLocked) continue;
             enemy.LockSwing();
             Vector3 velocity = bestDelta / dt;
-            hitPosition = enemy.HitBloodPosition(hitPosition - bestDelta, hitPosition, radius);
             if (IsHeld)
             {
                 enemy.SubmitSwing(velocity, knockbackScale, hitPosition);
@@ -813,7 +813,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             PhotonPlayer player = players[p];
             if (player == null || player.IsDead) continue;
             if (companionOnly && !player.IsCompanion) continue;
-            if (player.SwingLocked && (itemSounds == null || !itemSounds.HasFleshImpact)) continue;
+            if (player.SwingLocked && (itemSounds == null || !itemSounds.FleshImpactReady)) continue;
             PhotonView victim = player.photonView;
             if (!player.IsCompanion && victim != null && victim.OwnerActorNr == ownerActor) continue;
 
@@ -836,7 +836,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             }
             if (!hit) continue;
 
-            if (itemSounds != null) itemSounds.PlayFleshImpact(hitPosition);
+            if (itemSounds != null) itemSounds.PlayFleshImpact(hitPosition, bestDelta);
             if (player.IsCompanion)
             {
                 SubmitCompanionHit(player, bestDelta / dt, hitPosition);
@@ -884,7 +884,12 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         PhotonPlayer player = other.GetComponentInParent<PhotonPlayer>();
         if (player == null || !player.IsCompanion) return;
         Vector3 hitPosition = other.ClosestPoint(rb.worldCenterOfMass);
-        SubmitCompanionHit(player, rb.GetPointVelocity(hitPosition), hitPosition);
+        Vector3 velocity = rb.GetPointVelocity(hitPosition);
+        float minSpeed = player.Companion.HitReactionMinSpeed;
+        if (itemSounds != null && !player.IsDead && hasBeenPickedUp && !PickupGrowing && !IsStashed
+            && velocity.sqrMagnitude >= minSpeed * minSpeed)
+            itemSounds.PlayFleshImpact(hitPosition, velocity);
+        SubmitCompanionHit(player, velocity, hitPosition);
     }
 
     void StoreSamples(int count)

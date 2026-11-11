@@ -60,7 +60,7 @@ Unity import validation passed; headset listening and device performance remain
 unverified. See [port evidence](duckz-ports.md#31aa84116b80c9fb9682493c4c88f51de505b97f--enemy-mono-audio).
 
 November 8 retreat follow-up: port Duckz `43dc293e65b37f9d12498dc209ccd9e9d4588cbe`.
-Retreats now last 3–9 seconds, superseding the earlier 1–8 second tuning below.
+Retreats now last 4–12 seconds (Duckz 22262f75), superseding the 3–9 and earlier 1–8 second tunings.
 Stationary retreat exits retain a stable PUN comparison packet so state changes are
 sent. Rails boarding and packet fields are preserved. Editor checks pass; actual
 peer/headset acceptance remains pending. See [port evidence](duckz-ports.md#43dc293e65b37f9d12498dc209ccd9e9d4588cbe--retreat-timing-and-stationary-exits).

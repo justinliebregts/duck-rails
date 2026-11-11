@@ -75,7 +75,8 @@ namespace Game.AI
             if (tether.sqrMagnitude > tipRadius * tipRadius && SweepObstacle(wrist.position,
                 tether.normalized, tether.magnitude, solids, out var across))
             {
-                contact = Contact.Solid;
+                // A body can cross the paid-out chain, too. Only a tip hit can pull it.
+                contact = SurfaceContact(across.collider, out _);
                 point = across.point;
                 return true;
             }

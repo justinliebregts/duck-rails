@@ -98,10 +98,10 @@ namespace Game.AI
         [SerializeField] float maxFlightTime = 4f;
         [Tooltip("Minimum retreat duration. Starts after the shove ends or the enemy lands.")]
         [FormerlySerializedAs("meleeWanderLock")]
-        [SerializeField, Min(0f), InspectorName("Retreat Time Min")] float retreatTime = 3f;
-        [SerializeField, Min(0f)] float retreatTimeMax = 9f;
+        [SerializeField, Min(0f), InspectorName("Retreat Time Min")] float retreatTime = 4f;
+        [SerializeField, Min(0f)] float retreatTimeMax = 12f;
         [SerializeField] bool retreatAfterKill;
-        [SerializeField, Min(0f)] float flareFearRadius;
+        [SerializeField, Min(0f)] float flareFearRadius = 6f;
         bool _flareRetreat, _searchingFlareLocation;
         float _flareRepath;
         DeathFlare _flareThreat;
@@ -117,8 +117,6 @@ namespace Game.AI
         [SerializeField] float headShakeAngle = 25f;
         [Tooltip("Back-and-forth cycles across the stun.")]
         [SerializeField] float headShakeCycles = 3f;
-        [Tooltip("One-shot spray played at the contact. Its cone points along local forward.")]
-        [SerializeField] GameObject hitBloodPrefab;
 
         [Header("Fall recovery")]
         [SerializeField, Min(1f)] float fallRecoveryDelay = 20f;
@@ -1078,10 +1076,11 @@ namespace Game.AI
                 away = Quaternion.AngleAxis(Random.Range(-40f, 40f), up) * away.normalized;
                 float distance = Random.Range(10f, 14f);
                 float height = Vector3.Dot(offset, up);
-                // Pick on the spider's support plane, at the chosen 3D distance.
+                // Pick on the enemy's support plane, at the chosen 3D distance.
                 _flareDestination = nearby.transform.position + up * height
                     + away * Mathf.Sqrt(Mathf.Max(0f, distance * distance - height * height));
-                int destinationNode = manager.ResolveNode(_flareDestination);
+                int destinationNode = _ground != null ? manager.ResolveGroundNode(_flareDestination)
+                    : manager.ResolveNode(_flareDestination);
                 if (destinationNode >= 0)
                 {
                     Vector3 snapped = manager.Graph.GetPosition(destinationNode);
@@ -1090,6 +1089,8 @@ namespace Game.AI
                         _flareDestination = snapped;
                 }
                 _flareRepath = 0f;
+                _retreatProgressPosition = root.position;
+                _retreatStalledTime = 0f;
                 if (_stalk != null) _stalk.StopStalking(this);
                 _loco.Interrupt();
                 _flareRetreat = true;
@@ -1115,6 +1116,13 @@ namespace Game.AI
             CurrentState = State.Retreat;
             _seen = false;
             _chaseTimeoutEnabled = false;
+            // An unsupported or airborne smasher must finish its physics tick before walking.
+            if (_jump != null && _jump.isActiveAndEnabled && _jump.TickJump(this, manager, dt))
+            {
+                SetAirbornePose(IsJumping);
+                if (_airHitLock && !IsJumping) BeginRetreat(manager, _meleeShoveDir);
+                return true;
+            }
             _flareRepath -= dt;
             if (_flareRepath <= 0f)
             {
@@ -1122,6 +1130,7 @@ namespace Game.AI
                 _flareRepath = 0.3f;
             }
             _loco.TickMove(this, manager, dt);
+            TryJumpIfRetreatStalled(manager.SurfaceMask, _flareDestination - root.position, dt);
             return true;
         }
 
@@ -1244,25 +1253,7 @@ namespace Game.AI
                 return;
             }
 
-            // Observe actual walking progress without requesting paths or probing physics.
-            // A quarter metre of horizontal progress gives walking another full second.
-            if (_jump != null && _jump.isActiveAndEnabled)
-            {
-                Vector3 progress = pos - _retreatProgressPosition;
-                progress.y = 0f;
-                if (progress.sqrMagnitude >= .25f * .25f)
-                {
-                    _retreatProgressPosition = pos;
-                    _retreatStalledTime = 0f;
-                }
-                else _retreatStalledTime += dt;
-                if (_retreatRemaining > 0f && _retreatStalledTime >= 1f
-                    && _jump.TryStartRetreatJump(this, mask, _retreatDir))
-                {
-                    SetAirbornePose(true);
-                    return;
-                }
-            }
+            if (_retreatRemaining > 0f && TryJumpIfRetreatStalled(mask, _retreatDir, dt)) return;
 
             if (retreatLookAtPlayer && TryPlayerPoint(m, out Vector3 player))
             {
@@ -1277,6 +1268,24 @@ namespace Game.AI
                 _lastSeenPos = player;
             }
             if (_retreatRemaining <= 0f) FinishRetreat(m);
+        }
+
+        // Observe actual walking progress without requesting paths or probing physics.
+        // A quarter metre of horizontal progress gives walking another full second.
+        bool TryJumpIfRetreatStalled(LayerMask mask, Vector3 direction, float dt)
+        {
+            if (_jump == null || !_jump.isActiveAndEnabled) return false;
+            Vector3 progress = root.position - _retreatProgressPosition;
+            progress.y = 0f;
+            if (progress.sqrMagnitude >= .25f * .25f)
+            {
+                _retreatProgressPosition = root.position;
+                _retreatStalledTime = 0f;
+            }
+            else _retreatStalledTime += dt;
+            if (_retreatStalledTime < 1f || !_jump.TryStartRetreatJump(this, mask, direction)) return false;
+            SetAirbornePose(true);
+            return true;
         }
 
         void BeginDrop(bool fromShove)
@@ -1492,11 +1501,6 @@ namespace Game.AI
             _nextHitTime = localHitGate;
         }
 
-        public void ReceiveRemoteHitEffect(Vector3 velocity, Vector3 hitPosition)
-        {
-            // Another hitter's feedback must not consume this client's hit gate.
-            SpawnHitBlood(velocity, hitPosition);
-        }
 
         public float LocalPushDistance(Vector3 velocity, out Vector3 direction)
         {
@@ -1537,7 +1541,6 @@ namespace Game.AI
 
             _nextHitTime = Time.time + hitCooldown;
             ClearStun();
-            SpawnHitBlood(velocity, hitPosition);
             if (!HasAuthority || root == null) return;
             GetComponent<RailCoalCarrier>()?.Hit();
             if (_hook != null) _hook.Interrupt();
@@ -1584,24 +1587,6 @@ namespace Game.AI
             }
             float distance = Mathf.Lerp(MeleePushDistanceMin, MeleePushDistanceMax, strength);
             BeginMeleeShove(dir, distance);
-        }
-
-        // Cone forward is +Z. Spray out of the entry surface instead of into the mesh.
-        void SpawnHitBlood(Vector3 velocity, Vector3 hitPosition)
-        {
-            if (hitBloodPrefab == null) return;
-            float speedSq = velocity.sqrMagnitude;
-            if (speedSq < 1e-8f) return;
-            Vector3 dir = velocity / Mathf.Sqrt(speedSq);
-            Vector3 origin = hitPosition;
-            if (origin.sqrMagnitude < 1e-8f && root != null)
-            {
-                Vector3 up = root.up.sqrMagnitude > 1e-6f ? root.up.normalized : Vector3.up;
-                origin = root.position + up * (bodyHeight * 0.5f) - dir * bodyRadius;
-            }
-            if (origin.sqrMagnitude < 1e-8f && root == null) return;
-            Vector3 spin = Mathf.Abs(dir.y) > 0.99f ? Vector3.forward : Vector3.up;
-            Instantiate(hitBloodPrefab, origin, Quaternion.LookRotation(-dir, spin));
         }
 
         void BeginStun(Vector3 dir, bool slide)

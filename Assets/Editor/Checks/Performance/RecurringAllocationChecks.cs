@@ -5,6 +5,7 @@ using System.Reflection;
 using ExitGames.Client.Photon;
 using Photon.Pun;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 public static class RecurringAllocationChecks
@@ -29,10 +30,22 @@ public static class RecurringAllocationChecks
     public static void Run()
     {
         if (!Application.isBatchMode) throw new Exception("Isolated batch only");
+        // DuckHomeChecks replaces the scene. Keep analytics inert across those scene changes in Edit Mode.
+        var scene = EditorSceneManager.NewPreviewScene();
+        var inert = new GameObject("Disabled regression analytics");
+        inert.SetActive(false);
+        UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(inert, scene);
+        var analytics = typeof(DuckzAnalytics).GetProperty("Instance");
+        var previous = DuckzAnalytics.Instance;
+        analytics.SetValue(null, inert.AddComponent<DuckzAnalytics>());
         try {
             Codec(); Cache(); ActualDuck(); DuckHomeChecks.Run();
             Debug.Log("RecurringAllocationChecks: ALL PASSED"); EditorApplication.Exit(0);
         } catch(Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
+        finally {
+            analytics.SetValue(null, previous);
+            EditorSceneManager.ClosePreviewScene(scene);
+        }
     }
     static void Codec()
     {

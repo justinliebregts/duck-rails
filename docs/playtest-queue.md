@@ -43,7 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
-_(empty)_
+### Enemy tuning + late-join flares (22262f75, 98ec9f5b, 6f4c3cba) — queued 2026-11-10
+- Commit(s): see git log "Port Duckz enemy tuning group"
+- Changed: speeds rebalanced, retreat 4–12 s, all zombies fear 40 s flares, flares restored for late joiners, smaller kill triggers, slower spider stalk.
+- Setup: 2 clients; run `FlareJoinNetworkChecks`, `DeathLifecycleChecks`, `SmasherRetreatJumpChecks`; then manual: client A dies (flare), client B joins late (also aboard a moving train).
+- Check: B sees the active flare with correct remaining life; enemies of every type avoid it; flare expires ~40 s; master handoff keeps it; smasher/hook behave near flares.
+- Needs human: speed/kill-trigger feel in headset.
+- Priority: normal
+
 
 ## Results
 

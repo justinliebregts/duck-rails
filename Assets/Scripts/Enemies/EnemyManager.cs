@@ -138,7 +138,12 @@ namespace Game.AI
             if (enemyPrefabs != null)
             {
                 for (int i = 0; i < enemyPrefabs.Length; i++)
-                    PhotonPreparePool.Register(enemyPrefabs[i]);
+                {
+                    var prefab = enemyPrefabs[i];
+                    PhotonPreparePool.Register(prefab);
+                    if (prefab != null && prefab.TryGetComponent<ZombieHookAttack>(out var hook))
+                        hook.PrewarmImpacts();
+                }
             }
         }
 

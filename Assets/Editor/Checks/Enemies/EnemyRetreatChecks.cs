@@ -23,7 +23,8 @@ public static class EnemyRetreatChecks
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Enemies/Zombie{name}.prefab");
             var configured = prefab.GetComponent<Enemy>();
-            Check((float)Get(configured, "retreatTime") == 3f && (float)Get(configured, "retreatTimeMax") == 9f, name + " retreat range");
+            Check((float)Get(configured, "flareFearRadius") == 6f, name + " flare fear radius");
+            Check((float)Get(configured, "retreatTime") == 4f && (float)Get(configured, "retreatTimeMax") == 12f, name + " retreat range");
             Check((bool)Get(configured, "retreatAfterKill") == (name == "Spider" || name == "Smasher"), name + " kill retreat setting");
         }
         var actor = new GameObject("Retreat check");
@@ -46,7 +47,7 @@ public static class EnemyRetreatChecks
             {
                 Call(enemy, "BeginRetreat", null, Vector3.back);
                 float duration = (float)Get(enemy, "_retreatRemaining");
-                Check(duration >= 3 && duration <= 9, "Sample outside retreat range");
+                Check(duration >= 4 && duration <= 12, "Sample outside retreat range");
             }
             Call(enemy, "FinishRetreat", manager);
             Check(enemy.CurrentState == Enemy.State.Search && enemy.LastSeenPos == kill, "Search must use kill position");

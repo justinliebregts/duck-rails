@@ -12,6 +12,12 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
 {
     static PhotonMasterHandoff instance;
     public static bool LocalAvailable => instance == null || instance.InputAvailable;
+    // Desktop observers keep rendering the room when another window owns input focus.
+    // A paused application or unfocused headset still establishes a playback boundary.
+    // Never narrower than LocalAvailable, which already lets keyboard play ignore focus.
+    internal static bool CanPresentRemoteActions => instance == null || instance.InputAvailable ||
+        (!instance.paused && instance.xrFocused &&
+            (instance.focused || instance.display == null || !instance.display.running));
     internal static event System.Action LocalAvailabilityChanged;
 
     internal static bool IsUnavailableInRoom(int actor) => instance != null &&
@@ -134,6 +140,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
 
     void AvailabilityChanged(bool resuming)
     {
+        PhotonPlayer.InvalidateLocalHookShots();
         LocalAvailabilityChanged?.Invoke();
         RoomObjectRecovery.ReconcileAll();
         // Retain this frame's inventory changes while we still own the objects.
