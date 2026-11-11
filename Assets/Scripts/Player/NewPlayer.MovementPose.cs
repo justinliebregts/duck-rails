@@ -15,6 +15,7 @@ public partial class NewPlayer
     void OnDisable()
     {
         ClearLaunchLock();
+        EndHookHandProtection();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         ResetDevelopmentMovement();
 #endif

@@ -128,6 +128,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
     Quaternion remoteGripRotation = Quaternion.identity;
     bool stashedLocally;
     PhotonPlayer remoteOwner;
+    RemoteHookDropSurface hookDropSurface;
     bool hasBeenPickedUp;
     bool callbacksRegistered;
     bool destroyAfterOwnershipFallback;
@@ -303,6 +304,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
     {
         bool wasHeld = IsHeld;
         base.Release(linearVelocity, angularVelocity);
+        if (IsHeld) return;
         TrackHeld();
 
         if (wasHeld)
@@ -368,6 +370,9 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         CheckPendingPickup();
         RecoverDetachedHand();
         UpdateItemPose();
+        if (hookDropSurface.Active)
+            hookDropSurface.Correct(transform, !photonView.IsMine && !IsHeldByAnyPlayer && !IsStashed
+                && (headEquipment == null || !headEquipment.IsEquipped));
         if (checkpointWhenSettled && photonView.IsMine && !IsHeldByAnyPlayer && rb.IsSleeping())
         { recovery?.Changed(); checkpointWhenSettled = false; }
         if (!destroyAfterOwnershipFallback) TickSwing();
@@ -575,6 +580,8 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         if (incomingHeld && info.Sender != null && incomingActor == info.Sender.ActorNumber && incomingActor == photonView.OwnerActorNr)
             PhotonMasterHandoff.HolderActivity(incomingActor, info.SentServerTimestamp);
         bool heldChanged = remoteHeld != incomingHeld;
+        if (remoteHeld && !incomingHeld && !incomingStash && holdVersion == incomingVersion)
+            hookDropSurface.Begin(transform, remoteHolderActorNumber);
         remoteHeld = incomingHeld;
         remoteHolderActorNumber = incomingActor;
         holdVersion = incomingVersion;

@@ -95,6 +95,8 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
     Vector3 prevPosition;
     Vector3 velocity;
     Vector3 prevCarryOffset, carryVelocity;
+    bool hookRelativeVelocity;
+    RemoteHookDropSurface hookDropSurface;
 
     int grantedTo;
     bool orphaned;
@@ -115,7 +117,7 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
     public SoundEvent HoverSound => hoverOverride != null ? hoverOverride : hoverSound;
     public SoundEvent PutSound => putOverride != null ? putOverride : putSound;
     public Vector3 Velocity => velocity;
-    public Vector3 GetReleaseVelocity() => GetComponent<RailCargo>()?.PrepareRelease() == true ? velocity - carryVelocity : velocity;
+    public Vector3 GetReleaseVelocity() => GetComponent<RailCargo>()?.PrepareRelease() == true || hookRelativeVelocity ? velocity - carryVelocity : velocity;
     public bool AwaitingClaim => awaitingClaim;
     public bool IsCurrentLocalClaim => requester == LocalActor && requestLife == BagInventory.Life
         && ((requestedTarget != Target.LeftHand && requestedTarget != Target.RightHand) || requestHandEpoch == BagInventory.HandClaimEpoch);
@@ -251,7 +253,8 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
         transform.SetParent(hold, true);
         prevPosition = transform.position;
         velocity = Vector3.zero;
-        prevCarryOffset = RailCargo.PassengerCarryOffset;
+        hookRelativeVelocity = hand.HookProtected;
+        prevCarryOffset = hand.ThrowMotionOffset;
         carryVelocity = Vector3.zero;
         holdingHand = hand;
         if (photonView.OwnerActorNr == LocalActor) photonView.MarkLiveOwnership();
@@ -294,6 +297,7 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
     {
         if (!CanControl) return;
         bool wasHeld = state == BagState.Held && CanControl;
+        if (wasHeld && holdingHand != null && !holdingHand.ProtectHookRelease(transform, ref throwVelocity)) return;
         awaitingClaim = false;
         transform.SetParent(null, true);
         SetState(BagState.Dropped, 0, false);
@@ -311,6 +315,12 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
         if (impactSounds != null) impactSounds.PrepareRelease();
         if (wasHeld && impactSounds != null) impactSounds.PlayThrow(throwVelocity);
         RecoveryChanged();
+    }
+
+    internal bool ProtectUnavailableHookDrop()
+    {
+        Vector3 velocity = Vector3.zero;
+        return holdingHand == null || holdingHand.ProtectHookRelease(transform, ref velocity);
     }
 
     public bool ApplyUnavailableDrop(int actor, int version, Vector3 position, Quaternion rotation)
@@ -538,6 +548,7 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
             UpdateOwned();
         else
             UpdateRemote();
+        if (hookDropSurface.Active) hookDropSurface.Correct(transform, !control && state == BagState.Dropped);
 
         UpdateSlotVisibility();
         if (checkpointWhenSettled && CanControl && state == BagState.Dropped && rb.IsSleeping())
@@ -593,13 +604,21 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
         {
             case BagState.Held:
                 float dt = Time.deltaTime;
-                if (dt > 1e-5f)
+                // During a hook pull, throws are measured relative to the pulled body.
+                bool hookNow = holdingHand != null && holdingHand.HookProtected;
+                Vector3 offset = holdingHand != null ? holdingHand.ThrowMotionOffset : RailCargo.PassengerCarryOffset;
+                if (hookRelativeVelocity != hookNow)
+                {
+                    hookRelativeVelocity = hookNow;
+                    velocity = carryVelocity = Vector3.zero;
+                }
+                else if (dt > 1e-5f)
                 {
                     velocity = Vector3.Lerp(velocity, (transform.position - prevPosition) / dt, 0.5f);
-                    carryVelocity = Vector3.Lerp(carryVelocity, (RailCargo.PassengerCarryOffset - prevCarryOffset) / dt, 0.5f);
+                    carryVelocity = Vector3.Lerp(carryVelocity, (offset - prevCarryOffset) / dt, 0.5f);
                 }
                 prevPosition = transform.position;
-                prevCarryOffset = RailCargo.PassengerCarryOffset;
+                prevCarryOffset = offset;
                 break;
             case BagState.Stowed:
                 if (localBackAnchor != null)
@@ -736,6 +755,8 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
             ((newState != BagState.Dropped && newHolder == releasedActor) || (newAwaitingClaim && requester == releasedActor)))) return;
         if (newState == BagState.Held && info.Sender != null && newHolder == info.Sender.ActorNumber && newHolder == photonView.OwnerActorNr)
             PhotonMasterHandoff.HolderActivity(newHolder, info.SentServerTimestamp);
+        if (state == BagState.Held && newState == BagState.Dropped && newVersion == holdVersion)
+            hookDropSurface.Begin(transform, holderActor);
         holdVersion = newVersion;
         awaitingClaim = newAwaitingClaim;
         if (newState == BagState.Held)

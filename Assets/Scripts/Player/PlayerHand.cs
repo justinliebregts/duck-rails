@@ -18,7 +18,7 @@ public interface IHandLocomotionShape
 }
 
 [DefaultExecutionOrder(50)] // after LocalBodyDriver poses hand.L / hand.R
-public class PlayerHand : MonoBehaviour
+public partial class PlayerHand : MonoBehaviour
 {
     const float MinSegmentDt = 1e-5f;
 
@@ -152,6 +152,7 @@ public class PlayerHand : MonoBehaviour
     /// <summary>Starts pushing the player with shape, like a held locomotion item. It stops on its own once shape reports it isn't held.</summary>
     public void HoldShape(IHandLocomotionShape shape)
     {
+        pendingHookDrop = null;
         heldShape = shape;
         if (NewPlayer.instance != null)
             NewPlayer.instance.SnapHandLocomotionAnchor(IsControllerRTouch);
@@ -205,6 +206,7 @@ public class PlayerHand : MonoBehaviour
         if (!holdPointOnSkin)
             TryAttachHoldPointToSkin();
 
+        if (pendingHookDrop != null) RetryHookDrop();
         if (!CanGrab)
         {
             Release();
@@ -250,6 +252,7 @@ public class PlayerHand : MonoBehaviour
         item.Grab(this);
         if (item.Holder != this) return false;
 
+        pendingHookDrop = null;
         held = item;
         input?.NotifyTrackedHandGrab(IsControllerLTouch);
         sampleFilled = 0;
@@ -286,11 +289,14 @@ public class PlayerHand : MonoBehaviour
         sampleFilled = 0;
         sampleWrite = 0;
         item.Release(lin * throwLinearScale, ang * throwAngularScale);
+        if (pendingHookDrop != null && item != null && pendingHookDrop == item.transform
+            && item.Holder == this && held == null) held = item;
     }
 
     /// <summary>Called by Grabbable when another hand takes ownership.</summary>
     public void NotifyStolen()
     {
+        pendingHookDrop = null;
         held = null;
         sampleFilled = 0;
         sampleWrite = 0;
@@ -399,6 +405,7 @@ public class PlayerHand : MonoBehaviour
         if (item.Holder != this)
             return false;
 
+        pendingHookDrop = null;
         held = item;
         input?.NotifyTrackedHandGrab(IsControllerLTouch);
         sampleFilled = 0;
@@ -447,7 +454,7 @@ public class PlayerHand : MonoBehaviour
         Transform t = HoldPoint;
         int i = sampleWrite;
         posSamples[i] = t.position;
-        carrySamples[i] = RailCargo.PassengerCarryOffset;
+        carrySamples[i] = ThrowMotionOffset;
         rotSamples[i] = t.rotation;
         timeSamples[i] = Time.time;
         sampleWrite = (sampleWrite + 1) % velocitySamples;
@@ -461,6 +468,7 @@ public class PlayerHand : MonoBehaviour
         angular = Vector3.zero;
 
         bool relativeRelease = held != null && held.PrepareCargoRelease();
+        relativeRelease |= HookProtected;
 
         if (sampleFilled < 2) return;
 

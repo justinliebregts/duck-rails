@@ -78,6 +78,8 @@ public class Grabbable : MonoBehaviour
     PlayerHand holder;
     bool cachedDetectCollisions;
     RigidbodyInterpolation cachedInterpolation;
+    bool hookDropCcd;
+    CollisionDetectionMode previousDropCcd;
 
     const float PickupGrowthDuration = 0.15f;
     Vector3 pickupStartScale;
@@ -105,6 +107,7 @@ public class Grabbable : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (hookDropCcd && (rb.isKinematic || rb.IsSleeping())) RestoreDropCcd();
         if (OwnsPickupPose && pickupGrowing)
             ApplyPickupGrowth();
     }
@@ -179,6 +182,7 @@ public class Grabbable : MonoBehaviour
 
     protected virtual void OnDisable()
     {
+        RestoreDropCcd();
         if (surfaceRegistered) { surfaceItems.Remove(this); surfaceRegistered = false; }
         CancelLocalHold();
     }
@@ -188,12 +192,19 @@ public class Grabbable : MonoBehaviour
     {
         if (!IsHeld) return;
         FinishPickupGrowth();
+        if (!ProtectUnavailableHookDrop()) return;
         CancelLocalHold();
         rb.isKinematic = false;
         rb.useGravity = true;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         PrepareDropImpact();
+    }
+
+    internal bool ProtectUnavailableHookDrop()
+    {
+        Vector3 velocity = Vector3.zero;
+        return holder == null || holder.ProtectHookRelease(transform, ref velocity);
     }
 
     protected virtual void Awake()
@@ -303,6 +314,7 @@ public class Grabbable : MonoBehaviour
     public virtual void Grab(PlayerHand hand)
     {
         if (hand == null || !hand.CanGrab || !CanBeGrabbed) return;
+        RestoreDropCcd();
         if (holder == hand) return;
 
         bool takingFromOtherHand = holder != null;
@@ -363,6 +375,7 @@ public class Grabbable : MonoBehaviour
         FinishPickupGrowth();
 
         PlayerHand hand = holder;
+        if (!hand.ProtectHookRelease(transform, ref linearVelocity, ref angularVelocity)) return;
         holder = null;
 
         transform.SetParent(null, true);
@@ -370,6 +383,14 @@ public class Grabbable : MonoBehaviour
         rb.useGravity = true;
         rb.interpolation = cachedInterpolation;
         rb.detectCollisions = cachedDetectCollisions;
+        if (hand.HookProtected && rb.collisionDetectionMode != CollisionDetectionMode.ContinuousSpeculative)
+        {
+            // A long weapon can tip over after release. Include angular travel
+            // in collision detection until the dropped body settles.
+            previousDropCcd = rb.collisionDetectionMode;
+            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
+            hookDropCcd = true;
+        }
 
         rb.position = transform.position;
         rb.rotation = transform.rotation;
@@ -384,6 +405,13 @@ public class Grabbable : MonoBehaviour
         OnReleased?.Invoke(hand);
         if (sounds != null) sounds.PlayThrow(linearVelocity);
         PrepareDropImpact();
+    }
+
+    void RestoreDropCcd()
+    {
+        if (!hookDropCcd) return;
+        hookDropCcd = false;
+        if (rb != null) rb.collisionDetectionMode = previousDropCcd;
     }
 
     /// <summary>Suppress release-time player overlaps, including when worn equipment falls.</summary>

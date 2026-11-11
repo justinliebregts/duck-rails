@@ -49,6 +49,14 @@ namespace Game.Animation
         public Transform RightHand => rightArm != null ? rightArm.EndBone : null;
         public TwoBoneLimb LeftArm => leftArm;
         public TwoBoneLimb RightArm => rightArm;
+
+        internal void PoseConstrainedWrist(bool right, Vector3 position, Quaternion palmRotation)
+        {
+            var arm = right ? rightArm : leftArm;
+            arm.Solve(position, palmRotation, arm.RootPos + (right ? _rPoleDir : _lPoleDir), PlayerArmMaxStretch);
+            // A moving obstacle can briefly put the safe grip outside arm reach.
+            arm.EndBone.position = position;
+        }
         /// <summary>Chest position relative to the eyes, in head-yaw space.</summary>
         public Vector3 ChestFromHead => new Vector3(0f, -shoulderDrop, shoulderForward);
 

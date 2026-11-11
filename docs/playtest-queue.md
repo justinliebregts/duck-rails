@@ -51,6 +51,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: speed/kill-trigger feel in headset.
 - Priority: normal
 
+### ZombieHook pull: no snapback, hands/gear clear of surfaces (6f27966d, 7b5dad14) — queued 2026-11-10
+- Commit(s): see git log "Port Duckz ZombieHook pull"
+- Changed: hook pulls no longer snap the VR player back; while pulled, hands, held weapons/items and a hand-held bag stay out of floors and walls (locally and as sent to others), releases mid-pull drop instead of fling, and observers keep dropped items above the floor.
+- Setup: 2 clients (A in headset). Force `RailHook` spawns. Pull A (1) on the ground near a wall, (2) standing on the moving train, including near the cabin walls/rear, (3) on a curve. Repeat with bare hands, nail bat, gold bar, and a hand-held bag; release the item mid-pull once inside and once outside the train cargo volume.
+- Check: no rewind after the pull; no hand/bat/bag visibly inside geometry for A or B; train travel neither lost nor added; item released on the train becomes cargo and rides along, one released off it falls in place; B never sees a dropped bat tip through the floor.
+- Needs human: headset hand/arm feel during and after the pull, comfort aboard the moving train.
+- Priority: normal
+
 
 ## Results
 

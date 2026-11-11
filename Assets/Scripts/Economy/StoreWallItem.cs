@@ -177,6 +177,7 @@ public class StoreWallItem : Grabbable
     public override void Release(Vector3 linearVelocity, Vector3 angularVelocity)
     {
         base.Release(linearVelocity, angularVelocity);
+        if (IsHeld) return;
         rb.isKinematic = true;
         rb.useGravity = false;
 

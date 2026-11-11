@@ -12,18 +12,23 @@ public sealed class GrabSurfaceData : ScriptableObject
     public bool IsValid => triangles != null && triangles.Length >= 3 && triangles.Length % 3 == 0;
     public int TriangleCount => triangles.Length / 3;
     public Mesh ReferenceMesh => referenceMesh;
+    internal Bounds LocalBounds => localBounds;
     public Matrix4x4 ReferenceToRoot => referenceToRoot;
 
     // Transform the bounds conservatively, including nonuniform scale and rotated parents.
     public bool WithinReach(Matrix4x4 toWorld, Vector3 point, float radiusSquared)
     {
-        Vector3 e = localBounds.extents;
+        return TransformBounds(localBounds, toWorld).SqrDistance(point) <= radiusSquared;
+    }
+
+    internal static Bounds TransformBounds(Bounds local, Matrix4x4 toWorld)
+    {
+        Vector3 e = local.extents;
         Vector3 x = toWorld.MultiplyVector(new Vector3(e.x, 0, 0));
         Vector3 y = toWorld.MultiplyVector(new Vector3(0, e.y, 0));
         Vector3 z = toWorld.MultiplyVector(new Vector3(0, 0, e.z));
         Vector3 extent = Abs(x) + Abs(y) + Abs(z);
-        var bounds = new Bounds(toWorld.MultiplyPoint3x4(localBounds.center), extent * 2f);
-        return bounds.SqrDistance(point) <= radiusSquared;
+        return new Bounds(toWorld.MultiplyPoint3x4(local.center), extent * 2f);
     }
 
     static Vector3 Abs(Vector3 v) => new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));

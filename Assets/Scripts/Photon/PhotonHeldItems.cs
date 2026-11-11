@@ -101,10 +101,15 @@ public static class PhotonHeldItems
             && (owner == 0 || owner == holder || owner == departedActor || availability.CanRelease(owner, view, holder, version));
     }
 
-    public static bool Drop(PhotonGrabbable item) => Send(item.GetComponent<PhotonView>(), item.HeldActor, item.HoldVersion);
+    public static bool Drop(PhotonGrabbable item)
+    {
+        if (!item.ProtectUnavailableHookDrop()) return false;
+        return Send(item.GetComponent<PhotonView>(), item.HeldActor, item.HoldVersion);
+    }
     public static bool Drop(BagObject bag)
     {
         if (!PhotonNetwork.InRoom) { bag.DropLocal(Vector3.zero); return true; }
+        if (!bag.ProtectUnavailableHookDrop()) return false;
         return Send(bag.photonView, bag.DropActor, bag.HoldVersion);
     }
 

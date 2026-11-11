@@ -1,0 +1,78 @@
+# ZombieHook pull port batch evidence — 2026-11-10, Unity 6000.3.24f1, disposable copy tmp/duckz-port-validation
+
+## ZombieHookPullChecks.Run (isolated batch Play Mode) — exit 0
+ZombieHook pull clear wall=False carried=False hit=True peak=6.25 first=6.50 retained=9.50 lateral=0.00 resumeSpeed=18.00 held=True
+ZombieHook pull bare wall=False carried=False hit=True peak=6.25 first=6.50 retained=6.50 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull item wall=False carried=False hit=True peak=6.25 first=6.50 retained=6.50 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bat wall=False carried=False hit=True peak=6.25 first=6.50 retained=6.50 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bag wall=False carried=False hit=True peak=6.25 first=6.50 retained=6.50 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull pan+bag wall=False carried=False hit=True peak=6.25 first=6.50 retained=6.50 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull clear wall=True carried=False hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bare wall=True carried=False hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull item wall=True carried=False hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bat wall=True carried=False hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bag wall=True carried=False hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull pan+bag wall=True carried=False hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull clear wall=False carried=True hit=True peak=6.25 first=6.50 retained=6.50 lateral=0.00 resumeSpeed=18.00 held=True
+ZombieHook pull bare wall=False carried=True hit=True peak=6.25 first=6.50 retained=6.25 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull item wall=False carried=True hit=True peak=6.25 first=6.50 retained=6.25 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bat wall=False carried=True hit=True peak=6.25 first=6.50 retained=6.25 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bag wall=False carried=True hit=True peak=6.25 first=6.50 retained=6.25 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull pan+bag wall=False carried=True hit=True peak=6.25 first=6.50 retained=6.25 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull clear wall=True carried=True hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bare wall=True carried=True hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull item wall=True carried=True hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bat wall=True carried=True hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull bag wall=True carried=True hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook pull pan+bag wall=True carried=True hit=True peak=1.85 first=1.85 retained=1.85 lateral=0.00 resumeSpeed=0.00 held=True
+ZombieHook surface bare obstructDrop=False passed 34 samples, travel=6.04
+ZombieHook surface ItemGoldBar obstructDrop=False passed 34 samples, travel=6.05
+ZombieHook surface WeaponNailBat obstructDrop=False passed 34 samples, travel=6.05
+ZombieHook surface Bag obstructDrop=False passed 34 samples, travel=6.05
+ZombieHook surface WeaponNailBat obstructDrop=True passed 33 samples, travel=6.05
+ZombieHook surface Bag obstructDrop=True passed 33 samples, travel=6.05
+
+## Control: ShiftHookPose disabled in copy only — exit 0 (carried cases do not discriminate the shift)
+12
+
+## First attempt before fixture focus adaptation — exit 1
+InvalidOperationException: Grab failed: ItemGoldBar handCanGrab=False canBe=True activeEnabled=True stashed=False avail=False down=False dead=False holder= held= drive=False
+
+## MovementSnapbackPlayChecks.Run — exit 0
+MovementSnapbackPlayChecks PASS: hand displacement persisted across real player-loop frames at 72/144 FPS, with gravity/launch/carry/turn excluded.
+
+## PlayerPalmAlignmentChecks — exit 0
+HOOKPULLPORT PASS PlayerPalmAlignmentChecks
+
+## RailDuckzPortChecks.RunBatch — process exit 1 (RailWeek3Checks only)
+PASS ControllerPalmCalibrationChecks
+PASS ControllerPalmInteractionChecks
+PASS TrackedHandInputChecks
+PASS HeadPivotMovementChecks
+PASS HeadPivotSynchronizationChecks
+PASS HeadPivotLifeNetworkChecks
+PASS HelicopterCabinCollisionChecks
+PASS HelicopterSupportChecks
+PASS HelicopterNetworkChecks
+PASS DevelopmentMovementChecks
+PASS DevelopmentMovementNetworkChecks
+PASS PickupRecoveryChecks
+PASS RoomObjectRecoveryChecks
+PASS RailDuckzPortChecks
+PASS RailTestRunner
+FAIL RailWeek3Checks: Sixteen distinct encounter assets
+PASS RailBridgeHoldChecks
+PASS RailButtonTouchChecks
+PASS RailCoalLiveChecks
+PASS RailDesktopChecks
+PASS RailDiagnosticChecks
+PASS RailDriveChecks
+PASS RailDuckzPortChecks
+PASS RailEconomyChecks
+PASS RailHoldControlChecks
+PASS RailQuickStartChecks
+PASS RailRigChecks
+PASS RailSessionChecks
+PASS RailTestBlockOrderChecks
+PASS RailTestRunner
+PASS RailWeek2Checks

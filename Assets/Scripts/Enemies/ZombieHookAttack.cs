@@ -498,6 +498,7 @@ namespace Game.AI
             if (sound != null && AudioManager.instance != null) AudioManager.instance.Play(sound, from);
             if (victim != 0 && contact == Contact.Flesh)
             {
+                PhotonPlayer.MarkHookImpact(victim);
                 var local = PhotonPlayer.Local;
                 if (local != null && local.photonView.ViewID == victim && !local.IsDead)
                     PhotonPlayer.ApplyLocalHookPull(pull);

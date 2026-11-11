@@ -332,6 +332,12 @@ namespace Game.Animation
                 rHandPos = rightPalm.position, rHandRot = rightPalm.rotation,
             }, LookDownChestBack());
 
+            // The grip is a child of the solved wrist. Correct the wrist before gear,
+            // locomotion and the network sample its pose. Tracking anchors stay untouched.
+            var motor = NewPlayer.instance;
+            if (motor != null && motor.ProtectingHookHands && motor.gameObject == gameObject)
+                motor.ResolveHookHands(leftPalm, rightPalm);
+
             if (controllerInput == null)
                 return;
 

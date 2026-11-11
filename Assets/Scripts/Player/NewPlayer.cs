@@ -191,6 +191,7 @@ public partial class NewPlayer : MonoBehaviour
 
         public void InitializeValues()
         {
+            EndHookHandProtection();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             ResetDevelopmentMovement();
 #endif
@@ -319,6 +320,12 @@ public partial class NewPlayer : MonoBehaviour
           lastPos += delta;
           for (int i = 0; i < lastLeftLocoCount; i++) lastLeftLocoSamples[i] += delta;
           for (int i = 0; i < lastRightLocoCount; i++) lastRightLocoSamples[i] += delta;
+          // Hook-protected grips sweep from their last safe pose. Carry it with the
+          // cabin so a moving train does not turn train travel into a cast across its floor or walls.
+          if (hookHandsActive) {
+            hookLeft?.ShiftHookPose(delta);
+            hookRight?.ShiftHookPose(delta);
+          }
           // Preserve real player velocity, contact state and jump history. Warp()
           // resets those, so it is not a carry operation.
         }
@@ -399,6 +406,7 @@ public partial class NewPlayer : MonoBehaviour
             if (TryGetHandLocomotionShape(false, currentLeftLocoSamples, out int count, out _) && count > 0)
                 return AverageSamples(currentLeftLocoSamples, count);
 
+            if (hookLeft != null && hookLeft.HookProtected) return hookLeft.SafeHookContact;
             if ((PositionWithOffset(leftHandTransform, leftHandOffset) - headCollider.transform.position).magnitude < maxArmLength)
             {
                 return PositionWithOffset(leftHandTransform, leftHandOffset);
@@ -414,6 +422,7 @@ public partial class NewPlayer : MonoBehaviour
             if (TryGetHandLocomotionShape(true, currentRightLocoSamples, out int count, out _) && count > 0)
                 return AverageSamples(currentRightLocoSamples, count);
 
+            if (hookRight != null && hookRight.HookProtected) return hookRight.SafeHookContact;
             if ((PositionWithOffset(rightHandTransform, rightHandOffset) - headCollider.transform.position).magnitude < maxArmLength)
             {
                 return PositionWithOffset(rightHandTransform, rightHandOffset);
@@ -572,6 +581,8 @@ public partial class NewPlayer : MonoBehaviour
 
         void Update() {
           Rotate();
+          if (hookHandsActive && (_bodyDriver == null || _bodyDriver.Body == null))
+              ResolveHookHands();
           // Locomotion samples tracked poses once per rendered frame, not per physics step.
           float dTime = Time.deltaTime;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -782,6 +793,27 @@ public partial class NewPlayer : MonoBehaviour
             //   rb.position += hit2.point + (hit2.normal * (bodyCollider.height * 1.2f)) - bodyMidpoint.position;
             // }
             // rb.position += hookVel + jetVel + wingVel;
+
+            if (resetHandsAfterHookPull)
+            {
+                // The rig and its held shapes are now at the accepted physics pose.
+                // Contacts from before the pull would drag the body back on this step.
+                resetHandsAfterHookPull = false;
+                SeedHandLocomotionSamples(false);
+                SeedHandLocomotionSamples(true);
+                wasLeftHandTouching = wasRightHandTouching = false;
+                leftHandVelHistory.Clear();
+                rightHandVelHistory.Clear();
+                movementRenderCount = 0;
+                // External travel must not become a hand-powered jump.
+                lastPosition = transform.position;
+                currentVelocity = Vector3.zero;
+                // A planted mesh can touch beyond the smaller locomotion spheres.
+                // Resume its normal braking at the accepted pose without a rewind.
+                if ((hookLeft != null && hookLeft.TouchingHookSurface)
+                    || (hookRight != null && hookRight.TouchingHookSurface)) rb.linearVelocity = Vector3.zero;
+                SetVelHistoryToCurrentVel();
+            }
 
             Vector3 gravityStep = Vector3.down * 2f * 9.8f * dTime * dTime;
             bool allowLeftHandCollision = AllowHandLocomotionCollision(false);
@@ -1367,6 +1399,52 @@ public partial class NewPlayer : MonoBehaviour
 
         int disableMovementRequestCount;
         int launchGeneration;
+        bool resetHandsAfterHookPull;
+        PlayerHand hookLeft, hookRight;
+        bool hookHandsActive;
+        internal bool ProtectingHookHands => hookHandsActive;
+        internal RemotePlayerBody HookBody => _bodyDriver != null ? _bodyDriver.Body : null;
+
+        void EndHookHandProtection()
+        {
+            hookLeft?.EndHookProtection();
+            hookRight?.EndHookProtection();
+            hookHandsActive = resetHandsAfterHookPull = false;
+            hookLeft = hookRight = null;
+        }
+
+        internal void ResolveHookHands(Transform leftPalm = null, Transform rightPalm = null)
+        {
+            if (!hookHandsActive) return;
+            hookLeft?.ResolveHookHand(this, false, resetHandsAfterHookPull, leftPalm);
+            hookRight?.ResolveHookHand(this, true, resetHandsAfterHookPull, rightPalm);
+            hookHandsActive = (hookLeft != null && hookLeft.HookProtected)
+                || (hookRight != null && hookRight.HookProtected);
+        }
+
+        internal Transform HookPalm(bool left, Transform tracked)
+        {
+            if (!hookHandsActive) return tracked;
+            var hand = left ? hookLeft : hookRight;
+            return hand != null && hand.HookProtected ? hand.SafeHookPalm : tracked;
+        }
+
+        internal void PullByHook(Vector3 velocity) {
+          resetHandsAfterHookPull = true;
+          if (Player.instance != null)
+          {
+              hookLeft = Player.instance.leftPlayerHand;
+              hookRight = Player.instance.rightPlayerHand;
+              hookLeft?.BeginHookProtection();
+              hookRight?.BeginHookProtection();
+              hookHandsActive = true;
+              if (_bodyDriver != null && _bodyDriver.Body != null) _bodyDriver.PoseNow();
+              else ResolveHookHands();
+          }
+          ClearPassengerHandContacts();
+          LaunchPlayerFromLaunchPad(velocity, LaunchType.OverwriteVelocity,
+              Mathf.Max(1, Mathf.RoundToInt(0.36f / Time.fixedDeltaTime)));
+        }
 
         /// <summary>
         /// Launch method used by LaunchPad triggers.

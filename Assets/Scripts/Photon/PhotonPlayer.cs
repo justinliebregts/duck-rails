@@ -113,6 +113,14 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     }
 
     int lastHookReset;
+    double hookSurfaceUntil;
+    internal bool RecentHookImpact => Time.unscaledTimeAsDouble < hookSurfaceUntil;
+    internal static void MarkHookImpact(int viewId)
+    {
+        var view = PhotonView.Find(viewId);
+        if (view != null && view.TryGetComponent(out PhotonPlayer target))
+            target.hookSurfaceUntil = Time.unscaledTimeAsDouble + 2;
+    }
     bool hasHookReset;
 
     internal static void InvalidateLocalHookShots()
@@ -230,7 +238,13 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     public Transform Chest => body != null ? body.Chest : null;
 
     /// <summary>The owner's hand transform that the pose stream sends. Null on remote copies.</summary>
-    public Transform HandSource(bool left) => left ? lHandSource : rHandSource;
+    public Transform HandSource(bool left)
+    {
+        var tracked = left ? lHandSource : rHandSource;
+        var motor = NewPlayer.instance;
+        return motor != null && motor.ProtectingHookHands && _fingerSource != null && motor.gameObject == _fingerSource.gameObject
+            ? motor.HookPalm(left, tracked) : tracked;
+    }
 
     /// <summary>The hand pose as sent over the network: the owner's source transform, or the latest interpolated pose on remote copies.</summary>
     public bool TryGetHandPose(bool left, out Vector3 position, out Quaternion rotation)
@@ -422,8 +436,8 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
             {
                 var packet = PosePacket.Capture(
                     headSource,
-                    lHandSource,
-                    rHandSource,
+                    HandSource(true),
+                    HandSource(false),
                     _fingerSource != null ? _fingerSource.Curl : default);
                 var manager = HelicopterManager.instance;
                 int arrival = 0, pad = 0; Transform frame = null;
@@ -948,7 +962,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         if (IsLocalHuman && headSource != null)
         {
             Transform chest = _fingerSource != null && _fingerSource.Body != null ? _fingerSource.Body.Chest : null;
-            return OverlapsTrackedHook(headSource, chest, lHandSource, rHandSource, from, to, radius,
+            return OverlapsTrackedHook(headSource, chest, HandSource(true), HandSource(false), from, to, radius,
                 headRadius, bodyRadius, bodyLength, handRadius);
         }
         if (OverlapsSwing(from, to, radius)) return true;
@@ -985,8 +999,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         var desktop = player.GetComponent<DesktopPlayer>();
         if (desktop != null && desktop.isActiveAndEnabled) desktop.PullByHook(velocity);
         else if (NewPlayer.instance != null && NewPlayer.instance.isActiveAndEnabled)
-            NewPlayer.instance.LaunchPlayerFromLaunchPad(velocity, LaunchType.OverwriteVelocity,
-                Mathf.Max(1, Mathf.RoundToInt(0.36f / Time.fixedDeltaTime)));
+            NewPlayer.instance.PullByHook(velocity);
     }
 
     [PunRPC]

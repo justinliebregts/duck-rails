@@ -388,3 +388,47 @@ This history starts November 8, 2026; it is not an audit of earlier imports.
 - Validation: editor `ZombieHitShapeChecks`, `HitBloodChecks`, `ZombieHookChecks`, `EnemyRetreatChecks`, `RailEnemyChecks` passed. In the disposable copy (`tmp/duckz-port-validation`, batch runner `HitShapePortBatch`, copy only): `ZombieHitShapeChecks`, `SpiderRaiseChecks` (5000 assertions) and `HitBloodChecks` passed; `PickupRecoveryChecks` alone passed (298 assertions). The remaining recovery suites and `PhotonGrabbableChecks` (second run, with the known order-dependent `PickupRecoveryChecks` round-robin failure expected) and `GrabbablePlayChecks` (Play Mode) are **not yet recorded**; update this entry with results.
 - Remaining: record those results; throw/grab feel on headsets, two-client thrown-hit parity.
 - Destination commit: the commit introducing this entry (see Git history).
+
+## ZombieHook pull group — 6f27966d, 7b5dad14
+
+- Status: implemented; compiled with an empty error Console and disposable-batch checks passed November 10, 2026. Real-client and
+  **headset acceptance of the pull is required** (queued for playtest); editor/batch checks are not acceptance.
+- Source SHAs (full): `6f27966de4774e88274fd9f00fe4e38c03bb70b3` (no VR snapback after a hook pull),
+  `7b5dad1408931792ec7a0351e59bf32ee0d7ba5a` (hands and held gear kept clear of surfaces during pulls).
+- Prerequisites: ZombieHook group, hook impact/blood, enemy tuning and hit shapes are already ported (entries above).
+- Behavior: `NewPlayer.PullByHook` replaces the direct launch call. It clears passenger hand contacts and reseeds hand samples, velocity
+  history and render history at the accepted pose, so pre-pull contacts cannot drag the body back. While a pull is active, each hand's
+  wrist, palm, locomotion contact and held gear (item, weapon or hand-held bag) are swept to a surface-clear pose
+  (`PlayerHand.HookSurface.cs`), applied to the IK wrist by `LocalBodyDriver`, and sent over the network (`PhotonPlayer.HandSource`).
+  Releases during a pull are made clear before they detach, and are deferred if moving geometry occupies both the new and last safe grip.
+  They are measured relative to the pulled body (drop rather than fling) and use speculative CCD until the item settles. Observers briefly
+  correct a dropped item's displayed pose against its supporting floor (`RemoteHookDropSurface`, after `PhotonPlayer.MarkHookImpact`).
+- Destination: `Scripts/Player/{NewPlayer,NewPlayer.MovementPose,PlayerHand,PlayerHand.HookSurface(new)}.cs`, `Scripts/Utility/{LocalBodyDriver,RemotePlayerBody}.cs`,
+  `Scripts/Items/{Grabbable,PhotonGrabbable,GrabSurfaceData,Bag/BagObject}.cs`, `Scripts/Photon/{PhotonPlayer,PhotonHeldItems}.cs`, `Scripts/Enemies/ZombieHookAttack.cs`,
+  `Scripts/Economy/StoreWallItem.cs`, `Editor/Checks/Enemies/ZombieHookPullChecks.cs` (new). Source GUIDs kept for both new scripts; neither collides in Rails.
+- Adaptations:
+  - `HelicopterCargo.PassengerCarryOffset` is replaced by `RailCargo.PassengerCarryOffset`. `BagObject`'s held-velocity sampling is inline in `UpdateOwned` in Rails, so the
+    hook-relative sampling was merged there. Rails' `RailCargo` release (`PrepareRelease`/`CompleteRelease`) is unchanged.
+  - Moving train: `NewPlayer.ApplyPassengerDisplacement` already shifts every locomotion anchor by the cabin carry. It now also calls
+    `PlayerHand.ShiftHookPose`, which shifts the stored world-space safe poses. Without this, those sweep origins would trail the cabin by one
+    frame of train travel. Cabin hand/body support reporting is unchanged; `PullByHook` clears passenger hand contacts as in the source.
+    During a pull, release velocity excludes the player's own displacement, including train carry. An item released inside the train
+    volume attaches as cargo with that relative velocity. One released outside it drops in place rather than keeping train speed.
+  - `StoreWallItem`: only the source's `if (IsHeld) return;` guard (a deferred hook release stays held). No wallet, coin or cosmetic logic touched;
+    the removed train safe is not restored.
+  - `ZombieHookPullChecks`: grants `PhotonMasterHandoff` input focus before grabs, because Rails gates grabs on focus and the batch process is unfocused (same approach as
+    `PickupJoinNetworkChecks`). Adds 12 "carried" cases that move the floor and wall sideways at 20 m/s while applying the cabin's passenger displacement, and check
+    that no train travel is lost or rewound.
+- Networking: no new RPCs, event codes or packet fields; the pose stream sends the constrained palm transform in place of the tracked one during a pull. AppVersion auto-bumped.
+- Validation (disposable copy `tmp/duckz-port-validation`, Unity 6000.3.24f1, [evidence](validation/hook-pull-port/batch.txt)): `ZombieHookPullChecks` passed all 24 grip/wall/carried pull
+  cases plus 6 ramp surface-clearance/halfway-drop cases (including obstructed drops and zero-allocation hand resolution). `MovementSnapbackPlayChecks` and
+  `PlayerPalmAlignmentChecks` passed. All 15 `RailDuckzPortChecks.RunBatch` entries passed (palm calibration/interaction, tracked hand, head-pivot movement, helicopter cabin
+  collision/support/network, development movement and network, pickup/room-object recovery, cargo). The process exited 1 only because the bundled quick suite's
+  `RailWeek3Checks` asserts exactly sixteen block prefabs. That is a block-asset inventory check, unrelated to these files.
+  - The first pull run failed on the fixture's focus-gated grab (before the adaptation above).
+  - A control run with `ShiftHookPose` disabled in the copy also passed. The carried cases therefore show that carry is preserved,
+    but do **not** prove the shift is needed (flat floor, sideways carry). Its benefit on a real cabin is unverified.
+- Remaining: headset pulls on the ground and aboard the moving train (hands, bat and bag against floor, walls and cabin interior). Also: two-client observer view of
+  constrained hands and dropped items, release mid-pull in the cargo volume versus outside it, and curves. Pull versus downed state and the desktop pull path were not changed.
+  No diagnostic reports inspected; source Duckz untouched.
+- Destination commit: the commit introducing this entry (see Git history).
