@@ -70,6 +70,9 @@ Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, w
 
 ## In-game panel
 
+### Admin gate and L3 toggle — November 11
+In VR the test panel now opens and closes with **L3** (click the left thumbstick), not the left menu button. The menu buttons always open the normal pause menu. On desktop, P still opens the panel when it is available. The panel is always available in the Editor. In development builds it is available only when `PlayerSession.IsAdmin` is true. That flag comes from `GET admin/check` against the backend `admin_privileges` table after sign-in. This is a client-side convenience gate, not a security boundary. Release builds still exclude the panel. The old admin-only L3 gold-bar dropper (`GoldBarDropper`) was removed. Unity compilation passed; live headset checks are queued in [playtest-queue.md](playtest-queue.md).
+
 ### VR press withdrawal — November 8
 
 Physical presses now share a finger-clear lock across PressableButton and PauseMenuButton, including diagnostic-to-game-menu and settings-page transitions. A successful poke blocks further physical presses until its contacting fingers withdraw beyond the original button face or sides with 3 cm clearance. Passing through the back does not rearm; hiding/rebuilding the source panel preserves the lock. Desktop click APIs and normal hold/release events remain unchanged.

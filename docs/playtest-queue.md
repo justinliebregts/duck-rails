@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Test panel on L3, admin-gated — queued 2026-11-11
+- Commit(s): uncommitted
+- Changed: in VR the test panel toggles on L3 instead of the left menu button. Menu buttons always open the pause menu. The panel needs the Editor or a backend admin in development builds. GoldBarDropper is removed.
+- Setup: Editor VR rig, single client; then development build on headset with an admin account and a non-admin account.
+- Check: Editor: L3 opens/closes the wrist panel, menu button opens pause menu, P and the overlay button still open the desktop panel. Dev build admin: L3 opens panel after sign-in. Dev build non-admin: L3 does nothing, menu button opens pause menu. No gold bar drops on L3.
+- Needs human: headset admin/non-admin accounts.
+- Priority: normal
+
 ### Stranded non-master leaves the ending train — queued 2026-11-11
 - Commit(s): d9ab4c4fc
 - Changed: a client still in a public expedition during `Returning` that cannot follow the crew leaves on its own. This covers a client missing from `rails.users`, an expired transfer window, or a crew handoff that stopped without arriving. It goes to the crew's known destination, then its previous compound, then any compound. Reported: three-player win, one non-master stayed aboard forever.

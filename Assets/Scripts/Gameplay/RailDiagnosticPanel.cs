@@ -42,7 +42,10 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
     Material buttonMaterial;
     TMP_Text toast;
     float toastUntil;
-    public static bool OwnsMenuInput => Instance != null && RailDiagnostics.Development && GR.Player.instance != null;
+    /// <summary>Editor always; development builds only for backend admins (client-side check, not a security boundary).</summary>
+    public static bool Available => RailDiagnostics.Development &&
+        (Application.isEditor || (PlayerSession.Instance != null && PlayerSession.Instance.IsAdmin));
+    public static bool OwnsMenuInput => Instance != null && Available && GR.Player.instance != null;
     void Awake() { Instance = this; }
     void OnDisable() { Close(); }
     void OnDestroy() { if (panel != null) Destroy(panel); if (toast != null) Destroy(toast.gameObject); if (panelMaterial != null) Destroy(panelMaterial); if (buttonMaterial != null) Destroy(buttonMaterial); if (Instance == this) Instance = null; RailTestTools.RestoreNetwork(); }
@@ -51,8 +54,9 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (!RailDiagnostics.Development) return;
         var player = GR.Player.instance;
         if (player == null) { Close(); return; }
-        if (IsOpen && desktopOpen != KeyboardMode) { Close(); Toggle(); }
-        if (player.ReturnButtonPress_Left(ButtonName.Start).wasPressed || (RailDesktopInput.GetKeyDown(KeyCode.P) && !DuckCompanionDebug.IsTyping)) Toggle();
+        if (!Available) Close();
+        else if (IsOpen && desktopOpen != KeyboardMode) { Close(); Toggle(); }
+        if (Available && player.ReturnButtonPress_Left(ButtonName.Thumbstick).wasPressed || (RailDesktopInput.GetKeyDown(KeyCode.P) && !DuckCompanionDebug.IsTyping)) Toggle();
         if (desktopOpen && RailDesktopInput.GetKeyDown(KeyCode.Escape)) Close();
         if (desktopOpen) { Cursor.lockState = CursorLockMode.None; Cursor.visible = true; }
         if (!RailTestTools.Allowed) RailTestTools.RestoreNetwork();
@@ -73,7 +77,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
     }
     public void Toggle()
     {
-        if (!RailDiagnostics.Development) return;
+        if (!Available) return;
         if (IsOpen) { Close(); return; }
         if (KeyboardMode) {
             desktopOpen = true; refresh = 0;
