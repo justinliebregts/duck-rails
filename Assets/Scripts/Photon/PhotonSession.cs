@@ -50,7 +50,9 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     AppSettings settings;
     Action<string> loginStatus;
     bool operationPending, loadingScene, quitting, initialized, leaving;
-    double operationUntil, retryAt, resumeUntil, nextAuthorityTick, lastCommit, loadingSince;
+    double operationUntil, retryAt, resumeUntil, nextAuthorityTick, lastCommit, loadingSince, strandedRetryAt;
+    bool crewReturnFailed;
+    string crewReturnTarget = "", crewReturnToken = "";
     int pendingRevision = -1;
     public bool RecoveringConnection { get; private set; }
     public bool ReturningToLogin => false;
@@ -216,6 +218,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (!arrived)
         {
+            crewReturnFailed = true; crewReturnTarget = crewReturn?.KnownTarget ?? "";
             FailInput("Crew return could not finish. Check your connection, then use the room code to regroup or choose Leave.");
             SetStatus(LastError);
         }
@@ -420,6 +423,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         DuckzAnalytics.SessionEvent(request == Request.Rejoin ? "rejoined" : "joined");
         request = Request.None; RecoveringConnection = false; leaving = false;
         joinedRoom = PhotonNetwork.CurrentRoom.Name; followedTransfer = null; pendingRevision = -1;
+        crewReturnFailed = false; crewReturnTarget = ""; crewReturnToken = "";
         loadingSince = Time.realtimeSinceStartupAsDouble; WorldReady = false;
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [RailSessionRules.Boarding] = false, [RailSessionRules.Ready] = "" });
         PlayerProps.PushCosmetics(); RoomMembershipChanged?.Invoke();
@@ -633,7 +637,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         followedTransfer = destination;
         if (destination.StartsWith("return-", StringComparison.Ordinal) && Kind == RailSessionRules.ExpeditionKind)
         {
-            crewReturn?.Dispose();
+            crewReturn?.Dispose(); crewReturnFailed = false; crewReturnToken = destination;
             crewReturn = new RailCrewReturn(this, settings, destination, users);
             SetStatus("Keeping your crew together while finding a compound...");
             return;
@@ -641,6 +645,34 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         transferKind = Kind == RailSessionRules.CompoundKind ? RailSessionRules.ExpeditionKind : RailSessionRules.CompoundKind;
         transferRun = transferKind == RailSessionRules.ExpeditionKind ? destination : ""; transferUsers = users;
         Begin(Request.Transfer, destination);
+    }
+    // Safety net: the crew has left a public expedition, but this client is
+    // still aboard with no live handoff to follow it. Prefer the crew's known
+    // destination, then the compound we came from, then any public compound.
+    void LeaveIfStrandedAfterReturn(double now)
+    {
+        if (Kind != RailSessionRules.ExpeditionKind || Phase != RailPhase.Returning || now < strandedRetryAt) return;
+        string destination = Get(RailSessionRules.Destination, "");
+        if (!destination.StartsWith("return-", StringComparison.Ordinal)) return;
+        bool inCrew = Get(RailSessionRules.TransferUsers, Array.Empty<string>()).Contains(PhotonNetwork.LocalPlayer.UserId);
+        bool active = crewReturn != null && crewReturn.Active;
+        if (!RailSessionRules.StrandedAfterReturn(inCrew, active, crewReturnFailed && crewReturnToken == destination,
+            Get(RailSessionRules.TransferUntil, 0d), PhotonNetwork.Time)) return;
+        strandedRetryAt = now + 5;
+        string target = crewReturnToken == destination ? crewReturnTarget : "";
+        crewReturn?.Dispose(); crewReturn = null;
+        DuckzAnalytics.SessionEvent("stranded_return");
+        if (target.StartsWith("fresh:", StringComparison.Ordinal))
+        {
+            // The crew's fresh compound is addressed by its allocation token.
+            transferKind = RailSessionRules.CompoundKind; transferRun = "";
+            transferUsers = new[] { PhotonNetwork.LocalPlayer.UserId };
+            Begin(Request.Transfer, target.Substring(6));
+        }
+        else if (RailSessionRules.IsCode(target)) Begin(Request.ReturnToCompound, target);
+        else if (!string.IsNullOrEmpty(previousCompound)) Begin(Request.ReturnToCompound, previousCompound);
+        else Begin(Request.Random);
+        if (HasRoomRequest) SetStatus("Your crew has left the train. Returning to a compound...");
     }
     void TickAuthority()
     {
@@ -759,6 +791,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!operationPending && request != Request.None && !PhotonNetwork.InRoom && now >= retryAt && !loadingScene) Connect();
         if (!IsRailsRoom || HasRoomRequest) return;
         FollowTransfer();
+        LeaveIfStrandedAfterReturn(now);
+        if (!IsRailsRoom || HasRoomRequest) return;
         if (!WorldReady && now - loadingSince > RailSessionRules.WorldLoadSeconds && Phase == RailPhase.Running)
         { Begin(Request.Random); FailInput("World loading timed out. Returning to a compound."); return; }
         if (now < nextAuthorityTick) return;

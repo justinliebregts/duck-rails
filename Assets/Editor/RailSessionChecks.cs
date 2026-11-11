@@ -40,6 +40,10 @@ public static class RailSessionChecks
         Check(Enumerable.Range(1, 4).All(RailSessionRules.SearchExistingCompound), "One through four returning players search existing compounds");
         Check(!RailSessionRules.SearchExistingCompound(0) && Enumerable.Range(5, 4).All(n => !RailSessionRules.SearchExistingCompound(n)),
             "Five through eight returning players skip random matchmaking");
+        Check(!RailSessionRules.StrandedAfterReturn(true, true, false, 190, 200) && !RailSessionRules.StrandedAfterReturn(true, false, false, 190, 100),
+            "Crew members with a live handoff or open return window are not stranded");
+        Check(RailSessionRules.StrandedAfterReturn(false, false, false, 190, 100) && RailSessionRules.StrandedAfterReturn(true, false, true, 190, 100) &&
+            RailSessionRules.StrandedAfterReturn(true, false, false, 190, 200), "Unlisted, failed-handoff or expired members leave the ending train");
         var leases = RailSessionRules.ReservationLeases(new[] { "crew-a", "crew-b" }, null, 100d);
         Check((double)leases["crew-a"] == 130d && (double)leases["crew-b"] == 130d, "Missing reservation leases receive thirty seconds");
         var resumed = RailSessionRules.ReservationLeases(new[] { "crew-a", "crew-b", "new-crew" }, leases, 120d);

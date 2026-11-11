@@ -27,6 +27,7 @@ public sealed class RailCrewReturn : IConnectionCallbacks, IMatchmakingCallbacks
     public bool Finished { get; private set; }
     public bool Active => !stopped;
     public string Diagnostic => "control=" + client.State + " active=" + Active + " destination=" + Target;
+    public string KnownTarget => Target.Length > 0 ? Target : retainedTarget;
     public string Target => client.InRoom && client.CurrentRoom.CustomProperties[Destination] is string value ? value : "";
     public bool InDestination => PhotonNetwork.InRoom && PhotonSession.Kind == RailSessionRules.CompoundKind &&
         (Target == FreshDestination ? PhotonSession.Get(RailSessionRules.Allocation, "") == token :

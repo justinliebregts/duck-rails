@@ -29,6 +29,12 @@ public static class RailSessionRules
         phase == RailPhase.Ending || phase == RailPhase.Returning
             ? (int)Math.Ceiling(Math.Max(0, deadline - now + (phase == RailPhase.Ending ? ReturnDelaySeconds : 0)))
             : 0;
+    // November 11: a member still in the expedition room after the crew's
+    // return token cannot follow it (not frozen into the crew, e.g. rejoined
+    // after a drop; window expired; or its handoff stopped without arriving).
+    // It must leave on its own instead of riding the ending train forever.
+    public static bool StrandedAfterReturn(bool inCrew, bool handoffActive, bool handoffFailed, double transferUntil, double now) =>
+        !handoffActive && (!inCrew || handoffFailed || now > transferUntil);
     public const string Schema = "rails.schema", Kind = "rails.kind", Phase = "rails.phase", Revision = "rails.revision";
     public const string Run = "rails.run", Deadline = "rails.deadline", Roster = "rails.roster", Destination = "rails.destination";
     public const string TransferUsers = "rails.users", TransferUntil = "rails.transferUntil", Ready = "rails.ready", Boarding = "rails.boarding";
