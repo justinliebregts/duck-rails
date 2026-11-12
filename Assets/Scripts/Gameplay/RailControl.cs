@@ -2,7 +2,7 @@ using System;
 using Photon.Pun;
 using UnityEngine;
 
-/// <summary>Grip-and-hold drive, with a hold-T shortcut in desktop Keyboard or VR mode.</summary>
+/// <summary>Grip-and-hold drive, with a toggle-T shortcut in desktop Keyboard or VR mode.</summary>
 public sealed class RailControl : MonoBehaviour
 {
     public enum Action { Drive, Horn, Bridge, Radio }
@@ -16,7 +16,11 @@ public sealed class RailControl : MonoBehaviour
     static readonly System.Collections.Generic.HashSet<RailControl> drives = new System.Collections.Generic.HashSet<RailControl>();
     PlayerHand driveHand;
     string gripToken, gripRun, releasedToken;
-    float gripStartZ, gripStarted, nextHeartbeat, driveProgress;
+    float gripStartAngle, gripStarted, nextHeartbeat, driveProgress;
+    Transform drivePalm;
+    Vector3 gripPalmLocal;
+    Quaternion gripPalmRotation;
+    const float BreakDistance = .18f;
     bool gripGranted, forwardLatched;
     bool simulatedDrive, throttleWasHeld;
     Vector3 handleRest;
@@ -82,8 +86,16 @@ public sealed class RailControl : MonoBehaviour
             var collider = control.handle.GetComponent<Collider>();
             if (collider == null || Vector3.Distance(collider.ClosestPoint(hand.transform.position), hand.transform.position) > .12f) continue;
             control.driveHand = hand;
-            control.gripStartZ = control.transform.InverseTransformPoint(hand.transform.position).z;
+            var driver = hand.GetComponentInParent<Game.Animation.LocalBodyDriver>();
+            control.drivePalm = driver == null ? hand.transform :
+                hand.IsControllerLTouch ? driver.LeftPalmSource : driver.RightPalmSource;
+            // Bring the palm's hold point onto the handle surface at acquisition.
+            Vector3 contactOffset = collider.ClosestPoint(hand.HoldPoint.position) - hand.HoldPoint.position;
+            control.gripPalmLocal = control.handle.InverseTransformPoint(control.drivePalm.position + contactOffset);
+            control.gripPalmRotation = Quaternion.Inverse(control.handle.rotation) * control.drivePalm.rotation;
+            control.gripStartAngle = LeverAngle(control.transform.InverseTransformPoint(control.drivePalm.position));
             control.BeginDrive();
+            VibrationManager.instance?.TriggerVibrationPulse(.5f, .25f, .04f, hand);
             return control;
         }
         return null;
@@ -100,7 +112,7 @@ public sealed class RailControl : MonoBehaviour
         if (driveHand == null && !simulatedDrive) return;
         PhotonSession.Instance?.RequestDriveGrip(gripRun, gripToken, 2, 0);
         releasedToken = gripToken;
-        driveHand = null; simulatedDrive = false; gripGranted = forwardLatched = false; driveProgress = 0;
+        driveHand = null; drivePalm = null; simulatedDrive = false; gripGranted = forwardLatched = false; driveProgress = 0;
         PoseDrive(0);
     }
     void OnApplicationFocus(bool focused) { if (!focused) ReleaseDrive(); }
@@ -125,7 +137,7 @@ public sealed class RailControl : MonoBehaviour
             bool granted = PhotonNetwork.LocalPlayer != null && PhotonSession.DriveGripActor == PhotonNetwork.LocalPlayer.ActorNumber && (string)state[2] == gripToken;
             bool released = simulatedDrive ? !throttleHeld :
                 !driveHand.isActiveAndEnabled || !driveHand.IsGripHeld || !driveHand.CanGrab ||
-                Vector3.Distance(driveHand.transform.position, transform.position) > 1.5f;
+                drivePalm == null || Vector3.Distance(drivePalm.position, handle.TransformPoint(gripPalmLocal)) > BreakDistance;
             if (released || RailWorld.InputBlocked || RailExpedition.LocalDown ||
                 PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady || PhotonSession.Phase != RailPhase.Running ||
                 gripRun != PhotonSession.RunId ||
@@ -133,9 +145,15 @@ public sealed class RailControl : MonoBehaviour
             else
             {
                 gripGranted |= granted;
-                float travel = simulatedDrive ? 1 : RailDriveLease.Travel(transform.InverseTransformPoint(driveHand.transform.position).z - gripStartZ);
+                float travel = simulatedDrive ? 1 : ArcTravel(gripStartAngle, transform.InverseTransformPoint(drivePalm.position));
+                bool wasForward = forwardLatched;
                 forwardLatched = RailDriveLease.ForwardDetent(forwardLatched, travel);
                 driveProgress = forwardLatched ? 1 : (travel <= .2f ? 0 : travel);
+                if (wasForward != forwardLatched)
+                {
+                    nextHeartbeat = 0; // Send STOP/GO edges immediately, not on the heartbeat timer.
+                    if (driveHand != null && gripGranted) DetentFeedback();
+                }
                 if (Time.unscaledTime >= nextHeartbeat)
                 {
                     nextHeartbeat = Time.unscaledTime + .15f;
@@ -149,6 +167,39 @@ public sealed class RailControl : MonoBehaviour
         if (driveHand != null || simulatedDrive) progress = gripGranted ? driveProgress : 0;
         PoseDrive(progress);
     }
+    static float LeverAngle(Vector3 point) => Mathf.Atan2(point.z, point.y) * Mathf.Rad2Deg;
+    public static float ArcTravel(float startAngle, Vector3 point) =>
+        Mathf.Clamp01(Mathf.DeltaAngle(startAngle, LeverAngle(point)) / 70f);
+
+    // Only the rendered palm is constrained. Tracking remains untouched for release,
+    // locomotion and travel, so the attached hand can never sustain its own GO input.
+    public static bool TryGetDrivePalm(Transform trackedPalm, out Vector3 position, out Quaternion rotation)
+    {
+        position = default; rotation = Quaternion.identity;
+        foreach (var control in drives)
+        {
+            if (control.driveHand == null || !control.gripGranted || control.drivePalm != trackedPalm ||
+                !control.driveHand.IsGripHeld || !control.driveHand.CanGrab || RailWorld.InputBlocked) continue;
+            position = control.handle.TransformPoint(control.gripPalmLocal);
+            if (Vector3.Distance(trackedPalm.position, position) > BreakDistance) return false;
+            rotation = control.handle.rotation * control.gripPalmRotation;
+            return true;
+        }
+        return false;
+    }
+    void DetentFeedback()
+    {
+        VibrationManager.instance?.TriggerVibrationPulse(.65f, .55f, .055f, driveHand);
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false; audioSource.spatialBlend = 1;
+            audioSource.minDistance = .3f; audioSource.maxDistance = 5;
+        }
+        if (sound == null) sound = Tone("Throttle detent", 130, .065f);
+        audioSource.PlayOneShot(sound, .3f);
+    }
+    void OnDestroy() { if (sound != null) Destroy(sound); }
     void PoseDrive(float progress)
     {
         if (handle == null) return;

@@ -326,10 +326,12 @@ namespace Game.Animation
 
             Transform leftPalm = LeftPalmSource;
             Transform rightPalm = RightPalmSource;
+            bool leftDrive = RailControl.TryGetDrivePalm(leftPalm, out var leftDrivePos, out var leftDriveRot);
+            bool rightDrive = RailControl.TryGetDrivePalm(rightPalm, out var rightDrivePos, out var rightDriveRot);
             body.ApplyPose(new BodyPose {
                 headPos  = headAnchor.position,  headRot  = headAnchor.rotation,
-                lHandPos = leftPalm.position,  lHandRot = leftPalm.rotation,
-                rHandPos = rightPalm.position, rHandRot = rightPalm.rotation,
+                lHandPos = leftDrive ? leftDrivePos : leftPalm.position,  lHandRot = leftDrive ? leftDriveRot : leftPalm.rotation,
+                rHandPos = rightDrive ? rightDrivePos : rightPalm.position, rHandRot = rightDrive ? rightDriveRot : rightPalm.rotation,
             }, LookDownChestBack());
 
             // The grip is a child of the solved wrist. Correct the wrist before gear,
@@ -361,6 +363,8 @@ namespace Game.Animation
             Vector3 rightCurl = new Vector3(rightThumbVal, controllerInput.rightTriggerValue, controllerInput.rightGripValue);
             if (controllerInput.TryGetTrackedFingerCurls(true, out var trackedLeft)) leftCurl = trackedLeft;
             if (controllerInput.TryGetTrackedFingerCurls(false, out var trackedRight)) rightCurl = trackedRight;
+            if (leftDrive) leftCurl = new Vector3(.95f, .8f, 1f);
+            if (rightDrive) rightCurl = new Vector3(.95f, .8f, 1f);
             // The historical "Pinky" channel is bound to middle_01/02 on the duck rig.
             rightThumb?.Apply(rightCurl.x);
             rightIndex?.Apply(rightCurl.y);

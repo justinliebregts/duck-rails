@@ -20,9 +20,16 @@ public static class RailDriveChecks
         lease.Reset();
         Check(lease.Actor == 0 && lease.Progress == 0 && !lease.Apply(2, "next", 1, 1, 12), "Timeout/master reset needs a fresh grip");
         Check(RailDriveLease.Travel(-1) == 0 && Mathf.Approximately(RailDriveLease.Travel(.14f), .5f) && RailDriveLease.Travel(2) == 1, "Forward travel is bounded; backward movement stays OFF");
+        Check(RailDriveLease.ForwardDetent(false, .85f) && RailDriveLease.ForwardDetent(true, .8f), "Push snaps GO and small backward movements do not chatter");
+        Check(!RailDriveLease.ForwardDetent(true, .72f) && !RailDriveLease.ForwardDetent(false, .8f), "Pull back cuts GO near the forward stop; grip alone cannot latch GO");
+        Check(!RailDriveLease.ForwardDetent(true, .5f), "Halfway back cannot sustain GO");
+        Vector3 offPoint = Quaternion.Euler(-35, 0, 0) * Vector3.up * .4f;
+        Vector3 onPoint = Quaternion.Euler(35, 0, 0) * Vector3.up * .4f;
+        Check(RailControl.ArcTravel(-35, offPoint) < .0001f &&
+            Mathf.Approximately(RailControl.ArcTravel(-35, onPoint), 1), "Arc travel follows both physical end stops");
+        Check(Mathf.Approximately(RailControl.ArcTravel(-35, Vector3.up), .5f) &&
+            Mathf.Approximately(RailControl.ArcTravel(-35, onPoint * 2), 1), "Arc projection preserves midpoint and ignores radial reach");
         var root = new GameObject("Drive fixture");
-        Check(RailDriveLease.ForwardDetent(false, .8f) && RailDriveLease.ForwardDetent(true, .7f), "Push snaps GO and small backward movements do not chatter");
-        Check(!RailDriveLease.ForwardDetent(true, .2f) && !RailDriveLease.ForwardDetent(false, .3f), "Pull back snaps OFF and stays OFF until pushed forward again");
         try
         {
             root.transform.position = new Vector3(10000, 10000, 10000);
@@ -50,7 +57,7 @@ public static class RailDriveChecks
             Check(off.z < 0 && handle.localPosition.z > 0 && Mathf.Approximately(handle.localPosition.magnitude, .4f), "Handle swings forward about the base rather than its centre");
         }
         finally { UnityEngine.Object.DestroyImmediate(root); }
-        Debug.Log("RAILS VR DRIVE: 17 checks passed");
+        Debug.Log("RAILS VR DRIVE: 20 checks passed");
     }
     public static void RunBatch()
     {

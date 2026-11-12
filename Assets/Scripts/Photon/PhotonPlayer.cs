@@ -439,6 +439,11 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
                     HandSource(true),
                     HandSource(false),
                     _fingerSource != null ? _fingerSource.Curl : default);
+                // Replicate the attached visual palm without moving tracking anchors.
+                if (IsLocalHuman && RailControl.TryGetDrivePalm(lHandSource, out var leftDrivePos, out var leftDriveRot))
+                { packet.LHandPos = leftDrivePos; packet.LHandRot = leftDriveRot; }
+                if (IsLocalHuman && RailControl.TryGetDrivePalm(rHandSource, out var rightDrivePos, out var rightDriveRot))
+                { packet.RHandPos = rightDrivePos; packet.RHandRot = rightDriveRot; }
                 var manager = HelicopterManager.instance;
                 int arrival = 0, pad = 0; Transform frame = null;
                 if (IsLocalHuman && ((manager != null && manager.TryGetLocalPassengerFrame(out arrival, out pad, out frame))

@@ -26,5 +26,5 @@ public sealed class RailDriveLease
     }
     public static float Travel(float forwardMetres) => Mathf.Clamp01(forwardMetres / .28f);
     // Separate detents prevent small hand tremors from toggling the train.
-    public static bool ForwardDetent(bool forward, float travel) => forward ? travel > .2f : travel >= .8f;
+    public static bool ForwardDetent(bool forward, float travel) => forward ? travel > .72f : travel >= .85f;
 }

@@ -6,6 +6,8 @@
 - [x] November 11 Farm screenshot polish installed with local edits preserved: furnishings, entrance/pond lights, ditch water audio, side fences, enterable silo/loot, and house geometry repairs. Navigation/lighting rebaked and focused editor checks pass; see [Farm evidence](farm-silos-layout.md#screenshot-polish-batch--november-11-2026).
 - [ ] Farm full screenshot polish: natural stair/ramp/loft traversal, water footsteps, loot recovery, enemy pursuit, real-client/headset readability and performance. **Queued for playtest**.
 
+- [ ] November 11 attached throttle trial: rendered/replicated palm follows the handle; arc travel, forward hold tolerance, breakaway and detent feedback implemented. Compile, 20 Edit Mode drive checks and both-hand solo live simulated grip/GO/pull-back/release/breakaway pass. Headset feel and multiplayer acceptance remain **queued for playtest**. See [trial](shared-rig.md#attached-throttle-trial--november-11).
+
 - [x] November 11 whole-bank lighting correction: lightmap the static tunnel bank instead of sampling one probe across it; preserve all 22 current lights. Finale baked/exported, 1,741 bindings installed and 23 editor checks pass. Night-to-dawn/headset appearance remains queued; see [item 23](level-polish-batch.md).
 
 - [x] November 11 finale tunnel-floor visibility correction: restored bake-excluded renderers and fixed prepare/export visibility persistence; 24 editor checks pass across prefab, bake scene reload and Expedition. Actual client/headset tunnel crossing remains queued. See item 22 in [batch checklist](level-polish-batch.md).

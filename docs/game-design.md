@@ -292,6 +292,13 @@ Proposed pacing: a 12–18 minute expedition, approximately three scavenging sto
 
 ## What we are leveraging from Duckz
 
+November 11 throttle trial: physical driving requires actively holding the handle
+forward, not merely keeping grip pressed. Attach the visible palm to the lever,
+close its fingers, constrain motion to the lever arc, and give forward-stop
+haptic/audio feedback. Pull-back cuts GO; release or excessive hand separation
+returns OFF. Existing keyboard T toggle remains a development convenience.
+Initial thresholds are tuning, not acceptance. See [trial](shared-rig.md#attached-throttle-trial--november-11).
+
 ### User-reported existing capabilities
 - Working multiplayer and room codes entered through a pause menu.
 - Photon Realtime networking; retain this stack for V1. PUN and Realtime are not synonyms: inspect actual SDK usage.

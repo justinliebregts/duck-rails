@@ -1,0 +1,41 @@
+Solo live desktop throttle trial — November 11, 2026
+Unity 6000.3.24f1, verified X:/Work/duck-rails, existing authenticated Running expedition, one client.
+Uncommitted attached-throttle changes. User explicitly requested Play Mode simulation.
+Temporary runtime probe injects synthetic palm poses into SimulatedRigInput after its Update,
+with ordinary simulated grip buttons consumed by ControllerInput/PlayerHand. No T shortcut,
+ForceGrab, direct drive acquisition or direct train-motion writes.
+Fixture temporarily places/holds the rig at the cockpit and follows the train frame;
+this does not validate natural locomotion/reach ergonomics. Existing authoritative lease is used.
+
+[Log] START Unity 6000.3.24f1 solo desktop shared rig; synthetic palm poses, ordinary grip input; no T or ForceGrab
+Neutral hand positioned at OFF
+PASS right normal grip acquired shared lease and visual attachment
+PASS smooth arc reaches networked GO
+PASS hold/jitter retains GO; attached palm and closed index; tracking gap=0.0063
+PASS pull-back cuts GO while grip stays held
+PASS re-push resumes GO
+Releasing grip at forward stop
+PASS release clears lease and visual attachment
+Reacquired for breakaway
+Moving hand sideways away from grip
+PASS sideways breakaway clears ownership
+Neutral hand positioned at OFF
+PASS left normal grip acquired shared lease and visual attachment
+PASS smooth arc reaches networked GO
+PASS hold/jitter retains GO; attached palm and closed index; tracking gap=0.0063
+PASS pull-back cuts GO while grip stays held
+PASS re-push resumes GO
+Releasing grip at forward stop
+PASS release clears lease and visual attachment
+Reacquired for breakaway
+Moving hand sideways away from grip
+PASS sideways breakaway clears ownership
+PASS both hands
+
+[Log] cleanup: injected=False grip=False actor=0 targetSpeed=0 disableMovement=False kinematic=False play=True
+
+Console retained two startup errors: MetaXR ErrorFormFactorUnavailable and LCK unsupported
+graphics API. No throttle exceptions were returned. No audio/haptic quality claim.
+Transient probe removed; normal input/movement restored; Play Mode left running as found.
+Remaining: worn-headset fit/feel, actual skin contact visual review, fast strokes, multiplayer
+remote pose/late join/host loss, focus/downing/blocked-input cleanup and ordinary pickup regression.
