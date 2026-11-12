@@ -20,3 +20,5 @@ November 10 decision (user): blocks get invisible side walls plus last-ground fa
 - VR hands can climb the invisible walls, the same as any Environment collider. Climbing past the wall is caught by lateral recovery.
 - Points on helicopters and other non-train moving platforms are never stored. A fall from one returns you to the last ground point.
 - The warp is instant (no fade).
+
+Visible side fencing uses the Farm-derived **1 m centerline inset** from the lateral ground edge. See [side-fence authoring standard](side-fences.md). Retain these invisible boundaries as a backstop.

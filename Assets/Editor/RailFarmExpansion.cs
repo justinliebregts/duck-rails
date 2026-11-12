@@ -69,9 +69,9 @@ public static partial class RailFarmSilos
         Guard(); meshes.Clear(); Materials();
         var scene=UnityEditor.SceneManagement.EditorSceneManager.OpenScene(BakeScene);
         var b=Object.FindFirstObjectByType<RailBlock>();
-        var p=b.transform.Find(RootName+"/Fields and orchard");
+        var p=b.transform.Find("Env/"+RootName+"/Fields and orchard")??b.transform.Find(RootName+"/Fields and orchard");
         foreach(var t in p.Cast<Transform>().Where(t=>t.name.StartsWith("Corn field ")).ToArray())Object.DestroyImmediate(t.gameObject);
-        var plant=CornPlant();for(int i=0;i<CornAreas.Length;i++)DenseCorn(p,i,plant);
+        var plant=CornPlant();for(int i=0;i<CornAreas.Length;i++)if(i!=2||!b.transform.Find("Env/"+RailFarmPaddock.RootName))DenseCorn(p,i,plant);
         PrefabUtility.ApplyPrefabInstance(b.gameObject,InteractionMode.AutomatedAction);
         UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(scene);
         UnityEditor.SceneManagement.EditorSceneManager.SaveScene(scene);AssetDatabase.SaveAssets();
@@ -80,10 +80,11 @@ public static partial class RailFarmSilos
     {
         // Opaque double-sided leaf diamonds: broad enough to overlap adjacent plants at low eye height.
         var v=new List<Vector3>();var uv=new List<Vector2>();var tr=new List<int>();
-        void Face(Vector3 a,Vector3 b,Vector3 c,Vector3 d,bool two=true){int k=v.Count;v.AddRange(new[]{a,b,c,d});uv.AddRange(new[]{Vector2.zero,Vector2.up,Vector2.one,Vector2.right});tr.AddRange(new[]{k,k+1,k+2,k,k+2,k+3});if(two)Face(d,c,b,a,false);}
+        void Face(Vector3 a,Vector3 b,Vector3 c,Vector3 d,bool two=true){int k=v.Count;v.AddRange(new[]{a,b,c,d});uv.AddRange(RailFarmCornPolish.FaceUV(a,b,c,d));tr.AddRange(new[]{k,k+1,k+2,k,k+2,k+3});if(two)Face(d,c,b,a,false);}
         Face(new(-.055f,0,0),new(-.055f,4,0),new(.055f,4,0),new(.055f,0,0));Face(new(0,0,-.055f),new(0,4,-.055f),new(0,4,.055f),new(0,0,.055f));
         for(int i=0;i<5;i++)
         {
+            if(i==2)continue; // Four leaves per stalk; retain the original height and spread.
             float y=.4f+i*.7f,angle=i*2.4f;var dir=new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle));var side=Vector3.Cross(Vector3.up,dir)*.4f;var stem=Vector3.up*y;var mid=stem+dir*.58f+Vector3.up*.24f;var tip=stem+dir*1.05f-Vector3.up*.18f;
             Face(stem,mid-side,tip,mid+side);
         }

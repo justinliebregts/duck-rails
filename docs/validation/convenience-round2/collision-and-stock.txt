@@ -1,0 +1,7 @@
+Tree canopy hulls: 114; existing trunk collision retained on Environment layer.
+Added 41 shape-matching static mesh colliders across 6 rooftop models, preserving Q opening and individual shapes.
+Seven full-diameter convex roller hulls on stationary brush roots; only visual children spin. Detached undersized proxies removed.
+Other solid display/glazing/fan/fixture panels: 22. Existing furniture, vehicles, HVAC and fences retain their separate collision; paint/neon/carpet/ground overlays remain noncolliding.
+Removed 108 retail product groups and 60 cooler drinks; retained nine spaced brown cubes and existing cooler coal/gold markers.
+PASS 184 new colliders intercept shape rays, are enabled non-trigger Environment colliders. All surviving original world poses/scales retained.
+PASS saved reload: 114 canopy hulls; nine retail boxes; no cooler drink groups; Q opening clear; brush visual rotation leaves collider transforms fixed; 1272 valid lighting bindings. Navigation and lighting rebaked.

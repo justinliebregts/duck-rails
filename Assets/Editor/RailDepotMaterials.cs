@@ -129,15 +129,16 @@ public static class RailDepotMaterials
         materials=Names.Select(n=>AssetDatabase.LoadAssetAtPath<Material>(Folder+"/"+n+".mat")).ToArray();
         if(materials.Any(m=>!m))throw new InvalidOperationException("Install Quackville depot materials first");
     }
-    internal static void Map(MeshFilter f,MeshRenderer r,string kind,float floor,string meshFolder=Folder+"/Meshes")
+    internal static void Map(MeshFilter f,MeshRenderer r,string kind,float floor,string meshFolder=Folder+"/Meshes",float wallStep=.5f)
     {
         var size=f.transform.lossyScale;float y=f.transform.position.y-floor;
         string key=kind+"_"+size.ToString("F4")+"_"+(kind=="wall"?y.ToString("F4"):"0");
+        if(kind=="wall" && wallStep!=.5f)key+="_step"+wallStep.ToString("F2",System.Globalization.CultureInfo.InvariantCulture);
         if(!meshes.TryGetValue(key,out var mesh))
         {
             // Always derive UV2 from the original UV-unwrapped cube, including repeat passes.
             var source=AssetDatabase.LoadAssetAtPath<Mesh>("Assets/DuckRails/Lighting/Blocks/maintenance-depot-v1/Cube Block UV.asset");
-            mesh=MakeMesh(source,size,y,kind);string path=meshFolder+"/"+kind+"-"+Hash128.Compute(key)+".asset";
+            mesh=MakeMesh(source,size,y,kind,wallStep);string path=meshFolder+"/"+kind+"-"+Hash128.Compute(key)+".asset";
             mesh.name=Path.GetFileNameWithoutExtension(path);
             var saved=AssetDatabase.LoadAssetAtPath<Mesh>(path);
             if(saved)
@@ -156,7 +157,7 @@ public static class RailDepotMaterials
         f.sharedMesh=mesh;r.sharedMaterials=materials;
         PrefabUtility.RecordPrefabInstancePropertyModifications(f);PrefabUtility.RecordPrefabInstancePropertyModifications(r);
     }
-    static Mesh MakeMesh(Mesh source,Vector3 size,float originY,string kind)
+    static Mesh MakeMesh(Mesh source,Vector3 size,float originY,string kind,float wallStep=.5f)
     {
         var verts=new List<Vector3>();var uv=new List<Vector2>();var uv2=new List<Vector2>();var normals=new List<Vector3>();
         var tris=Enumerable.Range(0,Names.Length).Select(_=>new List<int>()).ToArray();
@@ -166,7 +167,7 @@ public static class RailDepotMaterials
             Vector3 u=Mathf.Abs(normal.y)>.5f?Vector3.right:Vector3.Cross(Vector3.up,normal);
             Vector3 v=Vector3.Cross(normal,u);
             float w=Vector3.Scale(u,size).magnitude,h=Vector3.Scale(v,size).magnitude;
-            float step=kind=="wall"?.5f:2;
+            float step=kind=="wall"?wallStep:2;
             var xs=Edges(w,step);var ys=Edges(h,step);
             // Add precise paint-band boundaries and the tread's front safety strip.
             if(kind=="wall"&&Mathf.Abs(v.y)>.5f){float boundary=1.3f-originY+h/2;if(boundary>0&&boundary<h)ys.Add(boundary);ys=ys.Distinct().OrderBy(a=>a).ToList();}

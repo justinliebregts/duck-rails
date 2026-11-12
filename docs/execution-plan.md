@@ -1,5 +1,33 @@
 # Duck Rails — execution plan
 
+- [x] November 12 Convenience Store collision/sparse-stock correction: canopy and rooftop-model collision, stationary full-size brush hulls, solid-panel collision, nine brown shelf boxes and empty drink coolers. Current poses/pools preserved, local spawn clearance repaired; navigation/lighting rebuilt, 1,848 saved-prefab checks pass. Natural collision/hand/loose-item acceptance remains in the existing playtest queue.
+
+- [x] November 12 Convenience Store round two: preserve user moves/deletions; install requested interior/court/wash/crossing changes, rooftop identifiers/spotlights, tree undersides, shared mesh-neon atlas and store refinements. Redistribute loot after models; rebuild offline navigation/lighting. Compilation and 1,852 saved-prefab checks pass; see docs/convenience-store-layout.md.
+- [ ] Round-two natural traversal, item reach, nightclub/fluorescent/rooftop lighting readability, real-client consistency and Quest performance. Queued with the existing Convenience Store playtest entry.
+
+- [x] November 12: install approved Convenience Store screenshot polish plus rooftop duck mascot; navigation/lighting export, compilation and 4,010 editor assertions pass. See docs/convenience-store-layout.md.
+- [ ] Convenience Store art review, court/trailer/wash/interior traversal, loot reach, cosmetic rollers, enemy pursuit, real-client consistency and Quest lighting/performance acceptance. Queued for playtest.
+
+- [x] Farm basement cage art installed: central cage/chairs, open side cells/lockers, green-white baked lighting, two coal/four gold candidates. Focused loot/doorway checks pass; navigation and lighting rebuilt. See `farm-silos-layout.md`.
+- [ ] Farm basement cages: headset traversal, loot reach, enemy pursuit and lighting/performance acceptance. Queued for playtest.
+
+- [x] November 11 Farm screenshot polish installed with local edits preserved: furnishings, entrance/pond lights, ditch water audio, side fences, enterable silo/loot, and house geometry repairs. Navigation/lighting rebaked and focused editor checks pass; see [Farm evidence](farm-silos-layout.md#screenshot-polish-batch--november-11-2026).
+- [ ] Farm full screenshot polish: natural stair/ramp/loft traversal, water footsteps, loot recovery, enemy pursuit, real-client/headset readability and performance. **Queued for playtest**.
+
+- [ ] November 11 attached throttle trial: rendered/replicated palm follows the handle; arc travel, forward hold tolerance, breakaway and detent feedback implemented. Compile, 20 Edit Mode drive checks and both-hand solo live simulated grip/GO/pull-back/release/breakaway pass. Headset feel and multiplayer acceptance remain **queued for playtest**. See [trial](shared-rig.md#attached-throttle-trial--november-11).
+
+- [x] November 11 whole-bank lighting correction: lightmap the static tunnel bank instead of sampling one probe across it; preserve all 22 current lights. Finale baked/exported, 1,741 bindings installed and 23 editor checks pass. Night-to-dawn/headset appearance remains queued; see [item 23](level-polish-batch.md).
+
+- [x] November 11 finale tunnel-floor visibility correction: restored bake-excluded renderers and fixed prepare/export visibility persistence; 24 editor checks pass across prefab, bake scene reload and Expedition. Actual client/headset tunnel crossing remains queued. See item 22 in [batch checklist](level-polish-batch.md).
+
+- [x] November 11 finale follow-ups 17–21: improve ground bake detail, thin the middle ramps, group four floodlights, fix/darken the bank lip and extend outer walls to the water. One lighting/navigation pass and 1,862 scoped editor checks pass. [Evidence](level-polish-batch.md#follow-up-execution-result--november-11); headset/gameplay/performance acceptance remains queued below.
+
+- [x] November 11: implement all 16 approved bridge-finale-v1 polish items; preserve existing local edits, bridge controls and spawn counts. Navigation and lighting baked/exported, Expedition bindings installed, 1,375 geometry/spawn checks and 398 final clearance/reference checks pass. See [batch evidence](level-polish-batch.md#execution-result--november-11).
+- [ ] Playtest finale ramps/recovery, climb blocks, crate routes, lighting, cliff/valley sightlines, shifted coal reach, multiplayer and Quest performance. **Queued for playtest**, not accepted from editor checks.
+
+- [x] November 11: install approved Farm northeast pond/playground replacement, redistribute 14 coal/14 gold candidates and author six paddock enemy candidates. Net 43,104 fewer triangles (21.5% of Farm); navigation and lighting baked/exported; scoped geometry/spawn/export checks pass. See [Farm evidence](farm-silos-layout.md#northeast-paddock-polish--november-11-2026).
+- [ ] Playtest Farm paddock climbing/slide, shallow pond and loose-item recovery, enemy pursuit, peer/late-join consistency and Quest performance. Queued; editor checks do not complete acceptance.
+
 - [ ] November 11: validate the compound rating button on Quest (native review UI, cancel/return, failure retry, physical reach) and inspect the replaceable instruction PNG. See [rating station](subway-compound.md#rating-station--november-11-2026).
 
 - [x] November 10: add midpoint (21 coal / 21 gold) and finale (28 / 26) candidate pools; route includes fixed 6 coal / 2 gold at each. Footprint/clearance, saved references, 100 seeds per pool and assembled eight-player route checks pass. See [evidence](validation/special-block-loot.txt).
@@ -795,3 +823,12 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [x] Invisible ±48 m side walls on every block, a per-block kill floor, local last-ground recovery (never downs), and deletion of loose cargo below the floor. Compiles; EditMode check across all 19 block prefabs passes. See [player bounds](player-bounds.md).
 - [ ] Play Mode and two-client acceptance (queued for playtest), plus a headset check of how wall contact and the warp feel.
 - [ ] November 11: playtest the two fixed finale tower defenders on first bridge hold, including repeat presses, late join, host handoff and fresh-run reset. Placement, seeded selection and bridge EditMode checks pass; see `docs/final-escape-layout.md` and the playtest queue.
+
+- [x] November 11: install approved Skyscraper north/south yard blockout, preserving 3,088 tower transforms, and add 120 coal / 120 gold upper-floor candidates. Scoped installation and 1,000 seeded selection cases pass; see docs/skyscraper-layout.md.
+- [ ] Review Skyscraper yard traversal, foundation recovery, upper-floor loot distribution, nighttime readability and real-client/headset performance (queued for playtest).
+
+- [x] November 11: repair eight Skyscraper yard workbenches and install brighter baked construction lighting. See docs/skyscraper-layout.md for validation.
+- [ ] Review brighter Skyscraper lighting on headset, including glare, shadows and upper-floor readability; queued with the existing yard playtest.
+
+- [x] November 11: document Farm-derived 1 m side-fence centerline inset; install two 3 m concrete boundary walls on Skyscraper with world-scaled repeating UVs. See docs/side-fences.md and docs/skyscraper-layout.md.
+- [ ] Skyscraper boundary wall contact, seam transitions and headset texture/readability acceptance (queued for playtest).

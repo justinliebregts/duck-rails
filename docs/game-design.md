@@ -1,5 +1,43 @@
 # Duck Rails — V1 game design
 
+November 12 Convenience Store follow-up: large scenery must have collision, including tree canopies, rooftop models and wash brushes. Brush collision remains stationary while the visible bristles spin. Sparse shop shelves use a handful of brown box cubes; coolers contain empty shelves with possible coal/gold spawns, superseding dense retail goods/drinks. Stockroom inventory shelving is retained. See [current layout](convenience-store-layout.md#round-two-and-store-refinements--november-12-2026).
+
+November 12 Convenience Store round two: preserve the user's object moves/deletions; use closed ornamental restaurant rear doors, an open sideline court gap, lowered road-crossing barriers, yellow/pink party arcade, vendor rooftop models with baked spots and upright drinks coolers/stocked store. Restore gas cyan/teal neon. Mesh neon shares an atlas; tree canopies have underside faces. Loot redistributed after model changes with unchanged pools/per-run balance. Editor evidence and gameplay acceptance are tracked separately in [layout notes](convenience-store-layout.md#round-two-and-store-refinements--november-12-2026).
+
+November 11–12 Convenience Store: the approved screenshot-polish batch and arcade rooftop duck mascot are installed. Includes a northwest basketball court/open gate and enterable articulated semi, rail-facing car wash with cosmetic bristle rotation, varied restaurants/rooftops/picnic grove, additional lighting/cars, side fences and freezer/trailer loot candidates. Per-run counts and session rules are unchanged. Navigation/lighting and editor checks pass; gameplay/headset acceptance is queued. See [layout and evidence](convenience-store-layout.md#screenshot-polish-batch--november-1112-2026).
+
+Side-fence authoring default (November 11): use a **1 m centerline inset from each lateral ground edge**, measured from Farm Silos. Future requests for side fences use [the side-fence standard](side-fences.md), including thickness, seam and pixel-UV rules. Skyscraper uses 3 m-high concrete walls.
+
+November 11 Farm basement: approved empty holding cages, inward-facing chairs,
+open lockers and sickly off-white/green fluorescent lighting. Installed with
+loot candidates inside cells/lockers; per-run resource settings unchanged.
+Editor checks pass; gameplay/headset review queued in `docs/playtest-queue.md`.
+
+November 11 Farm screenshot polish: approved pond/entrance lights, ditch water
+audio, furnished barns/house, side fences, enterable grain silo with loot and
+wraparound access, plus house floor/roof/stair/cellar corrections are installed.
+Local art edits and per-run balance retained; navigation and lighting rebaked.
+Editor checks pass; **queued for playtest**. See
+[Farm screenshot batch](farm-silos-layout.md#screenshot-polish-batch--november-11-2026).
+
+November 11 finale follow-up: retain ramp routes but make the two middle connections thin concrete slabs; extend the low outer walls to the north water edge and darken/fix the bank lip. Ground lighting detail and four movable floodlight groups are installed with renewed baked lighting/navigation. Editor checks pass; **queued for playtest**. See [follow-up evidence](level-polish-batch.md#follow-up-execution-result--november-11).
+
+November 11 finale polish: user approved the combined layout in
+`output/level-polish-batch/layout-review.png`. All finale stairs become ramps,
+with inward-facing shorter south access, shorter upper runs and retained river
+recovery routes. Add climb blocks, asymmetric supply crates, low approach walls,
+emissive warning caps and inward baked floodlights. Replace the tunnel's block
+silhouette with a grounded cliff joined to the valley hills; recess the valley
+stream and add track ballast/closed cottage gables. Route, hold control, networking
+and per-run counts remain unchanged. Installed and editor-checked; **queued for
+playtest**. See [batch evidence](level-polish-batch.md#execution-result--november-11).
+
+November 11 Farm polish: approved northeast corn replacement with a shallow pond,
+dense horsetail clumps and a three-platform playground linked by two bridges.
+The swing frame stays empty and static. Redistribute loot around the new features
+and include enemy candidates; preserve crew-scaled per-run counts. Installed and
+editor-checked; headset/gameplay acceptance is queued. See [Farm paddock](farm-silos-layout.md#northeast-paddock-polish--november-11-2026).
+
 November 11 finale: the first valid bridge-button hold spawns one enemy in each lookout tower, exactly two per expedition instead of the prior five-enemy finale selection. Both initially use the regular zombie/minion, with per-marker type selection. Repeated presses do not add waves. See [tower defenders](final-escape-layout.md#first-hold-tower-defenders--november-11). Editor checks pass; gameplay acceptance is queued.
 
 November 10: user requested coal/gold spawners at the midpoint shop and finale.
@@ -259,6 +297,13 @@ October 30 validation update: the [multiplayer stability pass](multiplayer-stabi
 Proposed pacing: a 12–18 minute expedition, approximately three scavenging stops, with quiet travel intervals. Exact length, difficulty, and location count require testing. No repeating day/night cycle is currently planned; nighttime plus a dawn finale is the proposed approach.
 
 ## What we are leveraging from Duckz
+
+November 11 throttle trial: physical driving requires actively holding the handle
+forward, not merely keeping grip pressed. Attach the visible palm to the lever,
+close its fingers, constrain motion to the lever arc, and give forward-stop
+haptic/audio feedback. Pull-back cuts GO; release or excessive hand separation
+returns OFF. Existing keyboard T toggle remains a development convenience.
+Initial thresholds are tuning, not acceptance. See [trial](shared-rig.md#attached-throttle-trial--november-11).
 
 ### User-reported existing capabilities
 - Working multiplayer and room codes entered through a pause menu.
@@ -624,3 +669,7 @@ November 9 helipad integration: the approved 60 m helicopter stop is now a dedic
 ## Shared baked moonlight decision — November 9
 
 Use the user's farm-authored Moonlight as one shared baked directional-light prefab in all block bake scenes and Starting Station. Preserve local fixture lighting and runtime night/pre-dawn/dawn atmosphere. Authoring scenes use their prefab filename plus `-bake` for discoverability. See [lighting workflow and validation](block-lighting.md#shared-baked-moonlight-and-searchable-scenes--november-9).
+
+November 11 Skyscraper polish: approved workers' compound south and foundation/heavy works north, with the existing towers untouched. Added 120 coal and 120 gold candidates on +12/+16 m floors (270 of each total); per-run counts unchanged. See [yard polish](skyscraper-layout.md#approved-yard-polish--november-11-2026). Gameplay/headset review queued.
+
+November 11 Skyscraper lighting follow-up: repair shelter workbench legs, brighten existing spots and add warm yard floods/cool fill plus upper-floor accents, using the user's construction-night references. All lighting baked; existing tower geometry and loot quantities retained. See docs/skyscraper-layout.md; headset review queued.

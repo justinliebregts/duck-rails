@@ -4,6 +4,39 @@ October 30, 2026. Justin requested one gameplay rig for Quest Link/headset use a
 
 ## Controls
 
+### Attached throttle trial — November 11
+
+User-authorized live follow-up: both hands passed solo authenticated desktop
+simulation for ordinary grip acquisition, smooth arc GO, forward jitter hold,
+pull-back OFF while gripping, re-push GO, release and sideways breakaway. The
+attached-palm query and closed-index curl passed, with 6.3 mm tracked/attached
+palm gap at sampled forward holds. Final shared target speed and lease were zero.
+Normal input/movement restored; Play Mode left running. The fixture positioned
+the rig and supplied synthetic palm poses, so this is not natural reach/skin-fit,
+headset or multiplayer acceptance. See [live evidence](validation/shared-rig/throttle-hands-20261111.txt).
+
+Confirmed: physical throttle must remain actively held forward to run. The visible
+palm attaches at the acquired contact, fingers close, and the tracked palm drives
+the existing 70-degree arc. GO engages at 85% travel and cuts at 72%; this small
+hysteresis replaces the old 80%/20% latch. Grip release or more than 18 cm of
+tracked-to-attached palm separation releases ownership and snaps OFF. The forward
+stop produces a short haptic pulse and synthesized mechanical tone. These are
+initial feel tunings. Keyboard T toggle remains unchanged.
+
+Raw calibrated tracking stays independent of the visual constraint. The local body
+and outgoing PUN avatar pose use the attached palm; packet format, authoritative
+lease and timeout remain unchanged. STOP/GO edges send immediately instead of
+waiting for the next 150 ms heartbeat; actual braking still follows shared state
+and the existing braking curve. Focus/downing/phase/ownership cleanup is retained.
+
+Validation: verified Duck Rails editor in Edit Mode; compilation and all 20 drive
+checks pass (ownership, release, hysteresis, arc endpoints/midpoint, collider and
+pivot behavior). Console error query empty. An initial endpoint assertion used
+an excessively strict near-zero float comparison; corrected to 0.0001 tolerance
+and reran successfully. Initial checks preceded the live follow-up above. Attached-hand
+alignment, feedback quality, fast strokes, moving-train and remote-avatar behavior
+are **queued for playtest**, not verified.
+
 - **Page Down** skips toward the finish by the current block's authored length and adds 1 metre to your height, preserving sideways position and facing. Available in ready private expeditions in the Editor/Development Builds, in Keyboard or VR mode with the Game view focused. Keyboard mode requires the captured cursor; close typing/test panels first. Only your player moves. The starting station counts as a block; jumps beyond the finale and jumps from the finale are refused. This applies a relative height offset, not a terrain/roof clearance search.
 
 - Choose **Keyboard** or **VR** in the Scene view before Play. Both use the authored DuckPlayer prefab.

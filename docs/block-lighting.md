@@ -46,11 +46,13 @@ Every prefab in `Assets/DuckRails/Blocks` now has four permanent baked spotlight
 3. After rebaking the bridge finale, use **Install Finale Lighting**. Expedition contains existing bridge objects and interaction references, so this transfers matching render bindings onto them without replacing the bridge.
 4. Use **Validate Exported Catalogue** to verify all thirteen exports. **Bake Missing Samples** prepares/bakes missing companions; **Re-export Existing Bakes** refreshes all exports without rebaking.
 
-The moving bridge hinge and variable spawn objects are excluded from static lightmaps and disabled as bake contributors. The far dawn bank/exit are also outside this night sample. Fourteen companions (station plus thirteen blocks) are enabled after the three gameplay scenes in Build Settings. Only seven load during a normal expedition: station, five selected stops and finale. Authoring and proof scenes are not build entries.
+The moving bridge hinge and variable spawn objects are excluded from static lightmaps and disabled as bake contributors. The exit rail and DAWN label are also outside this night sample. November 11 correction: the static far bank/tunnel floor is included in baked GI and exported lightmap receivers, with probe fallback disabled. A single probe sample on its large renderer had incorrectly spread warm tunnel light across the whole grass bank. Preserve localized lightmap illumination instead. Fourteen companions (station plus thirteen blocks) are enabled after the three gameplay scenes in Build Settings. Only seven load during a normal expedition: station, five selected stops and finale. Authoring and proof scenes are not build entries.
 
 Do not run the general Week 3 gray-box rebuild to tune lighting: it regenerates prefab geometry/build settings and does not preserve this lighting authoring pass. Use the bake scenes and lighting menus. Geometry changes require another bake/export; do not edit generated companion scenes or texture bindings manually.
 
 ## Iteration and saved assets
+
+November 11 visibility correction: bake-excluded renderers are hidden only during preparation/baking, with explicit prefab override tracking. Export restores their prefab visibility before applying data and saves the authoring scene with those objects visible. This prevents the finale floor/drawbridge from remaining invisible after export. Their receiver bindings are still excluded. **Re-export Open Block And Keep Open** refreshes only the current saved block's existing bake; use it only when lighting inputs have not changed. The finale correction passed a prepare/export/reload cycle plus prefab and Expedition visibility checks; see `output/level-polish-batch/followup/tunnel-floor-checks.txt`.
 
 For more light in a corner, first adjust nearby baked fixture coverage or add a restrained baked fill in the authoring scene, then rebake and export. Increasing bounce alone only modestly brightened Compound's remote corners; the added baked spotlights made a larger readability improvement. Increasing probe density does not brighten static walls: probes sample the baked illumination for moving subjects.
 
@@ -61,6 +63,8 @@ Save/version the entire affected lighting folder, including authoring scene, gen
 Save other scene work before running export/proof menus: these tools open and replace the active editor scene. After a rebake, validate the export and inspect the result in the normal Expedition flow as well as the isolated bake scene.
 
 ## Troubleshooting
+
+- **Stationary imported prop ignores baked light:** on its stationary mesh object enable **Contribute Global Illumination**, choose **Receive Global Illumination: Lightmaps**, and ensure the mesh has secondary/lightmap UVs (FBX Model Import Settings > Generate Lightmap UVs, or a dedicated unwrapped mesh copy). Bake/export the block and install finale bindings if applicable. Do not mark runtime labels, coin effects or moving parts static. The finale gold crate uses a dedicated mesh copy in `Assets/DuckRails/FinaleFort/Polish/` so other uses of the shared FBX are unchanged.
 
 - **Prefab looks unlit in isolation:** inspect its bake scene, or run the normal Expedition/proof flow so its companion can load. Native baked data is owned by the companion scene, not by the prefab alone.
 - **Static surfaces have missing/wrong lighting:** check the companion's enabled Build Settings entry and `RailBakedBlockLighting.Failure`; rebake/re-export after geometry or UV changes. Do not hand-edit lightmap indices, which change as additive scenes load/unload.
