@@ -81,6 +81,7 @@ public sealed class RailGoldReceiver : MonoBehaviour, IOnEventCallback
             version < item.HoldVersion || now - sent < -.25 || now - sent > 2 || !receiver.Accepts(offset) ||
             Vector3.Distance(position, receiver.transform.position) > 5 || (view.IsMine && item.IsStashed)) return;
         state.consumed.Add(target); state.consumedSpawns.Add(token);
+        player.gold++; // superlatives count the depositor, not recipients
         if (view.InstantiationData is object[] data && data.Length >= 3 && data[data.Length - 1] is string marker)
             state.consumedMarkers.Add(marker);
         // Like Duckz, only the depositor is paid (CoinsPerBar per bar); nobody else shares the sale.

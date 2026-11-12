@@ -102,6 +102,12 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         var module = furnace.GetComponentInParent<RailFurnaceModule>();
         return module == null || module.AcceptsSample(offset);
     }
+    public void RequestStats(object[] values)
+    {
+        if (!PhotonSession.IsRailsRoom || !PhotonSession.OnTrain || PhotonNetwork.LocalPlayer == null) return;
+        PhotonNetwork.RaiseEvent(ActionEvent, new object[] { PhotonSession.RunId, "stats", 0, values },
+            new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
+    }
     public void RequestCoal(PhotonView view, PhotonGrabbable item)
     {
         if (!PhotonSession.IsRailsRoom || !PhotonSession.OnTrain || view == null || !view.IsMine ||
@@ -188,6 +194,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             ? RailTrain.Instance.Distance - RailRoute.Instance.FinaleStart : -1;
         atmosphere.Apply(RailAtmosphere.Progress(intoFinale, State.finished && State.success, PhotonNetwork.Time - State.finishedAt));
         Present();
+        RailStats.Tick();
         ConsumeCommittedCoal();
         RailGoldReceiver.PresentRewards(this);
         if (PhotonNetwork.IsMasterClient) SpawnCarrierDrops();
@@ -244,7 +251,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 if (p.reviveLostAt > 0) { p.reviveAt += now - p.reviveLostAt; p.reviveLostAt = 0; } // pause during grace
                 p.rescuer = rescuer.id;
                 if (now - p.reviveAt >= RailRunState.ReviveSeconds)
-                { p.down = false; p.protectedUntil = now + RailRunState.ProtectionSeconds; p.reviveAt = 0; p.rescuer = ""; if (!ending) rescuer.revives++; }
+                { p.down = false; p.protectedUntil = now + RailRunState.ProtectionSeconds; p.reviveAt = 0; p.rescuer = ""; if (!ending) { rescuer.revives++; p.revived++; } }
             }
         }
         if (ending)
@@ -257,6 +264,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             return;
         }
         next.UpdateBridgeHold(now, BridgeHoldUntil(next, now));
+        SampleStats(next, now);
         bool allDown = next.players.Any(p => IsConnected(p.actor)) && next.players.Where(p => IsConnected(p.actor)).All(p => p.down);
         if (!allDown) next.allDownAt = 0;
         else if (next.allDownAt <= 0) next.allDownAt = now;
@@ -289,8 +297,53 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         { pendingRequestJson = json; pendingRequestAt = now; }
     }
     static bool IsConnected(int actor) => PhotonNetwork.CurrentRoom?.GetPlayer(actor)?.IsInactive == false;
+    // Actors counted as holding the bridge button on the latest master tick (superlatives only).
+    readonly HashSet<int> bridgeHolders = new HashSet<int>();
+    // Tuning, not acceptance: see docs/game-design.md "Superlatives".
+    public const float LoneWolfMeters = 15, EmotionalSupportMeters = 2, StillMetersPerSecond = .2f;
+    /// <summary>Master-only, 10 Hz. Accumulates per-player seconds/distances for end-of-run superlatives.</summary>
+    void SampleStats(RailRunState s, double now)
+    {
+        if (s.startAt <= 0) s.startAt = now;
+        float dt = s.sampleAt > 0 ? (float)Math.Min(now - s.sampleAt, .5) : 0;
+        s.sampleAt = now;
+        var train = RailTrain.Instance;
+        if (dt <= 0 || train == null) return;
+        var present = new List<(RailParticipant p, Vector3 pos)>();
+        foreach (var p in s.players)
+            if (IsConnected(p.actor) && Position(p.actor, out var pos)) present.Add((p, pos));
+        bool bridgeOpen = s.BridgeProgress(now) < 1;
+        // Whoever holds the drive lease with the handle pushed forward is "holding the throttle".
+        int driver = PhotonSession.DriveGripActor;
+        bool driving = driver != 0 && PhotonSession.DriveGripState != null && PhotonSession.DriveGripState.Length > 3 &&
+            PhotonSession.DriveGripState[3] is float lever && lever > .5f;
+        foreach (var (p, pos) in present)
+        {
+            if (driving && p.actor == driver) p.throttleSeconds += dt;
+            bool hadPrevious = p.trackedSeconds > 0;
+            p.trackedSeconds += dt;
+            bool aboard = train.Contains(pos);
+            if (aboard) p.aboardSeconds += dt; else p.offTrainSeconds += dt;
+            if (p.down) p.downSeconds += dt;
+            p.maxFromTrain = Mathf.Max(p.maxFromTrain, Vector3.Distance(pos, train.transform.position));
+            if (present.Count > 1)
+            {
+                float nearest = float.MaxValue;
+                foreach (var (o, other) in present) if (o != p) nearest = Mathf.Min(nearest, Vector3.Distance(pos, other));
+                if (nearest > LoneWolfMeters) p.loneSeconds += dt;
+                if (nearest <= EmotionalSupportMeters) p.nearSeconds += dt;
+            }
+            // Stillness is measured in the train's frame while aboard so a moving train is not "movement".
+            Vector3 frame = aboard ? train.transform.InverseTransformPoint(pos) : pos;
+            if (hadPrevious && aboard == p.sampledAboard && !p.down && (frame - p.lastSample).magnitude / dt < StillMetersPerSecond)
+                p.stillSeconds += dt;
+            p.lastSample = frame; p.sampledAboard = aboard;
+            if (bridgeOpen && bridgeHolders.Contains(p.actor)) p.bridgeSeconds += dt;
+        }
+    }
     double BridgeHoldUntil(RailRunState state, double now)
     {
+        bridgeHolders.Clear();
         if (bridgeButton == null) return 0;
         var control = bridgeButton.GetComponent<RailHoldControl>();
         if (control == null || !control.isActiveAndEnabled || control.button == null || !control.button.interactable) return 0;
@@ -305,6 +358,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 (RailTrain.Instance != null && RailTrain.Instance.Contains(position)) ||
                 !HandNear(player.ActorNumber, control.button.transform.position, .65f)) continue;
             until = Math.Max(until, (double)((object[])value)[1]);
+            bridgeHolders.Add(player.ActorNumber);
         }
         return until;
     }
@@ -330,6 +384,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             return;
         }
 #endif
+        if (action == "stats") { RailStats.Apply(p, coalSample); return; }
         if (action == "down" || action == "enemy-down")
         {
             if (PhotonSession.Phase != RailPhase.Running) return;
@@ -346,8 +401,6 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             return;
         }
         if (p.down) return;
-        if (action == "horn" && RailTrain.Instance.Contains(position) && now - p.hornAt > 1)
-        { p.horns++; p.hornAt = now; }
         if (action == "gold") { RailGoldReceiver.ApplyDeposit(state, p, position, target, coalSample, now); return; }
         if (action != "coal") return;
         var view = PhotonView.Find(target);
@@ -444,7 +497,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 PhotonSession.Get(RailSessionRules.Deadline, 0d), now);
             results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
                 (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
-                string.Join("\n", State.players.Select(p => Safe(p.name) + " — " + (p.escaped ? "Escaped" : "Didn't make it") + "\n<size=65%>Coal " + p.coal + "   Revives " + p.revives + "   Downs " + p.downs + "   Honks " + p.horns + "  •  " + Award(p) + "</size>"));
+                string.Join("\n", State.players.Select(p => Safe(p.name) + " — " + (p.escaped ? "Escaped" : "Didn't make it") + "\n<size=65%>Coal " + p.coal + "   Gold " + p.gold + "   Revives " + p.revives + "   Downs " + p.downs + "  •  " + (string.IsNullOrEmpty(p.award) ? RailAwards.Fallback : p.award) + "</size>"));
             bool localAboard = Position(PhotonNetwork.LocalPlayer.ActorNumber, out var localPoint) && RailTrain.Instance.ContainsPadded(localPoint);
             if (caughtRun != State.run)
             { caughtRun = State.run; if (GR.Player.instance != null && !localAboard) TeleportAboard(); }
@@ -562,7 +615,6 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             [receiptKey] = receipts.Concat(issuedDrops).Where(r => r.StartsWith(State.run + ":", StringComparison.Ordinal)).Distinct().ToArray() });
     }
     static string Safe(string text) => (text ?? "Duck").Replace("<", "").Replace(">", "");
-    static string Award(RailParticipant p) => p.revives > 0 ? "Rescue Crew" : p.coal > 0 ? "Boiler Room Employee" : p.horns > 0 ? "Public Nuisance" : p.downs > 0 ? "Somehow Survived" : "Precious Cargo";
     void TeleportAboard()
     {
         if (GR.Player.instance == null || RailTrain.Instance == null) return;

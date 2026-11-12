@@ -360,6 +360,7 @@ public class Grabbable : MonoBehaviour
             sounds.Play(ItemSound.Grab);
         }
         OnGrabbed?.Invoke(hand);
+        RailStats.Pickup(this);
     }
 
     public bool PrepareCargoRelease() => GetComponent<RailCargo>()?.PrepareRelease() == true;
@@ -403,6 +404,7 @@ public class Grabbable : MonoBehaviour
         }
 
         OnReleased?.Invoke(hand);
+        RailStats.Drop(this);
         if (sounds != null) sounds.PlayThrow(linearVelocity);
         PrepareDropImpact();
     }

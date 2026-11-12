@@ -135,6 +135,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Priority: normal
 - Mode: fix-on-fail
 
+### Results board superlatives: stats, counters and award assignment — queued 2026-11-12
+- Commit(s): uncommitted (B clone)
+- Changed: honks removed; board shows Coal, Gold (deposited), Revives, Downs; 20 superlatives + Precious Cargo assigned once at the finish (`RailAwards`), counters from the master's 10 Hz sample and a batched client `stats` request. Spec: `docs/game-design.md` "Superlatives and board stats".
+- Cheap checks: `Duck Rails/Legacy/Run Superlative Checks` (`RailAwardsChecks`) PASSED 2026-11-12 in B's editor (MCP verified `Application.dataPath` = `X:/Work/duck-rails-b/Assets`): project compiled with 0 errors (only pre-existing warnings) and the menu item logged "25 superlative checks passed". Edit-mode only; no Play Mode, network or headset run. Later the same day the new `Boundaries` method (20 awards x 2 assertions) first failed at Pacifist (float `RunSeconds * .8f` rounding); after `Present()` and Window Seat were changed to exact integer multiples, it recompiled with 0 errors and the menu item logged "65 superlative checks passed" (all awards' minimums are inclusive, just-below gets no title).
+- Setup: private run to a bridge finish with 2+ clients (3+ ideal), a shop purchase, a gold sale, a revive, a hit on an enemy, a flashlight on for a minute.
+- Check: board rows show Coal/Gold/Revives/Downs and exactly one title each; no title repeats; the top stat holder gets the title; players under every minimum read Precious Cargo; a non-escaper reads Missed the Train unless a higher title applies; titles are identical on every client and after a master handoff or reconnect before the finish; failed runs show titles too.
+- Needs human: whether thresholds, the 15 m / 2 m proximity radii and the stillness limit feel right with real VR hand jitter.
+- Priority: normal
+- Mode: report-only
+
 ### Train aboard margin: escaped and end-of-run teleport — queued 2026-11-11
 - Commit(s): 84985d551
 - Changed: `RailTrain.ContainsPadded()` (Inspector-tunable `paddedMin`/`paddedMax`, yellow gizmo when selected) now decides who "Escaped" at the bridge finish and whether the end-of-run rescue teleport fires. Horns, boarding and cargo keep the tight `Contains()`.
