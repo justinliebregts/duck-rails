@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+Side-fence authoring default (November 11): use a **1 m centerline inset from each lateral ground edge**, measured from Farm Silos. Future requests for side fences use [the side-fence standard](side-fences.md), including thickness, seam and pixel-UV rules. Skyscraper uses 3 m-high concrete walls.
+
 November 11 Farm basement: approved empty holding cages, inward-facing chairs,
 open lockers and sickly off-white/green fluorescent lighting. Installed with
 loot candidates inside cells/lockers; per-run resource settings unchanged.
@@ -621,3 +623,7 @@ November 9 helipad integration: the approved 60 m helicopter stop is now a dedic
 ## Shared baked moonlight decision — November 9
 
 Use the user's farm-authored Moonlight as one shared baked directional-light prefab in all block bake scenes and Starting Station. Preserve local fixture lighting and runtime night/pre-dawn/dawn atmosphere. Authoring scenes use their prefab filename plus `-bake` for discoverability. See [lighting workflow and validation](block-lighting.md#shared-baked-moonlight-and-searchable-scenes--november-9).
+
+November 11 Skyscraper polish: approved workers' compound south and foundation/heavy works north, with the existing towers untouched. Added 120 coal and 120 gold candidates on +12/+16 m floors (270 of each total); per-run counts unchanged. See [yard polish](skyscraper-layout.md#approved-yard-polish--november-11-2026). Gameplay/headset review queued.
+
+November 11 Skyscraper lighting follow-up: repair shelter workbench legs, brighten existing spots and add warm yard floods/cool fill plus upper-floor accents, using the user's construction-night references. All lighting baked; existing tower geometry and loot quantities retained. See docs/skyscraper-layout.md; headset review queued.

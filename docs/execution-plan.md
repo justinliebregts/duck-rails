@@ -813,3 +813,12 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [x] Invisible ±48 m side walls on every block, a per-block kill floor, local last-ground recovery (never downs), and deletion of loose cargo below the floor. Compiles; EditMode check across all 19 block prefabs passes. See [player bounds](player-bounds.md).
 - [ ] Play Mode and two-client acceptance (queued for playtest), plus a headset check of how wall contact and the warp feel.
 - [ ] November 11: playtest the two fixed finale tower defenders on first bridge hold, including repeat presses, late join, host handoff and fresh-run reset. Placement, seeded selection and bridge EditMode checks pass; see `docs/final-escape-layout.md` and the playtest queue.
+
+- [x] November 11: install approved Skyscraper north/south yard blockout, preserving 3,088 tower transforms, and add 120 coal / 120 gold upper-floor candidates. Scoped installation and 1,000 seeded selection cases pass; see docs/skyscraper-layout.md.
+- [ ] Review Skyscraper yard traversal, foundation recovery, upper-floor loot distribution, nighttime readability and real-client/headset performance (queued for playtest).
+
+- [x] November 11: repair eight Skyscraper yard workbenches and install brighter baked construction lighting. See docs/skyscraper-layout.md for validation.
+- [ ] Review brighter Skyscraper lighting on headset, including glare, shadows and upper-floor readability; queued with the existing yard playtest.
+
+- [x] November 11: document Farm-derived 1 m side-fence centerline inset; install two 3 m concrete boundary walls on Skyscraper with world-scaled repeating UVs. See docs/side-fences.md and docs/skyscraper-layout.md.
+- [ ] Skyscraper boundary wall contact, seam transitions and headset texture/readability acceptance (queued for playtest).

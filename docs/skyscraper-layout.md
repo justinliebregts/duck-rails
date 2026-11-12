@@ -89,3 +89,44 @@ The reproducible System.Drawing script generated the PNG; the exported plan and 
 Open `Assets/DuckRails/Lighting/Blocks/skyscraper-works-v1/skyscraper-works-v1-bake.unity` to inspect. For gameplay, select **Skyscraper Works** in Duck Rails Tests → Test Block Order and use the existing private test launcher. Bright Lighting can help review structure. Authoring source: `Assets/Editor/RailSkyscraper.cs`; physical checks/captures: `Assets/Editor/RailSkyscraperChecks.cs`. The saved `Assets/DuckRails/SkyscraperWorks/RuntimeProof.unity` repeats the offline two-round loading proof when played.
 
 Pending: natural VR stair/hand movement, shaft falls and item/rescue recovery, crane/edge traversal, enemy pursuit and knockback, moving train/cargo/passenger clearance across real clients, low-eye gameplay visibility and Quest frame-time/memory. The rough block has 3,394 renderers; headset profiling and any needed geometry batching remain art-performance acceptance work. No full feature/headset acceptance is claimed by this installation.
+
+## Approved yard polish — November 11, 2026
+
+User approved [the top-down plan](../output/imagegen/skyscraper-yard-polish/yard-polish-plan.png), then explicitly limited geometry work to the north/south yards. Existing tower geometry is retained: the installer compared all 3,088 tower transforms, plus the railway route, before saving.
+
+- South: two enterable office trailers, warm windows, desks/chairs, covered break table/benches, parked cars, toilets, CutePixel development sign, delivery flatbed, loading shelter and material stacks.
+- North: shallow foundation excavation with two wide ramps, footings/rebar, static excavator, mixer truck, maintenance shelter, aggregate and formwork. Short fences, pipe sections, muddy tracks and puddles dress the outer areas. Materials reuse the rough Quackville palette.
+- Existing 150 coal and 150 gold candidates retained; append 120 of each type: per tower, 10 on +12 m and 20 on +16 m. Final pools: **270 coal / 270 gold / 26 enemies**. Per-run quantities and selection logic unchanged. Yard markers were adjusted for replaced shelters/supply geometry. More upper-floor candidates increase selection probability; individual floors are not guaranteed loot.
+- Scoped authoring: `Assets/Editor/RailSkyscraperYardPolish.cs`; installed additions under `Env/Approved yard polish`. Do not rerun the original whole-block installer. New mesh assets have combined renderers by material with authored UVs; collision remains separate.
+- Validation: [install preservation/support checks](validation/skyscraper-polish/install.txt), [1,000 seeded selection cases](validation/skyscraper-polish/selection.txt). Editor compile passed. Navigation rebaked; final dressing lighting export and saved validation recorded below when complete.
+- Natural traversal, pit recovery, item settling, nighttime visibility, multiplayer/headset performance: **queued for playtest**, not verified.
+
+Final editor evidence: navigation and lighting rebaked/exported after pipe/puddle dressing; [600 saved checks](validation/skyscraper-polish/saved-checks.txt) pass, including the 240 new loot envelopes/native markers, overlap positive control, railway clearance, seams, enemy navigation and saved lighting bindings. [Ground-only connectivity](validation/skyscraper-polish/yard-routes.txt) reaches both office interiors, the pit bottom and both ramps. Console error/exception query empty. Review captures use temporary bright lighting and are not nighttime/headset evidence. `git diff --check` reports Unity-generated empty `m_Name: ` whitespace only; no script/document whitespace errors. No Play Mode was launched.
+
+## Workbench repair and brighter construction lighting — November 11, 2026
+
+User reported floating workbench tops in the southeast shelter and supplied warm/cool nighttime construction-lighting references. Added 32 grounded legs and 16 cross braces beneath all eight workbenches across the south loading and north maintenance shelters. Preserved current Prefab Mode edits before saving.
+
+Existing tower spotlights increased from 65 to 95 and yard lights from 55 to 90. Added four top-floor accents (130), four warm yard floodlights (210) and two cool fills (150). All lights are baked; global Expedition atmosphere and shared moonlight stay unchanged. Tower structure and loot pools are unchanged. Authoring entry point: `RailSkyscraperYardPolish.FixBenchesAndLight()` (one-time scoped patch).
+
+Navigation rebuilt for bench legs/floodlight bases. Final bake and editor evidence: `docs/validation/skyscraper-polish/bench-lighting-followup.txt`. Nighttime balance, glare, natural movement and headset performance remain queued for playtest.
+
+Follow-up result: 32 grounded leg checks and ten baked-light checks passed, along with the 600 saved geometry/loot/navigation/reference checks. Navigation and lighting exports completed, Console error/exception query empty. Inspected baked [bench close-up](../output/skyscraper-polish/fixed-benches.png) and [lighting overview](../output/skyscraper-polish/brighter-lighting.png); these use the authoring bake with a dark camera background, not a gameplay/headset run. Existing dark gaps remain between local pools of light. Queued review includes final brightness taste/glare.
+
+## Rooftop tripod supports — November 11, 2026
+
+User requested grounded tripod stands beneath the four floating upper-floor lights. Added four telescopic poles with short mounting arms, collars, three splayed legs and rubber feet. Poles sit slightly beside each lamp to avoid blocking its downward beam. All 12 feet are supported by the existing +16 m floors and footprints avoid the existing loot envelopes. Light positions/settings, tower structure and spawn counts retained. Authoring entry: `RailSkyscraperYardPolish.AddRooftopTripods()`. Evidence: `docs/validation/skyscraper-polish/rooftop-tripods.txt`. Natural movement/headset inspection queued with the yard polish.
+
+## Bridge and crane guide lights — November 11, 2026
+
+User requested small baked point lights along the inter-building bridges and fallen crane. Added 23 warm point lights with small rail-clamped housings: five on each cross-track bridge, two on each short side bridge, nine on the crane. Lights alternate sides at roughly 4–6 m intervals, intensity 8, range 6.5 m, baked soft shadows. Placement uses the current deck transforms, including the user's slightly raised crane. Fixtures are noncolliding; existing transforms, spawn pools and offline navigation unchanged. Authoring: `RailSkyscraperYardPolish.AddCrossingPointLights()`. Evidence: `docs/validation/skyscraper-polish/crossing-point-lights.txt`. Lighting rebake/export and visual review recorded there; headset brightness/glare review queued.
+
+## Foundation floodlight repair — November 11, 2026
+
+User requested replacing the unsupported foundation light with a grounded tripod, retaining cool white-blue light and aiming forward over the whole foundation plus some of the excavator. Replaced the old downward fixture/mast with a three-legged stand at the southwest excavation corner (-41,0,119), head height 4.5 m, aimed toward (-26,-0.1,138.5). Retained the existing cool color and added a matching emissive lens. Baked spotlight: intensity 850, range 40 m, 115-degree outer cone, 85-degree inner cone. All three feet have ground support; four pit corners and the excavator body fit the cone/range. Removed only the old mast's 12 triangles from its shared rebar mesh; rebar and pit geometry retained. Initial mid-edge placement failed cone coverage before prefab save; corner placement passes. Authoring: `FixFoundationFloodlight()`. Evidence: `docs/validation/skyscraper-polish/foundation-tripod.txt`. Natural traversal and headset lighting review queued.
+
+## Concrete side boundaries — November 11, 2026
+
+User requested continuous concrete side fencing, approximately 3 m tall, with unstretched pixel textures, and a reusable inset based on Farm. Farm's saved boundary posts are at X +/-47 on ground extending to +/-48: **1 m centerline inset**. See [the reusable side-fence standard](side-fences.md).
+
+Installed two solid walls at X +/-47, Y0..3, thickness 0.5 m, full length Z0..160. Each side is one continuous concrete box; railway entry/exit stays open. Collision uses Environment BoxColliders. Dimensions are baked into the render mesh and planar UV0 repeats every 3 m on both axes, with separate lightmap UVs; 72 UV triangle edges passed the equal-density check. Preserved the user's current prefab edits and all pre-existing transforms. Authoring: `AddConcreteSideWalls()`. Navigation/lighting rebuilt; final saved checks recorded in `docs/validation/skyscraper-polish/side-walls.txt`. Headset and actual wall-contact acceptance queued.

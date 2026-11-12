@@ -42,6 +42,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ```
 
 ## Pending
+### Skyscraper north/south yards and upper-floor loot — November 11
+- Side walls: check 3 m concrete walls at X +/-47, ground contact/collision along both full lengths, entry/exit seam transitions, no stranded loot/enemies, square pixel density and headset appearance.
+- Foundation light: check grounded southwest tripod, broad cool forward illumination across the pit and onto the excavator, and glare/foot clearance on headset.
+- Crossing lights: review the 23 baked warm point lights on all four skybridges and the fallen crane for nighttime visibility and glare, including carried-item traversal.
+- Rooftop follow-up: check the four grounded tripod light stands for visual attachment and unobstructed walking/grabbing on +16 m floors.
+- Follow-up: eight workbenches now have legs/braces; brighter baked spots plus warm/cool floods. Check bench collision, nighttime visibility and glare on all floors and in both yards.
+- Status: pending, queued for playtest.
+- Scope: skyscraper-works-v1 only; preserve the existing tower geometry.
+- Checks: enter/exit both office trailers; walk the loading/maintenance shelters; enter the foundation and recover via each ramp; carry coal/gold out without catching on edges. Inspect worklights, windows, pipes and clutter at night on headset. Review upper-floor loot across repeated seeded runs (270 candidates of each type; per-run totals unchanged). Test enemy pursuit around new yards, late-join consistency, moving-train clearance and target headset performance.
+- Editor evidence: docs/validation/skyscraper-polish; tower/rail preservation, spawn support and 1,000 seeded selection cases passed. See docs/skyscraper-layout.md for bake and final validation evidence. No Play Mode run performed for this change.
 
 ### Farm full screenshot polish — queued 2026-11-11
 - Basement holding cages: central cage/four watching chairs, four side cells, three open lockers, four green-white baked fixtures. Added two coal/four gold candidates (pools now 105/117/22); per-run settings preserved. New loot checks and eight doorway clearance samples pass; navigation and lighting rebuilt. Queued for playtest: enter/exit every cell, reach locker loot, return through both basement exits, enemy pursuit, bar shadows and headset darkness/performance. See `validation/farm-polish/basement-checks.txt`.
