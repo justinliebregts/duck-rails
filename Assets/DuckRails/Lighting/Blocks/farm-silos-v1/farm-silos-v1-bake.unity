@@ -681,6 +681,24 @@ LightProbeGroup:
   - {x: -27, y: 9.8, z: 133}
   - {x: -27, y: 9.8, z: 138}
   - {x: -27, y: 9.8, z: 141.5}
+  - {x: 19.5, y: 8.1, z: 95.5}
+  - {x: 19.5, y: 9.3, z: 95.5}
+  - {x: 19.5, y: 8.1, z: 98}
+  - {x: 19.5, y: 9.3, z: 98}
+  - {x: 19.5, y: 8.1, z: 100.5}
+  - {x: 19.5, y: 9.3, z: 100.5}
+  - {x: 22, y: 8.1, z: 95.5}
+  - {x: 22, y: 9.3, z: 95.5}
+  - {x: 22, y: 8.1, z: 98}
+  - {x: 22, y: 9.3, z: 98}
+  - {x: 22, y: 8.1, z: 100.5}
+  - {x: 22, y: 9.3, z: 100.5}
+  - {x: 24.5, y: 8.1, z: 95.5}
+  - {x: 24.5, y: 9.3, z: 95.5}
+  - {x: 24.5, y: 8.1, z: 98}
+  - {x: 24.5, y: 9.3, z: 98}
+  - {x: 24.5, y: 8.1, z: 100.5}
+  - {x: 24.5, y: 9.3, z: 100.5}
   m_Dering: 1
 --- !u!4 &426431312
 Transform:
@@ -807,16 +825,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8855905167483463143, guid: d220eb81ab49e50449cdfb3f1c22d3b6, type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 1.6824949e-37
+      objectReference: {fileID: 0}
+    - target: {fileID: 8855905167483463143, guid: d220eb81ab49e50449cdfb3f1c22d3b6, type: 3}
       propertyPath: m_BoundingSphereOverride.x
-      value: NaN
+      value: 1.6927021e+22
       objectReference: {fileID: 0}
     - target: {fileID: 8855905167483463143, guid: d220eb81ab49e50449cdfb3f1c22d3b6, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 2.0552676e+17
+      value: 1.6604432e-37
       objectReference: {fileID: 0}
     - target: {fileID: 8855905167483463143, guid: d220eb81ab49e50449cdfb3f1c22d3b6, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 4.5915e-41
+      value: 1.6457606e-37
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

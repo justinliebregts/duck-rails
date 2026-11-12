@@ -1,5 +1,74 @@
 # Farm Silos layout
 
+User accepted the Farm art pass as done on November 11, 2026. Gameplay/headset acceptance remains queued separately.
+
+## Screenshot polish batch — November 11, 2026
+
+Silo surface follow-up: removed doorway wall-cap overlap (8cm below the landing),
+replaced collapsed cylinder-top UVs with a planar map at 1.8m per texture repeat,
+and assigned a separate golden-tinted dirt material. Retained the user's live
+shell-renderer +3cm and grain-height +10cm adjustments and aligned the nine silo
+loot candidates to that floor. Original shared cylinder/material assets are
+unchanged. Navigation/lighting refreshed; motion/headset appearance remains
+queued for playtest. See `validation/farm-polish/silo-surface-fix.txt`.
+The latest broad geometry report also finds seven roof/hay loot checks outside
+the silo failing against current local geometry; those placements were not
+changed by this focused repair. Earlier 791-pass evidence below describes the
+original batch, not that later local state.
+
+User approved implementation after thirteen annotated screenshot requests. Scoped
+edits build on the saved prefab, not a whole-farm rebuild. All 66 user-deleted
+serialized objects remain deleted; all 10 user-edited transform properties are
+preserved exactly. The unrelated audio-settings edit is untouched.
+
+- Five small warm pond lanterns; baked fixtures at the house/cellar, barn, both
+  left buildings (including new railway-facing doorways), cart shed and silo.
+- Shallow ditch water uses the existing `WaterVolume`/Water audio surface and stays
+  below the footbridge. No new audio or locomotion system.
+- Barn side hay loft, stairs, benches, shelves and dismantled tractor. Feed barn
+  bales/sacks/shelves/bin/table; workshop benches/tools/shelves/spare machinery.
+  Farmhouse dining/kitchen, sofa and bedroom furniture preserve main circulation.
+- Low-poly two-rail fencing along both long outer edges, short of the end seams.
+- West silo elevated doorway and walkable grain at Y7.5, west/north wraparound ramp
+  with turn landings/handrails, interior lighting/probes and loot. Second silo stays
+  closed. Two inaccessible silo-base gold candidates move onto accessible grain.
+- All four house flights have nine larger steps instead of eighteen, continuous
+  world-scale UVs, full interior opening width to the north wall and closed landing
+  gaps. Rear cellar access is 3m wide, excess excavation filled and bottom enclosed;
+  the accidental ground-floor rear opening above it is closed.
+- Wall tops no longer overlap the next floor; decorative front-gable roof panels
+  are clipped to the main roof envelope to clear the attic.
+
+Pools: **103 coal / 113 gold / 22 enemy candidates**. Added three silo coal, four
+silo gold and nine attic gold. Retained existing candidates and locally repaired
+28 invalid older loot placements for support/clearance, including moved hay,
+furniture and raised floors. Per-run settings/crew scaling and enemy positions are
+unchanged. Added markers are native registered prefabs, ready for inspection.
+
+Unity 6000.3.24f1 compilation and Console error query pass. **791 geometry, loot,
+reference and light checks**, 35 final entrance/closure/export checks, and 1,000
+seeded selections pass. Navigation and lighting rebaked/exported; 857 saved static
+receiver bindings and companion build entry are valid. Evidence:
+[geometry](validation/farm-polish/geometry-checks.txt),
+[final checks](validation/farm-polish/final-checks.txt),
+[selection](validation/farm-polish/selection-checks.txt),
+[preservation](validation/farm-polish/preservation.txt),
+[loot repairs](validation/farm-polish/loot-repairs.txt).
+
+[Attic](validation/farm-polish/attic.png) ·
+[Kitchen](validation/farm-polish/kitchen.png) ·
+[Silo](validation/farm-polish/silo.png) ·
+[Entrances](validation/farm-polish/entrances-night.png) ·
+[Pond](validation/farm-polish/pond-night.png).
+Day/interior previews use temporary review fill; night previews use the bake scene
+with fog disabled, not complete Expedition atmosphere.
+
+**Queued for playtest — Farm full screenshot polish:** stair/ramp/loft traversal,
+ditch footsteps, item recovery, enemy pursuit, real-client late join, headset
+readability/performance. No Play Mode launched. Larger stair rises and ramp turns
+especially need a headset feel check. `RailFarmPolish` is a one-time installer;
+do not rerun over user edits. `RailFarmPolishChecks` contains focused editor checks.
+
 ## Northeast paddock polish — November 11, 2026
 
 User approved replacing only the northeast cornfield with the [reviewed pond/playground concept](validation/farm-paddock/approved-concept.png). Installed under `Env/Northeast pond and playground` in the existing Farm prefab; the other two cornfields and all existing buildings remain. Three raised platforms (two roofed towers) connect via two bridges, with a static slide, two climbing ladders, and an empty swing frame (no chains, seats, joints or physics). Hay stacks, broken fencing and a cart dress the paths. The pond is a shallow ground depression, maximum 0.38 m below the surrounding ground, with an inexpensive opaque water surface and six dense horsetail clusters (108 stems). Vegetation has no collision or shadow casting. Water adds no swimming or physics system.
@@ -96,6 +165,22 @@ User explicitly approved building the revised 3D layout. This supersedes the old
 - Headset climbing, corn performance/readability, loose-item recovery and multiplayer acceptance remain outstanding.
 
 Authoring now also uses Assets/Editor/RailFarmExpansion.cs.
+
+### Basement holding cages — November 11
+
+User approved a central cage watched by chairs, wall cages/open lockers and unsettling off-white/green lighting. Installed one 3.4m central cage, four smaller open cells, four inward-facing wooden chairs and three open shelved metal lockers in the existing two-room basement. Chunky bars and fixed open doors have matching collision; entrances provide 1.3m openings. Existing shelf, tank, partitions, stair routes and local edits retained. Four baked fluorescent fixtures replace the basement's two warm lamps; brighter central cage and weaker side-room lighting leave dark corners. Geometry is combined by material and uses proportional texture UVs.
+
+Added two coal and four gold candidates inside cages/lockers; existing candidates and per-run settings retained (105 coal / 117 gold / 22 enemy candidates). All six additions pass footprint, clearance and nested marker checks. Eight doorway capsule samples pass; navigation rebuilt and Farm lighting baked/exported. Console clear. Inspected `validation/farm-polish/basement-cages-baked.png` and `basement-lockers-baked.png`; evidence in `basement-checks.txt`. The broader report still contains the seven previously recorded non-basement roof/hay loot failures, not new basement failures. Natural hand reach, cage traversal, enemy pursuit and headset lighting/performance remain queued for playtest.
+
+### Silo ceiling UV follow-up — November 11
+
+Enterable west silo cap now uses a dedicated `Polish/Silo ceiling planar UV.asset` mesh. The previous underside UVs collapsed to a line; all 17 underside vertices now project in XZ at a 1.8m repeat. All 16 ceiling triangles have nonzero UV area. Geometry, exterior UVs, baked UV2, material and local edits are retained; shared Cone.asset and the east silo are unchanged. No navigation/lightmap rebake needed. Editor capture `validation/farm-polish/silo-ceiling-fixed.png` inspected, Console clear; evidence in `silo-ceiling-fix.txt`. In-motion/headset appearance queued for playtest.
+
+### Corn UV and leaf follow-up — November 11
+
+Applied to the current two fields without regenerating their layout or changing local edits: 3,669 stalks across 52 patches retained. Removed one of five leaf diamonds per stalk, varying the omitted leaf height. Leaves decrease from 18,345 to 14,676 (20%); triangles decrease from 102,732 to 88,056 (14.3%). Stem and leaf UVs now project onto an orthonormal face basis at a .75 m texture repeat, replacing one stretched texture per face. Future corn authoring also uses four leaves and proportional UVs.
+
+Updated existing mesh assets in place, retaining GUIDs and prefab/bake-scene references. Current renderer shadow settings are retained (On in the inspected prefab, superseding the older Off description below); all patches have static flags zero, use probes, and have no colliders. No navigation or lighting bake needed for this follow-up. All saved meshes pass topology/nondegenerate UV checks; Console has no errors. Inspected `validation/farm-polish/corn-uv-fixed.png`; counts and validation are recorded in `validation/farm-polish/corn-surface-fix.txt`. Headset appearance and performance remain queued for playtest.
 
 ### Corn optimization — November 5
 

@@ -1,5 +1,11 @@
 # Duck Rails — execution plan
 
+- [x] Farm basement cage art installed: central cage/chairs, open side cells/lockers, green-white baked lighting, two coal/four gold candidates. Focused loot/doorway checks pass; navigation and lighting rebuilt. See `farm-silos-layout.md`.
+- [ ] Farm basement cages: headset traversal, loot reach, enemy pursuit and lighting/performance acceptance. Queued for playtest.
+
+- [x] November 11 Farm screenshot polish installed with local edits preserved: furnishings, entrance/pond lights, ditch water audio, side fences, enterable silo/loot, and house geometry repairs. Navigation/lighting rebaked and focused editor checks pass; see [Farm evidence](farm-silos-layout.md#screenshot-polish-batch--november-11-2026).
+- [ ] Farm full screenshot polish: natural stair/ramp/loft traversal, water footsteps, loot recovery, enemy pursuit, real-client/headset readability and performance. **Queued for playtest**.
+
 - [x] November 11 whole-bank lighting correction: lightmap the static tunnel bank instead of sampling one probe across it; preserve all 22 current lights. Finale baked/exported, 1,741 bindings installed and 23 editor checks pass. Night-to-dawn/headset appearance remains queued; see [item 23](level-polish-batch.md).
 
 - [x] November 11 finale tunnel-floor visibility correction: restored bake-excluded renderers and fixed prepare/export visibility persistence; 24 editor checks pass across prefab, bake scene reload and Expedition. Actual client/headset tunnel crossing remains queued. See item 22 in [batch checklist](level-polish-batch.md).

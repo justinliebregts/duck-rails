@@ -1,5 +1,17 @@
 # Duck Rails — V1 game design
 
+November 11 Farm basement: approved empty holding cages, inward-facing chairs,
+open lockers and sickly off-white/green fluorescent lighting. Installed with
+loot candidates inside cells/lockers; per-run resource settings unchanged.
+Editor checks pass; gameplay/headset review queued in `docs/playtest-queue.md`.
+
+November 11 Farm screenshot polish: approved pond/entrance lights, ditch water
+audio, furnished barns/house, side fences, enterable grain silo with loot and
+wraparound access, plus house floor/roof/stair/cellar corrections are installed.
+Local art edits and per-run balance retained; navigation and lighting rebaked.
+Editor checks pass; **queued for playtest**. See
+[Farm screenshot batch](farm-silos-layout.md#screenshot-polish-batch--november-11-2026).
+
 November 11 finale follow-up: retain ramp routes but make the two middle connections thin concrete slabs; extend the low outer walls to the north water edge and darken/fix the bank lip. Ground lighting detail and four movable floodlight groups are installed with renewed baked lighting/navigation. Editor checks pass; **queued for playtest**. See [follow-up evidence](level-polish-batch.md#follow-up-execution-result--november-11).
 
 November 11 finale polish: user approved the combined layout in
