@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Hand flashlight stays on after release — queued 2026-11-12
+- Commit(s): uncommitted.
+- Changed: `HandFlashlight` no longer turns off on release/pickup; the owner turns an unheld light off after 60 s (`abandonTimeout`). Stashing still turns it off.
+- Cheap checks: edit only; compile not yet confirmed in Console.
+- Setup: two clients; one holds a flashlight and turns it on.
+- Check: drop it - light stays on for both clients; picking it back up before 60 s keeps it on; left alone ~60 s it turns off with the off sound on both clients; stash turns it off.
+- Needs human: none
+- Priority: normal
+
 ### Train distance display — queued 2026-11-12
 - Commit(s): uncommitted
 - Changed: new `RailDistanceDisplay` + "Distance display" TMP label above the fuel gauge on `DuckRailsTrain.prefab`; shows `DISTANCE n m`, `RailTrain.Distance` rescaled so the bridge area (`RailRoute.FinaleStart`, ~780 m of track) reads ~1000 m (run ends ~1096 m). Display only; label hides with the other running labels at run end. Compiles clean, Console clear; not run in Play Mode.
