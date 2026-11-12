@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Broad block reverb — queued 2026-11-12
+- Commit(s): uncommitted.
+- Changed: 25 box zones across Final Bridge (3), Farm (6), Skyscraper (4), Convenience Store (4), Motel (4), Container Yard (4). Helicopter Shop excluded. See `docs/block-reverb.md` for placements/tuning.
+- Cheap checks: installer compiled; saved 25-zone count, enabled components, child references, positive sizes and matching fade radii pass; Console error/exception query empty. Existing serialized prefab objects preserved. No Play Mode run.
+- Setup: visit all six blocks in Test Block Order, then two real clients with late join; headset listening separately.
+- Check: smooth entry/exit; dry open railway except finale tunnel; restrained tower/container reflections; stronger tunnel/cellar/silo tails. Check cellar versus farmhouse, motel wings/change-room partition, container roof and skybridge transitions. Hear item impacts/footsteps and peer voice clearly; each client follows its own listener location. Tunnel fades on moving-train entry/exit; no lingering reverb after leaving/unloading a block.
+- Needs human: audio quality, voice intelligibility, headset transition feel and Quest performance. Manual-only listening acceptance.
+- Priority: normal.
+
 ### Container Yard north yard, fences and open containers — queued 2026-11-12
 - Latest ground/spawn revision supersedes prior pool/marker evidence: main ground repeats at 12 m instead of 3 m; 168 coal / 142 gold / 32 enemy candidates redistributed across the updated yard, with unchanged runtime scaling. 3,092 editor checks pass, including all 342 supported/clear candidates and all 800 crew/seed cases per selector; 1,191 lighting bindings re-exported. See `validation/container-yard-redistribution/`.
 - Redistribution checks: inspect loot in the shed workbenches/lower shelves, repair-container and trailer interiors, dock, tank-service corners, machinery, main container interiors and intended roof/climb rewards. Confirm natural reach, item settling, bilateral/quadrant encounters, low-eye ground texture scale and peer agreement. The old unsupported counterweight coal marker has been moved and its support issue is resolved. No Play Mode run for this revision.

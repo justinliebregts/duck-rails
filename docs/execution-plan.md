@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 12: install 25 broad box reverb zones across six selected prefabs; saved reference/settings checks and Console query pass. See [block reverb](block-reverb.md).
+- [ ] Listen to reverb transitions, voice clarity, adjacent-floor overlap and target-headset performance; queued for playtest.
+
 - [x] November 12 Container Yard: reduce main-ground texture repetition and redistribute pools to 168 coal / 142 gold / 32 enemy candidates, retaining per-run rules. All 3,092 placement/reference/crew-seed checks pass; lighting rebaked with 1,191 valid bindings. Previously unsupported counterweight coal placement resolved. See docs/container-yard-layout.md.
 - [ ] Review redistributed yard loot reach/climb rewards, natural enemy encounters, broad ground texture scale and real-client/headset appearance. Queued for playtest.
 

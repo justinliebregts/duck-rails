@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 12 audio: user approved broad reverb zones with soft edges. Installed 25 across Final Bridge, Farm, Skyscraper, Convenience Store, Motel and Container Yard; Helicopter Shop excluded. Editor checks pass; listening/headset acceptance queued. See [block reverb](block-reverb.md).
+
 November 12 Container Yard follow-up: main ground repeats at 12 m instead of 3 m; all spawn locations redistributed for the updated layout, with 168 coal / 142 gold / 32 enemy candidates and unchanged per-run scaling. All placement and 800 crew/seed cases pass. See [redistribution](container-yard-layout.md#ground-and-spawn-redistribution--november-12-2026). Gameplay/headset acceptance queued.
 
 November 12 Container Yard north extension: installed the approved repair shed, enterable semi-trailer/loading dock, forklift/pallet climb, two large horizontal propane tanks and two baked floodlights. Original layout/spawn placements retained; navigation/lighting and editor checks pass. See [north yard](container-yard-layout.md#north-repairloading-yard--installed-november-12-2026). Gameplay/headset acceptance queued.
