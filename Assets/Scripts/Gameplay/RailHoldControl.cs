@@ -73,7 +73,6 @@ public sealed class RailHoldControl : MonoBehaviour
     {
         held = value; heldRun = PhotonSession.RunId;
         Publish(value);
-        if (value && !radio && !bridge && PhotonSession.Phase == RailPhase.Running) RailExpedition.Instance?.Request("horn");
     }
     void Publish(bool value)
     {

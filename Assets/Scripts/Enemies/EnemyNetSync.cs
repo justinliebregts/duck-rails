@@ -218,6 +218,7 @@ namespace Game.AI
 
         void SubmitHit(Vector3 velocity, Vector3 hitPosition)
         {
+            RailStats.Repel(); // local player's accepted hit; superlative counter only
             int sequence = unchecked(++_hitSequence);
             if (sequence == 0) sequence = unchecked(++_hitSequence);
             if (!HasAuthority)

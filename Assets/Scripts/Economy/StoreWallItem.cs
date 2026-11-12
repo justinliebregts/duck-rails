@@ -267,7 +267,10 @@ public class StoreWallItem : Grabbable
         if (state != State.Pending) return;
 
         if (result == StorePurchaseResult.Bought || result == StorePurchaseResult.Equipped)
+        {
+            if (result == StorePurchaseResult.Bought) RailStats.Spent(store != null ? store.Find(itemKey)?.price ?? 0 : 0);
             PullOff();
+        }
         else if (result == StorePurchaseResult.Unlocked)
             ReturnToWall();
         else

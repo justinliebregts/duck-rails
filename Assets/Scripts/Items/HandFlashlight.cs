@@ -33,6 +33,7 @@ public sealed class HandFlashlight : MonoBehaviour, IPunObservable
 
     void Update()
     {
+        if (isOn && grabbable.IsHeld && !grabbable.IsStashed) RailStats.Flashlight(Time.deltaTime); // local holder only
         PlayerHand hand = grabbable.Holder;
         if (hand == null || grabbable.IsStashed || !hand.WasUsePressed)
             return;

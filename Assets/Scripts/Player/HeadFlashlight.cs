@@ -43,7 +43,10 @@ public sealed class HeadFlashlight : MonoBehaviour
     void LateUpdate()
     {
         if (equipment != null)
+        {
             SetLightEnabled(equipment.IsEquipped);
+            if (equipment.IsLocallyEquipped) RailStats.Flashlight(Time.deltaTime);
+        }
     }
 
     void Subscribe()

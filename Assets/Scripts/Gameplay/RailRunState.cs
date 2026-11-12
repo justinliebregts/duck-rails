@@ -9,7 +9,7 @@ using UnityEngine;
 public sealed class RailRunState
 {
     public string run;
-    public double bridgeAt, allDownAt, finishedAt;
+    public double bridgeAt, allDownAt, finishedAt, startAt, sampleAt;
     public double bridgeElapsed, bridgeHeldAt, bridgeHoldUntil;
     public bool finished, success;
     public string reason;
@@ -52,6 +52,8 @@ public sealed class RailRunState
         var winners = new HashSet<string>(aboard);
         foreach (var p in players) { p.escaped = winners.Contains(p.id); p.reviveAt = 0; p.rescuer = ""; }
         finished = true; finishedAt = now; reason = cause; success = players.Any(p => p.escaped);
+        // Lock superlatives with the finish so reconnects and master handoffs see the same titles.
+        RailAwards.Assign(players, new RailAwards.Context { RunSeconds = (float)Math.Max(0, now - (startAt > 0 ? startAt : now)) });
     }
 }
 
@@ -75,9 +77,14 @@ public sealed class RailCarrierState
 [Serializable]
 public sealed class RailParticipant
 {
-    public string id, name, rescuer;
-    public int actor, coal, revives, downs, horns;
-    public bool down, escaped;
-    public double protectedUntil, flareAt, reviveAt, hornAt, reviveLostAt;
-    public Vector3 flarePosition;
+    public string id, name, rescuer, award;
+    // Board stats.
+    public int actor, coal, gold, revives, downs;
+    // Superlative counters (see RailAwards). Event counts, then master-sampled seconds/metres.
+    public int revived, repels, spent, drops, pickups;
+    public float downSeconds, throttleSeconds, bridgeSeconds, flashlightSeconds, trackedSeconds, aboardSeconds,
+        offTrainSeconds, loneSeconds, nearSeconds, stillSeconds, maxFromTrain;
+    public bool down, escaped, sampledAboard;
+    public double protectedUntil, flareAt, reviveAt, reviveLostAt;
+    public Vector3 flarePosition, lastSample;
 }

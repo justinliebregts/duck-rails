@@ -488,9 +488,42 @@ November 1 confirmed change: the external bridge button requires a continuous ph
 - Players can walk around, talk, and honk while the train drives automatically.
 - Jumping/falling off during this ride returns the player aboard after two seconds without downing a standing player or reviving a downed player. This never revokes an earned finish or grants a non-finisher credit. Teammates can still revive downed players during the ride; the recorded results remain unchanged.
 - Use the shared success/failure world-space results board described above. The earlier 15–20-second display plus return countdown/fade remains suggested timing.
-- Candidate stats: fuel supplied, revives, enemies repelled, downs, horn use.
-- Candidate titles: Hero of the Day, Certified Chicken, Frequent Flyer, Personal Space Enforcer, Boiler Room Employee, Public Nuisance, Precious Cargo, Somehow Survived.
-- Suggested award policy: one per player, with tie handling and a zero-activity fallback. Show did-not-finish status independently of any award.
+- Show did-not-finish status independently of any award.
+
+#### Superlatives and board stats — November 12 (proposed; implemented, not yet validated)
+Supersedes the earlier candidate list. Status: **Proposed** values and thresholds, **implemented** in `RailAwards` / `RailStats` / `RailExpedition.SampleStats`; it compiles cleanly and the 25 edit-mode `RailAwardsChecks` pass (2026-11-12), but nothing here has been run in Play Mode or on multiple clients.
+
+- **Board stats per player:** Coal, Gold, Revives, Downs. Honks are no longer tracked or shown (the horn itself is unchanged). Gold counts bars **deposited** at a shop/crate (not picked up, so a bar cannot be farmed by picking it up and dropping it).
+- **Assignment:** locked once at the finish (`RailRunState.Finish`), stored on each participant, and so stable across reconnects and master handoff. Awards are processed in the priority order below; each goes to the eligible player with the **highest value** for its stat who has **no title yet**, provided the value meets the minimum (inclusive) and is above zero. Ties: escaped first, then lower actor number. Anyone left receives **Precious Cargo**. One title per player. Disconnected players keep their stats and can still receive a title.
+- **Thresholds are tuning defaults, not balance targets.** "Present for the run" means the player was sampled for at least 80% of the run.
+
+| # | Title | Winner (highest) | Minimum / condition | Counter |
+|---|---|---|---|---|
+| 1 | Hero of the Day | revives | 2 | existing |
+| 2 | Certified Chicken | downs | 2 | existing |
+| 3 | Somehow Survived | seconds spent down | escaped, at least 1 down | `downSeconds` (sampled) |
+| 4 | Damsel in Distress | times revived | 2 | `revived` |
+| 5 | Personal Space Enforcer | enemy hits sent (repels) | 3 | `repels` (client event) |
+| 6 | Gold Digger | gold deposited | 3 | `gold` |
+| 7 | Boiler Room Employee | coal | 5 | existing |
+| 8 | Big Spender | gameplay coins spent at expedition shops | 1 | `spent` (client event; gameplay coins only, never real-money cosmetics) |
+| 9 | Designated Driver | seconds holding the throttle forward | 30 s | `throttleSeconds` (sampled) |
+| 10 | Bridge Troll | seconds holding the bridge button | 10 s | `bridgeSeconds` (sampled) |
+| 11 | Butterfingers | items released | 5 | `drops` (client event) |
+| 12 | Loot Goblin | distinct items picked up | 10 | `pickups` (client event) |
+| 13 | Missed the Train | seconds off the train | did not escape | `offTrainSeconds` (sampled) |
+| 14 | Night Light | seconds with a flashlight or helmet light on | 60 s | `flashlightSeconds` (client) |
+| 15 | Tourist | greatest distance from the train | 100 m | `maxFromTrain` (sampled) |
+| 16 | Lone Wolf | seconds more than 15 m from every other duck | 60 s | `loneSeconds` (sampled) |
+| 17 | Emotional Support Duck | seconds within 2 m of another duck | 120 s | `nearSeconds` (sampled) |
+| 18 | Napping on the Job | seconds standing still (under 0.2 m/s, in the train's frame when aboard) | 60 s | `stillSeconds` (sampled) |
+| 19 | Window Seat | seconds aboard the train | present for the run and aboard at least 80% of the time | `aboardSeconds` (sampled) |
+| 20 | Pacifist | seconds present | escaped, zero repels, present for the run | `repels`, `trackedSeconds` |
+| 21 | Precious Cargo | fallback | none | none |
+
+- **Counting rules.** Sampled counters come from the master's 10 Hz tick (`SampleStats`). Event counters (repels, drops, pickups, coins spent, flashlight seconds) are batched on each client and sent to the master as one clamped `stats` request every 3 s. Furnace coal and gold bars are ignored for drops and pickups, and re-grabbing the same item does not add a pickup. Repels are one per second at most.
+- **Removed from the earlier candidates:** Frequent Flyer (no fall-recovery stat exists), Early Bird, Chatterbox, Silent Type, Cardio King, Fashionably Late, Pogo Duck, Wild Swinger, Public Nuisance and Rescue Crew.
+- **Open tuning:** the stillness speed, the 15 m / 2 m proximity radii, and every minimum. Headset hand tracking jitters, so Napping on the Job may need a higher speed limit. Pacifist is easy to earn because swings are not tracked, only repels.
 
 ### Encounter constraints and implementation decisions
 - Finale enemies remain local to the authored approach block and cannot board the train. No moving-train navigation or runtime crawlgraph baking is introduced.
