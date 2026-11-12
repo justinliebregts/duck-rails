@@ -117,3 +117,71 @@ now 27. Existing environment and marker transforms, navigation and lighting were
 preserved; no rebake. All crew sizes across 100 seeds reach their 4/8/12 targets
 with 15 m horizontal spacing. User inspection and natural headset/multiplayer
 acceptance remain pending. See [placement evidence](enemy-spawn-balance.md#requested-marker-additions).
+
+## Screenshot polish batch — November 11–12, 2026
+
+User supplied the following changes, then explicitly authorized executing the full batch against the existing layout. The additional rooftop duck mascot was requested during implementation. No whole-block rebuild or changes to other blocks are authorized.
+
+- Add bilateral trackside streetlights; enrich southwest picnic grove with varied tree scales and braced picnic tables.
+- Rotate southeast car wash inward to face the tracks and add a front/return access road. Replace box brushes with bristle rollers and make its sign neon green.
+- Replace northwest utilities with a fenced basketball court, hoops and an open entrance gate.
+- Lift road paint/crosswalks and remove paint colliders. Remove the arcade parking fence; add wooden lateral fencing at X ±47 (1 m inset), keeping railway ends open.
+- Make Noodle Box lighting red and gas station neon red. Shorten the gas sign pole below its sign face.
+- Remove floating sign fixture meshes while retaining their baked lights.
+- Close arcade/store/restaurant roof-edge gaps; reduce store wall tessellation while retaining Quackville atlas bands.
+- Add a reversed middle row of four arcade cabinets and a large goofy low-poly duck mascot above the arcade, facing the tracks.
+- Give the three restaurants distinct dining layouts and kitchen details; add varied HVAC, ducts, vents and tanks to roofs.
+- Double the six passenger cars to twelve, reuse the finale's detailed car geometry, scatter them more loosely and overturn two. Retain the delivery van.
+- Add an articulated broken-down semi northwest of the tracks, with an open rear trailer, walk-in ramp and gold candidates inside. Keep it clear of the court and rail corridor.
+- Add four south-wall store freezers, two open, with coal/gold candidates inside.
+
+Implementation tools: `RailConvenienceStorePolish.cs`, `RailConvenienceStorePolishDetails.cs`, and `RailConveniencePolishChecks.cs`. The installer is one-time and refuses to overwrite an installed pass. Subsequent changes should edit the saved prefab. `RailWashBrushSpin` animates only cosmetic rollers; collision remains on stationary equipment. No new car-wash, basketball or mascot gameplay system is introduced.
+
+Validation and bake results are recorded below when completed. User/headset traversal, moving-item reach, nighttime readability and multiplayer performance remain queued for playtest. Loot additions are random-pool candidates, not guaranteed simultaneous bars or a change to per-run resource counts.
+
+### Execution and evidence
+
+Installed on the existing prefab; final review completed November 12. Navigation and lighting were rebuilt/exported for this block only. Wall triangles reduced from 30,440 to 4,140 across 67 wall meshes (86.4%). Small static details were combined by material; six cosmetic brush rollers remain dynamic and probe-lit, with stationary collision.
+
+- [4,010 passing editor assertions](validation/convenience-polish/checks.txt): all coal/gold footprints and clearance, native marker links, railway/semi bounds, gate/wash/arcade/trailer headroom, side-fence inset, raised noncolliding paint, mesh/material/font references, baked-only lights, all 27 enemy candidates supported and clear, and 800 crew/seed selections with correct quadrant quotas and 15 m spacing.
+- [Navigation](validation/convenience-polish/navigation.txt): 24,457 nodes; retained grid origin and coverage. [Lighting export](validation/convenience-polish/export.txt): 1,109 saved renderer bindings, no missing renderer/texture references, two lightmaps. Unity compilation passes; final Console error/exception query is empty.
+- Pools: 126 coal / 109 gold / 27 enemies. Added two coal/two gold freezer candidates and six gold trailer candidates; retained all original marker identities. [Local loot repairs](validation/convenience-polish/loot-repairs.txt) and [two enemy adjustments](validation/convenience-polish/enemy-adjustment.txt) clear new furniture, rollers, car and HVAC. Per-run resource settings, track, stop and stable ID are unchanged.
+- Inspected actual Unity captures: [arcade mascot](validation/convenience-polish/arcade-mascot.png), [northwest court and semi](validation/convenience-polish/northwest.png), [gas station](validation/convenience-polish/gas-station.png), [restaurants](validation/convenience-polish/restaurants.png), [diner interior](validation/convenience-polish/diner-interior.png), [wash interior](validation/convenience-polish/wash-interior.png), [freezers](validation/convenience-polish/freezer-bank.png), [picnic grove](validation/convenience-polish/picnic.png). Review captures use temporary fill/no fog; [unfilled arcade view](validation/convenience-polish/night-review.png) still disables fog and does not establish final expedition/headset darkness.
+
+The prefab is left open for inspection. No Play Mode, real-client or headset run was performed. **Queued for playtest:** Convenience Store screenshot polish and arcade mascot. Existing V5 checks above are historical and do not validate the revised layout; use `RailConveniencePolishChecks.Run()` for this historical pass. No commit or push was requested.
+
+## Round two and store refinements — November 12, 2026
+
+Basketball-court follow-up: fitted BoxColliders on all 40 hoop-rim segments, 20 net strands and the playing surface. Existing backboards, posts, supports, bench and fence panels retain collision. All 121 court colliders pass shape-ray checks; both hoop centres and the south entrance remain clear. Navigation rebaked; current geometry/loot checks pass. [Evidence](validation/convenience-round2/court-collision.txt). Headset contact is queued for playtest.
+
+Crossing-arm follow-up: each lowered gate now has one continuous 0.18 × 0.24 × 4 m non-trigger Environment BoxCollider on its root, replacing the ten separate stripe colliders. All 42 sampled rays across both arms, including stripe seams and ends, hit. Railway clearance and existing geometry/poses are unchanged; the collision volume matches the prior segments, so lighting/navigation need no rebake. [Evidence](validation/convenience-round2/crossing-arm-colliders.txt). Natural collision contact remains queued for playtest.
+
+Latest collision/stock revision: all 114 canopy tiers now have convex collision in addition to the existing trunks. Added 41 shape-matching static mesh colliders across the six rooftop models, retaining the Q's hole; seven full-size convex wash-brush hulls sit on stationary brush roots while child bristles rotate. Replaced the detached undersized brush proxies. Added collision to 22 solid display, cooler-glass, fan and ceiling-fixture panels; furniture/vehicles/HVAC/fences retain existing collision. Road paint, neon and flat decorative overlays remain noncolliding. All surviving original world poses/scales are preserved. See [collision evidence](validation/convenience-round2/collision-and-stock.txt).
+
+Collision revision validation: compilation and **1,848 saved-prefab checks pass**, including loot clearance and enemy quota/navigation checks; the final Console error/exception query is empty. All 184 added prop colliders passed shape ray queries. Saved reload confirms the Q opening stays clear and rotating brush visuals leave collider transforms stationary. Navigation rebuilt to 28,727 nodes and lighting exported with 1,272 valid bindings. See [navigation](validation/convenience-round2/collision-navigation.txt). Natural player/hand/loose-item contact remains queued for playtest.
+
+The user superseded the dense shop stocking: removed 108 retail product groups and all 60 cooler drinks. Nine spaced brown box cubes remain on the shop shelves; the inventory-room racks remain stocked as previously requested. The coolers retain empty shelves and existing coal/gold candidates. Three loot candidates and one enemy candidate needed local clearance/support adjustments after the collider pass; candidate pools and per-run counts stay unchanged. [Repairs](validation/convenience-round2/collision-loot-repairs.txt), [sparse shop preview](validation/convenience-polish/sparse-store.png). Use `CollisionAndSparseStock()` only for the one-time scoped pass; never rerun older stocking installers over the final prefab.
+
+Q-logo correction: reversed the ring's 192 inward-facing triangles and recalculated outward normals in the saved mesh and authoring source. Vertex positions, lightmap UVs and object poses are unchanged; current user prefab edits are retained. [Mesh evidence](validation/convenience-round2/q-face-fix.txt) and [corrected Unity preview](validation/convenience-polish/q-corrected.png). Headset appearance remains in the existing playtest entry.
+
+The user authorized round two against their edited prefab, explicitly retaining moved objects and deletions. Their moved semi remains at approximately (-19.95, 0, 108.37), yaw 250.7873. The initial scoped pass preserved 2,450 untargeted transforms/parents/active states exactly; only 58 explicitly targeted objects changed or were replaced. A separate preservation check covers the later store refinements. Do not rerun the original block or round-one installers.
+
+- Restaurants have closed ornamental rear doors and empty framed front windows. Loot is redistributed through all three interiors.
+- Car wash retains six vertical rollers, with three staggered in the interior, plus a horizontal rear roller and stationary collision. The sampled walking corridor connects both ends.
+- Arcade rear room has eight more cabinets and an open aisle. Confetti carpet, violet interior walls and yellow/pink neon preserve the user's yellow exterior sign.
+- Court entrance is a four-metre gap in the south side near its southeast corner; the old east entrance is fenced. No swinging leaf remains. Court/picnic lamps move off the court/out of trees, and nine larger varied trees fill the court perimeter.
+- Both crossing barriers are lowered across the road lanes, with red/white arms and red signal lights; they remain outside the railway clearance. The primitive delivery vehicle becomes a simple blue van in the same position.
+- Roof identifiers: pizza slice, roast-duck platter, ramen bowl/chopsticks, pink googly-eyed Q and car. Each new identifier and the arcade duck has two baked spotlights.
+- All 114 canopy tiers across 38 trees have underside geometry, using three block-local mesh copies. Shared source assets and original tree poses are retained.
+- Gas station neon is restored to cyan/teal, superseding round one's red choice. Noodle Box remains red and the car wash green.
+- Quack Mart has four upright south-wall drink coolers, two open with reachable loot shelves; mixed bottles, tins, cartons and snack bags on the shop shelves; six stocked back-room racks; and five long twin-tube ceiling fluorescent fixtures, four lit and one burnt out.
+
+Mesh neon now uses one shared base/HDR emission atlas material instead of seven source materials (125 original renderer remaps). CutePixel TMP font materials remain separate. The later gas/fluorescent additions use the same atlas; 57 new static material groups were consolidated. This reduces material fragmentation, but target-headset draw/GPU cost still needs measurement.
+
+Loot work followed the model changes: 34 initial relocations, including trailer cargo following the user's moved trailer, four coal/four gold placements in each restaurant, and rear-arcade discoveries. The later cooler/rack changes required nine local loot adjustments and one enemy candidate moved clear of the relocated trailer. Candidate identities and pools stay **126 coal / 109 gold / 27 enemies**; per-run balance is unchanged. Candidate contents are not guaranteed in every expedition.
+
+Current authoring/check helpers are `RailConvenienceRound2*.cs`; use `RailConvenienceStore.CheckRound2(true)` after opening the saved target prefab. Evidence: [preservation](validation/convenience-round2/preservation.txt), [atlas](validation/convenience-round2/neon-atlas.txt), [tree caps](validation/convenience-round2/tree-caps.txt), [loot plan](validation/convenience-round2/loot-plan.txt), [post-model repairs](validation/convenience-round2/post-model-loot-repairs.txt), [checks](validation/convenience-round2/checks.txt), [navigation](validation/convenience-round2/navigation.txt). The offline graph has 24,714 nodes with retained origin/coverage.
+
+Actual editor previews: [store](validation/convenience-polish/r2-store.png), [stockroom](validation/convenience-polish/r2-stockroom.png), [arcade](validation/convenience-polish/r2-arcade.png), [vendor rooftops](validation/convenience-polish/r2-rooftops.png), [court](validation/convenience-polish/r2-court.png), [car wash](validation/convenience-polish/r2-wash.png), [tree undersides](validation/convenience-polish/r2-undersides.png). Filled/no-fog review views are not headset darkness or gameplay acceptance. The existing Convenience Store playtest entry includes this round; no Play Mode run was requested.
+
+Final saved-prefab checks: **1,852 pass, zero failures**, including full loot support/clearance, 800 crew/seed enemy selections, all 27 enemy navigation supports, new aisle/door/court/wash routes, fonts and material references. Lighting rebuilt/exported with **1,450 bindings and two lightmaps**, zero missing receiver/texture references; [export evidence](validation/convenience-round2/export.txt). Unfilled baked previews: [rooftop spots](validation/convenience-polish/r2-lit-rooftops.png) and [fluorescent store](validation/convenience-polish/r2-lit-store.png), still with fog disabled. Unity compilation passed. The final Console query contains an unrelated Unity Connect token-exchange web-request error; no script compilation or block-authoring error was reported. This is not a diagnostic-report query. Gameplay/headset acceptance remains **queued for playtest**.

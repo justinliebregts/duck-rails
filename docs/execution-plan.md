@@ -1,5 +1,13 @@
 # Duck Rails — execution plan
 
+- [x] November 12 Convenience Store collision/sparse-stock correction: canopy and rooftop-model collision, stationary full-size brush hulls, solid-panel collision, nine brown shelf boxes and empty drink coolers. Current poses/pools preserved, local spawn clearance repaired; navigation/lighting rebuilt, 1,848 saved-prefab checks pass. Natural collision/hand/loose-item acceptance remains in the existing playtest queue.
+
+- [x] November 12 Convenience Store round two: preserve user moves/deletions; install requested interior/court/wash/crossing changes, rooftop identifiers/spotlights, tree undersides, shared mesh-neon atlas and store refinements. Redistribute loot after models; rebuild offline navigation/lighting. Compilation and 1,852 saved-prefab checks pass; see docs/convenience-store-layout.md.
+- [ ] Round-two natural traversal, item reach, nightclub/fluorescent/rooftop lighting readability, real-client consistency and Quest performance. Queued with the existing Convenience Store playtest entry.
+
+- [x] November 12: install approved Convenience Store screenshot polish plus rooftop duck mascot; navigation/lighting export, compilation and 4,010 editor assertions pass. See docs/convenience-store-layout.md.
+- [ ] Convenience Store art review, court/trailer/wash/interior traversal, loot reach, cosmetic rollers, enemy pursuit, real-client consistency and Quest lighting/performance acceptance. Queued for playtest.
+
 - [x] Farm basement cage art installed: central cage/chairs, open side cells/lockers, green-white baked lighting, two coal/four gold candidates. Focused loot/doorway checks pass; navigation and lighting rebuilt. See `farm-silos-layout.md`.
 - [ ] Farm basement cages: headset traversal, loot reach, enemy pursuit and lighting/performance acceptance. Queued for playtest.
 

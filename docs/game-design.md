@@ -1,5 +1,11 @@
 # Duck Rails — V1 game design
 
+November 12 Convenience Store follow-up: large scenery must have collision, including tree canopies, rooftop models and wash brushes. Brush collision remains stationary while the visible bristles spin. Sparse shop shelves use a handful of brown box cubes; coolers contain empty shelves with possible coal/gold spawns, superseding dense retail goods/drinks. Stockroom inventory shelving is retained. See [current layout](convenience-store-layout.md#round-two-and-store-refinements--november-12-2026).
+
+November 12 Convenience Store round two: preserve the user's object moves/deletions; use closed ornamental restaurant rear doors, an open sideline court gap, lowered road-crossing barriers, yellow/pink party arcade, vendor rooftop models with baked spots and upright drinks coolers/stocked store. Restore gas cyan/teal neon. Mesh neon shares an atlas; tree canopies have underside faces. Loot redistributed after model changes with unchanged pools/per-run balance. Editor evidence and gameplay acceptance are tracked separately in [layout notes](convenience-store-layout.md#round-two-and-store-refinements--november-12-2026).
+
+November 11–12 Convenience Store: the approved screenshot-polish batch and arcade rooftop duck mascot are installed. Includes a northwest basketball court/open gate and enterable articulated semi, rail-facing car wash with cosmetic bristle rotation, varied restaurants/rooftops/picnic grove, additional lighting/cars, side fences and freezer/trailer loot candidates. Per-run counts and session rules are unchanged. Navigation/lighting and editor checks pass; gameplay/headset acceptance is queued. See [layout and evidence](convenience-store-layout.md#screenshot-polish-batch--november-1112-2026).
+
 Side-fence authoring default (November 11): use a **1 m centerline inset from each lateral ground edge**, measured from Farm Silos. Future requests for side fences use [the side-fence standard](side-fences.md), including thickness, seam and pixel-UV rules. Skyscraper uses 3 m-high concrete walls.
 
 November 11 Farm basement: approved empty holding cages, inward-facing chairs,
