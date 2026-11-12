@@ -1,5 +1,11 @@
 # Duck Rails — V1 game design
 
+November 12 Container Yard follow-up: main ground repeats at 12 m instead of 3 m; all spawn locations redistributed for the updated layout, with 168 coal / 142 gold / 32 enemy candidates and unchanged per-run scaling. All placement and 800 crew/seed cases pass. See [redistribution](container-yard-layout.md#ground-and-spawn-redistribution--november-12-2026). Gameplay/headset acceptance queued.
+
+November 12 Container Yard north extension: installed the approved repair shed, enterable semi-trailer/loading dock, forklift/pallet climb, two large horizontal propane tanks and two baked floodlights. Original layout/spawn placements retained; navigation/lighting and editor checks pass. See [north yard](container-yard-layout.md#north-repairloading-yard--installed-november-12-2026). Gameplay/headset acceptance queued.
+
+November 12 Container Yard polish: continuous thicker three-wire side fences at the standard 1 m inset, plus four open ground containers per bank with additional track-facing doors. Existing layout/spawn tuning retained; navigation/lighting rebuilt and editor checks pass. See [yard revision](container-yard-layout.md#fence-and-open-container-polish--november-12-2026). Gameplay/headset acceptance queued.
+
 November 12 motel correction: outward golf/rink sides, ceiling-mounted emissive room fixtures, downward near-white streetlights, simpler car wheels and six change-room benches. Replaced all spawn pools for the current layout: 48 coal / 64 gold / 32 enemy candidates, with unchanged per-run tuning. All crew-size/seed capacity checks pass; this supersedes the earlier motel spawn-capacity limitation. See [correction evidence](roadside-motel-layout.md#face-fixture-and-spawn-correction--november-12-2026). Gameplay/headset review remains queued.
 
 November 12 motel detail feedback: nine unique golf outlines with duck/house obstacles and furnished shack; golf/rental mesh lettering; boarded windows, dirty green handled doors and furnished guest rooms; joined wall/stair/rink surfaces, supported diving access, Quackville pixel materials, grey/blue cars and roof HVAC/pipes. Only the white room-front fixture style remains, with baked lights. See [detail pass](roadside-motel-layout.md#detail-feedback-batch--november-12-2026); gameplay/headset acceptance remains queued.

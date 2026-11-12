@@ -43,6 +43,19 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Container Yard north yard, fences and open containers — queued 2026-11-12
+- Latest ground/spawn revision supersedes prior pool/marker evidence: main ground repeats at 12 m instead of 3 m; 168 coal / 142 gold / 32 enemy candidates redistributed across the updated yard, with unchanged runtime scaling. 3,092 editor checks pass, including all 342 supported/clear candidates and all 800 crew/seed cases per selector; 1,191 lighting bindings re-exported. See `validation/container-yard-redistribution/`.
+- Redistribution checks: inspect loot in the shed workbenches/lower shelves, repair-container and trailer interiors, dock, tank-service corners, machinery, main container interiors and intended roof/climb rewards. Confirm natural reach, item settling, bilateral/quadrant encounters, low-eye ground texture scale and peer agreement. The old unsupported counterweight coal marker has been moved and its support issue is resolved. No Play Mode run for this revision.
+- North extension: approved repair shed with workbenches/dismantled container, enterable truck trailer and loading dock, static forklift/pallet climb, two horizontal propane tanks and two baked floodlights. Original markers/poses/tuning retained. Additional 1,776 editor checks and six ground-route connectivity checks pass; navigation/lighting rebuilt, 1,191 total valid bindings including all 33 new combined renderers. See `validation/container-north-yard/`.
+- North checks: walk around forklift into shed, inspect workbench/door/chain collision, traverse dock steps and threshold into trailer, climb pallets onto the fallen container, walk between/around propane tanks, confirm tank/support/valve contact and natural ground-enemy pursuit into the new interiors. Carry/drop items on the dock/trailer and compare both peers/late join. Headset night readability, dark rear-shed pocket and Quest frame time remain manual. No Play Mode run for this extension.
+- Commit(s): uncommitted.
+- Changed: east/west fences at X +/-47 m with continuous 9 cm wires, terminal posts and gap-free collision; four ground interiors per side, new Row 1 and existing Row 4 search openings face the tracks.
+- Historical fence/interior checks: Unity 6000.3.24f1 compiled; 2,052 checks passed with 1,158 lighting bindings. The then-unsupported counterweight coal is resolved by the latest redistribution above. No Play Mode run.
+- Setup: Container Yard first in Test Block Order; desktop then two real clients with late join; worn Quest separately.
+- Check: walk into all eight interiors, carry/drop items through new openings, retain roof/climb routes; continuous fence contact along both sides and no seam protrusions or railway end caps; enemies navigate the opened interiors; both clients agree on geometry/loot and lighting loads correctly.
+- Needs human: headset door/fence contact, nighttime wire/interior readability and Quest performance.
+- Priority: normal.
+
 ### Hand flashlight stays on after release — queued 2026-11-12
 - Commit(s): uncommitted.
 - Changed: `HandFlashlight` no longer turns off on release/pickup; the owner turns an unheld light off after 60 s (`abandonTimeout`). Stashing still turns it off.

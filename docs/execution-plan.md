@@ -1,5 +1,14 @@
 # Duck Rails — execution plan
 
+- [x] November 12 Container Yard: reduce main-ground texture repetition and redistribute pools to 168 coal / 142 gold / 32 enemy candidates, retaining per-run rules. All 3,092 placement/reference/crew-seed checks pass; lighting rebaked with 1,191 valid bindings. Previously unsupported counterweight coal placement resolved. See docs/container-yard-layout.md.
+- [ ] Review redistributed yard loot reach/climb rewards, natural enemy encounters, broad ground texture scale and real-client/headset appearance. Queued for playtest.
+
+- [x] November 12: install approved Container Yard north repair/loading yard and paired horizontal propane tanks, preserving all original transforms/lights/spawn markers. 1,776 geometry checks, six ground-route checks and 1,191 lighting bindings pass; navigation/lighting rebuilt. See docs/container-yard-layout.md.
+- [ ] North yard: headset shed/trailer/dock/pallet traversal, tank contact, carried items, natural enemy pursuit, nighttime appearance and Quest cost. Queued with Container Yard playtest.
+
+- [x] November 12 Container Yard fence/interior revision installed: 1 m side inset, continuous 9 cm wires, four open containers per bank and track-facing search doors. Navigation/lighting rebuilt; 2,052 editor checks and 1,158 saved lighting bindings pass. See docs/container-yard-layout.md for the separate existing unsupported coal marker.
+- [ ] Container Yard fence/interior revision: natural door traversal, fence contact/seams, enemy pursuit, nighttime/headset appearance and peer agreement. Queued for playtest.
+
 - [x] November 12 motel correction: golf/rink outward faces, mounted room fixtures, downward whiter streetlights, half-triangle car wheels, six change-room benches and complete spawn replacement. 48 coal / 64 gold / 32 enemy candidates pass support/reference checks and all 800 crew/seed capacity cases per selector; 2,691 spawn assertions plus focused geometry checks pass. See docs/roadside-motel-layout.md.
 - [ ] Motel correction: natural item/bench/cubby reach, bus-roof reward access, revised enemy routes and actual headset lighting/performance. Queued for playtest.
 

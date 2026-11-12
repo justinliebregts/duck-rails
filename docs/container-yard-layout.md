@@ -1,5 +1,60 @@
 # Container Yard — approved maze and installed rough blockout
 
+## Ground and spawn redistribution — November 12, 2026
+
+User requested less obvious ground tiling and redistribution of coal, gold and enemies after the north-yard additions. The main ground now uses a dedicated copy of the Quackville concrete material with texture scale 0.25 on both axes: **12 m repeats instead of 3 m**. Other concrete props retain their original material/texel scale. Geometry, collision, authored object poses and the existing offline graph are unchanged; lighting was rebaked/exported after the material change.
+
+Re-authored the existing **168 coal / 142 gold** markers and expanded enemies from 18 to **32 candidate locations**, eight per quadrant. These are candidate counts, not per-run counts. Resource scaling, the runtime 4/8/12 enemy targets, 15 m enemy separation, and inspector settings remain unchanged. Existing marker identities/native prefab connections are retained; only the additional 14 enemy markers are new.
+
+Loot candidate allocation follows named props and container surfaces:
+
+- South machinery/storage: 20 coal / 16 gold.
+- West maze: 54 coal / 44 gold.
+- East maze: 54 coal / 44 gold.
+- North repair area: 20 coal / 18 gold, including workbenches/lower shelves, dismantled-container floor/roof, fallen-container roof and pallet landing.
+- North loading area: 20 coal / 20 gold, including trailer floor/roof, dock, truck cab, storage and tank-service corners.
+
+Coal has 88 low/accessible candidates and 80 elevated candidates. Gold has 71 low/accessible and 71 intended climb rewards. These are authoring categories, not a runtime quota or proof of headset reachability. No loot is balanced on the rounded propane vessels. Enemy alternatives cover approaches, passages, the railway crossing, shed, trailer, fallen roof and tank aisle. The previously unsupported `Coal 073 - Counterweight` placement is **resolved by the authorized redistribution**; all current markers have supported footprints.
+
+Unity 6000.3.24f1: **3,092 checks pass**, including all 342 markers' four-corner support, clearance, native prefab references, uniqueness, enemy graph/bounds eligibility and ground material scale. For all eight crew sizes and 100 seeds each, both loot selectors meet their full targets and enemy selection meets counts, quadrant quotas and 15 m spacing. The saved lighting export has **1,191 valid bindings**; Console error query empty. Original collider/light/mesh-filter components are unchanged and no original serialized objects were removed. No Play Mode run.
+
+Evidence: [placement plan](validation/container-yard-redistribution/plan.txt), [checks](validation/container-yard-redistribution/checks.txt), [preservation](validation/container-yard-redistribution/preservation.txt), [lighting](validation/container-yard-redistribution/lighting.txt). Scoped authoring helper: `Assets/Editor/RailContainerSpawnRevision.cs`. Visually inspected [ground preview](../output/container-yard-redistribution/propane-and-truck.png) and [top-down](../output/container-yard-redistribution/top-down.png), using temporary brighter review rendering. Saved prefab left open for user placement inspection. **Queued for playtest**: natural reach/climbing, item settling, enemy encounters, nighttime/headset ground scale, peer agreement and performance.
+
+## North repair/loading yard — installed November 12, 2026
+
+User approved the revised top-down layout including propane tanks and explicitly requested implementation. Installed an open maintenance shed northwest, semi-trailer and raised loading dock northeast, forklift/pallets/fallen-container climb between those and the main stacks, and two floodlights. The geometry is grouped under `Env/Container yard authored v6/North repair and loading yard` for further editing.
+
+The two large horizontal propane tanks occupy the outer northeast yard beside the truck. They have rounded ends, concrete saddle supports, pipes, valves, protective bollards and CutePixel warning labels.
+
+Measured against the current saved prefab (Unity target verified): ground X -48..48 / Z0..160; side fences X +/-47. Retain the existing spare storage at (+/-36,119) and (+/-36,149), north overflow stacks, pallet piles and the main container maze.
+
+- Shed roof footprint: X -42..-24, Z126..142 (18 x 16 m), 5 m eaves / 5.8 m ridge. Open south/east faces; partially dismantled container at X -38..-26, Z133.5..136.5; two workbenches with vises/toolboxes, three spare doors and two static hanging chains.
+- Semi-trailer: X23..27, Z125..143, cab to the south; north-facing container doors open onto the dock at X21..31, Z143..146. Dock height is 1.46 m to meet the trailer/container floor without a step or gap (fit adjustment from the 1.3 m proposal). Seven west access steps occupy X17..21, Z143..145; north/east rails retain an open loading threshold. Walking space remains beside the truck.
+- Propane storage: two horizontal tanks, each 11 m long and 3 m in diameter, axes north/south at X35 and X41, Z128..139. Weathered off-white Quackville material, centre height 2.2 m and fitted mesh collision. Saddle envelopes X33.1..36.9 and X39.1..42.9 leave a 2.2 m service aisle and 4.1 m to the east fence centerline. Static scenery; no explosion mechanic. Existing storage at Z119/149 remains.
+- Forklift near (-16,123.5), slightly turned, with static wheels, mast, lowered forks, seat and overhead guard. Ten 0.3 m pallet steps at X -20.7..-18.3, Z128..134 reach a supported 3 m landing and fallen container at X -21..-9, Z134..137. The approach length was fitted to meet the roof continuously. Walk around the parked forklift via Z126.7.
+- Two floodlight poles near (-22,142) and (18,148); light activity/search areas while keeping a darker return pocket behind the shed. Static scenery, with baked lights.
+- Keep central X -6..6 clear, retain the 1 m side-fence inset and leave Z154..160 flat. Existing north storage remains at the edges to taper toward the seam.
+
+All original object transforms/parents and lights were preserved, with no original serialized objects removed. All 168 coal / 142 gold / 18 enemy markers and per-run settings remain unchanged; none overlap new geometry, including the northeast patrol at (32,144). The eight main-maze interiors remain; the repair shell and trailer add two enterable spaces. No new spawn candidates were added.
+
+Unity 6000.3.24f1 compiles; **1,776 editor checks pass** for collision, clearances, fitted tank geometry/outward faces, CutePixel labels, UVs, walking paths, step headroom, north-marker footprints and retained pools. Six additional ground-edge connectivity checks reach the shed, dismantled container, trailer, dock, tank aisle and fallen-container roof from the railway. Offline navigation and lighting rebuilt/exported: **1,191 valid bindings**, including all 33 new combined scenery renderers. New scenery totals 7,104 triangles, 205 colliders, three CutePixel labels and two baked spots. Console error query empty. Draw/frame-time cost still needs target-device measurement.
+
+Evidence: [geometry](validation/container-north-yard/geometry.txt), [navigation](validation/container-north-yard/navigation.txt), [preservation](validation/container-north-yard/preservation.txt), [lighting](validation/container-north-yard/lighting.txt). Authoring: `Assets/Editor/RailContainerNorthYard.cs`; checks/captures: `RailContainerNorthYardChecks.cs`. The direct route-check segment initially crossed the parked forklift; the intended walk-around route passes. No geometry failure or blocked destination remains in these checks.
+
+Visually reviewed temporary brighter editor captures: [overview](../output/container-north-yard/overview.png), [shed](../output/container-north-yard/repair-shed.png), [truck/tanks](../output/container-north-yard/propane-and-truck.png), [dock](../output/container-north-yard/dock.png), [top-down](../output/container-north-yard/top-down.png). Saved gameplay lighting is retained independently of these review renders. Left the saved prefab open for inspection. **Queued for playtest**: natural VR traversal/climbing, carried items, enemy pursuit, nighttime readability, peer agreement and Quest performance. No Play Mode run. The previously recorded unsupported `Coal 073 - Counterweight` is outside this north-yard change and remains unchanged.
+
+## Fence and open-container polish — November 12, 2026
+
+Implemented the user's scoped revision on the saved prefab, preserving existing art/light edits. East/west fence centerlines are now X +/-47 m: the standard 1 m inset from the 96 m ground width. Retained the dark steel three-wire/post style and 2.6 m height. Wires are 0.09 m thick (previously 0.035 m), span every adjacent post, and meet 21 posts per side from Z0.065 to Z159.935. Posts finish flush with both block seams. Thin continuous collision runs from ground to fence top; the existing player-boundary backstop and open railway ends remain.
+
+There are **four hollow containers per side**, all at ground level. The saved starting prefab contained three per side (two passages and one search room). Opened the Row 1 inner ground container on each side and turned the existing Row 4 search-room openings toward the tracks. Preserved container positions, colors, upper stacks, climbs and all spawn-marker transforms. Counts remain 168 coal / 142 gold / 18 enemies, with unchanged per-run settings.
+
+Unity 6000.3.24f1: compile and **2,052 editor checks pass**, covering wire/post continuity, inset/seams, ground collision, four interiors per bank, door/interior capsule clearance, UVs and loot clearance. All 310 loot candidates clear geometry; 309 have nearby support. **Existing issue:** `Coal 073 - Counterweight` at (-19.9, 3.1, 34) is unsupported after earlier reach-stacker edits; its position and surrounding machinery were unchanged by this pass. Recorded separately rather than moving an unrelated marker.
+
+Offline navigation and lighting rebuilt/exported; 1,158 valid renderer bindings and the enabled lighting companion checked. Existing light components are unchanged. Evidence: [geometry](validation/container-yard-polish/geometry.txt), [export](validation/container-yard-polish/export.txt), [preservation](validation/container-yard-polish/preservation.txt). Scoped authoring helper: `Assets/Editor/RailContainerYardPolish.cs`.
+
+Visually inspected temporary brighter editor captures: [fence](../output/container-yard-polish/fence.png), [track-facing openings](../output/container-yard-polish/track-openings.png), [top-down](../output/container-yard-polish/top-down.png). These do not establish gameplay-night/headset appearance. Left the saved prefab open for review. **Queued for playtest**; no Play Mode or multiplayer run for this revision.
+
 ## Spawn placement review — November 8, 2026
 
 Follow-up after positive user review: doubled the pools to **168 coal / 142 gold**, retaining all 173 existing marker transforms and all 18 enemy candidates. Added 84 coal (17 interior side-wall positions, 67 container-roof positions) and 71 gold (25 interior corners, 10 accessible container ends, 36 rooftop rewards). All new coal is on or in containers; roof candidates use horizontal container surfaces up to 6 m high. New positions passed support, four-corner footprint, spacing and overlap checks. Saved prefab passed 628 reference/seeded-selection checks. Preserved all 1,412 environment transforms and graph reference; per-run counts remain 6/2/5. User inspection of the expanded pass and natural VR reachability/settling remain pending. The initial pass below is historical.
