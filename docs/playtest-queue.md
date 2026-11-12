@@ -42,6 +42,23 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ```
 
 ## Pending
+
+### Motel community leisure layout — queued 2026-11-12
+- Latest correction supersedes prior pool counts: 48 coal / 64 gold / 32 enemy candidates, unchanged runtime spawn rules. All markers replaced for the current layout; all 100 seeds × crew sizes 1–8 meet full resource/enemy targets, quadrant quotas and spacing (2,691 checks). Inspect reach/return routes, bus-roof gold access, pool basin/upper-room enemy pursuit, ceiling-mounted lights, downward streetlight readability, low-poly wheels, six benches and outward golf/rink sides. No Play Mode run for this correction.
+- Detail feedback adds nine unique greens/duck/shoot-through house, shack counter/clubs, golf/rental mesh signs, boarded windows/green handled doors, guest furniture/bathrooms, roof equipment, grey/blue cars, continuous stair/wall/rink surfaces and Quackville pixel materials. Inspect all board/stair/rail joints, furnished-room and bathroom circulation, house passage, wall seams at moving viewpoints, material scale and white-only facade lighting. Remains queued; no Play Mode authorization for this batch.
+- Detail checks: 4,186 editor assertions pass, all 24 loot candidates supported/clear and all 18 enemy markers grounded; navigation rebuilt. Current saved layout contains no waterslide. Follow the current prefab and detail notes rather than the older slide-specific checks below.
+- Screenshot revision supersedes original layout: seven closed rooms, half-width doors, room 101/102 connection, unglazed windows, stair rails; mesh neon/car improvements; nine-hole golf and relocated shack; north rink/rental entrances, white/blue rink walls; simple side fences, varied convex-collider trees; food vendor/exterior left cubbies/loungers; deeper pool, two diving boards and straight slide; brighter lights.
+- Revision checks: 2,186 assertions pass; all loot support/clearance and named doorway checks pass. Check natural room/window passage, closed-room exclusion, internal door, all pool/board/slide recovery, vendor freezer/fryer/shelf/cubby reach, north rental/rink access, fences/trees, lights and peer agreement. Lighting brightness and Quest performance remain manual acceptance.
+- Commit(s): uncommitted.
+- Changed: separate public pool with change rooms/cubbies/static old waterslide; mini-golf, roller rink, five buses versus two retained cars; motel retained.
+- Cheap checks: 2,114 editor assertions pass; all loot support/clearance checked; offline navigation rebuilt. See docs/roadside-motel-layout.md and docs/validation/motel-leisure/.
+- Setup: motel-first private expedition, desktop then two real clients/late join; worn Quest separately.
+- Check: pool entry/recovery and slide stairs/flume; open cubbies and shower/bench circulation; rink/rental/golf access; bus clearances; carried-item settling; enemy routes and boarding; identical environment/loot across peers.
+- Candidate-capacity limitation resolved by the latest correction: 48/64/32 pools pass eight-player maxima and 800 enemy crew/seed selections. Natural gameplay balance and route accessibility still need playtest acceptance.
+- Needs human: natural VR reach/locomotion, slide fall recovery, darkness, scenery review and Quest performance.
+- Priority: normal.
+- Status: queued for playtest; no Play Mode run for this change.
+
 ### Convenience Store screenshot polish and arcade mascot — queued 2026-11-12
 - Basketball court: rim segments, net strands and playing surface now have fitted boxes; all 121 court colliders pass editor ray checks, hoop centres and south entrance remain clear, and navigation is rebaked. Check hand/item/player contact in the existing playtest.
 - Crossing arms: one continuous fitted BoxCollider per lowered arm now replaces segmented collision. Editor rays hit along both full lengths; check avatar/hand/carried-item contact at the tips and stripe seams. Queued for playtest.

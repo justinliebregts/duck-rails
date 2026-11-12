@@ -95,3 +95,91 @@ November 4: in response to the user's question about the other side and request 
 - Review both stair routes, low-eye sightlines, room search time, rescuing and boarding in VR, then validate networked play and Quest performance separately.
 
 All four PNGs were rendered and visually inspected. The drawing review caught and corrected insufficient north-wing frontage circulation before delivery. This is drawing verification only, not Unity or headset acceptance.
+
+## Community pool, mini-golf and roller rink — November 12, 2026
+
+User approved the [top-down concept](../output/motel-leisure/approved-concept.png), replacing the transformer yard and west garage with a separate run-down 1980s public pool. Northeast picnic grove is superseded by an outdoor roller rink. User requested more buses than cars.
+
+Installed rough Quackville blockout:
+- Existing two-storey motel geometry, balcony, stairs, rooms and courtyard retained.
+- West: excavated drained pool (20 x 28 m, floor -1.6 m), broad recovery steps, faded tiles/lane stripes, curved yellow static waterslide and stair tower. Separate fenced public entrance and rail-facing gate.
+- Change rooms: roofed open-front access, showers/privacy partitions, benches and 66 open cubbies along the rear wall.
+- Northwest: five putting greens, flags, simple obstacles/duck and ticket hut.
+- Northeast: concrete roller rink, pastel perimeter stripes, low rails/open entrance, skate rental hut/counter and covered benches.
+- South: separate public/motel parking, five closed static coach buses versus two retained courtyard cars, bike racks, signs and baked lamps.
+- Four old corner banks removed where they intersected the new destinations. Narrow lateral rises retained; fifteen trees have closed collidable canopies. Flat end seams and railway clearance retained.
+- No skating, slide physics or vehicle interaction system added.
+
+Authoring: RailMotelLeisure.Install() is a guarded one-time installation; FinishLayout() is the one-time terrain/scenery follow-up. Edit saved geometry for further changes; do not rerun the old whole-block greybox builder. New assets live in Assets/DuckRails/MotelLeisure.
+
+Validation: 2,114 focused editor assertions pass (loot footprint/clearance, native marker references, rail clearance, UV2, fonts, main entrance headroom, five buses/two cars). All 24 coal/gold candidates pass after local support corrections, including existing upper-room gold height corrections. Offline full-area navigation rebuilt; every enemy marker has ground within 0.8 m. See [checks](validation/motel-leisure/checks.txt) and [navigation evidence](validation/full-area-navigation.txt). Lighting and final captures are tracked below.
+
+Pools remain 18 coal / 6 gold / 18 enemy candidates; per-run scaling/settings unchanged. Displaced west markers were relocated; motel geometry and track preserved. These legacy pools are below eight-player resource capacity (31 coal/52 gold); existing enemy selections fall short in 600/800 crew/seed cases both before and after this pass. This is an existing balance limitation, not accepted spawn capacity. See [comparison](validation/motel-leisure/enemy-selection.txt).
+
+Queued for playtest: natural pool/slide recovery, cubby reach, stairs, room/rink/golf/bus circulation, enemy pursuit, multiplayer/late join, actual night lighting and Quest performance. No Play Mode run for this art pass.
+
+Final editor evidence: lighting exported with 1,737 valid receiver bindings and no missing renderer/texture references; Console error/exception query empty. Final [Unity overview](../output/motel-leisure/pool-and-motel.png) and [top-down](../output/motel-leisure/top-down.png) use temporary review fill/no fog, discarded after capture. Prefab Mode left open for inspection. This is rough blockout, not final art or headset acceptance.
+
+## Screenshot revision batch — November 12, 2026
+
+User explicitly approved executing the accumulated screenshot feedback. The updated prefab supersedes the initial leisure blockout details above.
+
+- Motel sign uses solid extruded CutePixel glyph geometry with white emissive material. Pool has one larger cyan emissive POOL mesh sign; redundant LOCAL/PUBLIC signs removed.
+- Two courtyard cars now have colored bodies, glazing, window pillars, wheels, bumpers and lamps. Five buses retained.
+- Removed all guest-room number labels. East room openings are 1.5 m wide (formerly 3 m), north openings 1.2 m (formerly 2.4 m). Seven of thirteen guest rooms are fixed closed facades: 103, 105, 201, 203, 205, 206, 208. Their interiors are blocked/removed and their front windows are opaque recesses. The fixed irregular selection is authored, not randomized independently by clients.
+- Open rooms have real unglazed front/outside window openings; retained service rooms also have windows. Rooms 101/102 have an internal connecting doorway and ajar leaf. Both motel stair sides now have open handrails/balusters.
+- Added two dumpsters north of the motel.
+- Moved golf shack to the southeast of the golf area, facing north, clear of the nearest green. Nine holes: three L-shaped, three long, three S-shaped, with varied flag rotations. Removed coplanar overlapping surface patches.
+- Trees vary in scale; all canopy mesh colliders are convex and trunks use boxes. Two tree groups moved clear of greens.
+- Rink barriers are short white concrete with blue top bands, with north and south entrance gaps. A north rental-building doorway also added.
+- Simple metal side fencing uses X +/-47 m (1 m inset) on the outer thirds and short returns to the retained central fences. Existing chain-link geometry retained; no full-length chain-link duplication.
+- Pool has six loungers, exterior cubbies only on the left, and a separated right-side food vendor with serving hatch/staff door, freezer, fryer, and shelved/boxed supply room.
+- Pool floor slopes from -1.6 m shallow depth to -3.2 m at the north end. Short (1 m) and tall (3 m) static diving boards have stair access. Slide is straight and shifted south to clear the diving boards. Broad shallow-end recovery steps retained.
+- Twelve additional 7.5 m streetlights and two 10 m pool floodlight masts. Sixteen new room-front fixtures: eight working/eight broken. Existing interior/other lights retained.
+
+Validation: 2,186 focused editor checks pass after loot support/clearance corrections, including retained native marker references, railway clearance, UV2, fonts, doorway headroom, room/fixture counts, golf, tree colliders and the requested pool/rink changes. All 24 loot candidates pass; closed-room candidates relocated to accessible rooms/features without changing candidate or per-run counts. Full-area navigation rebaked; all 18 enemy candidates have ground within 0.8 m. Existing larger-crew spawn-capacity limitations remain unchanged in scope. Evidence: [revision checks](validation/motel-leisure/revision-checks.txt), [navigation](validation/full-area-navigation.txt).
+
+Visual captures: [motel](../output/motel-leisure/revised-motel.png), [pool](../output/motel-leisure/revised-pool.png), [golf](../output/motel-leisure/revised-golf.png). These use temporary review fill/no fog and do not establish gameplay darkness acceptance. Lighting export evidence recorded separately below. No Play Mode run. All gameplay/headset acceptance is queued for playtest.
+
+Authoring entry: RailMotelRevision.Install is guarded against rerunning on an already revised prefab. Saved prefab is authoritative for final visual clearance adjustments. Do not run the older greybox/leisure installers over these edits.
+Interior lighting follow-up: no-fill review exposed a dark vendor. Added three baked fluorescent fixtures for vendor, supply room and skate rental; final check total is 2,186. The final lighting export and captures supersede the first revision bake.
+Final revision bake exported 2,154 valid receiver bindings (zero missing references). Final Console error/exception query is empty. Revised images refreshed after final bake; vendor-night.png uses no temporary fill. Saved motel prefab left open, clean. Queued for playtest.
+
+## Detail feedback batch — November 12, 2026
+
+The user authorized the next accumulated screenshot batch. It supersedes the repeated golf shapes and mixed room-front fixture styles above.
+
+- Nine individually authored putting outlines: L bend, T finish, extended zigzag, C loop, long straight, side return, hook finish, offset dogleg and diagonal chicane. A shoot-through house and restored duck occupy separate greens. Golf shack gains a counter and leaning clubs.
+- GOLF and SKATE RENTAL use solid extruded CutePixel glyph meshes.
+- Closed motel windows receive timber boards. Door leaves receive dirty green pixel materials and handles. Six accessible guest rooms gain dressers/CRTs and bathroom fixtures.
+- Both floors use joined wall surface meshes that remove overlapping partition/façade faces; original wall collision and openings remain. Both motel stairs use continuous concrete UVs instead of a repeated texture on each tread side.
+- Courtyard cars are light grey and blue. Roof receives three HVAC units and service pipes.
+- Keep only the eight white room-front fixtures and place baked lights at them. Remove other room-front fixture styles; interior lighting remains.
+- Diving stairs meet the board edges and heights; railing posts sit on the access treads. Rink wall/coping corners use joined extrusions and the three colored strips have mitered corners, retaining north/south entrance gaps.
+- New flat materials are replaced with point-filtered pixel textures cropped from the Quackville Town atlas. UVs use a consistent world scale on the added surfaces.
+
+Authoring: `RailMotelFinish.Install` is a guarded one-time detail pass. Saved prefab is authoritative; do not rerun previous whole-block installers. Editor checks, bake and visual-review evidence follow below. Natural traversal, reach, night readability, multiplayer and Quest acceptance remain queued for playtest.
+
+Editor validation: 4,186 checks pass, including all 24 native loot candidates' support/clearance, pixel-material coverage, nine distinct outline meshes, actual house opening, bed/dresser separation, continuous diving stair/board joints and supported rail posts. See [detail checks](validation/motel-leisure/finish-checks.txt). Navigation rebuilt to 27,700 nodes; all 18 enemy candidates have ground within 0.8 m. Candidate pools and per-run settings remain unchanged. The current saved prefab has no waterslide subtree; this detail pass preserves that absence rather than restoring a removed layout element. Visual review prompted moving five dressers away from the beds before the final bake.
+
+Final visual correction: continuous planar lightmap charts remove per-tread bands on both motel stair sides. Bathroom sinks have floor-supported pedestals and shower trays sit under the heads. Final lighting export has 1,954 valid receiver bindings and no missing references; [export evidence](validation/motel-leisure/finish-lighting.txt). Final Console error/exception query is empty. Saved Prefab Mode is open and clean. No Play Mode run; queued for playtest.
+
+Final Unity captures: [motel](../output/motel-leisure/finish-motel.png), [nine greens](../output/motel-leisure/finish-golf.png), [room](../output/motel-leisure/finish-room.png), [stair](../output/motel-leisure/finish-stair-detail.png), [diving boards](../output/motel-leisure/finish-diving-detail.png), [rink](../output/motel-leisure/finish-rink.png). These use temporary review fill/no fog, discarded after capture. The [no-fill motel capture](../output/motel-leisure/finish-night-motel.png) shows the baked lighting with fog disabled; it does not establish headset/night-readability acceptance.
+
+## Face, fixture and spawn correction — November 12, 2026
+
+User authorized this feedback batch: reversed golf/rink sides, floating interior lights, downward whiter streetlights, half-resolution car wheels, six spaced change-room benches, and replacement of all coal/gold/enemy placements.
+
+- Corrected the extrusion side triangle winding in `RailMotelFinish.Extrude` and the 13 saved golf/rink wall/coping meshes. Their top/bottom faces and outlines remain intact. All 198 side triangles now pass outside-facing collider rays with backface hits disabled. This checks the winding defect missed by the earlier detail assertions.
+- Mounted all 16 interior motel fixtures flush against the respective ceilings and assigned emissive white pixel material. The 12 tall streetlight spots aim vertically downward with near-white light. Existing authored light/pole positions retained.
+- Eight car wheels share a 10-segment, 40-triangle mesh, down from 20 segments/80 triangles per wheel; collider dimensions retained.
+- Six timber/metal benches in two columns and three spaced rows replace the change-room seating; clear of shower partitions and vendor space.
+- Replaced all previous spawn candidates with 48 coal, 64 gold and 32 enemies. These are this pass's authored pool sizes, not new per-run tuning. Inspector enable/fixed counts remain 6/2/5; crew scaling and selection code are unchanged. Loot covers six accessible guest rooms on both floors, motel services, benches, vendor/freezer/shelves, pool deck/basin, nine greens, golf shack, rink/rental and all five buses. Enemies have eight candidates per quadrant, including pool basin, upper motel walk and room 207 alternatives. Closed rooms are excluded.
+
+Validation: [placement plan](validation/motel-leisure/spawn-plan.txt) was checked for support/clearance before replacement. After saved-prefab reload, all 144 candidate markers retain native prefab references and pass item-envelope support/clearance (including a positive-control physics query); all enemies are within bounds and 0.8 m of baked ground. [2,691 spawn checks](validation/motel-leisure/spawn-revision-checks.txt) pass, including 100 seeds for every crew size 1–8: full scaled resource counts, full 4/8/12 enemy counts, exact quadrant quotas, unique selections and 15 m horizontal enemy spacing. This resolves the historical motel candidate-capacity shortfall recorded above. [50 art checks](validation/motel-leisure/correction-checks.txt) and [outside-face rays](validation/motel-leisure/face-collision-checks.txt) pass. Navigation rebuilt after geometry changes; lighting export and final visual review are recorded below. No Play Mode run; natural reach, bus-roof access, enemy pursuit and headset lighting remain queued for playtest.
+
+Final export: 1,970 valid lightmap receiver bindings, no missing references; saved pools 48/64/32 and inspector settings 6/2/5 verified. Navigation has 27,841 nodes; new enemy markers independently passed proximity checks after placement. [Lighting evidence](validation/motel-leisure/correction-lighting.txt). Compilation/authoring checks succeeded. The final Console query contained one Unity editor service-token exchange error; it did not block local checks or lighting export and was not investigated as a gameplay fault.
+
+Visual review: [golf edges](../output/motel-leisure/correction-golf-edge.png), [rink wall](../output/motel-leisure/correction-rink-edge.png), [six benches](../output/motel-leisure/correction-benches.png), [ceiling fixture](../output/motel-leisure/correction-ceiling-light.png). Captures use temporary fill/no fog; temporary objects/settings discarded and saved motel Prefab Mode left open and clean. Queued for playtest.
+
+Pre-commit crawl-graph rebake (November 12, explicitly requested): 27,836 nodes; all 144 authored markers preserved; all 32 enemy candidates have ground within 0.8 m. The 2,691 spawn checks passed again against the new graph. Saved motel Prefab Mode reopened for inspection. Gameplay/headset checks remain queued for playtest.
