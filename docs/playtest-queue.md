@@ -45,6 +45,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ### Furnace fuel popup — queued 2026-11-12
 - Dropping coal into the furnace floats a "+N" (N = per-run `RailResourceBalance.CoalValue`, e.g. +12.5 solo) up from the firebox opening, using the gold crate's `GoldRewardText` look. Shown on every client once per committed deposit; late joiners do not replay old ones. Check solo and two-client; verify the number matches the gauge gain and reads well. Compile/Console checked only; queued for playtest.
 
+### Seven-block material contact sounds — queued 2026-11-12
+- Commit(s): uncommitted.
+- Changed: AudioSurface assignments across Final Bridge, Farm, Skyscraper, Helicopter Shop, Convenience Store, Motel and Container Yard. See `docs/block-audio-surfaces.md` for material choices and approximation limits.
+- Cheap checks: installer compiled in Unity 6000.3.24f1; all seven saved prefabs reloaded; 10,344 environment colliders match planned surface types; all seven used types resolve to valid player footstep sounds. Serialized comparison preserves existing geometry, collision, gameplay and baked data. Console contains an LCK graphics-API error. No Play Mode run.
+- Setup: visit the seven blocks using Test Block Order; walk and make hand contact on representative surfaces, then compare remote contacts with two real clients.
+- Check: distinct metal/concrete/wood/grass/gravel sounds on bridge, silo, tower slabs, helicopter cabin, store floors, motel and containers; wooden fences/playground/pallets/trailer decking sound wooden. Check water-volume transitions and mixed ground seams. Confirm no missing or duplicate sounds and no traversal changes.
+- Needs human: headset listening and suitability of existing Wood/Stone/Metal approximations for rubber, fabric, glass and plastic; manual-only sound-quality acceptance.
+- Priority: normal.
+
 ### Broad block reverb — queued 2026-11-12
 - Commit(s): uncommitted.
 - Changed: 25 box zones across Final Bridge (3), Farm (6), Skyscraper (4), Convenience Store (4), Motel (4), Container Yard (4). Helicopter Shop excluded. See `docs/block-reverb.md` for placements/tuning.

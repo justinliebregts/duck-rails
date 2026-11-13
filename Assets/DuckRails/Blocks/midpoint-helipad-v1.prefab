@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4533217167909002411}
   - component: {fileID: 1119486029315911242}
   - component: {fileID: 3691501412525180017}
+  - component: {fileID: 6642907770558773133}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -112,6 +113,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6642907770558773133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 31362021064087952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &42860928238323116
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,6 +373,7 @@ GameObject:
   - component: {fileID: 896415680895006532}
   - component: {fileID: 4635405109706469395}
   - component: {fileID: 4847754272394038760}
+  - component: {fileID: 6740573631685053112}
   m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
@@ -459,6 +474,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6740573631685053112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 87023080259850074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &109782447564426177
 GameObject:
   m_ObjectHideFlags: 0
@@ -468,6 +496,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8996229772825247626}
+  - component: {fileID: 6695953875918751604}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -494,6 +523,19 @@ Transform:
   - {fileID: 5581122575567295909}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6695953875918751604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 109782447564426177}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &124607403549808779
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,6 +638,7 @@ GameObject:
   - component: {fileID: 5270888054497634858}
   - component: {fileID: 3440850805516859948}
   - component: {fileID: 2672751639500215494}
+  - component: {fileID: 8654009571069666042}
   m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
@@ -696,6 +739,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8654009571069666042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175480961900453442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &214205644364290279
 GameObject:
   m_ObjectHideFlags: 0
@@ -798,6 +854,7 @@ GameObject:
   - component: {fileID: 8298806890024979885}
   - component: {fileID: 9117493322370723988}
   - component: {fileID: 7503599707747934497}
+  - component: {fileID: 7672721193344936233}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -898,6 +955,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7672721193344936233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 225106906322724909}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &260080519734988983
 GameObject:
   m_ObjectHideFlags: 0
@@ -1006,7 +1076,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -1487,6 +1557,7 @@ GameObject:
   - component: {fileID: 7219587780339425221}
   - component: {fileID: 7224203080405887994}
   - component: {fileID: 8447230881388847406}
+  - component: {fileID: 7887152291979731705}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -1587,6 +1658,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7887152291979731705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 481235591166130206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &544698384126673935
 GameObject:
   m_ObjectHideFlags: 0
@@ -2139,6 +2223,7 @@ GameObject:
   - component: {fileID: 8417674346157018864}
   - component: {fileID: 4459903689885672039}
   - component: {fileID: 4039390265313278452}
+  - component: {fileID: 1457644140541270495}
   m_Layer: 6
   m_Name: Lens
   m_TagString: Untagged
@@ -2239,6 +2324,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1457644140541270495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 778820961519818239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &800781809809782918
 GameObject:
   m_ObjectHideFlags: 0
@@ -2251,6 +2349,7 @@ GameObject:
   - component: {fileID: 5324680362514242406}
   - component: {fileID: 5904054283182164961}
   - component: {fileID: 770827692358078056}
+  - component: {fileID: 5683404534530247887}
   m_Layer: 6
   m_Name: Horizontal fuel tank
   m_TagString: Untagged
@@ -2353,6 +2452,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5683404534530247887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 800781809809782918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &832771611230652780
 GameObject:
   m_ObjectHideFlags: 0
@@ -2365,6 +2477,7 @@ GameObject:
   - component: {fileID: 283806270864086263}
   - component: {fileID: 1030294586216915126}
   - component: {fileID: 2937525616619753599}
+  - component: {fileID: 4336032843050004288}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -2465,6 +2578,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4336032843050004288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832771611230652780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &843361832131749677
 GameObject:
   m_ObjectHideFlags: 0
@@ -2681,6 +2807,7 @@ GameObject:
   - component: {fileID: 240140237938529503}
   - component: {fileID: 3139755621089050334}
   - component: {fileID: 486681367153957492}
+  - component: {fileID: 2015742942524226378}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -2781,6 +2908,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2015742942524226378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915145876971158583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &957081970859721322
 GameObject:
   m_ObjectHideFlags: 0
@@ -2793,6 +2933,7 @@ GameObject:
   - component: {fileID: 5172413511957026094}
   - component: {fileID: 1304233098357364345}
   - component: {fileID: 4971887990348760092}
+  - component: {fileID: 1976433090401361434}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -2893,6 +3034,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1976433090401361434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 957081970859721322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &959700745881454063
 GameObject:
   m_ObjectHideFlags: 0
@@ -2992,6 +3146,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1171046719304749693}
+  - component: {fileID: 4000772568633981470}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -3018,6 +3173,19 @@ Transform:
   - {fileID: 1222163320809771419}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4000772568633981470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 968759326257804100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &1001288446000016150
 GameObject:
   m_ObjectHideFlags: 0
@@ -3030,6 +3198,7 @@ GameObject:
   - component: {fileID: 7251531291112917712}
   - component: {fileID: 7179707772873796072}
   - component: {fileID: 8212441860596735097}
+  - component: {fileID: 1114065604119907384}
   m_Layer: 6
   m_Name: Bund rim
   m_TagString: Untagged
@@ -3130,6 +3299,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1114065604119907384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1001288446000016150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &1195292612195797329
 GameObject:
   m_ObjectHideFlags: 0
@@ -3232,6 +3414,7 @@ GameObject:
   - component: {fileID: 4307529949835561807}
   - component: {fileID: 2729643723032203696}
   - component: {fileID: 8840336785139320606}
+  - component: {fileID: 6467900328542172056}
   m_Layer: 6
   m_Name: Bund rim
   m_TagString: Untagged
@@ -3332,6 +3515,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6467900328542172056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1253330754753362463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &1293081816423728737
 GameObject:
   m_ObjectHideFlags: 0
@@ -3341,6 +3537,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 160418792095239863}
+  - component: {fileID: 6771775582226578382}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -3367,6 +3564,19 @@ Transform:
   - {fileID: 5377709339218090446}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6771775582226578382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1293081816423728737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &1359650832368134167
 GameObject:
   m_ObjectHideFlags: 0
@@ -3379,6 +3589,7 @@ GameObject:
   - component: {fileID: 4573092295417866655}
   - component: {fileID: 7504944610339938713}
   - component: {fileID: 4516084812600943790}
+  - component: {fileID: 8221750402015119999}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -3479,6 +3690,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8221750402015119999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1359650832368134167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &1367238288243938283
 GameObject:
   m_ObjectHideFlags: 0
@@ -3656,6 +3880,7 @@ GameObject:
   - component: {fileID: 4124331930479868614}
   - component: {fileID: 4583258341745145656}
   - component: {fileID: 6945058885557519106}
+  - component: {fileID: 614979478886091788}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -3756,6 +3981,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &614979478886091788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1445131623461188440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &1502626783913277523
 GameObject:
   m_ObjectHideFlags: 0
@@ -3879,6 +4117,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3767360824450985413}
+  - component: {fileID: 3141777201004171777}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -3905,6 +4144,19 @@ Transform:
   - {fileID: 2200106530372251895}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3141777201004171777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1544765375747964529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &1569004654699177100
 GameObject:
   m_ObjectHideFlags: 0
@@ -4127,7 +4379,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -4396,6 +4648,7 @@ GameObject:
   - component: {fileID: 5261802485805403369}
   - component: {fileID: 7638605972869542503}
   - component: {fileID: 3178099238149403781}
+  - component: {fileID: 3588721559013333038}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -4496,6 +4749,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3588721559013333038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1726194871479786152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &1726909881862107640
 GameObject:
   m_ObjectHideFlags: 0
@@ -4598,6 +4864,7 @@ GameObject:
   - component: {fileID: 5330637985782550721}
   - component: {fileID: 2886800525665862234}
   - component: {fileID: 7314862701836897142}
+  - component: {fileID: 1860444394715200074}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -4698,6 +4965,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1860444394715200074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1728991979704093867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &1729428983921574351
 GameObject:
   m_ObjectHideFlags: 0
@@ -4707,6 +4987,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1431331618427136692}
+  - component: {fileID: 4665366294030874072}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -4733,6 +5014,19 @@ Transform:
   - {fileID: 8504746296319951947}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4665366294030874072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1729428983921574351}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &1738598619136014474
 GameObject:
   m_ObjectHideFlags: 0
@@ -4745,6 +5039,7 @@ GameObject:
   - component: {fileID: 7698429945532999303}
   - component: {fileID: 8072318253813764687}
   - component: {fileID: 648376331451411472}
+  - component: {fileID: 7609938726802664733}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -4845,6 +5140,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7609938726802664733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738598619136014474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &1798973192101715735
 GameObject:
   m_ObjectHideFlags: 0
@@ -4857,6 +5165,7 @@ GameObject:
   - component: {fileID: 7761879797423800843}
   - component: {fileID: 103817985495405587}
   - component: {fileID: 3766591564467239371}
+  - component: {fileID: 626476561273594757}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -4957,6 +5266,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &626476561273594757
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1798973192101715735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &1838277881703348817
 GameObject:
   m_ObjectHideFlags: 0
@@ -5359,7 +5681,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -5390,6 +5712,7 @@ GameObject:
   - component: {fileID: 985702273875966442}
   - component: {fileID: 4318943435524057652}
   - component: {fileID: 2121852097655315408}
+  - component: {fileID: 3062615343162581561}
   m_Layer: 6
   m_Name: Foundation
   m_TagString: Untagged
@@ -5490,6 +5813,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3062615343162581561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1903016460002077128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &1956465376035261234
 GameObject:
   m_ObjectHideFlags: 0
@@ -5592,6 +5928,7 @@ GameObject:
   - component: {fileID: 881653780278615522}
   - component: {fileID: 7622781786618734057}
   - component: {fileID: 2446528428023956853}
+  - component: {fileID: 4935171809051424373}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -5692,6 +6029,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4935171809051424373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2050150786648955052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &2109423156490737071
 GameObject:
   m_ObjectHideFlags: 0
@@ -5818,6 +6168,7 @@ GameObject:
   - component: {fileID: 8445238263642296443}
   - component: {fileID: 8593624259913461246}
   - component: {fileID: 2887720520310591410}
+  - component: {fileID: 6930487788708902090}
   m_Layer: 6
   m_Name: Bund floor
   m_TagString: Untagged
@@ -5918,6 +6269,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6930487788708902090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119461984682061622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &2132364289178001411
 GameObject:
   m_ObjectHideFlags: 0
@@ -5930,6 +6294,7 @@ GameObject:
   - component: {fileID: 1514157146825988540}
   - component: {fileID: 4600263645972247557}
   - component: {fileID: 2608192133751060142}
+  - component: {fileID: 7610958580069996569}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -6030,6 +6395,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7610958580069996569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132364289178001411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &2184937182665275573
 GameObject:
   m_ObjectHideFlags: 0
@@ -6246,6 +6624,7 @@ GameObject:
   - component: {fileID: 6664845898366578348}
   - component: {fileID: 2079578321217945794}
   - component: {fileID: 2363445433971474722}
+  - component: {fileID: 3138610432658314319}
   m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
@@ -6346,6 +6725,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3138610432658314319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2214913043566035123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &2248067499632525031
 GameObject:
   m_ObjectHideFlags: 0
@@ -6358,6 +6750,7 @@ GameObject:
   - component: {fileID: 8344960077210537250}
   - component: {fileID: 4455624158214701295}
   - component: {fileID: 3082728119313030850}
+  - component: {fileID: 4199940372722798302}
   m_Layer: 6
   m_Name: Side wall
   m_TagString: Untagged
@@ -6458,6 +6851,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4199940372722798302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2248067499632525031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &2268200683710647854
 GameObject:
   m_ObjectHideFlags: 0
@@ -6968,6 +7374,7 @@ GameObject:
   - component: {fileID: 5640311908486466949}
   - component: {fileID: 9217994522721480102}
   - component: {fileID: 1241429899010004909}
+  - component: {fileID: 8929079056341469615}
   m_Layer: 6
   m_Name: Lens
   m_TagString: Untagged
@@ -7068,6 +7475,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8929079056341469615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2373707334146238358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &2414149075510762655
 GameObject:
   m_ObjectHideFlags: 0
@@ -7080,6 +7500,7 @@ GameObject:
   - component: {fileID: 7120804607130765873}
   - component: {fileID: 1025763311604835465}
   - component: {fileID: 6954870972639681390}
+  - component: {fileID: 932286053089648866}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -7180,6 +7601,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &932286053089648866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2414149075510762655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &2415353074607541738
 GameObject:
   m_ObjectHideFlags: 0
@@ -7192,6 +7626,7 @@ GameObject:
   - component: {fileID: 7470296122270715324}
   - component: {fileID: 3535683507562148171}
   - component: {fileID: 7743367374627014182}
+  - component: {fileID: 6005461797287229451}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -7292,6 +7727,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6005461797287229451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2415353074607541738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &2490117862114372187
 GameObject:
   m_ObjectHideFlags: 0
@@ -7695,6 +8143,7 @@ GameObject:
   - component: {fileID: 7207390878022893051}
   - component: {fileID: 982886460080421065}
   - component: {fileID: 7580512752290185943}
+  - component: {fileID: 7620808321347750828}
   m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
@@ -7795,6 +8244,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7620808321347750828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2667390878887969697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &2819084194732708402
 GameObject:
   m_ObjectHideFlags: 0
@@ -7897,6 +8359,7 @@ GameObject:
   - component: {fileID: 4250388088080335581}
   - component: {fileID: 5672276104135642827}
   - component: {fileID: 1702160128748991450}
+  - component: {fileID: 4538873596666296589}
   m_Layer: 6
   m_Name: Bund rim
   m_TagString: Untagged
@@ -7997,6 +8460,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4538873596666296589
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2819437776006087965}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &2827701660642821121
 GameObject:
   m_ObjectHideFlags: 0
@@ -8555,7 +9031,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -8583,6 +9059,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5472763071058100992}
+  - component: {fileID: 7404148710556161374}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -8609,6 +9086,19 @@ Transform:
   - {fileID: 5256682173589784639}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7404148710556161374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2949001639105703481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &2957566269893656476
 GameObject:
   m_ObjectHideFlags: 0
@@ -8621,6 +9111,7 @@ GameObject:
   - component: {fileID: 6783197592993618626}
   - component: {fileID: 2545140358646199213}
   - component: {fileID: 3235050806056654725}
+  - component: {fileID: 8760725825153203097}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -8721,6 +9212,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8760725825153203097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2957566269893656476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &3008990083572492014
 GameObject:
   m_ObjectHideFlags: 0
@@ -8844,6 +9348,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4232064695566229632}
+  - component: {fileID: 1808315450202673448}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -8870,6 +9375,19 @@ Transform:
   - {fileID: 5712601276510349725}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1808315450202673448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3020134927174538201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &3037279593299986690
 GameObject:
   m_ObjectHideFlags: 0
@@ -9120,6 +9638,7 @@ GameObject:
   - component: {fileID: 725359799844568175}
   - component: {fileID: 2896693500490177553}
   - component: {fileID: 2453451202340691700}
+  - component: {fileID: 7282513368032545065}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -9220,6 +9739,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7282513368032545065
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3103387608799840448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &3106105908120636817
 GameObject:
   m_ObjectHideFlags: 0
@@ -9322,6 +9854,7 @@ GameObject:
   - component: {fileID: 4373758277039863676}
   - component: {fileID: 8857852801857424884}
   - component: {fileID: 1611570165131378278}
+  - component: {fileID: 2972964598797448398}
   m_Layer: 6
   m_Name: Side wall
   m_TagString: Untagged
@@ -9422,6 +9955,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2972964598797448398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3130694453792425405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &3201102674395738768
 GameObject:
   m_ObjectHideFlags: 0
@@ -9524,6 +10070,7 @@ GameObject:
   - component: {fileID: 433837086165796008}
   - component: {fileID: 1851860875857914338}
   - component: {fileID: 196207544727678339}
+  - component: {fileID: 4303453260096904469}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -9624,6 +10171,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4303453260096904469
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3259895876577308005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &3266100767557507181
 GameObject:
   m_ObjectHideFlags: 0
@@ -10086,6 +10646,7 @@ GameObject:
   - component: {fileID: 8074924653144867074}
   - component: {fileID: 996351050275888686}
   - component: {fileID: 6404496431265180445}
+  - component: {fileID: 794310170955479259}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -10186,6 +10747,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &794310170955479259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3576482159776012666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &3580935706931314365
 GameObject:
   m_ObjectHideFlags: 0
@@ -10409,6 +10983,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1198739765485392469}
+  - component: {fileID: 2506124290801629762}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -10435,6 +11010,19 @@ Transform:
   - {fileID: 684467466923227649}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2506124290801629762
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3659386063150479840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &3667165153378545338
 GameObject:
   m_ObjectHideFlags: 0
@@ -10543,7 +11131,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -10751,6 +11339,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2490886932480813698}
+  - component: {fileID: 1678989211620853247}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -10777,6 +11366,19 @@ Transform:
   - {fileID: 5453380156541993931}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1678989211620853247
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3772775632428832699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &3797515109251451047
 GameObject:
   m_ObjectHideFlags: 0
@@ -11014,6 +11616,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2661738465564642937}
+  - component: {fileID: 7791014415586116531}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -11040,6 +11643,19 @@ Transform:
   - {fileID: 5935816350021266316}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7791014415586116531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3857096145225125584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &3896697581552727478
 GameObject:
   m_ObjectHideFlags: 0
@@ -11148,7 +11764,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -11507,6 +12123,7 @@ GameObject:
   - component: {fileID: 5865601882783370760}
   - component: {fileID: 3935458324760824317}
   - component: {fileID: 3807369323351588006}
+  - component: {fileID: 1930576649882501006}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -11607,6 +12224,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1930576649882501006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4023312608755531180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &4044810644103659084
 GameObject:
   m_ObjectHideFlags: 0
@@ -11709,6 +12339,7 @@ GameObject:
   - component: {fileID: 3758795782368084927}
   - component: {fileID: 5154183134193409114}
   - component: {fileID: 6907434663893915589}
+  - component: {fileID: 4502617798720951939}
   m_Layer: 6
   m_Name: Rear fence post
   m_TagString: Untagged
@@ -11809,6 +12440,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4502617798720951939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4094411838104119873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &4148288607149694470
 GameObject:
   m_ObjectHideFlags: 0
@@ -11818,6 +12462,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2290011230029964065}
+  - component: {fileID: 3485397245900173923}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -11844,6 +12489,19 @@ Transform:
   - {fileID: 6835742654764481801}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3485397245900173923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4148288607149694470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &4193681230319635582
 GameObject:
   m_ObjectHideFlags: 0
@@ -11856,6 +12514,7 @@ GameObject:
   - component: {fileID: 9005949499665851271}
   - component: {fileID: 7806015735959623863}
   - component: {fileID: 890097737747101114}
+  - component: {fileID: 1772561902705991124}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -11956,6 +12615,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1772561902705991124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4193681230319635582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &4249593123443781629
 GameObject:
   m_ObjectHideFlags: 0
@@ -11968,6 +12640,7 @@ GameObject:
   - component: {fileID: 765602976300831152}
   - component: {fileID: 502166512717264062}
   - component: {fileID: 1571728008811846739}
+  - component: {fileID: 4122632422293177344}
   m_Layer: 6
   m_Name: Lens
   m_TagString: Untagged
@@ -12068,6 +12741,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4122632422293177344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4249593123443781629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &4285097706307770924
 GameObject:
   m_ObjectHideFlags: 0
@@ -12080,6 +12766,7 @@ GameObject:
   - component: {fileID: 6577985819441271743}
   - component: {fileID: 6422746184526896497}
   - component: {fileID: 4430971271373079454}
+  - component: {fileID: 5572812000670823845}
   m_Layer: 6
   m_Name: Lens
   m_TagString: Untagged
@@ -12180,6 +12867,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5572812000670823845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4285097706307770924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &4314750322410886133
 GameObject:
   m_ObjectHideFlags: 0
@@ -12192,6 +12892,7 @@ GameObject:
   - component: {fileID: 8488812644431902056}
   - component: {fileID: 1093319079693452019}
   - component: {fileID: 869466511364529584}
+  - component: {fileID: 7333102295736903025}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -12292,6 +12993,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7333102295736903025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4314750322410886133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &4389020943254059769
 GameObject:
   m_ObjectHideFlags: 0
@@ -12304,6 +13018,7 @@ GameObject:
   - component: {fileID: 4332461558507107357}
   - component: {fileID: 3820876982973853251}
   - component: {fileID: 555589079778372772}
+  - component: {fileID: 4197626414631613248}
   m_Layer: 6
   m_Name: Tank saddle
   m_TagString: Untagged
@@ -12404,6 +13119,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4197626414631613248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4389020943254059769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &4391524698606981818
 GameObject:
   m_ObjectHideFlags: 0
@@ -12416,6 +13144,7 @@ GameObject:
   - component: {fileID: 1338374130322475972}
   - component: {fileID: 6608789284684256712}
   - component: {fileID: 7598865503966269099}
+  - component: {fileID: 4165519206018587217}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -12516,6 +13245,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4165519206018587217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4391524698606981818}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &4411002571311038047
 GameObject:
   m_ObjectHideFlags: 0
@@ -12925,6 +13667,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1275832221810654247}
+  - component: {fileID: 4963929368973010001}
   m_Layer: 0
   m_Name: Windsock
   m_TagString: Untagged
@@ -12949,6 +13692,19 @@ Transform:
   - {fileID: 933013092298899892}
   m_Father: {fileID: 5281222190968173487}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4963929368973010001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4673553054609493279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &4674444633817663309
 GameObject:
   m_ObjectHideFlags: 0
@@ -13072,6 +13828,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7424902687385034555}
+  - component: {fileID: 7408099557681591767}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -13098,6 +13855,19 @@ Transform:
   - {fileID: 1919795538179526885}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7408099557681591767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4805214493246848682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &4808596604047914220
 GameObject:
   m_ObjectHideFlags: 0
@@ -13110,6 +13880,7 @@ GameObject:
   - component: {fileID: 1178154663284959263}
   - component: {fileID: 2658413561009619742}
   - component: {fileID: 6854730381358087709}
+  - component: {fileID: 5998137541711265878}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -13210,6 +13981,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5998137541711265878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4808596604047914220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &4873351752265376576
 GameObject:
   m_ObjectHideFlags: 0
@@ -13222,6 +14006,7 @@ GameObject:
   - component: {fileID: 483191211577492589}
   - component: {fileID: 2661591494664969411}
   - component: {fileID: 8880269907484095688}
+  - component: {fileID: 1935699726990387127}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -13322,6 +14107,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1935699726990387127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4873351752265376576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &4901980418927629989
 GameObject:
   m_ObjectHideFlags: 0
@@ -13331,6 +14129,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3035974793893825221}
+  - component: {fileID: 3823391390975715395}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -13357,6 +14156,19 @@ Transform:
   - {fileID: 399113634653754081}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3823391390975715395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4901980418927629989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &4951823010073172867
 GameObject:
   m_ObjectHideFlags: 0
@@ -13459,6 +14271,7 @@ GameObject:
   - component: {fileID: 1300508130867439672}
   - component: {fileID: 5761647507017388078}
   - component: {fileID: 6926458346997190840}
+  - component: {fileID: 4992146479432314098}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -13559,6 +14372,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4992146479432314098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4984724204256133866}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5004178617440548263
 GameObject:
   m_ObjectHideFlags: 0
@@ -13571,6 +14397,7 @@ GameObject:
   - component: {fileID: 2082219581306962587}
   - component: {fileID: 7994825142533547474}
   - component: {fileID: 7420463594565546188}
+  - component: {fileID: 7403614098164204324}
   m_Layer: 6
   m_Name: Lens
   m_TagString: Untagged
@@ -13671,6 +14498,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7403614098164204324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5004178617440548263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &5005856848191991543
 GameObject:
   m_ObjectHideFlags: 0
@@ -13773,6 +14613,7 @@ GameObject:
   - component: {fileID: 1982213409647319917}
   - component: {fileID: 8743475201219906184}
   - component: {fileID: 6145947879015396095}
+  - component: {fileID: 1470347497933295170}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -13873,6 +14714,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1470347497933295170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5030351978373206388}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5044328982069657671
 GameObject:
   m_ObjectHideFlags: 0
@@ -14031,6 +14885,7 @@ GameObject:
   - component: {fileID: 2279586409645772416}
   - component: {fileID: 7700618128810316023}
   - component: {fileID: 8987686559264401111}
+  - component: {fileID: 2506564009887922104}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -14131,6 +14986,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2506564009887922104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5050672740414153867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5101939815527692330
 GameObject:
   m_ObjectHideFlags: 0
@@ -14143,6 +15011,7 @@ GameObject:
   - component: {fileID: 8392946762221086801}
   - component: {fileID: 5994818460417204810}
   - component: {fileID: 233048951221724575}
+  - component: {fileID: 2560640040103222949}
   m_Layer: 6
   m_Name: Rear fence post
   m_TagString: Untagged
@@ -14243,6 +15112,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2560640040103222949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5101939815527692330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5107643517325215955
 GameObject:
   m_ObjectHideFlags: 0
@@ -14345,6 +15227,7 @@ GameObject:
   - component: {fileID: 3988671395372764019}
   - component: {fileID: 7987250933072974290}
   - component: {fileID: 2800628184357825733}
+  - component: {fileID: 7666267178456039117}
   m_Layer: 6
   m_Name: Door side wall
   m_TagString: Untagged
@@ -14445,6 +15328,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7666267178456039117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5109538688826149337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &5119835295123379117
 GameObject:
   m_ObjectHideFlags: 0
@@ -14457,6 +15353,7 @@ GameObject:
   - component: {fileID: 530246850998591630}
   - component: {fileID: 9129793642925977820}
   - component: {fileID: 1603122864284722073}
+  - component: {fileID: 2468596725312417430}
   m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
@@ -14557,6 +15454,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2468596725312417430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5119835295123379117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5214230249652818255
 GameObject:
   m_ObjectHideFlags: 0
@@ -14659,6 +15569,7 @@ GameObject:
   - component: {fileID: 1828788794444845180}
   - component: {fileID: 6719981606802475270}
   - component: {fileID: 5341857416519283788}
+  - component: {fileID: 6019916099270006419}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -14759,6 +15670,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6019916099270006419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5224400568504729021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5227758524699986457
 GameObject:
   m_ObjectHideFlags: 0
@@ -15038,6 +15962,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2870668514038359081}
+  - component: {fileID: 2529395417576814219}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -15064,6 +15989,19 @@ Transform:
   - {fileID: 1167507330685343264}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2529395417576814219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5281125507918426401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &5283591359961004017
 GameObject:
   m_ObjectHideFlags: 0
@@ -15076,6 +16014,7 @@ GameObject:
   - component: {fileID: 5119565166743707018}
   - component: {fileID: 5222598682269072674}
   - component: {fileID: 1797108412381845133}
+  - component: {fileID: 7865386843775411109}
   m_Layer: 6
   m_Name: Rear fence post
   m_TagString: Untagged
@@ -15176,6 +16115,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7865386843775411109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5283591359961004017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5294770258637720125
 GameObject:
   m_ObjectHideFlags: 0
@@ -15222,6 +16174,7 @@ GameObject:
   - component: {fileID: 6553998440359017547}
   - component: {fileID: 4050035607100443707}
   - component: {fileID: 4736743777881806150}
+  - component: {fileID: 8686092973961277619}
   m_Layer: 6
   m_Name: Tank saddle
   m_TagString: Untagged
@@ -15322,6 +16275,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8686092973961277619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5303930472135420877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5322500505312923353
 GameObject:
   m_ObjectHideFlags: 0
@@ -15334,6 +16300,7 @@ GameObject:
   - component: {fileID: 2306450735223213862}
   - component: {fileID: 5933837385017848929}
   - component: {fileID: 80296395288602655}
+  - component: {fileID: 692975291526075714}
   m_Layer: 6
   m_Name: Work bench
   m_TagString: Untagged
@@ -15434,6 +16401,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &692975291526075714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5322500505312923353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &5353634305763878305
 GameObject:
   m_ObjectHideFlags: 0
@@ -15716,6 +16696,7 @@ GameObject:
   - component: {fileID: 8785997536321577007}
   - component: {fileID: 6040080078093440135}
   - component: {fileID: 5033661596678033089}
+  - component: {fileID: 2232792487057152054}
   m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
@@ -15816,6 +16797,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2232792487057152054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5437191449595842767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5456554182711527630
 GameObject:
   m_ObjectHideFlags: 0
@@ -16032,6 +17026,7 @@ GameObject:
   - component: {fileID: 6918662403103705049}
   - component: {fileID: 8786823709969984282}
   - component: {fileID: 5823151737441492584}
+  - component: {fileID: 949090106643605062}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -16132,6 +17127,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &949090106643605062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5523788571417415917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5534555178251322517
 GameObject:
   m_ObjectHideFlags: 0
@@ -16234,6 +17242,7 @@ GameObject:
   - component: {fileID: 1955669026593351834}
   - component: {fileID: 3858033414080951010}
   - component: {fileID: 951027384566137626}
+  - component: {fileID: 1399173742300840373}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -16334,6 +17343,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1399173742300840373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5553346290949008869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5698070663645848871
 GameObject:
   m_ObjectHideFlags: 0
@@ -16343,6 +17365,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1388421973313314733}
+  - component: {fileID: 8538237159980062793}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -16369,6 +17392,19 @@ Transform:
   - {fileID: 5553511834898946210}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8538237159980062793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5698070663645848871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &5699829622636354338
 GameObject:
   m_ObjectHideFlags: 0
@@ -16378,6 +17414,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3341966696258142242}
+  - component: {fileID: 8466819621953602126}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -16404,6 +17441,19 @@ Transform:
   - {fileID: 1791262996392140371}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8466819621953602126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5699829622636354338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &5709355353483767202
 GameObject:
   m_ObjectHideFlags: 0
@@ -16413,6 +17463,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 344764496067988943}
+  - component: {fileID: 992235624698178929}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -16439,6 +17490,19 @@ Transform:
   - {fileID: 5182114812544396222}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &992235624698178929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5709355353483767202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &5724324999883958332
 GameObject:
   m_ObjectHideFlags: 0
@@ -16631,6 +17695,7 @@ GameObject:
   - component: {fileID: 5541207186186354498}
   - component: {fileID: 7671333463534260770}
   - component: {fileID: 111030383152745047}
+  - component: {fileID: 7767910275478102233}
   m_Layer: 6
   m_Name: Roof
   m_TagString: Untagged
@@ -16731,6 +17796,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7767910275478102233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5776785352426128318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &5780721948034345033
 GameObject:
   m_ObjectHideFlags: 0
@@ -17217,6 +18295,7 @@ GameObject:
   - component: {fileID: 4973720857900592378}
   - component: {fileID: 6963816715617108506}
   - component: {fileID: 6565600796916428486}
+  - component: {fileID: 6755030787190661283}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -17317,6 +18396,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6755030787190661283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5852568390002439539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5860653676365336514
 GameObject:
   m_ObjectHideFlags: 0
@@ -17329,6 +18421,7 @@ GameObject:
   - component: {fileID: 7956331217044794054}
   - component: {fileID: 6618473794850158743}
   - component: {fileID: 1413759234387410535}
+  - component: {fileID: 3921904740378915192}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -17429,6 +18522,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3921904740378915192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5860653676365336514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &5863502527037698559
 GameObject:
   m_ObjectHideFlags: 0
@@ -17438,6 +18544,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 635210593848649510}
+  - component: {fileID: 8130870966887590481}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -17464,6 +18571,19 @@ Transform:
   - {fileID: 1541456956639082344}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8130870966887590481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5863502527037698559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &5871192149978309947
 GameObject:
   m_ObjectHideFlags: 0
@@ -17656,6 +18776,7 @@ GameObject:
   - component: {fileID: 5185263004332586667}
   - component: {fileID: 3020306502941349060}
   - component: {fileID: 8433828663138965720}
+  - component: {fileID: 5957630478151555813}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -17756,6 +18877,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5957630478151555813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5912383505500820117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &6013341504940024706
 GameObject:
   m_ObjectHideFlags: 0
@@ -17948,6 +19082,7 @@ GameObject:
   - component: {fileID: 7167301221318271096}
   - component: {fileID: 2646493115563534794}
   - component: {fileID: 6661742754772114859}
+  - component: {fileID: 1878218068831625609}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -18048,6 +19183,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1878218068831625609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6091506905490632420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &6105055426393646840
 GameObject:
   m_ObjectHideFlags: 0
@@ -18060,6 +19208,7 @@ GameObject:
   - component: {fileID: 8483065807271164737}
   - component: {fileID: 3041971042909038466}
   - component: {fileID: 6892230356150490296}
+  - component: {fileID: 6506955562672283164}
   m_Layer: 6
   m_Name: Rear fence post
   m_TagString: Untagged
@@ -18160,6 +19309,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6506955562672283164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6105055426393646840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &6120917210553455009
 GameObject:
   m_ObjectHideFlags: 0
@@ -18302,7 +19464,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a30a7130d5abd74d9d1c5af9c11421c, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::RailBlock
   id: midpoint-helipad-v1
   displayName: Helipad Supply Stop
@@ -18386,7 +19548,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 593af95ad35fbc3498d4f46c01f1ca1b, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::RailBakedBlockLighting
   lightingScene: Assets/DuckRails/Lighting/Blocks/midpoint-helipad-v1/midpoint-helipad-v1-Lighting.unity
   bindings:
@@ -19400,6 +20562,7 @@ GameObject:
   - component: {fileID: 3160558069532852724}
   - component: {fileID: 6372226437798544880}
   - component: {fileID: 5345888813746839198}
+  - component: {fileID: 236189529432988692}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -19500,6 +20663,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &236189529432988692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6351649669821323009}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &6354518954360432128
 GameObject:
   m_ObjectHideFlags: 0
@@ -19823,6 +20999,7 @@ GameObject:
   - component: {fileID: 8587207545701121042}
   - component: {fileID: 4055540722308083835}
   - component: {fileID: 1571775879005261393}
+  - component: {fileID: 9076005189028292022}
   m_Layer: 6
   m_Name: Ground 96 x 60
   m_TagString: Untagged
@@ -19923,6 +21100,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9076005189028292022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6417069750099511985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: dd77956cc65845b2a7ea4400447f942b, type: 2}
 --- !u!1 &6426796680286496699
 GameObject:
   m_ObjectHideFlags: 0
@@ -19932,6 +21122,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3174180909630452607}
+  - component: {fileID: 6299385605857764326}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -19958,6 +21149,19 @@ Transform:
   - {fileID: 8130319615002977490}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6299385605857764326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6426796680286496699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &6460939552694874684
 GameObject:
   m_ObjectHideFlags: 0
@@ -19967,6 +21171,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7235355781367839332}
+  - component: {fileID: 3832582121890840636}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -19993,6 +21198,19 @@ Transform:
   - {fileID: 8891501709269206084}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3832582121890840636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6460939552694874684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &6492696602219117843
 GameObject:
   m_ObjectHideFlags: 0
@@ -20005,6 +21223,7 @@ GameObject:
   - component: {fileID: 7849038571362862357}
   - component: {fileID: 2405403388920034818}
   - component: {fileID: 5612636520023373673}
+  - component: {fileID: 2859122010242584756}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -20105,6 +21324,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2859122010242584756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6492696602219117843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &6498534058632295600
 GameObject:
   m_ObjectHideFlags: 0
@@ -20151,6 +21383,7 @@ GameObject:
   - component: {fileID: 7630981085707773469}
   - component: {fileID: 4821828048049231273}
   - component: {fileID: 6863887512678686312}
+  - component: {fileID: 3669477056898102018}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -20251,6 +21484,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3669477056898102018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6520989498191540171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &6537962104420787251
 GameObject:
   m_ObjectHideFlags: 0
@@ -20353,6 +21599,7 @@ GameObject:
   - component: {fileID: 6753715215381647822}
   - component: {fileID: 1454575296920857439}
   - component: {fileID: 3283265758146839442}
+  - component: {fileID: 5809129911009657204}
   m_Layer: 6
   m_Name: Lens
   m_TagString: Untagged
@@ -20453,6 +21700,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5809129911009657204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6695163745410854459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &6701069484609287343
 GameObject:
   m_ObjectHideFlags: 0
@@ -20465,6 +21725,7 @@ GameObject:
   - component: {fileID: 6379593454870459392}
   - component: {fileID: 5709247226799876521}
   - component: {fileID: 481691220629647037}
+  - component: {fileID: 2376708518638395377}
   m_Layer: 6
   m_Name: Rear fence post
   m_TagString: Untagged
@@ -20565,6 +21826,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2376708518638395377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6701069484609287343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &6729528119550785201
 GameObject:
   m_ObjectHideFlags: 0
@@ -20966,6 +22240,7 @@ GameObject:
   - component: {fileID: 806042850257606272}
   - component: {fileID: 7598708392659426071}
   - component: {fileID: 8537297225669961665}
+  - component: {fileID: 5213138660384447842}
   m_Layer: 6
   m_Name: Rear fence post
   m_TagString: Untagged
@@ -21066,6 +22341,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5213138660384447842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6882638202953239100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &6885282819902785842
 GameObject:
   m_ObjectHideFlags: 0
@@ -21078,6 +22366,7 @@ GameObject:
   - component: {fileID: 5656481507730896210}
   - component: {fileID: 2760665105389093320}
   - component: {fileID: 6203786023642603056}
+  - component: {fileID: 5699800060123999808}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -21178,6 +22467,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5699800060123999808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6885282819902785842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &6904751711281711354
 GameObject:
   m_ObjectHideFlags: 0
@@ -21277,6 +22579,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5486409016282419706}
+  - component: {fileID: 28887353818486944}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -21303,6 +22606,19 @@ Transform:
   - {fileID: 4885915817672276854}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &28887353818486944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6968638281611249357}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &6973474560866096654
 GameObject:
   m_ObjectHideFlags: 0
@@ -21411,7 +22727,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -21472,7 +22788,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bd4e4e1824cfb84496faf11ca0659b0, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Assembly-CSharp::Game.AI.CrawlGraphBaker
   size: {x: 99, y: 11.450937, z: 63}
   cellSize: 1
@@ -21515,6 +22831,7 @@ GameObject:
   - component: {fileID: 7204457386869564994}
   - component: {fileID: 2261418910533154120}
   - component: {fileID: 4256234803395125398}
+  - component: {fileID: 4452812843624069583}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -21615,6 +22932,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4452812843624069583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7003140402545764033}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &7005421427781201960
 GameObject:
   m_ObjectHideFlags: 0
@@ -21714,6 +23044,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1221523813119511934}
+  - component: {fileID: 378739605542816689}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -21740,6 +23071,19 @@ Transform:
   - {fileID: 8359176558455300861}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &378739605542816689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7005895698451081285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &7009120970245992652
 GameObject:
   m_ObjectHideFlags: 0
@@ -21752,6 +23096,7 @@ GameObject:
   - component: {fileID: 8968018460819231892}
   - component: {fileID: 104591814297064085}
   - component: {fileID: 3122119462808796374}
+  - component: {fileID: 3062344214375027806}
   m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
@@ -21852,6 +23197,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3062344214375027806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7009120970245992652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7018189891705299119
 GameObject:
   m_ObjectHideFlags: 0
@@ -21954,6 +23312,7 @@ GameObject:
   - component: {fileID: 3568349968950136700}
   - component: {fileID: 5474508941595613163}
   - component: {fileID: 1478565018702864783}
+  - component: {fileID: 3196479984182028445}
   m_Layer: 6
   m_Name: Door side wall
   m_TagString: Untagged
@@ -22054,6 +23413,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3196479984182028445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7043256410109106119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &7054868257762413900
 GameObject:
   m_ObjectHideFlags: 0
@@ -22066,6 +23438,7 @@ GameObject:
   - component: {fileID: 5972188138634084229}
   - component: {fileID: 9031085437836865559}
   - component: {fileID: 4290716142799587002}
+  - component: {fileID: 7788021618243154434}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -22166,6 +23539,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7788021618243154434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7054868257762413900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7137370588915816893
 GameObject:
   m_ObjectHideFlags: 0
@@ -22448,6 +23834,7 @@ GameObject:
   - component: {fileID: 3978777835539019667}
   - component: {fileID: 3481730081010553300}
   - component: {fileID: 5114963623078693811}
+  - component: {fileID: 7453523629861900733}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -22548,6 +23935,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7453523629861900733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7256382036624007962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7334249116578334380
 GameObject:
   m_ObjectHideFlags: 0
@@ -22560,6 +23960,7 @@ GameObject:
   - component: {fileID: 3786413903540339193}
   - component: {fileID: 3125374916748638054}
   - component: {fileID: 5923407553891641599}
+  - component: {fileID: 5854274701351830863}
   m_Layer: 6
   m_Name: Lens
   m_TagString: Untagged
@@ -22660,6 +24061,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5854274701351830863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7334249116578334380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &7341218805555595910
 GameObject:
   m_ObjectHideFlags: 0
@@ -22672,6 +24086,7 @@ GameObject:
   - component: {fileID: 8300753349685464299}
   - component: {fileID: 5399970019254170006}
   - component: {fileID: 3003452831878724666}
+  - component: {fileID: 4738251872250103325}
   m_Layer: 6
   m_Name: Bund rim
   m_TagString: Untagged
@@ -22772,6 +24187,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4738251872250103325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7341218805555595910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &7351861622765897867
 GameObject:
   m_ObjectHideFlags: 0
@@ -22898,6 +24326,7 @@ GameObject:
   - component: {fileID: 8373913942149367510}
   - component: {fileID: 1905548933458445280}
   - component: {fileID: 8424659673916401835}
+  - component: {fileID: 3589099967696698012}
   m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
@@ -22998,6 +24427,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3589099967696698012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7403903520493564117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7404763373248851176
 GameObject:
   m_ObjectHideFlags: 0
@@ -23010,6 +24452,7 @@ GameObject:
   - component: {fileID: 6028781156240116596}
   - component: {fileID: 9199305982908024270}
   - component: {fileID: 3184764569934620953}
+  - component: {fileID: 9093837376184422029}
   m_Layer: 6
   m_Name: Back wall
   m_TagString: Untagged
@@ -23110,6 +24553,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9093837376184422029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7404763373248851176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &7419951254673704894
 GameObject:
   m_ObjectHideFlags: 0
@@ -23122,6 +24578,7 @@ GameObject:
   - component: {fileID: 4345884781551790254}
   - component: {fileID: 8861240324201230201}
   - component: {fileID: 6278918768883920}
+  - component: {fileID: 7638481275586996897}
   m_Layer: 6
   m_Name: Lens
   m_TagString: Untagged
@@ -23222,6 +24679,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7638481275586996897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7419951254673704894}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &7471776913844580709
 GameObject:
   m_ObjectHideFlags: 0
@@ -23348,6 +24818,7 @@ GameObject:
   - component: {fileID: 1072208139995595895}
   - component: {fileID: 2050908127771860886}
   - component: {fileID: 8203107812441793190}
+  - component: {fileID: 6255438769162043904}
   m_Layer: 6
   m_Name: Filler cap
   m_TagString: Untagged
@@ -23450,6 +24921,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6255438769162043904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502139244459610180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7539066557060415079
 GameObject:
   m_ObjectHideFlags: 0
@@ -23558,7 +25042,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -23865,7 +25349,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -24076,6 +25560,7 @@ GameObject:
   - component: {fileID: 2042036910445477177}
   - component: {fileID: 927156593685888122}
   - component: {fileID: 5988747668647550569}
+  - component: {fileID: 1544657281295727062}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -24176,6 +25661,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1544657281295727062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7619744405961061933}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7627683337289751724
 GameObject:
   m_ObjectHideFlags: 0
@@ -24429,7 +25927,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
@@ -24460,6 +25958,7 @@ GameObject:
   - component: {fileID: 7127458974789466034}
   - component: {fileID: 3875402111586507307}
   - component: {fileID: 2467217681791508986}
+  - component: {fileID: 6184332388476277107}
   m_Layer: 6
   m_Name: Lens
   m_TagString: Untagged
@@ -24560,6 +26059,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6184332388476277107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7697903967536888632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &7740402108255770575
 GameObject:
   m_ObjectHideFlags: 0
@@ -24569,6 +26081,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6450176192236179933}
+  - component: {fileID: 5309739404070744954}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -24595,6 +26108,19 @@ Transform:
   - {fileID: 8920397680865462030}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5309739404070744954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7740402108255770575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &7843045137275206500
 GameObject:
   m_ObjectHideFlags: 0
@@ -24877,6 +26403,7 @@ GameObject:
   - component: {fileID: 6904913422517143207}
   - component: {fileID: 7087416866022639671}
   - component: {fileID: 288437192751726848}
+  - component: {fileID: 1988558081621053713}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -24977,6 +26504,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &1988558081621053713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7890332430240241825}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7911496219584737270
 GameObject:
   m_ObjectHideFlags: 0
@@ -25079,6 +26619,7 @@ GameObject:
   - component: {fileID: 7258041470356480155}
   - component: {fileID: 5730282492849589042}
   - component: {fileID: 689722308556945752}
+  - component: {fileID: 6382337386722334163}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -25179,6 +26720,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6382337386722334163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7922793239905080515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7935639213076246924
 GameObject:
   m_ObjectHideFlags: 0
@@ -25281,6 +26835,7 @@ GameObject:
   - component: {fileID: 8116686588012637955}
   - component: {fileID: 8134361631907815293}
   - component: {fileID: 3027541350847515941}
+  - component: {fileID: 4225940727268526062}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -25381,6 +26936,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4225940727268526062
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7937147378177878775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7956332124090532421
 GameObject:
   m_ObjectHideFlags: 0
@@ -25393,6 +26961,7 @@ GameObject:
   - component: {fileID: 2961685995641723636}
   - component: {fileID: 7637882099279534377}
   - component: {fileID: 3067480414443516019}
+  - component: {fileID: 9084763709625526807}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -25493,6 +27062,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9084763709625526807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7956332124090532421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &7993501466396014978
 GameObject:
   m_ObjectHideFlags: 0
@@ -25719,6 +27301,7 @@ GameObject:
   - component: {fileID: 2468427684748655769}
   - component: {fileID: 5630048786229604341}
   - component: {fileID: 2149829818140547011}
+  - component: {fileID: 5560286214440609697}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -25819,6 +27402,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5560286214440609697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8032442525171535800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &8102344473859765159
 GameObject:
   m_ObjectHideFlags: 0
@@ -26191,6 +27787,7 @@ GameObject:
   - component: {fileID: 6221075299244793266}
   - component: {fileID: 816458897571381269}
   - component: {fileID: 6360590099833880713}
+  - component: {fileID: 2658029338670170878}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -26291,6 +27888,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2658029338670170878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8264185144445817548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &8273435351487996638
 GameObject:
   m_ObjectHideFlags: 0
@@ -26393,6 +28003,7 @@ GameObject:
   - component: {fileID: 1356938267551693103}
   - component: {fileID: 1418539553693103902}
   - component: {fileID: 7049866256584958230}
+  - component: {fileID: 4538327268982139077}
   m_Layer: 6
   m_Name: Low concrete pad 30 x 30
   m_TagString: Untagged
@@ -26493,6 +28104,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &4538327268982139077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8278793081884044052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &8316059102920411444
 GameObject:
   m_ObjectHideFlags: 0
@@ -26505,6 +28129,7 @@ GameObject:
   - component: {fileID: 4196071080250551856}
   - component: {fileID: 2944616821700821350}
   - component: {fileID: 596590678213543193}
+  - component: {fileID: 6703574485128814738}
   m_Layer: 6
   m_Name: Ground-level walking apron
   m_TagString: Untagged
@@ -26605,6 +28230,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6703574485128814738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8316059102920411444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &8357089777009496571
 GameObject:
   m_ObjectHideFlags: 0
@@ -26797,6 +28435,7 @@ GameObject:
   - component: {fileID: 7770403230249633771}
   - component: {fileID: 6297595229687497717}
   - component: {fileID: 1665949775488386537}
+  - component: {fileID: 3415963117014727669}
   m_Layer: 6
   m_Name: Fence post
   m_TagString: Untagged
@@ -26897,6 +28536,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3415963117014727669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8404515774223686908}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &8405853439655553943
 GameObject:
   m_ObjectHideFlags: 0
@@ -26909,6 +28561,7 @@ GameObject:
   - component: {fileID: 2199608612885750453}
   - component: {fileID: 8165089611109804582}
   - component: {fileID: 1144203986393737333}
+  - component: {fileID: 8780584232474164773}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -27009,6 +28662,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8780584232474164773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8405853439655553943}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &8419907373871932567
 GameObject:
   m_ObjectHideFlags: 0
@@ -27135,6 +28801,7 @@ GameObject:
   - component: {fileID: 7420996023424444117}
   - component: {fileID: 1168023628260921101}
   - component: {fileID: 2943945447307763529}
+  - component: {fileID: 5290689624098524162}
   m_Layer: 6
   m_Name: Rear fence post
   m_TagString: Untagged
@@ -27235,6 +28902,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5290689624098524162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8427676026695358245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &8456644015808251605
 GameObject:
   m_ObjectHideFlags: 0
@@ -27337,6 +29017,7 @@ GameObject:
   - component: {fileID: 1696652108798473175}
   - component: {fileID: 1480229972438188929}
   - component: {fileID: 8615851531525649791}
+  - component: {fileID: 6437429715000353951}
   m_Layer: 6
   m_Name: Rear fence rail
   m_TagString: Untagged
@@ -27437,6 +29118,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6437429715000353951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8476805035014926572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &8620211321028841808
 GameObject:
   m_ObjectHideFlags: 0
@@ -27626,6 +29320,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5257197858421916550}
+  - component: {fileID: 3301574609403926602}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -27652,6 +29347,19 @@ Transform:
   - {fileID: 7014316771584716310}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3301574609403926602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8686242232497833460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &8691337572172527424
 GameObject:
   m_ObjectHideFlags: 0
@@ -27868,6 +29576,7 @@ GameObject:
   - component: {fileID: 7022349079875384952}
   - component: {fileID: 4348605952978354575}
   - component: {fileID: 5039802929194804351}
+  - component: {fileID: 409856640868531523}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -27968,6 +29677,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &409856640868531523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754023129395993581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &8761703931056433907
 GameObject:
   m_ObjectHideFlags: 0
@@ -28032,6 +29754,7 @@ GameObject:
   - component: {fileID: 499552558516569536}
   - component: {fileID: 3715344553093053966}
   - component: {fileID: 4716985958598557399}
+  - component: {fileID: 9127350833358978278}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -28132,6 +29855,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9127350833358978278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8761824949336166650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &8780658943388438329
 GameObject:
   m_ObjectHideFlags: 0
@@ -28141,6 +29877,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4299748836775633414}
+  - component: {fileID: 8795041829967428234}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -28167,6 +29904,19 @@ Transform:
   - {fileID: 1596225868185555155}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8795041829967428234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8780658943388438329}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &8868772924450433050
 GameObject:
   m_ObjectHideFlags: 0
@@ -28383,6 +30133,7 @@ GameObject:
   - component: {fileID: 3988884394601058324}
   - component: {fileID: 9132805486887657712}
   - component: {fileID: 1004966037548671443}
+  - component: {fileID: 7968528429218844842}
   m_Layer: 6
   m_Name: Door header
   m_TagString: Untagged
@@ -28483,6 +30234,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7968528429218844842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8972644426060448292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1 &9016218277659441090
 GameObject:
   m_ObjectHideFlags: 0
@@ -28495,6 +30259,7 @@ GameObject:
   - component: {fileID: 6092855357416980126}
   - component: {fileID: 5687759652339230619}
   - component: {fileID: 7533421449541786916}
+  - component: {fileID: 6837365957382087400}
   m_Layer: 6
   m_Name: Rock
   m_TagString: Untagged
@@ -28595,6 +30360,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6837365957382087400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9016218277659441090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &9026537460721009173
 GameObject:
   m_ObjectHideFlags: 0
@@ -28607,6 +30385,7 @@ GameObject:
   - component: {fileID: 2242348775458118984}
   - component: {fileID: 5879086768787291456}
   - component: {fileID: 1572674295834137055}
+  - component: {fileID: 7636275544778289579}
   m_Layer: 6
   m_Name: Base
   m_TagString: Untagged
@@ -28707,6 +30486,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7636275544778289579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9026537460721009173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &9107405972393146923
 GameObject:
   m_ObjectHideFlags: 0
@@ -28877,6 +30669,7 @@ GameObject:
   - component: {fileID: 4533121500814955473}
   - component: {fileID: 2876469556203749525}
   - component: {fileID: 4710450134060625617}
+  - component: {fileID: 7212760234792668809}
   m_Layer: 6
   m_Name: Fence rail
   m_TagString: Untagged
@@ -28977,6 +30770,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7212760234792668809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9139464312569412122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1 &9167440884101873447
 GameObject:
   m_ObjectHideFlags: 0
@@ -28986,6 +30792,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 828536250126208841}
+  - component: {fileID: 5090468567619007056}
   m_Layer: 0
   m_Name: Pine
   m_TagString: Untagged
@@ -29012,6 +30819,19 @@ Transform:
   - {fileID: 4580092057143049590}
   m_Father: {fileID: 221120241397241484}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5090468567619007056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9167440884101873447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
 --- !u!1001 &92459949407142478
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31175,13 +32995,97 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8424739811783408068, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 232788462009426064}
+    - targetCorrespondingSourceObject: {fileID: 154640305313481002, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4012203769893460475}
+    - targetCorrespondingSourceObject: {fileID: 4667746725999817384, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7900832189434866944}
+    - targetCorrespondingSourceObject: {fileID: 1322973637855024018, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6333212897144633557}
   m_SourcePrefab: {fileID: 100100000, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
+--- !u!1 &1291535122897708423 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8424739811783408068, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
+  m_PrefabInstance: {fileID: 7279721768736185411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &232788462009426064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1291535122897708423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
+--- !u!1 &2720717933520416491 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4667746725999817384, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
+  m_PrefabInstance: {fileID: 7279721768736185411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &7900832189434866944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2720717933520416491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
+--- !u!1 &7431960732060212585 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 154640305313481002, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
+  m_PrefabInstance: {fileID: 7279721768736185411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4012203769893460475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7431960732060212585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!4 &7713455164597351659 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1012596315085400232, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
   m_PrefabInstance: {fileID: 7279721768736185411}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8600434802060742609 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1322973637855024018, guid: 222c87542e4f1344e8e0bf147b5cbb79, type: 3}
+  m_PrefabInstance: {fileID: 7279721768736185411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6333212897144633557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8600434802060742609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
 --- !u!1001 &7702577770096293319
 PrefabInstance:
   m_ObjectHideFlags: 0
