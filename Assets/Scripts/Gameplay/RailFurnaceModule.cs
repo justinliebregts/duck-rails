@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using EasyTextEffects.Effects;
 
 /// <summary>The firebox, coal acceptance volume and effects travel as one authoring module.</summary>
 public sealed class RailFurnaceModule : MonoBehaviour
@@ -6,7 +8,19 @@ public sealed class RailFurnaceModule : MonoBehaviour
     public Transform insertion;
     public Vector3 acceptanceHalfExtents = new Vector3(.50f, .43f, .50f);
     public ParticleSystem fire, smoke;
+    [Header("Fuel popup (same look as the gold crate's +N)")]
+    public TMP_FontAsset fuelTextFont;
+    public Material fuelTextMaterial;
+    public TextEffectInstance fuelTextEffect;
     RailTrain train;
+
+    /// <summary>Floats a "+N" fuel number up out of the firebox opening.</summary>
+    public void ShowFuelGain(float fuel)
+    {
+        string text = Mathf.Abs(fuel - Mathf.Round(fuel)) < .05f ? Mathf.Round(fuel).ToString("0") : fuel.ToString("0.#");
+        Vector3 at = insertion != null ? insertion.position : transform.position;
+        GoldRewardText.Show("+" + text, at, fuelTextFont, fuelTextMaterial, fuelTextEffect);
+    }
 
     public bool Contains(Vector3 worldPoint)
     {

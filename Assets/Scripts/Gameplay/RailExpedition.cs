@@ -196,6 +196,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         Present();
         RailStats.Tick();
         ConsumeCommittedCoal();
+        ShowFuelPopups();
         RailGoldReceiver.PresentRewards(this);
         if (PhotonNetwork.IsMasterClient) SpawnCarrierDrops();
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.Time >= nextTick)
@@ -432,6 +433,18 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         changes[RailSessionRules.Motion] = new object[] { now, z, speed, (float)motion[3] };
         changes[RailSessionRules.Fuel] = Mathf.Min(RailResourceBalance.Capacity,
             fuel + RailResourceBalance.CoalValue(RailRoute.Instance?.Selection?.resourceCrew ?? 1));
+    }
+    readonly HashSet<string> shownFuel = new HashSet<string>();
+    string fuelPopupRun;
+    // Every client sees each committed deposit once; coal consumed before we joined stays silent.
+    void ShowFuelPopups()
+    {
+        bool seed = fuelPopupRun != PhotonSession.RunId;
+        if (seed) { fuelPopupRun = PhotonSession.RunId; shownFuel.Clear(); }
+        var module = furnace != null ? furnace.GetComponentInParent<RailFurnaceModule>() : null;
+        for (int i = 0; i < State.consumed.Count && i < State.consumedSpawns.Count; i++)
+            if (shownFuel.Add(State.consumed[i] + "|" + State.consumedSpawns[i]) && !seed && module != null)
+                module.ShowFuelGain(RailResourceBalance.CoalValue(RailRoute.Instance?.Selection?.resourceCrew ?? 1));
     }
     void ConsumeCommittedCoal()
     {
