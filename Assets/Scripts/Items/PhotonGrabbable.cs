@@ -202,7 +202,8 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
         object[] data = photonView.InstantiationData;
-        if (data == null || data.Length != 9 || !(data[0] is string tag) || tag != "pickup-pose-v1") return;
+        // A shop delivery can append its retained Compound lifetime after the pose.
+        if (data == null || (data.Length != 9 && data.Length != 10) || !(data[0] is string tag) || tag != "pickup-pose-v1") return;
         BeginPickupGrowth((Vector3)data[1], (Vector3)data[2], (Vector3)data[3], (double)data[4]);
         if (!photonView.IsMine)
         {

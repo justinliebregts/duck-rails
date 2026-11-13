@@ -78,7 +78,11 @@ public sealed class RailWorld : MonoBehaviour
             // Held cargo may belong to another connected player. Every client
             // removes its own cargo; room-owned cargo is removed by the master.
             if (!aboard) ClearCargo();
-            else if (PhotonNetwork.IsMasterClient) MaintainCargo();
+            else
+            {
+                ClearCompoundPurchases();
+                if (PhotonNetwork.IsMasterClient) MaintainCargo();
+            }
         }
         var local = GR.Player.instance;
         if (local == null) return;
@@ -127,14 +131,19 @@ public sealed class RailWorld : MonoBehaviour
         foreach (var view in PhotonNetwork.PhotonViewCollection)
             if (view != null && view.ViewID != 0 && view.TryGetComponent<RailCargo>(out _)) yield return view;
     }
-    public static bool HasLiveCargo => CargoViews().Any();
+    public static bool HasLiveCargo => CargoViews().Any(v => !RailCargo.KeepCompoundPurchase(v));
     static void ClearCargo()
     {
         if (PhotonNetwork.IsMasterClient)
             foreach (var enemy in Game.AI.Enemy.Active.ToArray())
                 if (enemy != null && enemy.TryGetComponent<PhotonView>(out var enemyView) && enemyView.IsMine) PhotonNetwork.Destroy(enemy.gameObject);
         // Destroy unregisters views synchronously; do not mutate the live iterator.
-        foreach (var view in CargoViews().Where(v => v.IsMine).ToArray())
+        foreach (var view in CargoViews().Where(v => v.IsMine && !RailCargo.KeepCompoundPurchase(v)).ToArray())
+            if (view != null && PhotonView.Find(view.ViewID) == view) PhotonNetwork.Destroy(view.gameObject);
+    }
+    static void ClearCompoundPurchases()
+    {
+        foreach (var view in CargoViews().Where(v => v.IsMine && RailCargo.IsCompoundPurchase(v)).ToArray())
             if (view != null && PhotonView.Find(view.ViewID) == view) PhotonNetwork.Destroy(view.gameObject);
     }
     void MaintainCargo()

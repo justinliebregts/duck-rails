@@ -73,7 +73,7 @@ public static class RoomRpc
     /// Asks the master client to spawn a bag as a room object, so it outlives whoever asked for it. Ownership goes to the
     /// local player, whose BagInventory puts it where target says once it arrives. Offline it spawns here directly.
     /// </summary>
-    public static void SpawnBag(byte bagId, string[] keys, Vector3 position, Quaternion rotation, BagObject.Target target)
+    public static void SpawnBag(byte bagId, string[] keys, Vector3 position, Quaternion rotation, BagObject.Target target, bool storePurchase = false)
     {
         GameObject prefab = BagInventory.BagPrefab;
         if (prefab == null)
@@ -94,7 +94,7 @@ public static class RoomRpc
             return;
         }
 
-        object[] request = { bagId, keys ?? new string[0], position, rotation, requester, (byte)target, life, BagInventory.HandClaimEpoch };
+        object[] request = { bagId, keys ?? new string[0], position, rotation, requester, (byte)target, life, BagInventory.HandClaimEpoch, storePurchase };
         if (PhotonNetwork.IsMasterClient)
             SpawnBagAsMaster(request);
         else
@@ -111,10 +111,12 @@ public static class RoomRpc
             return;
 
         PhotonPreparePool.Register(prefab);
-        GameObject go = PhotonNetwork.InstantiateRoomObject(prefab.name, position, rotation, 0,
-            BagObject.SpawnData(bagId, request[1] as string[], requester, (BagObject.Target)target,
-                request.Length > 6 && request[6] is int life ? life : -1,
-                request.Length > 7 && request[7] is int epoch ? epoch : 0));
+        object[] data = BagObject.SpawnData(bagId, request[1] as string[], requester, (BagObject.Target)target,
+            request.Length > 6 && request[6] is int life ? life : -1,
+            request.Length > 7 && request[7] is int epoch ? epoch : 0);
+        if (request.Length > 8 && request[8] is bool purchase && purchase)
+            data = RailCargo.WithCompoundPurchase(data, PhotonNetwork.CurrentRoom.GetPlayer(requester)?.UserId);
+        GameObject go = PhotonNetwork.InstantiateRoomObject(prefab.name, position, rotation, 0, data);
         if (go == null) return;
 
         Player owner = PhotonNetwork.CurrentRoom != null ? PhotonNetwork.CurrentRoom.GetPlayer(requester) : null;

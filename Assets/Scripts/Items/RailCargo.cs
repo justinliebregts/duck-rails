@@ -7,6 +7,35 @@ using UnityEngine;
 public sealed class RailCargo : MonoBehaviourPun, IPunObservable
 {
     public static readonly HashSet<RailCargo> Active = new HashSet<RailCargo>();
+    const string CompoundPurchaseTag = "rails-compound-purchase-v1";
+    // Retained spawn data lets peers and late joiners distinguish shop deliveries
+    // from expedition leftovers. A private departure changes the run in-place.
+    public static object[] WithCompoundPurchase(object[] data, string buyer)
+    {
+        if (!PhotonSession.IsRailsRoom || PhotonSession.OnTrain || !PhotonNetwork.InRoom) return data;
+        var tagged = new object[data.Length + 1];
+        System.Array.Copy(data, tagged, data.Length);
+        tagged[data.Length] = new object[] { CompoundPurchaseTag, PhotonNetwork.CurrentRoom.Name, PhotonSession.RunId, buyer };
+        return tagged;
+    }
+    public static bool IsCompoundPurchase(PhotonView view) => PurchaseLifetime(view) != null;
+    static object[] PurchaseLifetime(PhotonView view)
+    {
+        var data = view != null ? view.InstantiationData : null;
+        return data != null && data.Length > 0 && data[data.Length - 1] is object[] lifetime &&
+            lifetime.Length == 4 && lifetime[0] as string == CompoundPurchaseTag ? lifetime : null;
+    }
+    public static bool KeepCompoundPurchase(PhotonView view)
+    {
+        var lifetime = PurchaseLifetime(view);
+        if (lifetime == null || PhotonSession.OnTrain || !PhotonNetwork.InRoom ||
+            lifetime[1] as string != PhotonNetwork.CurrentRoom.Name || lifetime[2] as string != PhotonSession.RunId) return false;
+        // Retain an inactive reconnect slot, but clean up after a buyer actually
+        // leaves the room (including a public departure to another room).
+        foreach (var player in PhotonNetwork.PlayerList)
+            if (player.UserId == lifetime[3] as string) return true;
+        return false;
+    }
     public static Vector3 PassengerCarryOffset { get; private set; }
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetCarryOffset() => PassengerCarryOffset = Vector3.zero;

@@ -82,7 +82,7 @@ public struct ItemPickupPose
         return true;
     }
 
-    public Grabbable Spawn(GameObject prefab, PlayerHand hand)
+    public Grabbable Spawn(GameObject prefab, PlayerHand hand, bool storePurchase = false)
     {
         bool networkGrabbable = prefab.GetComponent<PhotonGrabbable>() != null;
         double started = networkGrabbable && PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
@@ -94,10 +94,11 @@ public struct ItemPickupPose
             Transform source = player != null ? player.HandSource(hand.IsControllerLTouch) : null;
             if (source == null) source = hand.transform;
             Quaternion inverse = Quaternion.Inverse(source.rotation);
-            go = PhotonNetwork.InstantiateWithRoomLifetime(prefab.name, position, rotation, 0,
-                new object[] { "pickup-pose-v1", startScale, fullScale, localGrip, started,
+            object[] data = new object[] { "pickup-pose-v1", startScale, fullScale, localGrip, started,
                     PhotonNetwork.LocalPlayer.ActorNumber, hand.IsControllerLTouch,
-                    inverse * (position - source.position), inverse * rotation });
+                    inverse * (position - source.position), inverse * rotation };
+            if (storePurchase) data = RailCargo.WithCompoundPurchase(data, PhotonNetwork.LocalPlayer.UserId);
+            go = PhotonNetwork.InstantiateWithRoomLifetime(prefab.name, position, rotation, 0, data);
         }
         else
         {

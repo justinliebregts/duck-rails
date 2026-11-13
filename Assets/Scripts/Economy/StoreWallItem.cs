@@ -314,7 +314,7 @@ public class StoreWallItem : Grabbable
 
         ItemPickupPose pose = ItemPickupPose.Capture(prefab, transform, hand.HoldPoint.position);
         if (!pose.ClampGripToSurface(prefab, hand.HoldPoint.position)) return false;
-        Grabbable weapon = pose.Spawn(prefab, hand);
+        Grabbable weapon = pose.Spawn(prefab, hand, storePurchase: true);
         if (weapon == null) return false;
         StartVanish();
         hand.Release();
@@ -337,7 +337,7 @@ public class StoreWallItem : Grabbable
             return;
         Transform hold = hand.HoldPoint;
         RoomRpc.SpawnBag(item.bagId, null, hold.position, hold.rotation,
-            hand.IsControllerLTouch ? BagObject.Target.LeftHand : BagObject.Target.RightHand);
+            hand.IsControllerLTouch ? BagObject.Target.LeftHand : BagObject.Target.RightHand, storePurchase: true);
     }
 
     void Fail() => ReturnToWall();
