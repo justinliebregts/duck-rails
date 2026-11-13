@@ -43,6 +43,18 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Shared complete store and security camera — queued 2026-11-12
+- Avatar acceptance: equip Quackbear, Huggy and Scrap Duck individually from each store; verify the local avatar/mirror and hands update correctly, every connected remote client sees the correct equipped avatar, a late joiner sees the current avatar, switching between all three and Default Duck replicates without stale meshes/faces, and the selection survives the intended scene transitions/rejoin. Use real authenticated clients; a single editor or visual prefab check is insufficient. Still queued, not verified.
+- Commit(s): uncommitted.
+- Changed: one RailSharedStore prefab in Compound, Departure Shop and midpoint helicopter: seven coin goods with price/coin labels underneath, nine bundle items, Default Duck and local SecurityCam/SecurityTV/HelicopterMirror. Supersedes previous midpoint-exclusion expectations.
+- Cheap checks: shared-store and helicopter authoring checks pass; no Play Mode.
+- Setup: two authenticated clients and late joiner; Meta bundle products and backend rollout for checkout checks.
+- Check: each location has one active store and TV; coin purchases charge once and spawn actual Rails cargo/bags on peers, all bundle ownership/equip/120-second timers, same-room cooldown sharing, default avatar, camera sees local face and remote players/held objects, screens have independent feeds and shut down out of range. Gold exchange still works only at the existing expedition intakes.
+- Needs human: spacing/reach at all shops (compound is 100% scale; overlap accepted pending user layout adjustment), prices/icons and countdown readability, camera framing and headset rendering cost.
+- Priority: normal.
+
+
+
 ### Furnace Polygon flames — queued 2026-11-12
 - Commit(s): uncommitted.
 - Changed: `RailFurnaceModule` spawns `FX_Fire_Big_02` (idle, already in `Assets/Plugins/PolygonParticleFX`, identical to the arpg copy) at the firebox; emission fades to 12% (`outOfFuelEmission`) when `PhotonSession.CurrentFuel` is 0 and back up on refuel. Each committed coal deposit plays `FX_Fire_Explosion_01` once on every client, from the same path as the "+N" fuel popup. Prefab refs live in `Furnace.prefab`; `fxScale` 0.25 is a first guess.
@@ -55,10 +67,10 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ### Quackbear, Huggy and Scrap Duck bundles — queued 2026-11-12
 - Commit(s): uncommitted.
-- Changed: compound bundle wall, three rigged avatars, separate four-slot bag and frying-pan placeholders, existing independent 120-second bag/weapon cooldowns and no avatar cooldown. See `docs/character-bundles.md`.
+- Changed: compound and Departure Shop bundle walls now use Duckz horizontal weapon–bag–avatar rows and source heading/countdown styling (overlap allowed for manual adjustment), three rigged avatars, separate four-slot bag and frying-pan placeholders, existing independent 120-second bag/weapon cooldowns and no avatar cooldown. See `docs/character-bundles.md`.
 - Cheap checks: Unity compilation, 103 EditMode checks, visual preview and backend config/economy tests passed; no Play Mode run.
 - Setup: two authenticated clients, then a late joiner and Quest; Meta durable products and matching backend catalog must be configured/deployed for purchase tests.
-- Check: unowned checkout/cancel/restoration; owned avatar/default equip; bag and weapon spawn naturally into either hand; same item blocked until 120s, other item and avatar unaffected; shared wall cooldown, actual Photon room reset versus private same-room scene transition; peer/late-join appearances and unique weapon spawn IDs; held/bagged/loose moving cargo and departure cleanup. No gameplay coin charge or expedition-shop inventory changes.
+- Check: unowned checkout/cancel/restoration; owned avatar/default equip; bag and weapon spawn naturally into either hand; same item blocked until 120s, other item and avatar unaffected; shared wall cooldown, actual Photon room reset versus private same-room scene transition; peer/late-join appearances and unique weapon spawn IDs; held/bagged/loose moving cargo and departure cleanup. No gameplay coin charge; Departure Shop retains seven standard supplies alongside nine bundle pulls; the midpoint now uses the same shared full store. Check reach and cooldown sharing across all three stores.
 - Needs human: headset reach (especially lower weapon row), natural grip, avatar eye/lip alignment and labels, Meta checkout interaction.
 - Priority: normal.
 

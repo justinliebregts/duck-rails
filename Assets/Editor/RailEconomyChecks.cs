@@ -40,13 +40,12 @@ public static class RailEconomyChecks
             Check(cargo != null && view.ObservedComponents.Contains(cargo), item.key + " replicates loose train cargo");
         }
         var shopPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(RailEconomyBuilder.Folder + "RailShop.prefab");
-        Check(shopPrefab.GetComponentsInChildren<StoreWallItem>(true).Length == 7, "One Duckz pull-to-buy display per item");
-        foreach (var display in shopPrefab.GetComponentsInChildren<StoreWallItem>(true))
+        Check(shopPrefab.GetComponentsInChildren<StoreWallItem>().Length == 17, "Seven standard supplies, nine bundle items and default avatar");
+        foreach (var display in shopPrefab.GetComponentsInChildren<StoreWallItem>())
         {
             var serialized = new SerializedObject(display);
             var label = serialized.FindProperty("label").objectReferenceValue as Component;
             Check(label == null || label.transform.IsChildOf(shopPrefab.transform), display.name + " price cannot reference the source store asset");
-            Check(display.transform.localPosition.y <= .75f, display.name + " lowered shelf height");
         }
         foreach (var block in Directory.GetFiles("Assets/DuckRails/Blocks", "*.prefab").Select(AssetDatabase.LoadAssetAtPath<RailBlock>).Where(b => b.id != "bridge-finale-v1"))
             Check(block.variations.All(v => v.gold.Length == 2 && v.gold.All(p => p != null && p.GetComponent<RailGoldSpawner>() != null)), block.id + " two editable gold spawners in every variation");

@@ -1,6 +1,10 @@
 # Duck Rails — V1 game design
 
-November 12 character bundles: Quackbear, Huggy and Scrap Duck each provide an immediately equippable avatar and separate placeholder bag/weapon pulls with independent two-minute per-player cooldowns, matching Duckz. Installed in the compound; expedition coin shops remain separate. Initial placeholders use four-slot basic bags and Rails frying pans. This request authorizes these compound bundle supplies; Meta product/pricing setup and live purchase/gameplay acceptance remain pending. See [character bundles](character-bundles.md).
+November 12 shared-store decision: Compound, Departure Shop and midpoint helicopter use one shared store prefab with seven standard coin items, three bundles, Default Duck, price/coin labels underneath, and locally wired SecurityCam/SecurityTV with HelicopterMirror. Gold intake stays separate. See [shared store](character-bundles.md#shared-store-in-all-three-locations--november-12).
+
+November 12 bundle presentation correction: use Duckz horizontal weapon–bag–avatar rows and identical heading/countdown text styling in both shops. User permits overlap for manual adjustment; see [bundle layout](character-bundles.md#horizontal-duckz-layout--november-12).
+
+November 12 character bundles: Quackbear, Huggy and Scrap Duck each provide an immediately equippable avatar and separate placeholder bag/weapon pulls with independent two-minute per-player cooldowns, matching Duckz. Installed in the compound and Departure Shop; bundle ownership remains separate from standard coin purchases. Initial placeholders use four-slot basic bags and Rails frying pans. This request authorizes these compound bundle supplies; Meta product/pricing setup and live purchase/gameplay acceptance remain pending. See [character bundles](character-bundles.md).
 
 November 12 audio: user approved broad reverb zones with soft edges. Installed 25 across Final Bridge, Farm, Skyscraper, Convenience Store, Motel and Container Yard; Helicopter Shop excluded. Editor checks pass; listening/headset acceptance queued. See [block reverb](block-reverb.md).
 

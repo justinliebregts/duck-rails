@@ -158,6 +158,7 @@ public static class RailBundleSetup
                 PrefabUtility.SaveAsPrefabAsset(root, wallPath);
             }
             finally { Object.DestroyImmediate(root); }
+            MatchDuckzLayout();
         }
         var module = PrefabUtility.LoadPrefabContents(Module);
         try
@@ -174,6 +175,66 @@ public static class RailBundleSetup
         }
         finally { PrefabUtility.UnloadPrefabContents(module); }
         AssetDatabase.SaveAssets(); Debug.Log("Rail bundles installed; gameplay and platform checkout queued for playtest.");
+    }
+
+    [MenuItem("Duck Rails/Bundles/Match Duckz horizontal layout")]
+    public static void MatchDuckzLayout()
+    {
+        if (Application.dataPath.Replace('\\','/') != "X:/Work/duck-rails/Assets" || EditorApplication.isPlaying)
+            throw new Exception("Duck Rails Edit Mode required");
+        // This inherited Store prefab is byte-identical to the inspected Duckz source.
+        var source = Load<GameObject>("Assets/Prefabs/Interface/Store.prefab");
+        var template = source.GetComponentsInChildren<Transform>(true).Single(t => t.name == "GorillaBundle");
+        string path = Folder + "RailBundleWall.prefab";
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var catalog = Load<StoreCatalog>(Folder + "RailBundleCatalog.asset");
+            for (int i = 0; i < Keys.Length; i++)
+            {
+                var origin = new Vector3((i - 1) * 1.6f, 1.78f, 0);
+                var title = root.GetComponentsInChildren<StoreBundleLabel>(true).Single(b =>
+                    new SerializedObject(b).FindProperty("bundleSku").stringValue == catalog.bundles[i].sku);
+                CopyLabel(template.Find("GorillaBundleTitle").GetComponent<TMP_Text>(), title.GetComponent<TMP_Text>(), origin, catalog.bundles[i].displayName);
+                foreach (var pair in new[] { ("weapon_", "GorillaKnifeDisplay"), ("bag_", "BagGorillaDisplay"), ("skin_duck_", "GorillaDisplay") })
+                {
+                    var display = root.transform.Find(pair.Item1 + Keys[i]).GetComponent<StoreWallItem>();
+                    var original = template.Find(pair.Item2).GetComponent<StoreWallItem>();
+                    // Rails visuals were centered when authored. Match the Duckz visual center,
+                    // rather than carrying over offsets for its different weapon/bag meshes.
+                    var bounds = new Bounds(); bool first = true;
+                    foreach (var r in original.GetComponentsInChildren<Renderer>(true).Where(r => !(r is LineRenderer)))
+                        for (int corner = 0; corner < 8; corner++)
+                        {
+                            var p = template.InverseTransformPoint(r.transform.TransformPoint(r.localBounds.center + Vector3.Scale(r.localBounds.extents,
+                                new Vector3((corner&1)==0?-1:1,(corner&2)==0?-1:1,(corner&4)==0?-1:1))));
+                            if (first) { bounds = new Bounds(p, Vector3.zero); first = false; } else bounds.Encapsulate(p);
+                        }
+                    display.transform.localPosition = origin + bounds.center;
+                    var label = (TMP_Text)new SerializedObject(display).FindProperty("label").objectReferenceValue;
+                    var originalLabel = (TMP_Text)new SerializedObject(original).FindProperty("label").objectReferenceValue;
+                    CopyLabel(originalLabel, label, origin, "");
+                    label.name = display.name + " Countdown";
+                }
+            }
+            // Default duck stays separate from the three horizontal bundles.
+            var defaultDisplay = root.transform.Find("skin_duck_default");
+            defaultDisplay.localPosition = new Vector3(-3.1f,1.15f,0);
+            var defaultLabel = (TMP_Text)new SerializedObject(defaultDisplay.GetComponent<StoreWallItem>()).FindProperty("label").objectReferenceValue;
+            defaultLabel.transform.localPosition = new Vector3(-3.1f,.92f,0);
+            root.transform.Find("Default Duck").localPosition = new Vector3(-3.1f,1.7f,0);
+            PrefabUtility.SaveAsPrefabAsset(root,path);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+    static void CopyLabel(TMP_Text source, TMP_Text target, Vector3 origin, string text)
+    {
+        EditorUtility.CopySerialized(source, target);
+        target.font = Load<TMP_FontAsset>("Assets/Fonts/CutePixel SDF.asset"); target.text = text;
+        var rect = target.rectTransform; var original = source.rectTransform;
+        rect.anchorMin = original.anchorMin; rect.anchorMax = original.anchorMax; rect.pivot = original.pivot;
+        rect.sizeDelta = original.sizeDelta; rect.localScale = original.localScale;
+        rect.localRotation = original.localRotation; rect.localPosition = origin + original.localPosition;
     }
 }
 #endif

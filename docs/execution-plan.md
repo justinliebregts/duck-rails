@@ -1,5 +1,13 @@
 # Duck Rails — execution plan
 
+- [x] November 12: install shared full store with standard coin labels, three bundles and camera/TV in all three locations; shared-store and helicopter authoring checks pass.
+- [ ] Validate shared-store purchase/delivery, bundles, cooldowns and camera feeds on clients/headsets; queued for playtest.
+
+- [x] November 12: replace vertical bundles with Duckz horizontal rows and copied heading/countdown styles; saved order/style checks and existing 103 bundle checks pass. Live acceptance remains queued.
+
+- [x] November 12: add all three bundles to Departure Shop beside seven standard supplies; catalog/cooldown, scene placement and Environment-clearance checks pass. See [bundles](character-bundles.md#departure-shop-addition--november-12).
+- [ ] Departure bundle natural pulls, checkout, shared cooldowns and headset/multiplayer acceptance: queued for playtest.
+
 - [x] November 12: install Quackbear, Huggy and Scrap Duck bundle assets/displays, separate replaceable bags/weapons and reused two-minute pull cooldowns. Unity compile, 103 EditMode checks and backend economy tests pass; see [character bundles](character-bundles.md).
 - [ ] Configure Meta bundle products/prices, deploy backend catalog and validate checkout/restoration, pulls/cooldowns, real peers and headset reach. Queued for playtest; implementation does not complete commerce acceptance.
 

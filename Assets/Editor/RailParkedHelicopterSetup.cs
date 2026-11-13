@@ -97,16 +97,16 @@ public static class RailParkedHelicopterSetup
         if(heli==null)throw new Exception("Missing helicopter");
         var store=heli.GetComponentInChildren<StoreUI>();
         var displays=heli.GetComponentsInChildren<StoreWallItem>();
-        if(displays.Length!=7 || store.Catalog.items.Count!=7)throw new Exception("Wrong catalogue/display count");
+        if(displays.Length!=17 || store.Catalog.items.Count!=17)throw new Exception("Wrong catalogue/display count");
         foreach(var d in displays)
         {
             var s=new SerializedObject(d);var key=s.FindProperty("itemKey").stringValue;
-            if(!RailEconomyBuilder.Keys.Contains(key)||s.FindProperty("store").objectReferenceValue!=store)throw new Exception("Wrong display binding");
+            if(s.FindProperty("store").objectReferenceValue!=store)throw new Exception("Wrong display binding");
             var item=store.Find(key);
-            if(item==null || item.durable)throw new Exception("Not Rails consumable "+key);
+            if(item==null)throw new Exception("Unknown Rails item "+key);
             // Bags use BagInventory's Rails-specific spawn path rather than StoreItem.prefab.
-            if(key=="bag_basic") { if(item.type!=StoreItemType.Bag || item.bagModel==null)throw new Exception("Wrong bag binding"); }
-            else if(item.prefab==null || item.prefab.GetComponent<RailCargo>()==null)throw new Exception("Not Rails cargo "+key);
+            if(item.type==StoreItemType.Bag) { if(item.bagModel==null)throw new Exception("Wrong bag binding"); }
+            else if(!item.IsWearable && (item.prefab==null || item.prefab.GetComponent<RailCargo>()==null))throw new Exception("Not Rails cargo "+key);
             var label=s.FindProperty("label").objectReferenceValue as TMP_Text;
             if(label==null || !label.transform.IsChildOf(heli.transform))throw new Exception("Foreign price label");
         }
@@ -115,7 +115,7 @@ public static class RailParkedHelicopterSetup
         var fx=heli.GetComponent<RailParkedHelicopter>();if(fx.rotorWash==null||fx.rotorWash.particleMesh==null||fx.rotorWash.particleMaterial==null)throw new Exception("Dust missing");
         if(heli.swayBobMeters!=0||heli.swayPitchDegrees!=0||heli.swayRollDegrees!=0||heli.propellerRotateSpeed<=0)throw new Exception("Stationary rotor settings");
         foreach(var t in heli.GetComponentsInChildren<TMP_Text>(true))if(t.font.name!="CutePixel SDF")throw new Exception("Wrong font");
-        Debug.Log("Rail parked helicopter authoring checks passed: seven Rails cargo displays/prices, one shared midpoint intake, camera/audio/dust preserved, no flight manager or dependent trigger.");
+        Debug.Log("Rail parked helicopter authoring checks passed: shared 17-item store, one shared midpoint intake, camera/audio/dust preserved, no flight manager or dependent trigger.");
     }
 }
 #endif
