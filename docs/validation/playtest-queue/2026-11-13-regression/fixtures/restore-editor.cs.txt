@@ -1,0 +1,11 @@
+using System;using System.IO;using System.Linq;using UnityEngine;using UnityEditor;
+internal class CommandScript:IRunCommand{public void Execute(ExecutionResult r){
+if(Application.dataPath!="X:/Work/duck-rails/Assets")throw new Exception("Wrong Unity target");
+if(EditorApplication.isPlayingOrWillChangePlaymode||RailRegressionLauncher.Status!="NotRunning")throw new Exception("Finish stopping scenario/Play Mode first");
+var s=RailTestBlockOrder.instance;s.useOrder=true;s.invincibleFromEnemies=true;s.blocks=new[]{"farm-silos-v1","canyon-v1","container-yard-v1","skyscraper-works-v1"}.Select(id=>AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/"+id+".prefab").GetComponent<RailBlock>()).ToList();s.Persist();
+EditorPrefs.SetBool("Duck.DesktopPlay",false);EditorPrefs.SetBool("DuckRails.DesktopPlay",false);RailEditorQuickStart.Enabled=false;
+var manager=Resources.FindObjectsOfTypeAll<ScriptableObject>().First(x=>x.GetType().FullName=="Unity.PlayMode.Editor.PlayModeManager");RailRemoteBridge.Set(manager,"ActivePlayModeConfig",null);
+foreach(var f in new[]{"Temp/rails-remote/Player2-in.cs","Temp/rails-remote/Player3-in.cs","Temp/cold-login-arm.txt","Temp/rails-coal-arm.txt","Temp/rails-week2-arm.txt","Temp/rails-week3-arm.txt","Temp/rails-stability-arm.txt","Temp/rails-cleanup-arm.txt"})if(File.Exists(f))File.WriteAllText(f,"");
+string result="Live restoration verified UTC="+DateTime.UtcNow.ToString("O")+" project="+Application.dataPath+" play="+EditorApplication.isPlayingOrWillChangePlaymode+" scenario="+RailRegressionLauncher.Status+" desktop="+EditorPrefs.GetBool("Duck.DesktopPlay")+" quick="+RailEditorQuickStart.Enabled+" order="+string.Join(",",s.blocks.Select(b=>b.id))+" invincible="+s.invincibleFromEnemies;
+File.AppendAllText("docs/validation/playtest-queue/2026-11-13-regression/cleanup.txt","\n"+result+"\nLogical restoration only: earlier crash erased byte backup.\n");r.Log(result);
+}}

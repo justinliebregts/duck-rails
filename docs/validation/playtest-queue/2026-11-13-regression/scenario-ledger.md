@@ -8,8 +8,8 @@ Unity 6000.3.24f1. Current working tree beginning at `3c64b55a44e9c118c176838fa2
 
 1. **PASS — Death lifecycle current-tree batch.** [DeathLifecycleChecks.log](DeathLifecycleChecks.log).
 2. **PASS — Smasher retreat/jump current-tree batch.** [SmasherRetreatJumpChecks.log](SmasherRetreatJumpChecks.log).
-3. **PASS — Animated hit-order/cooldown/held/thrown batch.** [GrabbablePlayChecks.log](GrabbablePlayChecks.log).
-4. **PASS — Hook pull: 24 movement and six surface cases.** [ZombieHookPullChecks.log](ZombieHookPullChecks.log).
+3. **PASS — Animated hit-order/cooldown/held/thrown batch.** [Initial run](GrabbablePlayChecks.log), [post-store-fix rerun](GrabbablePlayChecks-postfix.log), [exit status](postfix-batch-summary.txt).
+4. **PASS — Hook pull: 24 movement and six surface cases.** [Initial run](ZombieHookPullChecks.log), [post-store-fix rerun](ZombieHookPullChecks-postfix.log), [exit status](postfix-batch-summary.txt).
 5. **PASS — Two real Photon batch clients: flare replay, expiry and falling-master handoff.** [flare-host.log](flare-host.log), [flare-guest.log](flare-guest.log).
 6. **PASS — Compound pause menu/pages/tablet/close/death path.** [menu-True-Compound.txt](menu-True-Compound.txt).
 7. **PASS — Expedition pause menu/pages/tablet/close/death path.** [menu-True-Running.txt](menu-True-Running.txt).
