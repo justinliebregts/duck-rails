@@ -38,13 +38,21 @@ public static class RailRigLiveChecks
         sim.UseInjectedInput = true; sim.InjectedInput = default;
         evidence.Clear(); active = true; stage = 0; entered = Time.unscaledTime; lastFrame = -1;
         Status = "Running";
-        Vector3 testPosition = new Vector3(15, .35f, RailTrain.Instance.transform.position.z - 8);
+        // Stay above authored station/shop geometry: an overlapping counter
+        // otherwise cancels the simulated head motion in the collision solver.
+        Vector3 testPosition = new Vector3(15, 20, RailTrain.Instance.transform.position.z - 8);
         floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
         floor.name = "Shared rig fixture floor"; floor.layer = LayerMask.NameToLayer("Environment");
         floor.transform.position = new Vector3(testPosition.x, -.25f, testPosition.z);
         floor.transform.localScale = new Vector3(8, .5f, 8);
         Physics.SyncTransforms();
         player.Warp(testPosition, Quaternion.identity);
+        // The authored duck body sits above the rig origin. Put the fixture
+        // surface beneath that body instead of assuming origin Y is foot Y.
+        player.ReseedTrackingPose();
+        floor.transform.position = new Vector3(testPosition.x,
+            player.bodyCollider.bounds.min.y - .28f, testPosition.z);
+        Physics.SyncTransforms();
         Save();
     }
 
@@ -87,17 +95,19 @@ public static class RailRigLiveChecks
                         UnityEngine.Object.FindObjectsByType<DesktopPlayer>(FindObjectsSortMode.None).Length == 0, "One shared rig, zero DesktopPlayer instances");
                     Require(!owner.leftPlayerHand.IsDesktopInput && !owner.rightPlayerHand.IsDesktopInput, "VR hand paths");
                     Pass("One DuckPlayer, two authored VR hands, no DesktopPlayer or desktop interaction mode");
-                    checkpoint = player.transform.position;
+                    // Simulated room-scale walking translates trackingSpace. The rig root
+                    // can remain fixed while the gameplay head/body move through collision.
+                    checkpoint = player.headCollider.transform.position;
                     sim.InjectedInput = new SimulatedRigInput.Frame { move = Vector2.right };
                     Next(); break;
                 case 1:
                     if (age < .25f) return;
-                    Require(player.transform.position.x - checkpoint.x > .3f, "WASD moves actual rig");
+                    Require(player.headCollider.transform.position.x - checkpoint.x > .3f, "WASD moves actual gameplay head");
                     Pass("Simulated room-scale movement passes through NewPlayer");
-                    sim.InjectedInput = default; checkpoint = player.transform.position; Next(); break;
+                    sim.InjectedInput = default; checkpoint = player.headCollider.transform.position; Next(); break;
                 case 2:
                     if (age < .3f) return;
-                    Require(Mathf.Abs(player.transform.position.x - checkpoint.x) < .1f, "Released movement must stop without drift");
+                    Require(Mathf.Abs(player.headCollider.transform.position.x - checkpoint.x) < .1f, "Released movement must stop without drift");
                     Pass("Releasing movement stops horizontal input");
                     sim.InjectedInput = new SimulatedRigInput.Frame { leftReach = true, rightReach = true };
                     Next(); break;

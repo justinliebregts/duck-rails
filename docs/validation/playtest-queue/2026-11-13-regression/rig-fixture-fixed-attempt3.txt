@@ -1,0 +1,18 @@
+FAIL stage=9
+2026-11-13T08:08:39.3567091Z
+PASS One DuckPlayer, two authored VR hands, no DesktopPlayer or desktop interaction mode
+PASS Simulated room-scale movement passes through NewPlayer
+PASS Releasing movement stops horizontal input
+Setup root=(15.00, 19.97, 62.00) left=(17.20, 21.43, 62.67) right=(17.38, 21.43, 62.67) candidates=-23261980/-23262376
+Grab frame=902 root=(15.00, 19.97, 62.00) grip=down:True, wPressed:True, wReleased:False held=-23261980/-23262376 palms=(17.20, 21.43, 62.67)/(17.38, 21.43, 62.67) coal=(17.20, 21.58, 62.67)/(17.38, 21.58, 62.67)
+Grab frame=903 root=(15.00, 19.97, 62.00) grip=down:True, wPressed:False, wReleased:False held=-23261980/-23262376 palms=(17.20, 21.43, 62.67)/(17.38, 21.43, 62.67) coal=(17.20, 21.58, 62.67)/(17.38, 21.58, 62.67)
+Grab frame=904 root=(15.00, 19.97, 62.00) grip=down:True, wPressed:False, wReleased:False held=-23261980/-23262376 palms=(17.20, 21.43, 62.67)/(17.38, 21.43, 62.67) coal=(17.20, 21.58, 62.67)/(17.38, 21.58, 62.67)
+Grab frame=905 root=(15.00, 19.97, 62.00) grip=down:True, wPressed:False, wReleased:False held=-23261980/-23262376 palms=(17.20, 21.43, 62.67)/(17.38, 21.43, 62.67) coal=(17.20, 21.58, 62.67)/(17.38, 21.58, 62.67)
+Grab frame=906 root=(15.00, 19.97, 62.00) grip=down:True, wPressed:False, wReleased:False held=-23261980/-23262376 palms=(17.20, 21.43, 62.67)/(17.38, 21.43, 62.67) coal=(17.20, 21.58, 62.67)/(17.38, 21.58, 62.67)
+Grab frame=907 root=(15.00, 19.97, 62.00) grip=down:True, wPressed:False, wReleased:False held=-23261980/-23262376 palms=(17.20, 21.43, 62.67)/(17.38, 21.43, 62.67) coal=(17.20, 21.58, 62.67)/(17.38, 21.58, 62.67)
+Grab frame=908 root=(15.00, 19.97, 62.00) grip=down:True, wPressed:False, wReleased:False held=-23261980/-23262376 palms=(17.20, 21.43, 62.67)/(17.38, 21.43, 62.67) coal=(17.20, 21.58, 62.67)/(17.38, 21.58, 62.67)
+PASS Both hands acquire authored coal through ordinary proximity and shared grip; no ForceGrab
+PASS Grip release drops both items; trigger input reaches both hands
+PASS Physical button presses through DuckPlayer fingertip contact
+PASS Withdrawing simulated hand releases the physical button
+FAIL Shared hand grip must acquire the real train lever
