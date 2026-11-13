@@ -62,9 +62,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4aec65ff4f311064082f3fb0a1e587be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  observePhotonRoomsInEditor: 0
   respawnPoint: {fileID: 0}
   companionSpawnPoint: {fileID: 0}
   disableEnemySpawning: 0
+  disableDuckCompanion: 0
   enableVoicePatrol: 0
   usingDesktopPlayer: 0
 --- !u!114 &8859417743406439576
@@ -137,6 +139,9 @@ MonoBehaviour:
   - {fileID: 8107147980949860816, guid: 3d4d1009c12054743a1dc540e63954b7, type: 3}
   - {fileID: 8107147980949860816, guid: 837eb3d505ce90e4782a1e9f95d87cc8, type: 3}
   - {fileID: 7744112233445566001, guid: c4e8a1b27d6f4e0a9c3b5d7e1f2a4b60, type: 3}
+  - {fileID: 3604639287807212136, guid: aa9f8cfef9ae5aa4680dc74dafe359f4, type: 3}
+  - {fileID: 3604639287807212136, guid: 09c5a297e4b055f4da1bdbbc715f54c7, type: 3}
+  - {fileID: 3604639287807212136, guid: 2b870aac193437b44860a8eb8cc03c5a, type: 3}
 --- !u!114 &5886551941204541368
 MonoBehaviour:
   m_ObjectHideFlags: 0

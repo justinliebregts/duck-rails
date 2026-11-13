@@ -22,6 +22,6 @@ public class GameConfig : ScriptableObject
     [Tooltip("Must match NONCE_SECRET on the Duckz backend deployment. Signs X-Signature for coin/store/IAP requests.")]
     public string requestSigningSecret = "Rpbmcgb24gdGhlIHNob3V";
 
-    [Tooltip("Static store contents. Coin prices are replaced by GET /store, which reads duckz_economy.json.")]
+    [Tooltip("Static store contents. Coin prices are replaced by GET /store, which reads duckrails_economy.json.")]
     public StoreCatalog storeCatalog;
 }

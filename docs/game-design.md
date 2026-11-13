@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 12 character bundles: Quackbear, Huggy and Scrap Duck each provide an immediately equippable avatar and separate placeholder bag/weapon pulls with independent two-minute per-player cooldowns, matching Duckz. Installed in the compound; expedition coin shops remain separate. Initial placeholders use four-slot basic bags and Rails frying pans. This request authorizes these compound bundle supplies; Meta product/pricing setup and live purchase/gameplay acceptance remain pending. See [character bundles](character-bundles.md).
+
 November 12 audio: user approved broad reverb zones with soft edges. Installed 25 across Final Bridge, Farm, Skyscraper, Convenience Store, Motel and Container Yard; Helicopter Shop excluded. Editor checks pass; listening/headset acceptance queued. See [block reverb](block-reverb.md).
 
 November 12 Container Yard follow-up: main ground repeats at 12 m instead of 3 m; all spawn locations redistributed for the updated layout, with 168 coal / 142 gold / 32 enemy candidates and unchanged per-run scaling. All placement and 800 crew/seed cases pass. See [redistribution](container-yard-layout.md#ground-and-spawn-redistribution--november-12-2026). Gameplay/headset acceptance queued.

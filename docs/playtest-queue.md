@@ -42,6 +42,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ```
 
 ## Pending
+
+### Quackbear, Huggy and Scrap Duck bundles — queued 2026-11-12
+- Commit(s): uncommitted.
+- Changed: compound bundle wall, three rigged avatars, separate four-slot bag and frying-pan placeholders, existing independent 120-second bag/weapon cooldowns and no avatar cooldown. See `docs/character-bundles.md`.
+- Cheap checks: Unity compilation, 103 EditMode checks, visual preview and backend config/economy tests passed; no Play Mode run.
+- Setup: two authenticated clients, then a late joiner and Quest; Meta durable products and matching backend catalog must be configured/deployed for purchase tests.
+- Check: unowned checkout/cancel/restoration; owned avatar/default equip; bag and weapon spawn naturally into either hand; same item blocked until 120s, other item and avatar unaffected; shared wall cooldown, actual Photon room reset versus private same-room scene transition; peer/late-join appearances and unique weapon spawn IDs; held/bagged/loose moving cargo and departure cleanup. No gameplay coin charge or expedition-shop inventory changes.
+- Needs human: headset reach (especially lower weapon row), natural grip, avatar eye/lip alignment and labels, Meta checkout interaction.
+- Priority: normal.
+
 ### Matching fuel/distance backing — queued 2026-11-12
 - Shared backing mesh/material; original fuel text, ten yellow segments and dark sockets retained. Compile and serialized UI/gameplay preservation checks pass. Check headset appearance and fuel readability/full-to-empty state. No Play Mode run.
 

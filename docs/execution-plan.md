@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 12: install Quackbear, Huggy and Scrap Duck bundle assets/displays, separate replaceable bags/weapons and reused two-minute pull cooldowns. Unity compile, 103 EditMode checks and backend economy tests pass; see [character bundles](character-bundles.md).
+- [ ] Configure Meta bundle products/prices, deploy backend catalog and validate checkout/restoration, pulls/cooldowns, real peers and headset reach. Queued for playtest; implementation does not complete commerce acceptance.
+
 - [x] November 12: install 25 broad box reverb zones across six selected prefabs; saved reference/settings checks and Console query pass. See [block reverb](block-reverb.md).
 - [ ] Listen to reverb transitions, voice clarity, adjacent-floor overlap and target-headset performance; queued for playtest.
 

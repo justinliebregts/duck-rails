@@ -91,7 +91,7 @@ public class StoreUI : MonoBehaviour
 
     public bool IsEquipped(StoreItem item) => EquippedLoadout.Ensure().IsEquipped(item);
 
-    /// <summary>Coin price from duckz_economy.json once the store list has loaded. Catalog price until then.</summary>
+    /// <summary>Coin price from duckrails_economy.json once the store list has loaded. Catalog price until then.</summary>
     public int Price(StoreItem item)
     {
         if (item != null && DuckzWallet.Ensure().TryListed(item.key, out int price, out _))

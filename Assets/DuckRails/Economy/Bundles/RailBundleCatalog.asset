@@ -1,0 +1,331 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4da236b37843b25469680a1e3ccf87b4, type: 3}
+  m_Name: RailBundleCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::StoreCatalog
+  items:
+  - key: weapon_nail_bat
+    payment: 0
+    price: 275
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 7840470147409705320, guid: 3f7e560bb20479a418b26201c355d06b, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: weapon_fry_pan
+    payment: 0
+    price: 175
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 3604639287807212136, guid: 9834d51ba57738247b0b8f0ce41ac7a8, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: item_helmet
+    payment: 0
+    price: 75
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 4642380122350722137, guid: 21aaf00e4e4b5684d94bf7e81a2bec8e, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: item_flashlight
+    payment: 0
+    price: 25
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 8432819510711926704, guid: 47ad6d203de0e6e46b6bc2f1f43ee3dd, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: item_walkie_talkie
+    payment: 0
+    price: 50
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 3429181636712684669, guid: a115869cf7f8d2145bf2f3a53c769bb4, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: item_night_vision_goggles
+    payment: 0
+    price: 300
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 5458612398300695704, guid: 2dea0ca37a0e6724e9361d9c58295302, type: 3}
+    bundleSku: 
+    pullCooldown: 0
+  - key: bag_basic
+    payment: 0
+    price: 100
+    durable: 0
+    type: 3
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 2
+    bagModel: {fileID: 5704298873570786917, guid: 43a6206bcc42481bb8eb9fadca8e2f0f, type: 3}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: 
+    pullCooldown: 0
+  - key: skin_duck_default
+    payment: 0
+    price: 0
+    durable: 1
+    type: 1
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: 
+    pullCooldown: 0
+  - key: skin_duck_quackbear
+    payment: 0
+    price: 0
+    durable: 1
+    type: 1
+    skinId: 4
+    skinModel: {fileID: 5738005147005914307, guid: 64f5a1f14c91aa54a9c7357724249ef2, type: 3}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: duckrails_quackbear_bundle
+    pullCooldown: 0
+  - key: bag_quackbear
+    payment: 0
+    price: 0
+    durable: 0
+    type: 3
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 5
+    bagModel: {fileID: 5704298873570786917, guid: 59308ba710d0b084ab9e348b6ca0371e, type: 3}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: duckrails_quackbear_bundle
+    pullCooldown: 120
+  - key: weapon_quackbear
+    payment: 0
+    price: 0
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 3604639287807212136, guid: aa9f8cfef9ae5aa4680dc74dafe359f4, type: 3}
+    bundleSku: duckrails_quackbear_bundle
+    pullCooldown: 120
+  - key: skin_duck_huggy
+    payment: 0
+    price: 0
+    durable: 1
+    type: 1
+    skinId: 5
+    skinModel: {fileID: 5953402961522725376, guid: 01598f37ed8167743a775979e895b07c, type: 3}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: duckrails_huggy_bundle
+    pullCooldown: 0
+  - key: bag_huggy
+    payment: 0
+    price: 0
+    durable: 0
+    type: 3
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 6
+    bagModel: {fileID: 5704298873570786917, guid: 47558d1ba9416a74ea71fa6b93b1edf8, type: 3}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: duckrails_huggy_bundle
+    pullCooldown: 120
+  - key: weapon_huggy
+    payment: 0
+    price: 0
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 3604639287807212136, guid: 09c5a297e4b055f4da1bdbbc715f54c7, type: 3}
+    bundleSku: duckrails_huggy_bundle
+    pullCooldown: 120
+  - key: skin_duck_scrap_duck
+    payment: 0
+    price: 0
+    durable: 1
+    type: 1
+    skinId: 6
+    skinModel: {fileID: 3044760047530589493, guid: 24827897a2acc4c4eb1c7646e6c57624, type: 3}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: duckrails_scrap_duck_bundle
+    pullCooldown: 0
+  - key: bag_scrap_duck
+    payment: 0
+    price: 0
+    durable: 0
+    type: 3
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 7
+    bagModel: {fileID: 5704298873570786917, guid: a50603a6d6835724da3b4e98e49c69b2, type: 3}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 0}
+    bundleSku: duckrails_scrap_duck_bundle
+    pullCooldown: 120
+  - key: weapon_scrap_duck
+    payment: 0
+    price: 0
+    durable: 0
+    type: 0
+    skinId: 0
+    skinModel: {fileID: 0}
+    eyeMaterial: {fileID: 0}
+    bagId: 0
+    bagModel: {fileID: 0}
+    bagGrabOverride: {fileID: 0}
+    bagStowOverride: {fileID: 0}
+    bagDropOverride: {fileID: 0}
+    bagHoverOverride: {fileID: 0}
+    bagPutOverride: {fileID: 0}
+    prefab: {fileID: 3604639287807212136, guid: 2b870aac193437b44860a8eb8cc03c5a, type: 3}
+    bundleSku: duckrails_scrap_duck_bundle
+    pullCooldown: 120
+  bundles:
+  - sku: duckrails_quackbear_bundle
+    displayName: Quackbear Bundle
+    displayPrice: 
+  - sku: duckrails_huggy_bundle
+    displayName: Huggy Bundle
+    displayPrice: 
+  - sku: duckrails_scrap_duck_bundle
+    displayName: Scrap Duck Bundle
+    displayPrice: 

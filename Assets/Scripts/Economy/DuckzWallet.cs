@@ -111,7 +111,7 @@ public class DuckzWallet : MonoBehaviour
     /// <summary>A durable Meta SKU the server has granted, or Meta reports on this device.</summary>
     public bool OwnsSku(string sku) => !string.IsNullOrEmpty(sku) && (entitlements.Contains(sku) || platformOwned.Contains(sku));
 
-    // Price and durable flag from duckz_economy.json, once GET /store has loaded.
+    // Price and durable flag from duckrails_economy.json, once GET /store has loaded.
     public bool TryListed(string key, out int price, out bool durable)
     {
         if (!string.IsNullOrEmpty(key) && listed.TryGetValue(key, out ListedItem item))
