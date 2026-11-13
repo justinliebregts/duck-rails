@@ -43,6 +43,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Furnace Polygon flames — queued 2026-11-12
+- Commit(s): uncommitted.
+- Changed: `RailFurnaceModule` spawns `FX_Fire_Big_02` (idle, already in `Assets/Plugins/PolygonParticleFX`, identical to the arpg copy) at the firebox; emission fades to 12% (`outOfFuelEmission`) when `PhotonSession.CurrentFuel` is 0 and back up on refuel. Each committed coal deposit plays `FX_Fire_Explosion_01` once on every client, from the same path as the "+N" fuel popup. Prefab refs live in `Furnace.prefab`; `fxScale` 0.25 is a first guess.
+- Cheap checks: compile clean; prefab references resolve; burst bounds ~1.7 m at scale 0.25. No Play Mode run.
+- Setup: two clients on the train, a late joiner.
+- Check: flames burn idly; at 0 fuel they dwindle; dropping coal in gives a burst visible to the other client; size/position suit the firebox opening.
+- Needs human: scale/position feel (headset).
+- Priority: normal
+- Mode: fix-on-fail
+
 ### Quackbear, Huggy and Scrap Duck bundles — queued 2026-11-12
 - Commit(s): uncommitted.
 - Changed: compound bundle wall, three rigged avatars, separate four-slot bag and frying-pan placeholders, existing independent 120-second bag/weapon cooldowns and no avatar cooldown. See `docs/character-bundles.md`.

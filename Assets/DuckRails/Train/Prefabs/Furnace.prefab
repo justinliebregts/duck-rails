@@ -11936,6 +11936,10 @@ MonoBehaviour:
   acceptanceHalfExtents: {x: 0.9, y: 0.22, z: 0.5}
   fire: {fileID: 1617240281754291109}
   smoke: {fileID: 3173130103059132806}
+  idleFirePrefab: {fileID: 1345027383935582, guid: 508c9f007a2bf724d88361f16953bbac, type: 3}
+  coalBurstPrefab: {fileID: 1809022330002312, guid: ed511b7776af6174e9b1255c7a81e59c, type: 3}
+  fxScale: 0.25
+  outOfFuelEmission: 0.12
   fuelTextFont: {fileID: 11400000, guid: 2a9e4b84460fc644e86fff0c9e6b1da0, type: 2}
   fuelTextMaterial: {fileID: 2100000, guid: f36f24f9219f4143bfd917d0f4cd1772, type: 2}
   fuelTextEffect: {fileID: 11400000, guid: 83eba2cdb6af495c9f9096cca7982375, type: 2}
