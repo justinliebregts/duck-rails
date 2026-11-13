@@ -44,6 +44,63 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ## Pending
 ### Furnace fuel popup — queued 2026-11-12
 - Dropping coal into the furnace floats a "+N" (N = per-run `RailResourceBalance.CoalValue`, e.g. +12.5 solo) up from the firebox opening, using the gold crate's `GoldRewardText` look. Shown on every client once per committed deposit; late joiners do not replay old ones. Check solo and two-client; verify the number matches the gauge gain and reads well. Compile/Console checked only; queued for playtest.
+
+### Broad block reverb — queued 2026-11-12
+- Commit(s): uncommitted.
+- Changed: 25 box zones across Final Bridge (3), Farm (6), Skyscraper (4), Convenience Store (4), Motel (4), Container Yard (4). Helicopter Shop excluded. See `docs/block-reverb.md` for placements/tuning.
+- Cheap checks: installer compiled; saved 25-zone count, enabled components, child references, positive sizes and matching fade radii pass; Console error/exception query empty. Existing serialized prefab objects preserved. No Play Mode run.
+- Setup: visit all six blocks in Test Block Order, then two real clients with late join; headset listening separately.
+- Check: smooth entry/exit; dry open railway except finale tunnel; restrained tower/container reflections; stronger tunnel/cellar/silo tails. Check cellar versus farmhouse, motel wings/change-room partition, container roof and skybridge transitions. Hear item impacts/footsteps and peer voice clearly; each client follows its own listener location. Tunnel fades on moving-train entry/exit; no lingering reverb after leaving/unloading a block.
+- Needs human: audio quality, voice intelligibility, headset transition feel and Quest performance. Manual-only listening acceptance.
+- Priority: normal.
+
+### Container Yard north yard, fences and open containers — queued 2026-11-12
+- Latest ground/spawn revision supersedes prior pool/marker evidence: main ground repeats at 12 m instead of 3 m; 168 coal / 142 gold / 32 enemy candidates redistributed across the updated yard, with unchanged runtime scaling. 3,092 editor checks pass, including all 342 supported/clear candidates and all 800 crew/seed cases per selector; 1,191 lighting bindings re-exported. See `validation/container-yard-redistribution/`.
+- Redistribution checks: inspect loot in the shed workbenches/lower shelves, repair-container and trailer interiors, dock, tank-service corners, machinery, main container interiors and intended roof/climb rewards. Confirm natural reach, item settling, bilateral/quadrant encounters, low-eye ground texture scale and peer agreement. The old unsupported counterweight coal marker has been moved and its support issue is resolved. No Play Mode run for this revision.
+- North extension: approved repair shed with workbenches/dismantled container, enterable truck trailer and loading dock, static forklift/pallet climb, two horizontal propane tanks and two baked floodlights. Original markers/poses/tuning retained. Additional 1,776 editor checks and six ground-route connectivity checks pass; navigation/lighting rebuilt, 1,191 total valid bindings including all 33 new combined renderers. See `validation/container-north-yard/`.
+- North checks: walk around forklift into shed, inspect workbench/door/chain collision, traverse dock steps and threshold into trailer, climb pallets onto the fallen container, walk between/around propane tanks, confirm tank/support/valve contact and natural ground-enemy pursuit into the new interiors. Carry/drop items on the dock/trailer and compare both peers/late join. Headset night readability, dark rear-shed pocket and Quest frame time remain manual. No Play Mode run for this extension.
+- Commit(s): uncommitted.
+- Changed: east/west fences at X +/-47 m with continuous 9 cm wires, terminal posts and gap-free collision; four ground interiors per side, new Row 1 and existing Row 4 search openings face the tracks.
+- Historical fence/interior checks: Unity 6000.3.24f1 compiled; 2,052 checks passed with 1,158 lighting bindings. The then-unsupported counterweight coal is resolved by the latest redistribution above. No Play Mode run.
+- Setup: Container Yard first in Test Block Order; desktop then two real clients with late join; worn Quest separately.
+- Check: walk into all eight interiors, carry/drop items through new openings, retain roof/climb routes; continuous fence contact along both sides and no seam protrusions or railway end caps; enemies navigate the opened interiors; both clients agree on geometry/loot and lighting loads correctly.
+- Needs human: headset door/fence contact, nighttime wire/interior readability and Quest performance.
+- Priority: normal.
+
+### Hand flashlight stays on after release — queued 2026-11-12
+- Commit(s): uncommitted.
+- Changed: `HandFlashlight` no longer turns off on release/pickup; the owner turns an unheld light off after 60 s (`abandonTimeout`). Stashing still turns it off.
+- Cheap checks: edit only; compile not yet confirmed in Console.
+- Setup: two clients; one holds a flashlight and turns it on.
+- Check: drop it - light stays on for both clients; picking it back up before 60 s keeps it on; left alone ~60 s it turns off with the off sound on both clients; stash turns it off.
+- Needs human: none
+- Priority: normal
+
+### Train distance display — queued 2026-11-12
+- Commit(s): uncommitted
+- Changed: new `RailDistanceDisplay` + "Distance display" TMP label above the fuel gauge on `DuckRailsTrain.prefab`; shows `DISTANCE n m`, `RailTrain.Distance` rescaled so the bridge area (`RailRoute.FinaleStart`, ~780 m of track) reads ~1000 m (run ends ~1096 m). Display only; label hides with the other running labels at run end. Compiles clean, Console clear; not run in Play Mode.
+- Setup: any expedition, one client, then a late joiner.
+- Check: counter starts at 0 at departure, rises smoothly with speed, reads ~1000 at the bridge approach, is legible from the driver position, and matches on a late joiner.
+- Needs human: legibility/placement in headset.
+- Priority: low
+- Mode: fix-on-fail
+
+### Motel community leisure layout — queued 2026-11-12
+- Latest correction supersedes prior pool counts: 48 coal / 64 gold / 32 enemy candidates, unchanged runtime spawn rules. All markers replaced for the current layout; all 100 seeds × crew sizes 1–8 meet full resource/enemy targets, quadrant quotas and spacing (2,691 checks). Inspect reach/return routes, bus-roof gold access, pool basin/upper-room enemy pursuit, ceiling-mounted lights, downward streetlight readability, low-poly wheels, six benches and outward golf/rink sides. No Play Mode run for this correction.
+- Detail feedback adds nine unique greens/duck/shoot-through house, shack counter/clubs, golf/rental mesh signs, boarded windows/green handled doors, guest furniture/bathrooms, roof equipment, grey/blue cars, continuous stair/wall/rink surfaces and Quackville pixel materials. Inspect all board/stair/rail joints, furnished-room and bathroom circulation, house passage, wall seams at moving viewpoints, material scale and white-only facade lighting. Remains queued; no Play Mode authorization for this batch.
+- Detail checks: 4,186 editor assertions pass, all 24 loot candidates supported/clear and all 18 enemy markers grounded; navigation rebuilt. Current saved layout contains no waterslide. Follow the current prefab and detail notes rather than the older slide-specific checks below.
+- Screenshot revision supersedes original layout: seven closed rooms, half-width doors, room 101/102 connection, unglazed windows, stair rails; mesh neon/car improvements; nine-hole golf and relocated shack; north rink/rental entrances, white/blue rink walls; simple side fences, varied convex-collider trees; food vendor/exterior left cubbies/loungers; deeper pool, two diving boards and straight slide; brighter lights.
+- Revision checks: 2,186 assertions pass; all loot support/clearance and named doorway checks pass. Check natural room/window passage, closed-room exclusion, internal door, all pool/board/slide recovery, vendor freezer/fryer/shelf/cubby reach, north rental/rink access, fences/trees, lights and peer agreement. Lighting brightness and Quest performance remain manual acceptance.
+- Commit(s): uncommitted.
+- Changed: separate public pool with change rooms/cubbies/static old waterslide; mini-golf, roller rink, five buses versus two retained cars; motel retained.
+- Cheap checks: 2,114 editor assertions pass; all loot support/clearance checked; offline navigation rebuilt. See docs/roadside-motel-layout.md and docs/validation/motel-leisure/.
+- Setup: motel-first private expedition, desktop then two real clients/late join; worn Quest separately.
+- Check: pool entry/recovery and slide stairs/flume; open cubbies and shower/bench circulation; rink/rental/golf access; bus clearances; carried-item settling; enemy routes and boarding; identical environment/loot across peers.
+- Candidate-capacity limitation resolved by the latest correction: 48/64/32 pools pass eight-player maxima and 800 enemy crew/seed selections. Natural gameplay balance and route accessibility still need playtest acceptance.
+- Needs human: natural VR reach/locomotion, slide fall recovery, darkness, scenery review and Quest performance.
+- Priority: normal.
+- Status: queued for playtest; no Play Mode run for this change.
+
 ### Convenience Store screenshot polish and arcade mascot — queued 2026-11-12
 - Basketball court: rim segments, net strands and playing surface now have fitted boxes; all 121 court colliders pass editor ray checks, hoop centres and south entrance remain clear, and navigation is rebaked. Check hand/item/player contact in the existing playtest.
 - Crossing arms: one continuous fitted BoxCollider per lowered arm now replaces segmented collision. Editor rays hit along both full lengths; check avatar/hand/carried-item contact at the tips and stripe seams. Queued for playtest.

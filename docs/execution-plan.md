@@ -1,5 +1,29 @@
 # Duck Rails — execution plan
 
+- [x] November 12: install 25 broad box reverb zones across six selected prefabs; saved reference/settings checks and Console query pass. See [block reverb](block-reverb.md).
+- [ ] Listen to reverb transitions, voice clarity, adjacent-floor overlap and target-headset performance; queued for playtest.
+
+- [x] November 12 Container Yard: reduce main-ground texture repetition and redistribute pools to 168 coal / 142 gold / 32 enemy candidates, retaining per-run rules. All 3,092 placement/reference/crew-seed checks pass; lighting rebaked with 1,191 valid bindings. Previously unsupported counterweight coal placement resolved. See docs/container-yard-layout.md.
+- [ ] Review redistributed yard loot reach/climb rewards, natural enemy encounters, broad ground texture scale and real-client/headset appearance. Queued for playtest.
+
+- [x] November 12: install approved Container Yard north repair/loading yard and paired horizontal propane tanks, preserving all original transforms/lights/spawn markers. 1,776 geometry checks, six ground-route checks and 1,191 lighting bindings pass; navigation/lighting rebuilt. See docs/container-yard-layout.md.
+- [ ] North yard: headset shed/trailer/dock/pallet traversal, tank contact, carried items, natural enemy pursuit, nighttime appearance and Quest cost. Queued with Container Yard playtest.
+
+- [x] November 12 Container Yard fence/interior revision installed: 1 m side inset, continuous 9 cm wires, four open containers per bank and track-facing search doors. Navigation/lighting rebuilt; 2,052 editor checks and 1,158 saved lighting bindings pass. See docs/container-yard-layout.md for the separate existing unsupported coal marker.
+- [ ] Container Yard fence/interior revision: natural door traversal, fence contact/seams, enemy pursuit, nighttime/headset appearance and peer agreement. Queued for playtest.
+
+- [x] November 12 motel correction: golf/rink outward faces, mounted room fixtures, downward whiter streetlights, half-triangle car wheels, six change-room benches and complete spawn replacement. 48 coal / 64 gold / 32 enemy candidates pass support/reference checks and all 800 crew/seed capacity cases per selector; 2,691 spawn assertions plus focused geometry checks pass. See docs/roadside-motel-layout.md.
+- [ ] Motel correction: natural item/bench/cubby reach, bus-roof reward access, revised enemy routes and actual headset lighting/performance. Queued for playtest.
+
+- [x] November 12 motel detail feedback installed: nine unique greens/duck/house, shack contents and mesh signs, boarded windows/handled green doors, room furnishings, grey/blue cars, rooftop equipment, joined wall/stair/rink surfaces, supported diving access, Quackville pixel textures and white-only facade fixtures. 4,186 editor checks pass; navigation rebuilt. See docs/roadside-motel-layout.md.
+- [ ] Motel detail pass: natural furnished-room/bathroom movement, diving/rail joints, moving-view seam review, night lighting, real-client agreement and Quest performance. Queued for playtest.
+
+- [x] Motel screenshot revision batch installed: room/door/window/stair changes, mesh neon, cars, nine-hole golf/rink/side fences/trees, vendor and pool revisions, brighter fixtures. 2,186 editor checks pass; navigation rebuilt. See docs/roadside-motel-layout.md.
+- [ ] Revised motel: natural narrow-door/window traversal, closed-room exclusion, internal connection, pool/board/slide recovery, vendor/cubby reach, night lighting, multiplayer and Quest performance. Queued for playtest.
+
+- [x] November 12 motel: install approved community pool/change rooms/cubbies/waterslide, mini-golf, roller rink and five buses/two cars while preserving the motel. 2,114 focused editor checks pass; navigation rebuilt. See [layout](roadside-motel-layout.md#community-pool-mini-golf-and-roller-rink--november-12-2026).
+- [ ] Motel leisure: headset traversal/recovery/reach, night readability, multiplayer and Quest performance; existing spawn candidate capacity needs separate balancing.
+
 - [x] November 12 Convenience Store collision/sparse-stock correction: canopy and rooftop-model collision, stationary full-size brush hulls, solid-panel collision, nine brown shelf boxes and empty drink coolers. Current poses/pools preserved, local spawn clearance repaired; navigation/lighting rebuilt, 1,848 saved-prefab checks pass. Natural collision/hand/loose-item acceptance remains in the existing playtest queue.
 
 - [x] November 12 Convenience Store round two: preserve user moves/deletions; install requested interior/court/wash/crossing changes, rooftop identifiers/spotlights, tree undersides, shared mesh-neon atlas and store refinements. Redistribute loot after models; rebuild offline navigation/lighting. Compilation and 1,852 saved-prefab checks pass; see docs/convenience-store-layout.md.
