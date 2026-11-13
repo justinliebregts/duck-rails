@@ -91,4 +91,6 @@ Worn-headset hand tracking, reach, locomotion/comfort, visual fit of animated en
 
 ## Run hygiene
 
+Final cleanup is verified after the user's Ready response: Duck Rails is in Edit Mode, not compiling, scenario NotRunning with Default selected; original logical block order/invincibility and desktop/quick-start preferences are restored, and fixture inputs are disarmed. No new playtest was launched for this cleanup. The scenario counts remain unchanged.
+
 No diagnostic report inbox, report script or diagnostic JSON was read. Nothing was pushed, branched, stashed or reverted. Unrelated scene/prefab/code/doc changes remain. Editor resets separated entry groups; related network/traversal subscenarios shared an expedition to test retained state. This is not a claim of a fresh Edit Mode reset for every numbered assertion group. The first OpenXR teardown crash and user restart are recorded in the run notes. Final restoration is recorded in [cleanup](cleanup.txt).

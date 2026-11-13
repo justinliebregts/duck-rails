@@ -1,9 +1,13 @@
-Saved settings restored; live editor cleanup verification pending user/UI response.
+Cleanup complete: saved and live settings restored and independently read back on 2026-11-13 after the user's Ready response.
 Regression execution complete; no new test should be started.
 RailRegressionLauncher.Stop was requested. The main editor remained in Play/transition when restoration was attempted, so its guard refused to change settings.
 The temporary test-only RailColdLoginProbe.cs/.meta was removed; source retained in fixtures/RailColdLoginProbe.cs.txt.
 MCP stopped responding during subsequent script reload; the host editor process remains responsive. No second crash was inferred from sandbox-hidden process listings.
 User was asked to dismiss any modal and leave Duck Rails in Edit Mode, because desktop UI control was stopped after the earlier Escape.
 Restored directly while MCP was stalled: exact two Unity EditorPrefs registry keys Duck.DesktopPlay=false and accidental DuckRails.DesktopPlay=false; project QuickStart was read as false; UserSettings/RailTestBlockOrder.asset now contains Farm/Canyon/Container/Skyscraper in that order, useOrder=true and invincibility=true; saved PlayModeUserSettings last configuration reset to its default/null asset reference; remote input and known fixture-arm files cleared.
-These are saved values, not a verified live ScriptableSingleton/cache restoration. Still pending: user dismisses any modal, editor exits Play/transition, scenario reaches NotRunning, and live settings are read back. The earlier temporary recovery-process launch and other Unity project were not killed during this handoff.
+At the initial handoff these were saved values only; live verification was pending. That handoff is now resolved by the live restoration and independent readback below. The earlier temporary recovery-process launch and other Unity project were not killed during this handoff.
 Original temporary byte backup was lost during the earlier crash; byte-identical restoration cannot be claimed.
+
+Live restoration verified UTC=2026-11-13T15:55:04.5689258Z project=X:/Work/duck-rails/Assets play=False scenario=NotRunning desktop=False quick=False order=farm-silos-v1,canyon-v1,container-yard-v1,skyscraper-works-v1 invincible=True
+Logical restoration only: earlier crash erased byte backup.
+Final readback UTC=2026-11-13T15:55:25.5808049Z play=False compiling=False scenario=NotRunning config=Default desktop=False extraDesktop=False quick=False order=farm-silos-v1,canyon-v1,container-yard-v1,skyscraper-works-v1 useOrder=True invincible=True disarmed=True
