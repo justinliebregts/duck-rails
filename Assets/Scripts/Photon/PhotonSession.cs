@@ -19,7 +19,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public static object[] DriveGripState => Get(DriveGripProperty, new object[] { "", 0, "", 0f });
     public static int DriveGripActor => Phase == RailPhase.Running && DriveGripState[0] is string run && run == RunId ? (int)DriveGripState[1] : 0;
     static readonly TypedLobby AutomaticLobby = new TypedLobby("rails-auto-v2", LobbyType.Default);
-    bool? requestedTrainMoving;
+    float? requestedTrainThrottle;
     string requestedTrainRun;
     RailCrewReturn crewReturn;
     public const string Region = "us", PlayScene = GameScenes.Compound;
@@ -188,7 +188,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (HasRoomRequest || quitting) return;
         if (!IsCrewRequest(next)) { crewReturn?.Dispose(); crewReturn = null; }
-        requestedTrainMoving = null;
+        requestedTrainThrottle = null;
         if (Kind == RailSessionRules.CompoundKind) previousCompound = PhotonNetwork.CurrentRoom.Name;
         LastError = ""; request = next; requestedRoom = room;
         allocationAttempt = 0;
@@ -551,7 +551,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             !(sender.CustomProperties[RailSessionRules.Ready] is string ready) || ready != RunId + ":" + RailPhase.Running)) return;
         if (!driveLease.Apply(actor, token, operation, progress, PhotonNetwork.Time)) return;
         driveLeaseDirty = true;
-        QueueTrainControl(run, driveLease.Progress >= 1f);
+        QueueTrainControl(run, RailDriveLease.SpeedFraction(driveLease.Progress));
     }
     void TickDriveLease()
     {
@@ -577,27 +577,28 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             if (Phase == RailPhase.Running) QueueTrainControl(RunId, false);
         }
     }
-    void QueueTrainControl(string run, bool moving)
+    void QueueTrainControl(string run, bool moving) => QueueTrainControl(run, moving ? 1f : 0f);
+    void QueueTrainControl(string run, float throttle)
     {
         requestedTrainRun = run;
-        requestedTrainMoving = moving;
+        requestedTrainThrottle = Mathf.Clamp01(throttle);
         FlushTrainControl();
     }
     void FlushTrainControl()
     {
-        if (!requestedTrainMoving.HasValue) return;
+        if (!requestedTrainThrottle.HasValue) return;
         if (!IsRailsRoom || !PhotonNetwork.IsMasterClient || HasRoomRequest ||
             Phase != RailPhase.Running || requestedTrainRun != RunId)
-        { requestedTrainMoving = null; return; }
+        { requestedTrainThrottle = null; return; }
         // Keep the latest request until observed in room state. Another commit may
         // be in flight, including an earlier GO followed immediately by STOP.
         if (!WorldReady || (pendingRevision >= 0 && Time.realtimeSinceStartupAsDouble - lastCommit < 1)) return;
         double now = PhotonNetwork.Time;
-        float target = requestedTrainMoving.Value && CurrentFuel > 0f ? RailTestTools.TrainCruiseSpeed : 0f;
+        float target = CurrentFuel > 0f ? requestedTrainThrottle.Value * RailTestTools.TrainCruiseSpeed : 0f;
         var command = Get(RailSessionRules.Motion, new object[] { PhotonNetwork.Time, 0f, 0f, 0f });
         if (command.Length == 4 && command[3] is float currentTarget && currentTarget == target && (!driveLeaseDirty || DriveGripMatches()))
         {
-            if (pendingRevision < 0) { requestedTrainMoving = null; driveLeaseDirty = false; }
+            if (pendingRevision < 0) { requestedTrainThrottle = null; driveLeaseDirty = false; }
             return;
         }
         RailSessionRules.EvaluateTrain(command, Get(RailSessionRules.Fuel, 100f), now,
@@ -623,7 +624,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public override void OnMasterClientSwitched(Player master)
     {
-        requestedTrainMoving = null;
+        requestedTrainThrottle = null;
         driveLease.Reset(); driveLeaseRun = null;
         pendingRevision = -1; nextAuthorityTick = 0;
         if (master.IsLocal) DuckzAnalytics.SessionEvent("master_changed");
@@ -754,7 +755,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public override void OnDisconnected(DisconnectCause cause)
     {
-        requestedTrainMoving = null;
+        requestedTrainThrottle = null;
         driveLease.Reset(); driveLeaseRun = null;
         if (quitting) return;
         operationPending = false; WorldReady = false;

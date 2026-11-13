@@ -12,7 +12,7 @@ public static class RailDriveChecks
         Check(lease.Apply(1, "left", 0, 1, 10) && lease.Actor == 1 && lease.Progress == 0, "Grip starts in STOP even with a GO payload");
         Check(!lease.Apply(2, "other", 0, 0, 10) && !lease.Apply(1, "right", 0, 0, 10), "Another player or hand cannot steal an active hold");
         Check(!lease.Apply(2, "other", 1, 1, 10) && !lease.Apply(2, "other", 2, 0, 10), "Non-holder cannot drive or release");
-        Check(lease.Apply(1, "left", 1, .5f, 10.1) && lease.Progress == .5f, "Partial hand travel replicates without GO");
+        Check(lease.Apply(1, "left", 1, .5f, 10.1) && lease.Progress == .5f && Mathf.Approximately(RailDriveLease.SpeedFraction(lease.Progress), .375f), "Partial hand travel replicates and requests proportional speed");
         Check(lease.Apply(1, "left", 1, 1, 10.2) && lease.Progress == 1 && lease.Expires == 11.7, "Held GO renews the timeout");
         Check(lease.Apply(1, "left", 2, 0, 10.3) && lease.Actor == 0 && lease.Progress == 0, "Release clears ownership and GO");
         Check(!lease.Apply(1, "left", 1, 1, 10.4), "Delayed heartbeat cannot reacquire after release");
@@ -29,6 +29,16 @@ public static class RailDriveChecks
             Mathf.Approximately(RailControl.ArcTravel(-35, onPoint), 1), "Arc travel follows both physical end stops");
         Check(Mathf.Approximately(RailControl.ArcTravel(-35, Vector3.up), .5f) &&
             Mathf.Approximately(RailControl.ArcTravel(-35, onPoint * 2), 1), "Arc projection preserves midpoint and ignores radial reach");
+        Check(RailDriveLease.SpeedFraction(0)==0 && RailDriveLease.SpeedFraction(.2f)==0 && RailDriveLease.SpeedFraction(-1)==0,
+            "First twenty percent of travel is a speed dead zone");
+        Check(Mathf.Approximately(RailDriveLease.SpeedFraction(.6f),.5f) && RailDriveLease.SpeedFraction(1)==1,
+            "Remaining travel maps linearly to cruise speed");
+        Check(RailControl.ReturnProgress(1,0,.25f)==1 && Mathf.Approximately(RailControl.ReturnProgress(1,.125f,.25f),.5f) && RailControl.ReturnProgress(1,.25f,.25f)==0,
+            "Release animation starts continuously, passes midpoint and ends at a quarter second");
+        Check(RailControl.ReturnProgress(.4f,.25f,.25f)==0 && RailControl.ReturnProgress(1,0,0)==0,
+            "Partial releases finish and zero duration is safe");
+        Check(Mathf.Approximately(RailControl.GripTravel(.5f,0,Vector3.up),.5f) && RailControl.GripTravel(.5f,0,offPoint)<.0001f,
+            "Regrip during return preserves current travel and can pull backward");
         var root = new GameObject("Drive fixture");
         try
         {
@@ -57,7 +67,7 @@ public static class RailDriveChecks
             Check(off.z < 0 && handle.localPosition.z > 0 && Mathf.Approximately(handle.localPosition.magnitude, .4f), "Handle swings forward about the base rather than its centre");
         }
         finally { UnityEngine.Object.DestroyImmediate(root); }
-        Debug.Log("RAILS VR DRIVE: 20 checks passed");
+        Debug.Log("RAILS VR DRIVE: 25 checks passed");
     }
     public static void RunBatch()
     {

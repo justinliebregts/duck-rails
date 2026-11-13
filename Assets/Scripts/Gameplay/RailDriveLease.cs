@@ -25,6 +25,8 @@ public sealed class RailDriveLease
         return true;
     }
     public static float Travel(float forwardMetres) => Mathf.Clamp01(forwardMetres / .28f);
+    // Applied on the master; replicated progress stays physical lever travel, not speed.
+    public static float SpeedFraction(float progress) => Mathf.InverseLerp(.2f, 1f, progress);
     // Separate detents prevent small hand tremors from toggling the train.
     public static bool ForwardDetent(bool forward, float travel) => forward ? travel > .72f : travel >= .85f;
 }

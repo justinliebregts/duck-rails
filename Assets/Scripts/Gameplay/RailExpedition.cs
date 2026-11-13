@@ -317,7 +317,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         // Whoever holds the drive lease with the handle pushed forward is "holding the throttle".
         int driver = PhotonSession.DriveGripActor;
         bool driving = driver != 0 && PhotonSession.DriveGripState != null && PhotonSession.DriveGripState.Length > 3 &&
-            PhotonSession.DriveGripState[3] is float lever && lever > .5f;
+            PhotonSession.DriveGripState[3] is float lever && RailDriveLease.SpeedFraction(lever) > 0;
         foreach (var (p, pos) in present)
         {
             if (driving && p.actor == driver) p.throttleSeconds += dt;

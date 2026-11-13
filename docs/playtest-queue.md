@@ -42,6 +42,27 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ```
 
 ## Pending
+### Matching fuel/distance backing — queued 2026-11-12
+- Shared backing mesh/material; original fuel text, ten yellow segments and dark sockets retained. Compile and serialized UI/gameplay preservation checks pass. Check headset appearance and fuel readability/full-to-empty state. No Play Mode run.
+
+### Throttle hand offset, variable speed and return — queued 2026-11-12
+- Commit(s): uncommitted.
+- Changed: live palm offset, speed dead zone to 20% then proportional speed, retained forward snap, immediate STOP with 0.25s visual return; regrip preserves current angle. Prior cockpit works well in headset per user report.
+- Cheap checks: Unity compile, 25 drive and session EditMode checks pass; Console error/exception query empty; saved prefab/scene tuning defaults checked.
+- Setup: headset then two real clients with late join, disconnect and host handoff; do not treat user report of prior art as acceptance of these new behaviors.
+- Check: tune Y/-Z offset while holding without altering tracked input or breakaway; speed zero through 20%, intermediate speed thereafter, forward detent at 85%; return finishes in ~0.25s without instant snap, including release before network acknowledgement and regrip mid-return. Remote visual and train speeds agree; fuel is distance-based; timeout/disconnect/handoff brake; desktop T remains full-speed/STOP.
+- Needs human: palm clearance on both hands, variable-speed feel and detent/return feel.
+- Priority: normal.
+
+### Approved cockpit and lowered throttle axle — queued 2026-11-12
+- Commit(s): uncommitted.
+- Changed: solid grip joining three arms/slots, axle 18 cm lower, faceted horn, distance bezel and coal/fire/fuel picture. See `docs/cockpit-v2.md`.
+- Cheap checks: compilation, saved bindings/fonts, lowered neutral geometry, 71-angle slot envelope; EditMode render reviewed.
+- Setup: solo then two real clients, late join and host handoff.
+- Check: full STOP/GO arc, grip at either end of the wide bar, detent/release/breakaway, replicated grip, horn press/release, live distance and fuel. No arm/housing clipping at either end; no stale ownership on disconnect.
+- Needs human: headset reach and increased hand travel, label/card readability and moving lighting; manual-only.
+- Priority: normal.
+
 ### Furnace fuel popup — queued 2026-11-12
 - Dropping coal into the furnace floats a "+N" (N = per-run `RailResourceBalance.CoalValue`, e.g. +12.5 solo) up from the firebox opening, using the gold crate's `GoldRewardText` look. Shown on every client once per committed deposit; late joiners do not replay old ones. Check solo and two-client; verify the number matches the gauge gain and reads well. Compile/Console checked only; queued for playtest.
 

@@ -689,3 +689,7 @@ Use the user's farm-authored Moonlight as one shared baked directional-light pre
 November 11 Skyscraper polish: approved workers' compound south and foundation/heavy works north, with the existing towers untouched. Added 120 coal and 120 gold candidates on +12/+16 m floors (270 of each total); per-run counts unchanged. See [yard polish](skyscraper-layout.md#approved-yard-polish--november-11-2026). Gameplay/headset review queued.
 
 November 11 Skyscraper lighting follow-up: repair shelter workbench legs, brighten existing spots and add warm yard floods/cool fill plus upper-floor accents, using the user's construction-night references. All lighting baked; existing tower geometry and loot quantities retained. See docs/skyscraper-layout.md; headset review queued.
+
+November 12 approved cockpit: one solid grip links three arms through fore/aft slots, with the axle lowered 18 cm beneath the dashboard; faceted horn, numeric-only distance and coal/fire/fuel picture. Implemented; live acceptance queued. See [cockpit](cockpit-v2.md).
+
+November 12 throttle polish: proportional speed above a 20% travel dead zone, retaining the full-forward snap; immediate STOP command on release with a 0.25-second visual lever return. Rendered hand offset is live-tunable. Previous cockpit works well in headset per user report; new behavior queued. See [cockpit](cockpit-v2.md).

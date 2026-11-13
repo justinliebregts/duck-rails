@@ -856,3 +856,7 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] November 11: document Farm-derived 1 m side-fence centerline inset; install two 3 m concrete boundary walls on Skyscraper with world-scaled repeating UVs. See docs/side-fences.md and docs/skyscraper-layout.md.
 - [ ] Skyscraper boundary wall contact, seam transitions and headset texture/readability acceptance (queued for playtest).
+
+- [ ] November 12: headset and multiplayer acceptance of approved cockpit art and lowered throttle axle; installed with compile/EditMode checks. See [cockpit](cockpit-v2.md).
+
+- [ ] November 12 throttle polish: user reports prior cockpit/pivot works well in headset; validate new palm offset, proportional speed and 0.25-second visual return on headset/two clients. Compile and 25 drive plus session EditMode checks pass. See docs/cockpit-v2.md.

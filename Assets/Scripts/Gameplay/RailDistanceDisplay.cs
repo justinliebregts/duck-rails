@@ -7,6 +7,7 @@ public sealed class RailDistanceDisplay : MonoBehaviour
 {
     public const float BridgeMetres = 1000;
     public TMP_Text label;
+    public bool stacked;
     int lastShown = -1;
     void Update()
     {
@@ -15,6 +16,6 @@ public sealed class RailDistanceDisplay : MonoBehaviour
         int metres = Mathf.Max(0, Mathf.RoundToInt(train.Distance * BridgeMetres / route.FinaleStart));
         if (metres == lastShown) return;
         lastShown = metres;
-        label.text = "DISTANCE  " + metres + " m";
+        label.text = stacked ? "DISTANCE\n<size=160%>" + metres + " m</size>" : "DISTANCE  " + metres + " m";
     }
 }
