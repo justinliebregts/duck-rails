@@ -1,0 +1,14 @@
+START Unity 6000.3.24f1 solo desktop shared rig; synthetic palm poses, ordinary grip input; no T or ForceGrab
+Neutral hand positioned at OFF
+PASS right normal grip acquired shared lease and visual attachment
+PASS smooth arc reaches networked GO
+PASS hold/jitter retains GO; attached palm and closed index; tracking gap=0.0836
+PASS pull-back cuts GO while grip stays held
+PASS re-push resumes GO
+Releasing grip at forward stop
+PASS release clears lease and visual attachment
+Reacquired for breakaway
+Moving hand sideways away from grip
+PASS sideways breakaway clears ownership
+Neutral hand positioned at OFF
+FAIL stage=1 Grip did not acquire lever; hand=(0.05, 1.27, 101.66) palm=(0.05, 1.24, 101.66) target=(0.05, 1.24, 101.66)

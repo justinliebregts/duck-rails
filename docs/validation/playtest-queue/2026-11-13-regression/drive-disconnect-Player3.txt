@@ -1,0 +1,16 @@
+2026-11-13T09:33:36.2287198Z stage=0 inRoom=True phase=Running
+2026-11-13T09:33:40.2311220Z stage=1 inRoom=True phase=Running
+2026-11-13T09:33:43.2291789Z PASS stage=1 lease=3 expected=3 speed=0 master=lebo clients=3
+2026-11-13T09:33:44.2398266Z stage=2 inRoom=True phase=Running
+2026-11-13T09:33:46.4424277Z PASS stage=2 lease=0 expected=0 speed=0 master=lebo clients=3
+2026-11-13T09:33:48.2312130Z stage=3 inRoom=True phase=Running
+2026-11-13T09:34:08.2388129Z PASS stage=3 lease=0 expected=0 speed=0 master=lebo clients=3
+2026-11-13T09:34:10.2270140Z stage=4 inRoom=True phase=Running
+2026-11-13T09:34:13.2207950Z PASS stage=4 lease=1 expected=1 speed=0 master=lebo clients=3
+2026-11-13T09:34:14.2494628Z stage=5 inRoom=True phase=Running
+2026-11-13T09:34:16.4318044Z PASS stage=5 lease=0 expected=0 speed=0 master=David clients=3
+2026-11-13T09:34:18.2279167Z stage=6 inRoom=True phase=Running
+2026-11-13T09:34:36.2422820Z PASS stage=6 lease=0 expected=0 speed=0 master=David clients=3
+2026-11-13T09:34:38.2393428Z stage=7 inRoom=True phase=Running
+2026-11-13T09:34:38.2393428Z PASS all three returned OFF; no reacquisition
+2026-11-13T09:34:38.2393428Z DONE

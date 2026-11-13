@@ -1,0 +1,34 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using UnityEngine;using UnityEditor;
+internal class CommandScript : IRunCommand {
+ const string Path="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-13-regression/traversal-additional.txt";
+ class Route {public string label;public Vector3 a,b;}
+ List<Route> routes=new List<Route>();int index,stage;double entered;NewPlayer p;SimulatedRigInput sim;Vector3 origin;Quaternion rotation;
+ void Add(string block,string label,Vector3 a,Vector3 b){var t=UnityEngine.Object.FindObjectsByType<RailBlock>(FindObjectsSortMode.None).First(x=>x.id==block).transform;routes.Add(new Route{label=label,a=t.TransformPoint(a),b=t.TransformPoint(b)});}
+ void Log(string s)=>File.AppendAllText(Path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ public void Execute(ExecutionResult r){File.WriteAllText(Path,"Actual simulated room-scale input through NewPlayer collision. Warp only to each route start; head XZ steers at 1.8m/s. Endpoint tolerance .3m; 20-second timeout. No headset acceptance.\n");p=NewPlayer.instance;sim=SimulatedRigInput.Instance;origin=p.transform.position;rotation=p.transform.rotation;sim.SetSimulating(true);sim.UseInjectedInput=true;RailRemoteBridge.Set(sim,"yaw",0f);p.rb.isKinematic=false;
+ foreach(int sign in new[]{-1,1}){
+ Add("bridge-finale-v1","south inward ramp "+sign,new Vector3(sign*8,0,40),new Vector3(sign*12,2,40));
+ Add("bridge-finale-v1","middle ramp "+sign,new Vector3(sign*27,2,48),new Vector3(sign*27,4,56));
+ Add("bridge-finale-v1","upper ramp "+sign,new Vector3(sign*26,4,64),new Vector3(sign*26,8,72));
+ Add("bridge-finale-v1","river lower ramp "+sign,new Vector3(sign*16,-11.5f,88.5f),new Vector3(sign*35.5f,-5.75f,88.5f));
+ Add("bridge-finale-v1","river upper ramp "+sign,new Vector3(sign*35.5f,-5.75f,83),new Vector3(sign*16,0,83));}
+ var silo=new[]{new Vector3(15,0,90.5f),new Vector3(15,4,106),new Vector3(22,5.5f,106),new Vector3(22,6,110),new Vector3(15,6.5f,110),new Vector3(15,7.5f,98)};
+ for(int i=1;i<silo.Length;i++){Add("farm-silos-v1","silo uphill "+i,silo[i-1],silo[i]);Add("farm-silos-v1","silo downhill "+i,silo[i],silo[i-1]);}
+ Add("farm-silos-v1","playground platforms and both bridges",new Vector3(18,2.4f,146),new Vector3(40,2.4f,146));
+ Add("farm-silos-v1","ditch dry footbridge",new Vector3(7,0,41),new Vector3(17,0,41));
+ Add("farm-silos-v1","pond bank crossing",new Vector3(18,0,130),new Vector3(40,0,130));
+ Add("convenience-store-v1","wash middle lane",new Vector3(28,0,45),new Vector3(40,0,45));
+ Add("convenience-store-v1","wash rear road",new Vector3(42,0,36),new Vector3(42,0,54));
+ Add("skyscraper-works-v1","south foundation escape",new Vector3(-35,-1.4f,127),new Vector3(-35,0,120));
+ Add("skyscraper-works-v1","north foundation escape",new Vector3(-20,-1.4f,139),new Vector3(-20,0,146));
+ Add("roadside-motel-v1","motel east stair",new Vector3(23.8f,0,53.6f),new Vector3(23.8f,3.6f,60.4f));
+ Add("roadside-motel-v1","motel north stair",new Vector3(11.2f,0,84.8f),new Vector3(11.2f,3.6f,91.6f));
+ Start();EditorApplication.update+=Tick;r.Log("Traversing "+routes.Count+" routes");}
+ void Start(){if(index>=routes.Count){sim.InjectedInput=default;sim.UseInjectedInput=false;p.Warp(origin,rotation);EditorApplication.update-=Tick;Log("DONE");return;}sim.InjectedInput=default;p.Warp(routes[index].a+Vector3.up*.1f,Quaternion.identity);entered=EditorApplication.timeSinceStartup;stage=0;}
+ void Tick(){if(!Application.isPlaying){EditorApplication.update-=Tick;return;}try{RailRemoteBridge.Set(UnityEngine.Object.FindFirstObjectByType<PhotonMasterHandoff>(),"focused",true);var q=routes[index];double age=EditorApplication.timeSinceStartup-entered;if(stage==0){if(age<.7)return;stage=1;entered=EditorApplication.timeSinceStartup;}
+ Vector3 h=p.headCollider.transform.position,delta=q.b-h;delta.y=0;if(delta.magnitude<.3f||age>20){Log((delta.magnitude<.3f?"PASS ":"INCOMPLETE ")+q.label+" head="+h+" remainingXZ="+delta.magnitude+" target="+q.b+" down="+RailExpedition.LocalDown+" supported="+sim.HasBodySupport);index++;Start();return;}var local=p.transform.InverseTransformDirection(delta.normalized*.2f);sim.InjectedInput=new SimulatedRigInput.Frame{move=new Vector2(local.x,local.z)};
+ }catch(Exception e){Log("FIXTURE ERROR "+e);sim.InjectedInput=default;sim.UseInjectedInput=false;EditorApplication.update-=Tick;}}
+}
+
+
+

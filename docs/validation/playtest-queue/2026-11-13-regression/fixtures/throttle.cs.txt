@@ -1,0 +1,115 @@
+using UnityEngine;
+using UnityEditor;
+using System.Linq;
+using Game.Animation;
+internal class CommandScript : IRunCommand {
+ public void Execute(ExecutionResult result) {
+  if(Application.dataPath!="X:/Work/duck-rails/Assets" || !Application.isPlaying || Photon.Pun.PhotonNetwork.CurrentRoom.PlayerCount!=1) throw new System.Exception("Need solo Rails play");
+  var go=new GameObject("Throttle simulated hand trial");
+  go.AddComponent<ThrottleHandTrial>();
+  result.RegisterObjectCreation(go);
+  result.Log("Started real-frame physical grip trial");
+ }
+}
+[DefaultExecutionOrder(-16100)]
+internal class ThrottleHandTrial : MonoBehaviour {
+ SimulatedRigInput sim; NewPlayer player; LocalBodyDriver body; RailControl drive;
+ Vector3 origin, offPalm, cabinPosition; Quaternion originRot; bool oldDisable, oldKinematic, oldInject;
+ SimulatedRigInput.Frame oldFrame;
+ float entered; int stage; bool done; string trace=""; bool left;
+ void Start() {
+  sim=SimulatedRigInput.Instance; player=NewPlayer.instance; body=player.GetComponent<LocalBodyDriver>();
+  drive=Object.FindObjectsByType<RailControl>(FindObjectsSortMode.None).First(c=>c.action==RailControl.Action.Drive);
+  origin=RailTrain.Instance.transform.InverseTransformPoint(player.transform.position); originRot=player.transform.rotation;
+  oldDisable=player.disableMovement; oldKinematic=player.rb.isKinematic; oldInject=sim.UseInjectedInput; oldFrame=sim.InjectedInput;
+  player.Warp(new Vector3(drive.transform.position.x-.12f, player.transform.position.y,drive.transform.position.z-.65f),Quaternion.identity);
+  cabinPosition=RailTrain.Instance.transform.InverseTransformPoint(player.transform.position);
+  player.disableMovement=true; player.rb.isKinematic=true; sim.UseInjectedInput=true;
+  offPalm=drive.transform.InverseTransformPoint(drive.handle.position+Vector3.back*.025f);
+  entered=Time.unscaledTime;
+  Log("START Unity "+Application.unityVersion+" solo desktop shared rig; synthetic palm poses, ordinary grip input; no T or ForceGrab");
+ }
+ void Log(string s) {trace+=s+"\n"; SessionState.SetString("Rails.ThrottleTrial",trace); }
+ void Next(string s) {Log(s);stage++;entered=Time.unscaledTime;}
+ void Check(bool ok,string why) {if(!ok) throw new System.Exception(why);}
+ PlayerHand Hand => left?GR.Player.instance.leftPlayerHand:GR.Player.instance.rightPlayerHand;
+ Transform Palm => left?body.LeftPalmSource:body.RightPalmSource;
+ void Update() {
+  if(done || sim==null)return;
+  try {
+   float age=Time.unscaledTime-entered;
+   player.transform.position=RailTrain.Instance.transform.TransformPoint(cabinPosition);
+   float progress=0; bool grip=stage>=1 && stage<=6 || stage>=8 && stage<=10;
+   if(stage==2)progress=Mathf.Clamp01(age/1.2f);
+   if(stage==3)progress=.96f+.025f*Mathf.Sin(age*15);
+   if(stage==4)progress=Mathf.Lerp(1,.5f,Mathf.Clamp01(age));
+   if(stage==5)progress=Mathf.Lerp(.5f,1,Mathf.Clamp01(age));
+   if(stage==6 || stage==7 || stage==9 || stage==10)progress=1;
+   if(stage==8)progress=Mathf.Clamp01(age);
+   var target=drive.transform.TransformPoint(Quaternion.Euler(progress*70,0,0)*offPalm);
+   if(stage==10)target+=drive.transform.right*Mathf.Min(.3f,age*.3f);
+   var anchor=left?body.LeftHandAnchor:body.RightHandAnchor;
+   Vector3 offset=Palm.position-anchor.position;
+   Vector3 local=anchor.parent.InverseTransformPoint(target-offset);
+   sim.InjectedInput=new SimulatedRigInput.Frame {grip=grip,leftReach=left,rightReach=!left};
+   RailRemoteBridge.Set(sim,left?"leftPosition":"rightPosition",local);
+   RailRemoteBridge.Call(sim,"WriteSimulatedPose");
+   if(age<.35f)return;
+   if(stage==0 && age>.7f)Next("Neutral hand positioned at OFF");
+   else if(stage==1 && age>1) {
+    Check(drive.HeldBy(Hand),"Grip did not acquire lever; hand="+Hand.transform.position+" palm="+Palm.position+" target="+target);
+    Check(RailControl.TryGetDrivePalm(Palm,out var p,out var q),"No attached visual palm after lease grant");
+    Check(!sim.ThrottleHeld,"T must remain off");
+    Next("PASS "+(left?"left":"right")+" normal grip acquired shared lease and visual attachment");
+   }
+   else if(stage==2 && age>1.5f) {
+    Check(drive.HeldBy(Hand) && PhotonSession.DriveGripActor!=0 && (float)PhotonSession.DriveGripState[3]>=1,"Forward stroke failed GO");
+    Next("PASS smooth arc reaches networked GO");
+   }
+   else if(stage==3 && age>1.5f) {
+    Check(drive.HeldBy(Hand) && (float)PhotonSession.DriveGripState[3]>=1,"Forward tolerance dropped GO");
+    Check(RailControl.TryGetDrivePalm(Palm,out var p,out var q),"Attached hand missing while forward");
+    Check(Vector3.Distance(p,Palm.position)<.18f,"Tracking gap too large");
+    Check((left?body.Curl.leftIndex:body.Curl.rightIndex)>.7f,"Index not closed around lever");
+    Next("PASS hold/jitter retains GO; attached palm and closed index; tracking gap="+Vector3.Distance(p,Palm.position).ToString("F4"));
+   }
+   else if(stage==4 && age>1.4f) {
+    Check(drive.HeldBy(Hand) && (float)PhotonSession.DriveGripState[3]<1,"Pull-back while gripping failed OFF");
+    Next("PASS pull-back cuts GO while grip stays held");
+   }
+   else if(stage==5 && age>1.4f) {
+    Check((float)PhotonSession.DriveGripState[3]>=1,"Re-push failed GO");
+    Next("PASS re-push resumes GO");
+   }
+   else if(stage==6 && age>.5f)Next("Releasing grip at forward stop");
+   else if(stage==7 && age>.8f) {
+    Check(!drive.HeldBy(Hand) && PhotonSession.DriveGripActor==0,"Release failed to clear lease");
+    Check(!RailControl.TryGetDrivePalm(Palm,out var p,out var q),"Visual palm stayed constrained after release");
+    // Reacquire at OFF before the separate breakaway trial.
+    stage=8; entered=Time.unscaledTime;
+    Log("PASS release clears lease and visual attachment");
+   }
+   else if(stage==8 && age>1.3f) {
+    // Acquisition occurs at OFF on first frame, then the injected hand travels forward.
+    Check(drive.HeldBy(Hand),"Reacquisition failed"); Next("Reacquired for breakaway");
+   }
+   else if(stage==9 && age>.5f)Next("Moving hand sideways away from grip");
+   else if(stage==10 && age>1.2f) {
+    Check(!drive.HeldBy(Hand) && PhotonSession.DriveGripActor==0,"Sideways breakaway failed");
+    Log("PASS sideways breakaway clears ownership");
+    if(!left){left=true;stage=0;entered=Time.unscaledTime;sim.InjectedInput=default;}
+    else Finish("PASS both hands");
+   }
+  } catch(System.Exception e){Finish("FAIL stage="+stage+" "+e.Message);}
+ }
+ void Finish(string s) {
+  done=true; Log(s);
+  drive.ReleaseDrive(); sim.InjectedInput=default;
+  GR.Player.instance.leftPlayerHand.Release(); GR.Player.instance.rightPlayerHand.Release();
+  sim.UseInjectedInput=oldInject;sim.InjectedInput=oldFrame;
+  player.disableMovement=oldDisable;player.rb.isKinematic=oldKinematic;
+  player.Warp(RailTrain.Instance.transform.TransformPoint(origin),originRot);
+ }
+}
+
+

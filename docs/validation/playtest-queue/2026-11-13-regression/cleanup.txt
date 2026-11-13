@@ -1,0 +1,9 @@
+Saved settings restored; live editor cleanup verification pending user/UI response.
+Regression execution complete; no new test should be started.
+RailRegressionLauncher.Stop was requested. The main editor remained in Play/transition when restoration was attempted, so its guard refused to change settings.
+The temporary test-only RailColdLoginProbe.cs/.meta was removed; source retained in fixtures/RailColdLoginProbe.cs.txt.
+MCP stopped responding during subsequent script reload; the host editor process remains responsive. No second crash was inferred from sandbox-hidden process listings.
+User was asked to dismiss any modal and leave Duck Rails in Edit Mode, because desktop UI control was stopped after the earlier Escape.
+Restored directly while MCP was stalled: exact two Unity EditorPrefs registry keys Duck.DesktopPlay=false and accidental DuckRails.DesktopPlay=false; project QuickStart was read as false; UserSettings/RailTestBlockOrder.asset now contains Farm/Canyon/Container/Skyscraper in that order, useOrder=true and invincibility=true; saved PlayModeUserSettings last configuration reset to its default/null asset reference; remote input and known fixture-arm files cleared.
+These are saved values, not a verified live ScriptableSingleton/cache restoration. Still pending: user dismisses any modal, editor exits Play/transition, scenario reaches NotRunning, and live settings are read back. The earlier temporary recovery-process launch and other Unity project were not killed during this handoff.
+Original temporary byte backup was lost during the earlier crash; byte-identical restoration cannot be claimed.

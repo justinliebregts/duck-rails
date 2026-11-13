@@ -1,0 +1,62 @@
+#if UNITY_EDITOR
+using System;
+using System.IO;
+using System.Linq;
+using Photon.Pun;
+using Unity.Multiplayer.PlayMode;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+// Inert unless the regression explicitly arms Player3. Holds its initial network
+// queue until the other two real clients have a running expedition to late-join.
+[InitializeOnLoad]
+public static class RailColdLoginProbe
+{
+    static string Root { get { var p = Application.dataPath.Replace('\\', '/'); int i = p.IndexOf("/Library/VP/", StringComparison.OrdinalIgnoreCase); return i < 0 ? Path.GetDirectoryName(p) : p.Substring(0, i); } }
+    static string Evidence => Root + "/docs/validation/playtest-queue/2026-11-13-regression/cold-login-fresh-Player3.txt";
+    static bool held, redirected, finished, sawWarm;
+    static int uncovered, frames;
+    static double began;
+    static RailColdLoginProbe() => EditorApplication.update += Tick;
+    static bool Armed => !CurrentPlayer.IsMainEditor && CurrentPlayer.Tags.Contains("Player3") && File.Exists(Root + "/Temp/cold-login-arm.txt") && DateTime.TryParse(File.ReadAllText(Root + "/Temp/cold-login-arm.txt"), out var until) && DateTime.UtcNow < until.ToUniversalTime();
+    static void Log(string s) => File.AppendAllText(Evidence, DateTime.UtcNow.ToString("O") + " " + s + "\n");
+    static void Tick()
+    {
+        if (!Application.isPlaying || finished || !Armed) return;
+        try
+        {
+            if (!held)
+            {
+                held = true; began = EditorApplication.timeSinceStartup;
+                PhotonNetwork.IsMessageQueueRunning = false;
+                Log("Initial Login held; scene=" + SceneManager.GetActiveScene().name + " warmed=" + ExpeditionRenderWarmup.WarmedStates + " inRoom=" + PhotonNetwork.InRoom);
+            }
+            var session = PhotonSession.Instance;
+            // ConnectUsingSettings enables dispatch again. Keep it held until
+            // the initial request can target the already-running expedition.
+            if (!redirected) PhotonNetwork.IsMessageQueueRunning = false;
+            if (EditorApplication.timeSinceStartup - began > 180)
+            { Log("BLOCKED cold initial join timeout"); PhotonNetwork.IsMessageQueueRunning = true; finished = true; return; }
+            var roomFile = Root + "/Temp/cold-login-ready-room.txt";
+            if (!redirected && session != null && (bool)RailRemoteBridge.Get(session, "initialized") && File.Exists(roomFile))
+            {
+                var request = RailRemoteBridge.Get(session, "request");
+                RailRemoteBridge.Set(session, "request", Enum.Parse(request.GetType(), "JoinPrivate"));
+                RailRemoteBridge.Set(session, "requestedRoom", File.ReadAllText(roomFile).Trim());
+                redirected = true; PhotonNetwork.IsMessageQueueRunning = true;
+                Log("Released initial authenticated join toward retained expedition; scene=" + SceneManager.GetActiveScene().name + " inRoom=" + PhotonNetwork.InRoom + " warmed=" + ExpeditionRenderWarmup.WarmedStates);
+            }
+            if (!redirected || session == null || SceneManager.GetActiveScene().name != "Expedition") return;
+            frames++;
+            if (ExpeditionRenderWarmup.Running) { sawWarm = true; if (!RailTransitionVeil.Covered) uncovered++; }
+            if (!session.WorldReady || ExpeditionRenderWarmup.Running || RailTransitionVeil.Showing) return;
+            Log((sawWarm && uncovered == 0 && ExpeditionRenderWarmup.LastNewStates > 0 && !ExpeditionRenderWarmup.LastTimedOut ? "PASS " : "FAIL ") +
+                "cold Login late join; frames=" + frames + " uncoveredWarmFrames=" + uncovered + " newStates=" + ExpeditionRenderWarmup.LastNewStates + " seconds=" + ExpeditionRenderWarmup.LastSeconds +
+                " proxies=" + UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsSortMode.None).Count(t => t.name == "Warm proxies"));
+            finished = true;
+        }
+        catch (Exception e) { Log("FIXTURE ERROR " + e); PhotonNetwork.IsMessageQueueRunning = true; finished = true; }
+    }
+}
+#endif

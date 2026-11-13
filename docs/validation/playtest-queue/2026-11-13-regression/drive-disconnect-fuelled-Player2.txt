@@ -1,0 +1,16 @@
+2026-11-13T09:37:24.0256548Z stage=0 inRoom=True phase=Running
+2026-11-13T09:37:28.0591637Z stage=1 inRoom=True phase=Running
+2026-11-13T09:37:31.0613179Z PASS stage=1 lease=3 expected=3 speed=4 master=lebo clients=3
+2026-11-13T09:37:32.0389276Z stage=2 inRoom=True phase=Running
+2026-11-13T09:37:32.0394386Z DISCONNECT held actor=3 master=False
+2026-11-13T09:37:36.2523585Z stage=3 inRoom=True phase=Running
+2026-11-13T09:37:56.0399916Z PASS stage=3 lease=0 expected=0 speed=0 master=lebo clients=3
+2026-11-13T09:37:58.0295685Z stage=4 inRoom=True phase=Running
+2026-11-13T09:38:01.0413143Z PASS stage=4 lease=1 expected=1 speed=4 master=lebo clients=3
+2026-11-13T09:38:02.0271174Z stage=5 inRoom=True phase=Running
+2026-11-13T09:38:04.0596110Z PASS stage=5 lease=0 expected=0 speed=0.3039999 master=David clients=3
+2026-11-13T09:38:06.0308323Z stage=6 inRoom=True phase=Running
+2026-11-13T09:38:24.0329519Z PASS stage=6 lease=0 expected=0 speed=0 master=David clients=3
+2026-11-13T09:38:26.0478853Z stage=7 inRoom=True phase=Running
+2026-11-13T09:38:26.0478853Z PASS all three returned OFF; no reacquisition
+2026-11-13T09:38:26.0485610Z DONE

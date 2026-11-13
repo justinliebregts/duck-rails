@@ -1,0 +1,35 @@
+2026-11-13T08:34:34.7333910Z stage=0 actor=2 master=2
+2026-11-13T08:34:38.7472169Z stage=1 actor=2 master=2
+2026-11-13T08:34:41.2201127Z PASS non-master/shared-input acquire actor=1 speed=4 expectedDriver=1
+2026-11-13T08:34:42.7526964Z stage=2 actor=2 master=2
+2026-11-13T08:34:45.2618387Z PASS second client denied actor=1 speed=4 expectedDriver=1
+2026-11-13T08:34:46.7243796Z stage=3 actor=2 master=2
+2026-11-13T08:34:49.2403477Z PASS held rival input cannot steal after release actor=0 speed=0 expectedDriver=1
+2026-11-13T08:34:50.7289949Z stage=4 actor=2 master=2
+2026-11-13T08:34:53.2294952Z PASS fresh rival press acquires actor=3 speed=4 expectedDriver=1
+2026-11-13T08:34:54.7116482Z stage=5 actor=2 master=2
+2026-11-13T08:34:57.2164202Z PASS toggle STOP actor=0 speed=0 expectedDriver=1
+2026-11-13T08:34:58.7312327Z stage=6 actor=2 master=2
+2026-11-13T08:35:01.2288110Z PASS non-master/shared-input acquire actor=1 speed=4 expectedDriver=1
+2026-11-13T08:35:02.7540146Z stage=7 actor=2 master=2
+2026-11-13T08:35:05.2271186Z PASS focus loss brakes actor=0 speed=0 expectedDriver=1
+2026-11-13T08:35:06.7454642Z stage=8 actor=2 master=2
+2026-11-13T08:35:10.7470817Z stage=9 actor=2 master=2
+2026-11-13T08:35:13.2460616Z PASS non-master/shared-input acquire actor=1 speed=4 expectedDriver=1
+2026-11-13T08:35:14.7298285Z stage=10 actor=2 master=2
+2026-11-13T08:35:17.2090304Z PASS menu brakes actor=0 speed=0 expectedDriver=1
+2026-11-13T08:35:18.7156103Z stage=11 actor=2 master=2
+2026-11-13T08:35:22.7216322Z stage=12 actor=2 master=2
+2026-11-13T08:35:25.2235029Z PASS non-master/shared-input acquire actor=1 speed=4 expectedDriver=1
+2026-11-13T08:35:26.7163714Z stage=13 actor=2 master=2
+2026-11-13T08:35:29.2223447Z FAIL down brakes actor=1 speed=4 expectedDriver=1
+2026-11-13T08:35:30.7336453Z stage=14 actor=2 master=2
+2026-11-13T08:35:34.7100297Z stage=15 actor=2 master=2
+2026-11-13T08:35:37.2137045Z PASS non-master/shared-input acquire actor=1 speed=4 expectedDriver=1
+2026-11-13T08:35:38.7270241Z stage=16 actor=2 master=2
+2026-11-13T08:35:41.2363760Z PASS pause brakes actor=0 speed=0 expectedDriver=1
+2026-11-13T08:35:42.7200582Z stage=17 actor=2 master=2
+2026-11-13T08:35:46.7428670Z stage=18 actor=2 master=2
+2026-11-13T08:35:50.7383614Z stage=19 actor=2 master=2
+2026-11-13T08:35:53.2102592Z PASS early release leaves no orphan actor=0 speed=0 expectedDriver=1
+2026-11-13T08:35:54.7335476Z DONE

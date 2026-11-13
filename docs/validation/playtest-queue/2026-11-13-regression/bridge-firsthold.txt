@@ -1,0 +1,10 @@
+2026-11-13T07:52:07.0764600Z PASS No defenders before first non-master hold actor=3
+2026-11-13T07:52:10.0842201Z PASS First physical fingertip hold spawns exactly two and lowers bridge; defenders=2 progress=0.08086666
+2026-11-13T07:52:10.0857318Z IDs=265:2c6107c1d66c447c8740447ecd49c7be,266:49c08d95c40142b484f4e427153c148d
+2026-11-13T07:52:15.1149372Z PASS Both defenders approach held button
+2026-11-13T07:52:15.1159850Z FIXTURE ERROR System.NullReferenceException: Object reference not set to an instance of an object
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.CommandScript.Tick () [0x00240] in <90f1fa6defde4529a095a199aecd7827>:0 
+2026-11-13T07:52:31.0917133Z PASS No defenders before first non-master hold actor=3
+2026-11-13T07:52:35.0966337Z PASS Release pauses lowering at 0.7964333
+2026-11-13T07:52:39.1378986Z PASS Repress resumes with identical defender pair
+2026-11-13T07:52:39.1384018Z DONE paused for handoff/late join

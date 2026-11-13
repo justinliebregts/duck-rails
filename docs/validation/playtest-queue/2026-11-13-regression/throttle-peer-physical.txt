@@ -1,0 +1,12 @@
+START Unity 6000.3.24f1 three-client desktop shared rig; synthetic palm poses, ordinary grip input; no T or ForceGrab
+Neutral hand positioned at OFF
+PASS right normal grip acquired shared lease and visual attachment
+PASS smooth arc reaches networked GO
+PASS hold/jitter retains GO; attached palm and closed index; tracking gap=0.0835
+PASS pull-back cuts GO while grip stays held
+PASS re-push resumes GO
+Releasing grip at forward stop
+Release observed at 0.6249084s network actor=3
+Regrip during return at progress=0.8780854
+PASS release clears lease and visual attachment
+FAIL stage=8 Reacquisition failed

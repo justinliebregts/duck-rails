@@ -1,0 +1,19 @@
+using System;using System.IO;using System.Linq;using UnityEngine;using UnityEditor;using Photon.Pun;
+internal class CommandScript : IRunCommand {
+ const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-13-regression/";
+ string path,role,token;int stage,coins,viewId,baseline;double entered;PhotonGrabbable item;PlayerHand hand;RailGoldReceiver receiver;SimulatedRigInput sim;
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ public void Execute(ExecutionResult r){role=Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor?"main":Unity.Multiplayer.PlayMode.CurrentPlayer.Tags.First();path=Root+"gold-"+role+"-"+DateTime.UtcNow.ToString("HHmmss")+".txt";File.WriteAllText(path,"Actual gold hand claim, release into intake, server wallet receipt.\n");hand=GR.Player.instance.rightPlayerHand;sim=SimulatedRigInput.Instance;sim.SetSimulating(true);sim.UseInjectedInput=true;sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true};receiver=UnityEngine.Object.FindObjectsByType<RailGoldReceiver>(FindObjectsSortMode.None).OrderBy(x=>x.receiverId).First();item=UnityEngine.Object.FindObjectsByType<ItemGoldBar>(FindObjectsSortMode.None).Select(x=>x.GetComponent<PhotonGrabbable>()).First(x=>!x.IsHeldByAnyPlayer&&!x.IsStashed);coins=DuckzWallet.Instance.Coins;baseline=RailExpedition.Instance.State.gold.Count;viewId=item.GetComponent<PhotonView>().ViewID;token=item.GetComponent<PhotonView>().SpawnToken;NewPlayer.instance.Warp(item.transform.position+Vector3.back*.4f);entered=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;r.Log("Gold deposit armed "+role+" view="+viewId);}
+ void Tick(){if(!Application.isPlaying){EditorApplication.update-=Tick;return;}try{
+ foreach(var h in UnityEngine.Object.FindObjectsByType<PhotonMasterHandoff>(FindObjectsSortMode.None))RailRemoteBridge.Set(h,"focused",true);
+ if(EditorApplication.timeSinceStartup-entered<1)return;
+ if(EditorApplication.timeSinceStartup-entered>25)throw new Exception("Timeout stage="+stage+" item="+item+" held="+hand.Held+" coins="+DuckzWallet.Instance.Coins);
+ if(stage==0){hand.TryGrab(item);sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true,grip=true};stage++;entered=EditorApplication.timeSinceStartup;}
+ else if(stage==1){if(hand.Held!=item)return;Log("PASS claimed through hand; mine="+item.GetComponent<PhotonView>().IsMine);NewPlayer.instance.Warp(receiver.transform.position+Vector3.back);stage++;entered=EditorApplication.timeSinceStartup;}
+ else if(stage==2){hand.Release();sim.InjectedInput=default;item.transform.position=receiver.intake.transform.TransformPoint(receiver.intake.center);var body=item.GetComponent<Rigidbody>();body.position=item.transform.position;body.linearVelocity=Vector3.zero;body.angularVelocity=Vector3.zero;Physics.SyncTransforms();stage++;entered=EditorApplication.timeSinceStartup;}
+ else if(stage==3){var deposit=RailExpedition.Instance.State.gold.FirstOrDefault(x=>x.token==token);if(deposit==null||DuckzWallet.Instance.Coins==coins)return;bool ok=deposit.recipients.Length==1&&deposit.recipients[0]==PhotonNetwork.LocalPlayer.UserId&&DuckzWallet.Instance.Coins==Math.Min(2000,coins+100)&&PhotonView.Find(viewId)==null;Log((ok?"PASS ":"FAIL ")+"Depositor-only exactly once wallet "+coins+" -> "+DuckzWallet.Instance.Coins+" recipients="+deposit.recipients.Length+" master="+PhotonNetwork.IsMasterClient+" consumed="+(PhotonView.Find(viewId)==null));File.AppendAllText(Root+"gold-receipts.txt",role+"|"+token+"|"+coins+"|"+DuckzWallet.Instance.Coins+"\n");stage++;entered=EditorApplication.timeSinceStartup;}
+ else{Log((DuckzWallet.Instance.Coins==Math.Min(2000,coins+100)?"PASS ":"FAIL ")+"No duplicate wallet credit after receipt");sim.UseInjectedInput=false;EditorApplication.update-=Tick;Log("DONE");}
+ }catch(Exception e){Log("FAIL "+e);hand.Release();sim.UseInjectedInput=false;EditorApplication.update-=Tick;}}
+}
+
+

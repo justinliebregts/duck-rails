@@ -1,0 +1,27 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using UnityEngine;using UnityEditor;
+internal class CommandScript : IRunCommand {
+ const string Path="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-13-regression/traversal-final-desktop.txt";
+ class Route {public string label;public Vector3 a,b;}
+ List<Route> routes=new List<Route>();int index,stage;double entered;NewPlayer p;SimulatedRigInput sim;Vector3 origin;Quaternion rotation;
+ void Add(string block,string label,Vector3 a,Vector3 b){var t=UnityEngine.Object.FindObjectsByType<RailBlock>(FindObjectsSortMode.None).First(x=>x.id==block).transform;routes.Add(new Route{label=label,a=t.TransformPoint(a),b=t.TransformPoint(b)});}
+ void Log(string s)=>File.AppendAllText(Path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ public void Execute(ExecutionResult r){var callbacks=(EditorApplication.CallbackFunction)RailRemoteBridge.Get(typeof(EditorApplication),"update");foreach(var d in callbacks.GetInvocationList())if(d.Target!=null&&d.Target.GetType().Name=="CommandScript")EditorApplication.update-=(EditorApplication.CallbackFunction)d;File.WriteAllText(Path,"Actual simulated room-scale input through NewPlayer collision. Warp only to each route start; head XZ steers at 1.8m/s. Endpoint tolerance .3m; 30-second timeout, raised hands and jump where supported; endpoint waits eight seconds with correct-height grounded acceptance. No headset acceptance.\n");p=NewPlayer.instance;sim=SimulatedRigInput.Instance;origin=p.transform.position;rotation=p.transform.rotation;sim.SetSimulating(true);sim.UseInjectedInput=true;RailRemoteBridge.Set(sim,"yaw",0f);p.rb.isKinematic=false;
+
+ foreach(int sign in new[]{-1,1}){
+ Add("bridge-finale-v1","upper ramp retry "+sign,new Vector3(sign*26,4,63),new Vector3(sign*26,8,72));
+ }
+ Add("bridge-finale-v1","river lower east settled",new Vector3(16,-11.5f,88.5f),new Vector3(35.5f,-5.75f,88.5f));
+ Add("bridge-finale-v1","river upper east settled",new Vector3(35.5f,-5.75f,83),new Vector3(16,0,83));
+ Add("farm-silos-v1","playground platforms settled",new Vector3(18,2.4f,146),new Vector3(40,2.4f,146));
+ Add("farm-silos-v1","ditch bridge settled",new Vector3(7,0,41),new Vector3(17,0,41));
+ Add("roadside-motel-v1","east stairs grounded approach",new Vector3(23.8f,0,52),new Vector3(23.8f,3.6f,61));
+ Add("roadside-motel-v1","north stairs grounded approach",new Vector3(11.2f,0,83),new Vector3(11.2f,3.6f,92));
+ foreach(var cell in new[]{new Vector3(18.5f,-3.2f,134),new Vector3(19.3f,-3.2f,139.65f),new Vector3(19.3f,-3.2f,143.2f),new Vector3(26.5f,-3.2f,128.7f),new Vector3(28,-3.2f,142.85f)}){
+ Add("farm-silos-v1","basement cell enter "+cell,RailFarmSilos.HousePoint(cell+Vector3.back*.7f),RailFarmSilos.HousePoint(cell+Vector3.forward*.7f));
+ Add("farm-silos-v1","basement cell exit "+cell,RailFarmSilos.HousePoint(cell+Vector3.forward*.7f),RailFarmSilos.HousePoint(cell+Vector3.back*.7f));}
+ Start();EditorApplication.update+=Tick;r.Log("Traversing "+routes.Count+" routes");}
+ void Start(){if(index>=routes.Count){sim.InjectedInput=default;sim.UseInjectedInput=false;p.Warp(origin,rotation);EditorApplication.update-=Tick;Log("DONE");return;}sim.InjectedInput=default;p.Warp(routes[index].a+Vector3.up*.1f,Quaternion.identity);entered=EditorApplication.timeSinceStartup;stage=0;}
+ void Tick(){if(!Application.isPlaying){EditorApplication.update-=Tick;return;}try{RailRemoteBridge.Set(UnityEngine.Object.FindFirstObjectByType<PhotonMasterHandoff>(),"focused",true);var q=routes[index];double age=EditorApplication.timeSinceStartup-entered;if(stage==0){if(age<.7)return;stage=1;entered=EditorApplication.timeSinceStartup;}
+ Vector3 h=p.headCollider.transform.position,delta=q.b-h;delta.y=0;if(delta.magnitude<.3f&&stage==1){stage=2;entered=EditorApplication.timeSinceStartup;sim.InjectedInput=new SimulatedRigInput.Frame{leftReach=true,rightReach=true};return;}if(stage==2&&age<8)return;if(stage==2||age>30){Log((delta.magnitude<.65f&&sim.HasBodySupport&&h.y-q.b.y>.15f&&h.y-q.b.y<1.2f?"PASS ":"INCOMPLETE ")+q.label+" head="+h+" remainingXZ="+delta.magnitude+" target="+q.b+" down="+RailExpedition.LocalDown+" supported="+sim.HasBodySupport);index++;Start();return;}var local=p.transform.InverseTransformDirection(delta.normalized*.2f);sim.InjectedInput=new SimulatedRigInput.Frame{move=new Vector2(local.x,local.z),leftReach=true,rightReach=true,jump=sim.HasBodySupport&&age>1&&!q.label.Contains("basement")&&!q.label.Contains("ditch")&&!q.label.Contains("playground")};
+ }catch(Exception e){Log("FIXTURE ERROR "+e);sim.InjectedInput=default;sim.UseInjectedInput=false;EditorApplication.update-=Tick;}}
+}

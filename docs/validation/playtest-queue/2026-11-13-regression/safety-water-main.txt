@@ -1,0 +1,20 @@
+Current runtime recovery/water checks. Controlled placements and seeded recovery history; real LateUpdate and local listener.
+2026-11-13T07:42:11.7652335Z PASS Boundary wall pair at configured lateral edges roadside-motel-v1
+2026-11-13T07:42:11.7667475Z PASS Boundary wall pair at configured lateral edges farm-silos-v1
+2026-11-13T07:42:11.7667475Z PASS Boundary wall pair at configured lateral edges container-yard-v1
+2026-11-13T07:42:11.7667475Z PASS Boundary wall pair at configured lateral edges starting-station-v1
+2026-11-13T07:42:11.7677551Z PASS Boundary wall pair at configured lateral edges skyscraper-works-v1
+2026-11-13T07:42:11.7677551Z PASS Boundary wall pair at configured lateral edges lakeside-campground-v1
+2026-11-13T07:42:11.7677551Z PASS Boundary wall pair at configured lateral edges convenience-store-v1
+2026-11-13T07:42:11.7677551Z PASS Boundary wall pair at configured lateral edges bridge-finale-v1
+2026-11-13T07:42:11.7677551Z PASS Boundary wall pair at configured lateral edges midpoint-helipad-v1
+2026-11-13T07:42:12.4107048Z PASS Below-floor fall recovers to latest ground without down; root=(8.00, 0.01, 175.00)
+2026-11-13T07:42:13.0164909Z PASS Repeated fall within six seconds steps back one history sample
+2026-11-13T07:42:13.6427540Z PASS Lateral escape recovers to ground
+2026-11-13T07:42:14.2652667Z PASS Moving train recovery preserves train-local spot (0.00, -0.19, -2.00) speed=0.904
+2026-11-13T07:42:14.8838821Z PASS Lake head submersion enables 900Hz low-pass and exponential fog; head=(-26.50, -1.90, 1089.38) cutoff=900.0001
+2026-11-13T07:42:14.8848881Z PASS Submerged surface lookup is Water
+2026-11-13T07:42:15.4904353Z PASS Teleport out restores original fog exactly and removes temporary filter
+2026-11-13T07:42:15.4909376Z PASS Finale river floor resolves Water
+2026-11-13T07:42:16.1209416Z PASS Standing above finale water leaves head dry
+2026-11-13T07:42:16.1225735Z DONE

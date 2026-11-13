@@ -1,0 +1,31 @@
+Actual simulated room-scale input through NewPlayer collision. Warp only to each route start; head XZ steers at 1.8m/s. Endpoint tolerance .3m; 30-second timeout, raised hands and jump where supported; endpoint then waits two seconds for grounded acceptance. No headset acceptance.
+2026-11-13T08:55:06.8478795Z INCOMPLETE south inward ramp -1 head=(-10.60, 1.79, 1209.97) remainingXZ=1.399062 target=(-12.00, 2.00, 1210.00) down=False supported=True
+2026-11-13T08:55:16.0810288Z PASS middle ramp -1 head=(-27.00, 4.40, 1225.74) remainingXZ=0.2631837 target=(-27.00, 4.00, 1226.00) down=False supported=True
+2026-11-13T08:55:46.8218407Z INCOMPLETE upper ramp -1 head=(-26.00, 4.46, 1234.02) remainingXZ=7.982056 target=(-26.00, 8.00, 1242.00) down=False supported=True
+2026-11-13T08:56:06.3407688Z PASS river lower ramp -1 head=(-35.23, -5.35, 1258.50) remainingXZ=0.2658171 target=(-35.50, -5.75, 1258.50) down=False supported=True
+2026-11-13T08:56:24.1953824Z PASS river upper ramp -1 head=(-16.28, 0.40, 1252.99) remainingXZ=0.2831335 target=(-16.00, 0.00, 1253.00) down=False supported=True
+2026-11-13T08:56:30.1405681Z PASS south inward ramp 1 head=(11.72, 2.35, 1209.99) remainingXZ=0.2796269 target=(12.00, 2.00, 1210.00) down=False supported=True
+2026-11-13T08:56:39.8604563Z PASS middle ramp 1 head=(27.00, 4.40, 1225.75) remainingXZ=0.2496339 target=(27.00, 4.00, 1226.00) down=False supported=True
+2026-11-13T08:57:10.6161767Z INCOMPLETE upper ramp 1 head=(26.00, 4.46, 1234.02) remainingXZ=7.977295 target=(26.00, 8.00, 1242.00) down=False supported=True
+2026-11-13T08:57:29.5557752Z INCOMPLETE river lower ramp 1 head=(35.26, -0.99, 1258.47) remainingXZ=0.2375474 target=(35.50, -5.75, 1258.50) down=False supported=False
+2026-11-13T08:57:49.0012852Z INCOMPLETE river upper ramp 1 head=(16.27, 4.71, 1252.99) remainingXZ=0.2696941 target=(16.00, 0.00, 1253.00) down=False supported=False
+2026-11-13T08:58:05.8266773Z PASS silo uphill 1 head=(15.01, 4.48, 795.75) remainingXZ=0.2551064 target=(15.00, 4.00, 796.00) down=False supported=True
+2026-11-13T08:58:36.5717793Z INCOMPLETE silo downhill 1 head=(15.00, 4.16, 794.48) remainingXZ=13.97736 target=(15.00, 0.00, 780.50) down=False supported=True
+2026-11-13T08:58:45.0224061Z PASS silo uphill 2 head=(21.78, 5.97, 795.99) remainingXZ=0.215814 target=(22.00, 5.50, 796.00) down=False supported=True
+2026-11-13T08:58:53.6216851Z PASS silo downhill 2 head=(14.74, 7.32, 795.98) remainingXZ=0.2595586 target=(15.00, 4.00, 796.00) down=False supported=True
+2026-11-13T08:58:59.7750453Z PASS silo uphill 3 head=(22.00, 6.48, 799.71) remainingXZ=0.2869266 target=(22.00, 6.00, 800.00) down=False supported=True
+2026-11-13T08:59:06.5491561Z PASS silo downhill 3 head=(22.00, 6.00, 796.28) remainingXZ=0.2839356 target=(22.00, 5.50, 796.00) down=False supported=True
+2026-11-13T08:59:15.3431103Z PASS silo uphill 4 head=(15.27, 6.98, 799.99) remainingXZ=0.2753161 target=(15.00, 6.50, 800.00) down=False supported=True
+2026-11-13T08:59:23.8175359Z PASS silo downhill 4 head=(21.69, 6.50, 799.99) remainingXZ=0.3088424 target=(22.00, 6.00, 800.00) down=False supported=True
+2026-11-13T08:59:37.5633047Z PASS silo uphill 5 head=(15.00, 7.98, 788.28) remainingXZ=0.2789314 target=(15.00, 7.50, 788.00) down=False supported=True
+2026-11-13T08:59:51.0768261Z PASS silo downhill 5 head=(15.00, 7.00, 799.72) remainingXZ=0.2784443 target=(15.00, 6.50, 800.00) down=False supported=True
+2026-11-13T09:00:18.2597703Z INCOMPLETE playground platforms and both bridges head=(39.74, 5.96, 836.14) remainingXZ=0.2987937 target=(40.00, 2.40, 836.00) down=False supported=False
+2026-11-13T09:00:29.2766789Z INCOMPLETE ditch dry footbridge head=(16.75, 0.88, 730.99) remainingXZ=0.2531343 target=(17.00, 0.00, 731.00) down=False supported=False
+2026-11-13T09:01:00.0553658Z INCOMPLETE pond bank crossing head=(37.79, 0.93, 819.98) remainingXZ=2.21512 target=(40.00, 0.00, 820.00) down=False supported=False
+2026-11-13T09:01:30.7863212Z INCOMPLETE wash middle lane head=(30.35, 3.09, 514.98) remainingXZ=9.651856 target=(40.00, 0.00, 515.00) down=False supported=False
+2026-11-13T09:01:49.9625660Z PASS wash rear road head=(41.99, 0.48, 523.73) remainingXZ=0.2696497 target=(42.00, 0.00, 524.00) down=False supported=True
+2026-11-13T09:01:58.3132374Z PASS south foundation escape head=(-35.00, 0.71, 970.13) remainingXZ=0.1331311 target=(-35.00, 0.00, 970.00) down=False supported=True
+2026-11-13T09:02:06.8148562Z PASS north foundation escape head=(-20.00, 0.67, 995.75) remainingXZ=0.2495275 target=(-20.00, 0.00, 996.00) down=False supported=True
+2026-11-13T09:02:37.5768285Z INCOMPLETE motel east stair head=(23.80, 0.23, 363.33) remainingXZ=7.074982 target=(23.80, 3.60, 370.40) down=False supported=False
+2026-11-13T09:03:08.3184374Z INCOMPLETE motel north stair head=(11.20, 0.23, 394.53) remainingXZ=7.074982 target=(11.20, 3.60, 401.60) down=False supported=False
+2026-11-13T09:03:08.3184374Z DONE

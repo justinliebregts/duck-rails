@@ -1,0 +1,13 @@
+Actual simulated room-scale input through NewPlayer collision. Warp only to each route start; head XZ steers at 1.8m/s. Endpoint tolerance .3m; 30-second timeout, raised hands and jump where supported; endpoint waits eight seconds with correct-height grounded acceptance. No headset acceptance.
+2026-11-13T09:19:11.1719146Z INCOMPLETE upper ramp retry -1 head=(-26.00, 4.46, 1234.02) remainingXZ=7.981201 target=(-26.00, 8.00, 1242.00) down=False supported=True
+2026-11-13T09:19:41.9113856Z INCOMPLETE upper ramp retry 1 head=(26.00, 4.46, 1234.02) remainingXZ=7.982422 target=(26.00, 8.00, 1242.00) down=False supported=True
+2026-11-13T09:20:03.6836753Z PASS river lower east settled head=(35.11, -5.38, 1258.50) remainingXZ=0.3921671 target=(35.50, -5.75, 1258.50) down=False supported=True
+2026-11-13T09:20:25.5873084Z PASS river upper east settled head=(16.30, 0.39, 1253.00) remainingXZ=0.3004364 target=(16.00, 0.00, 1253.00) down=False supported=True
+2026-11-13T09:20:48.9635048Z PASS playground platforms settled head=(39.70, 2.88, 835.95) remainingXZ=0.3052523 target=(40.00, 2.40, 836.00) down=False supported=True
+2026-11-13T09:21:19.7092207Z INCOMPLETE ditch bridge settled head=(7.91, 0.47, 730.98) remainingXZ=9.09437 target=(17.00, 0.00, 731.00) down=False supported=True
+2026-11-13T09:21:50.4207321Z INCOMPLETE east stairs grounded approach head=(23.79, 2.29, 366.89) remainingXZ=4.10651 target=(23.80, 3.60, 371.00) down=False supported=False
+2026-11-13T09:22:21.1779735Z INCOMPLETE north stairs grounded approach head=(11.19, 2.12, 397.94) remainingXZ=4.062933 target=(11.20, 3.60, 402.00) down=False supported=True
+2026-11-13T09:22:51.9194726Z INCOMPLETE basement cell enter (18.50, -3.20, 134.00) head=(-23.82, -1.24, 818.50) remainingXZ=0.8776315 target=(-24.70, -1.70, 818.50) down=False supported=True
+2026-11-13T09:23:22.6550905Z INCOMPLETE basement cell exit (18.50, -3.20, 134.00) head=(-24.18, -1.24, 818.49) remainingXZ=0.8776475 target=(-23.30, -1.70, 818.50) down=False supported=True
+2026-11-13T09:23:53.3846114Z INCOMPLETE basement cell enter (19.30, -3.20, 139.65) head=(-29.47, -1.24, 819.29) remainingXZ=0.8776261 target=(-30.35, -1.70, 819.30) down=False supported=True
+Interrupted remaining basement cases to align head/hands with actual door direction. Replacement: traversal-basement-aligned.txt. DONE traversal group hold release.

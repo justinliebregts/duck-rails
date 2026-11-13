@@ -9,6 +9,8 @@ Use explicit statuses such as pending, in progress, implemented (validation pend
 validated, or already present (verified). A source diff inspection alone is not port validation.
 This history starts November 8, 2026; it is not an audit of earlier imports.
 
+November 13 current-tree regression freshly reran the older queue evidence, including prior Claude passes: GrabbablePlayChecks, DeathLifecycleChecks, SmasherRetreatJumpChecks, ZombieHookPullChecks (24 pull/six surface cases), and two-process real-Photon FlareJoinNetworkChecks pass. Three real game clients additionally cover ground/moving-train enemy deaths with late flare joins and a natural bare-hand ground Hook pull. These supplement the historical port evidence; they do not change headset/full live gear/train/curve acceptance status. [Scenario ledger, tested commits and raw evidence](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+
 ## 31aa84116b80c9fb9682493c4c88f51de505b97f — Enemy mono audio
 
 - Status: implemented; Unity import validation passed November 8, 2026.

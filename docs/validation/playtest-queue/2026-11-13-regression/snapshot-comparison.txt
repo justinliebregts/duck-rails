@@ -1,0 +1,16 @@
+PASS midpoint-helipad-v1 main baseline: 8 identities/tokens, maximum pose delta 0.000000m
+PASS midpoint-helipad-v1 main after-rejoin-and-handoff: 8 identities/tokens, maximum pose delta 0.000000m
+PASS midpoint-helipad-v1 Player2 baseline: 8 identities/tokens, maximum pose delta 0.000000m
+PASS midpoint-helipad-v1 Player2 after-rejoin-and-handoff: 8 identities/tokens, maximum pose delta 0.006000m
+PASS midpoint-helipad-v1 Player3 baseline: 8 identities/tokens, maximum pose delta 0.000000m
+PASS midpoint-helipad-v1 Player3 after-rejoin-and-handoff: 8 identities/tokens, maximum pose delta 0.000000m
+PASS bridge-finale-v1 main baseline: 8 identities/tokens, maximum pose delta 0.000000m
+PASS bridge-finale-v1 main after-rejoin-and-handoff: 8 identities/tokens, maximum pose delta 0.000000m
+PASS bridge-finale-v1 Player2 baseline: 8 identities/tokens, maximum pose delta 0.000000m
+PASS bridge-finale-v1 Player2 after-rejoin-and-handoff: 8 identities/tokens, maximum pose delta 0.006000m
+PASS bridge-finale-v1 Player3 baseline: 8 identities/tokens, maximum pose delta 0.000000m
+PASS bridge-finale-v1 Player3 after-rejoin-and-handoff: 8 identities/tokens, maximum pose delta 0.000000m
+PASS main locked score/title rows agree after actual actions, reconnect and handoff
+PASS Player2 locked score/title rows agree after actual actions, reconnect and handoff
+PASS Player3 locked score/title rows agree after actual actions, reconnect and handoff
+Actual gold counts 5/2/1; main spending 775 includes unintended fixture purchases. These counters were not seeded.

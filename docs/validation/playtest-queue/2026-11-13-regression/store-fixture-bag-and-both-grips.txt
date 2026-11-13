@@ -1,0 +1,17 @@
+Real wall grab/pull, backend coin charge, actual spawned cargo. Controlled rig positioning; no entitlements fabricated.
+2026-11-13T07:37:27.4087909Z SHOP 0 (-12.75, 1.00, 79.00) wallet=569
+2026-11-13T07:37:27.4087909Z BLOCKED owned-bundle cases: missing entitlement duckrails_quackbear_bundle
+2026-11-13T07:37:27.4097949Z BLOCKED owned-bundle cases: missing entitlement duckrails_huggy_bundle
+2026-11-13T07:37:27.4097949Z BLOCKED owned-bundle cases: missing entitlement duckrails_scrap_duck_bundle
+2026-11-13T07:37:27.4118085Z PASS Default avatar equip free at shop 0
+2026-11-13T07:37:29.5974611Z PASS Exactly one coin charge item_flashlight 569 -> 544
+2026-11-13T07:37:29.5974611Z PASS Real network item item_flashlight view=1002 token=3a417e3923ce442a9a94412a9a22776c held=PhotonGrabbable
+2026-11-13T07:37:51.7663979Z FAIL Wall pull did not spawn actual item bag_basic wallet=444 state=Idle
+2026-11-13T07:37:52.5273979Z SHOP 1 (-22.80, 0.20, 659.83) wallet=444
+2026-11-13T07:37:52.5273979Z BLOCKED owned-bundle cases: missing entitlement duckrails_quackbear_bundle
+2026-11-13T07:37:52.5273979Z BLOCKED owned-bundle cases: missing entitlement duckrails_huggy_bundle
+2026-11-13T07:37:52.5273979Z BLOCKED owned-bundle cases: missing entitlement duckrails_scrap_duck_bundle
+2026-11-13T07:37:52.5294366Z PASS Default avatar equip free at shop 1
+2026-11-13T07:38:13.9663096Z FAIL Wall pull did not spawn actual item item_flashlight wallet=144 state=Idle
+2026-11-13T07:38:35.4769826Z FAIL Wall pull did not spawn actual item bag_basic wallet=44 state=Idle
+2026-11-13T07:38:36.2395662Z DONE

@@ -1,0 +1,12 @@
+Actual simulated room-scale input through NewPlayer collision. Warp only to each route start; head XZ steers at 1.8m/s. Endpoint tolerance .3m; 30-second timeout, raised hands and jump where supported; endpoint waits eight seconds with correct-height grounded acceptance. No headset acceptance.
+2026-11-13T09:24:30.4798645Z PASS basement cell enter (18.50, -3.20, 134.00) head=(-24.45, -1.23, 818.62) remainingXZ=0.2776312 target=(-24.70, -1.70, 818.50) down=False supported=True
+2026-11-13T09:24:39.9218159Z PASS basement cell exit (18.50, -3.20, 134.00) head=(-23.58, -1.23, 818.46) remainingXZ=0.2803891 target=(-23.30, -1.70, 818.50) down=False supported=True
+2026-11-13T09:24:49.4379307Z PASS basement cell enter (19.30, -3.20, 139.65) head=(-30.09, -1.22, 819.29) remainingXZ=0.2604429 target=(-30.35, -1.70, 819.30) down=False supported=True
+2026-11-13T09:24:58.9349617Z PASS basement cell exit (19.30, -3.20, 139.65) head=(-29.20, -1.22, 819.30) remainingXZ=0.2465706 target=(-28.95, -1.70, 819.30) down=False supported=True
+2026-11-13T09:25:08.4392001Z PASS basement cell enter (19.30, -3.20, 143.20) head=(-33.66, -1.23, 819.24) remainingXZ=0.2451572 target=(-33.90, -1.70, 819.30) down=False supported=True
+2026-11-13T09:25:17.9041074Z PASS basement cell exit (19.30, -3.20, 143.20) head=(-32.78, -1.22, 819.29) remainingXZ=0.2815049 target=(-32.50, -1.70, 819.30) down=False supported=True
+2026-11-13T09:25:27.1334661Z PASS basement cell enter (26.50, -3.20, 128.70) head=(-19.11, -1.23, 826.48) remainingXZ=0.290919 target=(-19.40, -1.70, 826.50) down=False supported=True
+2026-11-13T09:25:57.8632921Z PASS basement cell exit (26.50, -3.20, 128.70) head=(-18.44, -1.24, 826.50) remainingXZ=0.4351389 target=(-18.00, -1.70, 826.50) down=False supported=True
+2026-11-13T09:26:07.3712044Z PASS basement cell enter (28.00, -3.20, 142.85) head=(-33.30, -1.23, 827.99) remainingXZ=0.2539626 target=(-33.55, -1.70, 828.00) down=False supported=True
+2026-11-13T09:26:16.8906403Z PASS basement cell exit (28.00, -3.20, 142.85) head=(-32.42, -1.22, 827.98) remainingXZ=0.2751513 target=(-32.15, -1.70, 828.00) down=False supported=True
+2026-11-13T09:26:16.8911691Z DONE

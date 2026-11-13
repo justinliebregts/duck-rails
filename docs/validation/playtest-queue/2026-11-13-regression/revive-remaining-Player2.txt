@@ -1,0 +1,22 @@
+2026-11-13T09:11:03.7017825Z stage=0 sequence=0 phase=Running
+2026-11-13T09:11:11.7198989Z stage=1 sequence=0 phase=Running
+2026-11-13T09:11:18.7256746Z PASS stage=1 authoritative completion sequence=1 start=3406175.803 completedAt=3406178.837 seconds=3.0339999999851 observedBursts=1 maxFollowGap=0.280014
+2026-11-13T09:11:18.7261922Z PASS no duplicate completion burst in stage=1
+2026-11-13T09:11:18.7267034Z PASS both feedback sounds use game effects mixer
+2026-11-13T09:11:19.7514859Z stage=2 sequence=1 phase=Running
+2026-11-13T09:11:26.7108878Z PASS long hand withdrawal resets progress and stops loop
+2026-11-13T09:11:27.6919261Z stage=3 sequence=1 phase=Running
+2026-11-13T09:11:34.7203749Z PASS stage=3 authoritative completion sequence=2 start=3406191.781 completedAt=3406194.804 seconds=3.0230000000447 observedBursts=1 maxFollowGap=0.3880005
+2026-11-13T09:11:34.7218853Z PASS no duplicate completion burst in stage=3
+2026-11-13T09:11:34.7218853Z PASS two helpers do not accelerate three-second rescue
+2026-11-13T09:11:34.7218853Z PASS both feedback sounds use game effects mixer
+2026-11-13T09:11:35.7141278Z stage=4 sequence=2 phase=Running
+2026-11-13T09:11:43.7383078Z stage=5 sequence=2 phase=Ending
+2026-11-13T09:11:50.7118828Z PASS stage=5 authoritative completion sequence=3 start=3406207.832 completedAt=3406210.959 seconds=3.12699999986216 observedBursts=1 maxFollowGap=0.2359924
+2026-11-13T09:11:50.7118828Z PASS no duplicate completion burst in stage=5
+2026-11-13T09:11:50.7124040Z PASS victory rescue leaves locked scores unchanged
+2026-11-13T09:11:50.7124040Z PASS both feedback sounds use game effects mixer
+2026-11-13T09:11:51.7183997Z stage=6 sequence=3 phase=Ending
+2026-11-13T09:11:58.7399806Z PASS no duplicate completion after receipt settled
+2026-11-13T09:11:59.7236510Z stage=7 sequence=3 phase=Ending
+2026-11-13T09:11:59.7236510Z DONE

@@ -1,0 +1,35 @@
+using System;using System.IO;using System.Linq;using UnityEngine;using UnityEditor;using Photon.Pun;
+internal class CommandScript : IRunCommand {
+ const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-13-regression/";
+ StoreUI[] stores;StoreWallItem wall;StoreItem item;PlayerHand hand;SimulatedRigInput sim;int shop,index,stage,coins,spent;double entered;string path;Vector3 origin;bool oldDisable,oldKinematic,oldLeft;
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){Log((ok?"PASS ":"FAIL ")+s);}
+ public void Execute(ExecutionResult r){GR.Player.instance.leftPlayerHand.enabled=true;path=Root+"store-bag-prerequisite-"+PhotonSession.Phase+".txt";File.WriteAllText(path,"Real wall grab/pull, backend coin charge, actual spawned cargo. Controlled rig positioning; no entitlements fabricated.\n");stores=UnityEngine.Object.FindObjectsByType<StoreUI>(FindObjectsSortMode.None).Where(x=>x.GetComponentsInChildren<StoreWallItem>().Any(w=>object.ReferenceEquals(RailRemoteBridge.Get(w,"store"),x))).OrderBy(x=>x.transform.position.z).Take(1).ToArray();hand=GR.Player.instance.rightPlayerHand;sim=SimulatedRigInput.Instance;sim.SetSimulating(true);sim.UseInjectedInput=true;oldLeft=GR.Player.instance.leftPlayerHand.enabled;GR.Player.instance.leftPlayerHand.enabled=false;origin=NewPlayer.instance.transform.position;oldDisable=NewPlayer.instance.disableMovement;oldKinematic=NewPlayer.instance.rb.isKinematic;NewPlayer.instance.disableMovement=true;NewPlayer.instance.rb.isKinematic=true;entered=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;r.Log("Store pull suite armed locations="+stores.Length);}
+ void Finish(){PhotonHeldItems.DropLocalHands();GR.Player.instance.leftPlayerHand.enabled=oldLeft;hand.Release();sim.InjectedInput=default;sim.UseInjectedInput=false;NewPlayer.instance.disableMovement=oldDisable;NewPlayer.instance.rb.isKinematic=oldKinematic;NewPlayer.instance.Warp(origin);EditorApplication.update-=Tick;Log("DONE");}
+ void Tick(){if(!Application.isPlaying){EditorApplication.update-=Tick;return;}try{
+ foreach(var h in UnityEngine.Object.FindObjectsByType<PhotonMasterHandoff>(FindObjectsSortMode.None))RailRemoteBridge.Set(h,"focused",true);
+ if(EditorApplication.timeSinceStartup-entered<.7)return;
+ if(shop>=stores.Length){Finish();return;}var store=stores[shop];var goods=store.Catalog.items.Where(x=>!x.InBundle&&!x.IsWearable&&x.payment==StorePayment.Coins&&x.key=="bag_basic").ToArray();
+ if(stage==0){
+ if(index==0){Log("SHOP "+shop+" "+store.transform.position+" wallet="+DuckzWallet.Instance.Coins);foreach(var bundle in store.Catalog.bundles)Log((DuckzWallet.Instance.OwnsSku(bundle.sku)?"OWNED ":"BLOCKED owned-bundle cases: missing entitlement ")+bundle.sku);var skin=store.Catalog.items.FirstOrDefault(x=>x.IsDefault);if(skin!=null)store.Purchase(skin.key,result=>Check(result==StorePurchaseResult.Equipped,"Default avatar equip free at shop "+shop));}
+ if(index>=goods.Length){shop++;index=0;entered=EditorApplication.timeSinceStartup;return;}
+ item=goods[index];coins=DuckzWallet.Instance.Coins;spent=RailExpedition.Instance?.LocalParticipant?.spent??0;
+ if(coins<store.Price(item)){Log("BLOCKED insufficient test wallet "+item.key+" needs="+store.Price(item)+" have="+coins);index++;return;}
+ wall=store.GetComponentsInChildren<StoreWallItem>().First(x=>(string)RailRemoteBridge.Get(x,"itemKey")==item.key);
+ sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true};NewPlayer.instance.Warp(NewPlayer.instance.transform.position+wall.transform.position-hand.HoldPoint.position);stage=1;entered=EditorApplication.timeSinceStartup;}
+ else if(stage==1){if(!hand.TryGrab(wall))throw new Exception("Wall grab refused "+item.key+" canGrab="+hand.CanGrab+" held="+hand.Held);sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true,grip=true};stage=2;entered=EditorApplication.timeSinceStartup;}
+ else if(stage==2){NewPlayer.instance.Warp(NewPlayer.instance.transform.position+Vector3.back*.55f);stage=3;entered=EditorApplication.timeSinceStartup;}
+ else if(stage==3){
+ var held=hand.Held;var bag=BagObject.Active.FirstOrDefault(b=>b.State==BagState.Held&&b.HolderActor==PhotonNetwork.LocalPlayer.ActorNumber&&!b.HeldInLeftHand);var view=item.type==StoreItemType.Bag?bag?.photonView:held!=null?held.GetComponent<PhotonView>():null;
+ if(view==null||held==wall){if(EditorApplication.timeSinceStartup-entered<20)return;Check(false,"Wall pull did not spawn actual item "+item.key+" wallet="+DuckzWallet.Instance.Coins+" state="+RailRemoteBridge.Get(wall,"state"));hand.Release();sim.InjectedInput=default;index++;stage=0;return;}
+ Check(DuckzWallet.Instance.Coins==coins-store.Price(item),"Exactly one coin charge "+item.key+" "+coins+" -> "+DuckzWallet.Instance.Coins);
+ Check(view.ViewID!=0&&!string.IsNullOrEmpty(view.SpawnToken),"Real network item "+item.key+" view="+view.ViewID+" token="+view.SpawnToken+" held="+(item.type==StoreItemType.Bag?"BagObject":held.GetType().Name));
+ File.AppendAllText(Root+"store-spawns.txt",shop+"|"+item.key+"|"+view.ViewID+"|"+view.SpawnToken+"\n");
+ PhotonHeldItems.DropLocalHands();sim.InjectedInput=default;index++;stage=0;entered=EditorApplication.timeSinceStartup;
+ }
+ }catch(Exception e){Log("FIXTURE ERROR "+e);Finish();}}
+}
+
+
+
+

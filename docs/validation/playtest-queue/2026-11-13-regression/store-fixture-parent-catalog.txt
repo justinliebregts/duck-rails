@@ -1,0 +1,6 @@
+Real wall grab/pull, backend coin charge, actual spawned cargo. Controlled rig positioning; no entitlements fabricated.
+2026-11-13T07:35:28.0169896Z SHOP 0 (-9.50, 1.00, 79.00) wallet=469
+2026-11-13T07:35:28.0193736Z FIXTURE ERROR System.InvalidOperationException: Sequence contains no matching element
+  at System.Linq.Enumerable.First[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) [0x00011] in <e1f614c5eede4689988594bcb9796955>:0 
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.CommandScript.Tick () [0x001f4] in <7b7e514abf6045abb08c8db9750d8e28>:0 
+2026-11-13T07:35:28.0204240Z DONE
