@@ -1,5 +1,34 @@
 # Container Yard — approved maze and installed rough blockout
 
+## Full-block Blender atlas review — November 14, 2026
+
+Converted the current saved block, including existing local edits, into a separate
+Blender asset and Unity review prefab/scene. User approved the review; the optimized
+visuals are now integrated into the original-GUID production prefab.
+1,191 compatible scenery renderers / 17 materials become 246 shared-material chunks;
+three original CutePixel labels remain (1,194 -> 249 enabled renderers). Repeating-UV
+preservation increases triangles 108,336 -> 202,488. Cells are 12 x 6 x 12 m with
+11 oversized sources kept separate. No textured emission or animated brushes exist
+in this block; other blocks' special materials/animation remain untouched.
+
+Saved comparisons preserve all 2,360 transforms, 4,110 serialized components,
+663 colliders, current 168 coal / 142 gold / 32 enemy candidates and per-run rules,
+navigation, 40 lights, four reverb zones, ground repeats, north-yard additions,
+three labels and 1,191 original baked bindings. Review adds 246 valid chunk bindings.
+All 354 source dependency hashes unchanged; exact imported meshes/lighting,
+compilation/Console and ten paired visual samples pass. Original darkness retained.
+
+Open **Duck Rails > Authoring > Container Yard > Open full-map Blender review**.
+Assets are under `Assets/DuckRails/ContainerYardAtlasReview`; editable source and
+recoverable originals under `ArtSource/ContainerYardAtlas`.
+[Evidence and limits](validation/container-yard-atlas/README.md).
+Production integration preserves all 8,147 original object IDs, all 663 colliders
+and 1,437 lighting bindings, with 353 other original dependency files unchanged.
+Build/source fingerprint and lighting-workflow guards pass.
+[Integration and recovery](validation/container-yard-atlas/production-integration.md).
+Runtime/headset checks remain
+**queued for playtest**. No Play Mode, APK/device comparison or rebake performed.
+
 ## Ground and spawn redistribution — November 12, 2026
 
 User requested less obvious ground tiling and redistribution of coal, gold and enemies after the north-yard additions. The main ground now uses a dedicated copy of the Quackville concrete material with texture scale 0.25 on both axes: **12 m repeats instead of 3 m**. Other concrete props retain their original material/texel scale. Geometry, collision, authored object poses and the existing offline graph are unchanged; lighting was rebaked/exported after the material change.

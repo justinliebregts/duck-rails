@@ -1,5 +1,13 @@
 # Duck Rails — V1 game design
 
+November 14 Container Yard atlas: full-block Blender source and isolated Unity
+review imported with 246 shared-material chunks and three retained CutePixel labels.
+Current layout/edits, collision, gameplay, spawns, navigation and baked lighting
+preserved. User approved the appearance; production integration preserves the
+original prefab GUID and all original object IDs. Authoring and integration checks
+pass; runtime/headset acceptance remains queued.
+[Integration evidence](validation/container-yard-atlas/production-integration.md).
+
 November 14 Skyscraper atlas: full-block Blender source and isolated Unity review
 imported with 394 shared-material chunks plus the retained CutePixel sign. Layout,
 collision, gameplay, spawn pools, navigation and baked lighting remain unchanged.

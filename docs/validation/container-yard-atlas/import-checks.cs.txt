@@ -1,0 +1,61 @@
+using UnityEngine;
+using UnityEditor;
+using System;
+using System.IO;
+using System.Linq;
+
+using System.Collections.Generic;
+internal class CommandScript : IRunCommand {
+string Key(Transform t, Transform root) {var p=new List<int>();while(t!=root){p.Insert(0,t.GetSiblingIndex());t=t.parent;}return string.Join("/",p);}
+Transform Resolve(Transform root,string key){var t=root;if(key!="")foreach(var i in key.Split('/'))t=t.GetChild(int.Parse(i));return t;}
+string Ref(UnityEngine.Object o,Transform root){
+ if(!o)return "null";var t=o is GameObject?(o as GameObject).transform:o is Component?(o as Component).transform:null;
+ if(t&&(t==root||t.IsChildOf(root)))return "local:"+Key(t,root)+":"+o.GetType().FullName+(o is Component?":"+Array.IndexOf(t.GetComponents(o.GetType()),o):"");
+ return "asset:"+GlobalObjectId.GetGlobalObjectIdSlow(o).ToString();
+}
+string Drop(string json,string field){string start="\""+field+"\":";int i=json.IndexOf(start,StringComparison.Ordinal);if(i<0)return json;int j=i+start.Length;if(json[j]=='{')j=json.IndexOf('}',j)+1;else {while(j<json.Length&&json[j]!=','&&json[j]!='}')j++;}return json.Remove(i,j-i);}
+string Canon(Component c,Transform root){
+ string json=EditorJsonUtility.ToJson(c).Replace(AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(root.gameObject)),"LOCAL_PREFAB");string token="\"instanceID\":";
+ int cursor=0;while((cursor=json.IndexOf(token,cursor,StringComparison.Ordinal))>=0){int first=cursor+token.Length;int end=first;while(end<json.Length&&(json[end]=='-'||char.IsDigit(json[end])))end++;string replace="\"reference\":\""+Ref(EditorUtility.InstanceIDToObject(int.Parse(json.Substring(first,end-first))),root)+"\"";json=json.Remove(cursor,end-cursor).Insert(cursor,replace);cursor+=replace.Length;}
+ foreach(var field in new[]{"m_CorrespondingSourceObject","m_PrefabInstance","m_PrefabAsset"})json=Drop(json,field);
+ if(c is Renderer)json=Drop(json,"m_Enabled");
+ return json;
+}
+void Require(bool ok,string why){if(!ok)throw new Exception(why);}
+public void Execute(ExecutionResult result) {
+var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/container-yard-v1.prefab");
+var review=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/ContainerYardAtlasReview/ContainerYard-FullAtlas-Review.prefab");
+
+int transforms=0,components=0,colliders=0;
+foreach(var t in source.GetComponentsInChildren<Transform>(true)){
+ var r=Resolve(review.transform,Key(t,source.transform));
+ Require((t==source.transform||t.name==r.name)&&t.localPosition==r.localPosition&&t.localRotation==r.localRotation&&t.localScale==r.localScale&&t.gameObject.activeSelf==r.gameObject.activeSelf&&t.gameObject.layer==r.gameObject.layer,"Transform mismatch "+t.name);transforms++;
+ var cs=t.GetComponents<Component>().Where(c=>!(c is Transform)&&!(c is RailSceneryChunks)&&!(c is RailBakedBlockLighting)).ToArray();
+ var cr=r.GetComponents<Component>().Where(c=>!(c is Transform)&&!(c is RailSceneryChunks)&&!(c is RailBakedBlockLighting)).ToArray();
+ Require(cs.Length==cr.Length,"Component count "+t.name);
+ for(int i=0;i<cs.Length;i++){Require(cs[i]&&cr[i]&&cs[i].GetType()==cr[i].GetType(),"Component type "+t.name);Require(Canon(cs[i],source.transform)==Canon(cr[i],review.transform),"Serialized change "+t.name+" "+cs[i].GetType());components++;if(cs[i] is Collider)colliders++;}
+}
+var original=source.GetComponent<RailBakedBlockLighting>();var lit=review.GetComponent<RailBakedBlockLighting>();
+Require(original.lightingScene==lit.lightingScene,"Lighting companion changed");
+foreach(var b in original.bindings){var r=Resolve(review.transform,Key(b.renderer.transform,source.transform)).GetComponent<Renderer>();var matches=lit.bindings.Where(x=>x.renderer==r).ToArray();Require(matches.Length==1&&matches[0].color==b.color&&matches[0].scaleOffset==b.scaleOffset,"Source lightmap binding mismatch");}
+Require(lit.bindings.All(b=>b.renderer&&b.color),"Invalid lightmap reference");
+var visual=review.transform.Find("Blender full ContainerYard - atlas review");
+var chunks=visual.GetComponentsInChildren<MeshRenderer>(true);
+Require(chunks.Length==246&&chunks.SelectMany(r=>r.sharedMaterials).Distinct().Count()==1,"Chunk/material count");
+Require(review.GetComponent<RailSceneryChunks>()==null,"Duplicate render switch");
+var payload=JsonUtility.FromJson<RailContainerYardAtlasReview.Payload>(File.ReadAllText("ArtSource/ContainerYardAtlas/unity-meshes.json"));
+Require(payload.sourceKeys.All(k=>!Resolve(review.transform,k).GetComponent<MeshRenderer>().enabled),"Source still rendering");
+var keys=new System.Collections.Generic.HashSet<string>(payload.sourceKeys);
+foreach(var src in source.GetComponentsInChildren<MeshRenderer>(true)){
+var dest=Resolve(review.transform,Key(src.transform,source.transform)).GetComponent<MeshRenderer>();
+Require(dest.enabled==(keys.Contains(Key(src.transform,source.transform))?false:src.enabled),"Unexpected renderer enable change "+src.name);
+}
+Require(payload.sourceHash==AssetDatabase.GetAssetDependencyHash(AssetDatabase.GetAssetPath(source)).ToString(),"Source dependency hash changed");
+int triangles=0;
+foreach(var chunk in chunks){var m=chunk.GetComponent<MeshFilter>().sharedMesh;Require(m&&m.subMeshCount==1&&m.uv2.Length==m.vertexCount&&m.normals.Length==m.vertexCount,"Invalid mesh");triangles+=m.triangles.Length/3;var b=lit.bindings.Single(x=>x.renderer==chunk);Require(b.scaleOffset==new Vector4(1,1,0,0),"Chunk ST mismatch");}
+Require(triangles==202488,"Triangle import mismatch");
+string report=$"PASS saved-asset authoring invariants\nOriginal transforms retained: {transforms}\nOriginal serialized components unchanged (except Renderer.enabled): {components}\nUnchanged colliders: {colliders}\nOriginal lightmap bindings preserved: {original.bindings.Length}\nValid review lighting bindings: {lit.bindings.Length}\nDisabled source renderers: {payload.sourceKeys.Length}\nAtlas chunks / materials: {chunks.Length} / 1\nImported triangles: {triangles}\nEnabled Env mesh renderers retained: {review.transform.Find("Env").GetComponentsInChildren<MeshRenderer>(true).Count(r=>r.enabled)}\nEnabled review mesh renderers: {review.GetComponentsInChildren<MeshRenderer>(true).Count(r=>r.enabled)}\nNo Play Mode, device run, or performance acceptance.\n";
+Directory.CreateDirectory("docs/validation/container-yard-atlas");File.WriteAllText("docs/validation/container-yard-atlas/import-checks.txt",report);result.Log(report);
+}}
+
+

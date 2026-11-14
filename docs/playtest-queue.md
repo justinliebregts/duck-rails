@@ -43,6 +43,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Container Yard production atlas integration — queued 2026-11-14
+- Commit(s): see git log "Integrate approved Container Yard atlas"; user-approved visuals integrated into the original-GUID production prefab.
+- Changed: 1,191 compatible scenery renderers / 17 materials -> 246 chunks / one atlas material, plus three retained CutePixel labels. Total 1,194 -> 249 renderers; triangles 108,336 -> 202,488. Cells 12 x 6 x 12 m; 11 oversized sources separate. No textured emission or animated brushes exist in this block.
+- Cheap checks: all 2,360 original transforms, 4,110 serialized components, 663 colliders, navigation/spawn settings, 354 original dependency hashes and 1,191 original baked bindings preserved. Exact mesh data and 1,437 review-scene lightmap bindings pass; ten paired visual samples inspected; compilation succeeds and final error Console empty. [Evidence](validation/container-yard-atlas/README.md).
+- Integration checks: all 8,147 original local object IDs retained; production metadata byte-identical; all 663 colliders and 1,437 lighting bindings match the approved review. 353 other original dependency files unchanged. Build/source fingerprint and lighting-workflow guards pass. [Evidence and recovery](validation/container-yard-atlas/production-integration.md).
+- Setup: use normal production Container Yard via Test Block Order on a requested queue run. One client for loading/readiness/visibility, two real clients plus late join for agreement; include nonzero route placement and return/replay. Production atlas assets are in `Assets/DuckRails/ContainerYardAtlas`; the approved review remains available.
+- Check: original lighting/readiness at origin and translated placement, companion unload/rebind, hide/show/re-enable and no missing/duplicate scenery. Preserve container interiors/roof routes/gantry, north shed/trailer/dock/tanks, ground repeats, collision, 168 coal / 142 gold / 32 enemy candidates and per-run selection, navigation, reverb and CutePixel text. Inspect normals/shadows, seams and distant minification.
+- Needs human: full Unity appearance approved. Moving-view/headset darkness/minification, natural climbing/container/trailer/dock traversal and item reach/recovery remain queued. Existing block gameplay acceptance remains open.
+- Priority: normal. No repeated wing pilot, routine Quest comparison or comparison APK unless explicitly requested. Renderer reduction does not establish Container Yard device performance.
+
 ### Skyscraper Works production atlas integration — queued 2026-11-14
 - Commit(s): see git log "Integrate approved Skyscraper atlas"; user approved the appearance and retained triangle count.
 - Changed: 3,403 compatible scenery renderers / 13 materials -> 394 chunks / one atlas material, plus retained CutePixel sign. Total 3,404 -> 395 renderers; scenery triangles 47,996 -> 228,866. Four-metre vertical cells suit tower floors; oversized sources stay separate. Constant HDR emission retained; no textured emission atlas or animated brushes exist in this block.

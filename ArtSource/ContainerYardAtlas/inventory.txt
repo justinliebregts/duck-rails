@@ -1,0 +1,84 @@
+Source Assets/DuckRails/Blocks/container-yard-v1.prefab hash=88852bfc0a566abd1eeaab5310b374ac
+Root (0.00, 0.00, 0.00) (0.00000, 0.00000, 0.00000, 1.00000) (1.00, 1.00, 1.00)
+Root child Track Entry renderers=0
+Root child Track Exit renderers=0
+Root child Suggested Stop renderers=0
+Root child Authored crawlgraph settings renderers=0
+Root child Coal Spawns renderers=0
+Root child Gold Spawns renderers=0
+Root child Enemy Spawns renderers=0
+Root child Env renderers=1194
+Root child Reverb Zones renderers=0
+MeshRenderers=1194 enabled=1194 colliders=663 transforms=2360
+Bindings=1191 runtimeChunks=False
+Scripts: RailBlock=1, RailBakedBlockLighting=1, CrawlGraphBaker=1, RailSpawnMarker=342, CoalSpawner=168, RailGoldSpawner=142, RailEnemySpawner=32, AudioSurface=285, UniversalAdditionalLightData=40, TextMeshPro=3, BoxReverbZone=4
+MAT Assets/DuckRails/TrackSurfaces/Dull grey rail.mat | Universal Render Pipeline/Lit | renderers=160 | keywords=
+  _MainTex=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg size=256x128 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg size=256x128 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/DepotMaterials/Old timber.mat | Universal Render Pipeline/Lit | renderers=80 | keywords=
+  _MainTex=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg size=256x256 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg size=256x256 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Polish/Yard ground broad repeat.mat | Universal Render Pipeline/Lit | renderers=1 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville concrete.png size=64x64 ST=(0.25, 0.25)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville concrete.png size=64x64 ST=(0.25, 0.25)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Rust red.mat | Universal Render Pipeline/Lit | renderers=35 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Machine yellow.mat | Universal Render Pipeline/Lit | renderers=32 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Faded blue.mat | Universal Render Pipeline/Lit | renderers=41 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Dark steel.mat | Universal Render Pipeline/Lit | renderers=445 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Sage steel.mat | Universal Render Pipeline/Lit | renderers=38 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Ochre steel.mat | Universal Render Pipeline/Lit | renderers=37 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Old pallets.mat | Universal Render Pipeline/Lit | renderers=252 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Gantry orange.mat | Universal Render Pipeline/Lit | renderers=11 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Tyres.mat | Universal Render Pipeline/Lit | renderers=10 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville dark roofing.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville dark roofing.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Cab glass.mat | Universal Render Pipeline/Lit | renderers=5 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville dark roofing.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville dark roofing.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Yard weeds.mat | Universal Render Pipeline/Lit | renderers=26 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville grass.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville grass.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/Yard gravel.mat | Universal Render Pipeline/Lit | renderers=8 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/Fonts/CutePixel SDF.asset | TextMeshPro/Distance Field | renderers=3 | keywords=
+  _MainTex=Assets/Fonts/CutePixel SDF.asset size=256x256 ST=(1.00, 1.00)/(0.00, 0.00)
+MAT Assets/DuckRails/ContainerYard/Yard concrete.mat | Universal Render Pipeline/Lit | renderers=5 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville concrete.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville concrete.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/ContainerYard/NorthYard/Weathered propane white.mat | Universal Render Pipeline/Lit | renderers=5 | keywords=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64 ST=(1.00, 1.00)/(0.00, 0.00)
+  emission=RGBA(0.000, 0.000, 0.000, 1.000)

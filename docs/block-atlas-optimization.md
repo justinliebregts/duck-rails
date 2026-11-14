@@ -202,8 +202,21 @@ bundle art fixes. Start with the full block; no wing pilot or comparison APK nee
   All 23,068 original object IDs, collision/gameplay and lighting remain intact.
   Runtime/headset acceptance queued for playtest.
   [Integration and recovery](validation/skyscraper-atlas/production-integration.md).
+- Container Yard: full-block Blender source and separate Unity review prefab/scene
+  imported November 14 from current saved assets, retaining existing local edits.
+  1,191 compatible renderers / 17 materials -> 246 chunks / one atlas material,
+  plus three CutePixel labels (1,194 -> 249 total renderers). Triangles
+  108,336 -> 202,488; 12 x 6 x 12 m cells with 11 oversized sources separate.
+  No textured emission or animated brushes in this block. All 663 colliders,
+  gameplay/spawns/navigation, 1,191 original baked bindings and 354 dependency
+  hashes preserved. Exact import, compilation/Console and ten paired visual
+  samples pass. User approved visuals; integrated into the original-GUID production
+  prefab November 14, retaining all 8,147 original object IDs, collision/gameplay
+  and lighting. Build and lighting-workflow guards pass. Runtime/headset acceptance
+  queued for playtest.
+  [Integration and recovery](validation/container-yard-atlas/production-integration.md).
 - Remaining blocks authorized for subsequent passes, not converted here: Bridge
-  Finale, Canyon, Container Yard, Electrical Substation, Farm Silos, Hospital
+  Finale, Canyon, Electrical Substation, Farm Silos, Hospital
   District, Lakeside Campground, Lumber Yard, Maintenance Depot, Midpoint Helipad,
   Nuclear Power Plant, Passenger Station, Quarry, Scrapyard and
   Tunnel Works. Later ordering is not fixed. Preserve special finale/vehicle/gameplay

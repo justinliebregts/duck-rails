@@ -1,0 +1,7 @@
+PASS detailed saved/imported asset checks
+All 246 imported meshes exactly match payload positions, normals, UV0, UV2 and indices; finite unit normals and valid indices.
+All 1437 actual review-scene lightmap indices/scale-offsets point to the intended assets.
+Full enabled source / review MeshFilter triangles (including any source degenerates): 108336 / 202488
+Candidate markers: coal=168 gold=142 enemy=32
+Lights=40; reverb zones=4; missing component references=0
+No runtime switch, production integration, navigation/lighting rebake, Play Mode, APK or device tests.
