@@ -1,0 +1,35 @@
+using UnityEngine;using UnityEditor;using UnityEngine.SceneManagement;using System;using System.IO;using System.Linq;using System.Text;
+internal class CommandScript:IRunCommand{
+void Require(bool ok,string why){if(!ok)throw new Exception(why);}
+int Triangles(GameObject root){return root.GetComponentsInChildren<MeshRenderer>(true).Where(r=>r.enabled&&r.GetComponent<MeshFilter>()&&r.GetComponent<MeshFilter>().sharedMesh).Sum(r=>r.GetComponent<MeshFilter>().sharedMesh.triangles.Length/3);}
+public void Execute(ExecutionResult result){
+var src=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/convenience-store-v1.prefab");
+var review=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/ConvenienceStoreAtlasReview/ConvenienceStore-FullAtlas-Review.prefab");
+var payload=JsonUtility.FromJson<RailConvenienceStoreAtlasReview.Payload>(File.ReadAllText("ArtSource/ConvenienceStoreAtlas/unity-meshes.json"));
+var renderers=review.transform.Find("Blender full ConvenienceStore - atlas review").GetComponentsInChildren<MeshRenderer>();
+foreach(var p in payload.parts){
+var r=renderers.Single(x=>x.name==p.name);var mesh=r.GetComponent<MeshFilter>().sharedMesh;
+Require(mesh.vertices.SequenceEqual(p.vertices)&&mesh.normals.SequenceEqual(p.normals)&&mesh.uv.SequenceEqual(p.uv)&&mesh.uv2.SequenceEqual(p.uv2)&&mesh.triangles.SequenceEqual(p.triangles),"Payload mismatch: "+p.name);
+Require(mesh.vertices.All(v=>float.IsFinite(v.x)&&float.IsFinite(v.y)&&float.IsFinite(v.z))&&mesh.normals.All(v=>Mathf.Abs(v.magnitude-1)<.001f),"Invalid vertex/normal: "+p.name);
+Require(mesh.triangles.All(i=>i>=0&&i<mesh.vertexCount),"Invalid indices");
+Require(AssetDatabase.GetAssetPath(review.GetComponent<RailBakedBlockLighting>().bindings.Single(b=>b.renderer==r).color)==p.lightmap,"Lightmap identity mismatch");
+}
+var scene=SceneManager.GetActiveScene();Require(scene.path.EndsWith("ConvenienceStore-FullAtlas-Review.unity"),"Wrong review scene");
+var live=scene.GetRootGameObjects().Single(g=>g.GetComponent<RailBlock>());
+foreach(var b in live.GetComponent<RailBakedBlockLighting>().bindings){Require(b.renderer&&b.color,"Missing live binding");Require(b.renderer.lightmapIndex<LightmapSettings.lightmaps.Length&&LightmapSettings.lightmaps[b.renderer.lightmapIndex].lightmapColor==b.color&&b.renderer.lightmapScaleOffset==b.scaleOffset,"Live lightmap mismatch: "+b.renderer.name);}
+var brushes=review.GetComponentsInChildren<RailWashBrushSpin>(true);Require(brushes.Length==7&&brushes.All(b=>b.GetComponentsInChildren<Collider>(true).Length==0),"Brush collision moved into animated hierarchy");
+var text=review.GetComponentsInChildren<TMPro.TMP_Text>(true);Require(text.Length==7&&text.All(t=>AssetDatabase.GetAssetPath(t.font)=="Assets/Fonts/CutePixel SDF.asset"),"Font mismatch");
+var neon=AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/ConvenienceStore/Round2/Shared neon atlas.mat");
+Require(review.GetComponentsInChildren<MeshRenderer>(true).Count(r=>r.enabled&&r.sharedMaterials.Contains(neon))==109,"Neon exception changed");
+Require(neon.GetTexture("_EmissionMap") is Texture2D e&&e.format==TextureFormat.RGBAHalf&&!e.isDataSRGB,"HDR emission format changed");
+var sb=new StringBuilder("PASS detailed saved/imported asset checks\n");
+sb.AppendLine("All 285 imported meshes exactly match payload positions, normals, UV0, UV2 and indices; finite unit normals and valid indices.");
+sb.AppendLine("All 1557 actual review-scene lightmap indices/scale-offsets point to the intended assets.");
+sb.AppendLine("Full enabled source / review MeshFilter triangles (including any source degenerates): "+Triangles(src)+" / "+Triangles(review));
+sb.AppendLine("Brush scripts: 7; brush descendant renderers: "+brushes.Sum(b=>b.GetComponentsInChildren<MeshRenderer>(true).Length)+"; animated descendant colliders: 0. Stationary collider serialization covered by import-checks.");
+sb.AppendLine("CutePixel text: "+text.Length+"; HDR textured neon renderers: 109, same RGBAHalf linear emission asset and material.");
+sb.AppendLine("Candidate markers: coal="+review.GetComponentsInChildren<CoalSpawner>(true).Length+" gold="+review.GetComponentsInChildren<RailGoldSpawner>(true).Length+" enemy="+review.GetComponentsInChildren<RailEnemySpawner>(true).Length);
+sb.AppendLine("Lights="+review.GetComponentsInChildren<Light>(true).Length+"; reverb zones="+review.GetComponentsInChildren<MonoBehaviour>(true).Count(c=>c&&c.GetType().Name=="BoxReverbZone")+"; missing component references="+review.GetComponentsInChildren<Transform>(true).Sum(t=>t.GetComponents<Component>().Count(c=>!c)));
+sb.AppendLine("No runtime switch, production integration, navigation/lighting rebake, Play Mode, APK or device tests.");
+File.WriteAllText("docs/validation/convenience-store-atlas/detail-checks.txt",sb.ToString());result.Log(sb.ToString());
+}}

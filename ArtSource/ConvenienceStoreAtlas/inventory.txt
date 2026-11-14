@@ -1,0 +1,133 @@
+hash=1532f7382fac5b2a7e509ca5962f3ebc root=(0.00, 0.00, 0.00) rot=(0.00, 0.00, 0.00) scale=(1.00, 1.00, 1.00)
+ROOT Track Entry
+ROOT Track Exit
+ROOT Suggested Stop
+ROOT Authored crawlgraph settings
+ROOT Coal Spawns
+ROOT Gold Spawns
+ROOT Enemy Spawns
+ROOT Env
+ROOT Reverb Zones
+renderers=1370 colliders=1420 bindings=1272
+SCRIPT RailBlock 1
+SCRIPT RailBakedBlockLighting 1
+SCRIPT CrawlGraphBaker 1
+SCRIPT RailSpawnMarker 262
+SCRIPT CoalSpawner 126
+SCRIPT RailGoldSpawner 109
+SCRIPT RailEnemySpawner 27
+SCRIPT AudioSurface 1023
+SCRIPT TextMeshPro 7
+SCRIPT UniversalAdditionalLightData 64
+SCRIPT RailWashBrushSpin 7
+SCRIPT BoxReverbZone 4
+MAT Quackville grass | Assets/DuckRails/CampgroundGreybox/Quackville grass.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville grass.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville grass.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Dull grey rail | Assets/DuckRails/TrackSurfaces/Dull grey rail.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg 256x128 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg 256x128 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Old timber | Assets/DuckRails/DepotMaterials/Old timber.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Stained plaster | Assets/DuckRails/DepotMaterials/Stained plaster.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Faded olive paint | Assets/DuckRails/DepotMaterials/Faded olive paint.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Exposed brick | Assets/DuckRails/DepotMaterials/Exposed brick.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg 256x128 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg 256x128 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Worn concrete | Assets/DuckRails/DepotMaterials/Worn concrete.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Oxidized steel | Assets/DuckRails/DepotMaterials/Oxidized steel.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg 256x128 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg 256x128 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Dark roofing | Assets/DuckRails/DepotMaterials/Dark roofing.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Worn yellow | Assets/DuckRails/DepotMaterials/Worn yellow.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg 256x128 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg 256x128 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Ground asphalt | Assets/DuckRails/DepotMaterials/Ground asphalt.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Shared neon atlas | Assets/DuckRails/ConvenienceStore/Round2/Shared neon atlas.mat shader=Universal Render Pipeline/Lit queue=2000 keys=_EMISSION
+  _MainTex=Assets/DuckRails/ConvenienceStore/Round2/Neon base atlas.asset 64x8 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/ConvenienceStore/Round2/Neon base atlas.asset 64x8 ST=(1.00, 1.00) / (0.00, 0.00)
+  _EmissionMap=Assets/DuckRails/ConvenienceStore/Round2/Neon emission atlas.asset 64x8 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Text-Neon pink | Assets/DuckRails/ConvenienceStore/Text-Neon pink.mat shader=TextMeshPro/Mobile/Distance Field queue=3000 keys=
+  _MainTex=Assets/Fonts/CutePixel SDF.asset 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Opaque cold glass | Assets/DuckRails/ConvenienceStore/Opaque cold glass.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Silo metal | Assets/DuckRails/FarmSilos/Silo metal.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Rubber and pupil | Assets/DuckRails/ConvenienceStore/Round2/Rubber and pupil.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Van faded blue | Assets/DuckRails/ConvenienceStore/Round2/Van faded blue.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Van dark windows | Assets/DuckRails/ConvenienceStore/Round2/Van dark windows.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Mascot cream | Assets/DuckRails/ConvenienceStore/Round2/Mascot cream.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Dark shingles | Assets/DuckRails/FarmSilos/Dark shingles.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville dark roofing.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville dark roofing.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Text-Neon yellow | Assets/DuckRails/ConvenienceStore/Text-Neon yellow.mat shader=TextMeshPro/Mobile/Distance Field queue=3000 keys=
+  _MainTex=Assets/Fonts/CutePixel SDF.asset 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Arcade confetti carpet | Assets/DuckRails/ConvenienceStore/Round2/Arcade confetti carpet.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/ConvenienceStore/Round2/Party carpet texture.asset 128x128 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/ConvenienceStore/Round2/Party carpet texture.asset 128x128 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Arcade midnight violet | Assets/DuckRails/ConvenienceStore/Round2/Arcade midnight violet.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Text-Neon teal | Assets/DuckRails/ConvenienceStore/Text-Neon teal.mat shader=TextMeshPro/Mobile/Distance Field queue=3000 keys=
+  _MainTex=Assets/Fonts/CutePixel SDF.asset 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Text Polish neon green | Assets/DuckRails/ConvenienceStore/Polish/Text Polish neon green.mat shader=TextMeshPro/Distance Field queue=3000 keys=
+  _MainTex=Assets/Fonts/CutePixel SDF.asset 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Wash blue bristles | Assets/DuckRails/ConvenienceStore/Polish/Wash blue bristles.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Warm ivory | Assets/DuckRails/ConvenienceStore/Polish/Warm ivory.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Old timber | Assets/DuckRails/FarmSilos/Old timber.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Mascot faded yellow | Assets/DuckRails/ConvenienceStore/Polish/Mascot faded yellow.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Text Polish neon red | Assets/DuckRails/ConvenienceStore/Polish/Text Polish neon red.mat shader=TextMeshPro/Distance Field queue=3000 keys=
+  _MainTex=Assets/Fonts/CutePixel SDF.asset 256x256 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Quackville foliage | Assets/DuckRails/CampgroundGreybox/Quackville foliage.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville foliage.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville foliage.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Access road asphalt | Assets/DuckRails/ConvenienceStore/Polish/Access road asphalt.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Faded court surface | Assets/DuckRails/ConvenienceStore/Polish/Faded court surface.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville concrete.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville concrete.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Mascot orange bill | Assets/DuckRails/ConvenienceStore/Polish/Mascot orange bill.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Faded semi red | Assets/DuckRails/ConvenienceStore/Polish/Faded semi red.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Car blue | Assets/DuckRails/FinaleFort/Car blue.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/FinaleFort/Car blue.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/FinaleFort/Car blue.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Vehicle glass | Assets/DuckRails/FinaleFort/Vehicle glass.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/FinaleFort/Vehicle glass.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/FinaleFort/Vehicle glass.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Scaffold steel | Assets/DuckRails/SkyscraperWorks/Scaffold steel.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png 64x64 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Car faded red | Assets/DuckRails/FinaleFort/Car faded red.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/FinaleFort/Car faded red.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/FinaleFort/Car faded red.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Cottage cream | Assets/DuckRails/FinaleFort/Cottage cream.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/FinaleFort/Cottage cream.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/FinaleFort/Cottage cream.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Vehicle rubber | Assets/DuckRails/FinaleFort/Vehicle rubber.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/FinaleFort/Vehicle rubber.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/FinaleFort/Vehicle rubber.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Car ivory | Assets/DuckRails/FinaleFort/Car ivory.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/FinaleFort/Car ivory.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/FinaleFort/Car ivory.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Car grey | Assets/DuckRails/FinaleFort/Car grey.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+  _MainTex=Assets/DuckRails/FinaleFort/Car grey.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+  _BaseMap=Assets/DuckRails/FinaleFort/Car grey.asset 32x32 ST=(1.00, 1.00) / (0.00, 0.00)
+MAT Crossing red | Assets/DuckRails/ConvenienceStore/Round2/Crossing red.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Pizza cheese | Assets/DuckRails/ConvenienceStore/Round2/Pizza cheese.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Pizza crust | Assets/DuckRails/ConvenienceStore/Round2/Pizza crust.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Roast duck glaze | Assets/DuckRails/ConvenienceStore/Round2/Roast duck glaze.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Ramen bowl lacquer | Assets/DuckRails/ConvenienceStore/Round2/Ramen bowl lacquer.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Quack Mart pink | Assets/DuckRails/ConvenienceStore/Round2/Quack Mart pink.mat shader=Universal Render Pipeline/Lit queue=2000 keys=
+MAT Cooler clear glazing | Assets/DuckRails/ConvenienceStore/Round2/Cooler clear glazing.mat shader=Universal Render Pipeline/Lit queue=3000 keys=_ALPHAPREMULTIPLY_ON,_SURFACE_TYPE_TRANSPARENT

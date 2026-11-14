@@ -1,0 +1,9 @@
+PASS detailed saved/imported asset checks
+All 285 imported meshes exactly match payload positions, normals, UV0, UV2 and indices; finite unit normals and valid indices.
+All 1557 actual review-scene lightmap indices/scale-offsets point to the intended assets.
+Full enabled source / review MeshFilter triangles (including any source degenerates): 55702 / 127134
+Brush scripts: 7; brush descendant renderers: 91; animated descendant colliders: 0. Stationary collider serialization covered by import-checks.
+CutePixel text: 7; HDR textured neon renderers: 109, same RGBAHalf linear emission asset and material.
+Candidate markers: coal=126 gold=109 enemy=27
+Lights=64; reverb zones=4; missing component references=0
+No runtime switch, production integration, navigation/lighting rebake, Play Mode, APK or device tests.

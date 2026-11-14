@@ -7,6 +7,14 @@ for compatible static scenery, and retain exceptions. Full Quest A/B testing is 
 required for every block; keep authoring checks and visual review, queue remaining
 live acceptance. See [workflow and rollout status](block-atlas-optimization.md).
 
+November 14 Convenience Store atlas: full-block Blender source and isolated Unity
+review imported with 285 shared-material chunks and retained HDR neon, brush,
+transparent/text/UV exceptions (516 total renderers). Layout, collision, gameplay,
+spawns, navigation and baked lighting are unchanged. The user approved the visuals;
+production integration now preserves the original prefab GUID and all original
+object IDs. Authoring checks pass; runtime/headset validation remains queued.
+See [integration evidence](validation/convenience-store-atlas/production-integration.md).
+
 November 13 viewing distance: user selected **120 m** for player cameras, smoothly
 increasing to **175 m** with the successful dawn transition. Installed for the shared
 XR/simulated DuckPlayer; temporary 50 m editor preview removed. Compilation and

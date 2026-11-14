@@ -163,7 +163,7 @@ a reviewed result, preserve the production prefab GUID/gameplay references, reta
 recoverable originals and reconcile existing generated-render/build guards. Track
 integration separately; Motel full-map production integration is still pending.
 
-## Convenience Store next
+## Convenience Store implementation
 
 Target `Assets/DuckRails/Blocks/convenience-store-v1.prefab`; read
 `docs/convenience-store-layout.md`, especially later sparse-store/collision and
@@ -181,7 +181,15 @@ bundle art fixes. Start with the full block; no wing pilot or comparison APK nee
 
 - Motel: full-map review and scoped Quest pair complete; optimization approach
   accepted. Visual fixes and full-map production integration pending.
-- Convenience Store: next authorized block; not converted in this documentation task.
+- Convenience Store: full-block Blender asset and separate Unity review prefab/scene
+  imported November 14. 1,139 compatible source renderers -> 285 shared-material
+  chunks; 231 retained exceptions; total 1,370 -> 516 enabled mesh renderers.
+  Original HDR textured emission retained. Converted triangles 50,538 -> 121,970;
+  whole-block MeshFilter triangles 55,702 -> 127,134. Saved preservation, exact-mesh,
+  dependency-hash and seven-view authoring checks pass. User approved the visuals;
+  integrated into the original-GUID production prefab November 14, retaining all
+  original object IDs/gameplay/collision and baked lighting. Runtime/headset
+  validation queued for playtest. [Integration and recovery](validation/convenience-store-atlas/production-integration.md).
 - Remaining blocks authorized for subsequent passes, not converted here: Bridge
   Finale, Canyon, Container Yard, Electrical Substation, Farm Silos, Hospital
   District, Lakeside Campground, Lumber Yard, Maintenance Depot, Midpoint Helipad,

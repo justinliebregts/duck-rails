@@ -1,11 +1,46 @@
 # Convenience Store layout
 
-November 13 next-work handoff: Convenience Store is the next authorized block for
-the [Blender atlas/chunk workflow](block-atlas-optimization.md). Preserve current
-saved art, moving car-wash brushes/stationary collision, existing textured emission,
-CutePixel text, spawn/navigation data and user edits. No repeated wing experiment
-or routine Quest A/B required; use cheap preservation checks and visual review.
-This documentation pass has not converted the block.
+## Full-block Blender atlas review — November 14, 2026
+
+The authorized full-block conversion is imported as a separate review prefab/scene,
+with existing user edits preserved. The user approved the appearance and the atlas
+is now integrated into the production prefab with its original GUID. Open **Duck Rails >
+Authoring > Convenience Store > Open full-map Blender review**. Assets are in
+`Assets/DuckRails/ConvenienceStoreAtlasReview`; editable source is
+`ArtSource/ConvenienceStoreAtlas/ConvenienceStore-FullMap-Atlas.blend`.
+
+1,139 compatible renderers / 41 materials become **285 chunks sharing one material**.
+The full block retains 231 exceptions and has **516 enabled MeshRenderers versus
+1,370**. Converted triangles increase 50,538 -> 121,970; whole-block MeshFilter
+triangles 55,702 -> 127,134; final exported vertices 221,119. Two 1024-square Unity
+maps preserve base tint/texture and metallic/smoothness. The original HDR textured
+neon atlas remains untouched on 109 renderers. Also retained: 91 renderers under
+seven brush spinners, eight transparent cooler panes, seven CutePixel labels and
+16 rooftop-model renderers with incomplete UV data.
+
+Saved checks preserve **3,208 transforms, 5,852 serialized components, all 1,420
+colliders and all 1,272 original lightmap bindings**; 285 new bindings are appended.
+All 1,378 dependency-file/metadata hashes matched during isolated review; after
+integration, only production prefab content changes (the other 1,377 still match).
+Brush collision remains
+stationary; source gameplay, 126/109/27 coal/gold/enemy candidates, per-run settings,
+navigation, lights, reverb, sparse shop, empty coolers, stocked inventory room and
+moved trailer are unchanged. No lighting/navigation rebake.
+
+Seven matching editor source/atlas views were inspected, including interiors,
+neon, wash and rooftops, with no obvious new defect. The final meshes have valid
+source-interpolated normals (correcting an initial Blender tiny-triangle corner-
+normal export issue). [Evidence and previews](validation/convenience-store-atlas/README.md)
+| [Workflow, exclusions and recovery](../ArtSource/ConvenienceStoreAtlas/README.md).
+
+**Conversion, user visual approval and production integration complete.**
+The production prefab retains all 11,745 original object IDs and 1,420 colliders;
+only source renderer flags, the appended visual root and lighting bindings change.
+Atlas assets now live in `Assets/DuckRails/ConvenienceStoreAtlas`, with GUIDs
+preserved. [Integration/recovery evidence](validation/convenience-store-atlas/production-integration.md).
+Runtime/headset checks are **queued for playtest**. No
+wing pilot, Play Mode, APK or Quest comparison was run; no performance gain is
+claimed for this block. Follow the [rollout workflow](block-atlas-optimization.md).
 
 ## V5 implementation — November 5
 

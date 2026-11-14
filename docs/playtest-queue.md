@@ -43,6 +43,17 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Convenience Store production atlas integration — queued 2026-11-14
+- Commit(s): see git log "Integrate approved Convenience Store atlas"; user-approved visuals integrated into the original-GUID production prefab.
+- Changed: 1,139 compatible static renderers -> 285 chunks / one shared atlas material. Retain 231 exceptions including textured HDR neon, seven animated brush hierarchies, transparent cooler panes, CutePixel labels and incomplete-UV rooftop models. Total enabled MeshRenderers 1,370 -> 516; whole-block MeshFilter triangles 55,702 -> 127,134.
+- Review-stage cheap checks: saved preservation of 3,208 transforms / 5,852 components / 1,420 colliders, exact imported mesh arrays and all 1,557 scene lightmap bindings, 1,378 original dependency hashes, compilation/empty final error Console and seven source/atlas visual pairs pass. [Evidence](validation/convenience-store-atlas/README.md). No Play Mode/APK/device tests.
+- Integration checks: all 11,745 original local object IDs preserved; production metadata byte-identical; 1,420 colliders and 1,557 lighting bindings match the approved review; 1,377 pre-existing dependency files unchanged. Build fingerprint/bake-workflow guards pass. [Evidence and recovery](validation/convenience-store-atlas/production-integration.md).
+- Setup: use the normal production Convenience Store via Test Block Order on a requested queue run. One client for loading/readiness/visibility, two real clients plus late join for agreement; include a nonzero route placement and return/replay. Production atlas assets are in `Assets/DuckRails/ConvenienceStoreAtlas`; the approved review remains available.
+- Check: correct lighting/readiness at origin and translated placement, companion unload/rebind, block hide/show/re-enable, no duplicate/missing scenery; retained brush animation with stationary full-size hulls; original collider contact, loot/spawns/navigation, sparse shelves/empty coolers/stockroom/trailer and CutePixel text remain intact. Inspect close/interior/distant seams, atlas minification, normal/shadow/reflection behavior and neon HDR colors.
+- Needs human: full-block Unity appearance approved. Moving-view/headset minification/interior darkness and natural traversal/brush collision remain queued; existing block gameplay acceptance is not closed by authoring checks.
+- Priority: normal. No repeated wing pilot or routine per-block Quest comparison; performance captures/builds only if requested.
+
+
 Atlas rollout policy — November 13: user accepts Motel's approach and authorizes
 the remaining blocks, Convenience Store next. Follow
 [the workflow](block-atlas-optimization.md). Do not repeat full Quest A/Bs for each

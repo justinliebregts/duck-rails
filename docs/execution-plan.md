@@ -1,7 +1,10 @@
 # Duck Rails — execution plan
 
 - [x] November 13: document the accepted Motel atlas workflow, conversion exceptions and reduced per-block testing policy. [Workflow](block-atlas-optimization.md).
-- [ ] Apply the authorized atlas/chunk workflow to Convenience Store next, then remaining blocks, preserving authored layout, collision, gameplay and baked lighting. Track conversion/review/integration separately; no repeated full Quest A/B by default. Motel's remaining visual fixes and production integration are pending.
+- [x] November 14: convert full Convenience Store compatible static scenery to a Blender atlas and 285 spatial chunks, import a separate Unity review, preserve textured HDR neon/animated brushes/collision/gameplay and baked lighting. Saved-asset, exact geometry, 1,378 dependency hash checks and visual inspection pass; [evidence](validation/convenience-store-atlas/README.md).
+- [x] November 14: user approved Convenience Store atlas visuals; integrated into the existing production prefab, retaining its GUID, all 11,745 original object IDs, collision/gameplay and baked bindings. Build/source fingerprint and lighting-workflow guards pass; [integration evidence](validation/convenience-store-atlas/production-integration.md).
+- [ ] Convenience Store production atlas: runtime/headset acceptance queued for playtest. Production has 516 enabled renderers versus 1,370, with triangle growth documented; no device performance claim.
+- [ ] Apply the authorized atlas/chunk workflow to remaining blocks in subsequent chats. Track conversion/review/integration separately; no repeated full Quest A/B by default. Motel's remaining visual fixes and production integration are pending.
 
 - [x] November 12: install shared full store with standard coin labels, three bundles and camera/TV in all three locations; shared-store and helicopter authoring checks pass.
 - [ ] Validate shared-store purchase/delivery, bundles, cooldowns and camera feeds on clients/headsets; queued for playtest.

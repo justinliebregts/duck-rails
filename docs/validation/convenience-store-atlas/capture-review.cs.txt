@@ -1,0 +1,36 @@
+using UnityEngine; using UnityEditor; using UnityEngine.SceneManagement; using System; using System.Linq; using System.IO; using System.Text;
+internal class CommandScript:IRunCommand {
+Transform Resolve(Transform root,string key){foreach(var i in key.Split('/'))root=root.GetChild(int.Parse(i));return root;}
+public void Execute(ExecutionResult result){
+var root=SceneManager.GetActiveScene().GetRootGameObjects().Single(g=>g.GetComponent<RailBlock>());
+if(!SceneManager.GetActiveScene().path.Contains("ConvenienceStoreAtlasReview"))throw new Exception("Wrong scene");
+var payload=JsonUtility.FromJson<RailConvenienceStoreAtlasReview.Payload>(File.ReadAllText("ArtSource/ConvenienceStoreAtlas/unity-meshes.json"));
+var originals=payload.sourceKeys.Select(k=>Resolve(root.transform,k).GetComponent<MeshRenderer>()).ToArray();
+var chunks=root.transform.Find("Blender full ConvenienceStore - atlas review").GetComponentsInChildren<MeshRenderer>();
+var cameraObject=new GameObject("Temporary authoring capture");var cam=cameraObject.AddComponent<Camera>();
+var fillObject=new GameObject("Temporary overview fill");var fill=fillObject.AddComponent<Light>();fill.type=LightType.Directional;fill.intensity=.8f;fill.shadows=LightShadows.None;fill.transform.rotation=Quaternion.Euler(40,-30,0);
+cam.fieldOfView=70;cam.nearClipPlane=.05f;cam.farClipPlane=400;cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new Color(.12f,.13f,.15f);cam.allowHDR=false;
+var rt=new RenderTexture(1280,720,24,RenderTextureFormat.ARGB32);cam.targetTexture=rt;
+var previous=RenderTexture.active;bool fog=RenderSettings.fog;
+var sb=new StringBuilder("Identical-camera authoring captures, fog disabled; overview has temporary directional fill. Other views use existing baked lighting. No Play Mode.\n");
+string folder="docs/validation/convenience-store-atlas";
+var names=new[]{"whole-block","forecourt","sparse-store","stockroom","arcade","wash","rooftops"};
+var eyes=new[]{new Vector3(-100,110,-35),new Vector3(5,3,73),new Vector3(23.5f,2,81),new Vector3(38,2,80),new Vector3(-20,2,80),new Vector3(21,2,45),new Vector3(3,15,101)};
+var targets=new[]{new Vector3(0,0,80),new Vector3(28,3,77),new Vector3(30,1.4f,67),new Vector3(38,1.5f,66),new Vector3(-29,1.2f,71),new Vector3(34,1.4f,45),new Vector3(26,6,124)};
+try{
+RenderSettings.fog=false;
+for(int i=0;i<names.Length;i++){
+cam.transform.position=eyes[i];cam.transform.rotation=Quaternion.LookRotation(targets[i]-eyes[i]);fill.enabled=i==0;
+Color32[][] pixels=new Color32[2][];
+for(int variant=0;variant<2;variant++){
+foreach(var r in originals)r.enabled=variant==0;foreach(var r in chunks)r.enabled=variant==1;
+cam.Render();RenderTexture.active=rt;var tex=new Texture2D(rt.width,rt.height,TextureFormat.RGB24,false);tex.ReadPixels(new Rect(0,0,rt.width,rt.height),0,0);tex.Apply();pixels[variant]=tex.GetPixels32();
+File.WriteAllBytes(folder+"/"+names[i]+(variant==0?"-source.png":"-atlas.png"),tex.EncodeToPNG());UnityEngine.Object.DestroyImmediate(tex);
+}
+double error=0;int changed=0;for(int p=0;p<pixels[0].Length;p++){var a=pixels[0][p];var b=pixels[1][p];var delta=Math.Abs(a.r-b.r)+Math.Abs(a.g-b.g)+Math.Abs(a.b-b.b);error+=delta;if(delta>24)changed++;}
+sb.AppendLine(names[i]+": mean RGB byte difference="+(error/(pixels[0].Length*3)).ToString("F3")+", pixels >8 average byte difference="+(100.0*changed/pixels[0].Length).ToString("F2")+"%");
+}
+}finally{foreach(var r in originals)r.enabled=false;foreach(var r in chunks)r.enabled=true;RenderSettings.fog=fog;RenderTexture.active=previous;cam.targetTexture=null;UnityEngine.Object.DestroyImmediate(cameraObject);UnityEngine.Object.DestroyImmediate(fillObject);rt.Release();UnityEngine.Object.DestroyImmediate(rt);}
+File.WriteAllText(folder+"/visual-comparison.txt",sb.ToString());result.Log(sb.ToString());
+}
+}
