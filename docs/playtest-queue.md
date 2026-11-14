@@ -43,6 +43,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Skyscraper Works production atlas integration — queued 2026-11-14
+- Commit(s): see git log "Integrate approved Skyscraper atlas"; user approved the appearance and retained triangle count.
+- Changed: 3,403 compatible scenery renderers / 13 materials -> 394 chunks / one atlas material, plus retained CutePixel sign. Total 3,404 -> 395 renderers; scenery triangles 47,996 -> 228,866. Four-metre vertical cells suit tower floors; oversized sources stay separate. Constant HDR emission retained; no textured emission atlas or animated brushes exist in this block.
+- Cheap checks: 4,507 original transforms, 15,185 serialized components, 3,649 colliders, navigation/spawn settings, all 354 original dependency hashes and 3,403 original baked bindings preserved. Exact mesh data and 3,797 review-scene bindings pass; seven visual pairs inspected; compilation succeeds and final error Console empty. [Evidence](validation/skyscraper-atlas/README.md).
+- Integration checks: all 23,068 original local object IDs and production metadata preserved; production matches the approved review; 353 pre-existing dependency files unchanged. Build fingerprint and lighting-workflow guards pass. [Evidence and recovery](validation/skyscraper-atlas/production-integration.md).
+- Setup: use normal production Skyscraper Works via Test Block Order on a requested queue run. One client for loading/readiness/visibility, two real clients plus late join for agreement; include nonzero route placement and return/replay. Production atlas assets are in `Assets/DuckRails/SkyscraperAtlas`; the approved review remains available.
+- Check: correct lighting/readiness at origin and translated placement, companion unload/rebind, hide/show/re-enable, no missing/duplicate scenery; unchanged tower floors/stairs/shafts/crane, foundation/collision, 270 coal / 270 gold / 26 enemy candidates and per-run selection, navigation and CutePixel text. Inspect normals, shadows, emission, atlas seams and distant minification.
+- Needs human: Unity appearance approved. Moving-view/headset darkness/minification, natural shaft/stair/crane traversal and item reach/recovery remain queued. Existing block gameplay acceptance remains open.
+- Priority: normal. No repeated wing pilot, routine Quest comparison or comparison APK; run those only on explicit request. Renderer reduction does not establish Skyscraper device performance.
+
 ### Convenience Store production atlas integration — queued 2026-11-14
 - Commit(s): see git log "Integrate approved Convenience Store atlas"; user-approved visuals integrated into the original-GUID production prefab.
 - Changed: 1,139 compatible static renderers -> 285 chunks / one shared atlas material. Retain 231 exceptions including textured HDR neon, seven animated brush hierarchies, transparent cooler panes, CutePixel labels and incomplete-UV rooftop models. Total enabled MeshRenderers 1,370 -> 516; whole-block MeshFilter triangles 55,702 -> 127,134.

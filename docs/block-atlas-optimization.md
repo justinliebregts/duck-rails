@@ -190,10 +190,22 @@ bundle art fixes. Start with the full block; no wing pilot or comparison APK nee
   integrated into the original-GUID production prefab November 14, retaining all
   original object IDs/gameplay/collision and baked lighting. Runtime/headset
   validation queued for playtest. [Integration and recovery](validation/convenience-store-atlas/production-integration.md).
+- Skyscraper Works: full-block Blender asset and isolated Unity review prefab/scene
+  imported November 14 from the current saved prefab, including local edits.
+  3,403 compatible source renderers / 13 materials -> 394 chunks / one shared
+  material, plus the original CutePixel sign (3,404 -> 395 total renderers).
+  Scenery triangles 47,996 -> 228,866; 12 x 4 x 12 m cells suit the tower floors.
+  Constant HDR emission retained; no textured-emission atlas or animated brushes
+  exist in this block. Saved preservation, exact meshes, all 354 source dependency
+  hashes and seven paired authoring views pass. User approved appearance and retained
+  triangle count; integrated into the original-GUID production prefab November 14.
+  All 23,068 original object IDs, collision/gameplay and lighting remain intact.
+  Runtime/headset acceptance queued for playtest.
+  [Integration and recovery](validation/skyscraper-atlas/production-integration.md).
 - Remaining blocks authorized for subsequent passes, not converted here: Bridge
   Finale, Canyon, Container Yard, Electrical Substation, Farm Silos, Hospital
   District, Lakeside Campground, Lumber Yard, Maintenance Depot, Midpoint Helipad,
-  Nuclear Power Plant, Passenger Station, Quarry, Scrapyard, Skyscraper Works and
+  Nuclear Power Plant, Passenger Station, Quarry, Scrapyard and
   Tunnel Works. Later ordering is not fixed. Preserve special finale/vehicle/gameplay
   objects; shared train/player/shop assets outside the target block are not an
   implicit extension of scenery conversion.

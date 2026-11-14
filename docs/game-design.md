@@ -1,5 +1,13 @@
 # Duck Rails — V1 game design
 
+November 14 Skyscraper atlas: full-block Blender source and isolated Unity review
+imported with 394 shared-material chunks plus the retained CutePixel sign. Layout,
+collision, gameplay, spawn pools, navigation and baked lighting remain unchanged.
+User approved appearance and retained triangle count; production integration now
+preserves the original prefab GUID and all original object IDs. Authoring checks
+pass; runtime/headset acceptance remains queued.
+[Integration evidence](validation/skyscraper-atlas/production-integration.md).
+
 November 13 optimization rollout: user accepted Motel's Blender atlas approach and
 authorized applying it to the other blocks, Convenience Store next. Preserve current
 layout/collision/gameplay/baked lighting, use spatial chunks and shared atlas materials

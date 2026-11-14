@@ -1,5 +1,9 @@
 # Duck Rails — execution plan
 
+- [x] November 14: convert full Skyscraper Works compatible scenery into a Blender atlas and 394 spatial chunks, with a separate Unity review prefab/scene. Preserve current edits, layout/collision/gameplay/spawns/navigation, CutePixel sign and baked lighting. Saved preservation, exact mesh/lightmap checks, 354 dependency hashes and seven-view inspection pass. [Evidence](validation/skyscraper-atlas/README.md).
+- [x] November 14: user approved Skyscraper appearance and retained triangle count; integrate into original-GUID production prefab, preserving all 23,068 original object IDs, collision/gameplay and lighting. Saved-review comparison, 353 unchanged dependency files, build fingerprint and lighting-workflow guards pass. [Integration](validation/skyscraper-atlas/production-integration.md).
+- [ ] Skyscraper production atlas runtime/headset acceptance. Total renderers 3,404 -> 395; scenery triangles 47,996 -> 228,866. Queued for playtest; no new device-performance claim.
+
 - [x] November 13: document the accepted Motel atlas workflow, conversion exceptions and reduced per-block testing policy. [Workflow](block-atlas-optimization.md).
 - [x] November 14: convert full Convenience Store compatible static scenery to a Blender atlas and 285 spatial chunks, import a separate Unity review, preserve textured HDR neon/animated brushes/collision/gameplay and baked lighting. Saved-asset, exact geometry, 1,378 dependency hash checks and visual inspection pass; [evidence](validation/convenience-store-atlas/README.md).
 - [x] November 14: user approved Convenience Store atlas visuals; integrated into the existing production prefab, retaining its GUID, all 11,745 original object IDs, collision/gameplay and baked bindings. Build/source fingerprint and lighting-workflow guards pass; [integration evidence](validation/convenience-store-atlas/production-integration.md).

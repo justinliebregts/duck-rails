@@ -1,5 +1,32 @@
 # Skyscraper Works — V2 layout
 
+## Full-block Blender atlas review — November 14, 2026
+
+Applied the authorized Motel workflow to the current saved block, including local
+edits. Separate review scene/prefab:
+`Assets/DuckRails/SkyscraperAtlasReview/Skyscraper-FullAtlas-Review.unity` / `.prefab`.
+Open via **Duck Rails > Authoring > Skyscraper Works > Open full-map Blender review**.
+Editable source: `ArtSource/SkyscraperAtlas/Skyscraper-FullMap-Atlas.blend`.
+
+3,403 compatible static renderers become 394 shared-atlas chunks; retain the
+CutePixel sign, yielding 395 versus 3,404 total. Thirteen materials packed at
+native resolution into 1024-square maps with constant HDR emission preserved.
+12 x 4 x 12 m spatial cells suit four-metre tower floors; oversized objects remain
+separate. Scenery triangles rise from 47,996 to 228,866 to preserve repeating UVs.
+
+Authoring checks preserve all 4,507 original transforms, 3,649 colliders, gameplay
+and navigation references, 270/270/26 candidate pools, 55 lights, four reverb zones
+and 3,403 original lightmap bindings. All 354 source dependency hashes are unchanged.
+Seven source/atlas visual pairs show no obvious new defects; existing dark areas
+remain. No textured emissive atlas or animated brushes exist in this prefab.
+
+User approved the appearance and chose to retain the triangle count. Integrated
+November 14 into the existing production prefab with its GUID and all 23,068
+original object IDs preserved. Production matches the review; 353 pre-existing
+dependency files remain unchanged. No lighting/navigation rebake, Play Mode or
+device test. Runtime/headset behavior is **queued for playtest**.
+[Integration and recovery](validation/skyscraper-atlas/production-integration.md).
+
 ## Enemy quadrant coverage — November 8, 2026
 
 User requested enough candidates for the new spawning-only crew tiers. Added eight

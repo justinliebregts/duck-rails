@@ -1,0 +1,19 @@
+using UnityEngine;using UnityEditor;using UnityEngine.SceneManagement;using System;using System.IO;using System.Linq;using System.Collections.Generic;
+internal class CommandScript:IRunCommand{
+public void Execute(ExecutionResult r){
+RailSkyscraperAtlasProduction.ValidateSaved();
+string path=RailSkyscraperAtlasProduction.Prefab;
+var root=AssetDatabase.LoadAssetAtPath<GameObject>(path);
+var clone=UnityEngine.Object.Instantiate(root);clone.hideFlags=HideFlags.HideAndDontSave;
+try{string before=RailSkyscraperAtlasProduction.Fingerprint(clone);clone.transform.Find("Env").GetComponentInChildren<MeshRenderer>(true).transform.localPosition+=Vector3.right;if(before==RailSkyscraperAtlasProduction.Fingerprint(clone))throw new Exception("Fingerprint missed geometry change");}
+finally{UnityEngine.Object.DestroyImmediate(clone);}
+var scene=SceneManager.GetActiveScene();string scenePath=scene.path;bool dirty=scene.isDirty;bool rejected=false;
+try{RailCatalogLightingAuthoring.Prepare(path);}catch(InvalidOperationException e){rejected=e.Message.Contains("derived atlas UVs");}
+if(!rejected||SceneManager.GetActiveScene().path!=scenePath||scene.isDirty!=dirty)throw new Exception("Bake guard failed or modified scene");
+File.WriteAllText("docs/validation/skyscraper-atlas/production-guards.txt","PASS saved production build validation, disposable geometry edit invalidates fingerprint, lighting Prepare rejects integrated atlas before scene mutation. No build/bake/Play Mode performed.\n");
+int count=0;var changes=new List<string>();using(var sha=System.Security.Cryptography.SHA256.Create())foreach(var line in File.ReadAllLines("ArtSource/SkyscraperAtlas/dependency-sha256.tsv")){var a=line.Split('\t');if(a[0]==path)continue;count++;if(!File.Exists(a[0])||BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(a[0]))).Replace("-","")!=a[1])changes.Add(a[0]);}
+string report="Original dependency files checked (excluding intentionally changed production prefab): "+count+"\nChanged/missing: "+changes.Count+"\n"+string.Join("\n",changes);File.WriteAllText("docs/validation/skyscraper-atlas/production-dependencies.txt",report);if(changes.Count>0)throw new Exception(report);
+var visual=root.transform.Find(RailSkyscraperAtlasProduction.Visual);var rs=visual.GetComponentsInChildren<MeshRenderer>(true);if(root.GetComponentsInChildren<MeshRenderer>(true).Count(x=>x.enabled)!=395||rs.Sum(x=>x.GetComponent<MeshFilter>().sharedMesh.triangles.Length/3)!=228866)throw new Exception("Production counts mismatch");
+if(!File.ReadAllBytes(path+".meta").SequenceEqual(File.ReadAllBytes("ArtSource/SkyscraperAtlas/pre-integration.prefab.meta.txt")))throw new Exception("Production metadata changed");
+r.Log(report);r.Log("PASS production guards, metadata, 395 renderers / 228866 scenery triangles.");
+}}
