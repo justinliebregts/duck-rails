@@ -42,9 +42,8 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
     Material buttonMaterial;
     TMP_Text toast;
     float toastUntil;
-    /// <summary>Editor always; development builds only for backend admins (client-side check, not a security boundary).</summary>
-    public static bool Available => RailDiagnostics.Development &&
-        (Application.isEditor || (PlayerSession.Instance != null && PlayerSession.Instance.IsAdmin));
+    /// <summary>Editor always; builds only for backend admins (client-side check, not a security boundary).</summary>
+    public static bool Available => RailDiagnostics.Development;
     void Awake() { Instance = this; }
     void OnDisable() { Close(); }
     void OnDestroy() { if (panel != null) Destroy(panel); if (toast != null) Destroy(toast.gameObject); if (panelMaterial != null) Destroy(panelMaterial); if (buttonMaterial != null) Destroy(buttonMaterial); if (Instance == this) Instance = null; RailTestTools.RestoreNetwork(); }

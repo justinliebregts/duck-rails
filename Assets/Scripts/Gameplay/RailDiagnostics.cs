@@ -48,7 +48,8 @@ public sealed class RailDiagnosticDebounce
 public sealed class RailDiagnostics : MonoBehaviour
 {
     public static RailDiagnostics Instance { get; private set; }
-    public static bool Development => Application.isEditor || Debug.isDebugBuild;
+    /// <summary>Editor, or any build (including release) where the signed-in account is a backend admin. Client-side check, not a security boundary; evaluated live because admin status arrives after sign-in.</summary>
+    public static bool Development => Application.isEditor || (PlayerSession.Instance != null && PlayerSession.Instance.IsAdmin);
     public static string Folder
     {
         get
@@ -82,7 +83,7 @@ public sealed class RailDiagnostics : MonoBehaviour
         if (Instance != null) return;
         var go = new GameObject("Rail diagnostics"); DontDestroyOnLoad(go);
         go.AddComponent<RailDiagnostics>();
-        if (Development) go.AddComponent<RailDiagnosticPanel>();
+        go.AddComponent<RailDiagnosticPanel>(); // gated at runtime by Development (admin) rather than at boot
     }
     void Awake() { Instance = this; Application.logMessageReceived += OnLog; }
     void OnDestroy() { Application.logMessageReceived -= OnLog; if (Instance == this) Instance = null; }
