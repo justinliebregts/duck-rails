@@ -1,0 +1,17 @@
+Unity 6000.3.24f1; two authenticated MPPM editors; PUN/Photon; one workstation; normal network (no injected latency/loss).
+Original code baseline: stationary wearer, moving train; remote hats/goggles both classified as loose cargo.
+before-player2-moving-final: actor=2 clients=2 frames=353 samples=706 remoteViews=2 missingFrames=0 maxPosition=0.013201m maxAngle=0.0000deg cargoFrames=706 syncFrames=0 trainDisplacement=32.628m
+
+Fixed code: both wearers use SimulatedRigInput with look=(0.5,0), move=(0.015,0). Samples are at URP beginCameraRendering, once per frame, after all LateUpdates.
+PASS after-main-acceleration: actor=1 clients=2 frames=460 samples=920 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=27.964m speed=0.00..4.00m/s
+PASS after-main-braking: actor=1 clients=2 frames=460 samples=920 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=0.366m speed=0.00..0.78m/s
+PASS after-main-fullstop: actor=1 clients=2 frames=467 samples=934 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=4.000m speed=0.00..4.00m/s
+PASS after-main-ground: actor=1 clients=2 frames=457 samples=914 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=0.000m speed=0.00..0.00m/s
+PASS after-main-moving: actor=1 clients=2 frames=403 samples=806 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=32.656m speed=4.00..4.00m/s
+PASS after-main-stopped: actor=1 clients=2 frames=417 samples=834 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=0.000m speed=0.00..0.00m/s
+PASS after-player2-acceleration: actor=2 clients=2 frames=357 samples=714 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=27.608m speed=0.00..4.00m/s
+PASS after-player2-braking: actor=2 clients=2 frames=356 samples=712 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=0.383m speed=0.00..0.85m/s
+PASS after-player2-fullstop: actor=2 clients=2 frames=360 samples=720 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=3.792m speed=0.00..4.00m/s
+PASS after-player2-ground: actor=2 clients=2 frames=354 samples=708 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=0.000m speed=0.00..0.00m/s
+PASS after-player2-moving: actor=2 clients=2 frames=324 samples=648 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=32.488m speed=4.00..4.00m/s
+PASS after-player2-stopped: actor=2 clients=2 frames=324 samples=648 remoteViews=2 missingFrames=0 maxPosition=0.000000m maxAngle=0.0000deg cargoFrames=0 syncFrames=0 trainDisplacement=0.000m speed=0.00..0.00m/s

@@ -1,5 +1,13 @@
 # Duck Rails testing tools
 
+## Worn head equipment on moving trains — November 14, 2026
+
+The focused cargo regression and two-client render-time measurement probe are
+documented in [worn equipment train validation](worn-equipment-train.md). Both
+actual Photon clients passed stationary, cruise, acceleration, braking and ground
+walking captures for hats and goggles; headset and network-fault coverage remain
+outside that scoped run.
+
 ## Automated Quest 3 performance survey — November 13, 2026
 
 The opt-in device runner and PC commands are documented in

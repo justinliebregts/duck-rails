@@ -52,7 +52,10 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
     public bool StateReady => photonView.IsMine || received;
     bool Predicting => item != null && item.PickupPending;
     bool Simulates => photonView.IsMine || Predicting;
-    bool Loose => item != null ? !item.IsHeldByAnyPlayer && !item.IsStashed : bag != null && bag.State == BagState.Dropped;
+    // Worn gear follows the avatar's interpolated head, never the independent cargo stream.
+    // Use the same gate for carry, snapshots and recovery so stale aboard frames cannot move it.
+    bool Loose => (headEquipment == null || !headEquipment.IsEquipped) &&
+        (item != null ? !item.IsHeldByAnyPlayer && !item.IsStashed : bag != null && bag.State == BagState.Dropped);
     void Awake()
     {
         // Authored loot is mostly stationary. Publish moving/interaction state
@@ -112,7 +115,7 @@ public sealed class RailCargo : MonoBehaviourPun, IPunObservable
     {
         // Loose cargo below the block floor is unrecoverable; its authority removes it from the room.
         if (!removed && photonView.IsMine && Loose && !Predicting && PhotonNetwork.InRoom && PhotonSession.IsRailsRoom
-            && (headEquipment == null || !headEquipment.IsEquipped) && RailPlayerBounds.BelowFloor(transform.position))
+            && RailPlayerBounds.BelowFloor(transform.position))
         {
             removed = true;
             DuckzLog.Log($"[Rails] Removing {name} (view {photonView.ViewID}) below the block floor at {transform.position}", this);
