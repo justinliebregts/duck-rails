@@ -1,0 +1,319 @@
+Playtest queue run 2026-11-12 — Unity 6000.3.24f1, verified X:/Work/duck-rails, tested at 81b4538ab (+ fix bfcd86651 for Farm loot).
+Clients: main editor (DuckPlayer simulated rig, 'lebo') via Unity MCP; MPPM Player2 ('David') via RailRemoteBridge. Real Photon cloud/backend.
+Setup notes: the open convenience-store bake scene was flagged dirty but byte-identical to disk (copy saved to Temp first); saved to clear the flag so
+scenario start was not blocked by a save prompt. Test Block Order temporarily set to convenience-store, farm-silos, skyscraper-works and restored
+byte-identical afterwards (farm, canyon, container-yard, skyscraper; invincible on). Quick-start preference and scenario selection restored.
+Keyboard/L3/Start were not injected (unfocused editor). No diagnostic reports were read.
+
+== Expedition render warmup (1adf32ebe) — solo private sandbox ==
+First departure: ExpeditionRenderWarmup.LastNewStates=37, LastSeconds=1.93, LastTimedOut=False. No 'Warm proxies' object; cameras afterwards:
+  SecurityCameraEye(off), Left/RightEyeAnchor(off), CenterEyeAnchor. 177/178 lights enabled (only the unlit flashlight off); helicopter
+  lights 'Spot Light Back/Front' and 'Light (1)' enabled.
+Second departure (same process), veil sampler:
+  02:28:09.6 Departing | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=37 exp=False world=False
+  02:28:10.5 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=37 exp=False world=False
+  02:28:11.7 Departing | veil a=1 held=True 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=True last=37 exp=True world=False
+  02:28:13.4 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=0 exp=True world=True
+  02:28:13.4 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:28:13.5 Departing | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:28:13.7 Running | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:28:13.8 Running | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:29:32.1 Ending | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:29:58.0 Ending | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=False
+  02:29:58.0 Ending | veil a=part held=False 'HEADING HOME' / 'Leaving room...' | warm running=False last=0 exp=True world=False
+  02:29:58.1 Ending | veil a=1 held=False 'HEADING HOME' / 'Leaving room...' | warm running=False last=0 exp=True world=False
+  02:29:58.1 Compound | veil a=1 held=False 'HEADING HOME' / 'Leaving room...' | warm running=False last=0 exp=True world=False
+  02:29:58.5 Compound | veil a=1 held=False 'HEADING HOME' / 'Finding a public compound...' | warm running=False last=0 exp=True world=False
+  02:29:58.6 Compound | veil a=1 held=False 'HEADING HOME' / 'Creating a compound...' | warm running=False last=0 exp=True world=False
+  02:29:59.5 Compound | veil a=1 held=False 'HEADING HOME' / 'Loading Compound...' | warm running=False last=0 exp=True world=False
+  02:30:00.3 Compound | veil a=1 held=False 'LOADING' / 'Loading Compound...' | warm running=False last=0 exp=False world=True
+  02:30:00.5 Compound | veil a=1 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:30:00.5 Compound | veil a=part held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:30:00.8 Compound | veil a=0 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:30:19.9 Compound | veil a=0 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=False
+  02:30:19.9 Compound | veil a=part held=False 'LOADING' / 'Leaving room...' | warm running=False last=0 exp=False world=False
+  02:30:20.0 Compound | veil a=1 held=False 'LOADING' / 'Leaving room...' | warm running=False last=0 exp=False world=False
+  02:30:20.5 Compound | veil a=1 held=False 'LOADING' / 'Creating private room 40803...' | warm running=False last=0 exp=False world=False
+  02:30:21.3 Staging | veil a=1 held=False 'LOADING' / 'Loading current world state...' | warm running=False last=0 exp=False world=True
+  02:30:21.3 Staging | veil a=1 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:30:21.5 Staging | veil a=part held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:30:21.7 Staging | veil a=0 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:30:29.1 Departing | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=0 exp=False world=False
+  02:30:29.9 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=0 exp=False world=False
+  02:30:31.0 Departing | veil a=1 held=True 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=True last=0 exp=True world=False
+  02:30:32.7 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=0 exp=True world=True
+  02:30:32.7 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:30:32.9 Departing | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:30:33.0 Running | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:30:33.1 Running | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:31:09.4 Ending | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:31:21.0 Ending | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=False
+  02:31:21.1 Ending | veil a=part held=False 'HEADING HOME' / 'Leaving room...' | warm running=False last=0 exp=True world=False
+  02:31:21.2 Compound | veil a=part held=False 'HEADING HOME' / 'Leaving room...' | warm running=False last=0 exp=True world=False
+  02:31:21.2 Compound | veil a=1 held=False 'HEADING HOME' / 'Leaving room...' | warm running=False last=0 exp=True world=False
+  02:31:21.7 Compound | veil a=1 held=False 'HEADING HOME' / 'Finding a public compound...' | warm running=False last=0 exp=True world=False
+  02:31:21.8 Compound | veil a=1 held=False 'HEADING HOME' / 'Creating a compound...' | warm running=False last=0 exp=True world=False
+  02:31:22.7 Compound | veil a=1 held=False 'HEADING HOME' / 'Loading Compound...' | warm running=False last=0 exp=True world=False
+  02:31:23.4 Compound | veil a=1 held=False 'LOADING' / 'Loading Compound...' | warm running=False last=0 exp=False world=True
+  02:31:23.6 Compound | veil a=1 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:31:23.6 Compound | veil a=part held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:31:23.9 Compound | veil a=0 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:31:27.0 Compound | veil a=part held=False 'LOADING' / 'Leaving room...' | warm running=False last=0 exp=False world=False
+  02:31:27.1 Compound | veil a=1 held=False 'LOADING' / 'Leaving room...' | warm running=False last=0 exp=False world=False
+  02:31:27.6 Compound | veil a=1 held=False 'LOADING' / 'Creating private room 56551...' | warm running=False last=0 exp=False world=False
+  02:31:28.4 Staging | veil a=1 held=False 'LOADING' / 'Loading current world state...' | warm running=False last=0 exp=False world=True
+  02:31:28.4 Staging | veil a=1 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:31:28.6 Staging | veil a=part held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:31:28.6 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=0 exp=False world=False
+  02:31:30.4 Departing | veil a=1 held=True 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=True last=0 exp=True world=False
+  02:31:32.1 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=0 exp=True world=True
+  02:31:32.2 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:31:32.3 Departing | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:31:32.4 Running | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:31:32.6 Running | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:31:50.8 Ending | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:32:07.2 Ending | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=False
+  02:32:07.2 Ending | veil a=part held=False 'HEADING HOME' / 'Leaving room...' | warm running=False last=0 exp=True world=False
+  02:32:07.3 Compound | veil a=1 held=False 'HEADING HOME' / 'Leaving room...' | warm running=False last=0 exp=True world=False
+  02:32:07.9 Compound | veil a=1 held=False 'HEADING HOME' / 'Finding a public compound...' | warm running=False last=0 exp=True world=False
+  02:32:08.0 Compound | veil a=1 held=False 'HEADING HOME' / 'Creating a compound...' | warm running=False last=0 exp=True world=False
+  02:32:08.8 Compound | veil a=1 held=False 'HEADING HOME' / 'Loading Compound...' | warm running=False last=0 exp=True world=False
+  02:32:09.8 Compound | veil a=1 held=False 'LOADING' / 'Loading Compound...' | warm running=False last=0 exp=False world=True
+  02:32:10.0 Compound | veil a=1 held=False 'LOADING' / 'Leaving room...' | warm running=False last=0 exp=False world=False
+  02:32:10.6 Compound | veil a=1 held=False 'LOADING' / 'Creating private room 30193...' | warm running=False last=0 exp=False world=False
+  02:32:11.4 Staging | veil a=1 held=False 'LOADING' / 'Loading current world state...' | warm running=False last=0 exp=False world=True
+  02:32:11.4 Staging | veil a=1 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:32:11.6 Staging | veil a=part held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:32:11.9 Staging | veil a=0 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:32:11.9 Departing | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=0 exp=False world=False
+  02:32:12.8 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=0 exp=False world=False
+  02:32:13.9 Departing | veil a=1 held=True 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=True last=0 exp=True world=False
+  02:32:15.6 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=0 exp=True world=True
+  02:32:15.6 Departing | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:32:15.8 Departing | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:32:15.9 Running | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:32:16.1 Running | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:32:34.4 Ending | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:33:06.5 Returning | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=0 exp=True world=True
+  02:33:08.6 Staging | veil a=part held=False 'HEADING HOME' / 'Loading Compound...' | warm running=False last=0 exp=True world=False
+  02:33:08.8 Staging | veil a=1 held=False 'HEADING HOME' / 'Loading Compound...' | warm running=False last=0 exp=True world=False
+  02:33:09.5 Staging | veil a=1 held=False 'LOADING' / 'Loading Compound...' | warm running=False last=0 exp=False world=True
+  02:33:09.6 Staging | veil a=1 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:33:09.7 Staging | veil a=part held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  02:33:09.9 Staging | veil a=0 held=False 'LOADING' / 'Ready' | warm running=False last=0 exp=False world=True
+  -> 0 new states; warmup ran entirely under a covered veil. 'Getting the train ready...' not shown: WorldReady became true on the same sample
+     the hold ended (cosmetic).
+Late join aboard the running train (Player2 from a compound, process already warm; not a cold Login join):
+  02:37:04.2 Compound | veil a=1 held=False 'LOADING' / 'Joining 47321...' | warm running=False last=38 total=38 exp=False world=False
+  02:37:05.0 Running | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=False last=38 total=38 exp=False world=False
+  02:37:07.7 Running | veil a=1 held=True 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=True last=38 total=38 exp=True world=False
+  02:37:09.0 Running | veil a=1 held=True 'ALL ABOARD' / 'The train is departing... Loading Expedition...' | warm running=True last=38 total=38 exp=True world=True
+  02:37:09.1 Running | veil a=1 held=True 'ALL ABOARD' / 'Getting the train ready...' | warm running=True last=38 total=38 exp=True world=True
+  02:37:09.1 Running | veil a=1 held=False 'ALL ABOARD' / 'Getting the train ready...' | warm running=False last=2 total=40 exp=True world=True
+  02:37:09.1 Running | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=2 total=40 exp=True world=True
+  02:37:09.3 Running | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=2 total=40 exp=True world=True
+  02:37:09.6 Running | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=2 total=40 exp=True world=True
+  02:40:53.2 Compound | veil a=part held=False 'RECONNECTING' / 'Connection lost. Reconnecting...' | warm running=False last=2 total=40 exp=True world=False !!UNCOVERED_EXPEDITION_FRAME
+  02:40:53.5 Compound | veil a=1 held=False 'RECONNECTING' / 'Connection lost. Reconnecting...' | warm running=False last=2 total=40 exp=True world=False
+  02:40:55.2 Compound | veil a=1 held=False 'RECONNECTING' / 'Reconnecting...' | warm running=False last=2 total=40 exp=True world=False
+  02:40:56.1 Compound | veil a=1 held=False 'RECONNECTING' / 'Rejoining your crew...' | warm running=False last=2 total=40 exp=True world=False
+  02:40:57.0 Running | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading current world state...' | warm running=False last=2 total=40 exp=True world=False
+  02:40:57.1 Running | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Loading current world state...' | warm running=False last=2 total=40 exp=True world=True
+  02:40:57.1 Running | veil a=1 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=2 total=40 exp=True world=True
+  02:40:57.3 Running | veil a=part held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=2 total=40 exp=True world=True
+  02:40:57.5 Running | veil a=0 held=False 'ALL ABOARD' / 'The train is departing... Ready' | warm running=False last=2 total=40 exp=True world=True
+  -> veil covered from join until release; ALL ABOARD / 'Getting the train ready...'; 2 new states; no uncovered Expedition frame on arrival.
+  (The only uncovered flag is the normal 0.15 s fade-in while LEAVING the expedition.)
+
+== Train aboard margin (84985d551) — solo, three separate runs, train padded box (-2.7,-0.9,-5.5)..(2.7,4.0,6.5) ==
+Bridge state seeded as fully lowered, train driven across bridgeZ at 6 m/s. Head pinned in train space each frame via NewPlayer.Warp.
+-- side
+  aboard margin case side target head local (2.60, 1.00, 0.00) padded (-2.70, -0.90, -5.50)..(2.70, 4.00, 6.50)
+  02:31:07.0 first sample headLocal=(2.60, 1.00, 0.00) tight=False padded=True
+  02:31:07.1 DISPLACED headLocal=(2.60, 1.00, -842.23) finished=False phase=Running
+  02:31:09.4 FINISHED reason=Bridge crossed success=True headLocal=(2.60, 1.00, 0.25) tight=False padded=True players=lebo:Escaped
+  02:31:15.4 end 6s after finish headLocal=(2.60, 1.00, -0.04) tight=False padded=True
+-- nose
+  aboard margin case nose target head local (0.00, 1.50, 6.00) padded (-2.70, -0.90, -5.50)..(2.70, 4.00, 6.50)
+  02:31:48.7 first sample headLocal=(0.00, 1.50, 6.00) tight=False padded=True
+  02:31:48.8 DISPLACED headLocal=(0.00, 1.50, -837.92) finished=False phase=Running
+  02:31:50.8 FINISHED reason=Bridge crossed success=True headLocal=(0.00, 1.50, 6.15) tight=False padded=True players=lebo:Escaped
+  02:31:56.8 end 6s after finish headLocal=(0.00, 1.50, 5.96) tight=False padded=True
+-- far
+  aboard margin case far
+  02:32:32.1 placed far at (25.0, 18.1, 70.0) hit=Mountain flank
+  02:32:32.3 sample headWorld=(25.0, 19.3, 70.0) headLocal=(25.0, 18.3, -843.5) padded=False
+  02:32:34.4 FINISHED reason=Bridge crossed success=False headWorld=(0.0, 2.9, 923.3) padded=True players=lebo:Didn't make it
+  02:32:34.4 TELEPORTED aboard headLocal=(0.00, 1.90, -2.00) tight=True 0.00s after finish
+  (single DISPLACED lines are the train jumping to the bridge approach before the finish, not a teleport)
+An earlier attempt was invalid (DesktopPlayer lookup returned null on the DuckPlayer rig, so the player was never placed); not counted.
+
+== Compound Discord and Rate buttons — desktop, solo ==
+Compound: DiscordStation url=https://discord.gg/sfyvhahnDW, RateGameStation status 'Share your feedback'.
+PressableButton.Press()/Release() on JOIN DISCORD: nextRequest 0 -> t+3. Second press + direct OpenInvite() in the same window ignored (guard).
+RATE GAME: same guard; status 'Store opened. Find Ratings and Reviews.' (desktop store URL opened via Application.OpenURL).
+Room before/after 48914, phase Compound, no room request (no transition). Browser launch itself not observed by the agent.
+
+== Block loot/enemy consistency — two clients, private 47321, route convenience-store, farm-silos, skyscraper-works (+midpoint, finale) ==
+  main: role=main tag=start room=47321 phase=Running master=True run=d3068385ca074ecb92c7e50417db0f15 blocks=convenience-store-v1,farm-silos-v1,skyscraper-works-v1
+  main: counts bridge-finale-v1/coal=6 bridge-finale-v1/gold=2 convenience-store-v1/coal=9 convenience-store-v1/enemy=4 convenience-store-v1/gold=16 farm-silos-v1/coal=9 farm-silos-v1/enemy=4 farm-silos-v1/gold=16 midpoint-helipad-v1/coal=6 midpoint-helipad-v1/gold=2 skyscraper-works-v1/coal=9 skyscraper-works-v1/enemy=4 skyscraper-works-v1/gold=16
+  main: unsupported=0 awake=0 belowKill=0 total=103
+  p2:   role=player2 tag=start room=47321 phase=Running master=False run=d3068385ca074ecb92c7e50417db0f15 blocks=convenience-store-v1,farm-silos-v1,skyscraper-works-v1
+  p2:   counts bridge-finale-v1/coal=6 bridge-finale-v1/gold=2 convenience-store-v1/coal=9 convenience-store-v1/enemy=4 convenience-store-v1/gold=16 farm-silos-v1/coal=9 farm-silos-v1/enemy=4 farm-silos-v1/gold=16 midpoint-helipad-v1/coal=6 midpoint-helipad-v1/gold=2 skyscraper-works-v1/coal=9 skyscraper-works-v1/enemy=4 skyscraper-works-v1/gold=16
+  p2:   unsupported=0 awake=0 belowKill=0 total=103
+  91 coal/gold: identical view IDs, spawn tokens and positions (<=1 cm Y), all asleep, resting on real colliders (max gap 0.00 m).
+  12 enemies: identical view IDs/tokens; positions differ only because snapshots were seconds apart while patrolling.
+Player2 left and late-rejoined the running train:
+  p2:   role=player2 tag=latejoin room=47321 phase=Running master=False run=d3068385ca074ecb92c7e50417db0f15 blocks=convenience-store-v1,farm-silos-v1,skyscraper-works-v1
+  p2:   counts bridge-finale-v1/coal=6 bridge-finale-v1/gold=2 convenience-store-v1/coal=9 convenience-store-v1/enemy=4 convenience-store-v1/gold=16 farm-silos-v1/coal=9 farm-silos-v1/enemy=4 farm-silos-v1/gold=16 midpoint-helipad-v1/coal=6 midpoint-helipad-v1/gold=2 skyscraper-works-v1/coal=9 skyscraper-works-v1/enemy=4 skyscraper-works-v1/gold=16
+  p2:   unsupported=0 awake=0 belowKill=0 total=103
+  -> same 103 items, no duplicates, positions within 1 cm; same enemy IDs.
+Convenience Store: 7 RailWashBrushSpin 'Cosmetic spinning bristles' with no colliders/rigidbodies; block has 0 rigidbodies/joints.
+Farm: swing frame present; block has 0 rigidbodies/joints.
+
+== Loot candidate footprint/clearance (editor, isolated preview scene, all candidates) ==
+  SUMMARY farm-silos-v1 candidates=222 coal=105 gold=117 enemy=22 failures=8
+  SUMMARY convenience-store-v1 candidates=235 coal=126 gold=109 enemy=27 failures=0
+  SUMMARY skyscraper-works-v1 candidates=540 coal=270 gold=270 enemy=26 failures=18
+  SUMMARY bridge-finale-v1 candidates=54 coal=28 gold=26 enemy=6 failures=0
+  FAIL footprint farm-silos-v1 Coal Coal 079 - Building roof (18.68, 2.90, 109.31)
+  FAIL clearance farm-silos-v1 Coal Coal 080 - Building roof (-30.52, 3.40, 78.16) hits Walkable roof
+  FAIL clearance farm-silos-v1 Coal Coal 081 - Building roof (-30.92, 3.40, 95.86) hits Walkable roof
+  FAIL clearance farm-silos-v1 Gold Gold 071 - Hay climbs (-25.99, 3.25, 69.14) hits Walkable roof
+  FAIL footprint farm-silos-v1 Gold Gold 079 - Building roof (18.68, 2.75, 108.62)
+  FAIL clearance farm-silos-v1 Gold Gold 080 - Building roof (-30.52, 3.25, 73.12) hits Walkable roof
+  FAIL clearance farm-silos-v1 Gold Gold 081 - Building roof (-30.92, 3.25, 91.52) hits Walkable roof
+  FAIL clearance farm-silos-v1 Gold Gold 087 - Tree roots (-41.05, 1.54, 119.60) hits Low orchard retaining stones
+  FAIL clearance skyscraper-works-v1 Coal Coal 034 - Tower B floor 0 (29.00, 0.20, 75.50) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Coal Coal 035 - Tower B floor 0 (36.10, 0.20, 57.00) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Coal Coal 036 - Tower B floor 0 (20.50, 0.20, 65.50) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Coal Coal 064 - Tower C floor 0 (-21.00, 0.20, 107.50) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Coal Coal 065 - Tower C floor 0 (-13.90, 0.20, 89.00) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Coal Coal 066 - Tower C floor 0 (-29.50, 0.20, 97.50) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Coal Coal 094 - Tower D floor 0 (29.00, 0.20, 107.50) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Coal Coal 095 - Tower D floor 0 (36.10, 0.20, 89.00) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Coal Coal 096 - Tower D floor 0 (20.50, 0.20, 97.50) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Gold Gold 031 - Tower B floor 0 (13.30, 0.05, 75.60) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Gold Gold 032 - Tower B floor 0 (36.30, 0.05, 66.80) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Gold Gold 033 - Tower B floor 0 (19.00, 0.05, 69.00) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Gold Gold 061 - Tower C floor 0 (-36.70, 0.05, 107.60) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Gold Gold 062 - Tower C floor 0 (-13.70, 0.05, 98.80) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Gold Gold 063 - Tower C floor 0 (-31.00, 0.05, 101.00) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Gold Gold 091 - Tower D floor 0 (13.30, 0.05, 107.60) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Gold Gold 092 - Tower D floor 0 (36.30, 0.05, 98.80) hits Ground slab
+  FAIL clearance skyscraper-works-v1 Gold Gold 093 - Tower D floor 0 (19.00, 0.05, 101.00) hits Ground slab
+Farm fix bfcd86651 (RailFarmPolishChecks.RepairLoot, only the failing markers moved):
+  Coal 079 - Building roof (18.680, 2.900, 109.310) -> (19.292, 3.050, 110.788)
+  Coal 080 - Building roof (-30.520, 3.400, 78.160) -> (-30.520, 3.490, 78.160)
+  Coal 081 - Building roof (-30.920, 3.400, 95.860) -> (-30.920, 3.490, 95.860)
+  Gold 071 - Hay climbs (-25.994, 3.250, 69.139) -> (-25.994, 3.340, 69.139)
+  Gold 079 - Building roof (18.680, 2.750, 108.620) -> (19.598, 2.900, 110.837)
+  Gold 080 - Building roof (-30.520, 3.250, 73.120) -> (-30.520, 3.340, 73.120)
+  Gold 081 - Building roof (-30.920, 3.250, 91.520) -> (-30.920, 3.340, 91.520)
+  Gold 087 - Tree roots (-41.050, 1.541, 119.600) -> (-40.897, 1.906, 119.970)
+  Re-check: farm 222 candidates, 0 failures; pools 105/117/22 unchanged.
+Skyscraper floor-0 clearance hits are slight overlaps with the ground slab; live, those items spawned asleep with 0.00 m gap. Not changed.
+
+== Attached throttle — two clients, lease level (simulated-rig hold path, same shared lease as the hand grip) ==
+-- main
+  throttle main handler
+  02:38:52.0 CMD idle
+  02:38:52.0 sim=True held=False simDrive=False granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:39:03.4 CMD pulse-1
+  02:39:03.4 sim=True held=True simDrive=True granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:39:03.5 sim=True held=True simDrive=True granted=True actor=1 me=1 master=True prog=0 lever=35 target=0 phase=Running blocked=False down=False
+  02:39:03.7 sim=True held=True simDrive=True granted=True actor=1 me=1 master=True prog=1 lever=35 target=4 phase=Running blocked=False down=False
+  02:39:19.1 CMD pulse-2
+  02:39:19.1 sim=True held=False simDrive=False granted=False actor=1 me=1 master=True prog=1 lever=325 target=4 phase=Running blocked=False down=False
+  02:39:19.3 sim=True held=False simDrive=False granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:39:30.6 sim=True held=False simDrive=False granted=False actor=3 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:39:30.7 sim=True held=False simDrive=False granted=False actor=3 me=1 master=True prog=1 lever=35 target=4 phase=Running blocked=False down=False
+  02:39:41.0 sim=True held=False simDrive=False granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:39:49.3 CMD pulse-3
+  02:39:49.3 sim=True held=True simDrive=True granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:39:49.4 sim=True held=True simDrive=True granted=True actor=1 me=1 master=True prog=0 lever=35 target=0 phase=Running blocked=False down=False
+  02:39:49.6 sim=True held=True simDrive=True granted=True actor=1 me=1 master=True prog=1 lever=35 target=4 phase=Running blocked=False down=False
+  02:39:55.0 sim=True held=True simDrive=True granted=True actor=1 me=1 master=True prog=1 lever=35 target=4 phase=Running blocked=True down=False
+  02:39:55.1 sim=True held=False simDrive=False granted=False actor=1 me=1 master=True prog=1 lever=325 target=4 phase=Running blocked=True down=False
+  02:39:55.1 sim=True held=False simDrive=False granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=True down=False
+  02:40:05.5 sim=True held=False simDrive=False granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:40:05.9 sim=True held=False simDrive=False granted=False actor=3 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:40:06.1 sim=True held=False simDrive=False granted=False actor=3 me=1 master=True prog=1 lever=35 target=4 phase=Running blocked=False down=False
+  02:40:15.6 sim=True held=False simDrive=False granted=False actor=3 me=1 master=True prog=1 lever=35 target=0 phase=Running blocked=False down=False
+  02:40:31.4 sim=True held=False simDrive=False granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:40:49.9 sim=True held=False simDrive=False granted=False actor=3 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:40:50.2 sim=True held=False simDrive=False granted=False actor=3 me=1 master=True prog=1 lever=35 target=4 phase=Running blocked=False down=False
+  02:40:53.4 sim=True held=False simDrive=False granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:41:25.4 CMD pulse-4
+  02:41:25.4 sim=True held=True simDrive=True granted=False actor=0 me=1 master=True prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:41:25.6 sim=True held=True simDrive=True granted=True actor=1 me=1 master=True prog=0 lever=35 target=0 phase=Running blocked=False down=False
+  02:41:25.7 sim=True held=True simDrive=True granted=True actor=1 me=1 master=True prog=1 lever=35 target=4 phase=Running blocked=False down=False
+  02:41:32.2 sim=True held=False simDrive=False granted=False actor=0 me=-1 master=False prog=0 lever=325 target=0 phase=Compound blocked=True down=False
+  02:41:35.9 sim=True held=False simDrive=False granted=False actor=0 me=1 master=False prog=0 lever=325 target=0 phase=Running blocked=True down=False
+  02:41:36.0 sim=True held=False simDrive=False granted=False actor=0 me=1 master=False prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:41:52.1 sim=True held=False simDrive=False granted=False actor=3 me=1 master=False prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:41:52.3 sim=True held=False simDrive=False granted=False actor=3 me=1 master=False prog=1 lever=35 target=4 phase=Running blocked=False down=False
+  02:41:54.2 sim=True held=False simDrive=False granted=False actor=0 me=1 master=False prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:42:00.3 sim=True held=False simDrive=False granted=False actor=3 me=1 master=False prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:42:00.4 sim=True held=False simDrive=False granted=False actor=3 me=1 master=False prog=1 lever=35 target=4 phase=Running blocked=False down=False
+  02:42:07.1 sim=True held=False simDrive=False granted=False actor=0 me=-1 master=False prog=0 lever=325 target=0 phase=Compound blocked=True down=False
+  02:42:10.7 sim=True held=False simDrive=False granted=False actor=3 me=1 master=False prog=1 lever=35 target=4 phase=Running blocked=True down=False
+  02:42:10.8 sim=True held=False simDrive=False granted=False actor=3 me=1 master=False prog=1 lever=35 target=4 phase=Running blocked=False down=False
+  02:42:25.0 sim=True held=False simDrive=False granted=False actor=0 me=1 master=False prog=0 lever=325 target=0 phase=Running blocked=False down=False
+  02:42:26.9 CMD stop
+  02:42:26.9 handler removed
+-- player2
+  throttle p2 observer
+  02:39:03.1 CMD idle
+  02:39:03.1 held=False simDrive=False actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:39:03.5 held=False simDrive=False actor=1 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:39:03.7 held=False simDrive=False actor=1 me=3 master=False prog=1 lever=35 target=4 phase=Running
+  02:39:10.8 CMD pulse-p2-1
+  02:39:10.8 held=True simDrive=False actor=1 me=3 master=False prog=1 lever=35 target=4 phase=Running
+  02:39:19.3 held=True simDrive=False actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:39:28.2 CMD pulse-p2-2
+  02:39:28.3 held=False simDrive=False actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:39:30.3 CMD pulse-p2-3
+  02:39:30.3 held=True simDrive=True actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:39:30.6 held=True simDrive=True actor=3 me=3 master=False prog=0 lever=35 target=0 phase=Running
+  02:39:30.7 held=True simDrive=True actor=3 me=3 master=False prog=1 lever=35 target=4 phase=Running
+  02:39:40.7 held=False simDrive=False actor=3 me=3 master=False prog=1 lever=325 target=4 phase=Running
+  02:39:41.0 held=False simDrive=False actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:39:49.4 held=False simDrive=False actor=1 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:39:49.6 held=False simDrive=False actor=1 me=3 master=False prog=1 lever=35 target=4 phase=Running
+  02:39:55.1 held=False simDrive=False actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:40:05.7 CMD pulse-p2-4
+  02:40:05.7 held=True simDrive=True actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:40:05.9 held=True simDrive=True actor=3 me=3 master=False prog=0 lever=35 target=0 phase=Running
+  02:40:06.1 held=True simDrive=True actor=3 me=3 master=False prog=1 lever=35 target=4 phase=Running
+  02:40:15.6 held=True simDrive=True actor=3 me=3 master=False prog=1 lever=35 target=0 phase=Running
+  02:40:31.3 held=False simDrive=False actor=3 me=3 master=False prog=1 lever=325 target=0 phase=Running
+  02:40:31.4 held=False simDrive=False actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:40:49.7 CMD pulse-p2-5
+  02:40:49.7 held=True simDrive=True actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:40:50.0 held=True simDrive=True actor=3 me=3 master=False prog=0 lever=35 target=0 phase=Running
+  02:40:50.2 held=True simDrive=True actor=3 me=3 master=False prog=1 lever=35 target=4 phase=Running
+  02:40:53.2 held=False simDrive=False actor=0 me=-1 master=False prog=0 lever=325 target=0 phase=Compound
+  02:40:57.0 held=False simDrive=False actor=0 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:41:25.6 held=False simDrive=False actor=1 me=3 master=False prog=0 lever=325 target=0 phase=Running
+  02:41:25.7 held=False simDrive=False actor=1 me=3 master=False prog=1 lever=35 target=4 phase=Running
+  02:41:32.3 held=False simDrive=False actor=1 me=3 master=True prog=1 lever=35 target=4 phase=Running
+  02:41:32.4 held=False simDrive=False actor=0 me=3 master=True prog=0 lever=325 target=0 phase=Running
+  02:41:52.0 CMD pulse-p2-6
+  02:41:52.0 held=True simDrive=True actor=0 me=3 master=True prog=0 lever=325 target=0 phase=Running
+  02:41:52.1 held=True simDrive=True actor=3 me=3 master=True prog=0 lever=35 target=0 phase=Running
+  02:41:52.3 held=True simDrive=True actor=3 me=3 master=True prog=1 lever=35 target=4 phase=Running
+  02:41:54.0 CMD pulse-p2-7
+  02:41:54.1 held=False simDrive=False actor=3 me=3 master=True prog=1 lever=325 target=4 phase=Running
+  02:41:54.2 held=False simDrive=False actor=0 me=3 master=True prog=0 lever=325 target=0 phase=Running
+  02:42:00.1 CMD pulse-p2-8
+  02:42:00.2 held=True simDrive=True actor=0 me=3 master=True prog=0 lever=325 target=0 phase=Running
+  02:42:00.3 held=True simDrive=True actor=3 me=3 master=True prog=0 lever=35 target=0 phase=Running
+  02:42:00.4 held=True simDrive=True actor=3 me=3 master=True prog=1 lever=35 target=4 phase=Running
+  02:42:24.8 CMD pulse-p2-9
+  02:42:24.9 held=False simDrive=False actor=3 me=3 master=True prog=1 lever=325 target=4 phase=Running
+  02:42:25.0 held=False simDrive=False actor=0 me=3 master=True prog=0 lever=325 target=0 phase=Running
+  02:42:26.9 CMD stop
+  02:42:26.9 handler removed
+
+Console during the run: only Meta XR ErrorFormFactorUnavailable, LCK graphics-API and one Unity AI relay process-exit error.

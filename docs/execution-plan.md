@@ -64,10 +64,10 @@
 - [x] Farm basement cage art installed: central cage/chairs, open side cells/lockers, green-white baked lighting, two coal/four gold candidates. Focused loot/doorway checks pass; navigation and lighting rebuilt. See `farm-silos-layout.md`.
 - [ ] Farm basement cages: headset traversal, loot reach, enemy pursuit and lighting/performance acceptance. Queued for playtest.
 
+- [ ] November 11 attached throttle trial: rendered/replicated palm follows the handle; arc travel, forward hold tolerance, breakaway and detent feedback implemented. Compile, 20 Edit Mode drive checks and both-hand solo live simulated grip/GO/pull-back/release/breakaway pass. Headset feel and multiplayer acceptance remain **queued for playtest**. See [trial](shared-rig.md#attached-throttle-trial--november-11).
+
 - [x] November 11 Farm screenshot polish installed with local edits preserved: furnishings, entrance/pond lights, ditch water audio, side fences, enterable silo/loot, and house geometry repairs. Navigation/lighting rebaked and focused editor checks pass; see [Farm evidence](farm-silos-layout.md#screenshot-polish-batch--november-11-2026).
 - [ ] Farm full screenshot polish: natural stair/ramp/loft traversal, water footsteps, loot recovery, enemy pursuit, real-client/headset readability and performance. **Queued for playtest**.
-
-- [ ] November 11 attached throttle trial: rendered/replicated palm follows the handle; arc travel, forward hold tolerance, breakaway and detent feedback implemented. Compile, 20 Edit Mode drive checks and both-hand solo live simulated grip/GO/pull-back/release/breakaway pass. Headset feel and multiplayer acceptance remain **queued for playtest**. See [trial](shared-rig.md#attached-throttle-trial--november-11).
 
 - [x] November 11 whole-bank lighting correction: lightmap the static tunnel bank instead of sampling one probe across it; preserve all 22 current lights. Finale baked/exported, 1,741 bindings installed and 23 editor checks pass. Night-to-dawn/headset appearance remains queued; see [item 23](level-polish-batch.md).
 
@@ -601,6 +601,7 @@ Acceptance:
 - [ ] Repeated grabs and acceleration do not produce divergent ownership or cargo positions.
 - [ ] Enemies never board and cannot make every boarding point unusable.
 - [ ] Revive completion/interrupt and flare lifetime agree across clients, including a late joiner.
+- [ ] Validate November 12 Raider Legends revive audio/particle import with rescuer, revived player and observer, including moving train, interruption grace, simultaneous revives, ending ride, late join/master handoff and return/replay. Implementation and 31 EditMode checks pass; live/headset acceptance remains queued. See `revive-effects.md`.
 - [ ] Distant handheld users and players at the train station can communicate intelligibly.
 
 Record device, client count, network conditions, and reproducible failures. Test beyond a single LAN/editor setup using the existing supported simulation tools where available.
@@ -889,6 +890,9 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] November 12: headset and multiplayer acceptance of approved cockpit art and lowered throttle axle; installed with compile/EditMode checks. See [cockpit](cockpit-v2.md).
 
 - [ ] November 12 throttle polish: user reports prior cockpit/pivot works well in headset; validate new palm offset, proportional speed and 0.25-second visual return on headset/two clients. Compile and 25 drive plus session EditMode checks pass. See docs/cockpit-v2.md.
+
+- [x] November 12 evening queue: two authenticated clients pass flashlight release/regrab, 60-second abandonment/off-audio and component stash path. Furnace intake fix `79b69296b` passes four actual deposits including moving train, host handoff and empty-fuel recovery. Motel lighting fix `3c64b55a4` restores route readiness with three clients/late join. See [scoped evidence](validation/playtest-queue/2026-11-12-evening/run-notes.txt).
+- [ ] Full queue acceptance remains open: 31 entries retain manual/headset, missing product/account prerequisites or explicitly unrun scenarios. Partial three-client throttle lease, revive presentation, results-board transport, stranded return and route consistency passes do not close their broader milestones; see [queue results](playtest-queue.md#results).
 
 - [x] November 13: install Motel-only offline spatial render chunks, retaining editable source geometry, collision/spawns and baked atlases. Compile and EditMode geometry/UV, saved-state and reversible-switch checks pass; see docs/quest-performance.md.
 - [ ] Motel consolidation: matched Quest frame-time/draw/memory/load A/B and runtime lighting/culling/interior acceptance; queued for playtest. Renderer-count reduction alone does not establish performance acceptance.

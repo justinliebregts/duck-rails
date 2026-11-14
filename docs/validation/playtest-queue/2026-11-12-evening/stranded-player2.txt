@@ -1,0 +1,24 @@
+Three real clients; public-return state seeded in isolated private test room. Disconnect non-master during Ending, retain room with disabled third session, resume after return token.
+2026-11-13T06:57:23.1853237Z Joined room=74278 phase=Running request=False
+2026-11-13T06:57:52.7244821Z Joined room=74278 phase=Ending request=False
+2026-11-13T06:58:20.0833289Z DISCONNECT nonmaster=True
+2026-11-13T06:58:20.1198106Z Disconnected room= phase=Compound request=True
+2026-11-13T06:59:08.2160093Z RESUME automatic reconnect/rejoin
+2026-11-13T06:59:08.2322445Z ConnectingToNameServer room= phase=Compound request=True
+2026-11-13T06:59:08.4267153Z Authenticating room= phase=Compound request=True
+2026-11-13T06:59:08.7271077Z ConnectingToMasterServer room= phase=Compound request=True
+2026-11-13T06:59:09.2984394Z Authenticating room= phase=Compound request=True
+2026-11-13T06:59:09.4452045Z Joining room= phase=Compound request=True
+2026-11-13T06:59:09.5246086Z ConnectingToGameServer room= phase=Compound request=True
+2026-11-13T06:59:09.8993003Z Authenticating room= phase=Compound request=True
+2026-11-13T06:59:10.0343796Z Joining room= phase=Compound request=True
+2026-11-13T06:59:10.2264467Z Leaving room=74278 phase=Returning request=True
+2026-11-13T06:59:10.3663570Z ConnectingToMasterServer room= phase=Compound request=True
+2026-11-13T06:59:10.6920229Z Authenticating room= phase=Compound request=True
+2026-11-13T06:59:10.8395149Z Joining room= phase=Compound request=True
+2026-11-13T06:59:11.1220474Z ConnectingToGameServer room= phase=Compound request=True
+2026-11-13T06:59:11.5299438Z Authenticating room= phase=Compound request=True
+2026-11-13T06:59:11.6661678Z Joining room= phase=Compound request=True
+2026-11-13T06:59:11.8241431Z Joined room=77818 phase=Compound request=True
+2026-11-13T06:59:12.9210842Z Joined room=77818 phase=Compound request=False
+2026-11-13T06:59:12.9215871Z DONE recovered to Compound 77818

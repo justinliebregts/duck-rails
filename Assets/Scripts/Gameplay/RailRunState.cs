@@ -86,5 +86,8 @@ public sealed class RailParticipant
         offTrainSeconds, loneSeconds, nearSeconds, stillSeconds, maxFromTrain;
     public bool down, escaped, sampledAboard;
     public double protectedUntil, flareAt, reviveAt, reviveLostAt;
+    // Presentation receipt independent of frozen ending statistics; committed with the revival.
+    public int reviveSequence;
+    public double revivedAt;
     public Vector3 flarePosition, lastSample;
 }

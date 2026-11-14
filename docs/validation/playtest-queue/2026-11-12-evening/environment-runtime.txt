@@ -1,0 +1,58 @@
+Local runtime plumbing only; no acoustic/visual/headset acceptance.
+2026-11-13T06:46:03.3654433Z Route=container-yard-v1,roadside-motel-v1,convenience-store-v1,farm-silos-v1,skyscraper-works-v1 mirrors=2 zones=25
+2026-11-13T06:46:03.3664566Z PASS independent render textures
+2026-11-13T06:46:04.1827801Z PASS near screen (-6.54, 3.12, 78.24) texture=256x256
+2026-11-13T06:46:04.9950363Z PASS near screen (-25.55, 2.32, 654.21) texture=256x256
+2026-11-13T06:46:05.8067208Z PASS screen shuts down at distant train position (-6.54, 3.12, 78.24)
+2026-11-13T06:46:05.8067208Z PASS screen shuts down at distant train position (-25.55, 2.32, 654.21)
+2026-11-13T06:46:06.6243139Z PASS reverb West bunker outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:07.4375093Z PASS reverb West bunker outside=True listenerDistance=6.00 max=1 clampError=0.000
+2026-11-13T06:46:08.2492653Z PASS reverb Arcade outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:09.0770545Z PASS reverb Arcade outside=True listenerDistance=6.00 max=1 clampError=0.000
+2026-11-13T06:46:09.8930375Z PASS reverb East bunker outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:10.7013681Z PASS reverb East bunker outside=True listenerDistance=6.00 max=1 clampError=0.000
+2026-11-13T06:46:11.5088477Z PASS reverb Change rooms outside=False listenerDistance=0.00 max=0.8 clampError=0.000
+2026-11-13T06:46:12.3287775Z PASS reverb Change rooms outside=True listenerDistance=6.00 max=0.8 clampError=0.000
+2026-11-13T06:46:13.1420674Z PASS reverb East lower container passages outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:13.9620795Z PASS reverb East lower container passages outside=True listenerDistance=6.01 max=1 clampError=0.000
+2026-11-13T06:46:14.7682903Z PASS reverb Open trailer outside=False listenerDistance=0.35 max=0.6 clampError=0.000
+2026-11-13T06:46:15.5778629Z PASS reverb Open trailer outside=True listenerDistance=6.02 max=0.6 clampError=0.000
+2026-11-13T06:46:16.3869480Z PASS reverb Escape tunnel outside=False listenerDistance=0.00 max=3 clampError=0.000
+2026-11-13T06:46:17.2053134Z PASS reverb Escape tunnel outside=True listenerDistance=6.00 max=3 clampError=0.000
+2026-11-13T06:46:18.0225520Z PASS reverb Tower C outside=False listenerDistance=0.00 max=1.5 clampError=0.000
+2026-11-13T06:46:18.8291668Z PASS reverb Tower C outside=True listenerDistance=6.00 max=1.5 clampError=0.000
+2026-11-13T06:46:19.6324023Z PASS reverb Tower A outside=False listenerDistance=0.00 max=1.5 clampError=0.000
+2026-11-13T06:46:20.4529872Z PASS reverb Tower A outside=True listenerDistance=6.00 max=1.5 clampError=0.000
+2026-11-13T06:46:21.2729381Z PASS reverb Tower D outside=False listenerDistance=0.00 max=1.5 clampError=0.000
+2026-11-13T06:46:22.0881932Z PASS reverb Tower D outside=True listenerDistance=6.00 max=1.5 clampError=0.000
+2026-11-13T06:46:22.9079083Z PASS reverb Farmhouse outside=False listenerDistance=0.00 max=0.65 clampError=0.000
+2026-11-13T06:46:23.7248955Z PASS reverb Farmhouse outside=True listenerDistance=6.00 max=0.65 clampError=0.000
+2026-11-13T06:46:24.5420361Z PASS reverb Workshop outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:25.3508768Z PASS reverb Workshop outside=True listenerDistance=6.00 max=1 clampError=0.000
+2026-11-13T06:46:26.1631219Z PASS reverb East guest wing outside=False listenerDistance=0.00 max=0.8 clampError=0.000
+2026-11-13T06:46:26.9724392Z PASS reverb East guest wing outside=True listenerDistance=6.00 max=0.8 clampError=0.000
+2026-11-13T06:46:27.7854108Z PASS reverb Cellar outside=False listenerDistance=0.00 max=0.65 clampError=0.000
+2026-11-13T06:46:28.5869531Z PASS reverb Cellar outside=True listenerDistance=6.00 max=0.65 clampError=0.000
+2026-11-13T06:46:29.3995601Z PASS reverb Restaurant row outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:30.2253973Z PASS reverb Restaurant row outside=True listenerDistance=6.00 max=1 clampError=0.000
+2026-11-13T06:46:31.0305259Z PASS reverb North guest wing outside=False listenerDistance=0.00 max=0.8 clampError=0.000
+2026-11-13T06:46:31.8327451Z PASS reverb North guest wing outside=True listenerDistance=6.00 max=0.8 clampError=0.000
+2026-11-13T06:46:32.6451765Z PASS reverb Pool vendor and supply outside=False listenerDistance=0.00 max=0.8 clampError=0.000
+2026-11-13T06:46:33.4570179Z PASS reverb Pool vendor and supply outside=True listenerDistance=6.00 max=0.8 clampError=0.000
+2026-11-13T06:46:34.2709134Z PASS reverb Tower B outside=False listenerDistance=0.00 max=1.5 clampError=0.000
+2026-11-13T06:46:35.0725514Z PASS reverb Tower B outside=True listenerDistance=6.00 max=1.5 clampError=0.000
+2026-11-13T06:46:35.8822939Z PASS reverb Enterable silo outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:36.6908770Z PASS reverb Enterable silo outside=True listenerDistance=6.00 max=1 clampError=0.000
+2026-11-13T06:46:37.5000342Z PASS reverb Repair shed outside=False listenerDistance=0.00 max=1.5 clampError=0.000
+2026-11-13T06:46:38.3167434Z PASS reverb Repair shed outside=True listenerDistance=6.00 max=1.5 clampError=0.000
+2026-11-13T06:46:39.1353767Z PASS reverb Car wash outside=False listenerDistance=0.00 max=1.5 clampError=0.000
+2026-11-13T06:46:39.9527760Z PASS reverb Car wash outside=True listenerDistance=6.00 max=1.5 clampError=0.000
+2026-11-13T06:46:40.7604416Z PASS reverb Main barn outside=False listenerDistance=0.00 max=1.5 clampError=0.000
+2026-11-13T06:46:41.5698678Z PASS reverb Main barn outside=True listenerDistance=6.00 max=1.5 clampError=0.000
+2026-11-13T06:46:42.3871373Z PASS reverb West lower container passages outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:43.1951741Z PASS reverb West lower container passages outside=True listenerDistance=6.00 max=1 clampError=0.000
+2026-11-13T06:46:44.0010784Z PASS reverb Feed barn outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:44.8057271Z PASS reverb Feed barn outside=True listenerDistance=6.00 max=1 clampError=0.000
+2026-11-13T06:46:45.6143093Z PASS reverb Store and stockroom outside=False listenerDistance=0.00 max=1 clampError=0.000
+2026-11-13T06:46:46.4259117Z PASS reverb Store and stockroom outside=True listenerDistance=6.00 max=1 clampError=0.000
+2026-11-13T06:46:47.2336352Z DONE

@@ -1,0 +1,178 @@
+Unity=6000.3.24f1 phase=Running ready=True clients=3 run=60556a1faeb1460bbbfaf44de750d2a0
+route=container-yard-v1,roadside-motel-v1,convenience-store-v1,farm-silos-v1,skyscraper-works-v1
+BLOCK container-yard-v1 renderers=1194 colliders=665 reverb=4 active=True
+BLOCK roadside-motel-v1 renderers=1974 colliders=1902 reverb=4 active=True
+BLOCK convenience-store-v1 renderers=1370 colliders=1422 reverb=4 active=True
+BLOCK midpoint-helipad-v1 renderers=454 colliders=178 reverb=0 active=True
+BLOCK farm-silos-v1 renderers=953 colliders=1436 reverb=6 active=True
+BLOCK skyscraper-works-v1 renderers=3404 colliders=3651 reverb=4 active=True
+BLOCK starting-station-v1 renderers=476 colliders=255 reverb=0 active=True
+BLOCK bridge-finale-v1 renderers=1904 colliders=1144 reverb=3 active=True
+CARGO 2 8e6bb983f8a64e9a88fa56387bf04932 RailFlashlight(Clone) (-0.825, 1.015, 83.874) asleep=True
+CARGO 3 923aca2d2e29434ea217cec8118620d8 RailFlashlight(Clone) (-0.275, 1.015, 83.874) asleep=True
+CARGO 4 c7115f659e55421a9b0d8ed20a1f106f RailGoldBar(Clone) (-11.800, 0.160, 233.600) asleep=True
+CARGO 5 9740ff1f07684949994d4b04adc3375d RailGoldBar(Clone) (37.000, 0.160, 245.000) asleep=True
+CARGO 6 4f3872dba554488db575fa3a56fd8503 RailGoldBar(Clone) (-35.500, 3.000, 222.600) asleep=True
+CARGO 7 5a735b6e30af47f89cf897b974368569 RailGoldBar(Clone) (-28.641, 0.000, 182.767) asleep=True
+CARGO 8 3234012c7a574ebdbd80832fcb715f56 RailGoldBar(Clone) (37.100, 3.000, 234.100) asleep=True
+CARGO 9 8e6b4fb1ad5f4db2802975b506c097e5 RailGoldBar(Clone) (-42.700, 0.000, 222.650) asleep=True
+CARGO 10 5bc08a4e355d428b9b966e6ec49ab2f6 RailGoldBar(Clone) (35.100, 6.000, 299.900) asleep=True
+CARGO 11 aff1c5e05d1d489d9d7de5df402596b3 RailGoldBar(Clone) (-11.800, 3.000, 257.400) asleep=True
+CARGO 12 9e2734190b384a10b6ae3eadf4c16d9a RailGoldBar(Clone) (-20.225, 6.000, 201.900) asleep=True
+CARGO 13 212552d34cc346bdb867cdfe3077f05b RailGoldBar(Clone) (-30.910, 3.000, 194.303) asleep=True
+CARGO 14 6596a44061c0417ca7612f3fc3741dce RailGoldBar(Clone) (-13.200, 3.000, 286.400) asleep=True
+CARGO 15 df77708890024d35b7e0ff121c667933 RailGoldBar(Clone) (14.700, 1.300, 170.950) asleep=True
+CARGO 16 06158eca9b174e6fb40bb9df99712855 RailGoldBar(Clone) (-36.200, 0.190, 284.100) asleep=True
+CARGO 17 548d83c58a9a45ebb6629a32351a044d RailGoldBar(Clone) (24.550, 4.300, 286.840) asleep=True
+CARGO 18 43a91a9fcda94772b23f032708323ee4 RailGoldBar(Clone) (-42.700, 0.000, 162.150) asleep=True
+CARGO 19 458943d1f7be43b29e89a33e699de050 RailGoldBar(Clone) (-15.000, 3.000, 285.500) asleep=True
+CARGO 20 4c7d91972f6f413c902216d5f8670a7e RailGoldBar(Clone) (44.900, 0.740, 449.000) asleep=True
+CARGO 21 1151157a8dea4077873295a10dd10653 RailGoldBar(Clone) (30.800, 3.600, 378.700) asleep=True
+CARGO 22 c7489da8a5e0434d883b9b61f2fa2ba0 RailGoldBar(Clone) (12.000, 0.200, 431.000) asleep=True
+CARGO 23 245a21c20eee4d8881d46d4c2ca8d0c0 RailGoldBar(Clone) (-17.500, 0.200, 430.333) asleep=True
+CARGO 24 7ca23760b584473ab297e79c8ee1c590 RailGoldBar(Clone) (44.900, 0.740, 442.000) asleep=True
+CARGO 25 4f62643e48364061bc9adf2b5acfd82b RailGoldBar(Clone) (-40.333, 0.200, 455.167) asleep=True
+CARGO 26 521a448d82f145b099f3a9cc8e255506 RailGoldBar(Clone) (30.800, 0.000, 378.700) asleep=True
+CARGO 27 541f0f455bb242e2a89752c8407016a1 RailGoldBar(Clone) (24.000, 0.000, 412.150) asleep=True
+CARGO 28 b58a33334e5345d4aa1706e931e4ad75 RailGoldBar(Clone) (-37.000, 2.925, 335.500) asleep=True
+CARGO 29 d586f20562284e2bbaef2fc82529aeb6 RailGoldBar(Clone) (44.900, 0.740, 435.000) asleep=True
+CARGO 30 fe17ab35245847fa9d3b5e7253a3c087 RailGoldBar(Clone) (-33.000, -3.200, 389.000) asleep=True
+CARGO 31 240ba9ccd7724ba5bf0c24630c4ee599 RailGoldBar(Clone) (18.000, 2.925, 334.500) asleep=True
+CARGO 32 f422f44b41ab468488bbe9ff2ea3568f RailGoldBar(Clone) (-12.000, 0.400, 417.400) asleep=True
+CARGO 33 e280877f7eae40a59300315664ec2583 RailGoldBar(Clone) (39.000, 0.000, 379.200) asleep=True
+CARGO 34 82ab02f3d0d447bcb71f2849b9fda121 RailGoldBar(Clone) (-40.333, 0.200, 433.833) asleep=True
+CARGO 35 54ca101f75fb437c91b51946aaebb3cf RailGoldBar(Clone) (-11.392, 0.050, 346.942) asleep=True
+CARGO 36 012c755ab8d4457fbbec70b290b79adc RailGoldBar(Clone) (13.300, 3.925, 590.389) asleep=True
+CARGO 37 c7e17d702bcf4ad2991324ceeab5cb14 RailGoldBar(Clone) (23.772, 4.475, 554.491) asleep=True
+CARGO 38 1e2742f57a194c7989c2faf56a83c235 RailGoldBar(Clone) (26.710, 0.240, 548.264) asleep=True
+CARGO 39 94e78ac82e0a4c14b56b4941a3f554fe RailGoldBar(Clone) (20.379, 3.275, 555.367) asleep=True
+CARGO 40 71ee86287b704525b5474ef844fb0a3f RailGoldBar(Clone) (20.429, 3.275, 532.462) asleep=True
+CARGO 41 4ca36da6fc2c44a887e4bb4869e7dc4c RailGoldBar(Clone) (42.738, 1.550, 537.270) asleep=True
+CARGO 42 3ca784f4710f4225a7e31c2f07cb64e1 RailGoldBar(Clone) (20.397, 3.275, 547.226) asleep=True
+CARGO 43 9d8c357db3c04468be92f92fe7d72db8 RailGoldBar(Clone) (-23.970, 2.200, 544.710) asleep=True
+CARGO 44 d50ec9a1bd6d481fa77bc1d5eb632151 RailGoldBar(Clone) (18.667, 0.000, 598.706) asleep=True
+CARGO 45 8224770738124a1c8fd6fd294fa40d13 RailGoldBar(Clone) (-29.999, 2.200, 554.012) asleep=True
+CARGO 46 596d1c20583049a8a0c36740c827add0 RailGoldBar(Clone) (35.267, 0.000, 547.621) asleep=True
+CARGO 47 43113a3899c44c7696317c6c4340d840 RailGoldBar(Clone) (28.258, 2.400, 555.026) asleep=True
+CARGO 48 df88924b1b6e48d7b1a60d560d8a37f5 RailGoldBar(Clone) (-15.615, 0.000, 563.231) asleep=True
+CARGO 49 2088da6cdad24eceb9b7c4e74f3bf138 RailGoldBar(Clone) (37.119, 0.000, 534.298) asleep=True
+CARGO 50 bdcddf3bb3b34ca38075ef94360b75b4 RailGoldBar(Clone) (-19.526, 4.475, 536.571) asleep=True
+CARGO 51 afcc6e06185646f3a260ced4eb4fbd53 RailGoldBar(Clone) (-19.514, 1.140, 577.728) asleep=True
+CARGO 52 8288ff51a67a46d9a731b14020e184af RailGoldBar(Clone) (17.800, 1.000, 812.000) asleep=True
+CARGO 53 e48514c2e6b1466a868c8cfa379f88ef RailGoldBar(Clone) (-32.650, 1.500, 828.650) asleep=True
+CARGO 54 63ebb4e289de4c1f8ac5798ae8b56939 RailGoldBar(Clone) (-26.650, 9.100, 817.650) asleep=True
+CARGO 55 d47273843bf449b0bf80b324873f8cef RailGoldBar(Clone) (-21.650, 2.550, 817.650) asleep=True
+CARGO 56 cf67cfb1977d4da28bfdec6514784945 RailGoldBar(Clone) (-29.700, -0.410, 833.050) asleep=True
+CARGO 57 d25ccd163d69483b8a68607530f754b0 RailGoldBar(Clone) (-38.716, 0.000, 717.264) asleep=True
+CARGO 58 faa1cd1be4704d959eddb9bdb2e5f23e RailGoldBar(Clone) (41.446, 0.129, 719.850) asleep=True
+CARGO 59 7c66d592f17d47b68b0e934582248e41 RailGoldBar(Clone) (-19.450, -1.700, 820.900) asleep=True
+CARGO 60 a8efc2dfe16a4cfd809c06958c92be55 RailGoldBar(Clone) (-30.000, 7.900, 820.000) asleep=True
+CARGO 61 35ac182f1aa3485e992be6ec27572808 RailGoldBar(Clone) (-14.650, 2.500, 818.650) asleep=True
+CARGO 62 6296b39af7794f9e8105038cb331ac42 RailGoldBar(Clone) (-21.650, 5.500, 816.650) asleep=True
+CARGO 63 7a7800b072814f9786b72da62ab1b6f4 RailGoldBar(Clone) (-32.080, 0.090, 779.800) asleep=True
+CARGO 64 599ac4a3b8314d4da5baca95abcd1272 RailGoldBar(Clone) (27.139, -0.010, 729.759) asleep=True
+CARGO 65 ee9393dcfe9a4c39b3d4d41aa3192403 RailGoldBar(Clone) (19.598, 2.850, 800.837) asleep=True
+CARGO 66 53ffbb3dae994662b02eef387f5d6674 RailGoldBar(Clone) (-38.187, 0.000, 722.803) asleep=True
+CARGO 67 943f35861e92440ab7a0264daf3d2f49 RailGoldBar(Clone) (-39.259, 0.000, 706.250) asleep=True
+CARGO 68 c7c1a097cee144cf80934e84c6c83b58 RailGoldBar(Clone) (29.600, 16.000, 937.400) asleep=True
+CARGO 69 0f7f0d49df384145b179c79908e98c4e RailGoldBar(Clone) (13.300, 16.000, 925.600) asleep=True
+CARGO 70 efde9840d9424d649484d1d9bbbdb1b6 RailGoldBar(Clone) (13.306, 0.100, 925.598) asleep=True
+CARGO 71 ce28e47f3a504fc49b9bcc7ac5bc508f RailGoldBar(Clone) (24.001, 0.000, 870.310) asleep=True
+CARGO 72 f5a315dcee604089b82b789cb0e789f1 RailGoldBar(Clone) (-33.900, 16.000, 956.300) asleep=True
+CARGO 73 bb9947c95bef47d991a748daf1dda5db RailGoldBar(Clone) (29.600, 12.000, 912.150) asleep=True
+CARGO 74 a9923a8af9a44308b5d5c85e1a60f3ea RailGoldBar(Clone) (-28.500, 12.000, 942.800) asleep=True
+CARGO 75 e262bc4f1fd44ff2a7be25cc66b4eb9e RailGoldBar(Clone) (19.000, 4.000, 919.000) asleep=True
+CARGO 76 cdf622dd44e24afb94a215b4fdd927e0 RailGoldBar(Clone) (-24.350, 8.000, 930.300) asleep=True
+CARGO 77 a8e88d1358ef4167adc67bbb115c413d RailGoldBar(Clone) (16.100, 16.000, 946.850) asleep=True
+CARGO 78 7275eb6177404a3e8cc60e7c06d601f8 RailGoldBar(Clone) (21.500, 12.000, 908.100) asleep=True
+CARGO 79 d8e20c066c3c4cbdad96d7008564d016 RailGoldBar(Clone) (7.650, 8.000, 915.350) asleep=True
+CARGO 80 bc1840728f4c4cf9893d22e35e10ce71 RailGoldBar(Clone) (14.750, 16.000, 924.300) asleep=True
+CARGO 81 ea6298f61ab24bd0a0747b023927edf1 RailGoldBar(Clone) (-30.000, 0.000, 967.300) asleep=True
+CARGO 82 daccc35a19134357a306f85b40c440d7 RailGoldBar(Clone) (2.550, 8.000, 915.350) asleep=True
+CARGO 83 039904234f724dc3932d19e80612f215 RailGoldBar(Clone) (16.100, 12.000, 905.400) asleep=True
+CARGO 84 57097532349e4deda7c8a8824b5677cc RailGoldBar(Clone) (-39.000, 0.990, 636.200) asleep=True
+CARGO 85 d56973ed92ff4566b0b1fa069a5c5a9d RailGoldBar(Clone) (-25.000, 0.000, 686.000) asleep=True
+CARGO 86 a5a8ab7357dc430aa5b8a953cded42d2 RailGoldBar(Clone) (33.000, 4.000, 1068.000) asleep=True
+CARGO 87 14e7e4d4ad5247c7a05a9750071795b3 RailGoldBar(Clone) (-29.010, 1.576, 1022.972) asleep=True
+CARGO 88 8eea5f006d2841f78f507e3c28874905 RailCoal(Clone) (-37.205, 6.150, 255.452) asleep=True
+CARGO 89 cecc6e7bfc1749929b52a7e5c86d838c RailCoal(Clone) (-40.850, 0.150, 204.170) asleep=True
+CARGO 90 da901411979c42dd90c82dee4f62c49a RailCoal(Clone) (-18.125, 6.150, 201.900) asleep=True
+CARGO 91 5f056857e4e44dfdb6611c5d8fe93e16 RailCoal(Clone) (-34.000, 0.180, 290.800) asleep=True
+CARGO 92 a8ff7dd6132447f796eb11a1c5159560 RailCoal(Clone) (-36.325, 6.150, 233.600) asleep=True
+CARGO 93 2d89128d2eeb40ab88b120c25d938176 RailCoal(Clone) (-29.695, 3.150, 203.892) asleep=True
+CARGO 94 d13f410ec3674db3b1af3511b5d0ef9d RailCoal(Clone) (-30.580, 0.470, 289.475) asleep=True
+CARGO 95 851da31ba1ba457ebe2b4899ab14a8bc RailCoal(Clone) (33.500, 0.310, 245.900) asleep=True
+CARGO 96 05535f1529a74b1bb0d8917d9990a668 RailCoal(Clone) (23.600, 3.150, 245.900) asleep=True
+CARGO 97 f6321f035bd5429a8f909e91691bfa9c RailCoal(Clone) (-28.500, 0.350, 430.667) asleep=True
+CARGO 98 4f30f36ab83841dc97afd4c12d12b137 RailCoal(Clone) (-18.000, 0.350, 429.667) asleep=True
+CARGO 99 08a8ca9b127541bebd5868f54fa77117 RailCoal(Clone) (-14.857, 0.200, 338.232) asleep=True
+CARGO 100 b518e3ba3ac649cab29ce5c93dfc4bac RailCoal(Clone) (-44.200, 0.150, 343.000) asleep=True
+CARGO 102 96cafb8685224665af5cd71830d0c4d1 RailCoal(Clone) (-14.700, 1.620, 423.850) asleep=True
+CARGO 103 0d74855055c44cb7877666b3a15715e0 RailCoal(Clone) (-19.900, 1.760, 410.700) asleep=True
+CARGO 104 fdb1a9723a464d54be44597fee1978c1 RailCoal(Clone) (-18.000, 0.350, 440.833) asleep=True
+CARGO 105 d4efe2267d4440d3a6ebbcc81ee8481f RailCoal(Clone) (26.500, 4.450, 411.100) asleep=True
+CARGO 106 41289d55b0544c138454663df7baba0a RailCoal(Clone) (21.909, 1.050, 600.234) asleep=True
+CARGO 107 062898ce65e3492bbc207f2422c15885 RailCoal(Clone) (-25.288, 0.150, 554.337) asleep=True
+CARGO 108 1a4306ac822d4985ba23bd9751c4792b RailCoal(Clone) (-25.600, 0.150, 562.706) asleep=True
+CARGO 109 9fe9a1c9d4cc45d4826a75448a9a78da RailCoal(Clone) (-31.978, 0.150, 538.432) asleep=True
+CARGO 110 3caf02c16e1e40c7a7c029c62a5f4fa0 RailCoal(Clone) (37.616, 0.150, 519.496) asleep=True
+CARGO 111 94758e9a6eea42b49658438383f852d3 RailCoal(Clone) (-31.877, 0.150, 515.779) asleep=True
+CARGO 112 aa7633e042424b29a7f23e2b625980b7 RailCoal(Clone) (37.706, 0.150, 513.587) asleep=True
+CARGO 113 866b215ac7c4491da34ba1decda67bf9 RailCoal(Clone) (11.689, 1.000, 595.111) asleep=True
+CARGO 114 a23a192cd3604adfa37f12fc3d769de0 RailCoal(Clone) (-23.905, 1.035, 503.217) asleep=True
+CARGO 115 c5e74dd0b2124204a81fa36e17e40107 RailCoal(Clone) (39.049, 0.061, 733.584) asleep=True
+CARGO 116 361363d14bf1469298fa9be201d09b77 RailCoal(Clone) (42.291, 0.261, 719.489) asleep=True
+CARGO 117 aa02317ed69c442a88eb5bd83d4b9bc8 RailCoal(Clone) (17.680, 0.150, 796.750) asleep=True
+CARGO 118 c02ca00e5bf8408ba86f140221743946 RailCoal(Clone) (-15.350, 2.650, 819.250) asleep=True
+CARGO 119 a41427bbe8444b2ca508f12f49fad687 RailCoal(Clone) (32.840, 0.270, 775.550) asleep=True
+CARGO 120 53db04e3a22342d2ab343c1bfc597b2a RailCoal(Clone) (-25.800, -1.550, 815.100) asleep=True
+CARGO 121 9e3b965b9df44402bb0c60db0fe9a391 RailCoal(Clone) (-34.900, -1.550, 815.100) asleep=True
+CARGO 122 b5c09fc1303d451ba477437dc622fc91 RailCoal(Clone) (-25.600, -1.550, 818.400) asleep=True
+CARGO 123 d8a0209cd8f84e469f1675073dacbbaf RailCoal(Clone) (-32.277, 0.150, 732.120) asleep=True
+CARGO 124 f1f417123a77438da1a95e4f8b08adbf RailCoal(Clone) (17.450, 12.150, 918.900) asleep=True
+CARGO 125 b5517d0d27ab45c3a5cd18b355cba441 RailCoal(Clone) (-26.000, 0.750, 870.000) asleep=True
+CARGO 126 4fc3e50ae0c542ffa618aede1dacac7e RailCoal(Clone) (36.100, 8.150, 907.000) asleep=True
+CARGO 127 73282c515e8e480b91c1ce6a89fe38a3 RailCoal(Clone) (-16.800, 4.940, 908.000) asleep=True
+CARGO 128 6279c4af3ed340a7b87719776fa194cc RailCoal(Clone) (-26.000, 0.150, 891.000) asleep=True
+CARGO 129 6f70f817aa0948809318771a6dc7ae51 RailCoal(Clone) (24.000, 0.150, 869.978) asleep=True
+CARGO 130 ce1abbf7dfda456fa438b1480bc847a8 RailCoal(Clone) (20.500, 0.250, 915.500) asleep=True
+CARGO 131 fc37eb64f09544d89eb632ff30451ba4 RailCoal(Clone) (-25.800, 16.150, 914.850) asleep=True
+CARGO 132 ebf7b102de9048b895b3ec4bebf9ec43 RailCoal(Clone) (-32.550, 12.150, 948.200) asleep=True
+CARGO 133 fd8e8d22652d45e29a95ff885b478c70 RailCoal(Clone) (-41.000, 3.550, 638.000) asleep=True
+CARGO 134 8d2d4702cff642ce86c5265146257004 RailCoal(Clone) (-41.000, 0.350, 639.000) asleep=True
+CARGO 135 3f8631b36ea14b3a8b6860b3a19a4cf6 RailCoal(Clone) (13.806, 0.150, 660.432) asleep=True
+CARGO 136 d288d4ddc5b449c58a4d47bd45d9c2c6 RailCoal(Clone) (29.149, 0.150, 661.750) asleep=True
+CARGO 137 f8613bb24a9e4269a24f692bebbb4c77 RailCoal(Clone) (24.766, 0.150, 633.633) asleep=True
+CARGO 138 5f9aff1414db477598d8370f16c4ca92 RailCoal(Clone) (-42.800, 0.150, 647.000) asleep=True
+CARGO 139 115861c5ba27418584a4e894b1f1c12a RailCoal(Clone) (-17.000, 2.150, 1054.000) asleep=True
+CARGO 140 7a5d7c24c5ce4d1297f5b39428524852 RailCoal(Clone) (27.000, 2.150, 1047.000) asleep=True
+CARGO 141 f7f902c3489c4189b6eaf493f7b0cbf5 RailCoal(Clone) (-33.000, 4.150, 1056.000) asleep=True
+CARGO 142 4f515e37762d4a61a25d5fea923be451 RailCoal(Clone) (-17.000, 4.150, 1078.000) asleep=True
+CARGO 143 844a2d728f174a4fb66001a7d099b2eb RailCoal(Clone) (23.000, 4.150, 1072.000) asleep=True
+CARGO 144 2e4aba1a179d436784cf7a8c12960cc5 RailCoal(Clone) (17.000, 4.150, 1078.000) asleep=True
+ENEMY 145 RailSpider(Clone)
+ENEMY 146 RailHook(Clone)
+ENEMY 147 RailSmasher(Clone)
+ENEMY 148 RailBomber(Clone)
+ENEMY 149 RailBomber(Clone)
+ENEMY 150 RailSmasher(Clone)
+ENEMY 151 RailZombie(Clone)
+ENEMY 152 RailHook(Clone)
+ENEMY 153 RailSpider(Clone)
+ENEMY 154 RailZombie(Clone)
+ENEMY 155 RailSmasher(Clone)
+ENEMY 156 RailHook(Clone)
+ENEMY 157 RailSpider(Clone)
+ENEMY 158 RailSmasher(Clone)
+ENEMY 159 RailHook(Clone)
+ENEMY 160 RailBomber(Clone)
+ENEMY 161 RailBomber(Clone)
+ENEMY 162 RailSmasher(Clone)
+ENEMY 163 RailSpider(Clone)
+ENEMY 164 RailZombie(Clone)
+MIRROR (-6.54, 3.12, 78.24) texture=-21332710 near=True rendering=False
+MIRROR (-25.55, 2.32, 654.21) texture=-21332752 near=False rendering=False
+STORE Shared Store items=17 owned=skin_duck_quackbear:False,bag_quackbear:False,weapon_quackbear:False,skin_duck_huggy:False,bag_huggy:False,weapon_huggy:False,skin_duck_scrap_duck:False,bag_scrap_duck:False,weapon_scrap_duck:False
+STORE Departure Shop items=17 owned=
+STORE Shared Store items=17 owned=skin_duck_quackbear:False,bag_quackbear:False,weapon_quackbear:False,skin_duck_huggy:False,bag_huggy:False,weapon_huggy:False,skin_duck_scrap_duck:False,bag_scrap_duck:False,weapon_scrap_duck:False
+DISTANCE DISTANCE <size=160%>18 m</size>

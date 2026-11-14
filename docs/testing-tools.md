@@ -22,6 +22,9 @@ Unity MCP only reaches the main editor. `Assets/Editor/RailRemoteBridge.cs` (edi
 - Simulated-rig throttle injection (`SimulatedRigInput.InjectedInput.throttle`) toggles GO and can leave a GO request pending that fires later. Prefer `PhotonSession.SetTrainMoving` or the test-panel shortcuts.
 - MPPM clone gotcha: a virtual player can lack `Library/VP/<clone>/Library/ScriptAssemblies`. Unity's Macros type resolver then throws `DirectoryNotFoundException` from any `Type.GetType`, including Photon's `LoadBalancingPeer` constructor, which breaks `RailCrewReturn` in that clone. Create the empty folder. This is editor-only; player builds are unaffected.
 
+- Blocking modal dialogs stall Unity MCP with no error (30 min timeouts). Before a scenario start, save or clear a dirty open scene; first save a copy outside Assets if you did not create the change. Leaving a prefab stage that you edited from a command raises "Prefab Has Been Modified"; save the stage first, or call `SaveAsPrefabAsset` and leave the stage clean. A stuck dialog can be found and its button clicked from Windows (EnumWindows / BM_CLICK).
+- The shared rig is `NewPlayer`, not `DesktopPlayer`; place the player with `NewPlayer.instance.Warp`.
+
 Used for the [November 11 queue run](playtest-queue.md); evidence in `docs/validation/playtest-queue/2026-11-11-live-queue-run.txt`.
 
 ## Private startup timeout and sandbox retry — November 9, 2026

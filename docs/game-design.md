@@ -360,14 +360,14 @@ October 30 validation update: the [multiplayer stability pass](multiplayer-stabi
 
 Proposed pacing: a 12–18 minute expedition, approximately three scavenging stops, with quiet travel intervals. Exact length, difficulty, and location count require testing. No repeating day/night cycle is currently planned; nighttime plus a dawn finale is the proposed approach.
 
-## What we are leveraging from Duckz
-
 November 11 throttle trial: physical driving requires actively holding the handle
 forward, not merely keeping grip pressed. Attach the visible palm to the lever,
 close its fingers, constrain motion to the lever arc, and give forward-stop
 haptic/audio feedback. Pull-back cuts GO; release or excessive hand separation
 returns OFF. Existing keyboard T toggle remains a development convenience.
 Initial thresholds are tuning, not acceptance. See [trial](shared-rig.md#attached-throttle-trial--november-11).
+
+## What we are leveraging from Duckz
 
 ### User-reported existing capabilities
 - Working multiplayer and room codes entered through a pause menu.
@@ -459,12 +459,12 @@ Optional emergency fuel was discussed: wooden bats could burn for much less fuel
 - Minion and spider boarding use a separately baked train crawlgraph. Its pose and movement follow the train while aboard; defensive hits can knock it off. Other enemy types retain their existing restrictions until separately implemented and verified.
 - A down immediately launches Duckz's flare, with no intentional delay: temporary illumination and deterrence for susceptible enemies.
 - While downed, the local player sees Duckz's existing red vision overlay. It clears on revival or return to the compound.
-- Revive by holding a hand near a downed player for approximately three seconds. A rising-pitch sound marks progress; completion revives the player. No item or extra button.
+- Revive by holding a hand near a downed player for approximately three seconds. Raider Legends' rising-pitch sound marks progress; completion revives the player and plays its completion sound and particle burst on every client at that duck. Audio is positional for nearby observers as well as the rescuer and downed player. No item or extra button. See [revive feedback](revive-effects.md) for implementation and pending live acceptance.
 
 ### Proposed details requiring tuning
 - Downed players crawl slowly and cannot climb onto the train unaided.
 - Moving the hand away resets revive progress; multiple hands do not accelerate it.
-- Both rescuer and downed player hear progress.
+- Progress and completion sounds are spatially audible to nearby crew; all clients present the completion burst (confirmed November 12).
 - Brief post-revive protection prevents immediate repeated downing.
 - Readable attack windups and retreat feedback; avoid unavoidable hit chains.
 - Keep boundaries out of obvious player routes and give real breathing room after departure.
