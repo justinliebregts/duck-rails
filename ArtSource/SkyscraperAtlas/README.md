@@ -1,5 +1,14 @@
 # Skyscraper Works full-block atlas review — November 14, 2026
 
+**SUPERSEDED later November 14:** production was restored to original geometry
+and revised to 17 floors (37,184 triangles after the stack-grounding follow-up).
+These Blender,
+source JSON, review and atlas assets are historical and must not overwrite the
+current block. `production-state-before-reduction.json` archives the retired
+fingerprint. User approved the revised original geometry; the fresh
+triangle-preserving review is in `ArtSource/SkyscraperAtlasLowPoly`.
+[Current evidence](../../docs/validation/skyscraper-low-poly-atlas/README.md).
+
 **Production integration completed after user approval:** the original-GUID
 production prefab now uses the approved chunks, with the triangle count unchanged.
 Atlas material/textures/mesh container moved to `Assets/DuckRails/SkyscraperAtlas`;

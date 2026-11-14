@@ -1,5 +1,15 @@
 # Duck Rails — execution plan
 
+- [x] November 14: user approved reduced/grounded Skyscraper source; fresh Blender atlas/chunk review preserves 37,184 triangles exactly, including all 2,140 twelve-triangle parts. 2,789 -> 649 renderers, 619 atlas chunks and 29 repeat exceptions. Source gameplay/collision/lighting and 304 dependency hashes unchanged; eight matched views, mesh/UV checks, compilation and Console pass. [Evidence](validation/skyscraper-low-poly-atlas/README.md).
+- [x] November 14: user approved the low-poly conversion; integrated into original-GUID production prefab, retaining all 19,064 original object IDs, 3,011 colliders and approved lighting. Production/review comparison, 303 unchanged dependency hashes and fingerprint/bake guards pass. [Integration](validation/skyscraper-low-poly-atlas/production-integration.md).
+- [ ] Skyscraper low-poly production runtime/headset acceptance: queued for playtest.
+
+- [x] November 14: ground/vary all 50 Skyscraper pallet stacks and 50 loose pipe pieces; vary floor layouts and shelter stockpiles, repair southeast truck/formwork, delete northeast pipe. 52 candidates follow support; pools unchanged. 37,184 triangles; navigation/lighting rebuilt. 711 dressing checks pass; broader checks retain only the 18 baseline loot overlaps. [Evidence](validation/skyscraper-materials/README.md).
+- [x] User approved Skyscraper stack variation/contacts and source geometry; fresh Blender review completed above. Runtime/headset checks remain queued for playtest.
+
+- [x] November 14: restore Skyscraper original geometry, remove NW +16 m and SE +12/+16 m floors, retain skyline/crossings, simplify upper details and buried slab faces. 37,784 triangles; navigation/lighting rebuilt. 8,726 assertions pass; the same 18 documented ground-loot overlaps remain. [Evidence](validation/skyscraper-reduction/README.md).
+- [x] Revised Skyscraper source approved; fresh Blender review has no texture-repeat tessellation growth. Runtime/headset acceptance queued for playtest; previous production-atlas acceptance remains superseded.
+
 - [x] November 14: convert full Farm Silos compatible scenery into a Blender atlas and 117 spatial chunks, with isolated Unity review prefab/scene and 54 retained probe-lit corn/pond/horsetail renderers. Current edits, 1,434 colliders, gameplay/spawns/navigation and baked lighting retained. Saved preservation, exact mesh/lightmap and reopen checks, 734 dependency hashes and twelve paired views pass. [Evidence](validation/farm-silos-atlas/README.md).
 - [x] November 14: user approved Farm Silos visuals; integrate into original-GUID production prefab, retaining all 8,738 original object IDs, 1,434 colliders and 1,016 lighting bindings. Approved-review comparison, 733 unchanged dependency files, fingerprint and lighting guards pass. [Integration](validation/farm-silos-atlas/production-integration.md).
 - [ ] Farm Silos production atlas runtime/headset acceptance. Renderers 953 -> 171; whole-block triangles 149,978 -> 194,784. Queued for playtest; no device-performance claim.
@@ -10,7 +20,7 @@
 
 - [x] November 14: convert full Skyscraper Works compatible scenery into a Blender atlas and 394 spatial chunks, with a separate Unity review prefab/scene. Preserve current edits, layout/collision/gameplay/spawns/navigation, CutePixel sign and baked lighting. Saved preservation, exact mesh/lightmap checks, 354 dependency hashes and seven-view inspection pass. [Evidence](validation/skyscraper-atlas/README.md).
 - [x] November 14: user approved Skyscraper appearance and retained triangle count; integrate into original-GUID production prefab, preserving all 23,068 original object IDs, collision/gameplay and lighting. Saved-review comparison, 353 unchanged dependency files, build fingerprint and lighting-workflow guards pass. [Integration](validation/skyscraper-atlas/production-integration.md).
-- [ ] Skyscraper production atlas runtime/headset acceptance. Total renderers 3,404 -> 395; scenery triangles 47,996 -> 228,866. Queued for playtest; no new device-performance claim.
+- Superseded November 14: the 395-renderer / 228,866-triangle Skyscraper production atlas was retired for the user-requested source-geometry revision above. Its earlier authoring evidence remains historical.
 
 - [x] November 13: document the accepted Motel atlas workflow, conversion exceptions and reduced per-block testing policy. [Workflow](block-atlas-optimization.md).
 - [x] November 14: convert full Convenience Store compatible static scenery to a Blender atlas and 285 spatial chunks, import a separate Unity review, preserve textured HDR neon/animated brushes/collision/gameplay and baked lighting. Saved-asset, exact geometry, 1,378 dependency hash checks and visual inspection pass; [evidence](validation/convenience-store-atlas/README.md).

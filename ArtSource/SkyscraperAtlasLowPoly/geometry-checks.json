@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "source_parts": 2788,
+  "twelve_triangle_parts_preserved": 2140,
+  "triangles_compared": 37184,
+  "chunks": 648,
+  "max_corner_errors": {
+    "position": 3.7892578124143483e-06,
+    "normal": 8.931121830979549e-08,
+    "lightmap_uv": 2.9795738210047773e-08,
+    "repeat_phase": 1.2988281241632649e-06
+  },
+  "source_surface_area": 76323.4905497247,
+  "export_surface_area": 76323.49542483209,
+  "relative_area_error": 6.38742719540282e-08,
+  "checks": "Every original triangle corner retained in order with original winding, normal, lightmap UV, renderer settings and lightmap identity. Texture repeat phase differs only by one constant integer offset per triangle; UV gradients preserved. No generated cuts or omitted triangles."
+}

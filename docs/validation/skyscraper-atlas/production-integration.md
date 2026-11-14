@@ -1,5 +1,13 @@
 # Approved Skyscraper production integration — November 14, 2026
 
+**Superseded later November 14:** user requested a floor/layout and polygon
+reduction, restoring source rendering and retiring these chunks. The current
+production block has 17 floors / 37,184 triangles after the stack-grounding
+follow-up; tall framing retained. The
+fingerprint is archived as `production-state-before-reduction.json`. This document
+is historical evidence, not the current production state. User reviews the new
+geometry before another Blender pass. [Current revision](../skyscraper-reduction/README.md).
+
 User approved the appearance and explicitly chose to keep the existing triangle
 count. Integrated on main into `Assets/DuckRails/Blocks/skyscraper-works-v1.prefab`.
 Production GUID **2a747f5f81583b74a873a4c2702813af** and metadata are unchanged.

@@ -1,5 +1,60 @@
 # Skyscraper Works — V2 layout
 
+## Triangle-preserving Blender review — November 14, 2026
+
+User approved the revised floors, framing and grounded/varied materials below.
+Fresh conversion in `Assets/DuckRails/SkyscraperLowPolyAtlasReview` retains
+**37,184 triangles exactly** while reducing enabled renderers **2,789 -> 649**.
+619 atlas chunks use repeated texture pixels rather than subdivided cube faces;
+29 large-repeat chunks retain four original materials. All 2,140 twelve-triangle
+source parts stay at 12 triangles. The CutePixel sign is unchanged.
+
+All source transforms, 3,011 colliders, gameplay/spawns/navigation and baked lighting
+are preserved. User approved the conversion; the production catalogue prefab now uses these
+chunks with its original GUID. Separate Unity review and Blender sources remain
+available. [Integration/recovery](validation/skyscraper-low-poly-atlas/production-integration.md).
+[Checks, paths and visual evidence](validation/skyscraper-low-poly-atlas/README.md).
+Runtime/headset acceptance remains queued for playtest.
+
+## Material grounding and variation — November 14, 2026
+
+User's screenshot follow-up is installed: all 50 tower pallets have supported
+one-to-four-layer stacks, varied rotations/dimensions and distinct arrangements
+across all 17 floors. Total layers 150 -> 126; the 50 loose pipe pieces also rest
+on the actual floors. Southeast truck/formwork layers touch their support; eight
+shelter stocks vary. The northeast concrete pipe pair is removed from rendering
+and collision; other pipe locations remain. 52 loot candidates follow changed
+supporting materials; pools and per-run rules stay 202/192/23 and unchanged.
+
+Current source geometry is **37,184 triangles / 2,789 renderers**, retaining the
+floor cuts and tall framing below. Navigation/lighting rebuilt. All 711 dressing
+checks pass; broader checks pass apart from the same 18 known ground-loot overlaps.
+[Evidence and close-ups](validation/skyscraper-materials/README.md).
+User approved this source and the new Blender pass above is ready for review;
+runtime and headset checks are queued for playtest.
+
+## Current source geometry revision — November 14, 2026
+
+User requested removing NW/Tower C's +16 m floor and SE/Tower B's +12/+16 m
+floors while retaining the tall framing. Installed from the preserved original
+meshes, retiring the production atlas. A/D retain five floors; B has three and C
+four. All 60 original skyline pieces and five crossings retain their transforms.
+Outgoing stairs and affected spawn candidates removed; rooftop light stands moved
+onto the new top floors, and reverb/navigation/lighting updated.
+
+Upper exterior midrails and two of each four upper pipe pieces removed; all top
+rails/posts, shaft/bridge/stair rails and exposed slab undersides retained. Internal
+slab-side faces removed. **37,784 triangles**, versus 228,866 in the retired atlas
+and 47,996 original; 2,813 unchunked mesh renderers. Candidate pools now **202 coal /
+192 gold / 23 enemies**, with per-run tuning unchanged. 8,726 focused assertions
+pass; 18 previously documented ground-floor loot overlaps remain unchanged.
+All 17 playable floors have connected ground navigation; full crew-size selection
+capacity passes. [Detailed evidence/review images](validation/skyscraper-reduction/README.md).
+
+User approved this source and requested the new triangle-preserving conversion
+above. Runtime/headset checks are queued for playtest. The atlas notes below
+describe the superseded high-poly version, retained for history and recovery.
+
 ## Full-block Blender atlas review — November 14, 2026
 
 Applied the authorized Motel workflow to the current saved block, including local

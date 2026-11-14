@@ -15,10 +15,10 @@ public static class RailSkyscraperAtlasProduction
 {
     public const string Prefab = "Assets/DuckRails/Blocks/skyscraper-works-v1.prefab";
     public const string Visual = "Optimized Skyscraper Works atlas";
-    const string Review = "Assets/DuckRails/SkyscraperAtlasReview/Skyscraper-FullAtlas-Review.prefab";
-    const string ReviewVisual = "Blender full Skyscraper - atlas review";
-    const string AssetsFolder = "Assets/DuckRails/SkyscraperAtlas";
-    const string Art = "ArtSource/SkyscraperAtlas/";
+    const string Review = "Assets/DuckRails/SkyscraperLowPolyAtlasReview/Skyscraper-LowPoly-Atlas-Review.prefab";
+    const string ReviewVisual = "Blender low-poly Skyscraper - atlas review";
+    const string AssetsFolder = "Assets/DuckRails/SkyscraperLowPolyAtlas";
+    const string Art = "ArtSource/SkyscraperAtlasLowPoly/";
     const string StatePath = Art + "production-state.json";
     [Serializable] public class State { public string guid, fingerprint; }
 
@@ -65,16 +65,16 @@ public static class RailSkyscraperAtlasProduction
         for (int i = 0; i < UnityEngine.SceneManagement.SceneManager.sceneCount; i++)
             if (UnityEngine.SceneManagement.SceneManager.GetSceneAt(i).isDirty)
                 throw new InvalidOperationException("Preserve pending scene edits before integrating saved assets.");
-        var data = JsonUtility.FromJson<RailSkyscraperAtlasReview.Payload>(File.ReadAllText(Art + "unity-meshes.json"));
+        var data = JsonUtility.FromJson<RailSkyscraperLowPolyAtlasReview.Payload>(File.ReadAllText(Art + "unity-meshes.json"));
         if (File.Exists(StatePath) || AssetDatabase.GetAssetDependencyHash(Prefab).ToString() != data.sourceHash)
             throw new InvalidOperationException("Already integrated or source changed since review. Inspect before continuing.");
         File.Copy(Prefab, Art + "pre-integration.prefab", false);
         File.Copy(Prefab + ".meta", Art + "pre-integration.prefab.meta.txt", false);
         string guid = AssetDatabase.AssetPathToGUID(Prefab);
-        if (!AssetDatabase.IsValidFolder(AssetsFolder)) AssetDatabase.CreateFolder("Assets/DuckRails", "SkyscraperAtlas");
+        if (!AssetDatabase.IsValidFolder(AssetsFolder)) AssetDatabase.CreateFolder("Assets/DuckRails", "SkyscraperLowPolyAtlas");
         foreach (string name in new[] { "Skyscraper_BaseColor.png", "Skyscraper_Emission.png", "Skyscraper_MetallicSmoothness.png", "SkyscraperAtlas.mat", "SkyscraperAtlasMeshes.asset" })
         {
-            string error = AssetDatabase.MoveAsset("Assets/DuckRails/SkyscraperAtlasReview/" + name, AssetsFolder + "/" + name);
+            string error = AssetDatabase.MoveAsset("Assets/DuckRails/SkyscraperLowPolyAtlasReview/" + name, AssetsFolder + "/" + name);
             if (!string.IsNullOrEmpty(error)) throw new IOException(error);
         }
         var reviewed = AssetDatabase.LoadAssetAtPath<GameObject>(Review);
@@ -111,7 +111,7 @@ public static class RailSkyscraperAtlasProduction
         if (path != Prefab) return;
         var root = AssetDatabase.LoadAssetAtPath<GameObject>(path);
         if (root && root.transform.Find(Visual))
-            throw new InvalidOperationException("Skyscraper Works uses approved derived atlas UVs. Restore original rendering/bindings and regenerate the atlas for a new bake; see ArtSource/SkyscraperAtlas/README.md. Existing lighting must not be re-exported over the integrated prefab.");
+            throw new InvalidOperationException("Skyscraper Works uses approved derived atlas UVs. Restore original rendering/bindings and regenerate the atlas for a new bake; see ArtSource/SkyscraperAtlasLowPoly/README.md. Existing lighting must not be re-exported over the integrated prefab.");
     }
 
     [MenuItem("Duck Rails/Authoring/Skyscraper Works/Validate production atlas")]
@@ -124,15 +124,16 @@ public static class RailSkyscraperAtlasProduction
         var state = JsonUtility.FromJson<State>(File.ReadAllText(StatePath));
         if (state.guid != AssetDatabase.AssetPathToGUID(Prefab) || state.fingerprint != Fingerprint(root))
             throw new BuildFailedException("Skyscraper Works atlas/source/lighting changed since approved integration. Reconcile and regenerate derived visuals before building.");
-        var data = JsonUtility.FromJson<RailSkyscraperAtlasReview.Payload>(File.ReadAllText(Art + "unity-meshes.json"));
+        var data = JsonUtility.FromJson<RailSkyscraperLowPolyAtlasReview.Payload>(File.ReadAllText(Art + "unity-meshes.json"));
         if (data.sourceKeys.Any(k => Resolve(root.transform, k).GetComponent<MeshRenderer>().enabled)) throw new BuildFailedException("Duplicate source rendering.");
         var chunks = visual.GetComponentsInChildren<MeshRenderer>(true);
         var lighting = root.GetComponent<RailBakedBlockLighting>();
-        if (chunks.Length != 394 || chunks.Any(r => !r.enabled || !r.sharedMaterial || !r.GetComponent<MeshFilter>().sharedMesh) ||
-            chunks.Select(r => r.sharedMaterial).Distinct().Count() != 1 || lighting.bindings.Length != 3797 ||
-            lighting.bindings.Any(b => !b.renderer || !b.color) || lighting.bindings.Select(b => b.renderer).Distinct().Count() != 3797)
+        if (chunks.Length != 648 || chunks.Any(r => !r.enabled || !r.sharedMaterial || !r.GetComponent<MeshFilter>().sharedMesh) ||
+            chunks.Select(r => r.sharedMaterial).Distinct().Count() != 5 || lighting.bindings.Length != 3436 ||
+            chunks.Sum(r => r.GetComponent<MeshFilter>().sharedMesh.triangles.Length / 3) != 37184 ||
+            lighting.bindings.Any(b => !b.renderer || !b.color) || lighting.bindings.Select(b => b.renderer).Distinct().Count() != 3436)
             throw new BuildFailedException("Invalid Skyscraper Works atlas chunks or lighting bindings.");
-        Debug.Log("Skyscraper Works production atlas authoring guard passed: 394 chunks, 3403 disabled originals, 3797 valid bindings.");
+        Debug.Log("Skyscraper Works production atlas authoring guard passed: 648 chunks, 2788 disabled originals, 3436 valid bindings, 37184 triangles.");
     }
 }
 

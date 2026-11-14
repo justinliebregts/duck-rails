@@ -1,5 +1,27 @@
 # Duck Rails — V1 game design
 
+November 14 Skyscraper follow-up: user approved the revised floors and grounded,
+varied stacks. Fresh Blender atlas/chunk review keeps **37,184 triangles exactly**
+and reduces enabled renderers **2,789 -> 649**. Texture repetition is baked into
+atlas pixels; oversized repeats retain four original materials. Collision,
+lighting, spawns and navigation remain unchanged. User approved this conversion;
+it is integrated into production with the original GUID. Runtime acceptance
+remains queued for playtest. [Evidence](validation/skyscraper-low-poly-atlas/README.md).
+
+November 14 Skyscraper material follow-up: user requested grounding/variation of
+all stacks and removal of the northeast concrete pipe. Installed 50 grounded
+one-to-four-layer pallet stacks with different arrangements on all 17 floors,
+fixed southeast piles and loose-pipe grounding, removed the northeast pipe, and
+updated affected loot/navigation/lighting. Current source: 37,184 triangles;
+user approved this source for the new Blender pass above. [Evidence](validation/skyscraper-materials/README.md).
+
+November 14 Skyscraper revision supersedes the earlier retained-atlas decision:
+user approved removing NW's top floor and SE's top two floors while keeping tall
+framing. Restored and simplified original geometry: 17 playable floors, 37,784
+triangles, unchanged bridge/crane routes and per-run spawn rules. Navigation and
+lighting rebuilt; 18 known ground-loot overlaps remain. User reviews this version
+before another Blender atlas/chunk pass. [Current layout/evidence](skyscraper-layout.md#current-source-geometry-revision--november-14-2026).
+
 November 14 Farm Silos atlas: full-block Blender source and isolated Unity review
 imported with 117 shared-material chunks and 54 retained probe-lit exceptions.
 Current edits, collision, gameplay/spawns/navigation and baked lighting preserved.

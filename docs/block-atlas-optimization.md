@@ -1,5 +1,58 @@
 # Blender atlas optimization workflow
 
+November 14 Skyscraper follow-up: user approved reduced/grounded source and
+authorized a fresh Blender pass. New isolated review preserves **37,184 triangles
+exactly**, with 648 chunks plus the sign (2,789 -> 649 renderers). Repeated texture
+pixels fit into the atlas without splitting geometry; 29 large-repeat chunks keep
+four original materials. All 2,140 twelve-triangle source pieces remain unchanged.
+The 228,866-triangle pass is retired and its fingerprint obsolete. The user
+approved the new conversion and requested this strategy become the documented
+default. The accepted conversion is integrated into the original-GUID production
+prefab; runtime checks remain queued.
+[Evidence and new workflow](validation/skyscraper-low-poly-atlas/README.md).
+
+## Confirmed default — preserve triangles, repeat texture pixels
+
+Use the accepted Skyscraper strategy for future block optimization. **Atlas
+conversion must not add triangles to simple cubes, pillars, rails or other source
+geometry.** A 12-triangle cube stays 12 triangles. Treat intentional geometry
+changes as separate work, not a side effect of atlas authoring.
+
+1. Start from the current approved original meshes, not a previously tessellated
+   atlas. Record source counts per part and for the whole block before conversion.
+2. Inspect UV spans after applying the original material scale/offset. Allocate
+   bounded atlas tiles containing multiple repeats of the original texture pixels
+   at native texel density. Add wrapping padding around each repeated tile.
+3. Remap each triangle with one constant integer UV offset so it fits its tile.
+   Preserve UV gradients and repeat phase; do not apply `frac` independently to
+   vertices, stretch the pattern to fit, or clip triangles at texture boundaries.
+4. If a source part needs too many repeats for the chosen texture budget, retain
+   its original repeating material and UVs. Combine compatible exceptions into
+   spatial chunks where useful. Several shared materials are acceptable; do not
+   inflate atlas memory or mesh complexity just to force a single material.
+5. Chunk by spatial cell, lightmap identity, renderer settings and material.
+   Respect floor/culling boundaries and keep oversized sources separate. Preserve
+   normals, winding, UV2/lightmap scale-offset, collision and gameplay data.
+6. Fail conversion/import if triangle counts grow. Independently compare exported
+   triangle corners with source geometry, including texture phase/gradients and
+   UV2. Record vertex counts separately: UV/normal seams may require vertices
+   without creating triangles. Check preservation and matched close/distant views
+   in Unity before accepting the conversion.
+
+Skyscraper demonstrates **37,184 -> 37,184 triangles**, 2,789 -> 649 renderers,
+and all 2,140 twelve-triangle source parts preserved. One 1024-square atlas serves
+2,759 parts; 29 large-repeat parts use four original materials. Its 12 x 4 x 12 m
+cells preserve the tower floor divisions. Choose tile repetitions, atlas size and
+cell dimensions from each block's actual inputs; these numbers are not universal
+defaults. Renderer reduction alone is not measured device performance.
+
+Primary reference: `ArtSource/SkyscraperAtlasLowPoly/build_atlas.py`,
+`verify_export.py`, `manifest.json`, `part-checks.json`, and
+`Assets/Editor/RailSkyscraperLowPolyAtlasReview.cs`. The earlier Motel/Skyscraper
+triangle-clipping builders below are historical references, not templates for
+new geometry conversion. Existing blocks are not automatically reprocessed by
+this policy change; work only on the block requested by the user.
+
 ## Confirmed direction — November 13, 2026
 
 The user accepted the Motel optimization and authorized applying the approach to
@@ -95,10 +148,13 @@ color-space handling and HDR emission. Motel used skyline packing, four-pixel
 padding, Point sampling and an emission multiplier of eight. Choose atlas size and
 HDR range from actual inputs; do not force 1024 or eight when data would be lost.
 
-Clip repeated UV triangles at tile boundaries before atlas remapping. Interpolate
-position, normal and UV2; preserve winding and texture repetition. Check per-part
-surface area and record triangle/vertex growth. Weld only matching position, normal
-and both UVs. Do not decimate, alter silhouettes or replace collision geometry.
+Prefer repeating texture pixels inside atlas tiles and retaining large-repeat
+material exceptions, preserving triangle topology. Skyscraper's low-poly builder
+demonstrates this with native texel density and no triangle growth. The historical
+Motel clip-at-tile-boundaries approach can multiply cube geometry and is not the
+default for new passes. Preserve winding, normals, texture gradients and UV2;
+check every source contribution and surface area. Weld only matching position,
+normal and both UVs. Do not decimate, alter silhouettes or replace collision geometry.
 
 Group by spatial cell, baked-lightmap identity and compatible renderer settings.
 Start with Motel's 12 x 6 x 12 m cells; retain oversized sources separately and
@@ -190,7 +246,14 @@ bundle art fixes. Start with the full block; no wing pilot or comparison APK nee
   integrated into the original-GUID production prefab November 14, retaining all
   original object IDs/gameplay/collision and baked lighting. Runtime/headset
   validation queued for playtest. [Integration and recovery](validation/convenience-store-atlas/production-integration.md).
-- Skyscraper Works: full-block Blender asset and isolated Unity review prefab/scene
+- Skyscraper Works: user approved the reduced floors, grounded/varied stacks and
+  fresh triangle-preserving atlas. **Current production: 37,184 triangles,
+  649 renderers**, with 619 atlas chunks, 29 repeat exceptions and CutePixel sign.
+  All 19,064 original source object IDs and 3,011 colliders retained; 3,436 lighting
+  bindings match the review. Authoring/integration checks pass; runtime/headset
+  checks queued. [Current integration](validation/skyscraper-low-poly-atlas/production-integration.md).
+  **The following earlier high-poly conversion was retired November 14.**
+  Historical conversion: full-block Blender asset and isolated Unity review prefab/scene
   imported November 14 from the current saved prefab, including local edits.
   3,403 compatible source renderers / 13 materials -> 394 chunks / one shared
   material, plus the original CutePixel sign (3,404 -> 395 total renderers).
