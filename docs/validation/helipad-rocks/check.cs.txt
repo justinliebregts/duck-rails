@@ -1,0 +1,46 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using Game.AI;
+internal class CommandScript : IRunCommand
+{
+    public void Execute(ExecutionResult result)
+    {
+        var root = AssetDatabase.LoadAssetAtPath<GameObject>(RailHelipadPreview.Path);
+        var rocks = root.transform.Find("Env/Trees and rocks").Cast<Transform>().Where(t => t.name == "Rock").ToArray();
+        if (rocks.Length != 14) throw new Exception("Missing rock");
+        var lighting = root.GetComponent<RailBakedBlockLighting>();
+        foreach (var t in rocks)
+        {
+            var mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            var collider = t.GetComponent<MeshCollider>();
+            if (!collider || !collider.convex || collider.sharedMesh != mesh || t.GetComponent<SphereCollider>()) throw new Exception("Rock collision mismatch");
+            if (mesh.triangles.Length / 3 > 24 || mesh.uv2.Length != mesh.vertexCount) throw new Exception("Complexity/lightmap UV failure");
+            var vertices = mesh.vertices; var normals = mesh.normals; var indices = mesh.triangles;
+            var edges = new Dictionary<string, int>();
+            for (int i = 0; i < indices.Length; i += 3)
+            {
+                var a = vertices[indices[i]]; var b = vertices[indices[i+1]]; var c = vertices[indices[i+2]];
+                var normal = Vector3.Cross(b-a,c-a).normalized;
+                if (normal.sqrMagnitude < .99f || Vector3.Dot(normal, (a+b+c)/3) <= 0) throw new Exception("Degenerate/inverted rock face");
+                for (int j = 0; j < 3; j++)
+                {
+                    if (Vector3.Dot(normals[indices[i+j]],normal) < .999f) throw new Exception("Smoothed rock normal");
+                    var start = vertices[indices[i+j]].ToString("F6"); var end = vertices[indices[i+(j+1)%3]].ToString("F6");
+                    string key = string.CompareOrdinal(start,end) < 0 ? start+end : end+start;
+                    edges[key] = edges.TryGetValue(key, out int count) ? count+1 : 1;
+                }
+            }
+            if (edges.Values.Any(n => n != 2)) throw new Exception("Non-manifold/open rock hull");
+            if (!t.GetComponent<Game.Audio.AudioSurface>() || lighting.bindings.Count(b => b.renderer == t.GetComponent<Renderer>() && b.color) != 1) throw new Exception("Missing rock audio/lightmap");
+        }
+        var block = root.GetComponent<RailBlock>();
+        if (block.spawnCandidates.coal.Length != 21 || block.spawnCandidates.gold.Length != 21 || block.coalCount != 6 || block.goldCount != 2) throw new Exception("Loot changed");
+        if (lighting.bindings.Length != 216 || lighting.bindings.Any(b => !b.renderer || !b.color)) throw new Exception("Bad block lighting");
+        var message = "PASS: 14 jagged rocks, " + rocks.Sum(t => t.GetComponent<MeshFilter>().sharedMesh.triangles.Length/3) + " triangles total; three closed convex meshes with outward flat normals and UV0/UV1; matching convex MeshColliders, retained rock audio and valid baked lighting. 42 loot candidates and 6/2 counts retained; 216 block lighting bindings; navigation " + CrawlGraph.Load(block.graph).NodeCount + " nodes. Edit Mode only; natural contact and headset appearance queued.\n";
+        File.WriteAllText("docs/validation/helipad-rocks/checks.txt", message); result.Log(message);
+    }
+}

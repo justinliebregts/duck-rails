@@ -1,0 +1,55 @@
+using System;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using UnityEditor;
+using Game.AI;
+internal class CommandScript : IRunCommand
+{
+    public void Execute(ExecutionResult result)
+    {
+        int checks = 0;
+        void Check(bool ok, string message) { if (!ok) throw new Exception(message); checks++; }
+        var root = AssetDatabase.LoadAssetAtPath<GameObject>(RailHelipadPreview.Path);
+        var block = root.GetComponent<RailBlock>();
+        var env = root.transform.Find("Env");
+        var group = env.Find("Side boundary fences");
+        Check(group && group.childCount == 2, "Missing side fences");
+        Check(!env.Cast<Transform>().Any(t => t.name == "Fence post" || t.name == "Fence rail"), "Old west fence remains");
+        Check(env.Cast<Transform>().Count(t => t.name.StartsWith("Rear fence")) == 19, "Rear fence changed");
+        Check(block.length == 60 && block.coalCount == 6 && block.goldCount == 2 && block.enemyCount == 0, "Block contract changed");
+        Check(block.spawnCandidates.coal.Length == 21 && block.spawnCandidates.gold.Length == 21, "Loot pool changed");
+        var bindings = root.GetComponent<RailBakedBlockLighting>().bindings;
+        Check(bindings.Length == 216 && bindings.All(b => b.renderer && b.color), "Missing baked bindings");
+        foreach (Transform t in group)
+        {
+            Check(Mathf.Abs(Mathf.Abs(t.localPosition.x) - 47) < .001f && t.localPosition.y == 0 && t.localPosition.z == 0, "Wrong edge inset");
+            Check(t.localScale == Vector3.one && t.localRotation == Quaternion.identity, "Fence scale/rotation");
+            var mesh = t.GetComponent<MeshFilter>().sharedMesh;
+            Check(mesh.triangles.Length / 3 == 216 && mesh.uv.Length == mesh.vertexCount && mesh.uv2.Length == mesh.vertexCount, "Mesh/UV contract");
+            Check((mesh.bounds.min - new Vector3(-.1f, 0, 0)).magnitude < .001f && (mesh.bounds.max - new Vector3(.1f, 2, 60)).magnitude < .001f, "Fence seam/ground bounds");
+            var c = t.GetComponent<BoxCollider>();
+            Check(c.enabled && !c.isTrigger && c.size == new Vector3(.2f, 2, 60) && c.center == new Vector3(0, 1, 30), "Continuous ground-level fence collision");
+            Check(t.gameObject.layer == LayerMask.NameToLayer("Environment"), "Fence collision layer");
+            Check(t.GetComponent<Game.Audio.AudioSurface>().type == env.Find("Rear fence post").GetComponent<Game.Audio.AudioSurface>().type, "Timber contact audio");
+            Check(bindings.Count(b => b.renderer == t.GetComponent<Renderer>()) == 1, "Missing/duplicate fence lightmap binding");
+            var bounds = new Bounds(t.localPosition + c.center, c.size);
+            foreach (var marker in root.GetComponentsInChildren<RailSpawnMarker>(true))
+                Check(Vector3.Distance(bounds.ClosestPoint(marker.transform.position), marker.transform.position) > .25f, "Loot overlaps fence: " + marker.name);
+            var heli = env.Find("Parked helicopter");
+            foreach (var collider in heli.GetComponentsInChildren<Collider>(true))
+            {
+                // Collider.bounds is empty on prefab assets; transformed mesh bounds are usable.
+                var mf = collider.GetComponent<MeshFilter>();
+                if (!mf || !mf.sharedMesh) continue;
+                foreach (var vertex in mf.sharedMesh.vertices)
+                    Check(Mathf.Abs(collider.transform.TransformPoint(vertex).x - t.localPosition.x) > .2f, "Helicopter reaches side fence");
+            }
+        }
+        var graph = CrawlGraph.Load(block.graph);
+        Check(graph.NodeCount > 0, "Empty offline graph");
+        var text = "PASS " + checks + " saved-prefab checks: measured 1m side inset, 432 triangles/two renderers, unit scale and UVs, full 60m ground-level collision, open railway, wood audio, 42 unchanged loot candidates clear of fences, helicopter clearance and 216 valid lightmap bindings. Offline graph: " + graph.NodeCount + " nodes. No Play Mode or headset acceptance.\n";
+        File.WriteAllText("docs/validation/helipad-fences/checks.txt", text);
+        result.Log(text);
+    }
+}

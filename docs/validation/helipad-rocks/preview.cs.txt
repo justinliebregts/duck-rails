@@ -1,0 +1,43 @@
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using System.IO;
+internal class CommandScript : IRunCommand
+{
+    public void Execute(ExecutionResult result)
+    {
+        var scene = EditorSceneManager.NewPreviewScene();
+        var parent = new GameObject("Rock asset preview"); SceneManager.MoveGameObjectToScene(parent, scene);
+        RenderTexture rt = null; Texture2D tex = null; Camera camera = null;
+        var previous = RenderTexture.active;
+        try
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                var go = new GameObject("Rock " + i); go.transform.SetParent(parent.transform, false);
+                go.transform.localPosition = new Vector3((i-1)*2.3f, .45f, 0); go.transform.localScale = new Vector3(1.5f, .9f, 1.3f);
+                go.AddComponent<MeshFilter>().sharedMesh = AssetDatabase.LoadAssetAtPath<UnityEngine.Mesh>("Assets/DuckRails/HelipadPreview/Jagged-rock-"+(i+1)+".asset");
+                go.AddComponent<MeshRenderer>().sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/CampgroundGreybox/Quackville rock.mat");
+            }
+            var lg = new GameObject("Preview light"); lg.transform.SetParent(parent.transform, false); lg.transform.rotation = Quaternion.Euler(35,-25,0);
+            var light = lg.AddComponent<Light>(); light.type = LightType.Directional; light.intensity = 2;
+            var cg = new GameObject("Preview camera"); cg.transform.SetParent(parent.transform, false); camera = cg.AddComponent<Camera>(); camera.scene = scene;
+            camera.transform.position = new Vector3(1.8f,3,-7); camera.transform.LookAt(new Vector3(0,.3f,0));
+            camera.orthographic = true; camera.orthographicSize = 2.4f; camera.clearFlags = CameraClearFlags.SolidColor;
+            camera.backgroundColor = new Color(.16f,.19f,.23f); camera.nearClipPlane = .05f; camera.farClipPlane = 30;
+            rt = new RenderTexture(1500,700,24); camera.targetTexture = rt; camera.Render(); RenderTexture.active = rt;
+            tex = new Texture2D(1500,700,TextureFormat.RGB24,false); tex.ReadPixels(new Rect(0,0,1500,700),0,0); tex.Apply();
+            File.WriteAllBytes("docs/validation/helipad-rocks/variants.png", tex.EncodeToPNG());
+            result.Log("Saved rock variants preview; isolated scene and render resources cleaned up.");
+        }
+        finally
+        {
+            if (camera) camera.targetTexture = null;
+            RenderTexture.active = previous;
+            EditorSceneManager.ClosePreviewScene(scene);
+            if (tex) Object.DestroyImmediate(tex);
+            if (rt) Object.DestroyImmediate(rt);
+        }
+    }
+}

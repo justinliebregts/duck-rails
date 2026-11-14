@@ -1,5 +1,11 @@
 # Duck Rails — execution plan
 
+- [x] November 14: replace all 14 midpoint helipad oval rocks with jagged low-poly meshes and matching convex collision (10,752 -> 328 triangles); preserve placements, rebuild navigation/lighting and pass editor/preservation checks. See [evidence](validation/helipad-rocks/README.md).
+- [ ] Helipad rocks: natural contact and nighttime/headset appearance, queued with the midpoint fence entry.
+
+- [x] November 14: install midpoint helipad timber side fences at the standard 1 m inset; rebuild navigation/lighting and pass saved-prefab clearance/reference checks. See [evidence](validation/helipad-fences/README.md).
+- [ ] Midpoint fences: natural contact, route seams, nighttime/headset readability and real-client loading; queued for playtest.
+
 - [x] November 14: user approved reduced/grounded Skyscraper source; fresh Blender atlas/chunk review preserves 37,184 triangles exactly, including all 2,140 twelve-triangle parts. 2,789 -> 649 renderers, 619 atlas chunks and 29 repeat exceptions. Source gameplay/collision/lighting and 304 dependency hashes unchanged; eight matched views, mesh/UV checks, compilation and Console pass. [Evidence](validation/skyscraper-low-poly-atlas/README.md).
 - [x] November 14: user approved the low-poly conversion; integrated into original-GUID production prefab, retaining all 19,064 original object IDs, 3,011 colliders and approved lighting. Production/review comparison, 303 unchanged dependency hashes and fingerprint/bake guards pass. [Integration](validation/skyscraper-low-poly-atlas/production-integration.md).
 - [ ] Skyscraper low-poly production runtime/headset acceptance: queued for playtest.

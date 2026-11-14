@@ -8,6 +8,7 @@ Established November 11, 2026 at the user's request, measured from the saved Far
 - Follow ground elevation and leave no gaps beneath the collision. Keep railway entry/exit open. A side-fence request means the two long lateral edges, not end caps across the railway.
 - Default continuous containment walls span the full block length. Farm's existing decorative fence runs Z2..158 on a 160 m block; that 2 m end setback is a measured farm detail, not a mandatory gap in future containment walls. Preserve flat ground at seams and avoid projecting geometry beyond the block.
 - Height/material are task-specific. For Skyscraper Works the user requested concrete at approximately 3 m high; installed as two 3 m-high, 0.5 m-thick solid boxes, Z0..160.
+- November 14 midpoint helipad: 2 m timber fences at X +/-47, full Z0..60, 0.2 m-wide posts/collision; retained rear decoration and open track ends. See [helipad evidence](validation/helipad-fences/README.md).
 - **No stretched pixel patterns:** bake dimensions into the mesh and project UV0 in world-sized units on each face (current Quackville concrete: one repeat per 3 m on both axes, Repeat wrap). Keep object scale at one; use separate nonoverlapping UV1 for lightmaps. Check horizontal and vertical texel density and end/top faces. Do not stretch a unit-cube texture over the entire wall.
 - Check collision, spawn overlap, navigation, railway clearance, baked lighting and transitions. Gameplay/headset acceptance is queued under the project playtest workflow.
 

@@ -43,6 +43,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Midpoint helipad side fences — queued 2026-11-14
+- Rock follow-up: user approved fence appearance; replaced all 14 oval rocks with three jagged, flat-shaded meshes and matching convex collision. 10,752 -> 328 triangles; all transforms, shop/loot and fence geometry retained. Navigation/lighting rebuilt (7,976 nodes / 216 bindings), mesh/collision/reference and preservation checks pass. [Rock evidence](validation/helipad-rocks/README.md). Include rock hand/body/loose-item contact, ground seating and nighttime/headset silhouette in this entry's live checks.
+- Commit(s): see git log "Add helipad side fences and jagged low-poly rocks".
+- Changed: two 2 m timber side fences at X +/-47 (1 m centerline inset), full Z0..60; replace the old partial west fence. Open railway ends and existing rear decorative fence retained. Collision/audio, offline navigation and baked lighting updated.
+- Cheap checks: saved-prefab checks pass for edge/seam bounds, UVs, 432 triangles/two renderers, continuous ground-level collision, timber audio, 42 retained loot candidates clear of fences, helicopter clearance and 216 valid lightmap bindings. Navigation rebuilt to 8,023 nodes; error Console empty. [Evidence](validation/helipad-fences/README.md).
+- Setup: requested queue run, normal expedition midpoint or Test Block Order; one client for traversal/lighting, two clients including late join for agreement.
+- Check: both fences render and block passage without gaps below ground; railway entry/exit and helicopter/shop access remain clear; no missing lighting at translated route placement or block transitions; loot stays reachable.
+- Needs human: natural hand/body contact, night readability and edge/seam appearance in headset.
+- Priority: normal.
+
 ### Farm Silos production atlas integration — queued 2026-11-14
 - Commit(s): see git log "Integrate approved Farm Silos atlas"; user-approved appearance integrated into original-GUID production prefab.
 - Changed: 899 compatible baked renderers / 27 materials -> 117 chunks / one shared atlas material. Retain 52 corn patches, pond water and horsetails: total 953 -> 171 renderers. Converted triangles 59,234 -> 104,040; whole block 149,978 -> 194,784. Constant HDR emission retained; no textured-emission atlas or animated brushes in Farm.

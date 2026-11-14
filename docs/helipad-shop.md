@@ -1,5 +1,32 @@
 # Midpoint helipad shop — November 9, 2026
 
+## Jagged rock revision — November 14, 2026
+
+After approving the fences, the user requested jagged low-poly rocks in place of
+the smooth ovals. All 14 now use three irregular, flat-shaded convex mesh variants:
+328 triangles total instead of 10,752 (96.9% fewer). Positions, sizes, materials,
+rock contact audio, shop and loot remain unchanged. Convex MeshColliders match
+the new surfaces. Navigation and lighting rebuilt (7,976 graph nodes; 216 baked
+bindings). Mesh/UV/collision, saved-reference and preservation checks pass; geometry
+preview inspected. Natural contact and nighttime/headset appearance are **queued
+for playtest**. See [evidence and preview](validation/helipad-rocks/README.md).
+
+## Side fencing — November 14, 2026
+
+Added continuous 2 m timber fences along both 60 m lateral edges, at local
+X = +/-47 m: the standard 1 m centerline inset from the 96 m ground's edges.
+Replaced the shorter X=-46 west fence; retained the rear decorative fence and
+open railway ends. Two combined meshes share one asset/material (432 triangles
+total), with world-sized repeating UVs, lightmap UVs, solid ground-level collision
+and the existing timber contact audio. The invisible player boundaries remain.
+
+Helicopter/shop placement, 21 coal / 21 gold candidates and 6/2 per-run counts are
+preserved. Navigation and lighting rebuilt: 8,023 graph nodes and 216 valid baked
+renderer bindings. Saved-prefab clearance/UV/reference checks and the error Console
+check pass; geometry preview inspected. **Queued for playtest**: fence contact,
+route seams, nighttime/headset readability and real-client loading.
+See [evidence](validation/helipad-fences/README.md).
+
 ## Loot placement — November 10
 
 Added 21 coal and 21 gold candidates around the hut workbench/interior/roof, fuel bund, pad corner and tree roots on both sides. Initial tuning is **6 coal / 2 gold per run**, independent of crew size, matching the finale's fixed-count treatment. These are supplementary service-stop supplies; the four scavenging blocks retain crew scaling. The historical no-resource description below is superseded.

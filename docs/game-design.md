@@ -1,5 +1,14 @@
 # Duck Rails — V1 game design
 
+November 14 midpoint rock polish: user approved fences and requested jagged
+low-poly rocks. Replaced all 14 smooth ovals with angular meshes and matching
+collision, preserving placement; editor checks pass and live acceptance is queued.
+See [rock revision](helipad-shop.md#jagged-rock-revision--november-14-2026).
+
+November 14 midpoint helipad: added both timber side fences with the shared 1 m
+edge inset. Retained shop/loot layout; rebuilt offline navigation and lighting.
+Editor checks pass; live acceptance remains queued. See [helipad fencing](helipad-shop.md#side-fencing--november-14-2026).
+
 November 14 Skyscraper follow-up: user approved the revised floors and grounded,
 varied stacks. Fresh Blender atlas/chunk review keeps **37,184 triangles exactly**
 and reduces enabled renderers **2,789 -> 649**. Texture repetition is baked into

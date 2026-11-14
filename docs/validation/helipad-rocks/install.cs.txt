@@ -1,0 +1,89 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+internal class CommandScript : IRunCommand
+{
+    UnityEngine.Mesh MakeRock(int variant)
+    {
+        var rng = new System.Random(619 + variant * 71);
+        float J(float magnitude) => ((float)rng.NextDouble() * 2 - 1) * magnitude;
+        var points = new List<Vector3>();
+        for (int i = 0; i < 5; i++)
+        {
+            float a = i * Mathf.PI * 2 / 5;
+            points.Add(new Vector3(Mathf.Cos(a) * (.37f + J(.07f)), -.4f + J(.04f), Mathf.Sin(a) * (.4f + J(.06f))));
+            a += .16f + variant * .14f;
+            points.Add(new Vector3(Mathf.Cos(a) * (.48f + J(.07f)), .02f + J(.14f), Mathf.Sin(a) * (.48f + J(.08f))));
+        }
+        // An off-centre broken ridge gives a jagged silhouette rather than an oval.
+        points.Add(new Vector3(-.28f + J(.04f), .32f, -.16f));
+        points.Add(new Vector3(.12f, .53f + variant * .04f, -.12f + J(.08f)));
+        points.Add(new Vector3(.31f, .24f + J(.08f), .2f));
+        points.Add(new Vector3(-.1f + J(.06f), .28f, .33f));
+        var bounds = new Bounds(points[0], Vector3.zero);
+        foreach (var p in points) bounds.Encapsulate(p);
+        for (int i = 0; i < points.Count; i++)
+        {
+            var p = points[i] - bounds.center;
+            points[i] = new Vector3(p.x / bounds.size.x, p.y / bounds.size.y, p.z / bounds.size.z);
+        }
+        var vertices = new List<Vector3>(); var normals = new List<Vector3>(); var uv = new List<Vector2>();
+        for (int a = 0; a < points.Count; a++) for (int b = a + 1; b < points.Count; b++) for (int c = b + 1; c < points.Count; c++)
+        {
+            var n = Vector3.Cross(points[b] - points[a], points[c] - points[a]);
+            if (n.sqrMagnitude < .0000001f) continue;
+            n.Normalize(); bool positive = false, negative = false;
+            foreach (var p in points) { float d = Vector3.Dot(n, p - points[a]); positive |= d > .00001f; negative |= d < -.00001f; }
+            if (positive && negative) continue;
+            int[] face = positive ? new[] { a, c, b } : new[] { a, b, c };
+            if (positive) n = -n;
+            foreach (int index in face)
+            {
+                var p = points[index]; vertices.Add(p); normals.Add(n);
+                var q = Vector3.Scale(p, new Vector3(1.5f, .9f, 1.3f));
+                uv.Add((Mathf.Abs(n.y) >= Mathf.Max(Mathf.Abs(n.x), Mathf.Abs(n.z)) ? new Vector2(q.x, q.z) : Mathf.Abs(n.x) > Mathf.Abs(n.z) ? new Vector2(q.z, q.y) : new Vector2(q.x, q.y)) / 1.5f);
+            }
+        }
+        var mesh = new UnityEngine.Mesh { name = "Helipad jagged rock " + (variant + 1) };
+        mesh.SetVertices(vertices); mesh.SetNormals(normals); mesh.SetUVs(0, uv);
+        mesh.SetTriangles(Enumerable.Range(0, vertices.Count).ToArray(), 0); mesh.RecalculateBounds();
+        if (!Unwrapping.GenerateSecondaryUVSet(mesh)) throw new Exception("Rock unwrap failed");
+        if (mesh.triangles.Length / 3 > 24) throw new Exception("Unexpected hull complexity");
+        return mesh;
+    }
+    public void Execute(ExecutionResult result)
+    {
+        if (Application.dataPath.Replace('\\','/') != "X:/Work/duck-rails/Assets" || EditorApplication.isPlayingOrWillChangePlaymode || Lightmapping.isRunning) throw new Exception("Use idle Duck Rails");
+        Directory.CreateDirectory("output/helipad-rocks");
+        File.Copy(RailHelipadPreview.Path, "output/helipad-rocks/before.prefab", false);
+        var meshes = new UnityEngine.Mesh[3];
+        for (int i = 0; i < meshes.Length; i++)
+        {
+            string path = "Assets/DuckRails/HelipadPreview/Jagged-rock-" + (i + 1) + ".asset";
+            if (AssetDatabase.LoadAssetAtPath<UnityEngine.Mesh>(path)) throw new Exception("Preserve existing rock asset");
+            meshes[i] = MakeRock(i); AssetDatabase.CreateAsset(meshes[i], path);
+        }
+        var root = PrefabUtility.LoadPrefabContents(RailHelipadPreview.Path);
+        try
+        {
+            var rocks = root.transform.Find("Env/Trees and rocks").Cast<Transform>().Where(t => t.name == "Rock").ToArray();
+            if (rocks.Length != 14) throw new Exception("Rock count changed");
+            int before = 0, after = 0;
+            for (int i = 0; i < rocks.Length; i++)
+            {
+                var t = rocks[i]; var mf = t.GetComponent<MeshFilter>(); before += mf.sharedMesh.triangles.Length / 3;
+                result.RegisterObjectModification(mf); mf.sharedMesh = meshes[i % 3]; after += mf.sharedMesh.triangles.Length / 3;
+                var old = t.GetComponent<SphereCollider>(); if (!old) throw new Exception("Unexpected rock collider");
+                var collider = t.gameObject.AddComponent<MeshCollider>(); collider.sharedMesh = mf.sharedMesh; collider.convex = true;
+                collider.sharedMaterial = old.sharedMaterial; collider.isTrigger = old.isTrigger; collider.enabled = old.enabled; collider.contactOffset = old.contactOffset;
+                result.DestroyObject(old);
+            }
+            PrefabUtility.SaveAsPrefabAsset(root, RailHelipadPreview.Path, out bool saved); if (!saved) throw new Exception("Save failed");
+            AssetDatabase.SaveAssets(); result.Log("Replaced all 14 rocks: " + before + " -> " + after + " triangles; three flat-shaded convex variants, matching collision. Placement/scale/material retained.");
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+}

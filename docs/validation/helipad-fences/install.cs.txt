@@ -1,0 +1,95 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+internal class CommandScript : IRunCommand
+{
+    public void Execute(ExecutionResult result)
+    {
+        if (Application.dataPath.Replace('\\', '/') != "X:/Work/duck-rails/Assets" || EditorApplication.isPlayingOrWillChangePlaymode || Lightmapping.isRunning)
+            throw new InvalidOperationException("Use the idle Duck Rails editor.");
+        const string meshPath = "Assets/DuckRails/HelipadPreview/Boundary-fence-60m.asset";
+        var root = PrefabUtility.LoadPrefabContents(RailHelipadPreview.Path);
+        try
+        {
+            var env = root.transform.Find("Env");
+            if (env.Find("Side boundary fences"))
+                throw new InvalidOperationException("Fences already installed; preserve subsequent authoring edits.");
+            var ground = env.Find("Ground 96 x 60");
+            if (ground.localPosition != new Vector3(0, -.5f, 30) || ground.localScale != new Vector3(96, 1, 60))
+                throw new InvalidOperationException("Re-measure changed ground before installing.");
+            var old = env.Cast<Transform>().Where(t => t.name == "Fence post" || t.name == "Fence rail").ToArray();
+            if (old.Length != 31 || old.Any(t => Mathf.Abs(t.localPosition.x + 46) > .01f))
+                throw new InvalidOperationException("Existing side fence differs from measured source.");
+            Directory.CreateDirectory("output/helipad-fences");
+            if (!File.Exists("output/helipad-fences/before.prefab")) File.Copy(RailHelipadPreview.Path, "output/helipad-fences/before.prefab", false);
+            var retained = root.GetComponentsInChildren<Transform>(true).Except(old)
+                .Select(t => (t, t.localPosition, t.localRotation, t.localScale)).ToArray();
+            var material = old[0].GetComponent<Renderer>().sharedMaterial;
+            var surface = old[0].GetComponent<Game.Audio.AudioSurface>().type;
+            var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(cube, root.scene);
+            var source = cube.GetComponent<MeshFilter>().sharedMesh;
+            var vertices = new List<Vector3>(); var normals = new List<Vector3>();
+            var uv = new List<Vector2>(); var triangles = new List<int>();
+            void Box(Vector3 center, Vector3 size)
+            {
+                int offset = vertices.Count;
+                var v = source.vertices; var n = source.normals;
+                for (int i = 0; i < v.Length; i++)
+                {
+                    var p = Vector3.Scale(v[i], size) + center;
+                    vertices.Add(p); normals.Add(n[i]);
+                    uv.Add((Mathf.Abs(n[i].y) > .5f ? new Vector2(p.x, p.z) : Mathf.Abs(n[i].x) > .5f ? new Vector2(p.z, p.y) : new Vector2(p.x, p.y)) / 4f);
+                }
+                triangles.AddRange(source.triangles.Select(i => i + offset));
+            }
+            // Post faces end exactly at the block seams; side centerlines are +/-47 m.
+            for (int i = 0; i <= 15; i++) Box(new Vector3(0, 1, Mathf.Lerp(.1f, 59.9f, i / 15f)), new Vector3(.2f, 2, .2f));
+            foreach (float y in new[] { .6f, 1.4f }) Box(new Vector3(0, y, 30), new Vector3(.12f, .15f, 60));
+            result.DestroyObject(cube);
+            var mesh = new UnityEngine.Mesh { name = "Helipad timber boundary fence 60m" };
+            mesh.SetVertices(vertices); mesh.SetNormals(normals); mesh.SetUVs(0, uv); mesh.SetTriangles(triangles, 0); mesh.RecalculateBounds();
+            if (!Unwrapping.GenerateSecondaryUVSet(mesh)) throw new Exception("Lightmap UV unwrap failed.");
+            var existing = AssetDatabase.LoadAssetAtPath<UnityEngine.Mesh>(meshPath);
+            if (existing)
+            {
+                if (!existing.vertices.SequenceEqual(mesh.vertices) || !existing.triangles.SequenceEqual(mesh.triangles) || !existing.uv.SequenceEqual(mesh.uv))
+                    throw new Exception("Preserve existing edited fence mesh.");
+                result.DestroyObject(mesh); mesh = existing;
+            }
+            else AssetDatabase.CreateAsset(mesh, meshPath);
+            var group = new GameObject("Side boundary fences"); result.RegisterObjectCreation(group);
+            group.transform.SetParent(env, false);
+            foreach (float x in new[] { -47f, 47f })
+            {
+                var go = new GameObject(x < 0 ? "West timber fence" : "East timber fence"); result.RegisterObjectCreation(go);
+                go.layer = LayerMask.NameToLayer("Environment"); go.transform.SetParent(group.transform, false); go.transform.localPosition = new Vector3(x, 0, 0);
+                go.AddComponent<MeshFilter>().sharedMesh = mesh;
+                var renderer = go.AddComponent<MeshRenderer>(); renderer.sharedMaterial = material; renderer.receiveGI = UnityEngine.ReceiveGI.Lightmaps;
+                GameObjectUtility.SetStaticEditorFlags(go, StaticEditorFlags.ContributeGI);
+                var collider = go.AddComponent<BoxCollider>(); collider.center = new Vector3(0, 1, 30); collider.size = new Vector3(.2f, 2, 60);
+                go.AddComponent<Game.Audio.AudioSurface>().type = surface;
+            }
+            foreach (var t in old) result.DestroyObject(t.gameObject);
+            var lighting = root.GetComponent<RailBakedBlockLighting>(); result.RegisterObjectModification(lighting);
+            lighting.bindings = lighting.bindings.Where(b => b.renderer != null).ToArray();
+            foreach (var pose in retained)
+                if (pose.t.localPosition != pose.localPosition || pose.t.localRotation != pose.localRotation || pose.t.localScale != pose.localScale)
+                {
+                    // ExecuteAlways shop displays can animate while prefab contents are loaded.
+                    result.RegisterObjectModification(pose.t);
+                    pose.t.SetLocalPositionAndRotation(pose.localPosition, pose.localRotation);
+                    pose.t.localScale = pose.localScale;
+                }
+            PrefabUtility.SaveAsPrefabAsset(root, RailHelipadPreview.Path, out bool saved);
+            if (!saved) throw new Exception("Prefab save failed.");
+            AssetDatabase.SaveAssets();
+            result.Log("Installed two 2m timber side fences at X +/-47, Z0..60. 432 triangles, two renderers/colliders. Replaced 31 old west-fence objects; preserved " + retained.Length + " other transforms. Navigation/lighting rebake required.");
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+}
