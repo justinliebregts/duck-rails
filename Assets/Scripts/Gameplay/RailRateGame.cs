@@ -28,13 +28,16 @@ public sealed class RailRateGame : MonoBehaviour
             {
                 if (this == null) return;
                 SetStatus(message.IsError ? "Could not open the store. Please try again." : "Thanks for sharing your feedback!");
-                if (message.IsError) Debug.LogWarning("[Rate Game] " + message.GetError().Message);
+                if (!message.IsError) return;
+                if (DuckzLog.AllowWarning(out var notice, "rate-launcher"))
+                    notice.Write("[Rate Game] " + message.GetError().Message);
             });
         }
         catch (Exception exception)
         {
             SetStatus("Could not open the store. Please try again.");
-            Debug.LogWarning("[Rate Game] " + exception.Message);
+            if (DuckzLog.AllowWarning(out var notice, "rate-exception"))
+                notice.Write("[Rate Game] " + exception.Message);
         }
 #else
         string appId = PlatformSettings.MobileAppID;
