@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5828ba106fc8434295669392a8e3125, type: 3}
+  m_Name: RailAudioBank
+  m_EditorClassIdentifier: Assembly-CSharp::RailAudioBank
+  coalThud: {fileID: 11400000, guid: 8e96153c7242ee6418f6f22c47680c6e, type: 2}
+  fireFlare: {fileID: 11400000, guid: 5e6cadc91cd298e4a93644b995cdee2f, type: 2}
+  fuelChime: {fileID: 11400000, guid: c911ec7d6d066b24a9f01470d9b4d3b3, type: 2}
+  furnaceFireLoop: {fileID: 11400000, guid: 139c858d613fa6c41ae56f8b9e642aae, type: 2}
+  railJoint: {fileID: 11400000, guid: c6f6aada32515ca4fa195402e04c43d1, type: 2}
+  trainStop: {fileID: 11400000, guid: d496373822bfbf84dbd7af5c84fa636e, type: 2}
+  outOfFuel: {fileID: 11400000, guid: 66d39cbf46b46b545b9aace410ed6424, type: 2}
+  lowFuelWarning: {fileID: 11400000, guid: a5bf076eb7429e342ac7bdba93a47f5b, type: 2}
+  bridgeCrash: {fileID: 11400000, guid: ee4220187e38f69409334667dabd2be0, type: 2}
+  rumbleLoop: {fileID: 8300000, guid: 10d325da5cbb27945b3bc161a4feec86, type: 3}
+  hornClips:
+  - {fileID: 8300000, guid: 44b3d1890ffe15f49b1bd11f28441595, type: 3}
+  bridgeMusic: {fileID: 8300000, guid: 1b1785b2fad736e45a6eee1b35ca57be, type: 3}
+  throttleGrab: {fileID: 11400000, guid: d8b34bf0fecf60248aa6a8b87a542e33, type: 2}
+  throttleRelease: {fileID: 11400000, guid: 8461df0c80c459745a7b961af3d69e08, type: 2}
+  throttleClick: {fileID: 11400000, guid: 2ce91dfbf1f7847479618a8b7cfd35b1, type: 2}
+  throttleLatch: {fileID: 11400000, guid: 7a2baf7bb2dcf8a45866ee431b6cd43d, type: 2}
+  railJointSpacing: 3.5
+  rumbleFullSpeed: 4
+  rumbleVolume: 0.6
+  rumbleMinPitch: 0.75
+  rumbleMaxPitch: 1.25
+  lowFuelThreshold: 20
+  lowFuelSlowInterval: 2.2
+  lowFuelFastInterval: 0.6
+  musicVolume: 0.8
+  musicFadeOutSeconds: 3
+  loopMusic: 1

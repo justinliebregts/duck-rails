@@ -53,6 +53,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: Unity visuals approved. Moving-view/headset appearance, natural stairs/silo/roof/cage/playground traversal and loot reach/recovery. Existing seven roof/hay loot failures and Farm gameplay acceptance remain separately recorded in farm-silos-layout.md.
 - Priority: normal. No repeated pilot, routine Quest comparison or comparison APK unless explicitly requested; renderer reduction does not establish Farm device performance.
 
+
 ### Container Yard production atlas integration — queued 2026-11-14
 - Commit(s): see git log "Integrate approved Container Yard atlas"; user-approved visuals integrated into the original-GUID production prefab.
 - Changed: 1,191 compatible scenery renderers / 17 materials -> 246 chunks / one atlas material, plus three retained CutePixel labels. Total 1,194 -> 249 renderers; triangles 108,336 -> 202,488. Cells 12 x 6 x 12 m; 11 oversized sources separate. No textured emission or animated brushes exist in this block.
@@ -143,7 +144,17 @@ No new block conversion or device run occurred during this documentation task.
 - Needs human: stationary upright headset framing and headset comfort checks are separate from unattended frame-cost measurements.
 - Priority: normal.
 
+### Train, furnace, throttle, horn and ending-music audio — queued 2026-11-13
+- Commit(s): uncommitted
+- Changed: `RailAudioBank` (Resources) plus `RailAudioDirector` drive rumble (volume and pitch follow speed), rail-joint clack every 3.5 m, stop sound at rest, low-fuel beep (clip not supplied yet) and out-of-fuel cue, coal deposit (thud, flare, chime via `ShowFuelGain`), looping furnace fire, bridge crash, and success-ending music with fade-out. Throttle grab, release, pitched click every 25% and latch on top at 100% (`RailControl`). Horn is now a one-shot that fades out on release (`RailHoldControl`). `AudioManager.Play` gained an optional `pitchScale`.
+- Setup: Expedition from Test Center, 1 client for most checks; 2 clients to confirm remote players hear deposits, throttle clicks and the horn.
+- Check: deposit coal (thud, flare, chime together; no replay on late join); fire loop fades in with fuel and out at 0; rumble fades in and pitches up with speed, down as it slows; clack cadence follows speed and stops at rest; stop sound only at full stop; out-of-fuel cue fires once when fuel hits 0; throttle clicks at 25/50/75/100% up and down with latch at 100%; grab and release sounds; horn plays while held, never loops, fades quickly on release; bridge collision crash; success ending music plays through the ending and fades before return.
+- Needs human: how it sounds (levels, pitch range of clicks, rumble pitch range, music loop seam; the ending ride is longer than the track so it loops, `loopMusic` on the bank), plus `Train_LowFuelWarning.wav` not yet supplied (slot is empty and silent).
+- Priority: normal
+
 ### Shared complete store and security camera — queued 2026-11-12
+- Regression 2026-11-13: Desktop purchases/lifetime/peer/late-join/handoff/departure PASS after fix `8379de0f1`; owned bundle and headset acceptance remain pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for full acceptance (3 clients)**: Compound has 17 active display items and one camera; both expedition feeds create independent textures nearby and shut off at distance. Owned-product equip/cooldown/checkout and natural purchases remain untested: configured test accounts have no new bundle entitlements. Headset framing/reach/performance still required. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Avatar acceptance: equip Quackbear, Huggy and Scrap Duck individually from each store; verify the local avatar/mirror and hands update correctly, every connected remote client sees the correct equipped avatar, a late joiner sees the current avatar, switching between all three and Default Duck replicates without stale meshes/faces, and the selection survives the intended scene transitions/rejoin. Use real authenticated clients; a single editor or visual prefab check is insufficient. Still queued, not verified.
 - Commit(s): uncommitted.
 - Changed: one RailSharedStore prefab in Compound, Departure Shop and midpoint helicopter: seven coin goods with price/coin labels underneath, nine bundle items, Default Duck and local SecurityCam/SecurityTV/HelicopterMirror. Supersedes previous midpoint-exclusion expectations.
@@ -154,10 +165,11 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal.
 
 
-
 ### Furnace Polygon flames — queued 2026-11-12
+- Regression 2026-11-13: The evening run's exercised desktop scenarios were deliberately excluded; headset scale/placement remains pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED only on headset scale/placement (solo, 2 clients, late third). Desktop portion PASS after fix 79b69296b**: idle/12% empty/refuel emission, four actual coal deposits including moving train/master handoff/empty recovery, one burst per receipt on peers, no historical burst on late join. See this run's Results. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): uncommitted.
-- Changed: `RailFurnaceModule` spawns `FX_Fire_Big_02` (idle, already in `Assets/Plugins/PolygonParticleFX`, identical to the arpg copy) at the firebox; emission fades to 12% (`outOfFuelEmission`) when `PhotonSession.CurrentFuel` is 0 and back up on refuel. Each committed coal deposit plays `FX_Fire_Explosion_01` once on every client, from the same path as the "+N" fuel popup. Prefab refs live in `Furnace.prefab`; `fxScale` 0.25 is a first guess.
+- Changed: `FX_Fire_Big_02` (already in `Assets/Plugins/PolygonParticleFX`, identical to the arpg copy) is a permanent child of `Furnace.prefab` ("Idle fire", tune its transform there; `RailFurnaceModule.idleFire`); emission fades to 12% (`outOfFuelEmission`) when `PhotonSession.CurrentFuel` is 0 and back up on refuel. Each committed coal deposit plays `FX_Fire_Explosion_01` once on every client, from the same path as the "+N" fuel popup. Prefab refs live in `Furnace.prefab`; `burstScale` 0.25 is a first guess.
 - Cheap checks: compile clean; prefab references resolve; burst bounds ~1.7 m at scale 0.25. No Play Mode run.
 - Setup: two clients on the train, a late joiner.
 - Check: flames burn idly; at 0 fuel they dwindle; dropping coal in gives a burst visible to the other client; size/position suit the firebox opening.
@@ -166,6 +178,8 @@ No new block conversion or device run occurred during this documentation task.
 - Mode: fix-on-fail
 
 ### Quackbear, Huggy and Scrap Duck bundles — queued 2026-11-12
+- Regression 2026-11-13: BLOCKED: all three real accounts still lack the bundle entitlements; owned equip/cooldown/persistence was not substituted with fabricated ownership. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (3 clients)**: active store inventory checked; no owned test entitlements for these three bundles, so avatar equip/peer/late-join persistence and cooldown/checkout acceptance remain unverified. Meta rollout and human checkout/reach are prerequisites; no ownership was fabricated. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): uncommitted.
 - Changed: compound and Departure Shop bundle walls now use Duckz horizontal weapon–bag–avatar rows and source heading/countdown styling (overlap allowed for manual adjustment), three rigged avatars, separate four-slot bag and frying-pan placeholders, existing independent 120-second bag/weapon cooldowns and no avatar cooldown. See `docs/character-bundles.md`.
 - Cheap checks: Unity compilation, 103 EditMode checks, visual preview and backend config/economy tests passed; no Play Mode run.
@@ -175,9 +189,13 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal.
 
 ### Matching fuel/distance backing — queued 2026-11-12
+- Regression 2026-11-13: Evening fuel/backing scenarios excluded; full-route distance now passes. Headset backing appearance remains pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED only on visual/headset acceptance (solo)**: live ten/five/zero fuel segments and distance values PASS; shared backing readability and appearance still require review. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Shared backing mesh/material; original fuel text, ten yellow segments and dark sockets retained. Compile and serialized UI/gameplay preservation checks pass. Check headset appearance and fuel readability/full-to-empty state. No Play Mode run.
 
 ### Throttle hand offset, variable speed and return — queued 2026-11-12
+- Regression 2026-11-13: Separate right/left physical paths and shared-input safety PASS; combined hand-switch, remote regrip/palm and right wide-bar end acceptance remain FAIL/incomplete. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for full acceptance (solo and 3 clients)**: lease-level dead zone, intermediate/full speed, immediate release target, smooth visual return and heartbeat expiry PASS; peer and late-join values agree. Physical hand/input fixture cannot reach its motion checks (see Results). Palm tuning, detent, early-release/regrip, physical binding and headset feel remain unverified. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): uncommitted.
 - Changed: live palm offset, speed dead zone to 20% then proportional speed, retained forward snap, immediate STOP with 0.25s visual return; regrip preserves current angle. Prior cockpit works well in headset per user report.
 - Cheap checks: Unity compile, 25 drive and session EditMode checks pass; Console error/exception query empty; saved prefab/scene tuning defaults checked.
@@ -187,6 +205,8 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal.
 
 ### Approved cockpit and lowered throttle axle — queued 2026-11-12
+- Regression 2026-11-13: Focused physical grips attempted both hands and wide-bar ends; right-end acceptance remains incomplete. Headset cockpit reach/feel remains pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: live distance/fuel and lease replication were sampled with 3 clients, but full physical grip arc, horn, hand travel, clipping and headset reach/readability were not verified. Existing geometry checks do not establish these. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): uncommitted.
 - Changed: solid grip joining three arms/slots, axle 18 cm lower, faceted horn, distance bezel and coal/fire/fuel picture. See `docs/cockpit-v2.md`.
 - Cheap checks: compilation, saved bindings/fonts, lowered neutral geometry, 71-angle slot envelope; EditMode render reviewed.
@@ -196,9 +216,13 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal.
 
 ### Furnace fuel popup — queued 2026-11-12
+- Regression 2026-11-13: Evening exercised receipt/popups were deliberately excluded; remaining headset appearance stays pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED only on human readability (solo, 2 clients and late third)**: PASS four committed physical deposits with matching crew-scaled fuel credit/popups on both peers; no historical popup on late join. See furnace fix and receipt evidence in Results. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Dropping coal into the furnace floats a "+N" (N = per-run `RailResourceBalance.CoalValue`, e.g. +12.5 solo) up from the firebox opening, using the gold crate's `GoldRewardText` look. Shown on every client once per committed deposit; late joiners do not replay old ones. Check solo and two-client; verify the number matches the gauge gain and reads well. Compile/Console checked only; queued for playtest.
 
 ### Seven-block material contact sounds — queued 2026-11-12
+- Regression 2026-11-13: 29 nearby material-specific hand/foot playback probes PASS. Natural contact cadence, duplicates, listening and headset quality remain pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual listening/contacts)**: no new representative foot/hand-contact playback or peer-contact coverage in this run. Existing saved AudioSurface checks remain evidence only for assignments, not audible quality or duplicate/missing live contacts. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): uncommitted.
 - Changed: AudioSurface assignments across Final Bridge, Farm, Skyscraper, Helicopter Shop, Convenience Store, Motel and Container Yard. See `docs/block-audio-surfaces.md` for material choices and approximation limits.
 - Cheap checks: installer compiled in Unity 6000.3.24f1; all seven saved prefabs reloaded; 10,344 environment colliders match planned surface types; all seven used types resolve to valid player footstep sounds. Serialized comparison preserves existing geometry, collision, gameplay and baked data. Console contains an LCK graphics-API error. No Play Mode run.
@@ -208,6 +232,8 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal.
 
 ### Broad block reverb — queued 2026-11-12
+- Regression 2026-11-13: Independent peer listener regions and unload/recreation PASS. Perceived audio/voice and headset acceptance remain pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for listening/performance acceptance (solo listener, 3-client route)**: all 25 live zones pass inside/outside listener-position plumbing; peers agree on zone counts. Independent moving peer listeners, unload tails, voice clarity, smooth audible transitions and Quest cost remain unverified. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): uncommitted.
 - Changed: 25 box zones across Final Bridge (3), Farm (6), Skyscraper (4), Convenience Store (4), Motel (4), Container Yard (4). Helicopter Shop excluded. See `docs/block-reverb.md` for placements/tuning.
 - Cheap checks: installer compiled; saved 25-zone count, enabled components, child references, positive sizes and matching fade radii pass; Console error/exception query empty. Existing serialized prefab objects preserved. No Play Mode run.
@@ -217,6 +243,8 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal.
 
 ### Container Yard north yard, fences and open containers — queued 2026-11-12
+- Regression 2026-11-13: Scoped desktop collision routes, selected loot settling/carry/drop and pursuit were attempted; completed routes PASS, repair threshold/full traversal acceptance remains incomplete. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for traversal/headset acceptance (3 clients)**: latest five-block route loads and peers/late joiner match cargo, enemy and geometry inventories. Natural shed/trailer/fence/climb traversal, loot reach/settling in all new areas and enemy pursuit remain unverified. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Latest ground/spawn revision supersedes prior pool/marker evidence: main ground repeats at 12 m instead of 3 m; 168 coal / 142 gold / 32 enemy candidates redistributed across the updated yard, with unchanged runtime scaling. 3,092 editor checks pass, including all 342 supported/clear candidates and all 800 crew/seed cases per selector; 1,191 lighting bindings re-exported. See `validation/container-yard-redistribution/`.
 - Redistribution checks: inspect loot in the shed workbenches/lower shelves, repair-container and trailer interiors, dock, tank-service corners, machinery, main container interiors and intended roof/climb rewards. Confirm natural reach, item settling, bilateral/quadrant encounters, low-eye ground texture scale and peer agreement. The old unsupported counterweight coal marker has been moved and its support issue is resolved. No Play Mode run for this revision.
 - North extension: approved repair shed with workbenches/dismantled container, enterable truck trailer and loading dock, static forklift/pallet climb, two horizontal propane tanks and two baked floodlights. Original markers/poses/tuning retained. Additional 1,776 editor checks and six ground-route connectivity checks pass; navigation/lighting rebuilt, 1,191 total valid bindings including all 33 new combined renderers. See `validation/container-north-yard/`.
@@ -229,16 +257,20 @@ No new block conversion or device run occurred during this documentation task.
 - Needs human: headset door/fence contact, nighttime wire/interior readability and Quest performance.
 - Priority: normal.
 
-### Hand flashlight stays on after release — queued 2026-11-12
+### Raider Legends revive feedback — queued 2026-11-12
+- Regression 2026-11-13: Moving/victory/two-helper handoff/late-progress/post-completion and volume-control desktop portions PASS. Four-client independent rescues remain BLOCKED; headset acceptance stays pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for full acceptance (3 clients)**: rescue handover, brief interruption/grace and overlapping downed players PASS; all clients emit rising progress audio and receipt-triggered completion audio/four-layer particles. Moving train, victory ride, late-progress join, handoff/replay cleanup and four-client independent rescues still need coverage; Player4 is unconfigured. Headset audio/particles remain manual. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): uncommitted.
-- Changed: `HandFlashlight` no longer turns off on release/pickup; the owner turns an unheld light off after 60 s (`abandonTimeout`). Stashing still turns it off.
-- Cheap checks: edit only; compile not yet confirmed in Console.
-- Setup: two clients; one holds a flashlight and turns it on.
-- Check: drop it - light stays on for both clients; picking it back up before 60 s keeps it on; left alone ~60 s it turns off with the off sound on both clients; stash turns it off.
-- Needs human: none
+- Changed: original ARPG progress/completion clips and four-layer revive burst; positional feedback on every client, pitch follows shared progress; committed completion receipts avoid duplicate/historical playback. See `revive-effects.md`.
+- Cheap checks: Unity 6000.3.24f1 compiles; 31 EditMode checks pass, shader/material/mesh/audio resolve, Console error query empty. No Play Mode run.
+- Setup: three real clients (rescuer, downed duck, uninvolved observer); repeat with moving train and during victory ride. Four clients for simultaneous independent rescues.
+- Check: everyone nearby hears the rising pitch and one completion sound and sees one burst at the revived duck; no burst before authoritative revival. Hand withdrawal stops sound; brief grace freezes progress, longer interruption resets it. Two helpers never accelerate it. Simultaneous rescues remain distinct. Effect follows duck/train; completion remains visible to observer. Late join during progress starts at current pitch; joining after completion does not replay it. Master handoff does not duplicate effects. Disconnect/compound return/replay leave no sounds or particles. Victory-ride revival plays feedback without changing locked results/stats. Game-volume control affects both sounds.
+- Needs human: headset spatial audio, volume, particle placement/scale/readability, Quest shader/performance and natural hand rescue.
 - Priority: normal
 
 ### Train distance display — queued 2026-11-12
+- Regression 2026-11-13: 475 full-route samples and actual bridge crossing PASS, without seeded distance. Supplied fuel and traversal pauses are disclosed; headset legibility stays pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED only on headset legibility (solo and 3 clients)**: acknowledged departure state reads 0 m, seeded bridge approach reads 1000 m; moving-run peer and late-join labels agree at 18 m. No claim of a natural full-route drive. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): uncommitted
 - Changed: new `RailDistanceDisplay` + "Distance display" TMP label above the fuel gauge on `DuckRailsTrain.prefab`; shows `DISTANCE n m`, `RailTrain.Distance` rescaled so the bridge area (`RailRoute.FinaleStart`, ~780 m of track) reads ~1000 m (run ends ~1096 m). Display only; label hides with the other running labels at run end. Compiles clean, Console clear; not run in Play Mode.
 - Setup: any expedition, one client, then a late joiner.
@@ -248,6 +280,8 @@ No new block conversion or device run occurred during this documentation task.
 - Mode: fix-on-fail
 
 ### Motel community leisure layout — queued 2026-11-12
+- Regression 2026-11-13: Balcony/door routes, selected loot carry/drop and pursuit PASS; both stair probes still fail to complete. Natural full circulation and headset acceptance remain pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for traversal/headset acceptance (3 clients)**: initial route startup FAIL from six null baked-renderer bindings; normal lighting re-export in fix 3c64b55a4 leaves 1,964 valid bindings. Rerun reaches Running/WorldReady, including late join, and peer inventories agree. Natural leisure-area/bus-roof traversal and enemy pursuit remain unverified. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Latest correction supersedes prior pool counts: 48 coal / 64 gold / 32 enemy candidates, unchanged runtime spawn rules. All markers replaced for the current layout; all 100 seeds × crew sizes 1–8 meet full resource/enemy targets, quadrant quotas and spacing (2,691 checks). Inspect reach/return routes, bus-roof gold access, pool basin/upper-room enemy pursuit, ceiling-mounted lights, downward streetlight readability, low-poly wheels, six benches and outward golf/rink sides. No Play Mode run for this correction.
 - Detail feedback adds nine unique greens/duck/shoot-through house, shack counter/clubs, golf/rental mesh signs, boarded windows/green handled doors, guest furniture/bathrooms, roof equipment, grey/blue cars, continuous stair/wall/rink surfaces and Quackville pixel materials. Inspect all board/stair/rail joints, furnished-room and bathroom circulation, house passage, wall seams at moving viewpoints, material scale and white-only facade lighting. Remains queued; no Play Mode authorization for this batch.
 - Detail checks: 4,186 editor assertions pass, all 24 loot candidates supported/clear and all 18 enemy markers grounded; navigation rebuilt. Current saved layout contains no waterslide. Follow the current prefab and detail notes rather than the older slide-specific checks below.
@@ -264,6 +298,9 @@ No new block conversion or device run occurred during this documentation task.
 - Status: queued for playtest; no Play Mode run for this change.
 
 ### Convenience Store screenshot polish and arcade mascot — queued 2026-11-12
+- Regression 2026-11-13: Court/arcade/rear-road samples, fixed-collision cosmetic rollers and loot carry/drop PASS; straight wash/pursuit acceptance remains incomplete; full natural routes/headset remain pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for traversal/headset acceptance (3 clients)**: current route, renderer/collider inventory, selected cargo and enemy IDs agree on peers and late join. Natural stair/shop/car-wash interaction and visual/performance acceptance remain pending; earlier scoped checks are retained below. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: two-client loot/enemy consistency, late rejoin, loot support and cosmetic-only brushes PASS; all 235 candidates pass footprint/clearance (see Results). Still queued: avatar traversal (court gap, wash/rear road, semi, coolers, restaurants, arcade), enemy pursuit, rear doors, art/lighting and Quest performance.
 - Basketball court: rim segments, net strands and playing surface now have fitted boxes; all 121 court colliders pass editor ray checks, hoop centres and south entrance remain clear, and navigation is rebaked. Check hand/item/player contact in the existing playtest.
 - Crossing arms: one continuous fitted BoxCollider per lowered arm now replaces segmented collision. Editor rays hit along both full lengths; check avatar/hand/carried-item contact at the tips and stripe seams. Queued for playtest.
 - Collision/sparse-stock follow-up: trees now collide across trunks and canopy tiers, all six rooftop models have shape-matching collision, and seven brush roots have stationary full-size hulls with rotating visual children. Check head/hand/carried-item contact and walking routes, particularly beneath trees and around wash rollers; ensure the Q opening remains open. Solid cooler glass/displays/fan/ceiling fixtures also collide. Shop shelves now have only nine scattered brown cubes; cooler shelves have no drinks, retaining coal/gold candidates. Verify loot reach and settling after local collision repairs; queued for playtest.
@@ -282,6 +319,9 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal.
 
 ### Skyscraper north/south yards and upper-floor loot — November 11
+- Regression 2026-11-13: Both foundation escape probes, selected cargo settling/carry/drop and pursuit PASS; 18 known candidate overlap flags retained. Full upper-floor/natural/headset acceptance stays pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for traversal/headset acceptance (3 clients)**: current block and selected cargo/enemy inventories agree on peers and late join. Upper-floor reach, foundation recovery, wall contact, pursuit and night/Quest performance were not newly verified. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: two-client loot/enemy consistency and late rejoin PASS. The editor check flags 18 floor-0 candidates in Towers B–D overlapping the ground slab; the live spawns settled asleep with no gap, so they were left unchanged. Review if items visibly pop on spawn. Traversal, lighting and performance remain queued.
 - Side walls: check 3 m concrete walls at X +/-47, ground contact/collision along both full lengths, entry/exit seam transitions, no stranded loot/enemies, square pixel density and headset appearance.
 - Foundation light: check grounded southwest tripod, broad cool forward illumination across the pit and onto the excavator, and glare/foot clearance on headset.
 - Crossing lights: review the 23 baked warm point lights on all four skybridges and the fallen crane for nighttime visibility and glare, including carried-item traversal.
@@ -292,18 +332,10 @@ No new block conversion or device run occurred during this documentation task.
 - Checks: enter/exit both office trailers; walk the loading/maintenance shelters; enter the foundation and recover via each ramp; carry coal/gold out without catching on edges. Inspect worklights, windows, pipes and clutter at night on headset. Review upper-floor loot across repeated seeded runs (270 candidates of each type; per-run totals unchanged). Test enemy pursuit around new yards, late-join consistency, moving-train clearance and target headset performance.
 - Editor evidence: docs/validation/skyscraper-polish; tower/rail preservation, spawn support and 1,000 seeded selection cases passed. See docs/skyscraper-layout.md for bake and final validation evidence. No Play Mode run performed for this change.
 
-### Farm full screenshot polish — queued 2026-11-11
-- Basement holding cages: central cage/four watching chairs, four side cells, three open lockers, four green-white baked fixtures. Added two coal/four gold candidates (pools now 105/117/22); per-run settings preserved. New loot checks and eight doorway clearance samples pass; navigation and lighting rebuilt. Queued for playtest: enter/exit every cell, reach locker loot, return through both basement exits, enemy pursuit, bar shadows and headset darkness/performance. See `validation/farm-polish/basement-checks.txt`.
-- Silo ceiling follow-up: enterable silo underside now uses planar XZ texture coordinates (1.8m repeats). Geometry and baked UV2 retained; all 16 underside UV triangles pass. Inspect ceiling texel scale from doorway/in motion; queued for playtest.
-- Corn follow-up: existing 3,669 stalks/52 patches retained; five leaves become four (20% fewer leaves, 102,732 -> 88,056 triangles). Geometry-scaled UVs replace stretched stem/leaf mapping. Saved mesh checks and Console pass; close-up editor capture inspected. Check in-headset texel scale, field concealment/readability and performance in motion. Queued for playtest.
-- Silo surface follow-up: doorway overlap removed; grain uses planar UVs and golden dirt. Retained user's grain/shell offsets and adjusted nine silo loot heights. Check threshold flicker and grain texel scale in motion. Current broad checks flag seven roof/hay loot footprint/clearance issues outside the silo; resolve against the user's latest geometry when running this queue.
-- Commit(s): uncommitted.
-- Changed: furnished farm buildings/house; pond/entrance baked lights; railway-facing shed doors; ditch water audio; low-poly side fencing; elevated silo interior with wraparound ramp/loot; house floor/attic roof/stair/cellar repairs. Local user edits and per-run settings preserved. Pools 103 coal / 113 gold / 22 enemies.
-- Cheap checks: Unity compilation, Console error query, 791 geometry/loot/reference/light checks, 35 entrance/closure/export checks and 1,000 seeded selections pass. Navigation and lighting rebaked/exported. See `docs/validation/farm-polish/` and `docs/farm-silos-layout.md`.
-- Setup: private Farm route, one desktop client then two authenticated clients with late join; headset review separately.
-- Check: all four nine-step house flights traverse without falling through side/bottom gaps; compact cellar is enterable/exitable; attic has no floor flicker or roof obstruction. Reach barn loft and silo grain, traverse ramp turns both ways, collect/return loot and recover drops. Furnished paths and doorways stay passable. Ditch produces wet footsteps; bridge stays dry. Review entrance/pond lights. Enemies pursue around structures; peers agree on scenery and seeded loot.
-- Needs human: larger stair-rise and ramp comfort/hand locomotion, loft reach, water sound quality, nighttime readability and Quest performance.
 ### Attached hold-forward throttle — queued 2026-11-11
+- Regression 2026-11-13: Fuelled driver/master disconnects, shared-input safety and ordinary pickups afterward PASS. Physical regrip/remote attached-hand acceptance remains incomplete. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for physical-input/headset acceptance (3 clients)**: current variable-speed lease, remote lever, release and heartbeat expiry PASS; earlier disconnect/handoff evidence remains below. Broad rig fixture fails before physical throttle coverage; attached hands, wide-bar grabs, ordinary pickups and actual keyboard binding remain unverified. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: multiplayer lease cases PASS through the simulated-rig hold path: exclusivity/denied lease, peer lever, focus/blocked/down/disconnect cleanup, host loss and late join (see Results). Still queued: remote attached-hand visual with a real hand grip, keyboard T, ordinary pickups afterwards, and all headset items.
 - Solo live follow-up: PASS on both hands for injected physical grip, smooth forward arc GO, forward jitter tolerance, pull-back OFF, re-push GO, release and sideways breakaway. Attached-palm query/closed finger curl pass; sampled palm gap 6.3 mm. Shared target speed/lease zero afterward; normal movement/input restored and existing Play session left running. See `docs/validation/shared-rig/throttle-hands-20261111.txt`. Remaining cases below, actual skin-contact visual review, headset feel and multiplayer remain queued; this is not full acceptance.
 - Attempt 2026-11-11: user authorized solo desktop simulated-hand Play Mode. Verified Duck Rails in Edit Mode, then `RailTestRunner.Start("sandbox")` and the follow-up state query each timed out after 120 seconds. Editor process remained present; computer-use window activation failed twice (`failed to activate captured window`). Runner state remained `launching`. No interaction checks ran; no PASS claimed. On recovery inspect editor/runner state and stop through `RailTestRunner.Stop` to restore the prior scenario before retrying. Do not discard the dirty Farm bake scene.
 - Commit(s): uncommitted.
@@ -314,9 +346,26 @@ No new block conversion or device run occurred during this documentation task.
 - Needs human: hand/finger alignment, comfortable travel/tolerance, fast-stroke breakaway, mechanical sound and haptics on both controllers.
 - Priority: normal.
 
+### Farm full screenshot polish — queued 2026-11-11
+- Regression 2026-11-13: Ten aligned cell entry/exit cases and accepted silo/playground samples PASS; barn/ditch/pond/full traversal acceptance remains incomplete. Human reach/lighting remains pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for traversal/headset acceptance (3 clients)**: current block/cargo/enemy inventories agree on peers and late join. Natural routes, surface contact, loot reach, enemy pursuit and device performance remain pending. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: the flagged roof/hay loot plus Gold 087 were repaired in `bfcd86651`; 222/222 candidates now pass. Two-client loot consistency and late rejoin PASS. Traversal (stairs, cellar, attic, silo ramp, basement cells), ditch footsteps, lights and headset items remain queued.
+- Basement holding cages: central cage/four watching chairs, four side cells, three open lockers, four green-white baked fixtures. Added two coal/four gold candidates (pools now 105/117/22); per-run settings preserved. New loot checks and eight doorway clearance samples pass; navigation and lighting rebuilt. Queued for playtest: enter/exit every cell, reach locker loot, return through both basement exits, enemy pursuit, bar shadows and headset darkness/performance. See `validation/farm-polish/basement-checks.txt`.
+- Silo ceiling follow-up: enterable silo underside now uses planar XZ texture coordinates (1.8m repeats). Geometry and baked UV2 retained; all 16 underside UV triangles pass. Inspect ceiling texel scale from doorway/in motion; queued for playtest.
+- Corn follow-up: existing 3,669 stalks/52 patches retained; five leaves become four (20% fewer leaves, 102,732 -> 88,056 triangles). Geometry-scaled UVs replace stretched stem/leaf mapping. Saved mesh checks and Console pass; close-up editor capture inspected. Check in-headset texel scale, field concealment/readability and performance in motion. Queued for playtest.
+- Silo surface follow-up: doorway overlap removed; grain uses planar UVs and golden dirt. Retained user's grain/shell offsets and adjusted nine silo loot heights. Check threshold flicker and grain texel scale in motion. Current broad checks flag seven roof/hay loot footprint/clearance issues outside the silo; resolve against the user's latest geometry when running this queue.
+- Commit(s): uncommitted.
+- Changed: furnished farm buildings/house; pond/entrance baked lights; railway-facing shed doors; ditch water audio; low-poly side fencing; elevated silo interior with wraparound ramp/loot; house floor/attic roof/stair/cellar repairs. Local user edits and per-run settings preserved. Pools 103 coal / 113 gold / 22 enemies.
+- Cheap checks: Unity compilation, Console error query, 791 geometry/loot/reference/light checks, 35 entrance/closure/export checks and 1,000 seeded selections pass. Navigation and lighting rebaked/exported. See `docs/validation/farm-polish/` and `docs/farm-silos-layout.md`.
+- Setup: private Farm route, one desktop client then two authenticated clients with late join; headset review separately.
+- Check: all four nine-step house flights traverse without falling through side/bottom gaps; compact cellar is enterable/exitable; attic has no floor flicker or roof obstruction. Reach barn loft and silo grain, traverse ramp turns both ways, collect/return loot and recover drops. Furnished paths and doorways stay passable. Ditch produces wet footsteps; bridge stays dry. Review entrance/pond lights. Enemies pursue around structures; peers agree on scenery and seeded loot.
+- Needs human: larger stair-rise and ramp comfort/hand locomotion, loft reach, water sound quality, nighttime readability and Quest performance.
 - Priority: normal.
 
 ### Bridge finale batch polish — queued 2026-11-11
+- Regression 2026-11-13: Middle/river ramp samples and fresh defender pair PASS; both upper ramps and west inward ramp remain incomplete. Headset/full route acceptance stays pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for traversal/headset acceptance (3 clients)**: loaded finale inventory and three reverb-zone plumbing checks pass; this run uses a controlled success trigger for results, not the actual bridge sweep. Ten-ramp traversal, defenders, natural crossing and headset/performance checks remain pending. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: all 54 finale loot candidates pass footprint/clearance; finale loot (6 coal / 2 gold) matched on both clients and after a late rejoin. Traversal, tunnel floor, lighting and Quest checks below remain queued.
 - Stationary gold-crate lighting: finale-only UV2 mesh copy, Contribute GI, Receive GI Lightmaps and block bake/export installed; 17 editor checks pass. **Queued for playtest:** baked crate readability beside the button and unchanged intake/coin behaviour. Reward-text fields were already null in the saved baseline; floating reward text is not validated by this change. See `output/level-polish-batch/followup/gold-crate-checks.txt` and before/after views.
 - Bank lighting correction: static far-bank/tunnel floor now uses its own exported lightmap instead of one probe sample across the whole renderer. One finale bake/export and 23 editor checks pass; 1,741 bindings installed, all 22 user-edited lights preserved. Compare `output/level-polish-batch/followup/bank-light-BEFORE.png` / `bank-light-AFTER.png`. **Queued for playtest:** entrance light stays local on grass during approach, tunnel passage and dawn transition; floor/bridge remain visible on clients/headset.
 - Tunnel-floor correction: restored the 149 disabled bake-excluded finale renderers and corrected their visibility lifecycle. Twenty-four EditMode checks pass, including export/reload persistence, Expedition visibility and tunnel floor collision. **Queued for playtest:** confirm visible floor throughout the tunnel and intact moving drawbridge on actual clients/headset; no Play Mode run for this fix.
@@ -330,6 +379,9 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal
 
 ### Farm northeast pond and playground — queued 2026-11-11
+- Regression 2026-11-13: Playground platforms/bridges and static swing PASS; ditch/pond route probes remain incomplete. Human natural reach/locomotion remains pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for traversal/headset acceptance (3 clients)**: current Farm selections agree on peers/late join. This does not verify natural ladder/bridge/slide/pond traversal, loose-item recovery, enemy approach or Quest performance. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: peers and the late joiner reconstruct identical Farm selections, and the swing has no physics components (see Results). Platform/ladder/slide/pond traversal, enemy approach and Quest performance remain queued.
 - Commit(s): uncommitted
 - Changed: replace northeast corn with shallow pond, 108 horsetail stems, three playground platforms/two bridges, static slide/ladders, empty swing frame and hay/cart/fence dressing. Net whole-Farm reduction 43,104 triangles (21.5%). Reposition 14 coal/14 gold and two enemies; append four enemy candidates. Per-run counts unchanged.
 - Cheap checks: compile, navigation bake, lighting bake/export and scoped saved references; loot footprint/clearance, enemy navigation/bounds, sampled deck/pond collision, 800 enemy crew/seed selections and 200 maximum-crew loot selections pass. See `docs/validation/farm-paddock/`. Broader catalogue lighting check has unrelated helipad light-count failure.
@@ -340,6 +392,8 @@ No new block conversion or device run occurred during this documentation task.
 - Mode: fix-on-fail
 
 ### Results board superlatives: stats, counters and award assignment — queued 2026-11-12
+- Regression 2026-11-13: Current award checks and actual-action result agreement after rejoin/handoff PASS; seeded evening title scenarios excluded. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for full acceptance; report-only (3 clients)**: after a real master handoff and controlled success, board counters and three distinct titles agree on every client. Repels/spent stats were submitted as test values; this is not a natural shop/gold/hit/minute-light run. Failed-run, pre-finish reconnect, all attribution cases and VR threshold feel remain unverified. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): uncommitted (B clone)
 - Changed: honks removed; board shows Coal, Gold (deposited), Revives, Downs; 20 superlatives + Precious Cargo assigned once at the finish (`RailAwards`), counters from the master's 10 Hz sample and a batched client `stats` request. Spec: `docs/game-design.md` "Superlatives and board stats".
 - Cheap checks: `Duck Rails/Legacy/Run Superlative Checks` (`RailAwardsChecks`) PASSED 2026-11-12 in B's editor (MCP verified `Application.dataPath` = `X:/Work/duck-rails-b/Assets`): project compiled with 0 errors (only pre-existing warnings) and the menu item logged "25 superlative checks passed". Edit-mode only; no Play Mode, network or headset run. Later the same day the new `Boundaries` method (20 awards x 2 assertions) first failed at Pacifist (float `RunSeconds * .8f` rounding); after `Present()` and Window Seat were changed to exact integer multiples, it recompiled with 0 errors and the menu item logged "65 superlative checks passed" (all awards' minimums are inclusive, just-below gets no title).
@@ -349,7 +403,10 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal
 - Mode: report-only
 
-### Train aboard margin: escaped and end-of-run teleport — queued 2026-11-11
+### Train aboard margin: escaped and end-of-run teleport — queued 2026-11-11, manual-only
+- Regression 2026-11-13: Side/nose/far-ground desktop classification rerun; traced nose stays padded for six seconds without rescue. Natural headset standing/hanging remains pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: prior solo spatial-boundary PASS remains valid evidence; this run's seeded success with 3 clients does not test actual padded-boundary finishes. Hand-hanging and a real second-client finish still pending. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: automated part PASSED (side hang, nose, far on the ground; see Results). Remaining: hanging off by hand in VR; a second client at the finish.
 - Commit(s): 84985d551
 - Changed: `RailTrain.ContainsPadded()` (Inspector-tunable `paddedMin`/`paddedMax`, yellow gizmo when selected) now decides who "Escaped" at the bridge finish and whether the end-of-run rescue teleport fires. Horns, boarding and cargo keep the tight `Contains()`.
 - Cheap checks: compiles; fields read back on the train prefab instance. Not run in Play Mode.
@@ -358,7 +415,10 @@ No new block conversion or device run occurred during this documentation task.
 - Needs human: hanging off the side by hand in VR.
 - Priority: normal
 
-### Expedition render warmup: flashlight and helicopter TV first use — queued 2026-11-11
+### Expedition render warmup: flashlight and helicopter TV first use — queued 2026-11-11, manual-only
+- Regression 2026-11-13: First/repeat, warm Compound late join and cold initial Login late join PASS under the veil; headset first-use hitch/appearance remains pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (cold-cache/headset)**: third client joined the running route successfully, but no new veil/cold-cache timing instrumentation was run. Prior desktop warmup PASS retained; cold Login join and Quest profile remain pending. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: desktop part PASSED (see Results). Remaining: a cold late join from Login, and the Quest cold-cache profile below.
 - Commit(s): 1adf32ebe
 - Changed: on every Expedition load, the transition veil stays up while `ExpeditionRenderWarmup` draws each scene and catalog render state with lights off and with a warm spot light, through the viewer camera and a copy of the helicopter feed camera. See docs/transition-veil.md.
 - Cheap checks: compiles, Console empty. Not run in Play Mode.
@@ -367,7 +427,10 @@ No new block conversion or device run occurred during this documentation task.
 - Needs human: Quest development build profiled on a cold shader cache. Confirm the first flashlight or helmet light-on and the first helicopter TV view produce no shader or pipeline-creation spikes, and record the added veil time.
 - Priority: normal
 
-### Compound Discord button — queued 2026-11-11
+### Compound Discord button — queued 2026-11-11, manual-only
+- Regression 2026-11-13: Actual button dispatch/debounce/room retention PASS again; external browser appearance was not visually accepted. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: previous desktop PASS retained; Quest browser launch/return and reach/readability not available in this desktop run. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: desktop press, 3 s guard and no room transition PASSED (see Results). Remaining: Quest browser launch/return, headset reach/readability.
 - Commit(s): uncommitted
 - Changed: local JOIN DISCORD physical button with a "Join the Discord!" heading on the inner right partition of the Station Info nook; opens https://discord.gg/sfyvhahnDW.
 - Cheap checks: installed via Unity MCP, installer validation (callback, URL, CutePixel labels) passed, no Console errors; camera capture shows readable placement.
@@ -376,7 +439,10 @@ No new block conversion or device run occurred during this documentation task.
 - Needs human: Quest browser launch/return, headset reach and readability at duck height.
 - Priority: normal
 
-### Compound rating button and instruction PNG — queued 2026-11-11
+### Compound rating button and instruction PNG — queued 2026-11-11, manual-only
+- Regression 2026-11-13: Actual button dispatch/debounce/status/room retention PASS again; external store and headset PNG/readability remain human checks. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: previous desktop PASS retained; native Meta UI/cancel, replacement PNG review and headset reach remain pending. No rating submitted. Shared Unity/commit metadata and evidence are in the newest Results entry.
+- Queue run 2026-11-12: desktop press, status text, 3 s guard and no room transition PASSED (see Results). Remaining: native Meta rating UI, cancel/return, PNG replacement, and headset reach.
 - Commit(s): uncommitted
 - Changed: local RATE GAME physical button and replaceable 1024 × 768 PNG canvas in the Station Info nook; Quest requests native Meta rating/review UI, desktop opens the configured app's store listing.
 - Cheap checks: Unity 6000.3.24f1 compiled and installed in batch Edit Mode, exit 0; callback, texture, canvas and font references passed; no C# errors or exceptions. Scene diff limited to the new instance.
@@ -386,30 +452,40 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal
 
 ### Pause menu and rooms: headset buttons and feel (5aaa6ffdb, d480df22a) — queued 2026-11-11, manual-only
+- Regression 2026-11-13: Desktop menu/pages/tablet/rooms/owner gate paths rerun PASS; physical controller/key delivery and headset feel remain pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: no Quest controllers; Start/P and natural menu/keypad/gate interaction were not newly verified. Prior automated results retained. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): 5aaa6ffdb, d480df22a; fix 1f1203b1c (automated part PASSED 2026-11-11, see Results)
 - Check: Start button on a Quest controller and the P key open/close the menu (key input was not simulated). Poke/grab feel of the menu, keypad and gate LAUNCH EXPEDITION button. Hint readability at duck height.
 - Needs human: all of the above.
 - Priority: normal
 
 ### Test panel on L3, admin-gated: controllers and dev builds (7ae3a4e70, d46433b7b) — queued 2026-11-11, manual-only
+- Regression 2026-11-13: Editor toggle and removed GoldBarDropper rerun PASS; physical L3/Esc and non-admin dev-build gating remain pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: no headset dev-build/admin versus non-admin controller run; prior editor-toggle evidence retained. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): 7ae3a4e70, d46433b7b; help-text fix aeb8c3051 (editor toggle PASSED 2026-11-11, see Results)
 - Check: Editor VR rig: L3 opens/closes the wrist panel and the menu button opens the pause menu. Esc closes the keyboard panel. Dev build: admin L3 opens the panel after sign-in; non-admin L3 does nothing and the menu button opens the pause menu; no gold bar drops on L3.
 - Needs human: controllers, admin and non-admin accounts on a headset.
 - Priority: normal
 
 ### Stranded return: three clients and the original repro (d9ab4c4fc) — queued 2026-11-11, manual-only
+- Regression 2026-11-13: Evening stranded-token case excluded; fresh normal public return and cut return-control connection PASS with three clients. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED only on original headset repro (3 clients)**: targeted desktop return/rejoin portion PASS. A disconnected non-master rejoined the retained Returning expedition after its return token, immediately entered Leaving, and recovered to Compound in 2.70 s from that sample. Public-return state was seeded in an isolated private room and third client's session updates held to retain it; not a natural public win. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): d9ab4c4fc (2-client cases PASSED 2026-11-11, see Results)
 - Check: with 3 clients (so the expedition room stays open), disconnect a non-master during Ending and rejoin after the return token; it must leave within about 5 s. Confirm the original three-player headset win no longer leaves anyone aboard.
 - Needs human: headset repro. The 3-client rejoin case can be run with the bridge (see testing-tools) when a third account is configured.
 - Priority: normal
 
 ### Finale defenders, loot, gold crate, water, walls: headset feel (0a062e440, 2b8c0d3e8, a38008a7b, 3a3056c87, 1f35eb82b) — queued 2026-11-11, manual-only
+- Regression 2026-11-13: Applicable automated/live loot, payout, defenders, water and fall-recovery portions freshly rerun PASS; human acceptance stays pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: no new headset encounter, economy-balance, splash/fog/audio or climbing/warp-feel evidence. Previous automated results retained. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): as listed (automated parts PASSED 2026-11-11, see Results)
 - Check: tower spawn presentation and defense difficulty; loot placement taste, roof/tower reach, resource balance; coin shower into the depositor, deposit sound and +100 text as seen by others; water splash/bubble/muffle levels and teal fog in a headset, Quest fog cost; invisible-wall contact, hand-climbing the wall and the instant fall-recovery warp. Economy balance at 100 coins per bar.
 - Needs human: all of the above.
 - Priority: normal
 
 ### Zombie hit shapes: in-game throws and swings (dcd2f9e1, 62ea1a73) — queued 2026-11-10, manual-only
+- Regression 2026-11-13: Current-tree GrabbablePlayChecks rerun PASS; natural visual fit and headset throws/swings remain pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: animated-enemy visual fit and natural throws/swings were not tested with a headset; prior fixture evidence retained. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): f073d29a4; fixture fixed in b76f4618f (automated part PASSED, see Results)
 - Changed: zombie hit shapes follow animated bones (all five enemies); thrown items hit the earliest-contacted enemy; Spider head hit radius 23 cm.
 - Setup: 1 client in Play Mode (headset preferred): throw/swing bat and gold bar at each enemy type, including crowded pairs and a locked (just-hit) zombie.
@@ -418,6 +494,8 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal
 
 ### Enemy tuning + late-join flares: in-game (22262f75, 98ec9f5b, 6f4c3cba) — queued 2026-11-10, manual-only
+- Regression 2026-11-13: Current batch suites plus actual ground/moving-train enemy deaths and real late-join original-deadline expiry PASS. Known world-space flare behavior retained; headset feel remains pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED for full acceptance**: current natural death/40-second flare/ground-and-moving-train late-join scenario was not run; prior inert-avatar fixture does not cover it. Speed/kill-trigger feel also needs a headset. Known world-space flare behavior remains out of scope. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): 1ea23d07f; fixture fixes 136fe60ea, 8005743a5 (automated part PASSED, see Results)
 - Changed: speeds rebalanced, retreat 4–12 s, all zombies fear 40 s flares, flares restored for late joiners, smaller kill triggers, slower spider stalk.
 - Setup: 2 real game clients: client A dies (flare), client B joins late, once on the ground and once aboard a moving train.
@@ -426,6 +504,8 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal
 
 ### ZombieHook pull: no snapback, hands/gear clear of surfaces (6f27966d, 7b5dad14) — queued 2026-11-10, manual-only
+- Regression 2026-11-13: 24 pull + six surface batch cases and an actual real-network bare-hand ground pull PASS; full live held-gear/train/curve/headset acceptance remains pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
+- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: no worn-headset ground/train/curve pulls or held-item release coverage; prior batch PASS does not establish natural hands/gear clearance or comfort. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): see git log "Port Duckz ZombieHook pull"; batch fixture re-run on HEAD 2026-11-10 PASS (see Results)
 - Changed: hook pulls no longer snap the VR player back; while pulled, hands, held weapons/items and a hand-held bag stay out of floors and walls (locally and as sent to others), releases mid-pull drop instead of fling, and observers keep dropped items above the floor.
 - Setup: 2 clients (A in headset). Force `RailHook` spawns. Pull A (1) on the ground near a wall, (2) standing on the moving train, including near the cabin walls/rear, (3) on a curve. Repeat with bare hands, nail bat, gold bar, and a hand-held bag; release the item mid-pull once inside and once outside the train cargo volume.
@@ -435,6 +515,51 @@ No new block conversion or device run occurred during this documentation task.
 
 
 ## Results
+
+### Older-queue regression 2026-11-13 — execution complete
+
+**58 PASS / 3 FAIL / 2 BLOCKED / 18 deliberately excluded scenario groups.** Human-only acceptance stays in Pending. The counting units, every fresh verdict, raw evidence, rejected fixture attempts, genuine blockers and checks not reached are in the [scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md). [Exact scenario-level exclusions](validation/playtest-queue/2026-11-13-regression/run-notes.md#deliberate-exclusions) come only from the November 12 evening run and its linked evidence. Older Results, including previous Claude passes, were rerun rather than grandfathered.
+
+Unity 6000.3.24f1; starting HEAD `3c64b55a44e9c118c176838fa2e19136bd4b3eec`, final gameplay HEAD `8379de0f15405a0541434dc20037fd929d8161f3`, with unrelated working-tree edits preserved. Three distinct authenticated desktop MPPM clients on the real Photon/backend, plus current-tree disposable batch processes. No push, branches, stashes, unrelated reverts or diagnostic report inspection.
+
+- **Fixed and rerun:** Compound cleanup deleted purchased flashlights/bags after charging. Production fix `8379de0f1` retains current purchases with room/run/buyer metadata and clears them at the appropriate departure. Three-client purchase/charge, peer/late-join/handoff, buyer leave, private departure, both expedition stores, floor cleanup and public-return reruns pass. [Fix evidence](validation/playtest-queue/2026-11-13-regression/store-cleanup-fix.md).
+- **Remaining FAIL groups:** the broad rig fixture still fails its legacy lever stage after three corrections (`8522aae9f` fixes its earlier movement/grab assertions); physical-throttle hand-switch/regrip/remote-palm/right-end acceptance remains incomplete; several desktop traversal/pursuit routes do not finish acceptably. These are failed acceptance/harness groups, not three diagnosed production defects. Scope, attempts and unexecuted downstream steps are explicit in the ledger; no fourth correction or speculative geometry/VR redesign was applied.
+- **Remaining genuine blockers:** the three accounts lack the new bundle entitlements, and no Player4 account is configured for independent simultaneous rescues. Owned equip/cooldown/persistence and four-client acceptance remain pending; no ownership or balances were fabricated.
+- **New remaining-scope passes:** real Compound/cold-Login late warmup; natural flashlight bag insertion; fuelled driver/master disconnect braking; ordinary pickups after throttle; independent peer reverb/unload; six-block carried-item agreement; live loot settling and scoped collision traversal; full-route odometer; traced nose finish margin; moving/victory/handoff/late-progress/post-completion revive feedback; ground and moving-train natural enemy death/late flare; real ground Hook pull.
+- **Older passes freshly rerun:** all five batch suites, menus/rooms/button actions, private launch ownership, special-block loot/handoff, depositor-only gold/replay, actual results attribution/awards, player recovery/water, first-hold/fresh-run defenders, normal public return and cut return-control connection. All details are in the ledger; no whole-feature acceptance is implied.
+- **Environment/hygiene:** an OpenXR teardown crash required the user's restart; no crash report was opened. Existing microphone/output-device, LCK DX12 and MRUK errors limit listening/device acceptance. Related network/traversal subscenarios shared worlds; this run does not claim an Edit Mode reset before every numbered group. Final cleanup is now verified after the user's Ready response: Edit Mode, scenario NotRunning/Default, original logical test preferences restored, fixture inputs disarmed. [Cleanup readback](validation/playtest-queue/2026-11-13-regression/cleanup.txt).
+
+### Queue run 2026-11-12 evening — current queue, up to three authenticated clients
+
+Unity **6000.3.24f1**, verified main project `X:/Work/duck-rails/Assets`; MPPM desktop clients on real Photon/backend accounts, one workstation. Tested starting at `5f4a6d72e199aa7304018a9d56b412529e1dc868` with the existing uncommitted working tree, then fixes `79b69296b` and `3c64b55a4`. Timestamps in raw evidence are UTC November 13; the run began on November 12 local time. [Evidence and limits](validation/playtest-queue/2026-11-12-evening/run-notes.txt).
+
+**Full-entry outcomes: 1 PASS / 0 outstanding product FAIL / 31 BLOCKED for full acceptance.** BLOCKED includes manual/headset prerequisites, missing owned bundle products/fourth account, and incomplete scenario coverage explicitly identified per entry above; it does not mean every remaining desktop case was attempted. Partial PASS results below do not close those entries. Two observed product failures were fixed and passed reruns. The broad physical rig fixture still fails before useful throttle coverage, with no retained fixture edit. No diagnostic reports were read and nothing was pushed.
+
+- **Hand flashlight stays on after release — PASS, complete (queued November 12; 2 clients).** Actual hand pickup and use input turn it on; release leaves it lit, regrab preserves light, a full 60.0-second abandonment turns it off, and the component's stash path turns it off. Peer state agrees throughout. Off AudioSources were observed playing on both clients; the remote audio sample used a supplemental timeout seeded near expiry with the observer nearby. Stash coverage invokes the real component path, not natural backpack insertion. No human acceptance was required by this entry. [Owner](validation/playtest-queue/2026-11-12-evening/flashlight-main.txt), [peer](validation/playtest-queue/2026-11-12-evening/flashlight-player2.txt), [owner sound](validation/playtest-queue/2026-11-12-evening/flashlight-off-sound-main.txt), [peer sound](validation/playtest-queue/2026-11-12-evening/flashlight-off-sound-player2.txt).
+- **Furnace coal intake — FAIL, fixed in `79b69296b`, rerun PASS (2 clients).** Actual thrown coal settled at insertion-relative Y -0.27 m, below the old 0.22 m acceptance half-height despite being inside the firebox. Increased only the half-height to 0.32 m; below-floor coal remains excluded. Four actual deposits now pass while stopped, moving, after master handoff, and at empty fuel, with exactly-once credit/removal and resumed driving. Both clients emitted one burst and popup per receipt; a late third client replayed neither. Solo full/empty/refuel emission and fuel segments pass. Headset scale/readability remain queued. [Before](validation/playtest-queue/2026-11-12-evening/coal-before-main.txt), [rerun](validation/playtest-queue/2026-11-12-evening/rails-coal-main.txt), [peer rerun](validation/playtest-queue/2026-11-12-evening/rails-coal-remote.txt), [late join](validation/playtest-queue/2026-11-12-evening/observer-late-player3.txt).
+- **Motel route readiness — FAIL, fixed in `3c64b55a4`, rerun PASS (up to 3 clients).** Six stale null baked-renderer references prevented WorldReady and timed out departure. Re-exported the existing Motel lighting scene through its normal exporter: 1,970 bindings become 1,964 valid bindings, with bake scene and lighting companion unchanged. The same five-block route now starts and the late joiner becomes ready. All three clients reconstruct the same 142 remaining cargo identities/tokens after one deposit, matching geometry/reverb inventories and enemy IDs. This covers Container Yard, Motel, Convenience Store, Farm, Skyscraper and route special blocks; not natural traversal/pursuit acceptance. [Before](validation/playtest-queue/2026-11-12-evening/motel-load-before.txt), [after](validation/playtest-queue/2026-11-12-evening/motel-load-after.txt), snapshots `snapshot-late-{main,player2,player3}.txt` in the evidence folder.
+- **Throttle, displays and environment — PASS scoped desktop portions.** Solo and a non-master driver with 3 clients: requested lever progress 0.2/0.6/1 gives 0/2/4 m/s, release clears target/lease, rendered return has intermediate frames (~0.20–0.22 s sampled), heartbeat expiry brakes. Remote values and late-join distance match; 0 m departure and seeded 1000 m bridge-approach display pass. Physical grip/keyboard input remain unverified: broad rig fixture attempts failed at support/movement setup, and its experimental adjustment was reverted. All 25 live reverb zones follow the actual local listener inside/outside; two expedition mirror cameras create independent 256×256 targets nearby and stop at distance. These are runtime plumbing checks, not audible/visual/headset acceptance. [Drive](validation/playtest-queue/2026-11-12-evening/variable-drive-network-main.txt), [solo](validation/playtest-queue/2026-11-12-evening/solo-runtime.txt), [environment](validation/playtest-queue/2026-11-12-evening/environment-runtime.txt).
+- **Revive feedback — PASS scoped 3-client portions.** Existing real-client revive suite passes handover, brief dropout/grace and one rescuer with two overlapping downed players. All three clients show rising progress-audio pitch and receipt-triggered completion audio/four emitting particle layers. This does not close moving-train/victory-ride, independent simultaneous rescues, late-progress join, handoff/replay cleanup or headset acceptance. [Suite](validation/playtest-queue/2026-11-12-evening/revive-main.txt), observer logs in the evidence folder.
+- **Results board — PASS controlled transport/assignment portion, report-only (3 clients).** After real host handoff and controlled success, all peers show matching Coal/Gold/Revives/Downs and distinct Personal Space Enforcer / Big Spender / Emotional Support Duck titles. Repels/spent inputs were seeded through the normal stats request; coal came from an actual deposit. Natural action attribution, failed runs, reconnect-before-finish and threshold feel remain pending. Evidence: `results-{main,player2,player3}.txt`.
+- **Stranded return — PASS targeted 3-client desktop reproduction.** Non-master disconnects during Ending; third client retains the old room; after the main client returns and the room contains a return token, reconnect enters Returning/Leaving immediately and reaches ready Compound 2.70 s later. Seeded public-return state in an isolated private room and disabled third-client session updates deliberately retain that room; this is not the original natural headset win. Third client was re-enabled before shutdown. [Reconnect trace](validation/playtest-queue/2026-11-12-evening/stranded-player2.txt), [retained room/token](validation/playtest-queue/2026-11-12-evening/stranded-player3.txt).
+
+Cleanup: scenario stopped, editor in clean Compound Edit Mode, saved four-block order restored byte-identical, original desktop preference restored, bridge commands cleared. Script compilation has no failures. Final error query contains the pre-existing LCK unsupported graphics-API startup error, not an empty Console. Headset/Quest, original natural repros and missing ownership/account prerequisites remain **queued for playtest**.
+
+### Queue run 2026-11-12 — solo and two-client live portions (Unity 6000.3.24f1, MPPM, tested at 81b4538ab + fix bfcd86651)
+Main editor via Unity MCP, Player2 via `RailRemoteBridge`, real Photon cloud and backend, desktop simulated rig. Keys, L3 and Start were not injected. Test Block Order was set temporarily to Convenience Store, Farm and Skyscraper, then restored byte-identical. Full evidence: [2026-11-12 run](validation/playtest-queue/2026-11-12-queue-run.txt).
+
+- **Train aboard margin — PASS** (solo, automated part). Three runs, each with the bridge seeded fully lowered and the train driven across it. Head hanging off the side at train-local (2.6, 1.0, 0): tight box false, padded true, "Escaped", no rescue teleport over 6 s. Head on the nose at (0, 1.5, 6.0): "Escaped", no teleport. On the ground 25 m away: "Didn't make it", teleported to the deck on the finish frame. An earlier attempt was invalid (wrong rig lookup) and is not counted.
+- **Expedition render warmup — PASS** (desktop part). First departure: 37 states in 1.93 s, no time limit, no leftover "Warm proxies" or extra camera, helicopter lights on. Second departure in the same process: 0 new states, warmup entirely under a covered ALL ABOARD veil. Late join aboard the running train (Player2 from a compound): veil covered from join to release, "Getting the train ready..." shown, 2 new states, no uncovered Expedition frame. Not covered: a cold join from Login (the process was already warm). On the second departure "Getting the train ready..." did not appear, because world readiness arrived on the same frame the hold ended. This is cosmetic.
+- **Compound Discord and Rate buttons — PASS** (desktop part). `PressableButton` presses fired each action once. Repeat presses and direct calls within 3 s hit the guard. RATE GAME status read "Store opened. Find Ratings and Reviews.". Same room before and after, no room request. The agent did not see the browser window itself.
+- **Block loot consistency: Convenience Store, Farm (incl. pond/playground), Skyscraper — PASS** (2 clients). The 91 coal/gold items match on both clients: view IDs, spawn tokens and positions agree within 1 cm, all asleep on real colliders. The 12 enemies have matching IDs. After a late rejoin there are the same 103 items with no duplicates. Car-wash spin is cosmetic: 7 spinners with no colliders, and no rigidbodies or joints in the block. The Farm swing has no physics.
+- **Farm loot candidates — FAIL, then fixed in `bfcd86651`.** An isolated editor check of all candidates found 8 failures: the 7 flagged roof/hay items, plus Gold 087, which now clips the orchard retaining stones. `RailFarmPolishChecks.RepairLoot` moved only those markers (mostly 9 cm up out of the walkable roof). Re-check: 222/222 pass, pools unchanged. Convenience Store (235) and bridge finale (54) pass. Skyscraper reports 18 floor-0 items overlapping the ground slab. Live, those items spawned asleep with a 0.00 m gap, so they were left unchanged (noted, not a fix target).
+- **Attached throttle multiplayer — PASS** (lease level, 2 clients, simulated-rig hold path on the same shared lease). Results:
+  - Peers see the driver's actor and a matching lever (35°/325°).
+  - A second client's press is denied, and a key still held when the driver releases does not steal control.
+  - A non-master can drive.
+  - Lease release and train stop on each of: driver focus loss, blocked input (menu), driver down (seeded state, because normal downs are rejected aboard), driver disconnect (about 0.3 s), and master disconnect. On master disconnect Player2 became master and cleared the orphaned lease in about 0.1 s.
+  - Rejoiners see OFF without re-acquiring, and a late joiner sees the other player driving.
+  - Not covered: the remote attached-hand visual, real hand grip, keyboard T, and ordinary pickups afterwards.
 
 ### Queue run 2026-11-11 — live multi-client portions (Unity 6000.3.24f1, MPPM, tested at f7aeaf8de + fixes)
 Two real clients: the main editor and the MPPM Player2, on the Photon cloud and backend, with the desktop simulated rig. Unity MCP drove the main editor. Player2 was driven through the new test-only `RailRemoteBridge`; see [testing tools](testing-tools.md). Buttons used their own `Press()` paths. P, L3 and Start were not simulated: an unfocused editor drops injected key input. Full evidence: [2026-11-11 live run](validation/playtest-queue/2026-11-11-live-queue-run.txt). The working tree also had unrelated uncommitted train/bridge-finale prefab edits.

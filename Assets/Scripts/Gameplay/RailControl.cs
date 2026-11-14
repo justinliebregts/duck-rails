@@ -13,8 +13,9 @@ public sealed class RailControl : MonoBehaviour
     [Tooltip("Rendered palm offset in handle-local metres. +Y lifts; -Z moves toward the driver. Does not affect tracking or breakaway.")]
     public Vector3 palmOffset = new Vector3(0, .025f, -.015f);
     [Min(0)] public float returnDuration = .25f;
-    AudioSource audioSource;
-    AudioClip sound;
+    int clickStep = -1;
+    // Pitch rises with each 25% step; the 100% step also plays the latch on top.
+    static readonly float[] ClickPitch = { .8f, .95f, 1.1f, 1.3f };
     bool touching;
     float nextUse;
     static readonly System.Collections.Generic.HashSet<RailControl> drives = new System.Collections.Generic.HashSet<RailControl>();
@@ -113,10 +114,31 @@ public sealed class RailControl : MonoBehaviour
         gripStarted = Time.unscaledTime; nextHeartbeat = 0;
         driveProgress = simulatedDrive ? 0 : gripStartProgress; gripGranted = forwardLatched = false;
         PhotonSession.Instance.RequestDriveGrip(gripRun, gripToken, 0, 0);
+        PlayThrottle(RailAudio.Bank?.throttleGrab);
+    }
+    void PlayThrottle(Game.Audio.SoundEvent sound, float pitch = 1f) =>
+        RailAudio.Play(sound, handle != null ? handle.position : transform.position, 1f, pitch);
+    // One click per 25% of lever travel in either direction, so the spring-back ratchets down through them.
+    void ThrottleClicks(float progress)
+    {
+        int step = Mathf.Clamp(Mathf.FloorToInt(progress * 4f + .001f), 0, 4);
+        var bank = RailAudio.Bank;
+        if (clickStep < 0 || bank == null || !PhotonSession.OnTrain) { clickStep = step; return; }
+        if (step == clickStep) return;
+        bool up = step > clickStep;
+        int from = up ? clickStep + 1 : step + 1, to = up ? step : clickStep;
+        for (int i = 0; i <= to - from; i++)
+        {
+            int k = up ? from + i : to - i; // descending pitch on the way back down
+            PlayThrottle(bank.throttleClick, ClickPitch[k - 1]);
+            if (up && k == 4) PlayThrottle(bank.throttleLatch);
+        }
+        clickStep = step;
     }
     public void ReleaseDrive()
     {
         if (driveHand == null && !simulatedDrive) return;
+        PlayThrottle(RailAudio.Bank?.throttleRelease);
         PhotonSession.Instance?.RequestDriveGrip(gripRun, gripToken, 2, 0);
         releasedToken = gripToken;
         driveHand = null; drivePalm = null; simulatedDrive = false; gripGranted = forwardLatched = false; driveProgress = 0;
@@ -208,21 +230,14 @@ public sealed class RailControl : MonoBehaviour
     }
     void DetentFeedback()
     {
+        // The throttle sounds (clicks and latch) come from ThrottleClicks as the lever moves.
         VibrationManager.instance?.TriggerVibrationPulse(.65f, .55f, .055f, driveHand);
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.playOnAwake = false; audioSource.spatialBlend = 1;
-            audioSource.minDistance = .3f; audioSource.maxDistance = 5;
-        }
-        if (sound == null) sound = Tone("Throttle detent", 130, .065f);
-        audioSource.PlayOneShot(sound, .3f);
     }
-    void OnDestroy() { if (sound != null) Destroy(sound); }
     void PoseDrive(float progress)
     {
         if (handle == null) return;
         renderedProgress = progress;
+        ThrottleClicks(progress);
         handle.localRotation = Quaternion.Euler(Mathf.Lerp(-35, 35, progress), 0, 0);
         handle.localPosition = handle.localRotation * handleRest;
     }

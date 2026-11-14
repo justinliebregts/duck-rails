@@ -9,10 +9,19 @@ public sealed class RailFurnaceModule : MonoBehaviour
     public Vector3 acceptanceHalfExtents = new Vector3(.50f, .43f, .50f);
     public ParticleSystem fire, smoke;
     [Header("Polygon FX (idle flames + per-coal burst)")]
-    public GameObject idleFirePrefab, coalBurstPrefab;
-    public float fxScale = .25f;
+    [Tooltip("Idle flames live in the Furnace prefab so they can be tuned in the editor; emission is scaled at runtime.")]
+    public GameObject idleFire;
+    public GameObject coalBurstPrefab;
+    public float burstScale = .25f;
     [Range(0, 1)] public float outOfFuelEmission = .12f;
-    GameObject idleFire;
+    [Tooltip("Emission change per second when the fire grows or shrinks (1 = full change in one second).")]
+    public float fadeSpeed = .5f;
+    [Tooltip("Fuel fraction (of capacity) at and above which the fire burns at full emission. Below it the fire ramps down linearly to Out Of Fuel Emission at 0 fuel.")]
+    [Range(0, 1)] public float fullBurnFuelFraction = .2f;
+    [Header("Debug")]
+    [Tooltip("Force the idle fire level (0-1 of full emission) regardless of fuel or boarding.")]
+    public bool debugOverride;
+    [Range(0, 1)] public float debugLevel = 1;
     ParticleSystem[] idleSystems;
     float[] idleBaseRates;
     float idleLevel = 1;
@@ -21,6 +30,8 @@ public sealed class RailFurnaceModule : MonoBehaviour
     public Material fuelTextMaterial;
     public TextEffectInstance fuelTextEffect;
     RailTrain train;
+    Game.Audio.AudioHandle fireLoop;
+    float nextFireTry;
 
     /// <summary>Floats a "+N" fuel number up out of the firebox opening.</summary>
     public void ShowFuelGain(float fuel)
@@ -29,6 +40,7 @@ public sealed class RailFurnaceModule : MonoBehaviour
         Vector3 at = insertion != null ? insertion.position : transform.position;
         GoldRewardText.Show("+" + text, at, fuelTextFont, fuelTextMaterial, fuelTextEffect);
         PlayCoalBurst(at);
+        RailAudioDirector.CoalDeposited(at);
     }
 
     /// <summary>One-shot flame burst; runs on every client from the committed-deposit popup path.</summary>
@@ -37,17 +49,14 @@ public sealed class RailFurnaceModule : MonoBehaviour
         if (coalBurstPrefab == null) return;
         var rot = transform.rotation;
         var burst = Instantiate(coalBurstPrefab, at, rot);
-        burst.transform.localScale = Vector3.one * fxScale;
+        burst.transform.localScale = Vector3.one * burstScale;
         foreach (var ps in burst.GetComponentsInChildren<ParticleSystem>()) { var main = ps.main; main.scalingMode = ParticleSystemScalingMode.Hierarchy; ps.Play(); }
         Destroy(burst, 4f);
     }
 
     void BuildIdleFire()
     {
-        if (idleFirePrefab == null || idleFire != null) return;
-        var anchor = fire != null ? fire.transform : (insertion != null ? insertion : transform);
-        idleFire = Instantiate(idleFirePrefab, anchor.position, transform.rotation, transform);
-        idleFire.transform.localScale = Vector3.one * fxScale;
+        if (idleFire == null || idleSystems != null) return;
         idleSystems = idleFire.GetComponentsInChildren<ParticleSystem>();
         foreach (var ps in idleSystems) { var main = ps.main; main.scalingMode = ParticleSystemScalingMode.Hierarchy; }
         idleBaseRates = new float[idleSystems.Length];
@@ -57,8 +66,11 @@ public sealed class RailFurnaceModule : MonoBehaviour
 
     void UpdateIdleFire(bool aboard)
     {
-        float target = !aboard ? 0 : PhotonSession.CurrentFuel > 0 ? 1 : outOfFuelEmission;
-        idleLevel = Mathf.MoveTowards(idleLevel, target, Time.deltaTime * .5f);
+        float fuel = PhotonSession.CurrentFuel;
+        float ramp = fullBurnFuelFraction <= 0 ? 1 : Mathf.Clamp01(fuel / (RailResourceBalance.Capacity * fullBurnFuelFraction));
+        float lit = Mathf.Lerp(outOfFuelEmission, 1, ramp);
+        float target = debugOverride ? debugLevel : !aboard ? 0 : lit;
+        idleLevel = Mathf.MoveTowards(idleLevel, target, Time.deltaTime * fadeSpeed);
         for (int i = 0; i < idleSystems.Length; i++)
         {
             var emission = idleSystems[i].emission;
@@ -87,6 +99,18 @@ public sealed class RailFurnaceModule : MonoBehaviour
         if (idleFire != null) UpdateIdleFire(aboard);
         else SetEmission(fire, aboard && PhotonSession.CurrentFuel > 0);
         SetEmission(smoke, aboard && train != null && Mathf.Abs(train.Speed) > .05f);
+        UpdateFireLoop(aboard && PhotonSession.CurrentFuel > 0);
+    }
+    // The fire bed follows the same condition as the flames and fades in and out with them.
+    void UpdateFireLoop(bool burning)
+    {
+        if (!burning) { if (fireLoop.IsPlaying) fireLoop.Stop(.6f); return; }
+        if (fireLoop.IsPlaying || Time.unscaledTime < nextFireTry) return;
+        nextFireTry = Time.unscaledTime + .5f;
+        var bank = RailAudio.Bank;
+        var manager = Game.Audio.AudioManager.instance;
+        if (bank != null && bank.furnaceFireLoop != null && manager != null)
+            fireLoop = manager.PlayAmbience(bank.furnaceFireLoop, insertion != null ? insertion : transform, this, true, .6f);
     }
     public static void SetEmission(ParticleSystem effect, bool enabled)
     {
@@ -96,7 +120,9 @@ public sealed class RailFurnaceModule : MonoBehaviour
     }
     void OnDisable()
     {
-        if (idleFire != null) { Destroy(idleFire); idleFire = null; }
+        fireLoop.Stop();
+        if (idleSystems != null) foreach (var ps in idleSystems) if (ps != null) ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        idleSystems = null;
         if (fire != null) fire.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         if (smoke != null) smoke.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
     }

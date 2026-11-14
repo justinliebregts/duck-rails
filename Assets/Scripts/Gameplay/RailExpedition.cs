@@ -37,8 +37,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     bool wasDown;
     readonly RailAtmosphere atmosphere = new RailAtmosphere();
     double nextTick, nextDownRequest, fallAt;
-    AudioSource reviveAudio;
-    AudioClip reviveClip;
+    RailReviveEffects reviveEffects;
     readonly Dictionary<string, TMP_Text> downLabels = new Dictionary<string, TMP_Text>();
     GameObject explosion;
     readonly HashSet<string> carrierHits = new HashSet<string>();
@@ -54,12 +53,11 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         RailEnemySpawns.Register();
         foreach (var prefab in supplies) PhotonPreparePool.Register(prefab);
         PhotonPreparePool.Register(goldPrefab); PhotonPreparePool.Register(coalPrefab); PhotonPreparePool.Register(enemyPrefab);
-        reviveClip = RailControl.Tone("Revive", 330, 1);
-        reviveAudio = gameObject.AddComponent<AudioSource>(); reviveAudio.clip = reviveClip; reviveAudio.loop = true; reviveAudio.volume = .12f;
+        reviveEffects = new RailReviveEffects();
     }
     void OnEnable() => PhotonNetwork.AddCallbackTarget(this);
-    void OnDisable() { RestoreNightAtmosphere(); PhotonNetwork.RemoveCallbackTarget(this); requests.Clear(); if (reviveAudio != null) reviveAudio.Stop(); }
-    void OnDestroy() { if (Instance == this) Instance = null; if (reviveClip != null) Destroy(reviveClip); }
+    void OnDisable() { RestoreNightAtmosphere(); PhotonNetwork.RemoveCallbackTarget(this); requests.Clear(); reviveEffects?.Reset(); }
+    void OnDestroy() { if (Instance == this) Instance = null; }
     public static bool CanTarget(PhotonPlayer player)
     {
         if (!PhotonSession.IsRailsRoom || Instance == null) return true;
@@ -172,14 +170,14 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     }
     void Update()
     {
-        if (!PhotonSession.IsRailsRoom) return;
-        if (!PhotonNetwork.IsMessageQueueRunning || PhotonSession.Instance == null || PhotonSession.Instance.HasRoomRequest) return;
+        if (!PhotonSession.IsRailsRoom) { reviveEffects.Reset(); return; }
+        if (!PhotonNetwork.IsMessageQueueRunning || PhotonSession.Instance == null || PhotonSession.Instance.HasRoomRequest) { reviveEffects.StopProgress(); return; }
         ReadState();
         if (!PhotonSession.OnTrain)
         {
             if (PhotonNetwork.IsMasterClient) foreach (var e in Game.AI.Enemy.Active.ToArray())
                 if (e != null && e.TryGetComponent<PhotonView>(out var view) && view.IsMine) PhotonNetwork.Destroy(e.gameObject);
-            requests.Clear(); reviveAudio.Stop(); wasDown = false;
+            requests.Clear(); reviveEffects.Reset(); wasDown = false;
             foreach (var label in downLabels.Values) if (label != null) label.gameObject.SetActive(false);
             return;
         }
@@ -252,7 +250,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 if (p.reviveLostAt > 0) { p.reviveAt += now - p.reviveLostAt; p.reviveLostAt = 0; } // pause during grace
                 p.rescuer = rescuer.id;
                 if (now - p.reviveAt >= RailRunState.ReviveSeconds)
-                { p.down = false; p.protectedUntil = now + RailRunState.ProtectionSeconds; p.reviveAt = 0; p.rescuer = ""; if (!ending) { rescuer.revives++; p.revived++; } }
+                { p.down = false; p.protectedUntil = now + RailRunState.ProtectionSeconds; p.reviveAt = 0; p.reviveLostAt = 0; p.rescuer = ""; p.reviveSequence++; p.revivedAt = now; if (!ending) { rescuer.revives++; p.revived++; } }
             }
         }
         if (ending)
@@ -297,7 +295,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (PhotonSession.Instance.Commit(changes) && requests.Count > 0)
         { pendingRequestJson = json; pendingRequestAt = now; }
     }
-    static bool IsConnected(int actor) => PhotonNetwork.CurrentRoom?.GetPlayer(actor)?.IsInactive == false;
+    public static bool IsConnected(int actor) => PhotonNetwork.CurrentRoom?.GetPlayer(actor)?.IsInactive == false;
     // Actors counted as holding the bridge button on the latest master tick (superlatives only).
     readonly HashSet<int> bridgeHolders = new HashSet<int>();
     // Tuning, not acceptance: see docs/game-design.md "Superlatives".
@@ -380,6 +378,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         {
             if (!p.down) return;
             p.down = false; p.reviveAt = 0; p.rescuer = "";
+            p.reviveLostAt = 0; p.reviveSequence++; p.revivedAt = now;
             p.protectedUntil = now + RailRunState.ProtectionSeconds;
             state.allDownAt = 0;
             return;
@@ -479,7 +478,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             {
                 label.transform.position = pos + Vector3.up;
                 if (Camera.main != null) label.transform.rotation = Camera.main.transform.rotation;
-                label.text = p.reviveAt > 0 ? "REVIVING " + Mathf.Clamp01((float)((now - p.reviveAt) / 3)).ToString("P0") : "DOWN\nHold a hand nearby";
+                label.text = p.reviveAt > 0 ? "REVIVING " + RailReviveEffects.Progress(p, now).ToString("P0") : "DOWN\nHold a hand nearby";
                 label.color = new Color(1, .75f, .2f);
             }
         }
@@ -491,9 +490,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             (PlayerHand.GripHandler as BagInventory)?.DropHandsForUnavailablePlayer();
         }
         wasDown = local?.down == true;
-        var reviving = State.players.FirstOrDefault(p => p.down && p.reviveAt > 0 && (p.id == local?.id || p.rescuer == local?.id));
-        if (reviving != null) { reviveAudio.pitch = 1 + Mathf.Clamp01((float)((now - reviving.reviveAt) / 3)); if (!reviveAudio.isPlaying) reviveAudio.Play(); }
-        else reviveAudio.Stop();
+        reviveEffects.Present(State, transform, now);
         results.gameObject.SetActive(State.finished);
         if (State.finished)
         {
@@ -505,6 +502,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 if (explosionMaterial != null) ps.GetComponent<ParticleSystemRenderer>().sharedMaterial = explosionMaterial;
                 var emission = ps.emission; emission.rateOverTime = 0; emission.SetBursts(new[] { new ParticleSystem.Burst(0, 90) });
                 ps.Play();
+                var audioBank = RailAudio.Bank;
+                if (audioBank != null) RailAudio.Play(audioBank.bridgeCrash, explosion.transform.position);
             }
             int returnSeconds = RailSessionRules.ReturnCountdown(PhotonSession.Phase,
                 PhotonSession.Get(RailSessionRules.Deadline, 0d), now);

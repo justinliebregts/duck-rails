@@ -14,6 +14,9 @@ public sealed class RailHoldControl : MonoBehaviour
     AudioSource source;
     AudioClip clip;
     bool held, focused = true, paused;
+    bool hornActive, hornFading;
+    AudioClip lastHorn;
+    const float HornFadeSeconds = .15f;
     double nextHeartbeat;
     string heldRun;
     readonly HashSet<int> listeners = new HashSet<int>();
@@ -27,7 +30,8 @@ public sealed class RailHoldControl : MonoBehaviour
         if (radio) gameObject.AddComponent<WalkieSpeaker>().Configure(0, true);
         else
         {
-            source.loop = true; source.maxDistance = 100; source.rolloffMode = AudioRolloffMode.Linear;
+            source.loop = false; source.maxDistance = 100; source.rolloffMode = AudioRolloffMode.Linear;
+            // Fallback only, used when RailAudioBank has no horn clips. The real horn is a one-shot.
             // Both harmonics finish a whole number of cycles, making the one-second loop seamless.
             var samples = new float[24000];
             for (int i = 0; i < samples.Length; i++)
@@ -35,6 +39,34 @@ public sealed class RailHoldControl : MonoBehaviour
             clip = AudioClip.Create("Held train horn", samples.Length, 1, 24000, false);
             clip.SetData(samples, 0); source.clip = clip;
         }
+    }
+    AudioClip PickHorn()
+    {
+        var horns = RailAudio.Bank != null ? RailAudio.Bank.hornClips : null;
+        if (horns == null || horns.Length == 0) return clip;
+        int pick = Random.Range(0, horns.Length);
+        if (horns.Length > 1 && horns[pick] == lastHorn) pick = (pick + 1) % horns.Length;
+        return lastHorn = horns[pick];
+    }
+    // One-shot while any nearby holder presses: it never loops if held past its end, and fades out quickly on release.
+    void UpdateHorn(bool pressed)
+    {
+        if (pressed)
+        {
+            if (hornActive) return;
+            hornActive = true; hornFading = false;
+            source.clip = PickHorn();
+            if (source.clip == null) return;
+            source.loop = source.clip == clip;
+            source.outputAudioMixerGroup = Game.Audio.AudioManager.instance != null && Game.Audio.AudioManager.instance.Settings != null
+                ? Game.Audio.AudioManager.instance.Settings.effects : null;
+            source.volume = 1f; source.Play();
+            return;
+        }
+        if (hornActive) { hornActive = false; hornFading = source.isPlaying; }
+        if (!hornFading) return;
+        source.volume = Mathf.MoveTowards(source.volume, 0f, Time.unscaledDeltaTime / HornFadeSeconds);
+        if (source.volume <= 0f || !source.isPlaying) { source.Stop(); source.volume = 1f; hornFading = false; }
     }
     void LateUpdate()
     {
@@ -63,8 +95,7 @@ public sealed class RailHoldControl : MonoBehaviour
         }
         else if (source != null)
         {
-            if (current.Count > 0 && !source.isPlaying) source.Play();
-            if (current.Count == 0 && source.isPlaying) source.Stop();
+            UpdateHorn(current.Count > 0);
         }
     }
     public static bool IsLive(object value, string run, double now) => value is object[] data && data.Length == 2 &&
@@ -86,7 +117,8 @@ public sealed class RailHoldControl : MonoBehaviour
         if (held) SetHeld(false);
         foreach (int actor in listeners) WalkieRadio.ClearView(-100000 - actor);
         listeners.Clear();
-        if (source != null) source.Stop();
+        hornActive = hornFading = false;
+        if (source != null) { source.Stop(); source.volume = 1f; }
     }
     void OnApplicationFocus(bool value) { focused = value; if (!value) StopHold(); }
     void OnApplicationPause(bool value) { paused = value; if (value) StopHold(); }

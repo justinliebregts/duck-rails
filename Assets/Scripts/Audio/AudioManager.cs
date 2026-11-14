@@ -182,8 +182,9 @@ namespace Game.Audio
                 if (candidate.isActiveAndEnabled) { listener = candidate; break; }
         }
 
-        public AudioHandle Play(SoundEvent sound, Vector3 position, float volumeScale = 1f, Transform ignoreOcclusionRoot = null)
-            => Request(sound, position, null, null, false, volumeScale, ignoreOcclusionRoot);
+        /// <summary>pitchScale multiplies the event's own random pitch, e.g. for pitched UI/detent clicks.</summary>
+        public AudioHandle Play(SoundEvent sound, Vector3 position, float volumeScale = 1f, Transform ignoreOcclusionRoot = null, float pitchScale = 1f)
+            => Request(sound, position, null, null, false, volumeScale, ignoreOcclusionRoot, pitchScale: pitchScale);
         public AudioHandle PlayAttached(SoundEvent sound, Transform follow, Behaviour owner = null, Transform ignoreOcclusionRoot = null)
             => follow != null ? Request(sound, follow.position, follow, owner, false, ignoreOcclusionRoot: ignoreOcclusionRoot) : default;
         public AudioHandle PlayLoop(SoundEvent sound, Transform follow, Behaviour owner = null, Transform ignoreOcclusionRoot = null)
@@ -193,7 +194,7 @@ namespace Game.Audio
             => origin != null ? Request(sound, origin.position, loop ? origin : null, owner, loop,
                 ambience: true, fadeIn: loop ? fadeIn : 0f) : default;
 
-        AudioHandle Request(SoundEvent sound, Vector3 position, Transform follow, Behaviour owner, bool loop, float volumeScale = 1f, Transform ignoreOcclusionRoot = null, bool ambience = false, float fadeIn = 0f)
+        AudioHandle Request(SoundEvent sound, Vector3 position, Transform follow, Behaviour owner, bool loop, float volumeScale = 1f, Transform ignoreOcclusionRoot = null, bool ambience = false, float fadeIn = 0f, float pitchScale = 1f)
         {
             if (!isActiveAndEnabled || voices == null || sound == null || (owner != null && !owner.isActiveAndEnabled))
                 return default;
@@ -265,6 +266,7 @@ namespace Game.Audio
             AudioMixerGroup group = settings == null ? null : settings.effects;
             sound.Configure(slot.Source, selection, group, loop);
             slot.Source.volume *= Mathf.Clamp01(volumeScale);
+            slot.Source.pitch *= Mathf.Clamp(pitchScale, 0.1f, 3f);
             slot.BaseVolume = slot.Source.volume;
             // Start at the sampled mix. Smoothing is for changes during playback, not the first buffer.
             float clear = slot.OcclusionTarget;
