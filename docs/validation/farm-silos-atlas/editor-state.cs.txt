@@ -1,0 +1,11 @@
+using UnityEngine;using UnityEditor;using UnityEngine.SceneManagement;using System;using System.IO;using System.Linq;
+internal class CommandScript:IRunCommand{public void Execute(ExecutionResult r){
+var scene=SceneManager.GetActiveScene();var root=scene.GetRootGameObjects().Single(g=>g.GetComponent<RailBlock>());
+var lights=root.GetComponentsInChildren<Light>(true);
+if(scene.path!="Assets/DuckRails/FarmSilosAtlasReview/FarmSilos-FullAtlas-Review.unity"||lights.Length!=41||lights.Any(l=>l.lightmapBakeType!=LightmapBakeType.Baked||l.enabled))throw new Exception("Reloaded baked light metadata mismatch");
+var msg="PASS reloaded review: 41 baked fixtures disabled only in review scene (prefab settings unchanged); no realtime preview double-lighting.\nScene="+scene.path+"\nPlay="+EditorApplication.isPlaying+" bake="+Lightmapping.isRunning+" compile="+EditorApplication.isCompiling+" dirty="+scene.isDirty+"\nLight probes="+(LightmapSettings.lightProbes?LightmapSettings.lightProbes.count:0)+"\nLighting data="+AssetDatabase.GetAssetPath(Lightmapping.lightingDataAsset)+"\n";
+File.WriteAllText("docs/validation/farm-silos-atlas/editor-state.txt",msg);r.Log(msg);
+Selection.objects=Array.Empty<UnityEngine.Object>();var view=SceneView.lastActiveSceneView;
+if(view){view.sceneLighting=true;view.sceneViewState.showFog=false;view.drawGizmos=false;view.LookAt(new Vector3(0,6,80),Quaternion.LookRotation(new Vector3(1,-.8f,1)),95,false,true);view.Repaint();}
+}}
+

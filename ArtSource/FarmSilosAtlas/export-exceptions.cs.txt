@@ -1,0 +1,28 @@
+using UnityEngine; using UnityEditor; using System; using System.IO; using System.Linq; using System.Collections.Generic;
+internal class CommandScript : IRunCommand {
+public void Execute(ExecutionResult result) {
+var root=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/farm-silos-v1.prefab");
+var payload=JsonUtility.FromJson<RailFarmSilosAtlasReview.Payload>(File.ReadAllText("ArtSource/FarmSilosAtlas/unity-meshes.json"));
+var converted=new HashSet<string>(payload.sourceKeys); var mats=new List<Material>(); var parts=new List<object>();
+foreach(var r in root.GetComponentsInChildren<MeshRenderer>(true)){
+var indices=new List<int>(); for(var t=r.transform;t!=root.transform;t=t.parent)indices.Insert(0,t.GetSiblingIndex());var key=string.Join("/",indices);
+if(converted.Contains(key)||!r.enabled)continue;
+var f=r.GetComponent<MeshFilter>();if(!f||!f.sharedMesh)continue;
+var mesh=f.sharedMesh;if(!mesh.isReadable)throw new Exception("Unreadable exception "+r.name);
+for(int sub=0;sub<mesh.subMeshCount;sub++){
+var m=r.sharedMaterials[sub];int mi=mats.IndexOf(m);if(mi<0){mi=mats.Count;mats.Add(m);}
+parts.Add(new {name=r.name,path=AnimationUtility.CalculateTransformPath(r.transform,root.transform),sourceKey=key,material=mi,
+vertices=mesh.vertices.Select(v=>root.transform.InverseTransformPoint(r.transform.TransformPoint(v))).Select(v=>new[]{v.x,v.y,v.z}),
+normals=mesh.normals.Select(v=>(root.transform.worldToLocalMatrix*r.transform.localToWorldMatrix).inverse.transpose.MultiplyVector(v).normalized).Select(v=>new[]{v.x,v.y,v.z}),
+uv=mesh.uv.Select(v=>Vector2.Scale(v,m.GetTextureScale("_BaseMap"))+m.GetTextureOffset("_BaseMap")).Select(v=>new[]{v.x,v.y}),triangles=mesh.GetTriangles(sub)});
+}}
+var materials=mats.Select(m=>new {name=m.name,color=new[]{m.GetColor("_BaseColor").r,m.GetColor("_BaseColor").g,m.GetColor("_BaseColor").b,m.GetColor("_BaseColor").a},
+emission=m.IsKeywordEnabled("_EMISSION")?new[]{m.GetColor("_EmissionColor").r,m.GetColor("_EmissionColor").g,m.GetColor("_EmissionColor").b}:new[]{0f,0f,0f},
+metallic=m.GetFloat("_Metallic"),smoothness=m.GetFloat("_Smoothness"),transparent=m.renderQueue>2500,
+basePixels=Pixels(m.GetTexture("_BaseMap")),emissionPixels=Pixels(m.GetTexture("_EmissionMap"))});
+var json=(string)AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("Newtonsoft.Json.JsonConvert")).First(t=>t!=null).GetMethod("SerializeObject",new[]{typeof(object)}).Invoke(null,new object[]{new {parts,materials}});
+File.WriteAllText("ArtSource/FarmSilosAtlas/exceptions.json",json);result.Log("Exported "+parts.Count+" reference-only exception parts; "+mats.Count+" materials. No production changes.");
+}
+object Pixels(Texture tex){if(!tex)return null; var t=tex as Texture2D;if(!t)throw new Exception("Not Texture2D"); if(!t.isReadable){var rt=RenderTexture.GetTemporary(t.width,t.height,0,RenderTextureFormat.ARGBFloat,RenderTextureReadWrite.Linear);var previous=RenderTexture.active;Graphics.Blit(t,rt);RenderTexture.active=rt;var copy=new Texture2D(t.width,t.height,TextureFormat.RGBAFloat,false,true);copy.ReadPixels(new Rect(0,0,t.width,t.height),0,0);copy.Apply();var output=new {width=t.width,height=t.height,linear=true,pixels=copy.GetPixels().Select(c=>new[]{c.r,c.g,c.b,c.a}).ToArray()};RenderTexture.active=previous;RenderTexture.ReleaseTemporary(rt);UnityEngine.Object.DestroyImmediate(copy);return output;}return new {width=t.width,height=t.height,linear=!t.isDataSRGB,pixels=t.GetPixels().Select(c=>new[]{c.r,c.g,c.b,c.a})};}
+}
+

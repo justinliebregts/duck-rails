@@ -1,5 +1,10 @@
 # Duck Rails — V1 game design
 
+November 14 Farm Silos atlas: full-block Blender source and isolated Unity review
+imported with 117 shared-material chunks and 54 retained probe-lit exceptions.
+Current edits, collision, gameplay/spawns/navigation and baked lighting preserved.
+User approved the appearance; production integration preserves the original prefab GUID and all 8,738 original object IDs. Authoring/integration checks pass; runtime/headset acceptance remains queued. [Integration evidence](validation/farm-silos-atlas/production-integration.md).
+
 November 14 Container Yard atlas: full-block Blender source and isolated Unity
 review imported with 246 shared-material chunks and three retained CutePixel labels.
 Current layout/edits, collision, gameplay, spawns, navigation and baked lighting

@@ -1,0 +1,63 @@
+using UnityEngine; using UnityEditor; using System; using System.IO; using System.Linq; using System.Collections.Generic;
+internal class CommandScript : IRunCommand {
+[Serializable] public class Data { public List<Part> parts=new List<Part>(); public List<Mat> materials=new List<Mat>(); }
+[Serializable] public class Part {public int sourceId; public string path; public string sourceKey; public string settings; public Vector3[] vertices; public Vector3[] normals; public Vector2[] uv; public Vector2[] uv2; public int[] triangles; public int material; public string lightmap; public Vector4 lightmapST;}
+[Serializable] public class Mat {public string name; public string texture; public Color color; public Color emission; public float metallic; public float smoothness; public Vector2 scale; public Vector2 offset;}
+public void Execute(ExecutionResult result) {
+var root=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/farm-silos-v1.prefab");
+var wing=root.transform; var data=new Data(); var exclusions=new List<string>(); var mats=new List<Material>();
+string folder="ArtSource/FarmSilosAtlas";
+if(File.Exists(folder+"/source.json")||File.Exists(folder+"/original.prefab"))throw new InvalidOperationException("Source snapshot exists; preserve it and any review edits.");
+Directory.CreateDirectory(folder+"/textures");
+foreach(var r in wing.GetComponentsInChildren<MeshRenderer>(true)){
+var reason=Excluded(r,root); if(reason!=null){exclusions.Add(AnimationUtility.CalculateTransformPath(r.transform,root.transform)+" | "+reason);continue;}
+var mesh=r.GetComponent<MeshFilter>().sharedMesh;
+var indices=new List<int>();for(var t=r.transform;t!=root.transform;t=t.parent)indices.Insert(0,t.GetSiblingIndex());
+string sourceKey=string.Join("/",indices);
+string settings=string.Join(",",r.gameObject.layer,(int)r.shadowCastingMode,r.receiveShadows?1:0,(int)r.lightProbeUsage,(int)r.reflectionProbeUsage,r.renderingLayerMask,r.sortingLayerID,r.sortingOrder,(int)r.motionVectorGenerationMode);
+
+for(int s=0;s<mesh.subMeshCount;s++){if(mesh.GetIndexCount(s)==0)continue;
+var m=r.sharedMaterials[s]; if(!m||m.shader.name!="Universal Render Pipeline/Lit")continue;
+int mi=mats.IndexOf(m); if(mi<0){mi=mats.Count;mats.Add(m);
+var md=new Mat{name=m.name,color=m.GetColor("_BaseColor"),emission=m.IsKeywordEnabled("_EMISSION")?m.GetColor("_EmissionColor"):Color.black,metallic=m.GetFloat("_Metallic"),smoothness=m.GetFloat("_Smoothness"),scale=m.GetTextureScale("_BaseMap"),offset=m.GetTextureOffset("_BaseMap")};
+var tex=m.GetTexture("_BaseMap"); if(tex){var rt=RenderTexture.GetTemporary(tex.width,tex.height,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB); var prev=RenderTexture.active; Graphics.Blit(tex,rt); RenderTexture.active=rt;var copy=new Texture2D(tex.width,tex.height,TextureFormat.RGBA32,false);copy.ReadPixels(new Rect(0,0,tex.width,tex.height),0,0);copy.Apply();md.texture="textures/"+mi+".png";File.WriteAllBytes(folder+"/"+md.texture,copy.EncodeToPNG());RenderTexture.active=prev;RenderTexture.ReleaseTemporary(rt);UnityEngine.Object.DestroyImmediate(copy);}data.materials.Add(md);}
+var binding=root.GetComponent<RailBakedBlockLighting>().bindings.FirstOrDefault(b=>b.renderer==r);
+data.parts.Add(new Part{sourceId=r.GetInstanceID(),sourceKey=sourceKey,settings=settings,path=AnimationUtility.CalculateTransformPath(r.transform,root.transform),vertices=mesh.vertices.Select(v=>root.transform.InverseTransformPoint(r.transform.TransformPoint(v))).ToArray(),normals=mesh.normals.Select(n=>(root.transform.worldToLocalMatrix*r.transform.localToWorldMatrix).inverse.transpose.MultiplyVector(n).normalized).ToArray(),uv=mesh.uv,uv2=mesh.uv2,triangles=mesh.GetTriangles(s),material=mi,lightmap=AssetDatabase.GetAssetPath(binding.color),lightmapST=binding.scaleOffset});
+}}
+File.WriteAllLines(folder+"/exclusions.txt",exclusions);
+var paths=AssetDatabase.GetDependencies("Assets/DuckRails/Blocks/farm-silos-v1.prefab",true).Concat(AssetDatabase.GetDependencies("Assets/DuckRails/Lighting/Blocks/farm-silos-v1/farm-silos-v1-bake.unity",true)).Distinct().Where(File.Exists).ToArray();
+using(var sha=System.Security.Cryptography.SHA256.Create()) File.WriteAllLines(folder+"/dependency-sha256.tsv",paths.SelectMany(p=>new[]{p,p+".meta"}).Where(File.Exists).Select(p=>p+"\t"+BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(p))).Replace("-","")));
+File.Copy("Assets/DuckRails/Blocks/farm-silos-v1.prefab",folder+"/original.prefab",false);
+File.Copy("Assets/DuckRails/Lighting/Blocks/farm-silos-v1/farm-silos-v1-bake.unity",folder+"/original-bake.unity",false);
+File.WriteAllText(folder+"/source.json",(string)AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("Newtonsoft.Json.JsonConvert")).First(t=>t!=null).GetMethod("SerializeObject",new[]{typeof(object)}).Invoke(null,new object[]{new { sourceHash=AssetDatabase.GetAssetDependencyHash("Assets/DuckRails/Blocks/farm-silos-v1.prefab").ToString(), parts=data.parts.Select(p=>new {p.sourceId,p.sourceKey,p.settings,p.path,vertices=p.vertices.Select(v=>new[]{v.x,v.y,v.z}), normals=p.normals.Select(v=>new[]{v.x,v.y,v.z}),uv=p.uv.Select(v=>new[]{v.x,v.y}),uv2=p.uv2.Select(v=>new[]{v.x,v.y}),p.triangles,p.material,p.lightmap,lightmapST=new[]{p.lightmapST.x,p.lightmapST.y,p.lightmapST.z,p.lightmapST.w}}), materials=data.materials.Select(m=>new {m.name,m.texture,color=new[]{m.color.r,m.color.g,m.color.b},emission=new[]{m.emission.r,m.emission.g,m.emission.b},m.metallic,m.smoothness,scale=new[]{m.scale.x,m.scale.y},offset=new[]{m.offset.x,m.offset.y}}) }}));result.Log("Exported "+data.parts.Count+" mesh parts; "+mats.Count+" materials. Production assets unchanged.");
+}
+string Excluded(MeshRenderer r,GameObject root){
+if(!r.enabled)return "disabled source";
+var f=r.GetComponent<MeshFilter>(); if(!f||!f.sharedMesh)return "missing mesh / TMP";
+var mesh=f.sharedMesh;
+for(var t=r.transform;t!=root.transform;t=t.parent){
+ if(!t.gameObject.activeSelf)return "inactive hierarchy";
+ if(t.GetComponent<Rigidbody>()||t.GetComponent<Animator>()||t.GetComponent<Animation>())return "moving hierarchy";
+ if(t.GetComponents<MonoBehaviour>().Any(b=>!b))return "missing script";
+ var script=t.GetComponents<MonoBehaviour>().FirstOrDefault(b=>b.GetType().Name!="AudioSurface");
+ if(script)return "scripted hierarchy: "+script.GetType().Name;
+}
+if(!mesh.isReadable)return "unreadable mesh";
+if(mesh.normals.Length!=mesh.vertexCount||mesh.uv.Length!=mesh.vertexCount||mesh.uv2.Length!=mesh.vertexCount)return "missing normals/UV0/UV2";
+if(r.HasPropertyBlock()||r.forceRenderingOff||r.probeAnchor||r.transform.localToWorldMatrix.determinant<=0)return "special renderer override or reflected transform";
+if(!root.GetComponent<RailBakedBlockLighting>().bindings.Any(b=>b.renderer==r&&b.color))return "no baked binding";
+for(int s=0;s<mesh.subMeshCount;s++){
+ if(mesh.GetIndexCount(s)==0)continue;
+ if(s>=r.sharedMaterials.Length||!r.sharedMaterials[s])return "missing material";
+ var m=r.sharedMaterials[s];
+ if(m.shader.name!="Universal Render Pipeline/Lit"||m.renderQueue>2500||m.shaderKeywords.Any(k=>k!="_EMISSION"))return "unsupported shader / transparent";
+ if(m.GetTexturePropertyNames().Any(p=>p!="_BaseMap"&&p!="_MainTex"&&m.GetTexture(p)))return "textured property retained: "+m.name;
+ if(m.GetFloat("_Cull")!=2||m.GetFloat("_WorkflowMode")!=1||m.GetFloat("_Surface")!=0||m.GetFloat("_AlphaClip")!=0||m.GetFloat("_SpecularHighlights")!=1||m.GetFloat("_EnvironmentReflections")!=1||m.GetFloat("_SmoothnessTextureChannel")!=0)return "nondefault shader settings";
+ if(mesh.GetTopology(s)!=MeshTopology.Triangles)return "nontriangular topology";
+}
+return null;
+}
+}
+
+
+

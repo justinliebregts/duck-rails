@@ -1,0 +1,7 @@
+PASS reloaded review: 41 baked fixtures disabled only in review scene (prefab settings unchanged); no realtime preview double-lighting.
+Scene=Assets/DuckRails/FarmSilosAtlasReview/FarmSilos-FullAtlas-Review.unity
+Play=False bake=False compile=False dirty=False
+Light probes=554
+Lighting data=Assets/DuckRails/Lighting/Blocks/farm-silos-v1/farm-silos-v1-bake/LightingData.asset
+Final presentation: labelled EditorOnly overview fill outside block; selected as review sun. Disable it for original baked-night appearance. Scene View fog/image effects off for inspection; production atmosphere unchanged.
+Final Console query: Error/Exception/Assert empty; compilation successful. No Play Mode or device tests.

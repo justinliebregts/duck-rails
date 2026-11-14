@@ -1,0 +1,143 @@
+Root=(0.00, 0.00, 0.00) rotation=(0.00000, 0.00000, 0.00000, 1.00000) scale=(1.00, 1.00, 1.00)
+Mesh renderers=953 enabled=953 bindings=899 colliders=1434
+SCRIPT RailBlock 1
+SCRIPT RailBakedBlockLighting 1
+SCRIPT CrawlGraphBaker 1
+SCRIPT RailSpawnMarker 244
+SCRIPT CoalSpawner 105
+SCRIPT RailGoldSpawner 117
+SCRIPT RailEnemySpawner 22
+SCRIPT AudioSurface 578
+SCRIPT UniversalAdditionalLightData 41
+SCRIPT WaterVolume 1
+SCRIPT BoxReverbZone 6
+MAT Assets/DuckRails/TrackSurfaces/Dull grey rail.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg size=256x128
+ TEX _BaseMap=Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg size=256x128
+MAT Assets/DuckRails/DepotMaterials/Old timber.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg size=256x256
+ TEX _BaseMap=Assets/Models/Quackville/Quackville_Town_Diffuse.jpg size=256x256
+MAT Assets/DuckRails/FarmSilos/Pasture.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville grass.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville grass.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Old timber.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Barn red timber.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/FarmSilos/Textures/Red barn boards.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/FarmSilos/Textures/Red barn boards.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Dark shingles.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville dark roofing.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville dark roofing.png size=64x64
+MAT Assets/DuckRails/FarmSilos/White farmhouse siding.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/FarmSilos/Textures/Weathered white boards.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/FarmSilos/Textures/Weathered white boards.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Golden hay.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Silo metal.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Polish/Warm lantern glass.mat | Universal Render Pipeline/Lit | _EMISSION | emission=RGBA(2.000, 0.960, 0.260, 2.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Polish/Golden grain.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Foundation stone.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville concrete.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville concrete.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Polish/Basement oxidized iron.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Polish/Basement locker enamel.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Polish/Basement fluorescent glass.mat | Universal Render Pipeline/Lit | _EMISSION | emission=RGBA(1.110, 1.320, 0.960, 1.500)
+ TEX _MainTex=Assets/DuckRails/FarmSilos/Textures/Weathered white boards.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/FarmSilos/Textures/Weathered white boards.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Dark window glass.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville weathered paint.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Polish/Faded green upholstery.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/FarmSilos/Textures/Weathered white boards.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/FarmSilos/Textures/Weathered white boards.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Apple foliage.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville foliage.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville foliage.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Red apples.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville foliage.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville foliage.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Farm lanes.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Paddock/Shallow water opaque.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/FarmSilos/Paddock/Harvested soil.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville gravel.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Paddock/Timber.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Paddock/Teal roof.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/FarmSilos/Paddock/Dark bands.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Paddock/Slide yellow.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+MAT Assets/DuckRails/FarmSilos/Paddock/Hay.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+ TEX _MainTex=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+ TEX _BaseMap=Assets/DuckRails/CampgroundGreybox/Textures/Quackville timber.png size=64x64
+MAT Assets/DuckRails/FarmSilos/Paddock/Horsetail.mat | Universal Render Pipeline/Lit |  | emission=RGBA(0.000, 0.000, 0.000, 1.000)
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 0/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Farm authored v3/Fields and orchard/Corn field 1/Dense corn patch
+UNBOUND Env/Northeast pond and playground/Pond water
+UNBOUND Env/Northeast pond and playground/Dense horsetail clumps/Horsetails

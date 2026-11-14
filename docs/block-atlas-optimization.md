@@ -215,8 +215,17 @@ bundle art fixes. Start with the full block; no wing pilot or comparison APK nee
   and lighting. Build and lighting-workflow guards pass. Runtime/headset acceptance
   queued for playtest.
   [Integration and recovery](validation/container-yard-atlas/production-integration.md).
+- Farm Silos: full-block Blender source and isolated Unity review imported November
+  14 from current saved assets, retaining local edits. 899 compatible renderers /
+  27 materials -> 117 chunks / one shared atlas material, plus 54 original probe-lit
+  corn/pond/horsetail renderers (953 -> 171). Converted triangles 59,234 -> 104,040;
+  whole block 149,978 -> 194,784. All 1,434 colliders, gameplay/spawns/navigation,
+  899 original baked bindings and 734 dependency hashes preserved. Exact import,
+  scene-reopen lighting checks, compilation/Console and twelve paired views pass.
+  Constant HDR emission retained; no textured-emission atlas or animated brushes.
+  User approved the visuals; integrated into the original-GUID production prefab, preserving all 8,738 original object IDs. Runtime/headset acceptance queued for playtest. [Integration and recovery](validation/farm-silos-atlas/production-integration.md).
 - Remaining blocks authorized for subsequent passes, not converted here: Bridge
-  Finale, Canyon, Electrical Substation, Farm Silos, Hospital
+  Finale, Canyon, Electrical Substation, Hospital
   District, Lakeside Campground, Lumber Yard, Maintenance Depot, Midpoint Helipad,
   Nuclear Power Plant, Passenger Station, Quarry, Scrapyard and
   Tunnel Works. Later ordering is not fixed. Preserve special finale/vehicle/gameplay

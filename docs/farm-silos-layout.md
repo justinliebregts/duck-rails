@@ -1,5 +1,27 @@
 # Farm Silos layout
 
+## Full-block Blender atlas review — November 14, 2026
+
+Separate optimized review imported from the current saved prefab, retaining local
+edits. 899 compatible baked renderers / 27 materials -> 117 chunks / one shared
+atlas material; 54 original probe-lit corn/pond/horsetail renderers retained.
+Total enabled renderers 953 -> 171. Converted triangles 59,234 -> 104,040;
+whole-block triangles 149,978 -> 194,784. Constant HDR emission retained; no
+textured-emission atlas, animated brushes or TMP text exist in Farm.
+
+All 1,434 colliders, 2,361 original transforms, gameplay/navigation, 105 coal /
+117 gold / 22 enemy candidates and per-run settings remain intact. All 899 original
+baked bindings retained, 117 appended; 554 probes and source LightingData retained.
+734 dependency hashes, exact imported mesh arrays, saved preservation, compilation
+and twelve paired authoring views pass. The isolated review restores lightmap
+bindings after reload and suppresses baked fixtures' realtime editor previews;
+original production/review prefab light settings remain unchanged.
+
+Open **Duck Rails > Authoring > Farm Silos > Open full-map Blender review**.
+User approved the appearance; production integration now retains the original prefab GUID and all 8,738 original object IDs. Runtime/headset acceptance
+**queued for playtest**. Existing seven roof/hay loot failures remain separate.
+[Evidence, lighting adaptation](validation/farm-silos-atlas/README.md) and [production integration/recovery](validation/farm-silos-atlas/production-integration.md).
+
 User accepted the Farm art pass as done on November 11, 2026. Gameplay/headset acceptance remains queued separately.
 
 ## Screenshot polish batch — November 11, 2026

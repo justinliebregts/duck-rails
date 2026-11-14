@@ -43,6 +43,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Farm Silos production atlas integration — queued 2026-11-14
+- Commit(s): see git log "Integrate approved Farm Silos atlas"; user-approved appearance integrated into original-GUID production prefab.
+- Changed: 899 compatible baked renderers / 27 materials -> 117 chunks / one shared atlas material. Retain 52 corn patches, pond water and horsetails: total 953 -> 171 renderers. Converted triangles 59,234 -> 104,040; whole block 149,978 -> 194,784. Constant HDR emission retained; no textured-emission atlas or animated brushes in Farm.
+- Cheap checks: all 2,361 transforms, 4,503 serialized components, 1,434 colliders, gameplay/navigation/spawn settings, 734 dependency hashes and 899 original baked bindings preserved. 117 exact imported meshes and all 1,016 scene lightmap bindings pass, including scene reopen. 554 probes, 41 original prefab lights, six reverb zones and all 54 exceptions retained. Twelve matched visual pairs inspected; compilation and final error Console checks pass. [Evidence and scene-only lighting adaptation](validation/farm-silos-atlas/README.md).
+- Integration checks: all 8,738 original object IDs and production metadata preserved; production matches approved review with 171 renderers, 1,434 colliders and 1,016 bindings; 733 existing dependency files unchanged. Build fingerprint/lighting workflow guards pass. [Integration/recovery](validation/farm-silos-atlas/production-integration.md).
+- Setup: use normal production Farm Silos via Test Block Order on a requested queue run. One client for lighting/readiness/visibility; two real clients plus late join for agreement. Include nonzero route placement, companion unload/rebind and return/replay. Production assets are in Assets/DuckRails/FarmSilosAtlas; the approved review remains available.
+- Check: no missing/duplicate scenery or stale source re-enable; correct lighting, normals, shadows, emission and minification. Preserve silo grain/ceiling/ramp, farmhouse floors/stairs/cages, hay/roof routes, corn, pond/playground, collision, water audio, 105 coal / 117 gold / 22 enemy candidates and per-run rules, navigation and reverb. The review's editor-only lightmap restoration is not evidence for runtime loading.
+- Needs human: Unity visuals approved. Moving-view/headset appearance, natural stairs/silo/roof/cage/playground traversal and loot reach/recovery. Existing seven roof/hay loot failures and Farm gameplay acceptance remain separately recorded in farm-silos-layout.md.
+- Priority: normal. No repeated pilot, routine Quest comparison or comparison APK unless explicitly requested; renderer reduction does not establish Farm device performance.
+
 ### Container Yard production atlas integration — queued 2026-11-14
 - Commit(s): see git log "Integrate approved Container Yard atlas"; user-approved visuals integrated into the original-GUID production prefab.
 - Changed: 1,191 compatible scenery renderers / 17 materials -> 246 chunks / one atlas material, plus three retained CutePixel labels. Total 1,194 -> 249 renderers; triangles 108,336 -> 202,488. Cells 12 x 6 x 12 m; 11 oversized sources separate. No textured emission or animated brushes exist in this block.
