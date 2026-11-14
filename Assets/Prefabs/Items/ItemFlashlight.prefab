@@ -166,6 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HandFlashlight
   spotLight: {fileID: 4210583910027311033}
+  abandonTimeout: 60
 --- !u!114 &4210583910027311009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,9 +239,9 @@ Light:
   m_Type: 0
   m_Color: {r: 1, g: 0.9490196, b: 0.8509804, a: 1}
   m_Intensity: 250
-  m_Range: 100
-  m_SpotAngle: 30
-  m_InnerSpotAngle: 25
+  m_Range: 75
+  m_SpotAngle: 25
+  m_InnerSpotAngle: 20
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
     m_Type: 0
