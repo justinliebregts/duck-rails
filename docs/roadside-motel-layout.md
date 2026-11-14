@@ -183,3 +183,78 @@ Final export: 1,970 valid lightmap receiver bindings, no missing references; sav
 Visual review: [golf edges](../output/motel-leisure/correction-golf-edge.png), [rink wall](../output/motel-leisure/correction-rink-edge.png), [six benches](../output/motel-leisure/correction-benches.png), [ceiling fixture](../output/motel-leisure/correction-ceiling-light.png). Captures use temporary fill/no fog; temporary objects/settings discarded and saved motel Prefab Mode left open and clean. Queued for playtest.
 
 Pre-commit crawl-graph rebake (November 12, explicitly requested): 27,836 nodes; all 144 authored markers preserved; all 32 enemy candidates have ground within 0.8 m. The 2,691 spawn checks passed again against the new graph. Saved motel Prefab Mode reopened for inspection. Gameplay/headset checks remain queued for playtest.
+
+November 12 evening queue run: the current prefab had six null baked-renderer bindings and prevented expedition readiness. Fix `3c64b55a4` re-exports the existing Motel lighting scene through the standard exporter, leaving **1,964 valid bindings**; the bake scene and lighting companion are unchanged. The same five-block route then reaches Running/WorldReady, including a third authenticated late joiner, with matching peer geometry/cargo/enemy inventories. This supersedes the 1,970-binding count above; it does not establish natural traversal, enemy pursuit or headset acceptance. See [queue evidence](validation/playtest-queue/2026-11-12-evening/run-notes.txt).
+
+## Motel render consolidation pilot — November 13, 2026
+
+The user authorized a Motel-only optimization pilot with the current layout retained.
+`RailMotelRenderChunks.Generate()` derives spatial meshes from the saved prefab;
+`RailSceneryChunks` switches rendering at runtime. Original objects stay enabled
+in Edit Mode for editing and baking; the generated root stays inactive. At runtime
+only source Renderer.enabled changes: collision, gameplay objects and markers stay
+active. The original 1,964 lighting bindings stay intact; generated bindings append
+at runtime with identity UV scale/offset because atlas transforms are baked into UV2.
+The normal lighting loader handles atlas-index rebinding on load/unload.
+
+Result: 1,905 source renderers / 1,954 nonempty submeshes become 698 chunks, with
+69 untouched renderers (767 active total versus 1,974). Every combined triangle
+corner and lightmap UV passes preservation checks. This does not reduce triangles.
+Groups use 12 x 6 x 12 m cells, material, lightmap and compatible renderer settings;
+large surfaces and transparent/scripted/movable objects stay separate. Original
+mesh/material assets are unchanged, including their empty material slots.
+
+Authoring workflow:
+1. Edit the original scenery, never the inactive generated root. Save the prefab.
+2. If geometry/lighting requires a rebake, use the existing bake/export workflow.
+3. Close Motel Prefab Mode, then run **Duck Rails > Authoring > Motel > Regenerate
+   optimized render chunks**. Do not rerun the old whole-block art installers.
+4. The build guard rejects stale geometry/material/lightmap data until regenerated.
+   In-editor runtime fallback retains originals if lighting bindings no longer match.
+5. For an A/B build, disable `RailSceneryChunks` on the Motel root, save, build, then
+   restore it enabled after testing. Do not manually activate the generated root.
+
+Saved-prefab reload, compilation, repeatable generation, triangle/UV preservation,
+activation/restore/idempotence, moved-source fingerprint rejection and stale-UV
+fallback pass in Edit Mode. [Generation](validation/motel-render-chunks/generation.txt),
+[checks](validation/motel-render-chunks/checks.txt). No Play Mode or device run.
+The editor Console query retained two Inspector missing-target exceptions, unrelated
+to a C# compile failure; actual runtime acceptance is pending.
+
+Generated mesh native memory is 6,262,320 bytes in the editor. Original source meshes
+remain loaded; device memory and initialization cost need measurement. Larger bounds
+and changed reflection-probe selection need visual review. **Queued for playtest**:
+Motel spatial render consolidation, including matched Quest timings and culling,
+lighting readiness/rebinding, interior visuals and collision/interaction regression.
+
+November 13 Quest follow-up: Motel-first run fa93ca6c863246c68abcc707546cac32
+completed all four Motel viewpoints with 100% tracking. Worst-view median CPU/GPU
+14.7/14.7 ms and 61.5 native FPS, improved over prior capture but still above
+13.89 ms budget; head pitch differed about 8 degrees, so controlled A/B remains
+pending. See docs/quest-performance.md device evidence; manual/runtime culling,
+interior visuals and broader acceptance remain queued.
+
+## Full-map Blender atlas review — November 13, 2026
+
+Following the approved east-wing pilot and its scoped Quest comparison, the user
+authorized the rest of Motel. Separate review assets now cover compatible static
+scenery throughout the existing map: 1,964 source renderers become 305 chunks with
+one material, with ten original mesh renderers retained. Open **Duck Rails >
+Authoring > Motel > Open full-map Blender review**. Production assets are unchanged.
+
+Saved-asset comparison preserves all 1,900 colliders, 2,688 original transforms,
+gameplay/spawn/navigation references and 1,964 original lightmap bindings. Existing
+baked illumination is connected to the new chunks. UV repetition raises converted
+triangles from 83,344 to 168,243; reduced renderer count is not performance evidence.
+See [source/workflow](../ArtSource/MotelAtlas/README.md) and
+[import checks](validation/motel-full-atlas/import-checks.txt).
+Full-map user visual review, runtime/headset checks and performance acceptance are
+pending; **queued for playtest**. No new Play Mode, build or Quest run for this pass.
+
+November 13 follow-up: user requested device performance before visual fixes.
+The full-map same-build 120 m pair has four 100%-tracked views per variant, 24–70%
+fewer draws, improved CPU medians and CPU p95, and a small forward GPU p95 regression
+(10.0 -> 10.4 ms). Both remain within sampled 72 Hz p95 budget. Pose differs 0.176 m
+and 0.23 degrees; this is scoped evidence, not full acceptance. See
+[results/build correction](validation/motel-full-atlas/results.md). Visual fixes,
+production rollout and remaining runtime/headset checks are still pending.

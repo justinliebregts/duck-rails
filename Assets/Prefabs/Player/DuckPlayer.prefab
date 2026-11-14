@@ -468,6 +468,7 @@ GameObject:
   - component: {fileID: 369627461290954692}
   - component: {fileID: 5546536034250811139}
   - component: {fileID: 2512012454720054885}
+  - component: {fileID: 7894191493867657741}
   m_Layer: 7
   m_Name: DuckPlayer
   m_TagString: Player
@@ -1926,7 +1927,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.04
-  far clip plane: 1400
+  far clip plane: 120
   field of view: 90
   orthographic: 0
   orthographic size: 5
@@ -2075,7 +2076,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.04
-  far clip plane: 1400
+  far clip plane: 120
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -2203,7 +2204,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.04
-  far clip plane: 1400
+  far clip plane: 120
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -3567,3 +3568,15 @@ SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: -1051307216263671134, guid: 9867282f563bddb4ea9cb668e103625f, type: 3}
   m_PrefabInstance: {fileID: 6780811638430472446}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7894191493867657741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428590198633956322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5abd698fc33a1dc45b937063cf44494b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RailPlayerViewDistance

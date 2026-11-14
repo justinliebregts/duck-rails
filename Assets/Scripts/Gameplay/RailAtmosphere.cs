@@ -5,6 +5,12 @@ using UnityEngine.SceneManagement;
 /// <summary>Local rendering of shared route/finish progress. No runtime GI or probe captures.</summary>
 public sealed class RailAtmosphere
 {
+    public const float NightViewDistance = 120f;
+    public const float DawnViewDistance = 175f;
+    public static float PlayerViewDistance { get; private set; } = NightViewDistance;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetViewDistance() => PlayerViewDistance = NightViewDistance;
+
     Material originalSky, sky;
     Scene scene;
     Light sun;
@@ -26,6 +32,8 @@ public sealed class RailAtmosphere
 
     public void Apply(float progress)
     {
+        // Use the same success/dawn blend as fog, including late joins and replay.
+        PlayerViewDistance = Mathf.Lerp(NightViewDistance, DawnViewDistance, Mathf.Clamp01(progress - 1f));
         if (sky == null)
         {
             originalSky = RenderSettings.skybox;
@@ -74,6 +82,7 @@ public sealed class RailAtmosphere
 
     public void Restore()
     {
+        PlayerViewDistance = NightViewDistance;
         if (sky == null) return;
         // A new active scene owns its own environment.
         if (SceneManager.GetActiveScene() == scene)

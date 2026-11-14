@@ -1,0 +1,31 @@
+using UnityEngine; using UnityEditor; using System; using System.IO; using System.Linq; using System.Collections.Generic;
+internal class CommandScript : IRunCommand {
+[Serializable] public class Data { public List<Part> parts=new List<Part>(); public List<Mat> materials=new List<Mat>(); }
+[Serializable] public class Part {public int sourceId; public string path; public string sourceKey; public string settings; public Vector3[] vertices; public Vector3[] normals; public Vector2[] uv; public Vector2[] uv2; public int[] triangles; public int material; public string lightmap; public Vector4 lightmapST;}
+[Serializable] public class Mat {public string name; public string texture; public Color color; public Color emission; public float metallic; public float smoothness; public Vector2 scale; public Vector2 offset;}
+public void Execute(ExecutionResult result) {
+var root=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/roadside-motel-v1.prefab");
+var wing=root.transform.Find("Env"); var data=new Data(); var mats=new List<Material>();
+string folder="ArtSource/MotelAtlas"; Directory.CreateDirectory(folder+"/textures");
+foreach(var r in wing.GetComponentsInChildren<MeshRenderer>(true)){
+var f=r.GetComponent<MeshFilter>(); if(!f||!f.sharedMesh||!r.enabled)continue;
+var mesh=f.sharedMesh; if(!mesh.isReadable || mesh.uv2.Length != mesh.vertexCount || r.HasPropertyBlock() || r.forceRenderingOff || r.probeAnchor || r.transform.localToWorldMatrix.determinant<=0)continue;
+bool scripted=false; for(var t=r.transform;t!=root.transform;t=t.parent) if(!t.gameObject.activeSelf||t.GetComponent<Rigidbody>()||t.GetComponent<Animator>()||t.GetComponent<Animation>()||t.GetComponents<MonoBehaviour>().Any(b=>!b||b.GetType().Name!="AudioSurface"))scripted=true;
+if(scripted)continue;
+var checkedBinding=root.GetComponent<RailBakedBlockLighting>().bindings.FirstOrDefault(b=>b.renderer==r);
+if(!checkedBinding.color)continue;
+if(Enumerable.Range(0,mesh.subMeshCount).Any(s=>mesh.GetIndexCount(s)>0&&(s>=r.sharedMaterials.Length||!r.sharedMaterials[s]||r.sharedMaterials[s].shader.name!="Universal Render Pipeline/Lit"||r.sharedMaterials[s].renderQueue>2500||r.sharedMaterials[s].shaderKeywords.Any(k=>k!="_EMISSION"))))continue;
+var indices=new List<int>();for(var t=r.transform;t!=root.transform;t=t.parent)indices.Insert(0,t.GetSiblingIndex());
+string sourceKey=string.Join("/",indices);
+string settings=string.Join(",",r.gameObject.layer,(int)r.shadowCastingMode,r.receiveShadows?1:0,(int)r.lightProbeUsage,(int)r.reflectionProbeUsage,r.renderingLayerMask,r.sortingLayerID,r.sortingOrder,(int)r.motionVectorGenerationMode);
+
+for(int s=0;s<mesh.subMeshCount;s++){if(mesh.GetIndexCount(s)==0)continue;
+var m=r.sharedMaterials[s]; if(!m||m.shader.name!="Universal Render Pipeline/Lit")continue;
+int mi=mats.IndexOf(m); if(mi<0){mi=mats.Count;mats.Add(m);
+var md=new Mat{name=m.name,color=m.GetColor("_BaseColor"),emission=m.IsKeywordEnabled("_EMISSION")?m.GetColor("_EmissionColor"):Color.black,metallic=m.GetFloat("_Metallic"),smoothness=m.GetFloat("_Smoothness"),scale=m.GetTextureScale("_BaseMap"),offset=m.GetTextureOffset("_BaseMap")};
+var tex=m.GetTexture("_BaseMap"); if(tex){var rt=RenderTexture.GetTemporary(tex.width,tex.height,0,RenderTextureFormat.ARGB32,RenderTextureReadWrite.sRGB); var prev=RenderTexture.active; Graphics.Blit(tex,rt); RenderTexture.active=rt;var copy=new Texture2D(tex.width,tex.height,TextureFormat.RGBA32,false);copy.ReadPixels(new Rect(0,0,tex.width,tex.height),0,0);copy.Apply();md.texture="textures/"+mi+".png";File.WriteAllBytes(folder+"/"+md.texture,copy.EncodeToPNG());RenderTexture.active=prev;RenderTexture.ReleaseTemporary(rt);UnityEngine.Object.DestroyImmediate(copy);}data.materials.Add(md);}
+var binding=root.GetComponent<RailBakedBlockLighting>().bindings.FirstOrDefault(b=>b.renderer==r);
+data.parts.Add(new Part{sourceId=r.GetInstanceID(),sourceKey=sourceKey,settings=settings,path=AnimationUtility.CalculateTransformPath(r.transform,root.transform),vertices=mesh.vertices.Select(v=>r.transform.TransformPoint(v)).ToArray(),normals=mesh.normals.Select(n=>r.transform.localToWorldMatrix.inverse.transpose.MultiplyVector(n).normalized).ToArray(),uv=mesh.uv,uv2=mesh.uv2,triangles=mesh.GetTriangles(s),material=mi,lightmap=AssetDatabase.GetAssetPath(binding.color),lightmapST=binding.scaleOffset});
+}}
+File.WriteAllText(folder+"/source.json",(string)AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("Newtonsoft.Json.JsonConvert")).First(t=>t!=null).GetMethod("SerializeObject",new[]{typeof(object)}).Invoke(null,new object[]{new { sourceHash=AssetDatabase.GetAssetDependencyHash("Assets/DuckRails/Blocks/roadside-motel-v1.prefab").ToString(), parts=data.parts.Select(p=>new {p.sourceId,p.sourceKey,p.settings,p.path,vertices=p.vertices.Select(v=>new[]{v.x,v.y,v.z}), normals=p.normals.Select(v=>new[]{v.x,v.y,v.z}),uv=p.uv.Select(v=>new[]{v.x,v.y}),uv2=p.uv2.Select(v=>new[]{v.x,v.y}),p.triangles,p.material,p.lightmap,lightmapST=new[]{p.lightmapST.x,p.lightmapST.y,p.lightmapST.z,p.lightmapST.w}}), materials=data.materials.Select(m=>new {m.name,m.texture,color=new[]{m.color.r,m.color.g,m.color.b},emission=new[]{m.emission.r,m.emission.g,m.emission.b},m.metallic,m.smoothness,scale=new[]{m.scale.x,m.scale.y},offset=new[]{m.offset.x,m.offset.y}}) }}));result.Log("Exported "+data.parts.Count+" mesh parts; "+mats.Count+" materials. Production assets unchanged.");
+}}

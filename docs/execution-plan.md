@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 13: document the accepted Motel atlas workflow, conversion exceptions and reduced per-block testing policy. [Workflow](block-atlas-optimization.md).
+- [ ] Apply the authorized atlas/chunk workflow to Convenience Store next, then remaining blocks, preserving authored layout, collision, gameplay and baked lighting. Track conversion/review/integration separately; no repeated full Quest A/B by default. Motel's remaining visual fixes and production integration are pending.
+
 - [x] November 12: install shared full store with standard coin labels, three bundles and camera/TV in all three locations; shared-store and helicopter authoring checks pass.
 - [ ] Validate shared-store purchase/delivery, bundles, cooldowns and camera feeds on clients/headsets; queued for playtest.
 
@@ -871,3 +874,16 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] November 12: headset and multiplayer acceptance of approved cockpit art and lowered throttle axle; installed with compile/EditMode checks. See [cockpit](cockpit-v2.md).
 
 - [ ] November 12 throttle polish: user reports prior cockpit/pivot works well in headset; validate new palm offset, proportional speed and 0.25-second visual return on headset/two clients. Compile and 25 drive plus session EditMode checks pass. See docs/cockpit-v2.md.
+
+- [x] November 13: install Motel-only offline spatial render chunks, retaining editable source geometry, collision/spawns and baked atlases. Compile and EditMode geometry/UV, saved-state and reversible-switch checks pass; see docs/quest-performance.md.
+- [ ] Motel consolidation: matched Quest frame-time/draw/memory/load A/B and runtime lighting/culling/interior acceptance; queued for playtest. Renderer-count reduction alone does not establish performance acceptance.
+- November 13 full-map atlas scoped Quest evidence: same-build 120 m pair has four valid views each; draws 24–70% lower, CPU medians and p95 improve, forward GPU p95 10.0 -> 10.4 ms. Both remain within sampled 72 Hz p95 budget. Pose difference 0.176 m / 0.23 degrees and both variants resident; memory/load, visual fixes, interiors, runtime and multiplayer acceptance remain pending. [Results](validation/motel-full-atlas/results.md). No production rollout.
+
+- November 13 Motel Quest partial evidence: four valid Motel-first viewpoints, worst median CPU/GPU 14.7/14.7 ms and 61.5 FPS. Still over 72 Hz budget; comparison pitch differs ~8 degrees, controlled A/B and remaining acceptance stay open. See docs/quest-performance.md.
+
+- November 13 50 m benchmark-only experiment: all four Motel views sampled under the 72 Hz frame budget; same-build normal-distance control supports distance-culling benefit in matched yaw-180. No production clip change or visual/multiplayer acceptance; see docs/quest-performance.md.
+
+- November 13 100 m Quest comparison: fresh same-build 50 m control and 100 m run both sustain sampled 72 Hz Motel views; forward median CPU/GPU 10.0/7.9 versus 11.4/8.5 ms. 100 m remains a proposed visual-review candidate, not a production decision; see docs/quest-performance.md.
+
+- [x] November 13: implement user-selected 120 m player view, blending to 175 m during successful dawn; remove temporary 50 m editor override. Compilation and 17 EditMode checks pass. See docs/quest-performance.md.
+- [ ] Validate 120/175 m nighttime/dawn visuals, late join/reset, benchmark override and Quest/multiplayer performance; queued for playtest. Prior 50/100 m captures do not validate these new distances.

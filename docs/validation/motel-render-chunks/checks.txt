@@ -1,0 +1,6 @@
+PASS saved-prefab fingerprint and activation/restore/idempotence/stale-UV fallback.
+PASS 698 saved meshes with one material/submesh, valid UV2 and finite vertices: True
+Original active renderers: 1974; optimized: 767
+Generated mesh native memory bytes: 6262320
+PASS regenerated with stable existing mesh assets; moved-source fingerprint rejection and all activation/restore checks pass.
+PASS every generated triangle corner preserves position (1 mm tolerance) and atlas UV (0.00001 tolerance).

@@ -1,5 +1,12 @@
 # Convenience Store layout
 
+November 13 next-work handoff: Convenience Store is the next authorized block for
+the [Blender atlas/chunk workflow](block-atlas-optimization.md). Preserve current
+saved art, moving car-wash brushes/stationary collision, existing textured emission,
+CutePixel text, spawn/navigation data and user edits. No repeated wing experiment
+or routine Quest A/B required; use cheap preservation checks and visual review.
+This documentation pass has not converted the block.
+
 ## V5 implementation — November 5
 
 User approved the arcade/streetlight revision for 3D. Installed on the existing convenience-store prefab under `Convenience store authored v5`, using `RailConvenienceStore` plus `RailConvenienceStoreV5`. Prior V2 implementation/evidence below is historical.

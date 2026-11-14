@@ -1,5 +1,15 @@
 # Duck Rails testing tools
 
+## Automated Quest 3 performance survey — November 13, 2026
+
+The opt-in device runner and PC commands are documented in
+[quest-performance.md](quest-performance.md). Build via **Duck Rails > Tests >
+Quest Performance > Build Device Runner**, then use `Tools/quest-performance.ps1`
+to install/run/collect. It uses a fresh private solo room and real XR rendering,
+drives a seeded four-block route, and captures labelled stationary yaw views.
+It never queries diagnostic reports. Compilation/request checks pass; see the
+linked document for actual device evidence and remaining validation.
+
 ## Driving MPPM virtual players from an agent — November 11, 2026
 
 Unity MCP only reaches the main editor. `Assets/Editor/RailRemoteBridge.cs` (editor-only, inert unless used) lets an agent drive the Multiplayer Play Mode virtual players. Each virtual player polls `Temp/rails-remote/<tag>-in.cs` in the main project, where `<tag>` is its first MPPM player tag (e.g. `Player2`). The file's first line must be `// id: <unique>`, and the rest is a normal Unity MCP `CommandScript`. The player compiles and runs it with the Unity AI Assistant RunCommand builder and writes the logs to `<tag>-out.txt`. A new id runs the script once.

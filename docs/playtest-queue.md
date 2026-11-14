@@ -43,6 +43,65 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+Atlas rollout policy — November 13: user accepts Motel's approach and authorizes
+the remaining blocks, Convenience Store next. Follow
+[the workflow](block-atlas-optimization.md). Do not repeat full Quest A/Bs for each
+block by default; keep authoring preservation checks/visual review and queue live
+acceptance. Historical benchmark proposals below do not override this direction.
+No new block conversion or device run occurred during this documentation task.
+
+### Full Motel Blender atlas review — queued 2026-11-13
+- Scoped Quest evidence 2026-11-13: accepted same-build 120 m pair, all four views 100% tracked, applied full-map variants confirmed. Draw calls fall 24–70%; CPU medians improve 0.1–0.6 ms and maximum view CPU p95 improves 12.5 -> 11.8 ms. GPU medians improve in three views; forward GPU p95 rises 10.0 -> 10.4 ms. All view p95 CPU/GPU remain under 13.89 ms; sampled native FPS remains capped around 72. Pose difference 0.176 m / 0.23 degrees; both variants resident, no release-memory claim. [Results/limits](validation/motel-full-atlas/results.md). Initial cached wing-fixture build was rejected before measurement; clean-build fix and substitution assertion passed. User's visual fixes intentionally deferred; broader runtime/headset/multiplayer acceptance remains queued.
+- November 13 follow-up: user requested Quest performance testing before addressing remaining visual issues. Dedicated same-build fixture now selects exact production consolidation (767 enabled mesh renderers) or full-map atlas (315), with 10 common renderers and unchanged collision/gameplay. Both alternatives remain resident. Capture results pending below; this does not approve visual issues or production rollout.
+- Commit(s): uncommitted. User authorized extending the approved wing approach across the rest of Motel; no repeat of the wing Quest capture requested.
+- Changed: isolated full-map prefab/scene under `Assets/DuckRails/MotelAtlasReview`; 1,964 source renderers become 305 spatial chunks sharing one atlas material, with 10 originals retained (315 enabled mesh renderers total). Production Motel/catalogue unchanged. Open **Duck Rails > Authoring > Motel > Open full-map Blender review**.
+- Cheap checks: importer compiles; saved assets retain 2,688 original transforms, 8,003 serialized components except renderer-enabled changes, all 1,900 colliders and 1,964 original lightmap bindings. 2,269 total bindings are valid. Surface-area preservation passed during conversion. See [import evidence](validation/motel-full-atlas/import-checks.txt) and [source/workflow](../ArtSource/MotelAtlas/README.md).
+- Tradeoff: converted geometry rises from 83,344 to 168,243 triangles to preserve repeating UVs. Atlas emission/surface mipmaps disabled after correcting visible cross-tile glow; base-color mipmaps retained. No full-map performance benefit claimed.
+- Setup when authorized: review appearance first, then isolated full-map route fixture against current production consolidation at 120 m with matched settings/poses. The existing wing comparison builder does not select this prefab. Exercise translated placement, companion unload/rebinding, hide/show/re-enable, interiors and natural traversal.
+- Check: no missing/duplicate faces, color/emission/lightmap drift, atlas seams/bleeding or culling problems; unchanged collision/spawns/interactions; compare CPU/GPU median/p95, draws, triangles, memory and load cost. Keep production rollout pending until evidence supports it.
+- Needs human: full-map Unity review, headset minification/interior appearance and traversal. Scoped device performance completed above; remaining acceptance queued for playtest.
+- Priority: normal.
+
+### Motel east-wing Blender atlas pilot — queued 2026-11-13, scoped Quest comparison recorded
+- User approved Blender and Unity appearance, then authorized the Quest comparison. Same-build 120 m pair has all four Motel views at 100% tracking. Wing-facing yaw-90: draws 411 -> 309; median CPU/GPU 10.15/8.0 -> 9.9/7.2 ms. All per-view CPU/GPU p95 under 13.89 ms; forward CPU p95 increases 11.9 -> 12.7 ms. This is directional evidence, not a uniform speedup: stopped train/head positions differ 0.556 m, angles within 0.03 degrees. User accepted this positional limitation and requested no repeat. Third run cancelled at login with zero valid frames, excluded. See `docs/validation/motel-wing-comparison/results.md`.
+- User approved Blender appearance and authorized separate Unity review import. Open **Duck Rails > Authoring > Motel > Open Blender wing review**, or `Assets/DuckRails/MotelWingReview/Motel-Atlas-Review.unity`.
+- Changed: separate full-block review prefab/scene, 29 single-material wing chunks, retained collision/gameplay and outside-wing render portions, original two baked atlas bindings. Production Motel unchanged. See `ArtSource/MotelWingPilot/README.md` for workflow and limits.
+- Comparison fixture: separate `MotelWingBenchmark` prefab has 590 shared outside chunks and selectable 130 original-material/29 atlas wing chunks; only the explicit development comparison build injects it. Production assets unchanged. Both variants resident, so shipping memory/load savings remain unmeasured.
+- Proposed later checks: source/atlas color and emission equivalence, seams/mipmaps, normals, lightmap UV2/rebinding, interior and exterior culling, followed by matched 120 m Quest CPU/GPU/memory/load comparison if integration is authorized. Preserve all collision, gameplay and CutePixel text.
+- Needs human: headset interior/seam/culling appearance and natural traversal. Blender and Unity appearance approved.
+- Status: scoped native rail-view performance evidence only; production integration, runtime visibility/rebinding regressions, interior/combat, thermal and multiplayer acceptance remain queued for playtest.
+
+### Player viewing distance 120 m to 175 m at dawn — queued 2026-11-13
+- Commit(s): uncommitted.
+- Changed: shared DuckPlayer cameras default to 120 m; runtime controller follows the existing successful dawn blend to 175 m. Failure/pre-dawn stay at 120 m; restore/replay returns to 120 m. Temporary editor-only 50 m override removed. Explicit development benchmark override still takes precedence.
+- Checks passed: compilation and 17 EditMode checks for saved camera/controller references, transition endpoints/midpoint, failure, late-arrival dawn value, reset and unaffected unrelated cameras. See [evidence](validation/motel-render-chunks/view-distance-checks.txt).
+- Setup: editor desktop and Quest; review nighttime blocks and successful finale through dawn, then return/replay. Test late join at dawn and optional benchmark override separately.
+- Check: local XR eyes/simulated view use 120 m, smoothly reach 175 m with dawn and reset; no visible cutoffs on important signs/lights/buildings, no dawn valley disappearance, no mirror/veil camera changes; target-device CPU/GPU budget holds. These distances have not yet been device-profiled.
+- Needs human: head-turning, distant silhouettes/emissive lights, flashlight reach and dawn appearance.
+- Priority: normal.
+
+### Motel spatial render consolidation — queued 2026-11-13
+- 100 m comparison 2026-11-13: same-build native 100 m capture and fresh 50 m control pass four Motel viewpoints with 100% tracking; pitch within 1 degree. Forward median CPU/GPU 11.4/8.5 ms at 100 m versus 10.0/7.9 at 50 m, both around 72 FPS. All sampled Motel/Convenience 100 m views under budget at p95. Visual/dawn/multiplayer acceptance remains pending; no production clip change. See [comparison](quest-performance.md#100-m-versus-fresh-50-m--november-13-2026).
+- Editor review setup 2026-11-13: temporary **Duck Rails > Tests > Preview 50m player far clip** toggle enabled for desktop/XR Play Mode. User to review popping, signs/headlamps, interiors and dawn. Editor-only; production camera assets/builds unchanged. Queued for playtest.
+- Far-clip experiment 2026-11-13: explicit 50 m benchmark and same-build authored-distance control completed all Motel views. Closely matched yaw-180 CPU/GPU improved 12.5/9.9 -> 9.6/7.1 ms, draws 2,470 -> 317; yaw-0 comparison is confounded by headset movement. All 50 m views meet the sampled frame budget, but visual/dawn/multiplayer acceptance remains open. Production far clip remains 1,400 m. See [experiment](quest-performance.md#50-m-far-clip-experiment--november-13-2026).
+- Quest partial PASS 2026-11-13: fresh optimized build, explicit Motel-first route, all four Motel views at 100% tracking. Worst view 14.7/14.7 ms median CPU/GPU and 61.5 FPS versus prior 19.2/17.5 ms and 51 FPS; still misses 72 Hz budget. Head pitch differs ~8 degrees, so controlled component on/off A/B, runtime visual/culling and manual checks remain pending. See [device evidence](quest-performance.md#quest-device-check--november-13-2026).
+- Commit(s): uncommitted.
+- Changed: offline-generated 698 render chunks replace 1,905 static source renderers at runtime; source geometry/collision/spawns and original baked lighting retained. Active Motel mesh renderers: 1,974 to 767. See [evidence and tradeoffs](quest-performance.md#motel-consolidation-pilot--november-13-2026).
+- Setup: first check Motel lighting readiness in a translated route and block hide/show/re-enable; then matched short Quest runs with `RailSceneryChunks` enabled versus disabled on Motel, identical route/settings/poses to baseline `e1dc96566b4e4ab0ab45c83e870e9221`. Restore component enabled after the comparison. Do not change render scale/MSAA/foveation during this A/B.
+- Check: no missing/duplicate surfaces or lightmap drift at origin/translated placements and after another lighting companion unloads; source/optimized views match, including interiors/reflections; collision, markers and interactions unchanged; disabling component restores originals; leaving/re-entering visibility range restores chunks. Compare CPU/GPU median/p95, draw calls, triangles, memory, loading and missed frames; report regressions rather than assuming fewer renderers guarantees a win. Aim for both CPU/GPU below the 13.89 ms budget at 72 Hz; further optimization may be needed.
+- Needs human: headset close-up/interior appearance, culling transitions and natural traversal.
+- Priority: normal.
+
+### Quest performance runner robustness and expanded coverage — queued 2026-11-13
+- Follow-up 2026-11-13: default 180-second expedition stop/save, collection and cleanup passed on device in run `fa93ca6c863246c68abcc707546cac32`; explicit Motel-first route confirmed in metadata. This closes the timed-stop uncertainty below, not broader coverage/robustness acceptance.
+- Commit(s): uncommitted.
+- Changed: opt-in native Quest 3 solo rail survey, buffered frame counters and PC run/collect controls. See [setup and device evidence](quest-performance.md).
+- Device evidence: 483-second native capture, four scavenging blocks plus helipad, automatic refuelling/travel, CPU/GPU metrics, cancellation/timeouts, CSV retrieval and cleanup passed. User deliberately stopped after sufficient representative data; full route is not required for initial tuning. New default PC 180-second timer has syntax checks only and needs validation on the next requested run. See linked evidence for the one tracking-rejected view.
+- Setup: Development APK on authorized Quest 3; explicit `Tools/quest-performance.ps1 -Action Run`. Run additional four-block sets separately.
+- Check: cancellation, login/room/readiness timeouts, focus/tracking-loss rejection, request consumed after crash/restart, cleanup restores callbacks and PC proximity state; compare repeated captures with matched settings and release-equivalent overhead. Interior/combat and actual multiplayer load need separate scenarios.
+- Needs human: stationary upright headset framing and headset comfort checks are separate from unattended frame-cost measurements.
+- Priority: normal.
+
 ### Shared complete store and security camera — queued 2026-11-12
 - Avatar acceptance: equip Quackbear, Huggy and Scrap Duck individually from each store; verify the local avatar/mirror and hands update correctly, every connected remote client sees the correct equipped avatar, a late joiner sees the current avatar, switching between all three and Default Duck replicates without stale meshes/faces, and the selection survives the intended scene transitions/rejoin. Use real authenticated clients; a single editor or visual prefab check is insufficient. Still queued, not verified.
 - Commit(s): uncommitted.

@@ -1,5 +1,18 @@
 # Duck Rails — V1 game design
 
+November 13 optimization rollout: user accepted Motel's Blender atlas approach and
+authorized applying it to the other blocks, Convenience Store next. Preserve current
+layout/collision/gameplay/baked lighting, use spatial chunks and shared atlas materials
+for compatible static scenery, and retain exceptions. Full Quest A/B testing is not
+required for every block; keep authoring checks and visual review, queue remaining
+live acceptance. See [workflow and rollout status](block-atlas-optimization.md).
+
+November 13 viewing distance: user selected **120 m** for player cameras, smoothly
+increasing to **175 m** with the successful dawn transition. Installed for the shared
+XR/simulated DuckPlayer; temporary 50 m editor preview removed. Compilation and
+17 EditMode checks pass; 120/175 m visual/device acceptance remains queued. See
+[performance evidence](quest-performance.md#production-view-distance--november-13-2026).
+
 November 12 shared-store decision: Compound, Departure Shop and midpoint helicopter use one shared store prefab with seven standard coin items, three bundles, Default Duck, price/coin labels underneath, and locally wired SecurityCam/SecurityTV with HelicopterMirror. Gold intake stays separate. See [shared store](character-bundles.md#shared-store-in-all-three-locations--november-12).
 
 November 12 bundle presentation correction: use Duckz horizontal weapon–bag–avatar rows and identical heading/countdown text styling in both shops. User permits overlap for manual adjustment; see [bundle layout](character-bundles.md#horizontal-duckz-layout--november-12).
