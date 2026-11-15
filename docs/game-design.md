@@ -1,5 +1,10 @@
 # Duck Rails — V1 game design
 
+November 15 helipad: user requested random 2–4x enlargement of the jagged rocks
+to distinguish them from coal. Authored varied scales and grounded bases retain
+the meshes and loot; live readability/traversal acceptance remains queued.
+See [larger rocks](helipad-shop.md#larger-varied-rocks--november-15-2026).
+
 November 14 midpoint rock polish: user approved fences and requested jagged
 low-poly rocks. Replaced all 14 smooth ovals with angular meshes and matching
 collision, preserving placement; editor checks pass and live acceptance is queued.

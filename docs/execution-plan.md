@@ -2,6 +2,7 @@
 
 - [x] November 14: replace all 14 midpoint helipad oval rocks with jagged low-poly meshes and matching convex collision (10,752 -> 328 triangles); preserve placements, rebuild navigation/lighting and pass editor/preservation checks. See [evidence](validation/helipad-rocks/README.md).
 - [ ] Helipad rocks: natural contact and nighttime/headset appearance, queued with the midpoint fence entry.
+- [x] November 15 follow-up: user requested random 2–4x rock sizes; authored enlargement and ground seating, with three small clearance shifts, retain the 328-triangle geometry. Navigation/lighting rebuilt; saved scale/grounding/clearance and mesh checks pass. Natural traversal, loot reach and coal/scenery distinction remain queued.
 
 - [x] November 14: install midpoint helipad timber side fences at the standard 1 m inset; rebuild navigation/lighting and pass saved-prefab clearance/reference checks. See [evidence](validation/helipad-fences/README.md).
 - [ ] Midpoint fences: natural contact, route seams, nighttime/headset readability and real-client loading; queued for playtest.

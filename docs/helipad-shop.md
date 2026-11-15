@@ -1,5 +1,17 @@
 # Midpoint helipad shop — November 9, 2026
 
+## Larger varied rocks — November 15, 2026
+
+User requested random 2–4x size multipliers because the small angular rocks read
+as coal. All 14 have fixed authored random multipliers (actual 2.19–3.65x), uniformly
+applied across each rock's axes. Raise each centre to keep its base 10 cm embedded
+in the ground. Eleven horizontal positions are unchanged; three moved 0.5–0.75 m
+to keep the existing loot clear. Meshes/materials, 328 triangles total, fences and
+all 42 loot markers remain unchanged. See the [scale record](validation/helipad-rocks/scale-variation-2026-11-15.csv).
+Navigation/lighting rebuilt (8,233 graph nodes, 216 baked bindings); saved scale,
+grounding, mesh, loot-clearance and reference checks pass. Natural traversal,
+loot reach and headset readability remain queued for playtest.
+
 ## Jagged rock revision — November 14, 2026
 
 After approving the fences, the user requested jagged low-poly rocks in place of

@@ -1,0 +1,54 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+internal class CommandScript : IRunCommand
+{
+    public void Execute(ExecutionResult result)
+    {
+        if (Application.dataPath.Replace('\\','/') != "X:/Work/duck-rails/Assets" || EditorApplication.isPlayingOrWillChangePlaymode || Lightmapping.isRunning) throw new Exception("Use idle Duck Rails editor");
+        var root = PrefabUtility.LoadPrefabContents(RailHelipadPreview.Path);
+        try
+        {
+            var rocks = root.transform.Find("Env/Trees and rocks").Cast<Transform>().Where(t => t.name == "Rock").ToArray();
+            if (rocks.Length != 14 || rocks.Any(t => (t.localScale - new Vector3(1.5f,.9f,1.3f)).magnitude > .001f)) throw new Exception("Rock source changed; do not multiply the revision twice");
+            var markers = root.GetComponentsInChildren<RailSpawnMarker>(true);
+            var poses = markers.Select(t => (t.transform.localPosition,t.transform.localRotation,t.transform.localScale)).ToArray();
+            var rng = new System.Random(20261115);
+            var lines = new List<string> { "rock_index,multiplier,x,y,z,scale_x,scale_y,scale_z,horizontal_shift_m" };
+            for (int i = 0; i < rocks.Length; i++)
+            {
+                var rock = rocks[i]; var original = rock.localScale; var position = rock.localPosition;
+                var collider = rock.GetComponent<MeshCollider>(); bool clear = false; float factor = 2 + 2 * (float)rng.NextDouble();
+                result.RegisterObjectModification(rock);
+                for (int attempt = 0; attempt <= 256; attempt++)
+                {
+                    rock.localScale = original * factor;
+                    float radius = attempt == 0 ? 0 : Mathf.Ceil(attempt / 16f) * .25f;
+                    float angle = ((attempt - 1) % 16) * Mathf.PI / 8;
+                    // Preserve the existing 10 cm ground embed instead of burying the larger rocks.
+                    rock.localPosition = new Vector3(position.x + radius * Mathf.Cos(angle), rock.localScale.y * .5f - .1f, position.z + radius * Mathf.Sin(angle));
+                    Physics.SyncTransforms();
+                    var candidate = collider.bounds;
+                    clear = candidate.min.x >= 4 && candidate.max.x <= 46.8f && candidate.min.z >= 0 && candidate.max.z <= 60 && markers.All(m => Vector3.Distance(collider.ClosestPoint(m.transform.position),m.transform.position) > .25f);
+                    if (clear) break;
+                }
+                if (!clear) throw new Exception("Cannot enlarge rock " + i + " without covering loot");
+                var bounds = collider.bounds;
+                if (bounds.min.x < 4 || bounds.max.x > 46.8f || bounds.min.z < 0 || bounds.max.z > 60 || Mathf.Abs(bounds.min.y + .1f) > .002f) throw new Exception("Rock crosses railway/fence/seam or is not grounded");
+                var p = rock.localPosition; var s = rock.localScale;
+                float shift = Vector2.Distance(new Vector2(position.x,position.z),new Vector2(p.x,p.z));
+                lines.Add(FormattableString.Invariant($"{i},{factor:F6},{p.x:F6},{p.y:F6},{p.z:F6},{s.x:F6},{s.y:F6},{s.z:F6},{shift:F3}"));
+            }
+            if (!poses.SequenceEqual(markers.Select(t => (t.transform.localPosition,t.transform.localRotation,t.transform.localScale)))) throw new Exception("Loot transforms changed");
+            Directory.CreateDirectory("output/helipad-rocks");
+            File.Copy(RailHelipadPreview.Path, "output/helipad-rocks/before-resize.prefab", false);
+            PrefabUtility.SaveAsPrefabAsset(root,RailHelipadPreview.Path,out bool saved); if (!saved) throw new Exception("Save failed");
+            File.WriteAllLines("docs/validation/helipad-rocks/scale-variation-2026-11-15.csv",lines);
+            result.Log("Enlarged all 14 rocks by independent seeded 2–4x factors. Nearest clear placements, bottoms at Y=-0.1m, all 42 loot markers clear, fence/railway/seams clear. Scales: " + string.Join(", ",rocks.Select(t => (t.localScale.x/1.5f).ToString("F2") + "x")));
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+}
