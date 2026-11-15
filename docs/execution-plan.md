@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 15: install model-derived train shell collision; preserve visual/gameplay bindings, rebake train navigation, pass 50 focused checks and 489 boarding graph checks. [Evidence and legacy-check limits](validation/train-mesh-collision/README.md).
+- [ ] Train model-aligned collision: moving passenger/hand/body/loose-item contact, natural enemy boarding, real-client agreement and Quest cost; queued for playtest.
+
 - [x] November 14: replace all 14 midpoint helipad oval rocks with jagged low-poly meshes and matching convex collision (10,752 -> 328 triangles); preserve placements, rebuild navigation/lighting and pass editor/preservation checks. See [evidence](validation/helipad-rocks/README.md).
 - [ ] Helipad rocks: natural contact and nighttime/headset appearance, queued with the midpoint fence entry.
 - [x] November 15 follow-up: user requested random 2–4x rock sizes; authored enlargement and ground seating, with three small clearance shifts, retain the 328-triangle geometry. Navigation/lighting rebuilt; saved scale/grounding/clearance and mesh checks pass. Natural traversal, loot reach and coal/scenery distinction remain queued.

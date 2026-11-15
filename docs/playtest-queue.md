@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Train model-aligned collision — queued 2026-11-15
+- Commit(s): see git log "Align train collision with reviewed model".
+- Changed: disable obsolete/overlapping shell boxes and hulls; use three non-convex model-derived shell meshes (1,947 triangles) plus matching dash housing collision. Preserve furnace wall meshes, radio table, triggers and passenger/network code. Rebuilt train navigation.
+- Cheap checks: compilation, 50 focused collision/clearance checks, prefab/scene preservation and 489 boarding graph checks pass. [Evidence and historical-validator limits](validation/train-mesh-collision/README.md).
+- Setup: normal Expedition train; one client for contact/deposit checks, then two real clients including late join and master handoff. Run existing isolated minion/spider rear/side/surface-carry loops only when the queue is requested.
+- Check: hands/body meet deck, rails, canopy supports, nose, roof and dash at visible surfaces with no invisible blocks or pass-through. Rear and both side gaps stay open; coal enters furnace and remains exactly-once. Dropped/thrown coal, gold and tools collide and ride through GO/STOP/turns/slopes; natural passenger movement/support and deliberate exits remain correct. Minions/spiders board, pursue and dismount through all authorized gaps and retain wall support. Peers agree after late join/master loss. Compare Quest physics/frame time with previous collision; do not infer a speedup from fewer colliders.
+- Needs human: natural VR hand/body feel, edge contact, thin-surface snagging, moving-train feel and Quest performance.
+- Priority: normal.
+
 ### LIV recording game audio and remote voice — queued 2026-11-15
 - Commit: see git log "Fix LIV game audio capture after listener replacement".
 - Changed: embedded LCK mixer discards destroyed listener capture references, rebinds after scene/listener replacement, and resumes active capture; microphone reading survives temporary listener gaps. See [cause and scope](liv-recording-audio.md).

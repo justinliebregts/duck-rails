@@ -1,5 +1,11 @@
 # Duck Rails — V1 game design
 
+November 15 train collision: user approved model-derived shell collision in
+place of the misaligned blockout colliders. Installed while preserving controls,
+furnace openings and passenger motion; offline navigation and focused editor
+checks pass. Live physics/headset acceptance remains queued.
+[Evidence and limits](validation/train-mesh-collision/README.md).
+
 November 15 helipad: user requested random 2–4x enlargement of the jagged rocks
 to distinguish them from coal. Authored varied scales and grounded bases retain
 the meshes and loot; live readability/traversal acceptance remains queued.

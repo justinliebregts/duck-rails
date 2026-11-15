@@ -129,7 +129,9 @@ public static class RailBlenderTrainImport
             }
             // Retain old objects and their identities: only static artwork is replaced.
             foreach (var r in root.transform.Find("Yard Mule shell").GetComponentsInChildren<MeshRenderer>(true)) r.enabled = false;
-            foreach (var r in assembly.furnace.transform.Find("Front firebox art").GetComponentsInChildren<MeshRenderer>(true)) r.enabled = false;
+            var legacyFirebox = assembly.furnace.transform.Find("Front firebox art");
+            if (legacyFirebox)
+                foreach (var r in legacyFirebox.GetComponentsInChildren<MeshRenderer>(true)) r.enabled = false;
             var art = assembly.controls.Find("Integrated dash art");
             art.Find("Integrated housing").GetComponent<MeshRenderer>().enabled = false;
             var trim = art.Find("Dash trim");
@@ -139,7 +141,8 @@ public static class RailBlenderTrainImport
                 if (r.enabled) r.probeAnchor = anchor;
 
             var furnaceCollision = Child(assembly.furnace.transform, "Blender furnace collision");
-            foreach (var old in assembly.furnace.transform.Find("Front firebox art").GetComponentsInChildren<Collider>(true)) old.enabled = false;
+            if (legacyFirebox)
+                foreach (var old in legacyFirebox.GetComponentsInChildren<Collider>(true)) old.enabled = false;
             var source = model.parts.ToDictionary(p => p.name);
             var deck = root.transform.Find("Hull and deck/Deck collision slab").GetComponent<BoxCollider>();
             float deckHeight = source["Single wood deck"].vertices[0].y;
@@ -173,6 +176,8 @@ public static class RailBlenderTrainImport
             foreach (int side in new[] { -1, 1 })
                 Box(collision, "Lower nose side " + side, new Vector3(side * 1.56f, -.4675f, 5.47f), new Vector3(.96f, .355f, .94f));
 
+            // Reimports must not restore the obsolete blockout collision.
+            RailTrainMeshCollision.Apply(root, model);
             foreach (var pair in preserved)
                 if (EditorJsonUtility.ToJson(pair.Key) != pair.Value) throw new InvalidOperationException("Gameplay binding changed: " + pair.Key.GetType().Name);
             // Fire follows the lowered ember bed. The insertion anchor, accepted samples and fuel protocol stay intact.
@@ -209,8 +214,9 @@ public static class RailBlenderTrainImport
             check(renderer.lightProbeUsage == LightProbeUsage.BlendProbes && renderer.probeAnchor == root.transform.Find("Train light probe anchor"), p.name + " uses the shared moving probe anchor");
         }
         check(root.transform.Find("Yard Mule shell").GetComponentsInChildren<MeshRenderer>(true).All(r => !r.enabled), "Legacy shell artwork disabled without removing collision/light identities");
-        check(a.furnace.transform.Find("Front firebox art").GetComponentsInChildren<MeshRenderer>(true).All(r => !r.enabled), "Legacy furnace artwork disabled");
-        check(a.furnace.transform.Find("Front firebox art").GetComponentsInChildren<Collider>(true).All(c => !c.enabled), "Legacy furnace collision disabled");
+        var legacyFirebox = a.furnace.transform.Find("Front firebox art");
+        check(!legacyFirebox || legacyFirebox.GetComponentsInChildren<MeshRenderer>(true).All(r => !r.enabled), "Legacy furnace artwork absent or disabled");
+        check(!legacyFirebox || legacyFirebox.GetComponentsInChildren<Collider>(true).All(c => !c.enabled), "Legacy furnace collision absent or disabled");
         check(a.furnace.transform.Find("Blender furnace collision").GetComponentsInChildren<MeshCollider>().All(c => c.enabled && c.convex && c.sharedMesh), "Replacement furnace solids use valid convex mesh collision");
         check(a.radio.GetComponentsInChildren<MeshRenderer>().All(r => r.enabled), "Separate radio/table renderers retained");
         check(a.controls.GetComponent<RailCockpitFuelBar>().segments.GetComponent<MeshRenderer>().enabled, "Live fuel segments retained separately");

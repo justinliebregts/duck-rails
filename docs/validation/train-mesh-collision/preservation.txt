@@ -1,0 +1,6 @@
+PASS All 378 original prefab object/component IDs retained
+PASS Original MonoBehaviour, mesh renderer/filter, light and particle serialized documents unchanged
+PASS Train prefab meta/GUID unchanged
+PASS Repeated installer leaves saved prefab byte-identical
+PASS Expedition preview inherits all three enabled shell meshes, disabled old deck/chassis, original furnace and gauge bindings
+PASS Actual passenger support cache recognizes all three replacement shell colliders; no AudioSurface tags lost

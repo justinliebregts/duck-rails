@@ -1,5 +1,16 @@
 # Yard Mule train art — November 6, 2026
 
+## Model-aligned collision — November 15
+
+User approved replacing obsolete shell boxes with model-derived collision.
+Installed three non-convex structural shell meshes (1,947 triangles) and matching
+dash housing faces; disabled the overlapping old shell colliders. Furnace wall
+meshes, controls/triggers, visual assets and passenger motion remain intact.
+Train navigation rebaked; 50 focused geometry/contact checks and 489 boarding
+graph checks pass. Broader historical validators have stale art assumptions;
+moving/headset acceptance is **queued for playtest**.
+See [implementation and evidence](validation/train-mesh-collision/README.md).
+
 ## Blender integration — November 10
 
 The user approved the reviewed model and authorized Unity integration. The
