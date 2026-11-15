@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### LIV recording game audio and remote voice — queued 2026-11-15
+- Commit: see git log "Fix LIV game audio capture after listener replacement".
+- Changed: embedded LCK mixer discards destroyed listener capture references, rebinds after scene/listener replacement, and resumes active capture; microphone reading survives temporary listener gaps. See [cause and scope](liv-recording-audio.md).
+- Cheap checks: verified Duck Rails Unity target, compilation successful, all nine listener-lifecycle EditMode assertions passed, Console error/exception query empty, scoped diff whitespace checks passed. No Play Mode or native recording started.
+- Setup: Quest build (user's reported device); two real clients. Start from Login, record in Compound, depart into Expedition, return, and repeat a recording. Also cross a transition while recording if supported by the camera lifecycle.
+- Check: clips contain local microphone, audible nearby remote speech, and game effects (horn/footsteps); no silent game track after transitions or restarting capture. Game-audio/microphone toggles remain independent, and headset playback remains normal.
+- Needs human: listen to saved clips on the user's recording device, confirm remote voice/game levels and audio/video sync.
+- Priority: normal.
+
 ### Midpoint helipad side fences — queued 2026-11-14
 - November 15 size follow-up (see git log "Vary helipad rocks at two to four times their original size"): all 14 rocks use independent authored random 2–4x scale factors (actual 2.19–3.65x), with grounded bases. Three rocks shifted 0.5–0.75 m to preserve loot clearance; all markers and counts retained. Navigation/lighting rebuilt (8,233 nodes / 216 bindings); saved scale/grounding/clearance and mesh checks pass. Include enlarged-rock traversal, loot reach and coal-versus-scenery readability. See [evidence](validation/helipad-rocks/README.md#random-enlargement--november-15-2026).
 - Rock follow-up: user approved fence appearance; replaced all 14 oval rocks with three jagged, flat-shaded meshes and matching convex collision. 10,752 -> 328 triangles; all transforms, shop/loot and fence geometry retained. Navigation/lighting rebuilt (7,976 nodes / 216 bindings), mesh/collision/reference and preservation checks pass. [Rock evidence](validation/helipad-rocks/README.md). Include rock hand/body/loose-item contact, ground seating and nighttime/headset silhouette in this entry's live checks.

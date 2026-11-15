@@ -19,6 +19,7 @@ namespace Liv.Lck
     internal class LckAudioMixer : ILckAudioMixer, ILckLateUpdate
     {
         private ILckAudioSource _gameAudioSource;
+        private bool _captureEnabled;
         private bool _isGameAudioMuted = false;
         private float _gameAudioGain = 1.0f;
         private Queue<float> _gameAudioQueue = new Queue<float>();
@@ -76,30 +77,28 @@ namespace Liv.Lck
 
         public void ReadAvailableAudioData()
         {
-            if(!VerifyAudioCaptureComponent())
-            {
-                return;
-            }
+            var hasGameAudio = VerifyAudioCaptureComponent();
 
             if (_nativeMicrophoneCapture.IsCapturing())
             {
                 _nativeMicrophoneCapture.GetAudioData(MicrophoneAudioDataCallback);
             }
 
-            _gameAudioSource.GetAudioData(GameAudioDataCallback);
+            if (hasGameAudio)
+                _gameAudioSource.GetAudioData(GameAudioDataCallback);
         }
         
         public void EnableCapture()
         {
+            _captureEnabled = true;
             VerifyAudioCaptureComponent();
 
             if (_gameAudioSource == null)
             {
                 LckLog.LogError("Unable to enable audio capture - game audio source is null");
-                return;
             }
-            
-            _gameAudioSource.EnableCapture();
+            else
+                _gameAudioSource.EnableCapture();
 
             _micCaptureStartRecordingTime = null;
             _microphoneQueue.Clear();
@@ -113,7 +112,9 @@ namespace Liv.Lck
 
         public void DisableCapture()
         {
-            _gameAudioSource?.DisableCapture();
+            _captureEnabled = false;
+            if (IsGameAudioSourceAlive())
+                _gameAudioSource.DisableCapture();
             _micCaptureStartRecordingTime = null;
             _microphoneQueue.Clear();
             _gameAudioQueue.Clear();
@@ -121,12 +122,6 @@ namespace Liv.Lck
         
         private AudioBuffer MixAudioArrays(float recordingTime)
         {
-            if(_gameAudioSource == null)
-            {
-                LckLog.LogError("LCK No game audio source found");
-                return null;
-            }
-            
             var shouldIncludeMicAudio = _nativeMicrophoneCapture.IsCapturing();
             
             // Keep track of the recording time when the mic started capturing so that we can use it to monitor whether
@@ -327,6 +322,21 @@ namespace Liv.Lck
 
         private bool VerifyAudioCaptureComponent()
         {
+            // The service survives scene loads; its listener/capture component does not.
+            // Interface references do not use Unity's destroyed-object null comparison.
+            var markerActive = _audioCaptureMarker != null &&
+                _audioCaptureMarker.gameObject.activeInHierarchy &&
+                (!(_audioCaptureMarker is Behaviour behaviour) || behaviour.enabled);
+            if (!markerActive || !IsGameAudioSourceAlive())
+            {
+                if (IsGameAudioSourceAlive())
+                    _gameAudioSource.DisableCapture();
+                _gameAudioSource = null;
+                _audioCaptureMarker = null;
+                _gameAudioBuffer.Clear();
+                _lastGameAudioLevel = 0;
+            }
+
             if (_audioCaptureMarker == null)
             {
                 var allListeners = LckMonoBehaviourMediator.FindObjectsOfType<AudioListener>(false);
@@ -371,6 +381,9 @@ namespace Liv.Lck
                 }
             }
 
+            if (_audioCaptureMarker == null)
+                return false; // A scene transition can temporarily have no listener.
+
             if (_gameAudioSource == null)
             {
                 _gameAudioSource = _audioCaptureMarker.gameObject.GetComponent<ILckAudioSource>();
@@ -387,10 +400,17 @@ namespace Liv.Lck
                     _gameAudioSource = _audioCaptureMarker.gameObject.AddComponent<LckAudioCapture>();
 #endif
                 }
-
+                if (_captureEnabled)
+                    _gameAudioSource.EnableCapture();
             }
 
             return true;
+        }
+
+        private bool IsGameAudioSourceAlive()
+        {
+            return _gameAudioSource != null &&
+                (!(_gameAudioSource is UnityEngine.Object unityObject) || unityObject != null);
         }
 
         private bool CheckMicAudioPermissions()
