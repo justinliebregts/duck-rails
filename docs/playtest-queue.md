@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Arcade open-window collision — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: removed only the two invisible BoxColliders spanning the arcade front windows in `convenience-store-v1.prefab`; visuals and all frame/sill/mullion colliders retained.
+- Cheap checks: Unity reimport and EditMode inspection pass; both window objects have no collider, all 11 arcade window-frame colliders and the two other shop-window colliders remain. Prefab diff contains only the two component removals; Console error query empty.
+- Setup: one client at the Convenience Store arcade.
+- Check: hands/items pass through the pictured window openings; solid sills and frames still block contact. Existing prebaked navigation is unchanged by this collider-only request.
+- Needs human: headset contact/traversal feel.
+- Priority: normal.
+
 ### Speed-matched train wheels — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: four visible wheels rotate about local X from shared train distance / 0.43 m radius, following actual acceleration, braking and fuel-exhaustion coasting. Suspension mounts and existing collision stay fixed relative to the train.

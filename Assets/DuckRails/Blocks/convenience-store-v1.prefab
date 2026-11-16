@@ -149796,7 +149796,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2937432636959269139}
-  - component: {fileID: 5518520612054490124}
   - component: {fileID: 633323154988798921}
   m_Layer: 6
   m_Name: Clear shop window collision
@@ -149820,27 +149819,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1728245577724357857}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &5518520612054490124
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5377717588301533131}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.08, y: 2, z: 6}
-  m_Center: {x: -19, y: 1.65, z: 83}
 --- !u!114 &633323154988798921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260773,7 +260751,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 386661851990778129}
-  - component: {fileID: 8455453186675276407}
   - component: {fileID: 5301936788575026048}
   m_Layer: 6
   m_Name: Clear shop window collision
@@ -260797,27 +260774,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1728245577724357857}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &8455453186675276407
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9177562694430905446}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.08, y: 2, z: 11}
-  m_Center: {x: -19, y: 1.65, z: 71.5}
 --- !u!114 &5301936788575026048
 MonoBehaviour:
   m_ObjectHideFlags: 0
