@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Test panel fuel 100 — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: desktop and VR test panel fuel buttons now set shared fuel to 100 instead of 20, with matching labels.
+- Setup: ready private Expedition as master; open test tools on desktop and in VR.
+- Check: Fuel 100 fills fuel to 100; existing authority restrictions remain enforced.
+- Needs human: VR label readability.
+- Priority: low.
+
 ### Compound countdown plate animation and SFX — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: plate follows shared public countdown; sinks 0.03 m and plays PressurePlate_On on start, rises and plays PressurePlate_Off on stop. Collider is stationary and tagged Metal.

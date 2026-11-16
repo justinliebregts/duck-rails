@@ -155,7 +155,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (tools)
         {
             Button("BRIDGE", -.095f, -.065f, RailTestTools.Bridge); Button("BOARD TRAIN", .095f, -.065f, RailTestTools.Board);
-            Button("FUEL 20", -.095f, -.125f, () => RailTestTools.SetFuel(20)); Button("LOADED BAG", .095f, -.125f, RailTestTools.SpawnBag);
+            Button("FUEL 100", -.095f, -.125f, () => RailTestTools.SetFuel(100)); Button("LOADED BAG", .095f, -.125f, RailTestTools.SpawnBag);
             Button("DOWN ME", -.095f, -.185f, RailTestTools.DownSelf); Button("REPEAT ROUTE", .095f, -.185f, RailTestTools.RepeatRoute);
             Button("BRIGHT LIGHTING", -.095f, -.245f, RailTestLighting.Bright); Button("GAMEPLAY LIGHTING", .095f, -.245f, RailTestLighting.Gameplay);
             Button("FLASHLIGHT", -.095f, -.305f, RailTestTools.SpawnFlashlight);
@@ -219,7 +219,7 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
         if (tools) {
             GuiPair("Bright Lighting", RailTestLighting.Bright, "Gameplay Lighting", RailTestLighting.Gameplay, button);
             GuiPair("Bridge", RailTestTools.Bridge, "Board train", RailTestTools.Board, button);
-            GuiPair("Fuel 20", () => RailTestTools.SetFuel(20), "Loaded bag", RailTestTools.SpawnBag, button);
+            GuiPair("Fuel 100", () => RailTestTools.SetFuel(100), "Loaded bag", RailTestTools.SpawnBag, button);
             if (GUILayout.Button("Deposit 1 coal into furnace", button)) RailTestTools.DepositCoal();
             GuiPair("Down me", RailTestTools.DownSelf, "Repeat route", RailTestTools.RepeatRoute, button);
             if (GUILayout.Button("Spawn flashlight", button)) RailTestTools.SpawnFlashlight();
