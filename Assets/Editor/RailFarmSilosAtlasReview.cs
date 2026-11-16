@@ -136,6 +136,7 @@ public static class RailFarmSilosAtlasReview
     [MenuItem("Duck Rails/Authoring/Farm Silos/Open full-map Blender review")]
     public static void Open()
     {
+        if(File.Exists(RailFarmPolishAtlas.ReviewScene)){RailFarmPolishAtlas.OpenReview();return;}
         RequireIdle();
         var stage=PrefabStageUtility.GetCurrentPrefabStage();
         if(stage!=null&&stage.scene.isDirty)throw new InvalidOperationException("Save current prefab edits before opening review.");

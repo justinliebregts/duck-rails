@@ -1,5 +1,11 @@
 # Duck Rails — execution plan
 
+- [x] November 15: implement Farm screenshot geometry/lantern repairs and pond
+  underside collider; rebake navigation/lighting and regenerate triangle-preserving
+  Blender chunks. Authoring checks pass. [Evidence](validation/farm-silos-polish-2026-11-15/README.md).
+- [ ] Farm revised traversal, water audio after user assignment, moving-view/night
+  appearance and real-client acceptance: queued for playtest.
+
 - [x] November 15: install four speed-matched visual train wheels with fixed suspension; compilation, geometry/rotation EditMode checks and Console check pass. See [wheel rotation](yard-mule-train.md#speed-matched-wheels--november-15).
 - [ ] Train wheel driving, late-join/client agreement and headset appearance: queued for playtest.
 

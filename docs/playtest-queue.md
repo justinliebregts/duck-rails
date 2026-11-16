@@ -43,6 +43,22 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Farm Silos screenshot repairs and pond collider — queued 2026-11-15
+
+- Scope: slide side/deck collider alignment, five ramp/landing joins, north path
+  overlap removal, mounted/lowered lanterns, two removed lights with fresh bake,
+  outdoor tractor removal, and pond-shaped solid collider below water. Rebuilt
+  offline navigation and Blender atlas without triangle growth. Narrow ditch also
+  has a solid box with Water AudioSurface; verify its water footsteps.
+- Checks now: 69 collision/reference checks, all 244 spawn poses/order preserved,
+  per-triangle Blender comparison, eight Unity visual pairs, production guard and
+  compile/Console checks. [Evidence](validation/farm-silos-polish-2026-11-15/README.md).
+- Run: traverse/climb both slide edges and every ramp landing; inspect path/ramp
+  surfaces while moving, fixture darkness/mounts, and pond walking/item support.
+  Check pond water footsteps after the user assigns Water AudioSurface. Exercise
+  enemy pursuit and real-client/late-join agreement on the revised block.
+- Manual: headset hand contact, darkness and moving-view texture readability.
+
 ### Arcade open-window collision — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: removed only the two invisible BoxColliders spanning the arcade front windows in `convenience-store-v1.prefab`; visuals and all frame/sill/mullion colliders retained.

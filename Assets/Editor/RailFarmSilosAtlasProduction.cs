@@ -121,18 +121,21 @@ public static class RailFarmSilosAtlasProduction
         var visual = root ? root.transform.Find(Visual) : null;
         if (!visual && !File.Exists(StatePath)) return; // Not yet integrated.
         if (!visual || !visual.gameObject.activeSelf || root.GetComponent<RailSceneryChunks>()) throw new BuildFailedException("Missing/overridden Farm Silos production atlas.");
-        var state = JsonUtility.FromJson<State>(File.ReadAllText(StatePath));
+        bool polished=File.Exists(RailFarmPolishAtlas.Art+"production-state.json");
+        string currentArt=polished?RailFarmPolishAtlas.Art:Art;
+        var state = JsonUtility.FromJson<State>(File.ReadAllText(currentArt+"production-state.json"));
         if (state.guid != AssetDatabase.AssetPathToGUID(Prefab) || state.fingerprint != Fingerprint(root))
             throw new BuildFailedException("Farm Silos atlas/source/lighting changed since approved integration. Reconcile and regenerate derived visuals before building.");
-        var data = JsonUtility.FromJson<RailFarmSilosAtlasReview.Payload>(File.ReadAllText(Art + "unity-meshes.json"));
+        var data = JsonUtility.FromJson<RailFarmSilosAtlasReview.Payload>(File.ReadAllText(currentArt + "unity-meshes.json"));
         if (data.sourceKeys.Any(k => Resolve(root.transform, k).GetComponent<MeshRenderer>().enabled)) throw new BuildFailedException("Duplicate source rendering.");
         var chunks = visual.GetComponentsInChildren<MeshRenderer>(true);
         var lighting = root.GetComponent<RailBakedBlockLighting>();
-        if (chunks.Length != 117 || chunks.Any(r => !r.enabled || !r.sharedMaterial || !r.GetComponent<MeshFilter>().sharedMesh) ||
-            chunks.Select(r => r.sharedMaterial).Distinct().Count() != 1 || lighting.bindings.Length != 1016 ||
-            lighting.bindings.Any(b => !b.renderer || !b.color) || lighting.bindings.Select(b => b.renderer).Distinct().Count() != 1016)
+        int expectedBindings=data.sourceKeys.Length+data.parts.Length;
+        if (chunks.Length != data.parts.Length || chunks.Any(r => !r.enabled || !r.sharedMaterial || !r.GetComponent<MeshFilter>().sharedMesh) ||
+            (!polished && chunks.Select(r => r.sharedMaterial).Distinct().Count() != 1) || lighting.bindings.Length != expectedBindings ||
+            lighting.bindings.Any(b => !b.renderer || !b.color) || lighting.bindings.Select(b => b.renderer).Distinct().Count() != expectedBindings)
             throw new BuildFailedException("Invalid Farm Silos atlas chunks or lighting bindings.");
-        Debug.Log("Farm Silos production atlas authoring guard passed: 117 chunks, 899 disabled originals, 1016 valid bindings.");
+        Debug.Log($"Farm Silos production atlas authoring guard passed: {chunks.Length} chunks, {data.sourceKeys.Length} disabled originals, {expectedBindings} valid bindings.");
     }
 }
 

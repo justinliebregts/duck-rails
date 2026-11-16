@@ -1,0 +1,15 @@
+using UnityEngine;using UnityEditor;using UnityEngine.SceneManagement;using System.Linq;using System.IO;
+internal class CommandScript:IRunCommand{
+public void Execute(ExecutionResult result){
+string prefix="PREFIX";string folder="docs/validation/farm-silos-polish-2026-11-15/";
+var root=Object.FindFirstObjectByType<RailBlock>();var lighting=root.GetComponent<RailBakedBlockLighting>();var maps=LightmapSettings.lightmaps.ToList();foreach(var b in lighting.bindings){int i=maps.FindIndex(m=>m.lightmapColor==b.color);if(i<0){i=maps.Count;maps.Add(new LightmapData{lightmapColor=b.color});}b.renderer.lightmapIndex=i;b.renderer.lightmapScaleOffset=b.scaleOffset;}LightmapSettings.lightmaps=maps.ToArray();
+var lamps=Object.FindObjectsByType<Light>(FindObjectsSortMode.None).Where(l=>l.enabled).ToArray();foreach(var l in lamps)l.enabled=false;
+var go=new GameObject("Temporary comparison camera");var camera=go.AddComponent<Camera>();camera.fieldOfView=60;camera.nearClipPlane=.1f;camera.farClipPlane=300;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.1f,.17f,.24f);camera.cullingMask=1<<6;
+var sun=new GameObject("Temporary comparison fill");var fill=sun.AddComponent<Light>();fill.type=LightType.Directional;fill.intensity=.65f;sun.transform.rotation=Quaternion.Euler(45,-40,0);
+bool fog=RenderSettings.fog;RenderSettings.fog=false;var rt=new RenderTexture(1000,750,24);camera.targetTexture=rt;var previous=RenderTexture.active;
+string[] names={"slide","ramps","silo","shed","west-lanterns","barn-south","path","pond"};
+Vector3[] pos={new(14,4,134),new(1,13,114),new(12,9.1f,98),new(10,9,104),new(-8,6,82),new(24,1.7f,59),new(-3,9,101),new(7,14,116)};
+Vector3[] target={new(18.2f,1.5f,142),new(18,4,103),new(22,9,98),new(26,2,112),new(-25,2,81),new(25,2.2f,65.5f),new(-10,0,110),new(25,0,130)};
+try{for(int i=0;i<names.Length;i++){go.transform.position=pos[i];go.transform.LookAt(target[i]);camera.Render();RenderTexture.active=rt;var tex=new Texture2D(1000,750,TextureFormat.RGB24,false);tex.ReadPixels(new Rect(0,0,1000,750),0,0);tex.Apply();File.WriteAllBytes(folder+prefix+"-"+names[i]+".png",tex.EncodeToPNG());Object.DestroyImmediate(tex);}}
+finally{RenderTexture.active=previous;camera.targetTexture=null;rt.Release();Object.DestroyImmediate(rt);Object.DestroyImmediate(go);Object.DestroyImmediate(sun);RenderSettings.fog=fog;foreach(var l in lamps)l.enabled=true;}
+result.Log("Captured "+prefix+" eight views");}}

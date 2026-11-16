@@ -1,5 +1,11 @@
 # Blender atlas optimization workflow
 
+November 15 Farm repair pass: scoped source corrections and fresh lighting bake,
+then triangle-preserving Blender regeneration. 907 sources -> 209 chunks plus 54
+retained renderers; 59,326 -> 59,326 converted triangles. Original production GUID
+and spawn poses retained. Current review/evidence supersedes the November 14 Farm
+conversion. [Repairs and validation](validation/farm-silos-polish-2026-11-15/README.md).
+
 November 14 Skyscraper follow-up: user approved reduced/grounded source and
 authorized a fresh Blender pass. New isolated review preserves **37,184 triangles
 exactly**, with 648 chunks plus the sign (2,789 -> 649 renderers). Repeated texture

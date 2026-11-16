@@ -1,0 +1,29 @@
+using UnityEngine;using UnityEditor;using System;using System.IO;using System.Linq;using System.Collections.Generic;
+internal class CommandScript:IRunCommand{
+public void Execute(ExecutionResult result){
+var checks=new List<string>();void Check(bool pass,string msg){checks.Add((pass?"PASS ":"FAIL ")+msg);}
+RailFarmSilosAtlasProduction.ValidateSaved();
+var root=PrefabUtility.LoadPrefabContents(RailFarmSilos.PrefabPath);
+try{
+var env=root.transform.Find("Env");var farm=env.Find("Farm authored v3");var play=env.Find("Northeast pond and playground/Playground towers and bridges");
+foreach(var t in play.Cast<Transform>().Where(t=>t.name=="Static slide"||t.name=="Slide edge")){
+ var c=t.GetComponent<BoxCollider>();Check(c&&c.enabled&&!c.isTrigger,"Solid "+t.name);
+ var dir=t.right;Check(c.Raycast(new Ray(t.position-dir*2,dir),out var hit,3),"Side ray contacts "+t.name+" at "+t.position);
+ Check(Mathf.Abs(t.localPosition.x-(t.name=="Static slide"?18f+play.Find("Playground towers and bridges Slide yellow").localPosition.x:t.localPosition.x<18?17.2f+play.Find("Playground towers and bridges Slide yellow").localPosition.x:18.8f+play.Find("Playground towers and bridges Slide yellow").localPosition.x))<.001f,"Slide visual/collision X aligned "+t.name);
+}
+var silo=farm.Find("Barn and silos/Enterable grain silo");
+foreach(var f in silo.GetComponentsInChildren<MeshFilter>().Where(f=>f.name.StartsWith("Silo ramp "))){var c=f.GetComponent<MeshCollider>();Check(c.sharedMesh==f.sharedMesh,"Matching ramp collision "+f.name);var v=f.sharedMesh.vertices;for(int j=0;j<=8;j++){var p=Vector3.Lerp((v[0]+v[1])*.5f,(v[2]+v[3])*.5f,j/8f);Check(c.Raycast(new Ray(p+Vector3.up*.1f,Vector3.down),out var hit,.2f),"Ramp deck support "+f.name+" sample "+j);}}
+var pond=env.Find("Northeast pond and playground/Pond water");var pc=pond.GetComponentInChildren<MeshCollider>();foreach(var p in new[]{new Vector3(25,0,130),new Vector3(22,0,128),new Vector3(28,0,132)})Check(pc.Raycast(new Ray(p+Vector3.up,Vector3.down),out var hit,2)&&Mathf.Abs(hit.point.y-(pond.TransformPoint(pond.GetComponent<MeshFilter>().sharedMesh.bounds.center).y-.025f))<.001f,"Pond underside support "+p);
+Check(pc.GetComponent<Game.Audio.AudioSurface>()==null,"Pond AudioSurface remains for user assignment");
+Check(!farm.Find("Fields and orchard/Abandoned tractor"),"Outdoor tractor removed");
+Check(silo.GetComponentsInChildren<Light>().Length==1,"Only entrance lantern remains in silo");
+Check(!root.GetComponentsInChildren<Light>().Any(l=>Vector3.Distance(l.transform.position,new Vector3(25.87f,2.2f,107.58f))<.1f),"Detached cart shed light removed");
+var light=root.GetComponentsInChildren<Light>().Single(l=>l.transform.parent.name=="Barn doorway lanterns"&&l.transform.position.z<70);Check(Mathf.Abs(light.transform.position.y-1.95f)<.001f,"South barn fixture lowered .35m");
+var b=root.GetComponent<RailBlock>();Check(b.spawnCandidates.coal.Length==105&&b.spawnCandidates.gold.Length==117&&b.spawnCandidates.enemies.Length==22,"Original candidate counts 105/117/22 preserved");
+Check(root.GetComponentsInChildren<MeshRenderer>(true).Where(r=>r.enabled).All(r=>r.sharedMaterial&&r.GetComponent<MeshFilter>().sharedMesh),"All enabled visuals have mesh/material");
+checks.Add("COUNTS enabledRenderers="+root.GetComponentsInChildren<MeshRenderer>(true).Count(r=>r.enabled)+" colliders="+root.GetComponentsInChildren<Collider>(true).Length+" lights="+root.GetComponentsInChildren<Light>(true).Length+" bindings="+root.GetComponent<RailBakedBlockLighting>().bindings.Length);
+}
+finally{PrefabUtility.UnloadPrefabContents(root);}
+File.WriteAllLines("docs/validation/farm-silos-polish-2026-11-15/editor-checks.txt",checks);result.Log(string.Join("\n",checks.Where(x=>x.StartsWith("FAIL")||x.StartsWith("COUNTS"))));result.Log(checks.Count(x=>x.StartsWith("PASS"))+" pass / "+checks.Count(x=>x.StartsWith("FAIL"))+" fail");
+}}
+

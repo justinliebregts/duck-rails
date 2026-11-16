@@ -1,5 +1,16 @@
 # Farm Silos layout
 
+## Screenshot repairs — November 15, 2026
+
+Repaired slide collision alignment, silo ramp/landing overlaps and orchard path
+z-fighting; removed the marked silo/shed lanterns and outdoor tractor; mounted
+retained lanterns and lowered the south barn fixture. Added the requested pond
+underside collider; the user will assign Water AudioSurface. Navigation/lighting
+rebuilt, then regenerated through Blender's triangle-preserving atlas workflow.
+Current output: 209 chunks plus 54 retained renderers, 59,326 converted triangles
+without subdivision. Editor checks pass; **queued for playtest**.
+[Evidence, review and recovery](validation/farm-silos-polish-2026-11-15/README.md).
+
 ## Full-block Blender atlas review — November 14, 2026
 
 Separate optimized review imported from the current saved prefab, retaining local
@@ -209,3 +220,9 @@ Updated existing mesh assets in place, retaining GUIDs and prefab/bake-scene ref
 User authorized disabling corn shadow casting and simplifying geometry. Reduced each stalk from nine leaf diamonds to five broader leaves, retaining plant positions, four-metre height, field coverage and 79 culling patches. Corn now has 154,392 triangles / 308,784 vertices, down from 242,616 / 485,232 (36.4%). ShadowCastingMode is Off on all corn patches in the saved prefab and bake scene; future authoring builds preserve it. Corn remains non-static, probe-lit scenery; the 851 baked receiver bindings are retained. No navigation or lighting rebake was required for this visual-only update.
 
 Geometry/catalogue/export checks passed and the regenerated ground-level capture was inspected. Unity emitted scene culling-mask allocation warnings during the combined check/capture command, but evidence files and captures completed; the saved prefab was independently inspected afterwards. Headset GPU timing remains unmeasured. No LODs added in this pass given the short fog visibility; fog itself is not a rendering cull, so distance culling remains a possible measured follow-up.
+
+### Ditch water contact — November 15
+
+Added a solid box beneath the narrow ditch water and assigned Water AudioSurface.
+Contact checks and rebuilt navigation pass; listening queued for playtest.
+

@@ -1,5 +1,11 @@
 # Duck Rails — V1 game design
 
+November 15 Farm repairs: corrected slide/ramp/path geometry and lantern mounting,
+removed the two marked lights and outdoor tractor, and added a pond underside
+collider for the user's Water AudioSurface assignment. Navigation/lighting and
+Blender chunks rebuilt; live acceptance queued.
+[Evidence](validation/farm-silos-polish-2026-11-15/README.md).
+
 November 15 farm audio: foliage contact sound is restricted to actual planted
 corn stalk coverage, excluding open paths/clearings. Implemented with non-solid
 audio coverage; listening/runtime acceptance queued. See [audio surfaces](block-audio-surfaces.md).
