@@ -42,6 +42,11 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ```
 
 ## Pending
+
+### Quackville blocked-exit sign — queued 2026-11-15
+- Installed `↑ QUACKVILLE` above the blocked Compound stairway with one left-side up arrow, raised CutePixel lettering and matching platform sign materials.
+- Editor compilation, assets/instance checks and visual capture pass; sign lowered on short supports to clear ceiling-pipe sightlines. See `docs/subway-compound.md` and `output/subway-terminal-model/quackville-exit-sign.png`.
+- Pending: headset readability and sightlines from normal approach and stairs. No Play Mode run; not verified live.
 ### Farm stalk-only foliage sounds — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: Foliage surface and supplied handHitFoliage clip for player hand/foot contacts inside actual corn stalk coverage; 52 patches, 3,669 stalks, no new collision.
