@@ -36,3 +36,14 @@ Fuel now shares the distance panel's DistanceBase mesh, Controls material, scale
 User reports the cockpit looks great and requested commit/push. Artwork and tuning have now been applied into the nested CockpitControls prefab, with train-level overrides/references retained. Saved throttle local X rotation is approximately -25.66 degrees, local position approximately (0.05, 0.12, 0.09), palm offset (0, 0.0200, 0.0315) metres and return duration 0.25 seconds. The prefab is the source of truth for final placement; the full initial art installer contains original layout defaults and should not be rerun over user tuning. The backing-only command remains scoped to panel artwork.
 
 Pre-commit check: verified Duck Rails editor in Edit Mode; saved fuel, fuel-segment and distance bindings resolve; 25 drive checks and session checks pass. User visual/headset approval is recorded separately from outstanding multiplayer acceptance of proportional speed and return. No new Play Mode run was launched.
+
+## Default-return regrip correction — November 16
+
+The queue found that a remote client's0.25-second local return could finish before
+its released lease was echoed, preventing any mid-return regrip. Physical grip now
+also permits that client's exact already-released token in the same run; master
+ownership arbitration and fresh-token validation remain unchanged. Two actual
+clients pass the default return/regrip, speed/detent and negative eligibility
+checks. See [evidence and remaining limits](validation/playtest-queue/2026-11-16/throttle-regrip-fix.md).
+Headset palm clearance, reach, variable-speed feel and real-machine jitter remain
+queued; no art, offset, duration or desktop-T tuning changed.

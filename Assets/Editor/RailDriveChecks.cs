@@ -19,6 +19,12 @@ public static class RailDriveChecks
         Check(lease.Apply(2, "next", 0, 0, 10.5) && !lease.Apply(1, "left", 2, 0, 10.6), "Old release cannot cancel a new holder");
         lease.Reset();
         Check(lease.Actor == 0 && lease.Progress == 0 && !lease.Apply(2, "next", 1, 1, 12), "Timeout/master reset needs a fresh grip");
+        Check(lease.Apply(1, "old", 0, 0, 13) && lease.Apply(1, "old", 2, 0, 13.1) &&
+            lease.Apply(1, "regrip", 0, 1, 13.11) && lease.Actor == 1 && lease.Token == "regrip" && lease.Progress == 0,
+            "Ordered release and same-actor regrip grant a fresh token in STOP");
+        Check(!lease.Apply(1, "old", 1, 1, 13.12) && !lease.Apply(1, "old", 2, 0, 13.13) &&
+            lease.Apply(1, "regrip", 1, .6f, 13.14) && lease.Progress == .6f,
+            "Delayed messages from the old grip cannot drive or cancel the same actor's new grip");
         Check(RailDriveLease.Travel(-1) == 0 && Mathf.Approximately(RailDriveLease.Travel(.14f), .5f) && RailDriveLease.Travel(2) == 1, "Forward travel is bounded; backward movement stays OFF");
         Check(RailDriveLease.ForwardDetent(false, .85f) && RailDriveLease.ForwardDetent(true, .8f), "Push snaps GO and small backward movements do not chatter");
         Check(!RailDriveLease.ForwardDetent(true, .72f) && !RailDriveLease.ForwardDetent(false, .8f), "Pull back cuts GO near the forward stop; grip alone cannot latch GO");
@@ -67,7 +73,7 @@ public static class RailDriveChecks
             Check(off.z < 0 && handle.localPosition.z > 0 && Mathf.Approximately(handle.localPosition.magnitude, .4f), "Handle swings forward about the base rather than its centre");
         }
         finally { UnityEngine.Object.DestroyImmediate(root); }
-        Debug.Log("RAILS VR DRIVE: 25 checks passed");
+        Debug.Log("RAILS VR DRIVE: 27 checks passed");
     }
     public static void RunBatch()
     {

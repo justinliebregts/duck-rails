@@ -1,0 +1,25 @@
+Unity 6000.3.24f1 RUN=20261116-throttle-default-1 roleActor=1 nonMasterDriver=2; ordinary simulated grip/arc and default return; no listening/headset acceptance
+2026-11-16T13:37:29.0064184Z PASS initial shared lever free and target stopped
+2026-11-16T13:37:29.0079382Z PASS authored default returnDuration is0.25s; fixture does not change it
+2026-11-16T13:37:29.0079382Z PASS initial local gameplay input allowed
+2026-11-16T13:37:29.0084841Z PASS fresh rendezvous RUN token
+2026-11-16T13:37:30.8554218Z PASS peer rendezvous same room/run
+2026-11-16T13:37:40.3744793Z PASS replicated physical lever travel stage=0 progress=0.1499967
+2026-11-16T13:37:40.3744793Z PASS deadzone sample at/below20percent keeps target stopped progress=0.1499967 target=0
+2026-11-16T13:37:40.3744793Z MEASURE stage=0 progress=0.1499967 speedTarget=0 actualSpeed=0; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:43.3700920Z PASS replicated physical lever travel stage=1 progress=0.1999953
+2026-11-16T13:37:43.3700920Z PASS deadzone sample at/below20percent keeps target stopped progress=0.1999953 target=0
+2026-11-16T13:37:43.3700920Z MEASURE stage=1 progress=0.1999953 speedTarget=0 actualSpeed=0; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:46.3586358Z PASS replicated physical lever travel stage=2 progress=0.5999947
+2026-11-16T13:37:46.3601589Z PASS authority speed normalization within measured physical travel tolerance stage=2 target=1.999973 expected=2
+2026-11-16T13:37:46.3601589Z MEASURE stage=2 progress=0.5999947 speedTarget=1.999973 actualSpeed=1.33762; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:49.3813998Z PASS replicated physical lever travel stage=3 progress=0.8399912
+2026-11-16T13:37:49.3829072Z PASS authority speed normalization within measured physical travel tolerance stage=3 target=3.199956 expected=3.2
+2026-11-16T13:37:49.3829072Z MEASURE stage=3 progress=0.8399912 speedTarget=3.199956 actualSpeed=2.817605; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:52.3592337Z PASS replicated physical lever travel stage=4 progress=1
+2026-11-16T13:37:52.3597426Z PASS authority speed normalization within measured physical travel tolerance stage=4 target=4 expected=4
+2026-11-16T13:37:52.3597426Z MEASURE stage=4 progress=1 speedTarget=4 actualSpeed=3.887311; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:55.3587920Z PASS first ordinary grip release settles shared STOP
+2026-11-16T13:38:07.9156889Z PASS final ordinary release settles shared STOP
+2026-11-16T13:38:11.8608164Z PASS all required authority phases sampled
+2026-11-16T13:38:11.8618221Z END checks=18 failures=0; defaultReturnObserved=False intermediateReturn=False defaultRegrip=False timingBlocked=False; headset reach and OS focus not covered

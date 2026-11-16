@@ -1,0 +1,143 @@
+// SAME command on two ready private clients; fresh RUN per rerun. ~38s + rendezvous,85s bound.
+// Controlled simulated grip and gradual palm arc; actual network authority. Default0.25s return is NEVER changed.
+// Two releases: complete return, then one regrip opportunity during default return. A missed frame/network
+// window is BLOCKED, not a geometry/gameplay failure. No OS/headset/natural reach claims.
+using System;using System.IO;using System.Linq;using System.Collections.Generic;
+using UnityEngine;using UnityEditor;using Photon.Pun;using Game.Animation;
+internal class CommandScript:IRunCommand {
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.PlayerCount!=2||PhotonSession.Phase!=RailPhase.Running||!PhotonSession.Instance.WorldReady)
+   throw new Exception("Requires exactly two ready authenticated clients in Running");
+  if(GameObject.Find("Bounded throttle default edges")!=null)throw new Exception("Edge fixture already installed");
+  var g=new GameObject("Bounded throttle default edges");var probe=g.AddComponent<QueueThrottleDefault>();g.AddComponent<QueueThrottleDefaultLate>().owner=probe;r.RegisterObjectCreation(g);r.Log("Armed default throttle checks; install same RUN on peer, then read both END records");
+ }
+}
+[DefaultExecutionOrder(-16100)] internal class QueueThrottleDefault:MonoBehaviour {
+ float returnMaxDt, returnStartProgress, regripCaptured;double returnObservedAt;bool returnMid, returnDone, returnBegan, requestRegrip, actualRegrip, regripBlocked;string secondToken;
+ const string RUN="20261116-throttle-default-1";
+ [Serializable] class HandSample {public string run,token;public int actor;public Vector3 local;public float index;public double time;}
+ RailControl drive;SimulatedRigInput sim;NewPlayer motor;LocalBodyDriver body;
+ string folder,path,token,room,run;int actor,remote,driver,winner,failures,checks,preLateFrame;double boot,start,nextSend,nextHandSample;float preLateGap=-1;
+ bool done,armed,physical,restored,firstHeld,regripStarted,regripHeld,peerChecked;
+ readonly HashSet<string> once=new HashSet<string>();
+ Vector3 origin,cabin,offPalm,oldVelocity,oldAngularVelocity;Quaternion originRot;bool oldDisable,oldKinematic,oldInject;
+ SimulatedRigInput.Frame oldFrame;float oldReturn,regripExpected;string firstToken;
+ readonly Dictionary<string,object> savedPose=new Dictionary<string,object>();
+ string Ready(int id)=>folder+"/"+RUN+"-"+id+".ready";
+ string StartFile=>folder+"/"+RUN+".start";
+ string AbortFile=>folder+"/"+RUN+".abort";
+ string HandFile=>folder+"/"+RUN+".hand";
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool b,string s){checks++;Log((b?"PASS ":"FAIL ")+s);if(!b)throw new Exception(s);}
+ bool Once(string s)=>once.Add(s);
+ T Get<T>(object x,string field)=>(T)RailRemoteBridge.Get(x,field);
+ float Target=>(float)PhotonSession.Get(RailSessionRules.Motion,new object[]{0d,0f,0f,0f})[3];
+ PlayerHand Hand=>GR.Player.instance.rightPlayerHand;
+ Transform Palm=>body.RightPalmSource;
+ void Start(){try{
+  actor=PhotonNetwork.LocalPlayer.ActorNumber;remote=PhotonNetwork.PlayerList.First(p=>!p.IsLocal).ActorNumber;
+  driver=PhotonNetwork.PlayerList.First(p=>!p.IsMasterClient).ActorNumber;room=PhotonNetwork.CurrentRoom.Name;run=PhotonSession.RunId;token=RUN+"-lease-"+actor;
+  string root=Application.dataPath.Replace('\\','/');int vp=root.IndexOf("/Library/VP/",StringComparison.OrdinalIgnoreCase);root=vp<0?Path.GetDirectoryName(root):root.Substring(0,vp);
+  folder=root+"/Temp/rails-throttle-edges";Directory.CreateDirectory(folder);
+  path=root+"/docs/validation/playtest-queue/2026-11-16/throttle-default-actor"+actor+".txt";
+  File.WriteAllText(path,"Unity "+Application.unityVersion+" RUN="+RUN+" roleActor="+actor+" nonMasterDriver="+driver+"; ordinary simulated grip/arc and default return; no listening/headset acceptance\n");
+  drive=UnityEngine.Object.FindObjectsByType<RailControl>(FindObjectsSortMode.None).Single(x=>x.action==RailControl.Action.Drive);
+  Check(PhotonSession.DriveGripActor==0&&Mathf.Abs(Target)<.001f,"initial shared lever free and target stopped");
+  Check(Mathf.Abs(drive.returnDuration-.25f)<.0001f,"authored default returnDuration is0.25s; fixture does not change it");
+  Check(!RailWorld.InputBlocked&&!RailExpedition.LocalDown,"initial local gameplay input allowed");
+  if(actor==driver){sim=SimulatedRigInput.Instance;motor=NewPlayer.instance;body=motor!=null?motor.GetComponent<LocalBodyDriver>():null;
+   Check(sim!=null&&sim.IsSimulating&&body!=null&&!sim.ThrottleHeld&&!sim.Buttons.grip&&sim.Buttons.move==Vector2.zero&&sim.Buttons.look==Vector2.zero,"non-master has neutral actual simulated rig");
+   Check(!GR.Player.instance.leftPlayerHand.IsHolding&&!Hand.IsHolding,"non-master hands empty");}
+  Check(!File.Exists(Ready(actor))&&!File.Exists(StartFile)&&!File.Exists(AbortFile),"fresh rendezvous RUN token");
+  boot=Time.realtimeSinceStartupAsDouble;armed=true;File.WriteAllText(Ready(actor),room+"\n"+run);
+ }catch(Exception e){Fail(e);}}
+ void Update(){if(done||!armed)return;try{
+  if(!Application.isPlaying||!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.Name!=room||PhotonSession.RunId!=run||PhotonNetwork.CurrentRoom.PlayerCount!=2)throw new Exception("Room/run/crew changed");
+  if(Time.realtimeSinceStartupAsDouble-boot>85)throw new Exception("85-second bounded fixture deadline");
+  if(File.Exists(AbortFile))throw new Exception("Peer aborted: "+File.ReadAllText(AbortFile));
+  if(start==0){
+   if(PhotonNetwork.IsMasterClient&&File.Exists(Ready(remote))&&!File.Exists(StartFile)){
+    Check(File.ReadAllText(Ready(remote))==room+"\n"+run,"peer rendezvous same room/run");
+    File.WriteAllText(StartFile,(PhotonNetwork.Time+3).ToString("R",System.Globalization.CultureInfo.InvariantCulture));}
+   if(File.Exists(StartFile))start=double.Parse(File.ReadAllText(StartFile),System.Globalization.CultureInfo.InvariantCulture);return;}
+  double age=PhotonNetwork.Time-start;if(age<0)return;
+  if(age>=0&&actor==driver&&!physical)BeginPhysical();
+  if(physical)DrivePhysical(age);
+  float[] sampleTimes={6.5f,9.5f,12.5f,15.5f,18.5f};float[] expected={.15f,.20f,.60f,.84f,1f};
+  for(int i=0;i<sampleTimes.Length;i++)if(age>sampleTimes[i]&&Once("travel"+i)){
+   float progress=(float)PhotonSession.DriveGripState[3];float fraction=i<2?0:i==2?.5f:i==3?.8f:1;
+   Check(PhotonSession.DriveGripActor==driver&&Mathf.Abs(progress-expected[i])<.012f,"replicated physical lever travel stage="+i+" progress="+progress);
+   if(i<2)Check(progress<=.2001f&&Mathf.Abs(Target)<.002f,"deadzone sample at/below20percent keeps target stopped progress="+progress+" target="+Target);
+   else Check(Mathf.Abs(Target-RailTestTools.TrainCruiseSpeed*fraction)<.012f*RailTestTools.TrainCruiseSpeed/.8f+.005f,"authority speed normalization within measured physical travel tolerance stage="+i+" target="+Target+" expected="+RailTestTools.TrainCruiseSpeed*fraction);
+   Log("MEASURE stage="+i+" progress="+progress+" speedTarget="+Target+" actualSpeed="+RailTrain.Instance.Speed+"; boundary20percent sampled with physical-pose tolerance");
+  }
+  if(age>21.5&&Once("firstStop"))Check(PhotonSession.DriveGripActor==0&&Mathf.Abs(Target)<.001f,"first ordinary grip release settles shared STOP");
+  if(age>34&&Once("finalStop"))Check(PhotonSession.DriveGripActor==0&&Mathf.Abs(Target)<.001f,"final ordinary release settles shared STOP");
+  if(age>38){Check(once.Contains("travel4")&&once.Contains("firstStop")&&once.Contains("finalStop"),"all required authority phases sampled");if(actor==driver)Check(returnDone,"complete default return was observed");Finish();}
+ }catch(Exception e){Fail(e);}}
+ // Observe local artwork after actual rig/grip posing; peer authority checks run separately.
+ public void SampleAttachedHand(){if(done||!physical||actor!=driver||start==0)return;try{
+  double age=PhotonNetwork.Time-start;float progress=Get<float>(drive,"renderedProgress");
+  if(age>=19&&age<21.5){
+   if(!drive.HeldBy(Hand)&&!returnBegan){returnBegan=true;returnObservedAt=Time.realtimeSinceStartupAsDouble;returnStartProgress=progress;Log("RETURN begins observed progress="+progress+" localElapsed="+Get<float>(drive,"returnElapsed"));}
+   if(returnBegan&&!returnDone){returnMaxDt=Mathf.Max(returnMaxDt,Time.unscaledDeltaTime);if(progress>.005f&&progress<.995f)returnMid=true;
+    Log("RETURN frame elapsed="+(Time.realtimeSinceStartupAsDouble-returnObservedAt)+" progress="+progress+" frameDt="+Time.unscaledDeltaTime);
+    if(progress<=.0001f){double elapsed=Time.realtimeSinceStartupAsDouble-returnObservedAt;
+     if(!returnMid){regripBlocked=true;Log("BLOCKED default-return curve had no intermediate rendered frame; frameDt="+returnMaxDt);}else Check(elapsed>=Math.Max(0,.25-returnMaxDt-.005)&&elapsed<=.25+returnMaxDt+.005,"default return completes in0.25s within observed one-frame bracket elapsed="+elapsed+" maxDt="+returnMaxDt);
+     returnDone=true;Check(!RailControl.TryGetDrivePalm(Palm,out _,out _),"free palm after complete default return");}
+   }
+  }
+  if(age>=26&&age<29&&!actualRegrip){
+   if(!requestRegrip&&!drive.HeldBy(Hand)&&PhotonSession.DriveGripActor==0&&Get<bool>(drive,"returning")&&progress>.05f&&progress<.95f){requestRegrip=true;Log("INPUT schedule one fresh simulated grip in actual default return progress="+progress);}
+   if(requestRegrip&&drive.HeldBy(Hand)&&Get<string>(drive,"gripToken")!=secondToken){regripCaptured=Get<float>(drive,"gripStartProgress");
+    if(regripCaptured<=.001f){regripBlocked=true;Log("BLOCKED default return completed before ordinary grip edge could land");}
+    else{Check(regripCaptured<1&&Mathf.Abs(regripCaptured-progress)<.0001f,"actual default-window regrip captures currently rendered angle without snap captured="+regripCaptured+" rendered="+progress);actualRegrip=true;}
+   }
+  }
+  if(age>=29&&Once("regripResult")){if(!actualRegrip){regripBlocked=true;Log("BLOCKED no physical regrip inside0.25s default window; no timing or source modification");}else Check(drive.HeldBy(Hand)&&PhotonSession.DriveGripActor==actor&&(string)PhotonSession.DriveGripState[2]==Get<string>(drive,"gripToken"),"default-window physical regrip receives and retains the new shared lease");}
+ }catch(Exception e){Fail(e);}}
+ void BeginPhysical(){
+  oldDisable=motor.disableMovement;oldKinematic=motor.rb.isKinematic;oldVelocity=motor.rb.linearVelocity;oldAngularVelocity=motor.rb.angularVelocity;oldInject=sim.UseInjectedInput;oldFrame=sim.InjectedInput;oldReturn=drive.returnDuration;
+  origin=RailTrain.Instance.transform.InverseTransformPoint(new Vector3(motor.headCollider.transform.position.x,motor.transform.position.y,motor.headCollider.transform.position.z));originRot=Quaternion.Inverse(RailTrain.Instance.transform.rotation)*motor.transform.rotation;
+  foreach(string field in new[]{"headPosition","leftPosition","rightPosition","headRotation","leftRotation","rightRotation","yaw","pitch","reach","handRoll","awaitNeutral","awaitThrottleNeutral","throttleKeyWasHeld","Buttons","ThrottleHeld"})savedPose[field]=RailRemoteBridge.Get(sim,field);
+  physical=true;var stand=drive.transform.position-RailTrain.Instance.transform.right*.12f-RailTrain.Instance.transform.forward*.65f;stand.y=motor.transform.position.y;motor.Warp(stand,RailTrain.Instance.transform.rotation);
+  cabin=RailTrain.Instance.transform.InverseTransformPoint(motor.transform.position);motor.disableMovement=true;motor.rb.isKinematic=true;sim.UseInjectedInput=true;
+  offPalm=drive.transform.InverseTransformPoint(drive.handle.position+Vector3.back*.025f);
+  Log("INPUT ordinary simulated right-hand grip starts; default returnDuration remains0.25s");
+ }
+ void DrivePhysical(double age){
+  motor.transform.position=RailTrain.Instance.transform.TransformPoint(cabin);
+  bool grip=age>=2&&age<19;float travel=0;
+  if(age>=4&&age<7)travel=Mathf.Lerp(0,.15f,Mathf.Clamp01((float)(age-4)));
+  else if(age>=7&&age<10)travel=Mathf.Lerp(.15f,.20f,Mathf.Clamp01((float)(age-7)));
+  else if(age>=10&&age<13)travel=Mathf.Lerp(.20f,.60f,Mathf.Clamp01((float)(age-10)));
+  else if(age>=13&&age<16)travel=Mathf.Lerp(.60f,.84f,Mathf.Clamp01((float)(age-13)));
+  else if(age>=16&&age<19)travel=Mathf.Lerp(.84f,.86f,Mathf.Clamp01((float)(age-16)));
+  else if(age>=19&&age<22)travel=Get<float>(drive,"renderedProgress");
+  else if(age>=22&&age<26){grip=true;travel=Mathf.Clamp01((float)(age-23));if(age>24&&Once("secondHeld")){Check(drive.HeldBy(Hand)&&PhotonSession.DriveGripActor==actor,"second actual grip reaches GO before regrip probe");secondToken=Get<string>(drive,"gripToken");}}
+  else if(age>=26&&age<30){grip=requestRegrip;travel=actualRegrip?regripCaptured:Get<float>(drive,"renderedProgress");}
+  else if(age>=30){grip=false;travel=Get<float>(drive,"renderedProgress");}
+  var target=drive.transform.TransformPoint(Quaternion.Euler(travel*70,0,0)*offPalm);Vector3 offset=Palm.position-body.RightHandAnchor.position;
+  sim.InjectedInput=new SimulatedRigInput.Frame{grip=grip,rightReach=true};
+  RailRemoteBridge.Set(sim,"rightPosition",body.RightHandAnchor.parent.InverseTransformPoint(target-offset));RailRemoteBridge.Call(sim,"WriteSimulatedPose");
+  if(age>3&&Once("actualHeld"))Check(drive.HeldBy(Hand)&&PhotonSession.DriveGripActor==actor&&!sim.ThrottleHeld,"ordinary simulated grip owns actual network lease; no T shortcut");
+ }
+ void Fail(Exception e){if(done)return;if(path!=null)Log("FAIL "+e);failures++;if(folder!=null)File.WriteAllText(AbortFile,"actor="+actor+" "+e.Message);Finish();}
+ void Finish(){if(done)return;done=true;Restore();if(path!=null)Log("END checks="+checks+" failures="+failures+"; defaultReturnObserved="+returnDone+" intermediateReturn="+returnMid+" defaultRegrip="+actualRegrip+" timingBlocked="+regripBlocked+"; headset reach and OS focus not covered");enabled=false;Destroy(gameObject);}
+ void Restore(){if(restored)return;restored=true;
+  if(physical&&drive!=null)drive.ReleaseDrive();
+  if(physical&&sim!=null&&motor!=null){
+   sim.InjectedInput=default;GR.Player.instance.leftPlayerHand.Release();Hand.Release();drive.returnDuration=oldReturn;
+   foreach(var p in savedPose)RailRemoteBridge.Set(sim,p.Key,p.Value);RailRemoteBridge.Call(sim,"WriteSimulatedPose");
+   sim.UseInjectedInput=oldInject;sim.InjectedInput=oldFrame;motor.disableMovement=oldDisable;motor.rb.isKinematic=oldKinematic;
+   if(RailTrain.Instance!=null)motor.Warp(RailTrain.Instance.transform.TransformPoint(origin),RailTrain.Instance.transform.rotation*originRot);
+   if(!oldKinematic){motor.rb.linearVelocity=oldVelocity;motor.rb.angularVelocity=oldAngularVelocity;}
+   Log("RESTORED rig injection, stored poses, movement/rigidbody, returnDuration, original train-relative position; no train distance reset");
+  }
+ }
+ void OnDestroy(){Restore();}
+}
+[DefaultExecutionOrder(30000)] internal class QueueThrottleDefaultLate:MonoBehaviour {
+ public QueueThrottleDefault owner;
+ void LateUpdate(){if(owner!=null)owner.SampleAttachedHand();}
+}

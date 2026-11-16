@@ -1,0 +1,22 @@
+Unity 6000.3.24f1 RUN=20261116-throttle-edge-1 roleActor=2 nonMasterDriver=2; controlled RPC edges + ordinary simulated hand, no listening/headset acceptance
+2026-11-16T11:56:08.7540354Z PASS initial shared lever free and target stopped
+2026-11-16T11:56:08.7540354Z PASS initial local gameplay input allowed
+2026-11-16T11:56:08.7540354Z PASS non-master has neutral actual simulated rig
+2026-11-16T11:56:08.7540354Z PASS non-master hands empty
+2026-11-16T11:56:08.7550357Z PASS fresh rendezvous RUN token
+2026-11-16T11:56:11.7995449Z INPUT concurrent public acquire request token=20261116-throttle-edge-1-lease-2
+2026-11-16T11:56:13.7835247Z PASS concurrent requests resolve to one real actor=1
+2026-11-16T11:56:14.8124258Z INPUT losing actor attempts ordinary release with its own rejected token
+2026-11-16T11:56:15.7889833Z PASS loser heartbeat/release cannot steal or clear winning lease
+2026-11-16T11:56:16.8032879Z INPUT each actor releases only own contest token
+2026-11-16T11:56:19.7850218Z PASS contest release settles to no lease and STOP without distance reset
+2026-11-16T11:56:20.7984664Z PASS pre-ack case starts unowned
+2026-11-16T11:56:20.7990175Z PASS non-master queued acquire/release before any observable grant in same callback
+2026-11-16T11:56:23.7970882Z PASS pre-ack release leaves no ghost lease on this client
+2026-11-16T11:56:25.8002873Z INPUT ordinary simulated right-hand grip starts; only local art returnDuration temporarily2.5s
+2026-11-16T11:56:30.0772573Z PASS ordinary physical grip acquires non-master lease
+2026-11-16T11:56:30.8030334Z PASS ordinary forward arc reaches GO with attached visual palm/closed index; keyboard throttle remains off
+2026-11-16T11:56:31.8238845Z FAIL System.Exception: Peer aborted: actor=1 real peer stream carries attached right palm and closed index gap=0.08895601
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.QueueThrottleEdges.Update () [0x000c5] in <aab13ba67ab54e12b8d366a493347a28>:0 
+2026-11-16T11:56:31.8320061Z RESTORED rig injection, stored poses, movement/rigidbody, returnDuration, original train-relative position; no train distance reset
+2026-11-16T11:56:31.8320061Z END checks=13 failures=1; menu/default-return-window/OSfocus/headset acceptance not covered

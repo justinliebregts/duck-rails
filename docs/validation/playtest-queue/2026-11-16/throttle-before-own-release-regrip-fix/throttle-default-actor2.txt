@@ -1,0 +1,46 @@
+Unity 6000.3.24f1 RUN=20261116-throttle-default-1 roleActor=2 nonMasterDriver=2; ordinary simulated grip/arc and default return; no listening/headset acceptance
+2026-11-16T13:37:30.8524059Z PASS initial shared lever free and target stopped
+2026-11-16T13:37:30.8524059Z PASS authored default returnDuration is0.25s; fixture does not change it
+2026-11-16T13:37:30.8524059Z PASS initial local gameplay input allowed
+2026-11-16T13:37:30.8524059Z PASS non-master has neutral actual simulated rig
+2026-11-16T13:37:30.8524059Z PASS non-master hands empty
+2026-11-16T13:37:30.8539106Z PASS fresh rendezvous RUN token
+2026-11-16T13:37:33.8664536Z INPUT ordinary simulated right-hand grip starts; default returnDuration remains0.25s
+2026-11-16T13:37:36.8692739Z PASS ordinary simulated grip owns actual network lease; no T shortcut
+2026-11-16T13:37:40.3689232Z PASS replicated physical lever travel stage=0 progress=0.1499967
+2026-11-16T13:37:40.3694311Z PASS deadzone sample at/below20percent keeps target stopped progress=0.1499967 target=0
+2026-11-16T13:37:40.3694311Z MEASURE stage=0 progress=0.1499967 speedTarget=0 actualSpeed=0; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:43.3721133Z PASS replicated physical lever travel stage=1 progress=0.1999953
+2026-11-16T13:37:43.3738450Z PASS deadzone sample at/below20percent keeps target stopped progress=0.1999953 target=0
+2026-11-16T13:37:43.3738450Z MEASURE stage=1 progress=0.1999953 speedTarget=0 actualSpeed=0; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:46.3711722Z PASS replicated physical lever travel stage=2 progress=0.5999947
+2026-11-16T13:37:46.3721861Z PASS authority speed normalization within measured physical travel tolerance stage=2 target=1.999973 expected=2
+2026-11-16T13:37:46.3721861Z MEASURE stage=2 progress=0.5999947 speedTarget=1.999973 actualSpeed=1.346852; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:49.3630937Z PASS replicated physical lever travel stage=3 progress=0.8399912
+2026-11-16T13:37:49.3630937Z PASS authority speed normalization within measured physical travel tolerance stage=3 target=3.199956 expected=3.2
+2026-11-16T13:37:49.3630937Z MEASURE stage=3 progress=0.8399912 speedTarget=3.199956 actualSpeed=2.80961; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:52.3638040Z PASS replicated physical lever travel stage=4 progress=1
+2026-11-16T13:37:52.3638040Z PASS authority speed normalization within measured physical travel tolerance stage=4 target=4 expected=4
+2026-11-16T13:37:52.3638040Z MEASURE stage=4 progress=1 speedTarget=4 actualSpeed=3.889295; boundary20percent sampled with physical-pose tolerance
+2026-11-16T13:37:52.9079576Z RETURN begins observed progress=0.9598967 localElapsed=0.0301415
+2026-11-16T13:37:52.9079576Z RETURN frame elapsed=0.000391300000046613 progress=0.9598967 frameDt=0.0301415
+2026-11-16T13:37:52.9310103Z RETURN frame elapsed=0.0232965000000149 progress=0.8464346 frameDt=0.03176001
+2026-11-16T13:37:52.9537293Z RETURN frame elapsed=0.046264500000234 progress=0.7291821 frameDt=0.0235854
+2026-11-16T13:37:52.9735447Z RETURN frame elapsed=0.0666988000002675 progress=0.6145588 frameDt=0.0202679
+2026-11-16T13:37:52.9955591Z RETURN frame elapsed=0.0877918999999565 progress=0.4867054 frameDt=0.0214612
+2026-11-16T13:37:53.0202988Z RETURN frame elapsed=0.112640400000146 progress=0.3545934 frameDt=0.0223341
+2026-11-16T13:37:53.0404264Z RETURN frame elapsed=0.13397920000034 progress=0.2255304 frameDt=0.0235722
+2026-11-16T13:37:53.0601892Z RETURN frame elapsed=0.153638600000249 progress=0.133191 frameDt=0.0196546
+2026-11-16T13:37:53.0817298Z RETURN frame elapsed=0.173810799999956 progress=0.05827487 frameDt=0.0205393
+2026-11-16T13:37:53.1084438Z RETURN frame elapsed=0.201219400000355 progress=0.004596829 frameDt=0.0267657
+2026-11-16T13:37:53.1321898Z RETURN frame elapsed=0.22433430000001 progress=0 frameDt=0.0225446
+2026-11-16T13:37:53.1321898Z PASS default return completes in0.25s within observed one-frame bracket elapsed=0.224773000000368 maxDt=0.03176001
+2026-11-16T13:37:53.1321898Z PASS free palm after complete default return
+2026-11-16T13:37:55.3700890Z PASS first ordinary grip release settles shared STOP
+2026-11-16T13:37:57.8612442Z PASS second actual grip reaches GO before regrip probe
+2026-11-16T13:38:02.8628726Z BLOCKED no physical regrip inside0.25s default window; no timing or source modification
+2026-11-16T13:38:07.8543832Z PASS final ordinary release settles shared STOP
+2026-11-16T13:38:11.8640689Z PASS all required authority phases sampled
+2026-11-16T13:38:11.8640689Z PASS complete default return was observed
+2026-11-16T13:38:11.8655821Z RESTORED rig injection, stored poses, movement/rigidbody, returnDuration, original train-relative position; no train distance reset
+2026-11-16T13:38:11.8655821Z END checks=24 failures=0; defaultReturnObserved=True intermediateReturn=True defaultRegrip=False timingBlocked=True; headset reach and OS focus not covered

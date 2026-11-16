@@ -1,0 +1,71 @@
+Log RAILS DRIVE PASS: Grip starts in STOP even with a GO payload
+Log RAILS DRIVE PASS: Another player or hand cannot steal an active hold
+Log RAILS DRIVE PASS: Non-holder cannot drive or release
+Log RAILS DRIVE PASS: Partial hand travel replicates and requests proportional speed
+Log RAILS DRIVE PASS: Held GO renews the timeout
+Log RAILS DRIVE PASS: Release clears ownership and GO
+Log RAILS DRIVE PASS: Delayed heartbeat cannot reacquire after release
+Log RAILS DRIVE PASS: Old release cannot cancel a new holder
+Log RAILS DRIVE PASS: Timeout/master reset needs a fresh grip
+Log RAILS DRIVE PASS: Ordered release and same-actor regrip grant a fresh token in STOP
+Log RAILS DRIVE PASS: Delayed messages from the old grip cannot drive or cancel the same actor's new grip
+Log RAILS DRIVE PASS: Forward travel is bounded; backward movement stays OFF
+Log RAILS DRIVE PASS: Push snaps GO and small backward movements do not chatter
+Log RAILS DRIVE PASS: Pull back cuts GO near the forward stop; grip alone cannot latch GO
+Log RAILS DRIVE PASS: Halfway back cannot sustain GO
+Log RAILS DRIVE PASS: Arc travel follows both physical end stops
+Log RAILS DRIVE PASS: Arc projection preserves midpoint and ignores radial reach
+Log RAILS DRIVE PASS: First twenty percent of travel is a speed dead zone
+Log RAILS DRIVE PASS: Remaining travel maps linearly to cruise speed
+Log RAILS DRIVE PASS: Release animation starts continuously, passes midpoint and ends at a quarter second
+Log RAILS DRIVE PASS: Partial releases finish and zero duration is safe
+Log RAILS DRIVE PASS: Regrip during return preserves current travel and can pull backward
+Log RAILS DRIVE PASS: Handle and base are non-solid interaction triggers
+Log RAILS DRIVE PASS: Locomotion casts pass through the lever and base
+Log RAILS DRIVE PASS: Desktop targeting still hits the trigger control
+Log RAILS DRIVE PASS: Grip proximity still detects a hand inside the handle trigger
+Log RAILS DRIVE PASS: Handle swings forward about the base rather than its centre
+Log RAILS VR DRIVE: 27 checks passed
+Log RAILS PASS: Five-digit codes preserve leading zeroes
+Log RAILS PASS: Invalid and non-ASCII codes rejected
+Log RAILS PASS: Allocation probes cover every five-digit code without repeats
+Log RAILS PASS: Crew allocation is deterministic and wraps at the code-space boundary
+Log RAILS PASS: First occupant starts twenty seconds
+Log RAILS PASS: Entry/exit cannot extend a nonempty countdown
+Log RAILS PASS: Empty cancels and re-entry starts a fresh countdown
+Log RAILS PASS: Ninth occupant waits outside the eight-player roster
+Log RAILS PASS: Vacated slots refill without evicting admitted players
+Log RAILS PASS: Public compounds: twelve players, discoverable, no inactive shoppers
+Log RAILS PASS: Private rooms: eight players, hidden, code joinable
+Log RAILS PASS: 120-second reconnect slots; empty rooms close immediately
+Log RAILS PASS: One through four returning players search existing compounds
+Log RAILS PASS: Five through eight returning players skip random matchmaking
+Log RAILS PASS: Crew members with a live handoff or open return window are not stranded
+Log RAILS PASS: Unlisted, failed-handoff or expired members leave the ending train
+Log RAILS PASS: Missing reservation leases receive thirty seconds
+Log RAILS PASS: Master succession preserves deadlines while concurrent arrivals receive their own lease
+Log RAILS PASS: Removing an expired crew does not shorten another crew's reservation
+Log RAILS PASS: Consumed reservations remove obsolete lease metadata
+Log RAILS PASS: Invalid phase shortcuts rejected
+Log RAILS PASS: Crew stays aboard through ending and returning instead of spawning in a temporary compound
+Log RAILS PASS: Public compound arrival and private staging present the compound
+Log RAILS PASS: Acceleration integrates correct distance and speed
+Log RAILS PASS: Late join reconstructs moving train from current command
+Log RAILS PASS: Braking stops without changing past position
+Log RAILS PASS: Fuel burns with travelled distance, including acceleration
+Log RAILS PASS: Braking consumes fuel; a stopped train does not
+Log RAILS PASS: Restored room snapshot preserves fuel and motion across a master checkpoint
+Log RAILS PASS: Fuel exhaustion during acceleration coasts to rest without authority ticks
+Log RAILS PASS: Empty fuel cannot restart or become negative
+Log RAILS PASS: Exhaustion preserves speed at the fuel boundary
+Log RAILS PASS: Empty train advances while smoothly slowing
+Log RAILS PASS: Empty moving checkpoint preserves coast across master handoff
+Log RAILS PASS: Late join reconstructs the final coast stop without creeping
+Log RAILS PASS: Exhaustion during braking keeps motion continuous
+Log RAILS PASS: Refuelling a coasting GO command resumes acceleration
+Log RAILS PASS: Fuel exhaustion after the ramp also coasts smoothly
+Log RAILS PASS: Future motion commands do not burn fuel early
+Log RAILS PASS: Build starts at Login/Compound/Expedition, permits additive lighting companions and excludes other gameplay scenes
+Log RAILS PASS: RailBat observes cargo state over PUN
+Log RAILS PASS: RailBag observes cargo state over PUN
+Log RAILS CHECKS PASSED: 42. These are local checks, not multi-client acceptance.

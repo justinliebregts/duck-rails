@@ -89,7 +89,7 @@ public sealed class RailControl : MonoBehaviour
             PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady || PhotonSession.Phase != RailPhase.Running) return null;
         foreach (var control in drives)
         {
-            if (control.action != Action.Drive || control.handle == null || control.driveHand != null || control.simulatedDrive || PhotonSession.DriveGripActor != 0) continue;
+            if (control.action != Action.Drive || control.handle == null || control.driveHand != null || control.simulatedDrive || !control.CanRequestPhysicalGrip()) continue;
             var collider = control.handle.GetComponent<Collider>();
             if (collider == null || Vector3.Distance(collider.ClosestPoint(hand.transform.position), hand.transform.position) > .12f) continue;
             control.driveHand = hand;
@@ -107,6 +107,16 @@ public sealed class RailControl : MonoBehaviour
             return control;
         }
         return null;
+    }
+    bool CanRequestPhysicalGrip()
+    {
+        if (PhotonSession.DriveGripActor == 0) return true;
+        // The local handle starts returning before the reliable release is echoed.
+        // Regrip only our exact released token; the master still arbitrates the new grant.
+        var state = PhotonSession.DriveGripState;
+        return PhotonNetwork.LocalPlayer != null && PhotonSession.DriveGripActor == PhotonNetwork.LocalPlayer.ActorNumber &&
+            gripRun == PhotonSession.RunId && (string)state[0] == PhotonSession.RunId &&
+            !string.IsNullOrEmpty(releasedToken) && (string)state[2] == releasedToken;
     }
     void BeginDrive()
     {
