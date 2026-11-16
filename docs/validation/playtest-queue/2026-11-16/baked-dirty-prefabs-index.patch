@@ -1,0 +1,135 @@
+diff --git a/Assets/DuckRails/StartingStation.prefab b/Assets/DuckRails/StartingStation.prefab
+--- a/Assets/DuckRails/StartingStation.prefab
++++ b/Assets/DuckRails/StartingStation.prefab
+@@ -33824,6 +33824,21 @@
+   - renderer: {fileID: 1060545535589827073}
+     color: {fileID: 2800000, guid: 805d26b130d201f4d89a1f93c817d284, type: 3}
+     scaleOffset: {x: 0.02590848, y: 0.025908444, z: 0.620016, w: 0.8309535}
++  bakedFixtures:
++  - {fileID: 4579069856175947091}
++  - {fileID: 3321701484255902979}
++  - {fileID: 8520863056517703559}
++  - {fileID: 5380457628526532882}
++  - {fileID: 6161755837940051854}
++  - {fileID: 4860001385141447160}
++  - {fileID: 4217433485767495966}
++  - {fileID: 1809720938510142565}
++  - {fileID: 6906287340413590980}
++  - {fileID: 2534818755047840765}
++  - {fileID: 5522356210762411907}
++  - {fileID: 7280868384772101620}
++  - {fileID: 5787737655512220660}
++  - {fileID: 4540463225042541561}
+ --- !u!1 &7978921768286033020
+ GameObject:
+   m_ObjectHideFlags: 0
+diff --git a/Assets/DuckRails/Blocks/bridge-finale-v1.prefab b/Assets/DuckRails/Blocks/bridge-finale-v1.prefab
+--- a/Assets/DuckRails/Blocks/bridge-finale-v1.prefab
++++ b/Assets/DuckRails/Blocks/bridge-finale-v1.prefab
+@@ -102995,6 +102995,31 @@
+   - renderer: {fileID: 2875583933195108073}
+     color: {fileID: 2800000, guid: 7b670ec832e5d9348b92bb25a18ef2d2, type: 3}
+     scaleOffset: {x: 0.00199296, y: 0.0019929572, z: 0.9872969, w: 0.6845625}
++  bakedFixtures:
++  - {fileID: 6145388403050842254}
++  - {fileID: 6063181659945626110}
++  - {fileID: 6883553990737044991}
++  - {fileID: 7162967687848730708}
++  - {fileID: 7879636028185688936}
++  - {fileID: 7708049911417982082}
++  - {fileID: 237538437942340194}
++  - {fileID: 3490140662302310584}
++  - {fileID: 6304492400628175391}
++  - {fileID: 4593488393677742919}
++  - {fileID: 8734657316344536602}
++  - {fileID: 6372080383372827882}
++  - {fileID: 2104819553596795384}
++  - {fileID: 902586041458117182}
++  - {fileID: 6537536650500058048}
++  - {fileID: 6953614214736157594}
++  - {fileID: 8203932121047379053}
++  - {fileID: 4669763687119733297}
++  - {fileID: 4653130340860687999}
++  - {fileID: 5855205801025520272}
++  - {fileID: 2153667416651000184}
++  - {fileID: 8234414869958948431}
++  - {fileID: 6635879780527298404}
++  - {fileID: 3930287790649933640}
+ --- !u!1 &4058782225359623012
+ GameObject:
+   m_ObjectHideFlags: 0
+diff --git a/Assets/DuckRails/Blocks/convenience-store-v1.prefab b/Assets/DuckRails/Blocks/convenience-store-v1.prefab
+--- a/Assets/DuckRails/Blocks/convenience-store-v1.prefab
++++ b/Assets/DuckRails/Blocks/convenience-store-v1.prefab
+@@ -226390,6 +226390,71 @@
+   - renderer: {fileID: 5679859971124816244}
+     color: {fileID: 2800000, guid: af438e39d163516468406fc8f548edfa, type: 3}
+     scaleOffset: {x: 1, y: 1, z: 0, w: 0}
++  bakedFixtures:
++  - {fileID: 4961588293192147609}
++  - {fileID: 2700115960703673423}
++  - {fileID: 62521950161712564}
++  - {fileID: 7559150506419130710}
++  - {fileID: 7369808826871781923}
++  - {fileID: 7190680774954954958}
++  - {fileID: 5495892816773180481}
++  - {fileID: 7053235392091452782}
++  - {fileID: 6617220133623155762}
++  - {fileID: 2957815212866226030}
++  - {fileID: 8311813553712865187}
++  - {fileID: 2049810579955558524}
++  - {fileID: 2506621853753650243}
++  - {fileID: 7021048752487606797}
++  - {fileID: 8833867421304819434}
++  - {fileID: 8435882127865825971}
++  - {fileID: 9192994263103463564}
++  - {fileID: 1069051780128247593}
++  - {fileID: 208542832261273775}
++  - {fileID: 455354427823669949}
++  - {fileID: 6631308954092378869}
++  - {fileID: 7425086079789730139}
++  - {fileID: 7587049314447506}
++  - {fileID: 5200468421465722841}
++  - {fileID: 6527939225243499416}
++  - {fileID: 1977025269723663315}
++  - {fileID: 3217110520454130650}
++  - {fileID: 6180634565573640654}
++  - {fileID: 605175374435080740}
++  - {fileID: 3339422239929790961}
++  - {fileID: 1214514039018682511}
++  - {fileID: 6923007427776501042}
++  - {fileID: 4133333925290525109}
++  - {fileID: 3450229013360032669}
++  - {fileID: 8019914211792646933}
++  - {fileID: 7641010850133014440}
++  - {fileID: 1051788655311169559}
++  - {fileID: 5889478790374744926}
++  - {fileID: 704535092218686188}
++  - {fileID: 4901801945754980319}
++  - {fileID: 6363648590640795194}
++  - {fileID: 1503993347685814791}
++  - {fileID: 7312723848089366184}
++  - {fileID: 1575104964092243460}
++  - {fileID: 7994005243927622669}
++  - {fileID: 7917833926631339365}
++  - {fileID: 412110167035148855}
++  - {fileID: 3372386452587179114}
++  - {fileID: 2982955314636335508}
++  - {fileID: 3747754180073179084}
++  - {fileID: 7864046849748408852}
++  - {fileID: 5038110138800696977}
++  - {fileID: 9079475104132282830}
++  - {fileID: 1901734761433765603}
++  - {fileID: 6263219953040724540}
++  - {fileID: 5919120966814159743}
++  - {fileID: 426837964379083930}
++  - {fileID: 6001186385382780677}
++  - {fileID: 1793900510316341366}
++  - {fileID: 8340338129736505152}
++  - {fileID: 8778121992014618858}
++  - {fileID: 2216806582241655671}
++  - {fileID: 8729923901371756440}
++  - {fileID: 1462988470033864703}
+ --- !u!1 &7911489914444752801
+ GameObject:
+   m_ObjectHideFlags: 0

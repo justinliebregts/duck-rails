@@ -162,6 +162,7 @@ public static class RailStationLightingAuthoring
             .Select(r=>new RailBakedBlockLighting.Binding { renderer=r, color=LightmapSettings.lightmaps[r.lightmapIndex].lightmapColor, scaleOffset=r.lightmapScaleOffset }).ToArray();
         if(root.bindings.Length==0 || LightmapSettings.lightProbes==null || LightmapSettings.lightProbes.count==0)
             throw new InvalidOperationException("Bake lacks lightmaps or probes.");
+        root.CaptureBakedFixtures();
         PrefabUtility.RecordPrefabInstancePropertyModifications(root);
         PrefabUtility.ApplyPrefabInstance(root.gameObject,InteractionMode.AutomatedAction);
         EditorSceneManager.SaveScene(scene);

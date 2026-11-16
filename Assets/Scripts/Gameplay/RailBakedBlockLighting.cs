@@ -15,6 +15,9 @@ public sealed class RailBakedBlockLighting : MonoBehaviour
     }
     public string lightingScene;
     public Binding[] bindings = Array.Empty<Binding>();
+    // Authored bake mode is editor-only; prefab bakingOutput does not retain it.
+    // Export captures membership so player builds suppress exactly these fixtures.
+    [SerializeField] Light[] bakedFixtures = Array.Empty<Light>();
     bool ready;
     readonly List<Light> suppressedBakedLights = new List<Light>();
     public Vector3 LoadedPosition { get; internal set; }
@@ -40,10 +43,10 @@ public sealed class RailBakedBlockLighting : MonoBehaviour
     // not also render direct light when instantiated in an unbaked gameplay scene.
     void SuppressBakedLights()
     {
-        foreach (var light in GetComponentsInChildren<Light>(true))
+        foreach (var light in bakedFixtures)
         {
-            if (!light.enabled || light.lightmapBakeType != LightmapBakeType.Baked ||
-                light.GetComponentInParent<RailBakedBlockLighting>() != this) continue;
+            if (light == null || !light.enabled ||
+                light.GetComponentInParent<RailBakedBlockLighting>(true) != this) continue;
             suppressedBakedLights.Add(light);
             light.enabled = false;
         }
@@ -55,4 +58,16 @@ public sealed class RailBakedBlockLighting : MonoBehaviour
             if (light != null) light.enabled = true;
         suppressedBakedLights.Clear();
     }
+
+#if UNITY_EDITOR
+    public void CaptureBakedFixtures()
+    {
+        var fixtures = new List<Light>();
+        foreach (var light in GetComponentsInChildren<Light>(true))
+            if (light.lightmapBakeType == LightmapBakeType.Baked &&
+                light.GetComponentInParent<RailBakedBlockLighting>(true) == this)
+                fixtures.Add(light);
+        bakedFixtures = fixtures.ToArray();
+    }
+#endif
 }

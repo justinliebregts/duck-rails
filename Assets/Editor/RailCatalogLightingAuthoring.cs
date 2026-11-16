@@ -198,6 +198,7 @@ public static class RailCatalogLightingAuthoring
         // Explicitly record/restore only visibility; retain authored material and renderer edits.
         SetBakeVisibility(root,false);
         root.bindings=bindings;
+        root.CaptureBakedFixtures();
         PrefabUtility.RecordPrefabInstancePropertyModifications(root);PrefabUtility.ApplyPrefabInstance(root.gameObject,InteractionMode.AutomatedAction);
         if(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<RailBakedBlockLighting>().bindings.Length!=bindings.Length)
             throw new InvalidOperationException("Prefab binding export did not persist: "+path);
