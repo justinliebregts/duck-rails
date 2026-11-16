@@ -64,6 +64,37 @@ Save other scene work before running export/proof menus: these tools open and re
 
 ## Troubleshooting
 
+### Finale hard light cones — November 16, 2026
+
+User selected the softer `bridge-finale-v1-bake.unity` appearance as the target.
+Read-only inspection in the verified Duck Rails editor found all 1,746 exported
+renderer texture/UV bindings matched the open bake, and Expedition's finale
+bindings matched the prefab. The 24 fixture lights were `Baked` with
+`bakingOutput.isBaked=true` in the bake scene, but false and enabled in the prefab
+and Expedition. Native baked-light output is scene-owned; transferring renderer
+bindings does not transfer that fixture state. Unbaked editor previews therefore
+show direct fixture lighting rather than the baked appearance.
+
+`RailBakedBlockLighting` now suppresses its enabled baked-only lights when entering
+the gameplay companion lifecycle, preventing direct fixture contribution over
+the maps/probes. It restores only those lights on disable. Realtime/mixed lights,
+previously disabled lights and nested lighting owners are excluded. This shared
+owner correction also applies to the other companion-lit blocks. Authoring
+fixtures, bake inputs, textures and environment settings are unchanged. It does
+not add companion loading to Edit Mode: prefab/Expedition previews still differ;
+use the bake scene for baked appearance review.
+
+Validation: compilation passed; isolated Edit Mode checks using the actual finale
+prefab passed baked suppression, realtime/mixed preservation, previously disabled
+state, two restore/repeat cycles, repeated suppression and all 1,746 intact
+bindings. Console error query was empty before the lifecycle checks; afterward
+Unity reported `ShouldRunBehaviour()` assertions from the test harness calling
+runtime methods through SendMessage in Edit Mode, although state assertions passed.
+No Play Mode
+or reports inspected. Runtime visual confirmation and atmosphere differences
+remain queued in **Baked fixture double lighting** in `playtest-queue.md`; this is
+not yet evidence of a matching gameplay screenshot.
+
 - **Stationary imported prop ignores baked light:** on its stationary mesh object enable **Contribute Global Illumination**, choose **Receive Global Illumination: Lightmaps**, and ensure the mesh has secondary/lightmap UVs (FBX Model Import Settings > Generate Lightmap UVs, or a dedicated unwrapped mesh copy). Bake/export the block and install finale bindings if applicable. Do not mark runtime labels, coin effects or moving parts static. The finale gold crate uses a dedicated mesh copy in `Assets/DuckRails/FinaleFort/Polish/` so other uses of the shared FBX are unchanged.
 
 - **Prefab looks unlit in isolation:** inspect its bake scene, or run the normal Expedition/proof flow so its companion can load. Native baked data is owned by the companion scene, not by the prefab alone.

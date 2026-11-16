@@ -51,6 +51,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: VR label readability.
 - Priority: low.
 
+### Baked fixture double lighting — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: companion-lit blocks suppress baked-only fixture Lights during gameplay, retaining native lightmaps/probes and realtime lights; restore original enabled states on disable. User wants the softer finale bake-scene lighting.
+- Cheap checks: Unity compilation and actual-finale Edit Mode lifecycle checks pass; 1,746 texture/UV bindings match the bake and Expedition export. See docs/block-lighting.md.
+- Setup: one-client Expedition with finale and loaded companions; compare finale approach/platforms with bridge-finale-v1-bake.unity. Then unload/reload route and replay; sample station, helipad and a scavenging block.
+- Check: owners ready with no failures; all 24 finale baked fixtures disabled, expected maps bound; no hard direct fixture cones/double lighting; soft baked pools/shadows retained. Flashlights and helipad realtime lights still work. Replay preserves lighting and teardown leaves no companion leaks. Account for gameplay fog/ambient differences instead of requiring identical overall exposure.
+- Needs human: headset appearance and confirmation of preferred softness.
+- Priority: normal.
+
 ### Compound countdown plate animation and SFX — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: plate follows shared public countdown; sinks 0.03 m and plays PressurePlate_On on start, rises and plays PressurePlate_Off on stop. Collider is stationary and tagged Metal.
