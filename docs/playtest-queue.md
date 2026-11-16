@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Quackbear lip pivot normalization — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: `Lips_Quackbear.fbx` Lip_B and Lip_T now exactly match Default local position/rotation. Removed compensating root/lip rotations and baked pivot offsets into mesh vertices, preserving resting geometry and existing asset IDs.
+- Cheap checks: verified Duck Rails editor; FBX reimport passed; exact imported position/quaternion equality with Default for both lips; all 247 imported vertices retained with maximum world-position difference 0.000000067 m.
+- Setup: equip Quackbear; speak and stop speaking while viewing mirror/LIV, then switch to Default and back.
+- Check: both lips animate around the intended pivots without rotated motion, separation or a resting-position jump.
+- Needs human: microphone and visual appearance.
+- Priority: normal.
+
 ### FX_Heal_02 revive completion — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: Revived resource prefab now uses FX_Heal_02's three layers, with looping/play-on-awake disabled and local simulation. Existing trigger, audio and position retained.
