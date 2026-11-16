@@ -1,0 +1,42 @@
+2026-11-16T10:46:35.8240784Z Started real-client network proof; selection=natural spider
+2026-11-16T10:46:49.2181648Z Stage=0 room=11111
+2026-11-16T10:46:49.2191738Z ACK 0 actor=2 master=True
+2026-11-16T10:46:49.4526757Z ACK 0 actor=2 master=True
+2026-11-16T10:46:53.2215758Z Selected natural RailSpider(Clone) view=92
+2026-11-16T10:46:53.4512625Z Stage=1 room=11111
+2026-11-16T10:46:57.4666957Z POSE owner=True local=(0.00, 0.03, -3.00) frame=True sample=False trainSample=False net=(0.00, 0.00, 0.00)
+2026-11-16T10:46:57.4666957Z ACK 1 actor=2 master=True
+2026-11-16T10:46:57.5809957Z POSE owner=True local=(0.00, 0.03, -3.00) frame=True sample=False trainSample=False net=(0.00, 0.00, 0.00)
+2026-11-16T10:46:57.5815141Z ACK 1 actor=2 master=True
+2026-11-16T10:46:57.6816198Z POSE owner=True local=(0.00, 0.03, -3.00) frame=True sample=False trainSample=False net=(0.00, 0.00, 0.00)
+2026-11-16T10:46:57.9273423Z Stage=2 room=11111
+2026-11-16T10:47:03.9797506Z ACK 2 actor=2 master=True
+2026-11-16T10:47:04.1148192Z ACK 2 actor=2 master=True
+2026-11-16T10:47:05.3477659Z Stage=3 room=11111
+2026-11-16T10:47:10.3556087Z ACK 3 actor=2 master=False
+2026-11-16T10:47:10.4765500Z ACK 3 actor=2 master=False
+2026-11-16T10:47:10.9073738Z Stage=4 room=11111
+2026-11-16T10:47:12.5112405Z Submitted non-owner melee RPC
+2026-11-16T10:47:15.9472304Z PASS natural spider detachment after non-owner hit; authority=False
+2026-11-16T10:47:15.9489302Z ACK 4 actor=2 master=False
+2026-11-16T10:47:16.0504296Z PASS natural spider detachment after non-owner hit; authority=False
+2026-11-16T10:47:16.0509396Z ACK 4 actor=2 master=False
+2026-11-16T10:47:16.4043196Z Stage=5 room=11111
+2026-11-16T10:47:19.4615433Z Leaving for late re-entry
+2026-11-16T10:47:31.2856765Z Stage=6 room=11111
+2026-11-16T10:47:35.3310300Z ACK 6 actor=3 master=False
+2026-11-16T10:47:35.4501293Z ACK 6 actor=3 master=False
+2026-11-16T10:47:35.7813891Z Stage=7 room=11111
+2026-11-16T10:47:36.8880700Z Ordinary pursuit enabled: exit Left
+2026-11-16T10:47:43.7327698Z ACK 7 actor=3 master=False
+2026-11-16T10:47:43.8404021Z ACK 7 actor=3 master=False
+2026-11-16T10:47:44.6862210Z Stage=8 room=11111
+2026-11-16T10:47:45.7043367Z Ordinary pursuit enabled: board Left
+2026-11-16T10:47:49.7095194Z ACK 8 actor=3 master=False
+2026-11-16T10:47:49.8160465Z ACK 8 actor=3 master=False
+2026-11-16T10:47:50.1334447Z Stage=9 room=11111
+2026-11-16T10:47:51.1809072Z Ordinary pursuit enabled: exit Right
+2026-11-16T10:47:55.1594429Z ACK 9 actor=3 master=False
+2026-11-16T10:47:55.2718278Z ACK 9 actor=3 master=False
+2026-11-16T10:47:55.6184465Z Stage=10 room=11111
+2026-11-16T10:47:55.6184465Z PASS actual two-client carry, moving host migration, natural non-owner spider melee detachment, leave/rejoin, left exit/reboard, right exit and diagnostic snapshot

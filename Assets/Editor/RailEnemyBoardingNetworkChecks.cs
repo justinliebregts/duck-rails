@@ -17,7 +17,10 @@ public static class RailEnemyBoardingNetworkChecks
     const string RunKey = "Rails.Boarding.Network";
     static string Root { get { string p = Application.dataPath.Replace('\\', '/'); int i = p.IndexOf("/Library/VP/", StringComparison.OrdinalIgnoreCase); return i < 0 ? Path.GetDirectoryName(p) : p.Substring(0, i); } }
     static string ArmPath => Root + "/Temp/rails-boarding-arm.txt";
-    static string LogPath => Root + "/docs/validation/enemy-boarding/" + (RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "") + "network-" + (CurrentPlayer.IsMainEditor ? "main" : "remote") + ".txt";
+    static string ModePath => Root + "/Temp/rails-boarding-mode.txt";
+    static bool spiderProof;
+    static string Prefix => spiderProof || RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "";
+    static string LogPath => Root + "/docs/validation/enemy-boarding/" + Prefix + "network-" + (CurrentPlayer.IsMainEditor ? "main" : "remote") + ".txt";
     static string token, room;
     static int stage = -1, pendingStage = -1;
     static double entered, started, nextTick;
@@ -35,25 +38,33 @@ public static class RailEnemyBoardingNetworkChecks
     static ScriptableObject Scenario => Resources.FindObjectsOfTypeAll<ScriptableObject>().FirstOrDefault(o => o.GetType().FullName == "Unity.PlayMode.Editor.PlayModeManager");
     static RailEnemyBoardingNetworkChecks() => EditorApplication.update += Tick;
     [MenuItem("Duck Rails/Tests/Enemy Boarding/Run Two Client Network Loop")]
-    public static void Run()
+    public static void Run() => Start(false);
+    [MenuItem("Duck Rails/Tests/Enemy Boarding/Run Two Client Spider Network Loop")]
+    public static void RunSpider() => Start(true);
+    static void Start(bool spider)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode || Scenario == null) throw new Exception("Stop Play Mode and select a multiplayer scenario first");
         if (!MppmStandaloneCredentials.TryGet("Player2", out _)) throw new Exception("Configure Player2 test account first");
+        spiderProof = spider;
         var manager = Scenario;
         var property = manager.GetType().GetProperty("ActivePlayModeConfig");
         SessionState.SetString(RunKey + ".scenario", AssetDatabase.GetAssetPath((UnityEngine.Object)property.GetValue(manager)));
         SessionState.SetBool(RunKey + ".quick", RailEditorQuickStart.Enabled);
         SessionState.SetBool(RunKey, true);
         Directory.CreateDirectory(Root + "/docs/validation/enemy-boarding");
-        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + (RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "") + "network-main.txt", "");
-        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + (RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "") + "network-remote.txt", "");
+        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + Prefix + "network-main.txt", "");
+        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + Prefix + "network-remote.txt", "");
         foreach (string fixture in new[] { "rails-coal-arm.txt", "rails-week2-arm.txt", "rails-week3-arm.txt", "rails-stability-arm.txt", "rails-cleanup-arm.txt" })
         {
             string path = Root + "/Temp/" + fixture;
             if (File.Exists(path) && DateTime.TryParse(File.ReadAllText(path), out var expiry) && expiry.ToUniversalTime() > DateTime.UtcNow)
                 throw new Exception("Another fixture is armed: " + fixture);
         }
-        File.WriteAllText(ArmPath, DateTime.UtcNow.AddMinutes(12).ToString("O"));
+        string arm = DateTime.UtcNow.AddMinutes(12).ToString("O");
+        // Both editor processes reload the mode after domain reload. Publish the
+        // matching arm last so a stale marker cannot select another mode.
+        File.WriteAllText(ModePath, arm + "\n" + (spider ? "spider" : "normal"));
+        File.WriteAllText(ArmPath, arm);
         RailEditorQuickStart.Enabled = true;
         property.SetValue(manager, AssetDatabase.LoadAssetAtPath<UnityEngine.Object>("Assets/Settings/PlayMode/4 Diagnostic Two Client.asset"));
         manager.GetType().GetMethod("Start", Type.EmptyTypes).Invoke(manager, null);
@@ -62,6 +73,7 @@ public static class RailEnemyBoardingNetworkChecks
     public static void Stop()
     {
         File.WriteAllText(ArmPath, "");
+        File.WriteAllText(ModePath, "");
         var manager = Scenario;
         if (manager != null) manager.GetType().GetMethod("Stop", Type.EmptyTypes).Invoke(manager, null);
         else EditorApplication.isPlaying = false;
@@ -95,14 +107,23 @@ public static class RailEnemyBoardingNetworkChecks
                 RailEditorQuickStart.Enabled = SessionState.GetBool(RunKey + ".quick", true);
                 Scenario.GetType().GetProperty("ActivePlayModeConfig").SetValue(Scenario,
                     AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(SessionState.GetString(RunKey + ".scenario", "")));
-                SessionState.SetBool(RunKey, false); File.WriteAllText(ArmPath, "");
+                SessionState.SetBool(RunKey, false); File.WriteAllText(ArmPath, ""); File.WriteAllText(ModePath, "");
             }
             return;
         }
         if (!File.Exists(ArmPath)) return;
         string arm = File.ReadAllText(ArmPath);
         if (!DateTime.TryParse(arm, out var until) || DateTime.UtcNow > until.ToUniversalTime()) return;
-        if (arm != token) { token = arm; stage = pendingStage = -1; preparedEnemy = 0; done = rejoining = rendezvousAttempted = false; started = EditorApplication.timeSinceStartup; Record("Started real-client network proof"); }
+        if (arm != token)
+        {
+            token = arm; stage = pendingStage = -1; preparedEnemy = 0;
+            done = rejoining = rendezvousAttempted = false; started = EditorApplication.timeSinceStartup;
+            string mode = File.Exists(ModePath) ? File.ReadAllText(ModePath) : "";
+            if (mode == arm + "\nspider") spiderProof = true;
+            else if (mode == arm + "\nnormal") spiderProof = false;
+            else { Record("FAIL missing or stale network fixture mode token"); done = true; return; }
+            Record("Started real-client network proof; selection=" + (spiderProof ? "natural spider" : "normal boarding enemy"));
+        }
         if (!routeInstalled)
         {
             previousRoute = RailTestTools.OrderedRoute;
@@ -149,6 +170,7 @@ public static class RailEnemyBoardingNetworkChecks
             var enemy = id > 0 ? PhotonView.Find(id)?.GetComponent<Enemy>() : null;
             if (enemy != null && preparedEnemy != enemy.GetInstanceID())
             {
+                Require(!spiderProof || enemy.Locomotion is ClimbLocomotion, "Selected spider identity replicated to peer");
                 preparedEnemy = enemy.GetInstanceID();
                 if (enemy.GetComponent<RailBoardingFixtureFreeze>() == null) enemy.gameObject.AddComponent<RailBoardingFixtureFreeze>();
                 // Transport/melee fixture only: prevent incidental crew wipes and
@@ -174,8 +196,14 @@ public static class RailEnemyBoardingNetworkChecks
                     Require(Enemy.Active.Where(e => e.HasAuthority).All(e => e.GetComponent<ClimbLocomotion>() != null), "Spider-only expedition spawns");
                     Record("PASS spider-only encounter spawns");
                 }
-                enemy = Enemy.Active.FirstOrDefault(e => e.Boarding != null && e.HasAuthority);
-                if (enemy == null) return;
+                enemy = Enemy.Active.FirstOrDefault(e => e.Boarding != null && e.HasAuthority
+                    && (!spiderProof || e.Locomotion is ClimbLocomotion));
+                if (enemy == null)
+                {
+                    if (spiderProof) Require(age < 25, "No naturally spawned authoritative spider available in fixture route");
+                    return;
+                }
+                Record("Selected natural " + enemy.name + " view=" + enemy.GetComponent<PhotonView>().ViewID);
                 session.SetTrainMoving(false);
                 enemy.Teleport(train.transform.TransformPoint(new Vector3(0, .03f, -3)), train.transform.rotation);
                 enemy.Boarding.SetRemoteFrame(true, false); enemy.IsDormant = true;
@@ -226,9 +254,9 @@ public static class RailEnemyBoardingNetworkChecks
                 { enemy.SubmitSwing(-train.transform.forward * 10, 1, enemy.Root.position); action = true; Record("Submitted non-owner melee RPC"); }
                 if (enemy.HasAuthority && enemy.HitMovementActive && !sawMelee)
                 { sawMelee = true; Record("PASS authority observed non-owner melee reaction"); }
-                // A climbing spider can retain the rear face after a shove.
-                // Check support-loss replication independently of that valid adhesion.
-                if (age > 5 && enemy.HasAuthority && enemy.Locomotion is ClimbLocomotion && sawMelee && !action)
+                // Preserve the legacy transport-only fallback in normal mode.
+                // Spider proof must detach through the actual non-owner melee path.
+                if (!spiderProof && age > 5 && enemy.HasAuthority && enemy.Locomotion is ClimbLocomotion && sawMelee && !action)
                 {
                     action = true;
                     enemy.SetRootPose(train.transform.TransformPoint(new Vector3(0, .2f, -7)), train.transform.rotation);
@@ -238,6 +266,9 @@ public static class RailEnemyBoardingNetworkChecks
                 }
                 if (age > 5 && !enemy.Boarding.IsAboard)
                 {
+                    Require(!spiderProof || !enemy.HasAuthority || sawMelee, "Authority observed melee before natural spider detachment");
+                    if (spiderProof && !(PhotonNetwork.LocalPlayer.CustomProperties[AckKey] is int ack && ack == stage))
+                        Record("PASS natural spider detachment after non-owner hit; authority=" + enemy.HasAuthority);
                     Ack();
                     if (PhotonNetwork.IsMasterClient && AllAck)
                     {
@@ -305,7 +336,9 @@ public static class RailEnemyBoardingNetworkChecks
                 }
             }
             else if (stage == 10)
-            { Record("PASS actual two-client carry, moving host migration, non-owner hit/support-loss detachment, leave/rejoin, left exit/reboard, right exit and diagnostic snapshot"); done = true; }
+            { Record("PASS actual two-client carry, moving host migration, " +
+                (spiderProof ? "natural non-owner spider melee detachment" : "non-owner hit/support-loss detachment") +
+                ", leave/rejoin, left exit/reboard, right exit and diagnostic snapshot"); done = true; }
         }
         catch (Exception e) { Record("FAIL " + e.Message); done = true; }
     }

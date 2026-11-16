@@ -16,3 +16,5 @@ Validation:
 - [First focused attempt](spider-hit-regression-terrain.txt) passed 60/61; its borrowed low tilted train had terrain beneath the rear, invalidating the no-support assumption. The repeat uses a separate train over empty space and passed.
 
 These checks do not establish real-client transport, headset melee feel, or overall train-collision acceptance. Those remain in the ongoing queue run.
+
+Fresh actual two-client validation now passes (spider-network-main.txt and spider-network-Player2.txt): natural RailSpider selection, moving carriage-relative pose, authority migration, non-owner melee RPC observed by authority and actual detachment without teleport fallback, late rejoin aboard moving train, left exit/reboard and right exit. Editor fixture adds RunSpider mode matched to the arm token; normal transport-only mode retains its older fallback. This is real Photon desktop acceptance for the fix, not headset or cross-machine jitter evidence. No compile errors; known LCK/DX12 startup error remains.
