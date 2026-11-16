@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Platform and return clock ticks — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: copied the supplied ClockTick.wav from Duckz (source unchanged); RailAudioBank SoundEvent plays through AudioManager once per positive public platform countdown second, and only at 5–1 on expedition returns. Shared room time drives each client's local sound; no catch-up bursts, zero tick or private staging ticks. Event uses fixed pitch, 2D playback and the Effects volume controls.
+- Cheap checks: verified Duck Rails MCP target; Unity compilation completed, imported clip/event/bank binding checks passed in Edit Mode (clip duration 0.625 s), Console error query empty. No Play Mode run.
+- Setup: public Compound with two clients; cancel/restart boarding, complete departure, then success/failure returns; repeat with private expedition.
+- Check: one tick for each displayed positive platform second; cancel stops sound and restart resumes. Return stays silent above 5 then ticks at 5, 4, 3, 2, 1 across Ending/Returning without duplication. No tick at zero or after transfer; subsequent runs work; late join hears only current/future ticks. Game volume controls ticks.
+- Needs human: headset loudness and timing against the displayed clocks.
+- Priority: normal.
+
 ### Pause menu follows the train — queued 2026-11-15
 - Commit(s): uncommitted.
 - Cheap checks: Duck Rails Unity target confirmed in Edit Mode; compilation and `PauseMenuAudioChecks.Run()` passed (audio bindings, physical drop, close freeze and reopen pose). Scoped diff whitespace check passed. Console had one unrelated Package Manager cancellation error. Train-follow runtime/headset behavior remains untested; the attempted ad-hoc reflection probe was rejected by the MCP namespace restriction and is not validation evidence.

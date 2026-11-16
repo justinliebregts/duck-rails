@@ -1,5 +1,10 @@
 # Duck Rails — V1 game design
 
+November 15 countdown audio: use ClockTick through the existing AudioManager on
+every positive public platform countdown second and the last five return seconds
+(5–1), with fixed pitch and 2D playback. Implemented; listening/client acceptance
+is queued in [playtest queue](playtest-queue.md#platform-and-return-clock-ticks--queued-2026-11-15).
+
 November 15 pause menu: when summoned aboard, the floating menu follows the
 train; each new summon places it in front of the current player position.
 Grabbing retains the existing physical behavior. Live/headset acceptance is

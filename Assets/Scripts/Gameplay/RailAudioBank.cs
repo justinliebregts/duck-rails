@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "DuckZ/Audio/Rail Audio Bank")]
 public sealed class RailAudioBank : ScriptableObject
 {
+    [Header("Countdowns")]
+    public SoundEvent clockTick;
+
     [Header("Furnace")]
     public SoundEvent coalThud;
     public SoundEvent fireFlare, fuelChime;

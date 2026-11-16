@@ -42,6 +42,9 @@ public sealed class RailAudioDirector : MonoBehaviour
     string musicRun;
     float prevDistance, prevFuel = -1f, nextWarning;
     bool haveDistance, wasMoving;
+    string countdownRoom, countdownRun;
+    int previousCountdown;
+    bool countdownWasReturn;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetStatics() => instance = null;
@@ -73,6 +76,7 @@ public sealed class RailAudioDirector : MonoBehaviour
     {
         var bank = RailAudio.Bank;
         if (bank == null) return;
+        UpdateCountdown(bank);
         bool onTrain = PhotonSession.IsRailsRoom && PhotonSession.OnTrain;
         var train = onTrain ? RailTrain.Instance : null;
         RunCues();
@@ -85,6 +89,34 @@ public sealed class RailAudioDirector : MonoBehaviour
         }
         UpdateMotion(bank, train);
         UpdateFuel(bank, train);
+    }
+
+    void UpdateCountdown(RailAudioBank bank)
+    {
+        var session = PhotonSession.Instance;
+        bool ready = PhotonSession.IsRailsRoom && session != null && session.WorldReady &&
+            !session.HasRoomRequest && !session.AwaitingCrewDestination;
+        string room = ready ? PhotonNetwork.CurrentRoom.Name : null;
+        string run = ready ? PhotonSession.RunId : null;
+        bool returning = ready && PhotonSession.OnTrain;
+        int seconds = 0;
+        if (ready)
+        {
+            double deadline = PhotonSession.Get(RailSessionRules.Deadline, 0d);
+            if (returning)
+                seconds = RailSessionRules.ReturnCountdown(PhotonSession.Phase, deadline, PhotonNetwork.Time);
+            else if (!PhotonSession.IsPrivate && PhotonSession.Phase == RailPhase.Compound && deadline > 0)
+                seconds = (int)System.Math.Ceiling(System.Math.Max(0, deadline - PhotonNetwork.Time));
+        }
+        if (room != countdownRoom || run != countdownRun || returning != countdownWasReturn)
+            previousCountdown = 0;
+        // Only the current displayed second: never burst missed ticks after a stall.
+        if (seconds > 0 && seconds != previousCountdown && (!returning || seconds <= 5))
+            RailAudio.Play(bank.clockTick, Vector3.zero);
+        previousCountdown = seconds;
+        countdownRoom = room;
+        countdownRun = run;
+        countdownWasReturn = returning;
     }
 
     void RunCues()
