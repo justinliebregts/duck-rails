@@ -122,6 +122,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Priority: low.
 
 ### Baked fixture double lighting — queued 2026-11-16
+- Station follow-up: refreshed StartingStation prefab membership from 62 to 63 to include already-baked `Supplies corner bulb (3)`. Exact valid-reference coverage, inherited Expedition/bake-scene membership and 95 renderer UV bindings pass Edit Mode inspection. Check Supplies room has no extra direct pool while retaining the baked bulb illumination; overall station softness still needs visual acceptance.
 - Commit(s): uncommitted.
 - Changed: companion-lit blocks suppress baked-only fixture Lights during gameplay, retaining native lightmaps/probes and realtime lights; restore original enabled states on disable. User wants the softer finale bake-scene lighting.
 - Cheap checks: Unity compilation and actual-finale Edit Mode lifecycle checks pass; 1,746 texture/UV bindings match the bake and Expedition export. See docs/block-lighting.md.

@@ -64,6 +64,23 @@ Save other scene work before running export/proof menus: these tools open and re
 
 ## Troubleshooting
 
+### Starting Station fixture membership follow-up — November 16, 2026
+
+Inspection found 63 baked fixture Lights but only 62 serialized `bakedFixtures`
+references. `Env/City station v3/Baked lights/Supplies corner bulb (3)` was missing
+in the station prefab and inherited Expedition instance, allowing it to escape
+the existing gameplay suppression. Its bake-scene output was already baked.
+Refreshed only the prefab fixture membership (one added reference); Expedition
+and the bake scene inherit all 63 without scene overrides or scene saves.
+All 95 exported texture/UV entries agree between prefab and Expedition; all 95
+bake-scene native renderer UV transforms agree with the export. Saved metadata
+has exactly 63 unique valid fixture references and the companion is enabled in
+Build Settings. No rebake, light tuning or Play Mode performed. This repairs the
+specific remaining fixture; it does not establish the cause of every reported
+visual difference. Edit Mode still does not load the gameplay companion.
+Supplies-room softness and station appearance remain queued for playtest under
+**Baked fixture double lighting**.
+
 ### Finale hard light cones — November 16, 2026
 
 User selected the softer `bridge-finale-v1-bake.unity` appearance as the target.
