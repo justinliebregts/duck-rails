@@ -1,0 +1,158 @@
+// PREPARED corrected criterion; prior execution retains its raw identity FAIL.
+// PhotonSession loads Compound/Expedition in Single mode; each scene owns a new
+// DuckPlayer AND a separate root PauseMenu. Acceptance is resummon availability,
+// not preserving the prior menu instance across replacement of the whole scene.
+// Run on ONE client in a ready private Running room,
+// aboard the train, menu CLOSED, both hands EMPTY, with another client staying
+// in that room. No concurrent movement/input fixture or human input on this client.
+// Global wall-clock budget: 90 seconds, checked BEFORE session readiness.
+// Scope: real menu Update/follow/dismiss, actual Grabbable grab/release events,
+// real public-room transition and private-room rejoin. Injected: rig poses,
+// TogglePause callback and PlayerHand.TryGrab(item)/Release callbacks. This does
+// NOT prove physical grip-button selection, natural traversal, or VR comfort.
+// Ashore pose is an artificial kinematic pose 20m beside the train, not a floor test.
+// Saves/restores rig pose relative to train, movement/kinematic flags, menu closed.
+// Does not directly change train controls, input settings, or session properties.
+// Ordinary grab/drop statistics and room departure/join events occur normally.
+// Room transition cannot be rolled back if the retained private room disappears;
+// timeout cleanup restores local flags and reports incomplete room/pose restoration.
+using System;
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using Photon.Pun;
+
+internal class CommandScript : IRunCommand {
+ const string Root = "X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ string room, path;
+ NewPlayer originalPlayer;
+ PauseMenu menu;
+ Vector3 originLocal, originWorld, ashore, menuPos;
+ Quaternion originLocalRot, originRot, menuRot;
+ bool oldDisable, oldKin, done, restoreOnly;
+ int stage, failures, originalMenuId;
+ double start, entered;
+ void Log(string s) { File.AppendAllText(path, DateTime.UtcNow.ToString("O") + " " + s + "\n"); }
+ void Check(bool ok, string s) { if (!ok) failures++; Log((ok ? "PASS " : "FAIL ") + s); }
+ void Next(int value) { stage = value; entered = EditorApplication.timeSinceStartup; }
+ PauseMenu FindMenu() { return UnityEngine.Object.FindObjectsByType<PauseMenu>(FindObjectsInactive.Include, FindObjectsSortMode.None).FirstOrDefault(x => x.gameObject.activeInHierarchy); }
+ Transform Frame() { return menu == null ? null : (Transform)RailRemoteBridge.Get(menu, "summonFrame"); }
+ void Toggle() { RailRemoteBridge.Call(menu, "TogglePause"); }
+ void Close() { if (menu != null && menu.IsOpen) Toggle(); }
+ bool OriginalRoom() { return PhotonNetwork.InRoom && PhotonNetwork.CurrentRoom.Name == room; }
+ bool Ready() { var s = PhotonSession.Instance; return s != null && s.WorldReady && !s.HasRoomRequest && NewPlayer.instance != null; }
+ void Freeze() { var p = NewPlayer.instance; p.disableMovement = true; p.rb.isKinematic = true; }
+ void Pose(Vector3 position, Quaternion rotation) {
+  var p = NewPlayer.instance;
+  if (RailTrain.Instance != null && RailTrain.Instance.cabin != null) RailTrain.Instance.cabin.ReleasePassenger();
+  p.transform.SetPositionAndRotation(position, rotation);
+  p.rb.position = position; p.rb.rotation = rotation;
+  p.ReseedTrackingPose(); Physics.SyncTransforms();
+ }
+ public void Execute(ExecutionResult result) {
+  if (Application.dataPath != "X:/Work/duck-rails/Assets" || !Application.isPlaying || !Ready() || PhotonSession.Phase != RailPhase.Running || !PhotonNetwork.InRoom || PhotonNetwork.CurrentRoom.PlayerCount < 2)
+   throw new Exception("Need ready private Running room, two clients, this client aboard; peer must retain room.");
+  room = PhotonNetwork.CurrentRoom.Name;
+  if (room.Length != 5 || !room.All(char.IsDigit)) throw new Exception("Need five-digit private room for restoration.");
+  menu = FindMenu();
+  var player = GR.Player.instance;
+  if (menu == null || menu.IsOpen || player == null || player.IsDead || player.leftPlayerHand.IsHolding || player.rightPlayerHand.IsHolding || !RailTrain.TryPassengerFrame(out var train))
+   throw new Exception("Need closed menu, alive player, empty hands and actual passenger frame.");
+  originalPlayer = NewPlayer.instance;
+  originWorld = originalPlayer.transform.position; originRot = originalPlayer.transform.rotation;
+  originLocal = train.InverseTransformPoint(originWorld); originLocalRot = Quaternion.Inverse(train.rotation) * originRot;
+  oldDisable = originalPlayer.disableMovement; oldKin = originalPlayer.rb.isKinematic;
+  originalMenuId = menu.GetInstanceID();
+  path = Root + "menu-lifecycle-actor" + PhotonNetwork.LocalPlayer.ActorNumber + ".txt";
+  start = entered = EditorApplication.timeSinceStartup;
+  Freeze();
+  Log("START injected rig/summon/grab callbacks; real menu Update, grab/release events and room requests. No physical input or natural-traversal claim. room=" + room);
+  EditorApplication.update += Tick;
+  result.Log("Menu lifecycle observer started; maximum 90s. Evidence: " + path);
+ }
+ void Tick() {
+  if (done) return;
+  try {
+   double now = EditorApplication.timeSinceStartup, age = now - entered;
+   if (!Application.isPlaying || now - start >= 90) { restoreOnly = true; Log("BLOCKED global deadline stage=" + stage); Finish(); return; }
+   if (now - start > 60 && stage < 8) { Log("BLOCKED scenario budget exhausted; attempting original-room restoration"); restoreOnly = true; Next(8); }
+   if (!Ready()) return;
+   if (stage == 0) {
+    Toggle();
+    Check(menu.IsOpen && Frame() == RailTrain.Instance.transform, "aboard summon captures actual train frame");
+    Check(!menu.transform.IsChildOf(RailTrain.Instance.transform), "menu remains outside train hierarchy");
+    var hand = GR.Player.instance.rightPlayerHand;
+    var item = menu.GetComponent<Grabbable>();
+    if (item == null) throw new Exception("Menu has no Grabbable");
+    hand.TryGrab(item); // DIRECT CALLBACK INJECTION; selection/range/button delivery not tested.
+    var grab = (BoxCollider)RailRemoteBridge.Get(menu, "grabCollider");
+    Check(hand.Held == item && item.IsHeld && Frame() == null && (grab == null || !grab.enabled), "injected TryGrab(item): actual OnGrabbed clears frame and grab collider");
+    if (hand.Held == item) hand.Release(); // Actual release lifecycle/throw calculation.
+    var body = menu.GetComponent<Rigidbody>();
+    Check(!item.IsHeld && Frame() == null && !body.isKinematic && body.useGravity && (grab == null || grab.enabled), "actual Release event: no train frame, gravity enabled, grab collider restored");
+    Close();
+    ashore = RailTrain.Instance.transform.TransformPoint(new Vector3(20, originLocal.y, originLocal.z));
+    Pose(ashore, originRot); Next(1);
+   } else if (stage == 1 && age > .5) {
+    if (RailTrain.TryPassengerFrame(out _)) { if (age > 4) throw new Exception("Injected ashore pose still passenger; no ashore assertion made"); return; }
+    Toggle(); menuPos = menu.transform.position; menuRot = menu.transform.rotation;
+    Check(menu.IsOpen && Frame() == null, "ashore summon has no train frame");
+    Pose(ashore + menu.transform.right * .25f, originRot); Next(2);
+   } else if (stage == 2 && age > 1) {
+    Check(menu.IsOpen && Vector3.Distance(menu.transform.position, menuPos) < .002f && Quaternion.Angle(menu.transform.rotation, menuRot) < .1f, "ashore menu stays world-fixed during injected 0.25m rig movement");
+    Pose(NewPlayer.instance.transform.position + (Camera.main.transform.position - menu.mesh.transform.position).normalized * (menu.dismissDistance + 1), originRot);
+    Next(3);
+   } else if (stage == 3 && age > 1) {
+    Check(!menu.IsOpen, "ordinary menu Update dismisses beyond configured distance");
+    Close();
+    Pose(RailTrain.Instance.transform.TransformPoint(originLocal), RailTrain.Instance.transform.rotation * originLocalRot); Next(4);
+   } else if (stage == 4 && age > .5) {
+    if (!RailTrain.TryPassengerFrame(out _)) { if (age > 4) throw new Exception("Restored aboard pose did not reacquire passenger frame"); return; }
+    Toggle(); Check(menu.IsOpen && Frame() != null, "aboard resummon recaptures frame after drop and dismissal");
+    // Leave menu open during the actual room transition. Release fixture movement freeze.
+    NewPlayer.instance.disableMovement = oldDisable; NewPlayer.instance.rb.isKinematic = oldKin;
+    PhotonSession.Instance.RequestJoinRandom(); Next(5);
+   } else if (stage == 5 && PhotonSession.Phase == RailPhase.Compound) {
+    menu = FindMenu();
+    Log("INFO scene replacement menu instance changed=" + (menu != null && menu.GetInstanceID() != originalMenuId));
+    Check(menu != null && menu.gameObject.activeInHierarchy && menu.gameObject.scene == NewPlayer.instance.gameObject.scene, "current scene has an active menu alongside the current local rig after return");
+    if (menu == null) throw new Exception("No menu after return-open transition");
+    Close(); Toggle();
+    var head = Camera.main.transform;
+    var forward = Vector3.ProjectOnPlane(head.forward, Vector3.up);
+    if (forward.sqrMagnitude < .0001f) forward = Vector3.ProjectOnPlane(head.up, Vector3.up);
+    var expected = head.position + forward.normalized * menu.distance + Vector3.up * menu.height;
+    Check(menu.IsOpen && Frame() == null && Vector3.Distance(menu.transform.position, expected) < .01f, "public Compound resummon uses current head pose with no stale train frame");
+    Close(); Next(8);
+   } else if (stage == 8) {
+    if (!OriginalRoom()) { PhotonSession.Instance.RequestJoinCode(room); Next(9); }
+    else Finish();
+   } else if (stage == 9 && OriginalRoom() && PhotonSession.Phase == RailPhase.Running) {
+    Check(true, "rejoined original retained private room"); Finish();
+   }
+  } catch (Exception e) {
+   Log("FIXTURE ERROR stage=" + stage + " " + e);
+   restoreOnly = true;
+   if (stage >= 8) Finish(); else Next(8);
+  }
+ }
+ void Finish() {
+  if (done) return; done = true; EditorApplication.update -= Tick;
+  try {
+   if (Application.isPlaying && NewPlayer.instance != null) {
+    menu = FindMenu();
+    // Cleanup callback avoids JoinOpenRoom side effects while a room request is pending.
+    if (menu != null) menu.CloseForDeath();
+    if (OriginalRoom() && Ready() && RailTrain.Instance != null) {
+     Freeze(); Pose(RailTrain.Instance.transform.TransformPoint(originLocal), RailTrain.Instance.transform.rotation * originLocalRot);
+     Log("RESTORED original room and train-relative root pose; menu closed");
+    } else Log("RESTORATION INCOMPLETE original room/pose; current room=" + (PhotonNetwork.InRoom ? PhotonNetwork.CurrentRoom.Name : "none") + "; no unsafe cross-world pose restore");
+    NewPlayer.instance.disableMovement = oldDisable; NewPlayer.instance.rb.isKinematic = oldKin;
+    if (originalPlayer != null && originalPlayer != NewPlayer.instance) { originalPlayer.disableMovement = oldDisable; originalPlayer.rb.isKinematic = oldKin; }
+    Log("RESTORED movement and kinematic flags");
+   }
+  } catch (Exception e) { Log("CLEANUP ERROR " + e); }
+  Log("DONE failures=" + failures + " interrupted=" + restoreOnly + "; callback injection and synthetic rig poses only; human grip/comfort remain open");
+ }
+}

@@ -75,7 +75,8 @@ public class PauseMenu : MonoBehaviour
             if (mesh != null) {
                 mesh.SetActive(false);
             }
-            PlayMenuSound(closeSound, transform.position);
+            // Scene teardown may already have destroyed AudioManager. Keep this
+            // cleanup silent; explicit close actions play their own close cue.
         }
         if (playersMenu != null) {
             playersMenu.UnregisterCallbacks();
