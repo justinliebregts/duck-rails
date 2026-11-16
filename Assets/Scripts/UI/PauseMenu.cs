@@ -37,6 +37,9 @@ public class PauseMenu : MonoBehaviour
     PauseMenuButton activeButton;
     Grabbable grabbable;
     Rigidbody body;
+    Transform summonFrame;
+    Vector3 summonLocalPosition;
+    Quaternion summonLocalRotation;
 
     void Awake() {
         BindCameraButton("Open", OpenCameraTablet);
@@ -113,6 +116,8 @@ public class PauseMenu : MonoBehaviour
         if (!paused || (grabbable != null && grabbable.IsHeld)) {
             return;
         }
+
+        FollowSummonFrame();
 
         Camera head = Camera.main;
         if (head == null || mesh == null) {
@@ -196,6 +201,7 @@ public class PauseMenu : MonoBehaviour
     }
 
     void OnMenuGrabbed(PlayerHand hand) {
+        summonFrame = null;
         if (body != null) {
             body.detectCollisions = true;
         }
@@ -213,6 +219,7 @@ public class PauseMenu : MonoBehaviour
     }
 
     void StopMenuBody() {
+        summonFrame = null;
         if (body != null) {
             if (!body.isKinematic) {
                 body.linearVelocity = Vector3.zero;
@@ -312,6 +319,29 @@ public class PauseMenu : MonoBehaviour
         }
 
         StopMenuBody();
+        transform.SetPositionAndRotation(position, rotation);
+        if (body != null) {
+            body.position = position;
+            body.rotation = rotation;
+        }
+
+        // Capture only on summon: walking or looking around must not drag the menu.
+        if (RailTrain.TryPassengerFrame(out summonFrame)) {
+            summonLocalPosition = summonFrame.InverseTransformPoint(position);
+            summonLocalRotation = Quaternion.Inverse(summonFrame.rotation) * rotation;
+        }
+    }
+
+    void FollowSummonFrame() {
+        if (summonFrame == null || !summonFrame.gameObject.activeInHierarchy) {
+            summonFrame = null;
+            return;
+        }
+
+        // Keep the menu outside the train hierarchy so unloading the train cannot
+        // destroy it. Apply carry before the distance-based dismissal check.
+        Vector3 position = summonFrame.TransformPoint(summonLocalPosition);
+        Quaternion rotation = summonFrame.rotation * summonLocalRotation;
         transform.SetPositionAndRotation(position, rotation);
         if (body != null) {
             body.position = position;

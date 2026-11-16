@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Pause menu follows the train — queued 2026-11-15
+- Commit(s): uncommitted.
+- Cheap checks: Duck Rails Unity target confirmed in Edit Mode; compilation and `PauseMenuAudioChecks.Run()` passed (audio bindings, physical drop, close freeze and reopen pose). Scoped diff whitespace check passed. Console had one unrelated Package Manager cancellation error. Train-follow runtime/headset behavior remains untested; the attempted ad-hoc reflection probe was rejected by the MCP namespace restriction and is not validation evidence.
+- Changed: summoning aboard captures the passenger train frame; the floating menu follows its position/rotation before distance dismissal. Every summon resets the pose near the current head. Grabbing clears the frame and retains physical grab/drop behavior; closing clears it too. No train parenting, so unloading cannot destroy the menu.
+- Setup: one shared DuckPlayer in Keyboard mode, then target headset, aboard a moving expedition train.
+- Check: open while stopped then accelerate, and open while already moving; menu stays in its train-relative position through slopes and braking without auto-dismissing. Look/walk around without dragging it. Close/reopen from another position and confirm it appears in front of you. Walk off and away to dismiss, then reopen ashore and confirm it stays world-fixed. Grab/drop/reopen; return to Compound with menu open and confirm it can still be summoned.
+- Needs human: headset stability, reach and grab/drop feel.
+- Priority: normal.
+
 ### Train model-aligned collision — queued 2026-11-15
 - Commit(s): see git log "Align train collision with reviewed model".
 - Changed: disable obsolete/overlapping shell boxes and hulls; use three non-convex model-derived shell meshes (1,947 triangles) plus matching dash housing collision. Preserve furnace wall meshes, radio table, triggers and passenger/network code. Rebuilt train navigation.

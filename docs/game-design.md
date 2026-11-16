@@ -1,5 +1,10 @@
 # Duck Rails — V1 game design
 
+November 15 pause menu: when summoned aboard, the floating menu follows the
+train; each new summon places it in front of the current player position.
+Grabbing retains the existing physical behavior. Live/headset acceptance is
+queued in [playtest queue](playtest-queue.md#pause-menu-follows-the-train--queued-2026-11-15).
+
 November 15 train collision: user approved model-derived shell collision in
 place of the misaligned blockout colliders. Installed while preserving controls,
 furnace openings and passenger motion; offline navigation and focused editor

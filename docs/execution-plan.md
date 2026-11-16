@@ -1,5 +1,7 @@
 # Duck Rails — execution plan
 
+- [ ] Pause menu train-follow: implemented summon-time passenger anchoring and fresh placement on reopen; moving-train, off-train and headset acceptance [queued for playtest](playtest-queue.md#pause-menu-follows-the-train--queued-2026-11-15).
+
 - [x] November 15: install model-derived train shell collision; preserve visual/gameplay bindings, rebake train navigation, pass 50 focused checks and 489 boarding graph checks. [Evidence and legacy-check limits](validation/train-mesh-collision/README.md).
 - [ ] Train model-aligned collision: moving passenger/hand/body/loose-item contact, natural enemy boarding, real-client agreement and Quest cost; queued for playtest.
 
