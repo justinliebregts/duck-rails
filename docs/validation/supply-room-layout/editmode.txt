@@ -1,0 +1,43 @@
+Duck Rails Edit Mode; November 16, 2026
+HelmetDisplay floor-relative height 0.250..0.421
+FlashlightDisplay floor-relative height 0.250..0.370
+NightVisionGogglesDisplay floor-relative height 0.250..0.441
+WalkieTalkieDisplay floor-relative height 0.250..0.600
+NailBatDisplay floor-relative height 0.250..0.624
+DefaultAvatarDisplay floor-relative height 0.250..0.509
+BagBasicDisplay floor-relative height 0.250..0.505
+FryPanDisplay floor-relative height 0.250..0.631
+weapon_quackbear floor-relative height 0.250..0.675
+bag_quackbear floor-relative height 0.250..0.505
+skin_duck_quackbear floor-relative height 0.250..0.523
+weapon_huggy floor-relative height 0.250..0.675
+bag_huggy floor-relative height 0.250..0.505
+skin_duck_huggy floor-relative height 0.250..0.501
+weapon_scrap_duck floor-relative height 0.250..0.675
+bag_scrap_duck floor-relative height 0.250..0.505
+skin_duck_scrap_duck floor-relative height 0.250..0.487
+Assets/DuckRails/Compound/SubwayTerminal/SubwayTerminal.prefab: 17 distinct inherited displays, all grounded at 0.25m, tops below 0.70m, no pairwise mesh-bound overlaps.
+HelmetDisplay floor-relative height 0.250..0.421
+FlashlightDisplay floor-relative height 0.250..0.370
+NightVisionGogglesDisplay floor-relative height 0.250..0.441
+WalkieTalkieDisplay floor-relative height 0.250..0.600
+NailBatDisplay floor-relative height 0.250..0.624
+DefaultAvatarDisplay floor-relative height 0.250..0.509
+BagBasicDisplay floor-relative height 0.250..0.505
+FryPanDisplay floor-relative height 0.250..0.631
+weapon_quackbear floor-relative height 0.250..0.675
+bag_quackbear floor-relative height 0.250..0.505
+skin_duck_quackbear floor-relative height 0.250..0.523
+weapon_huggy floor-relative height 0.250..0.675
+bag_huggy floor-relative height 0.250..0.505
+skin_duck_huggy floor-relative height 0.250..0.501
+weapon_scrap_duck floor-relative height 0.250..0.675
+bag_scrap_duck floor-relative height 0.250..0.505
+skin_duck_scrap_duck floor-relative height 0.250..0.487
+Assets/DuckRails/Economy/RailShop.prefab: 17 distinct inherited displays, all grounded at 0.25m, tops below 0.70m, no pairwise mesh-bound overlaps.
+Saved Expedition inherits station layout/supports without scene edits.
+Existing shared-store inventory, price coin, catalog, cooldown and local camera-binding checks pass. Active Compound checks pass. No Play Mode or headset check run.
+
+User correction: removed all 18 stands in each room (17 item stands plus monitor stand); preserved all item/label positions and camera brackets. Shared-store checks pass. Earlier grounding/support evidence and preview images describe the superseded stand layout. Headset checks remain queued.
+
+Expedition spacing revision: Quackbear moved to south wall, Huggy/Scrap shifted south along west wall; bat/pan now west; five north-wall supplies spaced 1.05–1.15 m apart. Saved station prefab: 17 displays, all bottoms 0.25 m/tops below 0.70 m, no pairwise visual bounds overlaps. Shared-store checks pass. Compound untouched. Native preview: output/supply-room-layout/station-spread.png.

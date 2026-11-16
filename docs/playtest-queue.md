@@ -43,6 +43,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Low wall displays in both supplies rooms — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: all 17 Compound and Starting Station displays arranged low against room walls without stands (mesh bottoms at 0.25 m); item tops are 0.37–0.675 m above the floor. Prices/cooldowns lowered with items; monitor lowered; all item/monitor stands removed per user correction. Helicopter layout retained.
+- Passed now: Unity compilation, saved prefab/Expedition inheritance, actual mesh height and pairwise display bounds; removal of 18 stands per room with all display positions preserved, existing shared-store bindings and active Compound checks; Console error/exception query empty. See [evidence](validation/supply-room-layout/editmode.txt).
+- Spacing follow-up: expedition bundles extend onto the south wall; bat/pan moved west; five north-wall supplies spaced 1.05–1.15 m apart. Saved height/overlap and shared-store checks pass. Compound unchanged by this follow-up.
+- Setup: Compound, then Starting Station, with a roughly 0.5 m duck; two authenticated clients for delivery/equip visibility.
+- Check: all seven coin supplies, nine bundle pulls and Default Duck remain reachable; successful pulls/restocks return to their new positions; price/countdown text is readable; entrances and hand locomotion stay clear; camera feeds work.
+- Needs human: Gorilla Tag movement, natural hand reach, text readability and appearance on headset. Not verified by editor checks.
+- Priority: normal.
+
 ### Starting Station raised sign lettering — queued 2026-11-16
 
 - **Change:** all four station TMP labels replaced with 2 cm solid CutePixel meshes;
