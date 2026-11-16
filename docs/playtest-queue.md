@@ -43,6 +43,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Integrated radio console — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: approved 1.72 m wall-mounted console installed in shared RadioTable prefab; original voice/hold/button identities retained, aligned trigger and six new solids replace old table collision. See [integration and checks](radio-console.md#unity-installation--november-15).
+- Cheap checks: compilation, 24 saved-prefab checks, installed press/release/disable and nine hold checks pass; offline train graph rebaked, boarding regressions pass, Unity render reviewed, final Console error query empty.
+- Setup: one client for physical press/release; two clients with station and handheld walkie for voice, late join and moving train.
+- Button correction: collar/cap now share the plate slope; verify full microphone icon and even seating at rest and while held. Blender normal/clearance checks and Unity saved-prefab checks pass; no live test run.
+- Check: fits between wall posts without overlaps, cable exits rear faces, hold/release stops/starts transmission, cap moves with contact, no extra table legs or duplicate old geometry, late joining retains station operation.
+- Needs human: headset reach, CutePixel label/icon readability, nighttime appearance and voice quality.
+- Priority: normal.
+
 ### Quackville blocked-exit sign — queued 2026-11-15
 - Installed `↑ QUACKVILLE` above the blocked Compound stairway with one left-side up arrow, raised CutePixel lettering and matching platform sign materials.
 - Editor compilation, assets/instance checks and visual capture pass; sign lowered on short supports to clear ceiling-pipe sightlines. See `docs/subway-compound.md` and `output/subway-terminal-model/quackville-exit-sign.png`.

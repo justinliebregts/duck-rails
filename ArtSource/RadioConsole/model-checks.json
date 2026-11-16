@@ -1,0 +1,60 @@
+{
+  "shelf_width_m": 1.72,
+  "wall_clear_span_m": 1.74,
+  "end_clearance_m": 0.01,
+  "shelf_depth_m": 0.48,
+  "shelf_top_m": 0.42,
+  "bolt_count": 6,
+  "unity_mapping": "(1.64 + Blender Y, Blender Z, 2 - Blender X)",
+  "unity_installed": false,
+  "parts": [
+    {
+      "name": "Shelf",
+      "triangles": 132,
+      "vertices": 72
+    },
+    {
+      "name": "Supports",
+      "triangles": 240,
+      "vertices": 132
+    },
+    {
+      "name": "Speaker",
+      "triangles": 970,
+      "vertices": 427
+    },
+    {
+      "name": "MicBase",
+      "triangles": 44,
+      "vertices": 24
+    },
+    {
+      "name": "ButtonMount",
+      "triangles": 224,
+      "vertices": 120
+    },
+    {
+      "name": "TalkButton",
+      "triangles": 296,
+      "vertices": 184
+    },
+    {
+      "name": "Microphone",
+      "triangles": 484,
+      "vertices": 220
+    },
+    {
+      "name": "Label",
+      "triangles": 340,
+      "vertices": 352
+    },
+    {
+      "name": "Cable",
+      "triangles": 112,
+      "vertices": 64
+    }
+  ],
+  "triangles": 2842,
+  "static_checks": "PASS: 9 mesh parts, shared palette, consistent UVs, finite vertices, shelf width, cream label, button metadata, aligned collar/cap normals and icon clearance >0.8 mm.",
+  "fbx_roundtrip": "PASS: 9 mesh components, matching triangle count."
+}
