@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Skyscraper raised development sign — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: solid CutePixel lettering and a bottom-mounted baked spotlight on the front development sign; isolated fascia lightmap preserves existing tower atlas lighting.
+- Setup: Skyscraper Works in an expedition; inspect the approach sign at duck height.
+- Check: wording and raised edges readable, uplight visible without realtime double-lighting, sign lightmap remains bound after route translation and reload.
+- Needs human: headset readability and final art approval.
+- Priority: normal.
+
 ### Bridge crash collapse — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: five bridge sections collapse from the impact angle, settle on the river bed and burn; front-of-train large dark explosion, retained crash audio, 3.2-second results delay.

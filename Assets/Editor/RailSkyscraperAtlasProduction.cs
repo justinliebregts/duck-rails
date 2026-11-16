@@ -128,12 +128,19 @@ public static class RailSkyscraperAtlasProduction
         if (data.sourceKeys.Any(k => Resolve(root.transform, k).GetComponent<MeshRenderer>().enabled)) throw new BuildFailedException("Duplicate source rendering.");
         var chunks = visual.GetComponentsInChildren<MeshRenderer>(true);
         var lighting = root.GetComponent<RailBakedBlockLighting>();
+        var sign = root.transform.Find("Raised CutePixel development sign");
+        int expectedBindings = 3436 + (sign ? 3 : 0);
+        if (sign && (sign.GetComponentsInChildren<MeshRenderer>().Length != 3 ||
+            sign.GetComponentsInChildren<Light>().Length != 1 ||
+            sign.GetComponentInChildren<Light>().lightmapBakeType != LightmapBakeType.Baked ||
+            root.GetComponentsInChildren<TMPro.TextMeshPro>().Length != 0))
+            throw new BuildFailedException("Invalid raised development sign.");
         if (chunks.Length != 648 || chunks.Any(r => !r.enabled || !r.sharedMaterial || !r.GetComponent<MeshFilter>().sharedMesh) ||
-            chunks.Select(r => r.sharedMaterial).Distinct().Count() != 5 || lighting.bindings.Length != 3436 ||
+            chunks.Select(r => r.sharedMaterial).Distinct().Count() != 5 || lighting.bindings.Length != expectedBindings ||
             chunks.Sum(r => r.GetComponent<MeshFilter>().sharedMesh.triangles.Length / 3) != 37184 ||
-            lighting.bindings.Any(b => !b.renderer || !b.color) || lighting.bindings.Select(b => b.renderer).Distinct().Count() != 3436)
+            lighting.bindings.Any(b => !b.renderer || !b.color) || lighting.bindings.Select(b => b.renderer).Distinct().Count() != expectedBindings)
             throw new BuildFailedException("Invalid Skyscraper Works atlas chunks or lighting bindings.");
-        Debug.Log("Skyscraper Works production atlas authoring guard passed: 648 chunks, 2788 disabled originals, 3436 valid bindings, 37184 triangles.");
+        Debug.Log($"Skyscraper Works production atlas authoring guard passed: 648 chunks, 2788 disabled originals, {expectedBindings} valid bindings, 37184 atlas triangles.");
     }
 }
 

@@ -1,5 +1,30 @@
 # Skyscraper Works — V2 layout
 
+## Raised development sign — November 16, 2026
+
+Replaced the visible front TMP advertisement with solid 9 cm extruded CutePixel
+source-font lettering, retaining all three lines of wording. The original TMP
+object remains inactive for recovery. Added a charcoal fascia over the existing
+board and one bottom-mounted warm baked spotlight with a small housing.
+
+`Assets/DuckRails/SkyscraperSign/Sign-bake.unity` owns the isolated sign bake.
+Three new renderer bindings use its lightmap through the existing block loader;
+the original 3,436 bindings, 648 optimized chunks, 37,184 atlas triangles and
+block companion/probes are untouched. This local bake covers the sign assembly,
+not new illumination of the surrounding ground or moving subjects. The fixture
+is included in `CaptureBakedFixtures` so gameplay suppresses its direct light.
+Do not run the general block exporter over derived atlas UVs.
+
+Source: `ArtSource/SkyscraperSign/build_sign.py` and `letters.json` (6,432 letter
+triangles). Authoring: `Assets/Editor/RailSkyscraperSign.cs`. Production guard
+now checks the optional sign and 3,439 bindings; fingerprint reconciled after
+the scoped addition. Unity compile, bake, saved production guard and empty
+Error/Exception/Assert Console passed. Existing skyscraper lighting files are
+unchanged. [Review picture](../output/skyscraper-sign/review.png) uses the actual
+baked maps with fixture direct light disabled and fog off for inspection.
+No Play Mode run; runtime translation/reload and headset readability are
+**queued for playtest** under “Skyscraper raised development sign”.
+
 ## Triangle-preserving Blender review — November 14, 2026
 
 User approved the revised floors, framing and grounded/varied materials below.
