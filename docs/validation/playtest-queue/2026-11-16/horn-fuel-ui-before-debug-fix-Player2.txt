@@ -1,0 +1,5 @@
+Runtime evidence only: controlled native PressableButton.Press calls and operator Warp; no mouse/VR touch, manual visual or audible quality claim. Fuel 50/0/100 controlled values. Native FUEL 100 action rebases stopped motion at its unchanged distance. Horn uses dedicated AudioSource, not AudioManager voice pool.
+2026-11-16T11:53:22.4854842Z START driver=False actor=2 room=84026 run=c6b07268ff1d41558c8b8e9ec949ca93 distance=0
+2026-11-16T11:53:22.4981024Z BLOCKED initialization System.Exception: Need initialized horn, fuel bar and furnace without debug override
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.HornFuelQueue.Start () [0x001a8] in <8664cba1e6634a628ae2c21eb66ceae3>:0 
+2026-11-16T11:53:22.4991029Z BLOCKED DONE driver=False stage=0 failures=0 settledChecks=0 fuel=50 outCues=0 fireCues=0 fadeObserved=False duration=0.0137076999999977

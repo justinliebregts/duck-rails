@@ -1,0 +1,103 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using System.Globalization;using System.Text.RegularExpressions;
+using UnityEngine;using Photon.Pun;using Game.Audio;
+internal class CommandScript:IRunCommand{
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!PhotonSession.IsPrivate||PhotonSession.Phase!=RailPhase.Running||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||RailTrain.Instance==null)
+   throw new Exception("Need ready private Running clients, master drives and other clients observe");
+  if(RailTrain.Instance.Speed>.01f||Mathf.Abs(Convert.ToSingle(PhotonSession.Get(RailSessionRules.Motion,new object[]{0d,0f,0f,0f})[3]))>.01f)
+   throw new Exception("Need stopped train with retained target speed zero; no distance reset is performed");
+  var motion=PhotonSession.Get(RailSessionRules.Motion,new object[]{0d,0f,0f,0f});
+  if(Mathf.Abs(Convert.ToSingle(motion[2]))>.001f||Mathf.Abs(Convert.ToSingle(motion[1])-RailTrain.Instance.Distance)>.01f)
+   throw new Exception("Need zero-speed motion anchor at current distance (fresh run); fuel-only writes must not reinterpret old deceleration");
+  if(PhotonNetwork.IsMasterClient&&(!RailTestTools.CanMutate||RailDiagnosticPanel.Instance==null||NewPlayer.instance==null||RailExpedition.LocalDown||SimulatedRigInput.Instance==null||!SimulatedRigInput.Instance.IsSimulating||SimulatedRigInput.Instance.UseInjectedInput))
+   throw new Exception("Master needs available test tools, live local Keyboard rig, no competing injected input");
+  var g=new GameObject("Bounded horn fuel UI evidence");g.AddComponent<HornFuelQueue>();r.RegisterObjectCreation(g);r.Log("Horn/fuel observer armed; inject peers first, then master. 65-second bound.");
+ }
+}
+[DefaultExecutionOrder(30000)] internal class HornFuelQueue:MonoBehaviour{
+ const string Ev="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ readonly float[] targets={50,100,50,0,100};readonly HashSet<string> failed=new HashSet<string>(),leases=new HashSet<string>();
+ string path,run;bool driver,done,saved,oldOpen,oldTools,oldFocus,oldCursor,oldPlaying,sawPlay,fadeSample,inconclusive;CursorLockMode oldLock;
+ int stage,revision,starts,outCues,fireCues,settledChecks;double began,edge,retry,ack=-1,nextLog,lastChange;float distance,lastFuel=-999,firstFadeStep=-1;Vector3 stand;Quaternion rotation;
+ RailDiagnosticPanel panel;RailHoldControl horn;AudioSource source;RailFurnaceModule furnace;RailCockpitFuelBar bar;
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){if(!ok&&failed.Add(s))Log("FAIL "+s);}
+ void Start(){try{
+  driver=PhotonNetwork.IsMasterClient;run=PhotonSession.RunId;distance=RailTrain.Instance.Distance;began=Time.realtimeSinceStartupAsDouble;edge=began;
+  string role=Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor?"main":Unity.Multiplayer.PlayMode.CurrentPlayer.Tags.FirstOrDefault()??"peer";
+  path=Ev+"horn-fuel-ui-"+role+".txt";
+  File.WriteAllText(path,"Runtime evidence only: controlled native PressableButton.Press calls and operator Warp; no mouse/VR touch, manual visual or audible quality claim. Fuel 50/0/100 controlled values. Native FUEL 100 action rebases stopped motion at its unchanged distance. Horn uses dedicated AudioSource, not AudioManager voice pool.\n");
+  Log("START driver="+driver+" actor="+PhotonNetwork.LocalPlayer.ActorNumber+" room="+PhotonNetwork.CurrentRoom.Name+" run="+run+" distance="+distance);
+  horn=UnityEngine.Object.FindObjectsByType<RailHoldControl>(FindObjectsSortMode.None).Single(x=>!x.radio&&!x.bridge);
+  source=RailRemoteBridge.Get(horn,"source") as AudioSource;furnace=UnityEngine.Object.FindFirstObjectByType<RailFurnaceModule>();bar=UnityEngine.Object.FindFirstObjectByType<RailCockpitFuelBar>();
+  if(source==null||furnace==null||furnace.debugOverride||bar==null)throw new Exception("Need initialized horn, fuel bar and furnace without debug override");
+  ScanAudio(true);Backing();
+  if(driver){
+   if(horn.button.IsPressed||source.isPlaying)throw new Exception("Horn already held or playing; do not disturb user audio");
+   panel=RailDiagnosticPanel.Instance;oldOpen=panel.IsOpen;oldTools=(bool)RailRemoteBridge.Get(panel,"tools");oldLock=Cursor.lockState;oldCursor=Cursor.visible;panel.Close();
+   oldFocus=(bool)RailRemoteBridge.Get(horn,"focused");
+   var p=NewPlayer.instance;stand=new Vector3(p.headCollider.transform.position.x,p.transform.position.y,p.headCollider.transform.position.z);rotation=p.transform.rotation;saved=true;RailRemoteBridge.Set(horn,"focused",true);
+   var at=horn.transform.position-RailTrain.Instance.transform.forward*.7f;at.y=RailTrain.Instance.transform.position.y+.35f;p.Warp(at,Quaternion.identity);
+   revision=PhotonSession.Get(RailSessionRules.Revision,0);retry=began+.5;
+  }
+ }catch(Exception ex){if(path!=null)Log("BLOCKED initialization "+ex);Finish(false);}}
+ void Fuel100Button(){
+  panel.Close();panel.Build();var root=(GameObject)RailRemoteBridge.Get(panel,"panel");root.SetActive(true);
+  if(!(bool)RailRemoteBridge.Get(panel,"tools")){var tools=root.GetComponentsInChildren<PressableButton>().Single(x=>x.name=="TEST TOOLS");Check(tools.Press(),"native TEST TOOLS button accepts press");tools.Release();root=(GameObject)RailRemoteBridge.Get(panel,"panel");}
+  var fuel=root.GetComponentsInChildren<PressableButton>().Single(x=>x.name=="FUEL 100");
+  try{Check(fuel.Press(),"native FUEL 100 button accepts press");Log("NATIVE_BUTTON name="+fuel.name+" status="+RailTestTools.Status);}finally{fuel.Release();panel.Close();}
+ }
+ void Backing(){
+  var transforms=RailTrain.Instance.GetComponentsInChildren<Transform>(true);var a=transforms.FirstOrDefault(x=>x.name=="Fuel bezel");var b=transforms.FirstOrDefault(x=>x.name=="Distance bezel");
+  Check(a!=null&&b!=null,"both cockpit bezel objects exist");if(a==null||b==null)return;
+  Check(a.GetComponent<MeshFilter>().sharedMesh==b.GetComponent<MeshFilter>().sharedMesh&&a.GetComponent<Renderer>().sharedMaterial==b.GetComponent<Renderer>().sharedMaterial,"fuel bezel shares distance backing mesh and material");
+  Check(Vector3.Distance(a.localScale,b.localScale)<.0001f&&Quaternion.Angle(a.localRotation,b.localRotation)<.01f&&Mathf.Abs(a.localPosition.y-b.localPosition.y)<.0001f&&Mathf.Abs(a.localPosition.z-b.localPosition.z)<.0001f,"fuel bezel matches distance backing dimensions and alignment");
+  Check(a.gameObject.activeInHierarchy&&a.GetComponent<Renderer>().enabled,"fuel backing rendered");Log("BACKING fuel="+a.localPosition+" distance="+b.localPosition+" scale="+a.localScale);
+ }
+ void SampleFuel(float value){
+  int expected=Mathf.CeilToInt(Mathf.Clamp01(value/bar.capacity)*10),indices=bar.segments.sharedMesh.triangles.Length;var gauge=RailExpedition.Instance.gauge;
+  string text=gauge==null?"":gauge.GetParsedText();int label=text.IndexOf("FUEL",StringComparison.Ordinal);string token="";if(label>=0){int at=label+4;while(at<text.Length&&char.IsWhiteSpace(text[at]))at++;while(at<text.Length&&(char.IsDigit(text[at])||text[at]=='.'))token+=text[at++];}float shown;bool parsed=float.TryParse(token,System.Globalization.NumberStyles.Float,CultureInfo.InvariantCulture,out shown);
+  Check(indices==expected*6,"rendered segments match fuel "+value);
+  Check(bar.segments.gameObject.activeInHierarchy&&bar.segments.GetComponent<Renderer>().enabled,"fuel segments renderer active");
+  Check(gauge!=null&&gauge.gameObject.activeInHierarchy&&gauge.enabled&&gauge.font!=null&&gauge.font.name.Contains("CutePixel")&&parsed&&Mathf.Abs(shown-value)<.11f,"rendered CutePixel fuel label matches "+value);
+  float wanted=Mathf.Lerp(furnace.outOfFuelEmission,1,Mathf.Clamp01(value/(100*furnace.fullBurnFuelFraction)));
+  var systems=RailRemoteBridge.Get(furnace,"idleSystems") as ParticleSystem[];var bases=RailRemoteBridge.Get(furnace,"idleBaseRates") as float[];int measured=0;
+  if(systems!=null&&bases!=null)for(int i=0;i<systems.Length;i++){if(bases[i]<=0)continue;measured++;float ratio=systems[i].emission.rateOverTimeMultiplier/bases[i];Check(Mathf.Abs(ratio-wanted)<.015f&&systems[i].isPlaying,"settled idle fire emission fuel="+value+" system="+i);Log("FIRE fuel="+value+" system="+i+" ratio="+ratio+" playing="+systems[i].isPlaying);}
+  Check(measured>0,"idle fire has measurable emitting systems");if(value==0)Check(Mathf.Abs(wanted-.12f)<.001f,"empty idle fire configured to twelve percent");
+  settledChecks++;Log("FUEL_SETTLED shared="+PhotonSession.CurrentFuel+" retained="+PhotonSession.Get(RailSessionRules.Fuel,-1f)+" revision="+PhotonSession.Get(RailSessionRules.Revision,0)+" indices="+indices+" text="+text.Replace("\n"," | ")+" idle="+RailRemoteBridge.Get(furnace,"idleLevel"));
+ }
+ void ScanAudio(bool baseline){var am=AudioManager.instance;var bank=RailAudio.Bank;if(am==null||bank==null)return;var voices=RailRemoteBridge.Get(am,"voices") as Array;if(voices==null)return;
+  for(int i=0;i<voices.Length;i++){var v=voices.GetValue(i);var sound=RailRemoteBridge.Get(v,"Event") as SoundEvent;if(sound==null||(sound!=bank.outOfFuel&&sound!=bank.furnaceFireLoop))continue;string key=am.GetInstanceID()+":"+i+":"+RailRemoteBridge.Get(v,"Generation");if(!leases.Add(key)||baseline)continue;
+   if(sound==bank.outOfFuel)outCues++;if(sound==bank.furnaceFireLoop)fireCues++;var audio=RailRemoteBridge.Get(v,"Source") as AudioSource;Log("AUDIO fresh="+sound.name+" lease="+key+" playing="+(audio!=null&&audio.isPlaying)+" loop="+(audio!=null&&audio.loop));}}
+ void LateUpdate(){if(done)return;try{
+  double now=Time.realtimeSinceStartupAsDouble;if(now-began>65){Finish(!driver);return;}
+  if(PhotonSession.RunId!=run||PhotonSession.Phase!=RailPhase.Running||RailTrain.Instance==null||RailExpedition.Instance.State.finished)throw new Exception("Run/phase changed; no ending is requested by this fixture");
+  Check(Mathf.Abs(RailTrain.Instance.Distance-distance)<.02f&&RailTrain.Instance.Speed<.01f,"train distance and stopped speed retained");ScanAudio(false);
+  bool playing=source.isPlaying;if(playing&&!oldPlaying){starts++;sawPlay=true;Log("HORN_START count="+starts+" clip="+source.clip?.name+" duration="+source.clip?.length+" loop="+source.loop);}oldPlaying=playing;
+  if(playing)Check(!source.loop,"real horn clip is non-looping");
+  float fuel=PhotonSession.CurrentFuel;if(Mathf.Abs(fuel-lastFuel)>.01f){lastFuel=fuel;lastChange=now;Log("FUEL_RECEIVED value="+fuel+" revision="+PhotonSession.Get(RailSessionRules.Revision,0));}
+  if(now>=nextLog){nextLog=now+.5;Log("STATE stage="+stage+" fuel="+fuel+" hornPlaying="+playing+" hornHeld="+RailRemoteBridge.Get(horn,"held")+" active="+RailRemoteBridge.Get(horn,"hornActive")+" time="+source.time+" volume="+source.volume+" starts="+starts);}
+  if(!driver){if(lastChange>0&&now-lastChange>2.8){SampleFuel(fuel);lastChange=-1;}return;}
+  if(!PhotonNetwork.IsMasterClient)throw new Exception("Lost driver master authority");RailRemoteBridge.Set(horn,"focused",true);
+  if(stage<targets.Length){
+   float target=targets[stage];if(ack<0&&Mathf.Abs(fuel-target)<.01f&&PhotonSession.Get(RailSessionRules.Revision,0)>revision){ack=now;Log("ACK stage="+stage+" target="+target);}
+   if(ack>=0&&now-ack>=3){SampleFuel(target);stage++;ack=-1;revision=PhotonSession.Get(RailSessionRules.Revision,0);retry=now+.25;edge=now;return;}
+   if(ack<0&&now>=retry){retry=now+1.5;if(stage==1)Fuel100Button();else Log("FUEL_REQUEST target="+target+" accepted="+RailRemoteBridge.Commit(RailSessionRules.Fuel,target));}return;
+  }
+  if(stage==5&&now-edge>.5){Check(!RailWorld.InputBlocked,"input available before horn");Check(horn.button.Press(),"horn first Press accepted");stage=6;edge=now;starts=0;sawPlay=false;oldPlaying=false;Log("HORN hold starts; 12 seconds");return;}
+  if(stage==6){if(now-edge>1)Check((bool)RailRemoteBridge.Get(horn,"held"),"local horn stays held for long press");if(now-edge<12)return;
+   Check(sawPlay&&starts==1,"one playback start during twelve-second horn hold");if(source.clip!=null&&source.clip.length<11.5f)Check(!playing,"short one-shot stays finished while held");horn.button.Release();stage=7;edge=now;Log("HORN release, observe two seconds");return;}
+  if(stage==7&&now-edge>=2){Check(!playing&&!(bool)RailRemoteBridge.Get(horn,"held"),"horn stopped and local hold cleared after release");Check(!RailHoldControl.IsLive(((System.Collections.IDictionary)RailRemoteBridge.Get(PhotonNetwork.LocalPlayer,"CustomProperties"))["rails.hornHold"],run,PhotonNetwork.Time),"published horn hold cleared");Check(horn.button.Press(),"short fade-probe Press accepted");stage=8;edge=now;sawPlay=false;starts=0;oldPlaying=false;return;}
+  if(stage==8&&now-edge>.35){Check(sawPlay&&playing,"short pulse actually playing before fade release");horn.button.Release();stage=9;edge=now;Log("HORN short pulse release for fade measurement");return;}
+  if(stage==9){if(firstFadeStep<0)firstFadeStep=Time.unscaledDeltaTime;if(playing&&source.volume>0&&source.volume<.99f)fadeSample=true;if(now-edge<.5)return;Check(!playing,"short release stops within half a second");
+   if(!fadeSample&&firstFadeStep>=.15f){inconclusive=true;Log("BLOCKED fade temporal resolution: first release frame="+firstFadeStep+" exceeds 150ms fade; stop behavior checked separately");}else Check(fadeSample,"intermediate fade volume observed");
+   Check(starts==1,"short pulse has one playback start");Check(outCues==1,"one fresh out-of-fuel audio lease");Check(fireCues>=1,"fresh furnace loop lease after refuel");Finish(true);}
+ }catch(Exception ex){Log("BLOCKED fixture "+ex);Finish(false);}}
+ void Finish(bool complete){if(done)return;done=true;
+  if(driver&&saved){if(horn!=null){horn.button.Release();RailRemoteBridge.Set(horn,"focused",oldFocus);}if(NewPlayer.instance!=null)NewPlayer.instance.Warp(stand,rotation);
+   if(panel!=null){panel.Close();RailRemoteBridge.Set(panel,"tools",oldTools);RailRemoteBridge.Set(panel,"anchor",null);panel.Build();panel.Close();if(oldOpen)panel.Toggle();Cursor.lockState=oldLock;Cursor.visible=oldCursor;}
+   if(RailTestTools.CanMutate&&PhotonSession.CurrentFuel<99.99f)Log("CLEANUP fuel100 request accepted="+RailRemoteBridge.Commit(RailSessionRules.Fuel,100f)+"; receipt not verified after abnormal exit");
+  }
+  Log((failed.Count>0?"FAIL ":inconclusive?"BLOCKED ":complete?(driver?"PASS ":"OBSERVED "):"BLOCKED ")+"DONE driver="+driver+" stage="+stage+" failures="+failed.Count+" settledChecks="+settledChecks+" fuel="+PhotonSession.CurrentFuel+" outCues="+outCues+" fireCues="+fireCues+" fadeObserved="+fadeSample+" duration="+(Time.realtimeSinceStartupAsDouble-began));UnityEngine.Object.Destroy(gameObject);
+ }
+}
