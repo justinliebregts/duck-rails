@@ -1,0 +1,14 @@
+2026-11-16T11:41:45.2089390Z Started main
+2026-11-16T11:41:48.5656914Z Three authenticated clients joined private room
+2026-11-16T11:41:59.3864240Z Revive started, rescuer=5900649763374544
+2026-11-16T11:42:00.4026341Z Requested helper leave 5900649763374544
+2026-11-16T11:42:01.3286170Z Handover pose actor=2 rescuer=7077434625647384 target=(3.85, 0.47, 120.00) hands=(4.28, 0.13, 120.30)/(4.72, 0.13, 120.30) nearest=0.6292787
+2026-11-16T11:42:01.3291208Z Handover pose actor=3 rescuer=7077434625647384 target=(3.85, 0.47, 120.00) hands=(-1.42, 1.62, 68.30)/(-0.98, 1.62, 68.30) nearest=51.93961
+2026-11-16T11:42:01.3296308Z Handover kept progress; rescuer 5900649763374544 -> 7077434625647384
+2026-11-16T11:42:02.4235776Z Revive completed after handover, credited once
+2026-11-16T11:42:02.5558412Z Revive completed after handover, credited once
+2026-11-16T11:42:10.2857753Z Brief dropout did not reset revive (grace pause observed: False)
+2026-11-16T11:42:10.4182497Z Brief dropout did not reset revive (grace pause observed: False)
+2026-11-16T11:42:20.1936861Z One rescuer revived two overlapping downed players
+2026-11-16T11:42:20.3244222Z One rescuer revived two overlapping downed players
+2026-11-16T11:42:20.4493404Z PASS: revive, handover, brief dropout and overlapping players

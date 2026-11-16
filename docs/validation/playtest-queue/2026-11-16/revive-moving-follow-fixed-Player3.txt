@@ -1,0 +1,23 @@
+2026-11-16T11:42:38.2759399Z BEGIN seeded-down feedback run=89fb3b8e392a49bcab8de7c7c7606ea3; controlled normal32s moving success; actual shared progress/audio/particles
+2026-11-16T11:43:01.6438011Z stage=0 sequence=3 phase=Running
+2026-11-16T11:43:09.6386358Z stage=1 sequence=3 phase=Running
+2026-11-16T11:43:16.6679660Z PASS stage=1 authoritative completion sequence=4 start=3674491.81 completedAt=3674494.874 seconds=3.06399999978021 observedBursts=1 maxFollowGap=0 speed=4
+2026-11-16T11:43:16.6679660Z PASS exactly one target completion sound in stage=1
+2026-11-16T11:43:16.6689696Z PASS both feedback sounds use game effects mixer
+2026-11-16T11:43:17.6692559Z stage=2 sequence=4 phase=Running
+2026-11-16T11:43:24.6435433Z PASS long hand withdrawal resets progress and stops loop
+2026-11-16T11:43:25.6498331Z stage=3 sequence=4 phase=Running
+2026-11-16T11:43:32.6534967Z PASS stage=3 authoritative completion sequence=5 start=3674508.146 completedAt=3674511.163 seconds=3.01699999999255 observedBursts=1 maxFollowGap=0 speed=4
+2026-11-16T11:43:32.6534967Z PASS exactly one target completion sound in stage=3
+2026-11-16T11:43:32.6534967Z PASS two helpers do not accelerate three-second rescue
+2026-11-16T11:43:32.6550108Z PASS both feedback sounds use game effects mixer
+2026-11-16T11:43:33.6539614Z stage=4 sequence=5 phase=Running
+2026-11-16T11:43:41.6493864Z stage=5 sequence=5 phase=Ending
+2026-11-16T11:43:48.6397519Z PASS stage=5 authoritative completion sequence=6 start=3674523.62 completedAt=3674526.651 seconds=3.03099999995902 observedBursts=1 maxFollowGap=0 speed=4
+2026-11-16T11:43:48.6402557Z PASS exactly one target completion sound in stage=5
+2026-11-16T11:43:48.6402557Z PASS victory rescue leaves locked scores unchanged
+2026-11-16T11:43:48.6402557Z PASS both feedback sounds use game effects mixer
+2026-11-16T11:43:49.6692077Z stage=6 sequence=6 phase=Ending
+2026-11-16T11:43:56.6403883Z PASS no duplicate completion after receipt settled
+2026-11-16T11:43:57.6452029Z stage=7 sequence=6 phase=Ending
+2026-11-16T11:43:57.6452029Z DONE

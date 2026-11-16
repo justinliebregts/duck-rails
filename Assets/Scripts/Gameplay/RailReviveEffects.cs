@@ -10,6 +10,7 @@ public sealed class RailReviveEffects
         public GameObject root;
         public AudioSource progress, complete;
         public ParticleSystem particles;
+        public RailReviveFollow follow;
         public double pendingAt;
     }
 
@@ -46,6 +47,7 @@ public sealed class RailReviveEffects
             if (fx.pendingAt > 0 && (player.down || now - fx.pendingAt >= 3)) fx.pendingAt = 0;
             if (fx.root == null && (progressing || completing)) Create(fx, parent);
             if (fx.root == null) continue;
+            fx.follow.Actor = player.actor;
             if (positioned) fx.root.transform.position = head - Vector3.up * .5f;
             if (progressing)
             {
@@ -72,6 +74,7 @@ public sealed class RailReviveEffects
     {
         fx.root = new GameObject("Revive feedback");
         fx.root.transform.SetParent(parent, false);
+        fx.follow = fx.root.AddComponent<RailReviveFollow>();
         fx.progress = Source(fx.root, progressClip, true, 40);
         fx.complete = Source(fx.root, completeClip, false, 30);
         if (particlePrefab != null)
