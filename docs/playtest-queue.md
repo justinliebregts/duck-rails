@@ -42,6 +42,33 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ```
 
 ## Pending
+### Farm stalk-only foliage sounds — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: Foliage surface and supplied handHitFoliage clip for player hand/foot contacts inside actual corn stalk coverage; 52 patches, 3,669 stalks, no new collision.
+- Setup: Farm expedition, one client then two clients for remote hand/foot presentation.
+- Check: existing contacts inside planted corn select foliage; paths, clearings, pond, railway and above-canopy points do not. Water keeps priority. Leaving corn restores normal contact audio; no idle loop or blocked movement. Verify runtime registration/unregistration through route load/unload and transformed blocks. Corn brushing without a physical contact is not a new sound trigger.
+- Evidence: compilation and focused EditMode geometry/mapping checks pass; see block-audio-surfaces.md. Play Mode remains unrun.
+- Needs human: headset listening, boundary feel and volume.
+- Priority: normal.
+
+
+### Subway terminal raised sign lettering — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: Platforms, Station Info and Supplies now use solid CutePixel mesh letters, 22 mm deep; Platforms includes two up arrows. Only the new SubwayTerminal prefab's Sign labels group changed; original TMP labels are inactive for authoring reference.
+- Cheap checks: verified Duck Rails editor, compiled installation/check commands, saved three mesh references and depths, preserved all non-label transforms, visually inspected forward/oblique editor captures; Console error query empty.
+- Setup: one client in Compound.
+- Check: all three signs readable, arrows face up, letter faces/edges render without clipping or duplicate text at approach and side angles.
+- Needs human: headset readability and cream material appearance under station lighting.
+- Priority: low.
+
+### Subway terminal model swapped into Compound — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: Compound now shows the Blender-modelled `SubwayTerminal` prefab (mesh colliders plus four invisible guards) instead of the SubwayV2 blockout, which is disabled, not deleted. Later the same day: gate lower sheets given concourse-side faces, and a two-sided alpha-clipped wire mesh (`Mesh_Fence`, no collider) added above the barricades on both track sides and the Platforms end; rebaked. Boarding trigger, countdown, launch button, private-room hint, rating and Discord stations were re-placed; new baked lights; rebaked. See [subway compound](subway-compound.md).
+- Cheap checks: Edit Mode only. Floor raycasts at spawn, player start, boarding area, both stalls and stair landing hit; track, gate and stair guards block; spawn-to-gate line clear; 8/8 meshes lightmapped, 347 probes; after the mesh addition, rays at 4-5 m height toward both tracks and past the gate still hit the guards; all labels CutePixel SDF; Console error query empty. `Validate Subway Blockout` was not run and is expected to fail, since it checks SubwayV2.
+- Setup: one desktop client in Keyboard mode from Login into the public Compound; then two real clients.
+- Check: spawn on the floor clear of pillars and the stairs for all spawn slots; walk around the fountain, into Station Info and through both Supplies openings; cannot pass or climb the side barricades, the Platforms gate line or the stair barricade; boarding trigger starts the countdown in front of the gate, cancels on leaving, and the full countdown transfers to a ready expedition; private owner can press Launch Expedition on the gate; RATE GAME and JOIN DISCORD buttons are reachable and respond. `RailBoardingLiveChecks` should still derive its positions from the moved trigger.
+- Needs human: headset climbing and hand contact on the one-sided fence panels and thin props, button reach at duck height, text readability on the gate, lighting mood, whether the wire mesh shimmers or reads too dense in the headset, the gate sheets visible from the concourse, and Quest frame time with twelve players.
+- Priority: blocks other Compound work.
 
 ### Platform and return clock ticks — queued 2026-11-15
 - Commit(s): uncommitted.

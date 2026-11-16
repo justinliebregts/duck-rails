@@ -34,7 +34,7 @@ namespace Game.Audio
                 // No ground within reach (e.g. a deep lake bed): wet if the contact point is under a water surface.
                 surface = AudioSurface.TypeAt(null, point);
             }
-            var sound = sounds.Resolve(surface);
+            var sound = sounds.ResolveAt(surface, point);
             if (sound == null || AudioManager.instance == null) return;
             nextStep = Time.time + minimumInterval;
             AudioManager.instance.Play(sound, point, volume);

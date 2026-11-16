@@ -1,5 +1,28 @@
 # Block audio surfaces — November 12, 2026
 
+## Farm stalk-only foliage — November 15, 2026
+
+Added `Foliage` and `HandHit_Foliage` using the supplied `handHitFoliage.wav`.
+Player hand contacts and footsteps select this sound only within 0.6 m of an
+authored corn stalk, from ground contact tolerance (0.1 m) to its actual height.
+The 52 production corn patches contain 3,669 baked stalk positions, extracted
+from their mesh stems. Paths, clearings, pond and the rest of the farm retain
+their normal sounds. Corn stays non-solid; this selects existing contact sounds,
+not a continuous rustle or a new collision/hand-sweep event. Water takes priority;
+sound sets without a foliage entry retain their original surface selection.
+The corn authoring tool regenerates coverage when rebuilding corn.
+
+EditMode: all 3,669 stalk-center checks passed, plus five path/clearing/rail/pond
+exclusions and above-canopy exclusions. Saved prefab retains 1,434 colliders.
+Translation/rotation, both player mappings, outside fallback, minion sound
+preservation and clip selection passed with explicitly invoked volume lifecycle
+(ordinary MonoBehaviours do not enable in EditMode). Compilation passed.
+The explicit lifecycle fixture produced Unity `ShouldRunBehaviour()` assertions
+through EditMode `SendMessage`; its sound comparisons passed, but this is not a
+clean runtime lifecycle/Console acceptance. Temporary fixture objects were removed.
+No Play Mode or listening acceptance was performed. See “Farm stalk-only foliage
+sounds” in the playtest queue.
+
 User requested an inferred-material AudioSurface pass on Final Bridge, Farm,
 Skyscraper, Helicopter Shop, Convenience Store, Motel and Container Yard.
 Applied only to their seven `Assets/DuckRails/Blocks/*-v1.prefab` assets:

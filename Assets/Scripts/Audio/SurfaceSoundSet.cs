@@ -27,6 +27,20 @@ namespace Game.Audio
         }
 
         public SoundEvent Resolve(Collider collider) => Resolve(AudioSurface.TypeOf(collider));
-        public SoundEvent Resolve(Collider collider, Vector3 point) => Resolve(AudioSurface.TypeAt(collider, point));
+        public SoundEvent Resolve(Collider collider, Vector3 point) => ResolveAt(AudioSurface.TypeAt(collider, point), point);
+
+        public SoundEvent ResolveAt(SurfaceType surface, Vector3 point)
+        {
+            // Keep water priority and leave sound sets without foliage mappings unchanged.
+            var water = WaterVolume.Find(point, 0.05f);
+            if (water == null || water.waterSurface == null)
+            {
+                var foliage = FoliageVolume.Find(point);
+                if (foliage != null && entries != null)
+                    foreach (var entry in entries)
+                        if (entry.surface == foliage && entry.sound != null) return entry.sound;
+            }
+            return Resolve(surface);
+        }
     }
 }

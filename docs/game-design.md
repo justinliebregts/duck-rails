@@ -1,5 +1,9 @@
 # Duck Rails — V1 game design
 
+November 15 farm audio: foliage contact sound is restricted to actual planted
+corn stalk coverage, excluding open paths/clearings. Implemented with non-solid
+audio coverage; listening/runtime acceptance queued. See [audio surfaces](block-audio-surfaces.md).
+
 November 15 countdown audio: use ClockTick through the existing AudioManager on
 every positive public platform countdown second and the last five return seconds
 (5–1), with fixed pitch and 2D playback. Implemented; listening/client acceptance

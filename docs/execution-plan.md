@@ -1,5 +1,7 @@
 # Duck Rails — execution plan
 
+- [ ] Farm stalk-only foliage sounds: implemented new surface/clip and baked stalk coverage; compile/EditMode checks pass. Runtime and headset listening queued in [playtest queue](playtest-queue.md#farm-stalk-only-foliage-sounds--queued-2026-11-15).
+
 - [ ] Pause menu train-follow: implemented summon-time passenger anchoring and fresh placement on reopen; moving-train, off-train and headset acceptance [queued for playtest](playtest-queue.md#pause-menu-follows-the-train--queued-2026-11-15).
 
 - [x] November 15: install model-derived train shell collision; preserve visual/gameplay bindings, rebake train navigation, pass 50 focused checks and 489 boarding graph checks. [Evidence and legacy-check limits](validation/train-mesh-collision/README.md).

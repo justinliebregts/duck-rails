@@ -104,6 +104,7 @@ public static partial class RailFarmSilos
             }
             if(items.Count==0)continue;var m=new Mesh{indexFormat=IndexFormat.UInt32};m.CombineMeshes(items.ToArray(),true,true);m=Save("Corn-V5-"+field+"-"+x+"-"+z,m);
             var g=MeshGo(p,"Dense corn patch",m,leaves,Vector3.zero,Vector3.one);var renderer=g.GetComponent<MeshRenderer>();GameObjectUtility.SetStaticEditorFlags(g,0);renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.receiveGI=ReceiveGI.LightProbes;renderer.lightProbeUsage=LightProbeUsage.BlendProbes;
+            RailFarmFoliage.Configure(g, plant.vertexCount);
         }
         Debug.Log("Farm corn field "+field+": "+count+" stalks in "+r.width*r.height+" square metres");
     }
