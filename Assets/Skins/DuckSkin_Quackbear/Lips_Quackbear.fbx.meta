@@ -3,9 +3,14 @@ guid: e038fa3584f661c4c9b9449be9ab1f65
 ModelImporter:
   serializedVersion: 24300
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lip
+    second: {fileID: 2100000, guid: c2cef52d888a1ca4c824a1d90c5a7b76, type: 2}
   materials:
-    materialImportMode: 0
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
     materialLocation: 1
