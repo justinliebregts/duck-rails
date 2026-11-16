@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 public static class RailSharedStoreSetup
 {
     public const string Path = "Assets/DuckRails/Economy/RailSharedStore.prefab";
-    const string Module = "Assets/DuckRails/Compound/SubwayV2/Modules/05 Walk-through supplies store.prefab";
+    const string Module = "Assets/DuckRails/Compound/SubwayTerminal/SubwayTerminal.prefab";
     static T Load<T>(string path) where T : Object => AssetDatabase.LoadAssetAtPath<T>(path);
     static void Ref(Object target, string key, Object value)
     { var s = new SerializedObject(target); s.FindProperty(key).objectReferenceValue = value; s.ApplyModifiedPropertiesWithoutUndo(); }
@@ -99,13 +99,7 @@ public static class RailSharedStoreSetup
             foreach(var display in root.GetComponentsInChildren<StoreWallItem>(true).Where(d=>shared==null || !d.transform.IsChildOf(shared))) display.gameObject.SetActive(false);
             Mount(root.transform,new Vector3(-3.25f,0,0),Quaternion.Euler(0,90,0));
         });
-        Edit(Module,root =>
-        {
-            var old=root.transform.Find("RailBundleWall"); if(old!=null)old.gameObject.SetActive(false);
-            var store=Mount(root.transform,new Vector3(-3.25f,0,0),Quaternion.Euler(0,90,0));
-            // Full-size store; the user will adjust the compound around any overlap.
-            store.transform.localScale=Vector3.one;
-        });
+        InstallCompoundStore();
         // Disable only the earlier scene-added bundle wall; do not resave unrelated scene overrides.
         const string scene="Assets/Scenes/Expedition.unity";
         string yaml=File.ReadAllText(scene);
@@ -123,6 +117,63 @@ public static class RailSharedStoreSetup
         AssetDatabase.SaveAssets(); AssetDatabase.ImportAsset(scene);
         Validate();
     }
+    // The retired SubwayV2 instance remains inactive and untouched. Install into
+    // the current terminal asset so its existing scene instance inherits the store.
+    // This entry point avoids rewriting the other two stores or either scene.
+    [MenuItem("Duck Rails/Store/Install shared store in current Compound")]
+    public static void InstallCompoundStore()
+    {
+        if (Application.dataPath.Replace('\\','/') != "X:/Work/duck-rails/Assets" || EditorApplication.isPlaying)
+            throw new Exception("Duck Rails Edit Mode required");
+        if (Load<GameObject>(Path) == null || Load<GameObject>(Module) == null)
+            throw new Exception("Current terminal or shared store prefab is missing");
+        Edit(Module, root =>
+        {
+            if (root.transform.Find("Shared Store") != null) return; // Preserve later authored placement.
+            var store = Mount(root.transform, new Vector3(6.9f, 0, -1.6f), Quaternion.identity);
+            store.transform.localScale = Vector3.one;
+            // Keep the terminal ceiling fixture above the security feed's frame.
+            // Only the invisible camera mount moves; the shared camera prop stays put.
+            var camera = Find(store.transform, "SecurityCamera");
+            camera.position -= root.transform.up * .2f;
+            PrefabUtility.RecordPrefabInstancePropertyModifications(camera);
+        });
+    }
+
+    [MenuItem("Duck Rails/Store/Validate active Compound store")]
+    public static void ValidateActiveCompound()
+    {
+        var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/Compound.unity");
+        if (!scene.IsValid() || !scene.isLoaded)
+            throw new Exception("Load Compound to validate its active store; prefab-only checks are insufficient");
+        var stores = scene.GetRootGameObjects()
+            .SelectMany(root => root.GetComponentsInChildren<StoreUI>(true))
+            .Where(store => store.isActiveAndEnabled).ToArray();
+        if (stores.Length != 1) throw new Exception("Expected exactly one active Compound StoreUI, found " + stores.Length);
+        var store = stores[0];
+        if (PrefabUtility.GetCorrespondingObjectFromOriginalSource(store.gameObject) != Load<GameObject>(Path))
+            throw new Exception("Active Compound store is not the shared store prefab");
+        var parent = store.transform.parent;
+        if (parent == null || !parent.gameObject.activeInHierarchy ||
+            PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(parent.gameObject) != Module)
+            throw new Exception("Shared store is not under the active current terminal");
+        var displays = store.GetComponentsInChildren<StoreWallItem>();
+        if (displays.Length != 17 || displays.Any(display => !display.isActiveAndEnabled) ||
+            displays.Select(Key).Distinct().Count() != 17)
+            throw new Exception("Active Compound must expose all 17 distinct displays");
+        foreach (var display in displays)
+            if (new SerializedObject(display).FindProperty("store").objectReferenceValue != store)
+                throw new Exception("Compound display is bound to a different store");
+        var mirrors = store.GetComponentsInChildren<HelicopterMirror>();
+        if (mirrors.Length != 1 || !mirrors[0].isActiveAndEnabled)
+            throw new Exception("Active Compound shared store must expose one mirror");
+        var cameraMount = (Transform)new SerializedObject(mirrors[0]).FindProperty("cameraMount").objectReferenceValue;
+        var cameraRoot = store.transform.Find("SecurityCam");
+        if (cameraMount == null || cameraRoot == null || !cameraMount.IsChildOf(cameraRoot))
+            throw new Exception("Compound mirror is bound outside its own shared camera");
+        Debug.Log("Active Compound store checks pass: current terminal, one enabled store, 17 distinct displays, local mirror/camera binding.");
+    }
+
     [MenuItem("Duck Rails/Store/Validate shared store")]
     public static void Validate()
     {
@@ -144,7 +195,10 @@ public static class RailSharedStoreSetup
             if(shared==null||PrefabUtility.GetCorrespondingObjectFromSource(shared.gameObject)!=root)throw new Exception("Shared prefab missing at "+path);
             if(location.GetComponentsInChildren<StoreWallItem>().Length!=17||location.GetComponentsInChildren<HelicopterMirror>().Length!=1)throw new Exception("Duplicate/missing content at "+path);
         }
-        Debug.Log("Shared store checks pass: three instances, 17 items each, seven price coins, three bundles, one locally bound SecurityCam/TV each.");
+        var compoundScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/Compound.unity");
+        if (compoundScene.IsValid() && compoundScene.isLoaded) ValidateActiveCompound();
+        else Debug.Log("Compound scene is not loaded: active ancestor validation remains untested; run ValidateActiveCompound in Compound.");
+        Debug.Log("Shared store prefab checks pass: three current-location assets, 17 items each, seven price coins, three bundles, one locally bound SecurityCam/TV each.");
     }
 }
 #endif
