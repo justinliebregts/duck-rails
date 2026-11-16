@@ -12,6 +12,19 @@ public sealed class RailTrain : MonoBehaviour
     public float Speed { get; private set; }
     public float Distance { get; private set; }
     public Vector3 Velocity => transform.forward * Speed;
+    [Header("Wheel visuals (local X axles, metre-scale pivots)")]
+    public Transform[] wheels = new Transform[0];
+    public float wheelRadius = .43f;
+
+    // Distance is the integral of actual shared speed, including acceleration and coasting.
+    // Absolute phase also reconstructs correctly for late entry without another network message.
+    public void UpdateWheelRotation(float distance)
+    {
+        if (wheelRadius <= 0f) return;
+        float angle = (float)((double)distance / wheelRadius * Mathf.Rad2Deg % 360.0);
+        var rotation = Quaternion.AngleAxis(angle, Vector3.right);
+        foreach (var wheel in wheels) if (wheel) wheel.localRotation = rotation;
+    }
     bool initialized;
     void OnEnable() { Instance = this; initialized = false; }
     void OnDisable() { if (Instance == this) Instance = null; }
@@ -23,6 +36,7 @@ public sealed class RailTrain : MonoBehaviour
             PhotonNetwork.Time, out float distance, out float speed, out _);
         if (RailRoute.Instance != null && !RailRoute.Instance.Ready) return;
         Speed = speed; Distance = distance;
+        UpdateWheelRotation(distance);
         Vector3 next = origin + Vector3.forward * distance;
         Quaternion rotation = Quaternion.identity;
         if (RailRoute.Instance != null) RailRoute.Instance.Sample(distance, out next, out rotation);

@@ -106,6 +106,25 @@ without first adapting their ownership of generated geometry.
 
 November 10: the train safe module is removed. **Build Yard Mule** no longer searches for `TrainSafe` or shifts it inward. Furnace and radio placement is unchanged.
 
+## Speed-matched wheels — November 15
+
+`RailTrain` sets four visual axle rotations from shared evaluated travel distance
+using angle = distance / 0.43 m radius. This follows actual speed through acceleration,
+braking and empty-fuel coasting, holds at rest, and reconstructs phase for late entry
+without extra network traffic. Positive local-X rotation rolls toward train-local +Z.
+
+`RailTrainWheelArt.Install()` splits the reviewed combined wheel mesh offline into
+four centred wheels and stationary suspension mounts, retaining all 704 triangles,
+UVs, normals, material and probe settings. The original mesh remains disabled as a
+visual and retained for existing collision; collision/navigation do not change.
+The Blender importer reapplies this split on import. Five renderers replace one
+enabled wheel renderer; no runtime mesh generation is added.
+
+Unity compilation and focused EditMode checks pass for geometry preservation,
+four references/mounts, retained collision, forward/reverse/full-turn and long-distance
+angles, and stable stopped phase. Console error query empty. Actual driving,
+client agreement and headset appearance are [queued for playtest](playtest-queue.md#speed-matched-train-wheels--queued-2026-11-15).
+
 ## Front-only furnace — November 6
 
 User selected the exterior front-nose coal opening **only**, for playtesting. This supersedes the earlier side-mounted furnace and proposed secondary onboard opening. Keep the existing low cockpit controls. No stop-only rule or automatic braking is added: physical access determines when a player can fuel it.

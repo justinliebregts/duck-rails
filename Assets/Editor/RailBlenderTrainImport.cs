@@ -182,6 +182,7 @@ public static class RailBlenderTrainImport
                 if (EditorJsonUtility.ToJson(pair.Key) != pair.Value) throw new InvalidOperationException("Gameplay binding changed: " + pair.Key.GetType().Name);
             // Fire follows the lowered ember bed. The insertion anchor, accepted samples and fuel protocol stay intact.
             assembly.furnace.fire.transform.localPosition = new Vector3(0, -.29f, .28f);
+            RailTrainWheelArt.Apply(root);
             PrefabUtility.SaveAsPrefabAsset(root, RailYardMuleArt.Train);
             Debug.Log("Blender train installed: three static sections; " + preserved.Count + " gameplay components/bindings unchanged; controls, fuel display, horn, radio and furnace retained.");
         }
@@ -197,7 +198,7 @@ public static class RailBlenderTrainImport
         var root = AssetDatabase.LoadAssetAtPath<GameObject>(RailYardMuleArt.Train);
         var a = root.GetComponent<RailTrainAssembly>();
         var shell = root.transform.Find(VisualRoot);
-        check(shell && shell.GetComponentsInChildren<MeshRenderer>().Length == 3, "Exactly three Blender static mesh sections");
+        check(shell && shell.GetComponentsInChildren<MeshRenderer>().Length == 8, "Three source sections plus four rolling wheels and stationary mounts");
         var model = JsonUtility.FromJson<Model>(File.ReadAllText(Folder + "/unity-integration.json"));
         var parts = model.parts.ToDictionary(p => p.name);
         check(Mathf.Abs(parts["Boarding rails"].vertices.Min(v => v.y) + .075f) < .0001f, "Side rail bases seat into deck edging");

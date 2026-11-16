@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Speed-matched train wheels — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: four visible wheels rotate about local X from shared train distance / 0.43 m radius, following actual acceleration, braking and fuel-exhaustion coasting. Suspension mounts and existing collision stay fixed relative to the train.
+- Cheap checks: Unity compilation and EditMode prefab checks pass: four bindings, all 704 source triangles and positions retained, four stationary mounts, unchanged collision mesh, quarter/half/full-turn, reverse and long-distance angles, stable stopped phase. Console error query empty. No Play Mode run.
+- Setup: one client driving at normal and 5x test speed, then two clients including a moving late joiner.
+- Check: wheels roll forward without orbiting their axles, speed follows acceleration/braking/coasting, freeze at rest, agree across clients and reconstruct on late join/replay; mounts remain fixed. Review faceted wheels at speed.
+- Needs human: headset appearance.
+- Priority: normal.
+
 ### Integrated radio console — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: approved 1.72 m wall-mounted console installed in shared RadioTable prefab; original voice/hold/button identities retained, aligned trigger and six new solids replace old table collision. See [integration and checks](radio-console.md#unity-installation--november-15).

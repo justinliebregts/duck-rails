@@ -1,5 +1,8 @@
 # Duck Rails — execution plan
 
+- [x] November 15: install four speed-matched visual train wheels with fixed suspension; compilation, geometry/rotation EditMode checks and Console check pass. See [wheel rotation](yard-mule-train.md#speed-matched-wheels--november-15).
+- [ ] Train wheel driving, late-join/client agreement and headset appearance: queued for playtest.
+
 - [x] November 15: build approved integrated radio console in Blender to fit the measured wall span. Editable source, nine-part FBX, front/rear renders and geometry/export checks delivered; see [radio console](radio-console.md).
 - [x] Install approved radio console while preserving original voice/hold/button identities and settings. Compilation, 24 saved-prefab checks, installed-button checks, hold regressions and offline navigation/boarding checks pass; Unity render reviewed. See [integration](radio-console.md#unity-installation--november-15).
 - [ ] Validate new radio reach, live voice/physical contact, moving-train/multiplayer behavior and headset appearance; queued for playtest.

@@ -451,6 +451,10 @@ November 1 enemy expansion: each scavenging block has 4–6 enemies including mi
 
 ## Train
 
+November 15: visible train wheels rotate according to actual shared travel distance
+and their radius, following acceleration, braking and coasting and stopping at rest.
+Implemented with editor checks; live acceptance queued. See [wheel rotation](yard-mule-train.md#speed-matched-wheels--november-15).
+
 November 5 narrower Yard Mule revision: user approved the 20% width reduction and requested square, unstretched pixels and a single flat textured floor. Installed deck/collision/passenger width is 4 m (length 10 m, heights retained), gameplay equipment remains full size, UVs use uniform 32 texels/m on every shell face, and floor is one quad. Mesh UV checks and 45 modular-train checks pass; headset/multiplayer acceptance remains open. See [revision evidence](yard-mule-train.md#narrower-train-and-square-pixels--installed).
 
 November 5 train art: user approved and authorized the [Yard Mule shell](yard-mule-train.md): yellow/charcoal pixel textures, faceted canopy, low sloped grille nose, larger single roof spotlight aimed forward/down, and emissive-only safety markings. Installed in DuckRailsTrain with the original deck/rail heights, passenger and gameplay modules retained. Chair and legacy nose/side lights are disabled. This supersedes the prior shell/chair/light appearance decisions below. Editor checks pass; headset and multiplayer acceptance remain pending.
