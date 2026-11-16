@@ -102,6 +102,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: VR impact/scale/pacing, fire/smoke appearance and comfort.
 - Priority: normal.
 
+
 ### Test panel fuel 100 — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: desktop and VR test panel fuel buttons now set shared fuel to 100 instead of 20, with matching labels.
@@ -149,7 +150,6 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Priority: low.
 
 
-### Quackbear lip pivot normalization — queued 2026-11-15
 ### Saved fog settings and atmosphere tuner — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: shared saved night/pre-dawn/dawn fog endpoints and an Edit Mode Scene View preview. Existing defaults and transition timing retained; see docs/block-lighting.md.
@@ -159,6 +159,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: headset horizon continuity, visibility and visual preference.
 - Priority: normal.
 
+### Quackbear lip pivot normalization — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: `Lips_Quackbear.fbx` Lip_B and Lip_T now exactly match Default local position/rotation. Removed compensating root/lip rotations and baked pivot offsets into mesh vertices, preserving resting geometry and existing asset IDs.
 - Cheap checks: verified Duck Rails editor; FBX reimport passed; exact imported position/quaternion equality with Default for both lips; all 247 imported vertices retained with maximum world-position difference 0.000000067 m.
