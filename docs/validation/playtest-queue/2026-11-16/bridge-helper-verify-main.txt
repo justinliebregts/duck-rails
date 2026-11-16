@@ -1,0 +1,67 @@
+Actual permanent RailBridgeHoldFixture.SetHeld path. Controlled operator placement and helper self-revive are disclosed; no direct Press(), bridge progress, train, finish or award writes. Shared progress alone is not manual visual/headset evidence. Peer mode performs no input or position changes.
+2026-11-16T12:47:42.5789505Z ARM driver=True room=58347 run=6d07e276aae54931a7aeadc135ee1b1e actor=1 master=1 helperFrame=-1
+2026-11-16T12:47:42.5799554Z HELPER actual SetHeld(true), input and focus captured
+2026-11-16T12:47:42.5997952Z SAMPLE elapsed=0.020445699999982 progress=0 distance=0 speed=0 contact=False pressed=False held=False live=False headGap=1012.769 fingerGap=1012.317 revision=124
+2026-11-16T12:47:43.1127704Z SAMPLE elapsed=0.532990100000006 progress=0 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8334196 fingerGap=0.0157814 revision=126
+2026-11-16T12:47:43.6281472Z SAMPLE elapsed=1.0487172 progress=0.02053333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8325481 fingerGap=0.01344681 revision=130
+2026-11-16T12:47:44.1284663Z SAMPLE elapsed=1.54910960000001 progress=0.03726667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329636 fingerGap=0.01456165 revision=132
+2026-11-16T12:47:44.6296655Z SAMPLE elapsed=2.05000280000002 progress=0.05393333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8331994 fingerGap=0.01519299 revision=135
+2026-11-16T12:47:45.1497243Z SAMPLE elapsed=2.57031449999999 progress=0.07123333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8313624 fingerGap=0.01024532 revision=138
+2026-11-16T12:47:45.6693593Z SAMPLE elapsed=3.08996359999998 progress=0.08856667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8333396 fingerGap=0.01556778 revision=141
+2026-11-16T12:47:46.1796577Z SAMPLE elapsed=3.59985769999997 progress=0.1055 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8331263 fingerGap=0.01499748 revision=143
+2026-11-16T12:47:46.6902408Z SAMPLE elapsed=4.11065910000002 progress=0.1226 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8334885 fingerGap=0.01596546 revision=146
+2026-11-16T12:47:47.1919980Z SAMPLE elapsed=4.61355090000001 progress=0.1393667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8315376 fingerGap=0.01072025 revision=149
+2026-11-16T12:47:47.6982066Z SAMPLE elapsed=5.11893170000002 progress=0.1561667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8333189 fingerGap=0.01551247 revision=151
+2026-11-16T12:47:48.2205148Z SAMPLE elapsed=5.64085249999999 progress=0.1735667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329785 fingerGap=0.01460171 revision=154
+2026-11-16T12:47:48.7419159Z SAMPLE elapsed=6.16253769999997 progress=0.1909 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.833407 fingerGap=0.01574802 revision=156
+2026-11-16T12:47:49.2606947Z SAMPLE elapsed=6.68098709999998 progress=0.2081667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8332172 fingerGap=0.01524067 revision=159
+2026-11-16T12:47:49.7876329Z SAMPLE elapsed=7.20900719999997 progress=0.2257333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8330935 fingerGap=0.01490974 revision=163
+2026-11-16T12:47:50.2951467Z SAMPLE elapsed=7.71592770000001 progress=0.2425667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329604 fingerGap=0.01455307 revision=165
+2026-11-16T12:47:50.8241291Z SAMPLE elapsed=8.24465959999998 progress=0.2602 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8315873 fingerGap=0.01085472 revision=168
+2026-11-16T12:47:51.3284788Z SAMPLE elapsed=8.74974129999998 progress=0.2771333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8328785 fingerGap=0.01433372 revision=170
+2026-11-16T12:47:51.8382391Z SAMPLE elapsed=9.25989070000003 progress=0.2942333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8337202 fingerGap=0.01658344 revision=172
+2026-11-16T12:47:52.3702745Z SAMPLE elapsed=9.79063109999998 progress=0.3119 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8336862 fingerGap=0.01649284 revision=174
+2026-11-16T12:47:52.9050254Z SAMPLE elapsed=10.3261683 progress=0.3128 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8336862 fingerGap=0.01649284 revision=175
+2026-11-16T12:47:53.4271321Z SAMPLE elapsed=10.8474716 progress=0.3445667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8338387 fingerGap=0.01689911 revision=178
+2026-11-16T12:47:53.9365654Z SAMPLE elapsed=11.3578262 progress=0.3616333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329824 fingerGap=0.0146122 revision=181
+2026-11-16T12:47:54.4818498Z SAMPLE elapsed=11.9023742 progress=0.3797333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329641 fingerGap=0.01486256 revision=184
+2026-11-16T12:47:54.9873001Z SAMPLE elapsed=12.4078796 progress=0.3967 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8330996 fingerGap=0.01492596 revision=186
+2026-11-16T12:47:55.4909924Z SAMPLE elapsed=12.9117453 progress=0.4135 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8328537 fingerGap=0.01426697 revision=189
+2026-11-16T12:47:56.0158464Z SAMPLE elapsed=13.4364139 progress=0.4309333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329418 fingerGap=0.01450348 revision=192
+2026-11-16T12:47:56.5165615Z SAMPLE elapsed=13.9374953 progress=0.4476333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8332668 fingerGap=0.01537323 revision=194
+2026-11-16T12:47:57.0457060Z SAMPLE elapsed=14.4667638 progress=0.4653 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.832891 fingerGap=0.0143671 revision=197
+2026-11-16T12:47:57.5712928Z SAMPLE elapsed=14.9921974 progress=0.4827667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8334049 fingerGap=0.0157423 revision=200
+2026-11-16T12:47:58.0812555Z SAMPLE elapsed=15.5017596 progress=0.4998333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8336945 fingerGap=0.01651478 revision=202
+2026-11-16T12:47:58.5968077Z SAMPLE elapsed=16.0184781 progress=0.5169 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8337402 fingerGap=0.01663685 revision=204
+2026-11-16T12:47:59.1181523Z SAMPLE elapsed=16.5386096 progress=0.5343667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.833516 fingerGap=0.01603889 revision=206
+2026-11-16T12:47:59.6418196Z SAMPLE elapsed=17.0630729 progress=0.5518 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8328533 fingerGap=0.01426601 revision=208
+2026-11-16T12:48:00.1506901Z SAMPLE elapsed=17.5715252 progress=0.5688 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329476 fingerGap=0.01451874 revision=211
+2026-11-16T12:48:00.6622546Z SAMPLE elapsed=18.082841 progress=0.5857667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8334542 fingerGap=0.01587391 revision=213
+2026-11-16T12:48:01.1659848Z SAMPLE elapsed=18.5874383 progress=0.6027 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.832185 fingerGap=0.01246929 revision=216
+2026-11-16T12:48:01.6820206Z SAMPLE elapsed=19.1030846 progress=0.6198334 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329493 fingerGap=0.01452351 revision=218
+2026-11-16T12:48:02.2045325Z SAMPLE elapsed=19.6254088 progress=0.6372 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8334377 fingerGap=0.01583004 revision=221
+2026-11-16T12:48:02.7153661Z SAMPLE elapsed=20.13607 progress=0.6542667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8333674 fingerGap=0.01564217 revision=223
+2026-11-16T12:48:03.2452376Z SAMPLE elapsed=20.6659193 progress=0.6719667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.833038 fingerGap=0.01476097 revision=226
+2026-11-16T12:48:03.7585155Z SAMPLE elapsed=21.1793675 progress=0.6891 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329269 fingerGap=0.01446342 revision=228
+2026-11-16T12:48:04.2988210Z SAMPLE elapsed=21.7195608 progress=0.7070333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329667 fingerGap=0.01457024 revision=232
+2026-11-16T12:48:04.8016459Z SAMPLE elapsed=22.2229978 progress=0.7238333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.833629 fingerGap=0.01634026 revision=235
+2026-11-16T12:48:05.3035910Z SAMPLE elapsed=22.7252236 progress=0.7405 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8332711 fingerGap=0.01538467 revision=237
+2026-11-16T12:48:05.8182034Z SAMPLE elapsed=23.2397447 progress=0.7577333 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329917 fingerGap=0.01463699 revision=240
+2026-11-16T12:48:06.3203776Z SAMPLE elapsed=23.7422271 progress=0.7743334 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8329205 fingerGap=0.01444626 revision=243
+2026-11-16T12:48:06.8418535Z SAMPLE elapsed=24.2627872 progress=0.7919 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8338577 fingerGap=0.01694965 revision=246
+2026-11-16T12:48:07.3630389Z SAMPLE elapsed=24.7838568 progress=0.8092 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8332143 fingerGap=0.01523304 revision=249
+2026-11-16T12:48:07.8803365Z SAMPLE elapsed=25.300988 progress=0.8264334 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8334028 fingerGap=0.01573658 revision=252
+2026-11-16T12:48:08.3850383Z SAMPLE elapsed=25.8057579 progress=0.8432667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8330743 fingerGap=0.01485825 revision=255
+2026-11-16T12:48:08.9153226Z SAMPLE elapsed=26.3369318 progress=0.861 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8338541 fingerGap=0.01694012 revision=257
+2026-11-16T12:48:09.4677931Z SAMPLE elapsed=26.889495 progress=0.8790666 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8336032 fingerGap=0.01627159 revision=260
+2026-11-16T12:48:09.9878651Z SAMPLE elapsed=27.4090085 progress=0.8967667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8335664 fingerGap=0.01617336 revision=262
+2026-11-16T12:48:10.5021939Z SAMPLE elapsed=27.9229448 progress=0.9137 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8331085 fingerGap=0.0149498 revision=264
+2026-11-16T12:48:11.0418312Z SAMPLE elapsed=28.462959 progress=0.9314666 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8330134 fingerGap=0.01469517 revision=267
+2026-11-16T12:48:11.6029708Z SAMPLE elapsed=29.0244592 progress=0.9502667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.832848 fingerGap=0.01425171 revision=270
+2026-11-16T12:48:12.1049181Z SAMPLE elapsed=29.5261031 progress=0.9671667 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8331156 fingerGap=0.01496887 revision=272
+2026-11-16T12:48:12.6102315Z SAMPLE elapsed=30.0312693 progress=0.9841 distance=0 speed=0 contact=True pressed=True held=True live=True headGap=0.8335964 fingerGap=0.01625347 revision=275
+2026-11-16T12:48:13.0983582Z RESTORE original input frame/injection, bridge focus and standing point
+2026-11-16T12:48:13.0983582Z LOWERED distance=0 elapsed=30.5189681 contactSamples=990 acceptedHoldSamples=983 downSamples=0
+2026-11-16T12:48:13.1450123Z SAMPLE elapsed=30.5659883 progress=1 distance=0 speed=0 contact=False pressed=False held=False live=False headGap=-1 fingerGap=-1 revision=278
+2026-11-16T12:48:13.6593946Z SAMPLE elapsed=31.080898 progress=1 distance=0 speed=0 contact=False pressed=False held=False live=False headGap=-1 fingerGap=-1 revision=280
+2026-11-16T12:48:13.8987450Z PASS DONE driver=True lowered=True samples=1010 contacts=990 acceptedHolds=983 maxDistance=0 maxSpeed=0 failures=0 elapsed=31.3206184

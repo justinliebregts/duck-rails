@@ -1,0 +1,79 @@
+using System;using System.IO;using System.Linq;using System.Collections;using System.Collections.Generic;
+using UnityEngine;using UnityEditor;using Photon.Pun;using Game.Animation;
+internal class CommandScript:IRunCommand{
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!PhotonSession.IsPrivate||PhotonSession.Phase!=RailPhase.Running||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||PhotonSession.Instance.HasRoomRequest||RailTrain.Instance==null||RailExpedition.Instance==null||PhotonNetwork.PlayerList.Count(p=>!p.IsInactive)!=2)
+   throw new Exception("Need two ready clients in fresh private Running; inject peer first, then master");
+  if(Mathf.Abs(RailTrain.Instance.Distance)>.01f||Mathf.Abs(RailTrain.Instance.Speed)>.01f||RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time)>.0001f)
+   throw new Exception("Need distance0/speed0/bridge0; fixture never resets these values");
+  RailRemoteBridge.Get(typeof(RailBridgeHoldFixture),"lastPoseFrame"); // Require the proposed permanent helper to be compiled.
+  if(PhotonNetwork.IsMasterClient&&(SimulatedRigInput.Instance==null||!SimulatedRigInput.Instance.IsSimulating||SimulatedRigInput.Instance.UseInjectedInput||NewPlayer.instance==null||RailWorld.InputBlocked||RailDiagnosticPanel.BlocksDesktopInput||!RailTestTools.CanMutate||(bool)RailRemoteBridge.Get(typeof(RailBridgeHoldFixture),"holding")))
+   throw new Exception("Master requires unblocked Keyboard rig, inactive helper and no competing injected input");
+  var g=new GameObject("Permanent bridge helper verification");var observer=g.AddComponent<BridgeHelperVerify>();observer.Arm();r.RegisterObjectCreation(g);r.Log("Permanent helper validation armed; 60-second editor-clock bound. Non-master only observes shared progress.");
+ }
+}
+[DefaultExecutionOrder(30000)] internal class BridgeHelperVerify:MonoBehaviour{
+ const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ string path,run,room;bool driver,armed,done,restored,oldInjection,oldFocus,lowered;int actor,master,samples,contacts,acceptedHolds,downSamples;
+ double began,nextLog,releasedAt;float previous,maxDistance,maxSpeed;Vector3 stand;Quaternion heading;
+ SimulatedRigInput sim;SimulatedRigInput.Frame oldFrame;RailHoldControl control;
+ readonly HashSet<string> failures=new HashSet<string>();
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){if(!ok&&failures.Add(s))Log("FAIL "+s);}
+ public void Arm(){
+  driver=PhotonNetwork.IsMasterClient;master=PhotonNetwork.MasterClient.ActorNumber;actor=PhotonNetwork.LocalPlayer.ActorNumber;run=PhotonSession.RunId;room=PhotonNetwork.CurrentRoom.Name;
+  string role=Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor?"main":Unity.Multiplayer.PlayMode.CurrentPlayer.Tags.FirstOrDefault()??"peer";path=Root+"bridge-helper-verify-"+role+".txt";
+  File.WriteAllText(path,"Actual permanent RailBridgeHoldFixture.SetHeld path. Controlled operator placement and helper self-revive are disclosed; no direct Press(), bridge progress, train, finish or award writes. Shared progress alone is not manual visual/headset evidence. Peer mode performs no input or position changes.\n");
+  control=RailExpedition.Instance.bridgeButton.GetComponent<RailHoldControl>();began=EditorApplication.timeSinceStartup;armed=true;EditorApplication.update+=Watchdog;
+  Log("ARM driver="+driver+" room="+room+" run="+run+" actor="+actor+" master="+master+" helperFrame="+RailRemoteBridge.Get(typeof(RailBridgeHoldFixture),"lastPoseFrame"));
+  if(driver){
+   sim=SimulatedRigInput.Instance;oldInjection=sim.UseInjectedInput;oldFrame=sim.InjectedInput;oldFocus=(bool)RailRemoteBridge.Get(control,"focused");
+   var rig=NewPlayer.instance;stand=new Vector3(rig.headCollider.transform.position.x,rig.transform.position.y,rig.headCollider.transform.position.z);
+   Vector3 forward=Vector3.ProjectOnPlane(rig.headCollider.transform.forward,Vector3.up);heading=forward.sqrMagnitude>.0001f?Quaternion.LookRotation(forward):Quaternion.identity;
+   RailRemoteBridge.Set(control,"focused",true);RailBridgeHoldFixture.SetHeld(true);Log("HELPER actual SetHeld(true), input and focus captured");
+  }
+ }
+ void Watchdog(){if(done||!armed)return;try{
+  if(!Application.isPlaying)throw new Exception("Play ended");
+  if(EditorApplication.timeSinceStartup-began>=60)throw new Exception("60-second bound expired");
+ }catch(Exception ex){Log("BLOCKED "+ex);End(false);}}
+ void LateUpdate(){if(!armed||done)return;try{
+  double now=EditorApplication.timeSinceStartup;
+  if(!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.Name!=room||PhotonSession.RunId!=run||PhotonSession.Phase!=RailPhase.Running||RailTrain.Instance==null||RailExpedition.Instance==null||RailExpedition.Instance.State.finished)
+   throw new Exception("Original running world changed");
+  Check(PhotonNetwork.MasterClient.ActorNumber==master,"same master retained");
+  float progress=RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time);samples++;
+  Check(progress>=previous-.0005f,"shared bridge progress monotonic");previous=progress;
+  maxDistance=Mathf.Max(maxDistance,Mathf.Abs(RailTrain.Instance.Distance));maxSpeed=Mathf.Max(maxSpeed,Mathf.Abs(RailTrain.Instance.Speed));
+  Check(maxDistance<.01f&&maxSpeed<.01f,"train remains at zero distance and speed");
+  bool contact=false,held=false,live=false;float headGap=-1,fingerGap=-1;
+  if(driver&&!restored){
+   RailRemoteBridge.Set(control,"focused",true);
+   if(RailExpedition.LocalDown)downSamples++;
+   var body=GR.Player.instance.GetComponent<LocalBodyDriver>().Body;var finger=body.RightHand.GetComponentInChildren<SphereCollider>();var volume=control.button.GetComponent<BoxCollider>();
+   contact=PlayerHand.ButtonContact(volume,finger);held=(bool)RailRemoteBridge.Get(control,"held");
+   var props=(IDictionary)RailRemoteBridge.Get(PhotonNetwork.LocalPlayer,"CustomProperties");live=RailHoldControl.IsLive(props[RailHoldControl.BridgeKey],run,PhotonNetwork.Time);
+   headGap=Vector3.Distance(NewPlayer.instance.headCollider.transform.position,control.transform.position);fingerGap=Vector3.Distance(finger.transform.TransformPoint(finger.center),volume.transform.TransformPoint(volume.center));
+   if(contact)contacts++;if(contact&&control.button.IsPressed&&held&&live&&headGap<3)acceptedHolds++;
+  }
+  if(now>=nextLog){nextLog=now+.5;Log("SAMPLE elapsed="+(now-began)+" progress="+progress+" distance="+RailTrain.Instance.Distance+" speed="+RailTrain.Instance.Speed+" contact="+contact+" pressed="+control.button.IsPressed+" held="+held+" live="+live+" headGap="+headGap+" fingerGap="+fingerGap+" revision="+PhotonSession.Get(RailSessionRules.Revision,0));}
+  if(!lowered&&progress>=1){
+   lowered=true;Check(now-began>=29,"lowering spans normal thirty-second hold, not a state jump");Check(samples>20,"shared lowering sampled across frames");
+   if(driver){Check(contacts>20&&acceptedHolds>20,"actual fingertip contact, local press and shared live hold observed repeatedly");Restore();}
+   releasedAt=now;Log("LOWERED distance="+RailTrain.Instance.Distance+" elapsed="+(now-began)+" contactSamples="+contacts+" acceptedHoldSamples="+acceptedHolds+" downSamples="+downSamples);
+  }
+  if(lowered&&now-releasedAt>.75){
+   if(driver){var props=(IDictionary)RailRemoteBridge.Get(PhotonNetwork.LocalPlayer,"CustomProperties");
+    Check(!(bool)RailRemoteBridge.Get(typeof(RailBridgeHoldFixture),"holding")&&!control.button.IsPressed&&!(bool)RailRemoteBridge.Get(control,"held")&&!RailHoldControl.IsLive(props[RailHoldControl.BridgeKey],run,PhotonNetwork.Time),"helper/button/published hold released");
+    Check(sim.UseInjectedInput==oldInjection&&(bool)RailRemoteBridge.Get(control,"focused")==oldFocus,"input injection and focus restored");
+   }
+   End(true);
+  }
+ }catch(Exception ex){Log("BLOCKED "+ex);End(false);}}
+ void Restore(){if(!driver||restored)return;restored=true;RailBridgeHoldFixture.SetHeld(false);if(control!=null){control.button.Release();RailRemoteBridge.Set(control,"focused",oldFocus);}
+  if(sim!=null){sim.InjectedInput=oldFrame;sim.UseInjectedInput=oldInjection;}if(NewPlayer.instance!=null&&PhotonSession.RunId==run)NewPlayer.instance.Warp(stand,heading);
+  Log("RESTORE original input frame/injection, bridge focus and standing point");}
+ void End(bool complete){if(done)return;done=true;EditorApplication.update-=Watchdog;Restore();Log((failures.Count>0?"FAIL ":complete?"PASS ":"BLOCKED ")+"DONE driver="+driver+" lowered="+lowered+" samples="+samples+" contacts="+contacts+" acceptedHolds="+acceptedHolds+" maxDistance="+maxDistance+" maxSpeed="+maxSpeed+" failures="+failures.Count+" elapsed="+(EditorApplication.timeSinceStartup-began));UnityEngine.Object.Destroy(gameObject);}
+ void OnDestroy(){if(armed&&!done){Log("BLOCKED observer destroyed early");done=true;EditorApplication.update-=Watchdog;Restore();}}
+}
+
