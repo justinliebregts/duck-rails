@@ -52,6 +52,17 @@ public class DuckSkinVisuals : MonoBehaviourPunCallbacks
     readonly Dictionary<string, Transform> boneMap = new Dictionary<string, Transform>();
     readonly List<GameObject> defaultFaceRoots = new List<GameObject>();
     readonly Transform[] defaultFace = new Transform[4];
+    Transform[] boundFace;
+
+    /// <summary>The selected skin's face, including null parts for skins without them.</summary>
+    public bool TryGetFace(out Transform left, out Transform right, out Transform top, out Transform bottom)
+    {
+        left = boundFace != null ? boundFace[0] : null;
+        right = boundFace != null ? boundFace[1] : null;
+        top = boundFace != null ? boundFace[2] : null;
+        bottom = boundFace != null ? boundFace[3] : null;
+        return boundFace != null;
+    }
     readonly Material[] defaultEyeMaterials = new Material[2];
     readonly List<RestPose> defaultFaceRest = new List<RestPose>();
     readonly List<GameObject> attachments = new List<GameObject>();
@@ -379,6 +390,7 @@ public class DuckSkinVisuals : MonoBehaviourPunCallbacks
 
     void BindFace(Transform[] face)
     {
+        boundFace = face;
         PhotonEyeLook eyes = GetComponentInParent<PhotonEyeLook>();
         if (eyes != null)
             eyes.Bind(face[0], face[1]);

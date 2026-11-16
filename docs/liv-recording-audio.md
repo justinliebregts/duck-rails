@@ -1,5 +1,26 @@
 # LIV recording audio
 
+## Local capture lips — November 15, 2026
+
+Reported: talking does not move the local lips in LIV. Found a concrete skin
+binding defect: LocalBodyDriver searched the body for Lip_T/Lip_B once, including
+inactive default attachments, and retained those transforms after skin changes.
+DuckSkinVisuals binds replacement faces only to the network face components;
+the separate local capture rig could therefore animate hidden default lips.
+
+DuckSkinVisuals now exposes its selected face and LocalBodyDriver reads that
+binding before each external-camera pose. This also updates local capture eyes
+and handles returning to the default skin or missing face parts. The existing
+Photon microphone sampling, remote speech and camera visibility rules are unchanged.
+
+Validation: verified Duck Rails MCP target in Edit Mode, refreshed/compiled,
+and checked active selected lip references on isolated actual DuckPlayer prefab
+instances with Quackbear, Huggy and Scrap Duck. All three passed; Console
+error/exception query was empty and scoped whitespace checks passed. No saved
+prefab changes or Play Mode runs. Actual microphone/LIV recording, skin switching,
+default duck and mirror acceptance remain queued; the user's exact runtime cause
+is not confirmed by these asset checks.
+
 ## Missing game mix — November 15, 2026
 
 Reported symptom on Quest: recordings contain the local microphone but neither other

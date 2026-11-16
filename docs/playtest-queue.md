@@ -52,6 +52,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: microphone and visual appearance.
 - Priority: normal.
 
+### LIV local lips follow equipped skin — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: local LIV/mirror face posing uses DuckSkinVisuals' selected face instead of cached name lookups that can target hidden default lips. See [evidence](liv-recording-audio.md#local-capture-lips--november-15-2026).
+- Cheap checks: Unity compile; actual DuckPlayer with Quackbear, Huggy and Scrap Duck selected lip references active; Console error/exception query empty.
+- Setup: headset, live microphone, LIV selfie preview and recording; default duck and each bundle skin. Switch skins with the preview open, then transfer compound/expedition and repeat. Check shared-store mirror too.
+- Check: visible lips open while speaking and settle during silence; switching skins and switching back to default targets the current visible face; first-person head remains hidden. Confirm remote speech animation on a second client.
+- Needs human: actual microphone, preview/recording and headset visual acceptance.
+- Priority: normal.
+
 ### FX_Heal_02 revive completion — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: Revived resource prefab now uses FX_Heal_02's three layers, with looping/play-on-awake disabled and local simulation. Existing trigger, audio and position retained.

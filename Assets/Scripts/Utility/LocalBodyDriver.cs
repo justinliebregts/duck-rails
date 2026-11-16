@@ -164,7 +164,14 @@ namespace Game.Animation
 
         void EnsureFace()
         {
-            if (body == null || _leftEye != null || _rightEye != null || _topLip != null || _bottomLip != null)
+            if (body == null)
+                return;
+            // Skin attachments coexist with the inactive default face. Use the
+            // selected face on every capture so skin changes cannot leave stale lips.
+            var visuals = body.GetComponent<DuckSkinVisuals>();
+            if (visuals != null && visuals.TryGetFace(out _leftEye, out _rightEye, out _topLip, out _bottomLip))
+                return;
+            if (_leftEye != null || _rightEye != null || _topLip != null || _bottomLip != null)
                 return;
             Transform root = body.transform;
             _leftEye = FindDeep(root, "Eye_L");
