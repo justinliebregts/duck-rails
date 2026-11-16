@@ -165,3 +165,15 @@ Manual braking remains necessary. Hold advances lowering; release pauses and ret
 Choose or revise the visual direction, then prepare a measured top-down layout for approval before rough Quackville blockout. Production texture work, Unity installation, navigation/lighting bakes and headset/network validation remain unperformed.
 
 Generated using the built-in image generation tool. [Exact prompt](../output/imagegen/final-escape-v1/prompt.txt). References: [art guide](art-guide.md), [game design](game-design.md), [bridge hold](bridge-hold.md).
+
+## Bridge crash collapse — November 16, 2026
+
+User approved a visible five-piece bridge collapse on failure, beginning at the current raised/partially lowered angle. Implemented in `RailBridgeCollapse` and the generated `Resources/Rails/BridgeCollapse` prefab. The intact span is suppressed at impact; matching offline-sliced pieces fall with staggered rotation and remain as the wreck. Cut faces are closed, original materials retained, and lowest vertices land at river-bed Y -11.48. Original finale geometry, collision, navigation and lighting assets are unchanged.
+
+`FX_Explosion_Large_Dark_01` plays at train-local forward 5 m / up 1.5 m with existing bridge-crash audio. Three wreck fire pockets use `FX_Fire_Big_02` and `FX_Fire_Big_03`, without realtime Lights. There are no new wreck colliders or physics bodies. Additional tearing/splash audio and splash particles were not added. Results become visible at 3.2 seconds; failure outcome, return deadline and passenger recovery stay unchanged.
+
+Animation samples the retained `finishedAt` timestamp and frozen bridge progress. Late observers catch up; impact effects/audio are skipped after one second. New runs and disable restore original renderer/collider states. No new networking protocol or runtime fracture/bake is required.
+
+Validation: verified Duck Rails MCP target, successful script compilation and 81 `RailBridgeCollapseChecks.Run()` EditMode assertions across 0%, 50% and 99% lowered angles (alignment, landing, settled state, fire and restoration). Neutral-lit geometry preview: `output/bridge-collapse/wreck-preview.png`. A temporary preview capture logged a render-target cleanup error and the existing CutePixel em-dash warning; neither came from gameplay. Initial generator skipped prefab-asset geometry; fixed to use local activation and reject empty sections before the passing checks. Live crash/explosion, multiplayer/reconnect, replay and headset cost/visual acceptance are **queued for playtest**. Still preview and editor checks do not establish runtime acceptance.
+
+Rebuild offline pieces using **Duck Rails > Authoring > Finale > Build crash sections** after bridge model changes. No Play Mode was run.

@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Bridge crash collapse — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: five bridge sections collapse from the impact angle, settle on the river bed and burn; front-of-train large dark explosion, retained crash audio, 3.2-second results delay.
+- Cheap checks: compilation and 81 EditMode assertions pass; neutral geometry still inspected. See docs/final-escape-layout.md.
+- Setup: two real clients, crash with bridge fully raised, halfway down and almost down; repeat with reconnect during/after collapse and master departure. Replay a fresh run and complete a successful crossing.
+- Check: front impact explosion/sound once; intact bridge disappears exactly as matching sections start falling; no initial jump or floor penetration; three persistent fire pockets; all peers agree on collapse stage, late arrival does not replay impact; results at 3.2 seconds, unchanged return countdown; passenger recovery still works; fresh bridge/collision restored and success has no destruction. Check explosion scale, smoke occlusion, fire orientation and actual frame cost on Quest.
+- Needs human: VR impact/scale/pacing, fire/smoke appearance and comfort.
+- Priority: normal.
+
 ### Test panel fuel 100 — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: desktop and VR test panel fuel buttons now set shared fuel to 100 instead of 20, with matching labels.

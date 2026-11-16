@@ -945,3 +945,6 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] November 13: implement user-selected 120 m player view, blending to 175 m during successful dawn; remove temporary 50 m editor override. Compilation and 17 EditMode checks pass. See docs/quest-performance.md.
 - [ ] Validate 120/175 m nighttime/dawn visuals, late join/reset, benchmark override and Quest/multiplayer performance; queued for playtest. Prior 50/100 m captures do not validate these new distances.
+
+- [x] November 16: implement authored five-section bridge crash collapse and selected explosion/fire effects; compilation and 81 EditMode checks pass. See [collapse](final-escape-layout.md#bridge-crash-collapse--november-16-2026).
+- [ ] Validate bridge collapse timing, particles, reconnect/master handoff, replay and Quest visuals/performance; queued for playtest.

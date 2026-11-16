@@ -39,7 +39,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     double nextTick, nextDownRequest, fallAt;
     RailReviveEffects reviveEffects;
     readonly Dictionary<string, TMP_Text> downLabels = new Dictionary<string, TMP_Text>();
-    GameObject explosion;
+    RailBridgeCollapse collapse;
+    GameObject collapsePrefab;
     readonly HashSet<string> carrierHits = new HashSet<string>();
     readonly HashSet<string> issuedDrops = new HashSet<string>();
     public void CarrierHit(string marker) { if (PhotonSession.Phase == RailPhase.Running && State.carriers.Any(c => c.marker == marker && c.carrying)) carrierHits.Add(marker); }
@@ -56,7 +57,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         reviveEffects = new RailReviveEffects();
     }
     void OnEnable() => PhotonNetwork.AddCallbackTarget(this);
-    void OnDisable() { RestoreNightAtmosphere(); PhotonNetwork.RemoveCallbackTarget(this); requests.Clear(); reviveEffects?.Reset(); }
+    void OnDisable() { RestoreNightAtmosphere(); PhotonNetwork.RemoveCallbackTarget(this); requests.Clear(); reviveEffects?.Reset(); ResetCollapse(); }
     void OnDestroy() { if (Instance == this) Instance = null; }
     public static bool CanTarget(PhotonPlayer player)
     {
@@ -186,7 +187,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         {
             localRun = PhotonSession.RunId; caughtRun = null; shownFlares.Clear(); wasDown = false; requests.Clear(); pendingRequestJson = null;
             RestoreNightAtmosphere();
-            if (explosion != null) Destroy(explosion);
+            ResetCollapse();
         }
         float intoFinale = RailRoute.Instance != null && RailTrain.Instance != null
             ? RailTrain.Instance.Distance - RailRoute.Instance.FinaleStart : -1;
@@ -491,20 +492,26 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         }
         wasDown = local?.down == true;
         reviveEffects.Present(State, transform, now);
-        results.gameObject.SetActive(State.finished);
+        bool bridgeCrash = State.finished && State.reason == "Bridge collision";
+        float crashAge = (float)(now - State.finishedAt);
+        if (bridgeCrash)
+        {
+            if (collapse == null)
+            {
+                if (collapsePrefab == null) collapsePrefab = Resources.Load<GameObject>("Rails/BridgeCollapse");
+                if (collapsePrefab != null)
+                {
+                    collapse = Instantiate(collapsePrefab, transform).GetComponent<RailBridgeCollapse>();
+                    var train = RailTrain.Instance.transform;
+                    collapse.Begin(bridgeDeck, State.BridgeProgress(State.finishedAt),
+                        train.position + train.forward * 5 + Vector3.up * 1.5f, crashAge);
+                }
+            }
+            if (collapse != null) collapse.Sample(crashAge);
+        }
+        results.gameObject.SetActive(State.finished && (!bridgeCrash || crashAge >= RailBridgeCollapse.Duration));
         if (State.finished)
         {
-            if (State.reason == "Bridge collision" && explosion == null)
-            {
-                explosion = new GameObject("Train explosion"); explosion.transform.position = RailTrain.Instance.transform.position;
-                var ps = explosion.AddComponent<ParticleSystem>(); ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                var main = ps.main; main.loop = false; main.duration = 1; main.startLifetime = 2; main.startSpeed = 8; main.startSize = 2; main.startColor = new Color(1, .3f, .04f);
-                if (explosionMaterial != null) ps.GetComponent<ParticleSystemRenderer>().sharedMaterial = explosionMaterial;
-                var emission = ps.emission; emission.rateOverTime = 0; emission.SetBursts(new[] { new ParticleSystem.Burst(0, 90) });
-                ps.Play();
-                var audioBank = RailAudio.Bank;
-                if (audioBank != null) RailAudio.Play(audioBank.bridgeCrash, explosion.transform.position);
-            }
             int returnSeconds = RailSessionRules.ReturnCountdown(PhotonSession.Phase,
                 PhotonSession.Get(RailSessionRules.Deadline, 0d), now);
             results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
@@ -519,6 +526,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         }
         if (Camera.main != null) Camera.main.backgroundColor = RenderSettings.fogColor;
         if (runningLabels != null) foreach (var label in runningLabels) if (label != null) label.gameObject.SetActive(!State.finished);
+    }
+    void ResetCollapse()
+    {
+        if (collapse == null) return;
+        collapse.Restore();
+        Destroy(collapse.gameObject);
+        collapse = null;
     }
     void RestoreNightAtmosphere() => atmosphere.Restore();
     public void SeedCargo()

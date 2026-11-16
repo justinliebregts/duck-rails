@@ -818,3 +818,5 @@ November 11 Skyscraper lighting follow-up: repair shelter workbench legs, bright
 November 12 approved cockpit: one solid grip links three arms through fore/aft slots, with the axle lowered 18 cm beneath the dashboard; faceted horn, numeric-only distance and coal/fire/fuel picture. Implemented; live acceptance queued. See [cockpit](cockpit-v2.md).
 
 November 12 throttle polish: proportional speed above a 20% travel dead zone, retaining the full-forward snap; immediate STOP command on release with a 0.25-second visual lever return. Rendered hand offset is live-tunable. Previous cockpit works well in headset per user report; new behavior queued. See [cockpit](cockpit-v2.md).
+
+November 16 bridge crash: approved and implemented five animated bridge sections falling into the river, front-of-train FX_Explosion_Large_Dark_01 and persistent FX_Fire_Big_02/03 wreck fires. Shared finish time drives presentation; results wait 3.2 seconds. Editor checks pass; live acceptance queued. See [collapse](final-escape-layout.md#bridge-crash-collapse--november-16-2026).
