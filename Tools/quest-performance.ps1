@@ -13,6 +13,7 @@ param(
     [ValidateRange(2,60)][int]$ViewSeconds = 8,
     [ValidateRange(300,1800)][int]$TimeoutSeconds = 1200,
     [ValidateRange(0,2000)][float]$FarClipMeters = 0,
+    [ValidateSet(0,4,8)][int]$CrewLoad = 0,
     [ValidateSet('', 'control', 'atlas')][string]$MotelWingVariant = '',
     [ValidateSet('', 'control', 'atlas')][string]$MotelFullMapVariant = '',
     [string[]]$Blocks
@@ -88,7 +89,7 @@ if ($Action -eq 'Run') {
     Copy-Item -LiteralPath (Join-Path $folder 'preflight.json') -Destination $runFolder
     $request = [ordered]@{ version = 1; id = $RunId; roomCode = (Get-Random -Minimum 10000 -Maximum 100000).ToString();
         seed = $Seed; warmupSeconds = $WarmupSeconds; compoundSeconds = $CompoundSeconds;
-        viewSeconds = $ViewSeconds; timeoutSeconds = $TimeoutSeconds; farClipMeters = $FarClipMeters; motelWingVariant = $MotelWingVariant; motelFullMapVariant = $MotelFullMapVariant; blocks = @($Blocks | Where-Object { $_ }) }
+        viewSeconds = $ViewSeconds; timeoutSeconds = $TimeoutSeconds; farClipMeters = $FarClipMeters; crewLoad = $CrewLoad; motelWingVariant = $MotelWingVariant; motelFullMapVariant = $MotelFullMapVariant; blocks = @($Blocks | Where-Object { $_ }) }
     $requestPath = Join-Path $runFolder 'request.json'
     [IO.File]::WriteAllText($requestPath, ($request | ConvertTo-Json), [Text.UTF8Encoding]::new($false))
     $properties = Invoke-Adb @('-s', $Serial, 'shell', 'content', 'call', '--uri', 'content://com.oculus.rc', '--method', 'GET_PROPERTY')

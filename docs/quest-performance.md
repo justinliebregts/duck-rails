@@ -1,5 +1,54 @@
 # Quest 3 automated performance testing
 
+## Four versus eight synthetic ducks — November 14, 2026
+
+Explicitly requested overnight Quest test. Use `-CrewLoad 4` or `-CrewLoad 8`
+with the device runner: totals include the real local player, so these create
+three/seven extra default duck rigs and four/eight moving flashlight lights.
+Zero retains the existing solo survey. This option exists only in Editor and
+Development builds and requires a one-shot benchmark request.
+
+The extra rigs clone the production PhotonPlayer's unposed RemotePlayerBody
+subtree from its registered prefab. Each frame uses the real two-arm IK solver
+and FingerRig; synthetic lip movement uses the production 65-degree opening and
+1.0–0.6 width range. They have no PhotonPlayer, transport, voice decoding or
+enemy-target registration. Lights clone the production RailFlashlight Light
+and UniversalAdditionalLightData, including authored range/intensity/cone and
+shadow settings. One light gets local-held ForcePixel priority; other lights
+retain the prefab priority. No extra flashlight item physics is simulated.
+
+During the expedition the extra ducks form a camera-yaw-relative forward fan,
+with common slots shared by both workloads. They bob, look and wave while the
+lights sweep the scenery. This intentionally keeps the rigs simultaneously
+visible instead of approximating eight human players' spatial distribution.
+The synthetic load begins at station warmup; compound samples remain solo.
+Animation time resets per segment for matching phases between runs. Metadata
+and heartbeat status record rig/light counts and cumulative IK/lip applications;
+missing/inactive workload objects abort the run. Cleanup destroys the fixture.
+The local player's visual hands also use animated head-relative targets during
+the workload, through a development-only LocalBodyDriver pose callback; its real
+tracked head/camera, normal IK and rendering callbacks are retained. The callback
+is restored on cleanup. This avoids unattended controller poses obscuring the
+view and keeps the local rig's workload consistent. First-person head hiding is
+reasserted before posing. An initial eight-duck capture with near-camera mesh
+obstruction was cancelled and excluded; both workload sizes are rerun with this
+fixture, rather than comparing different builds.
+
+Requested comparison: same APK, seed, authored view distance, graphics settings,
+route and viewpoint duration; eight/four followed by four/eight to check run-order
+and thermal effects. Route: Container Yard, Convenience Store, Farm Silos,
+Skyscraper Works, plus the usual helipad/finale viewpoints. Native app FPS and
+CPU/GPU p50/p95 are the primary metrics; reject untracked/unfocused views.
+Completed four same-build surveys in order 8/4/4/8: 96 valid measured views,
+100% focus/tracking, 42.7 minutes captured. Both workloads generally held 72 Hz;
+the forward Skyscraper view reached 70 FPS in one four-duck repeat and had worst
+GPU p95 14.0/13.9 ms (four/eight), essentially the 13.89 ms budget. Equal-weight
+means of view medians changed by +0.16 ms CPU and +0.17 ms GPU; repeat variation
+and up to 0.77 m stopping-position differences limit causal precision.
+[Full results, build identity, raw-data references and cleanup](validation/quest-crew-load-2026-11-14/README.md).
+This does not establish real eight-client, voice, interior traversal, atlas
+before/after gains or release-build performance. Broader acceptance remains queued.
+
 ## Setup status — November 13, 2026
 
 Requested: repeatable native Quest 3 testing without manually playing the game.

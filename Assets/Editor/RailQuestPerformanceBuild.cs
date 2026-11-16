@@ -54,6 +54,8 @@ public static class RailQuestPerformanceBuild
         valid.Validate();
         valid.blocks = new [] { "a", "b", "c", "d" }; valid.Validate();
         valid.farClipMeters = 50; valid.Validate();
+        valid.crewLoad = 4; valid.Validate();
+        valid.crewLoad = 8; valid.Validate();
         int rejected = 0;
         void Reject(Action mutation) { var r = new RailQuestPerformance.Request { id = Guid.NewGuid().ToString("N"), roomCode = "58302" }; current = r; mutation(); try { r.Validate(); } catch (ArgumentException) { rejected++; } }
         Reject(() => current.id = "../escape");
@@ -66,10 +68,13 @@ public static class RailQuestPerformanceBuild
         Reject(() => current.farClipMeters = -1);
         Reject(() => current.farClipMeters = 5);
         Reject(() => current.farClipMeters = 2001);
-        if (rejected != 10) throw new Exception("Request guard failed");
+        Reject(() => current.crewLoad = -1);
+        Reject(() => current.crewLoad = 7);
+        Reject(() => current.crewLoad = 12);
+        if (rejected != 13) throw new Exception("Request guard failed");
         var failures = LoggingPolicyRules.CheckSource("RailQuestPerformance.cs", File.ReadAllText("Assets/Scripts/Gameplay/RailQuestPerformance.cs"));
         if (failures.Count != 0) throw new Exception(string.Join("\n", failures));
-        Debug.Log("Quest performance: valid requests, ten invalid requests and runtime logging policy pass. No gameplay run.");
+        Debug.Log("Quest performance: valid solo/four/eight requests, thirteen invalid requests and runtime logging policy pass. No gameplay run.");
     }
     static RailQuestPerformance.Request current;
 }

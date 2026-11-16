@@ -1,0 +1,223 @@
+{
+  "mean_cpu_delta_ms": 0.1552083333333334,
+  "mean_gpu_delta_ms": 0.16979166666666676,
+  "median_cpu_delta_ms": 0.14999999999999947,
+  "median_gpu_delta_ms": 0.17499999999999982,
+  "measured_frames": 82942,
+  "elapsed_minutes": 42.682341262366876,
+  "min_focus_pct": 100.0,
+  "run_stats": [
+    {
+      "run": {
+        "label": "pass-1-crew-8",
+        "crew": 8,
+        "id": "6057bb5e335543febba7b9a858f32163",
+        "startedUtc": "2026-11-14T10:22:43.4606960Z",
+        "finishedUtc": "2026-11-14T10:33:33.6453232Z"
+      },
+      "min_view_fps_median": 72.0,
+      "stale_frames": 28,
+      "native_seconds": 259,
+      "pose_applications": 290990,
+      "temperature": {
+        "min": 37.0,
+        "max": 37.0,
+        "median": 37.0
+      },
+      "cpu_clock": {
+        "min": 1382.0,
+        "max": 1651.0,
+        "median": 1382.0
+      },
+      "gpu_clock": {
+        "min": 456.0,
+        "max": 545.0,
+        "median": 456.0
+      }
+    },
+    {
+      "run": {
+        "label": "pass-2-crew-4",
+        "crew": 4,
+        "id": "4436d39d1e0e4bfb81fead9f9bb9caf8",
+        "startedUtc": "2026-11-14T10:33:33.6479890Z",
+        "finishedUtc": "2026-11-14T10:44:29.1357196Z"
+      },
+      "min_view_fps_median": 72.0,
+      "stale_frames": 49,
+      "native_seconds": 259,
+      "pose_applications": 126165,
+      "temperature": {
+        "min": 37.0,
+        "max": 37.0,
+        "median": 37.0
+      },
+      "cpu_clock": {
+        "min": 1382.0,
+        "max": 1651.0,
+        "median": 1382.0
+      },
+      "gpu_clock": {
+        "min": 456.0,
+        "max": 545.0,
+        "median": 456.0
+      }
+    },
+    {
+      "run": {
+        "label": "pass-3-crew-4",
+        "crew": 4,
+        "id": "d6442e6c6bd1485ba7bebf9a1d2f0c7d",
+        "startedUtc": "2026-11-14T10:44:29.1374877Z",
+        "finishedUtc": "2026-11-14T10:55:19.5781062Z"
+      },
+      "min_view_fps_median": 70.0,
+      "stale_frames": 53,
+      "native_seconds": 258,
+      "pose_applications": 124017,
+      "temperature": {
+        "min": 37.0,
+        "max": 37.0,
+        "median": 37.0
+      },
+      "cpu_clock": {
+        "min": 1382.0,
+        "max": 1651.0,
+        "median": 1382.0
+      },
+      "gpu_clock": {
+        "min": 456.0,
+        "max": 545.0,
+        "median": 456.0
+      }
+    },
+    {
+      "run": {
+        "label": "pass-4-crew-8",
+        "crew": 8,
+        "id": "1cad7412e22c45c6bab96f9ae188558f",
+        "startedUtc": "2026-11-14T10:55:19.5797644Z",
+        "finishedUtc": "2026-11-14T11:06:21.2037812Z"
+      },
+      "min_view_fps_median": 72.0,
+      "stale_frames": 35,
+      "native_seconds": 255,
+      "pose_applications": 296142,
+      "temperature": {
+        "min": 37.0,
+        "max": 37.0,
+        "median": 37.0
+      },
+      "cpu_clock": {
+        "min": 1382.0,
+        "max": 1920.0,
+        "median": 1382.0
+      },
+      "gpu_clock": {
+        "min": 456.0,
+        "max": 545.0,
+        "median": 456.0
+      }
+    }
+  ],
+  "4": {
+    "app_cpu_p50_ms": 9.739583333333334,
+    "app_gpu_p50_ms": 8.3125,
+    "draw_calls_p50": 344.875,
+    "triangles_p50": 116177.91666666667,
+    "fps_range": [
+      70.0,
+      73.0
+    ],
+    "worst_p95_ms": 14.0,
+    "max_repeat_cpu_median_difference_ms": 0.5,
+    "max_repeat_gpu_median_difference_ms": 1.0999999999999979
+  },
+  "8": {
+    "app_cpu_p50_ms": 9.894791666666666,
+    "app_gpu_p50_ms": 8.482291666666667,
+    "draw_calls_p50": 372.5208333333333,
+    "triangles_p50": 122744.33333333333,
+    "fps_range": [
+      72.0,
+      73.0
+    ],
+    "worst_p95_ms": 13.899999999999999,
+    "max_repeat_cpu_median_difference_ms": 0.5999999999999996,
+    "max_repeat_gpu_median_difference_ms": 1.0
+  },
+  "blocks": [
+    {
+      "id": "container-yard-v1",
+      "label": "Container Yard",
+      "4": {
+        "worst_p95_ms": 12.5,
+        "min_view_fps_median": 72.0
+      },
+      "8": {
+        "worst_p95_ms": 12.3,
+        "min_view_fps_median": 72.0
+      }
+    },
+    {
+      "id": "convenience-store-v1",
+      "label": "Convenience Store",
+      "4": {
+        "worst_p95_ms": 11.1,
+        "min_view_fps_median": 72.0
+      },
+      "8": {
+        "worst_p95_ms": 11.799999999999999,
+        "min_view_fps_median": 72.5
+      }
+    },
+    {
+      "id": "midpoint-helipad-v1",
+      "label": "Helipad",
+      "4": {
+        "worst_p95_ms": 11.1,
+        "min_view_fps_median": 72.0
+      },
+      "8": {
+        "worst_p95_ms": 11.9,
+        "min_view_fps_median": 72.0
+      }
+    },
+    {
+      "id": "farm-silos-v1",
+      "label": "Farm Silos",
+      "4": {
+        "worst_p95_ms": 10.9,
+        "min_view_fps_median": 72.0
+      },
+      "8": {
+        "worst_p95_ms": 11.299999999999999,
+        "min_view_fps_median": 72.0
+      }
+    },
+    {
+      "id": "skyscraper-works-v1",
+      "label": "Skyscraper Works",
+      "4": {
+        "worst_p95_ms": 14.0,
+        "min_view_fps_median": 70.0
+      },
+      "8": {
+        "worst_p95_ms": 13.899999999999999,
+        "min_view_fps_median": 72.0
+      }
+    },
+    {
+      "id": "finale-approach",
+      "label": "Finale approach",
+      "4": {
+        "worst_p95_ms": 12.0,
+        "min_view_fps_median": 72.0
+      },
+      "8": {
+        "worst_p95_ms": 12.8,
+        "min_view_fps_median": 72.0
+      }
+    }
+  ]
+}

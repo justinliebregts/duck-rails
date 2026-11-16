@@ -9,6 +9,10 @@ namespace Game.Animation
     /// <summary>Drives the body from the LOCAL player's tracked poses, 1:1.</summary>
     public class LocalBodyDriver : MonoBehaviour
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        // Explicit device-benchmark fixture only; real XR head/camera stays tracked.
+        public static System.Func<Transform, BodyPose> BenchmarkPoseOverride;
+#endif
 	    public ControllerInput controllerInput;
 
         /// <summary>Enabled local body drivers (DuckPlayer / DesktopPlayer). Enemies use this when no PhotonPlayer is present.</summary>
@@ -335,11 +339,19 @@ namespace Game.Animation
             Transform rightPalm = RightPalmSource;
             bool leftDrive = RailControl.TryGetDrivePalm(leftPalm, out var leftDrivePos, out var leftDriveRot);
             bool rightDrive = RailControl.TryGetDrivePalm(rightPalm, out var rightDrivePos, out var rightDriveRot);
-            body.ApplyPose(new BodyPose {
+            var pose = new BodyPose {
                 headPos  = headAnchor.position,  headRot  = headAnchor.rotation,
                 lHandPos = leftDrive ? leftDrivePos : leftPalm.position,  lHandRot = leftDrive ? leftDriveRot : leftPalm.rotation,
                 rHandPos = rightDrive ? rightDrivePos : rightPalm.position, rHandRot = rightDrive ? rightDriveRot : rightPalm.rotation,
-            }, LookDownChestBack());
+            };
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (BenchmarkPoseOverride != null)
+            {
+                pose = BenchmarkPoseOverride(headAnchor);
+                body.SetHeadHidden(true);
+            }
+#endif
+            body.ApplyPose(pose, LookDownChestBack());
 
             // The grip is a child of the solved wrist. Correct the wrist before gear,
             // locomotion and the network sample its pose. Tracking anchors stay untouched.

@@ -27,8 +27,11 @@ public sealed class RailQuestPerformance : MonoBehaviour
         public float farClipMeters; // Zero retains authored cameras; only explicitly armed captures override.
         public string motelWingVariant; // Empty = normal build; explicit control/atlas requires comparison build.
         public string motelFullMapVariant;
+        public int crewLoad; // 0 = solo survey; 4/8 includes one real local rig.
         public void Validate()
         {
+            if (crewLoad != 0 && crewLoad != 4 && crewLoad != 8)
+                throw new ArgumentException("Crew load must be zero, four or eight.");
             if ((!string.IsNullOrEmpty(motelFullMapVariant) && motelFullMapVariant != "control" && motelFullMapVariant != "atlas") ||
                 (!string.IsNullOrEmpty(motelFullMapVariant) && !string.IsNullOrEmpty(motelWingVariant)))
                 throw new ArgumentException("Invalid or conflicting Motel full-map comparison variant.");
@@ -55,6 +58,9 @@ public sealed class RailQuestPerformance : MonoBehaviour
         public float appliedFarClipMeters;
         public string appliedMotelWingVariant;
         public string appliedMotelFullMapVariant;
+        public int syntheticRigs, syntheticLights;
+        public long crewPoseApplications, crewLipApplications;
+        public string crewLightSettings;
     }
     [Serializable] sealed class Status
     {
@@ -65,6 +71,8 @@ public sealed class RailQuestPerformance : MonoBehaviour
         public string sessionPhase, sessionStatus;
         public float trainDistance, trainSpeed, trainFuel;
         public int driveGripActor;
+        public int syntheticRigs, syntheticLights;
+        public long crewPoseApplications;
     }
     struct Sample
     {
@@ -97,6 +105,9 @@ public sealed class RailQuestPerformance : MonoBehaviour
     float cachedTemperature;
     int cachedCpu, cachedGpu, cachedFoveation;
     NewPlayer clippedPlayer;
+    RailQuestCrewLoad crew;
+    Func<Transform, Game.Animation.BodyPose> oldLocalPoseOverride;
+    bool localPoseOverrideInstalled;
     readonly Dictionary<Camera, float> originalFarClips = new Dictionary<Camera, float>();
 
     void ApplyCameraOverride()
@@ -316,6 +327,29 @@ public sealed class RailQuestPerformance : MonoBehaviour
         }
         catch (Exception e) { End(false, e.GetType().Name + ": " + e.Message); }
     }
+    void LateUpdate()
+    {
+        if (finished || crew == null) return;
+        try
+        {
+            if (!crew.Healthy) throw new InvalidOperationException("Synthetic crew workload is incomplete.");
+            crew.Pose(NewPlayer.instance != null ? NewPlayer.instance.headCollider.transform : null,
+                (float)(Time.realtimeSinceStartupAsDouble - stageAt));
+        }
+        catch (Exception e) { End(false, "Crew workload: " + e.Message); }
+    }
+    Game.Animation.BodyPose BenchmarkLocalPose(Transform head)
+    {
+        float t = (float)(Time.realtimeSinceStartupAsDouble - stageAt);
+        var yaw = Quaternion.Euler(0, head.eulerAngles.y, 0);
+        return new Game.Animation.BodyPose {
+            headPos = head.position, headRot = head.rotation,
+            lHandPos = head.position + yaw * new Vector3(-.3f, -.3f + .06f * Mathf.Sin(t * 1.7f), .25f),
+            rHandPos = head.position + yaw * new Vector3(.3f, -.3f + .06f * Mathf.Cos(t * 1.7f), .25f),
+            lHandRot = yaw * Quaternion.Euler(0, 0, -30),
+            rHandRot = yaw * Quaternion.Euler(0, 0, 30)
+        };
+    }
     RailRouteState ChooseRoute(string run)
     {
         var catalog = RailRoute.Instance.catalog;
@@ -347,6 +381,16 @@ public sealed class RailQuestPerformance : MonoBehaviour
     }
     void Change(Stage value, string label)
     {
+        if (value == Stage.Settle && request.crewLoad != 0 && crew == null)
+        {
+            crew = new RailQuestCrewLoad(request.crewLoad);
+            oldLocalPoseOverride = Game.Animation.LocalBodyDriver.BenchmarkPoseOverride;
+            Game.Animation.LocalBodyDriver.BenchmarkPoseOverride = BenchmarkLocalPose;
+            localPoseOverrideInstalled = true;
+            metadata.scope += " Synthetic default-duck stress: real remote-body arm IK/fingers, synthetic lip poses; all dummy rigs follow each view in a visible forward fan. Production flashlight settings, scripted sweeps. No remote transport/voice decoding/AI targeting; one real local rig included in total. Compound has no synthetic load.";
+            metadata.scope += " Local visual hands use fixed head-relative animated targets to avoid unattended controller poses obstructing the view; real XR head, normal local IK/finger/render callbacks retained. Local first-person head hidden each pose.";
+            WriteMetadata();
+        }
         stage = value; stageAt = Time.realtimeSinceStartupAsDouble;
         segment = segments.Count; segments.Add(label);
         WriteStatus("running", "");
@@ -393,6 +437,12 @@ public sealed class RailQuestPerformance : MonoBehaviour
     static long Value(ProfilerRecorder recorder) => recorder.Valid ? recorder.LastValue : -1;
     void WriteMetadata()
     {
+        if (crew != null)
+        {
+            metadata.syntheticRigs = crew.RigCount; metadata.syntheticLights = crew.LightCount;
+            metadata.crewPoseApplications = crew.PoseApplications; metadata.crewLipApplications = crew.LipApplications;
+            metadata.crewLightSettings = crew.LightSettings;
+        }
         metadata.appliedMotelWingVariant = AppliedMotelWingVariant;
         metadata.appliedMotelFullMapVariant = AppliedMotelFullMapVariant;
         File.WriteAllText(Path.Combine(folder, "metadata.json"), JsonUtility.ToJson(metadata, true));
@@ -411,7 +461,9 @@ public sealed class RailQuestPerformance : MonoBehaviour
             trainDistance = RailTrain.Instance != null ? RailTrain.Instance.Distance : 0,
             trainSpeed = RailTrain.Instance != null ? RailTrain.Instance.Speed : 0,
             trainFuel = PhotonSession.Instance != null ? PhotonSession.CurrentFuel : 0,
-            driveGripActor = PhotonSession.DriveGripActor };
+            driveGripActor = PhotonSession.DriveGripActor,
+            syntheticRigs = crew?.RigCount ?? 0, syntheticLights = crew?.LightCount ?? 0,
+            crewPoseApplications = crew?.PoseApplications ?? 0 };
         // Rename ensures the PC never observes a half-written JSON file.
         string path = Path.Combine(folder, "status.json");
         File.WriteAllText(path + ".tmp", JsonUtility.ToJson(status, true));
@@ -455,6 +507,12 @@ public sealed class RailQuestPerformance : MonoBehaviour
         }
         finally
         {
+            if (localPoseOverrideInstalled)
+            {
+                Game.Animation.LocalBodyDriver.BenchmarkPoseOverride = oldLocalPoseOverride;
+                localPoseOverrideInstalled = false;
+            }
+            crew?.Dispose(); crew = null;
             FarClipOverride = 0;
             MotelWingVariant = null;
             AppliedMotelWingVariant = null;

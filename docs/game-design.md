@@ -66,6 +66,13 @@ triangles, unchanged bridge/crane routes and per-run spawn rules. Navigation and
 lighting rebuilt; 18 known ground-loot overlaps remain. User reviews this version
 before another Blender atlas/chunk pass. [Current layout/evidence](skyscraper-layout.md#current-source-geometry-revision--november-14-2026).
 
+November 14 Quest measurement: an explicitly armed Development-only fixture now
+compares four/eight total duck rigs and moving flashlight lights, using production
+arm IK/fingers and synthetic lip poses. Two surveys per workload completed; both
+generally held 72 FPS, with forward Skyscraper close to the GPU budget. No design
+or networking change; synthetic peers do not establish real crew/voice acceptance.
+[Results and limitations](validation/quest-crew-load-2026-11-14/README.md).
+
 November 14 Farm Silos atlas: full-block Blender source and isolated Unity review
 imported with 117 shared-material chunks and 54 retained probe-lit exceptions.
 Current edits, collision, gameplay/spawns/navigation and baked lighting preserved.

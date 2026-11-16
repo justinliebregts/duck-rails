@@ -104,6 +104,11 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: headset appearance.
 - Priority: normal.
 
+### Quackville blocked-exit sign — queued 2026-11-15
+- Installed `↑ QUACKVILLE` above the blocked Compound stairway with one left-side up arrow, raised CutePixel lettering and matching platform sign materials.
+- Editor compilation, assets/instance checks and visual capture pass; sign lowered on short supports to clear ceiling-pipe sightlines. See `docs/subway-compound.md` and `output/subway-terminal-model/quackville-exit-sign.png`.
+- Pending: headset readability and sightlines from normal approach and stairs. No Play Mode run; not verified live.
+
 ### Integrated radio console — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: approved 1.72 m wall-mounted console installed in shared RadioTable prefab; original voice/hold/button identities retained, aligned trigger and six new solids replace old table collision. See [integration and checks](radio-console.md#unity-installation--november-15).
@@ -114,20 +119,6 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: headset reach, CutePixel label/icon readability, nighttime appearance and voice quality.
 - Priority: normal.
 
-### Quackville blocked-exit sign — queued 2026-11-15
-- Installed `↑ QUACKVILLE` above the blocked Compound stairway with one left-side up arrow, raised CutePixel lettering and matching platform sign materials.
-- Editor compilation, assets/instance checks and visual capture pass; sign lowered on short supports to clear ceiling-pipe sightlines. See `docs/subway-compound.md` and `output/subway-terminal-model/quackville-exit-sign.png`.
-- Pending: headset readability and sightlines from normal approach and stairs. No Play Mode run; not verified live.
-### Farm stalk-only foliage sounds — queued 2026-11-15
-- Commit(s): uncommitted.
-- Changed: Foliage surface and supplied handHitFoliage clip for player hand/foot contacts inside actual corn stalk coverage; 52 patches, 3,669 stalks, no new collision.
-- Setup: Farm expedition, one client then two clients for remote hand/foot presentation.
-- Check: existing contacts inside planted corn select foliage; paths, clearings, pond, railway and above-canopy points do not. Water keeps priority. Leaving corn restores normal contact audio; no idle loop or blocked movement. Verify runtime registration/unregistration through route load/unload and transformed blocks. Corn brushing without a physical contact is not a new sound trigger.
-- Evidence: compilation and focused EditMode geometry/mapping checks pass; see block-audio-surfaces.md. Play Mode remains unrun.
-- Needs human: headset listening, boundary feel and volume.
-- Priority: normal.
-
-
 ### Subway terminal raised sign lettering — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: Platforms, Station Info and Supplies now use solid CutePixel mesh letters, 22 mm deep; Platforms includes two up arrows. Only the new SubwayTerminal prefab's Sign labels group changed; original TMP labels are inactive for authoring reference.
@@ -137,14 +128,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: headset readability and cream material appearance under station lighting.
 - Priority: low.
 
-### Subway terminal model swapped into Compound — queued 2026-11-15
+### Farm stalk-only foliage sounds — queued 2026-11-15
 - Commit(s): uncommitted.
-- Changed: Compound now shows the Blender-modelled `SubwayTerminal` prefab (mesh colliders plus four invisible guards) instead of the SubwayV2 blockout, which is disabled, not deleted. Later the same day: gate lower sheets given concourse-side faces, and a two-sided alpha-clipped wire mesh (`Mesh_Fence`, no collider) added above the barricades on both track sides and the Platforms end; rebaked. Boarding trigger, countdown, launch button, private-room hint, rating and Discord stations were re-placed; new baked lights; rebaked. See [subway compound](subway-compound.md).
-- Cheap checks: Edit Mode only. Floor raycasts at spawn, player start, boarding area, both stalls and stair landing hit; track, gate and stair guards block; spawn-to-gate line clear; 8/8 meshes lightmapped, 347 probes; after the mesh addition, rays at 4-5 m height toward both tracks and past the gate still hit the guards; all labels CutePixel SDF; Console error query empty. `Validate Subway Blockout` was not run and is expected to fail, since it checks SubwayV2.
-- Setup: one desktop client in Keyboard mode from Login into the public Compound; then two real clients.
-- Check: spawn on the floor clear of pillars and the stairs for all spawn slots; walk around the fountain, into Station Info and through both Supplies openings; cannot pass or climb the side barricades, the Platforms gate line or the stair barricade; boarding trigger starts the countdown in front of the gate, cancels on leaving, and the full countdown transfers to a ready expedition; private owner can press Launch Expedition on the gate; RATE GAME and JOIN DISCORD buttons are reachable and respond. `RailBoardingLiveChecks` should still derive its positions from the moved trigger.
-- Needs human: headset climbing and hand contact on the one-sided fence panels and thin props, button reach at duck height, text readability on the gate, lighting mood, whether the wire mesh shimmers or reads too dense in the headset, the gate sheets visible from the concourse, and Quest frame time with twelve players.
-- Priority: blocks other Compound work.
+- Changed: Foliage surface and supplied handHitFoliage clip for player hand/foot contacts inside actual corn stalk coverage; 52 patches, 3,669 stalks, no new collision.
+- Setup: Farm expedition, one client then two clients for remote hand/foot presentation.
+- Check: existing contacts inside planted corn select foliage; paths, clearings, pond, railway and above-canopy points do not. Water keeps priority. Leaving corn restores normal contact audio; no idle loop or blocked movement. Verify runtime registration/unregistration through route load/unload and transformed blocks. Corn brushing without a physical contact is not a new sound trigger.
+- Evidence: compilation and focused EditMode geometry/mapping checks pass; see block-audio-surfaces.md. Play Mode remains unrun.
+- Needs human: headset listening, boundary feel and volume.
+- Priority: normal.
+
 
 ### Platform and return clock ticks — queued 2026-11-15
 - Commit(s): uncommitted.
@@ -163,6 +155,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Check: open while stopped then accelerate, and open while already moving; menu stays in its train-relative position through slopes and braking without auto-dismissing. Look/walk around without dragging it. Close/reopen from another position and confirm it appears in front of you. Walk off and away to dismiss, then reopen ashore and confirm it stays world-fixed. Grab/drop/reopen; return to Compound with menu open and confirm it can still be summoned.
 - Needs human: headset stability, reach and grab/drop feel.
 - Priority: normal.
+
+### Subway terminal model swapped into Compound — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: Compound now shows the Blender-modelled `SubwayTerminal` prefab (mesh colliders plus four invisible guards) instead of the SubwayV2 blockout, which is disabled, not deleted. Later the same day: gate lower sheets given concourse-side faces, and a two-sided alpha-clipped wire mesh (`Mesh_Fence`, no collider) added above the barricades on both track sides and the Platforms end; rebaked. Boarding trigger, countdown, launch button, private-room hint, rating and Discord stations were re-placed; new baked lights; rebaked. See [subway compound](subway-compound.md).
+- Cheap checks: Edit Mode only. Floor raycasts at spawn, player start, boarding area, both stalls and stair landing hit; track, gate and stair guards block; spawn-to-gate line clear; 8/8 meshes lightmapped, 347 probes; after the mesh addition, rays at 4-5 m height toward both tracks and past the gate still hit the guards; all labels CutePixel SDF; Console error query empty. `Validate Subway Blockout` was not run and is expected to fail, since it checks SubwayV2.
+- Setup: one desktop client in Keyboard mode from Login into the public Compound; then two real clients.
+- Check: spawn on the floor clear of pillars and the stairs for all spawn slots; walk around the fountain, into Station Info and through both Supplies openings; cannot pass or climb the side barricades, the Platforms gate line or the stair barricade; boarding trigger starts the countdown in front of the gate, cancels on leaving, and the full countdown transfers to a ready expedition; private owner can press Launch Expedition on the gate; RATE GAME and JOIN DISCORD buttons are reachable and respond. `RailBoardingLiveChecks` should still derive its positions from the moved trigger.
+- Needs human: headset climbing and hand contact on the one-sided fence panels and thin props, button reach at duck height, text readability on the gate, lighting mood, whether the wire mesh shimmers or reads too dense in the headset, the gate sheets visible from the concourse, and Quest frame time with twelve players.
+- Priority: blocks other Compound work.
 
 ### Train model-aligned collision — queued 2026-11-15
 - Commit(s): see git log "Align train collision with reviewed model".
@@ -667,6 +668,13 @@ No new block conversion or device run occurred during this documentation task.
 
 
 ## Results
+
+### Synthetic four/eight duck-and-light Quest comparison — 2026-11-14
+- **PASS for requested capture/fixture validation**, not full multiplayer or all-view performance acceptance. Explicit user request; one Quest 3, Unity 6000.3.24f1, uncommitted on main over `61ea0c9452024cf78a538391f796b1a7b6055caf`.
+- Built and installed the same Development APK for four full surveys in order 8/4/4/8. Production default rigs use arm IK/fingers and synthetic lips; totals include one local rig. Four/eight authored lights sweep the scene. All 96 measured views pass coverage/focus/tracking checks; 82,942 measured frame samples.
+- Generally 72 FPS in both workloads. Forward Skyscraper reached a 70 FPS view median in one four-duck repeat; worst GPU p95 14.0/13.9 ms is near the 13.89 ms budget. Mean of matched-view median times increased +0.16 ms CPU / +0.17 ms GPU, with material repeat/position variation. [Full evidence](validation/quest-crew-load-2026-11-14/README.md).
+- Initial obstructed-camera fixture attempt cancelled/excluded; stable local visual hand poses/head hiding added, rebuilt and both workloads repeated. Final app stopped, request absent, recorder disabled and original device properties retained. Opt-in fixture is inactive on ordinary launch.
+- No other queue items were run or closed. Real eight clients/voice, interior traversal, release performance, atlas before/after gains and natural headset appearance remain unverified.
 
 ### Older-queue regression 2026-11-13 — execution complete
 
