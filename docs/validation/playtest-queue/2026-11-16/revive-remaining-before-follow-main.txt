@@ -1,0 +1,24 @@
+2026-11-16T11:29:59.8990562Z BEGIN seeded-down feedback run=7a1b94efb7274d69a36325dc4e43b75a; controlled normal32s moving success; actual shared progress/audio/particles
+2026-11-16T11:30:04.0902668Z stage=0 sequence=3 phase=Running
+2026-11-16T11:30:12.0437507Z stage=1 sequence=3 phase=Running
+2026-11-16T11:30:19.0726329Z PASS stage=1 authoritative completion sequence=4 start=3673689.364 completedAt=3673692.365 seconds=3.00100000016391 observedBursts=1 maxFollowGap=0.0555582 speed=4
+2026-11-16T11:30:19.0726329Z PASS exactly one target completion sound in stage=1
+2026-11-16T11:30:19.0731413Z PASS both feedback sounds use game effects mixer
+2026-11-16T11:30:20.3542732Z stage=2 sequence=4 phase=Running
+2026-11-16T11:30:27.0687134Z PASS long hand withdrawal resets progress and stops loop
+2026-11-16T11:30:28.0421120Z stage=3 sequence=4 phase=Running
+2026-11-16T11:30:29.0623649Z Master handoff during two-helper progress
+2026-11-16T11:30:35.0824166Z PASS stage=3 authoritative completion sequence=5 start=3673705.417 completedAt=3673708.518 seconds=3.10100000025705 observedBursts=1 maxFollowGap=0.05555344 speed=4
+2026-11-16T11:30:35.0824166Z PASS exactly one target completion sound in stage=3
+2026-11-16T11:30:35.0824166Z PASS two helpers do not accelerate three-second rescue
+2026-11-16T11:30:35.0824166Z PASS both feedback sounds use game effects mixer
+2026-11-16T11:30:36.0617294Z stage=4 sequence=5 phase=Running
+2026-11-16T11:30:44.0688318Z stage=5 sequence=5 phase=Ending
+2026-11-16T11:30:51.0624444Z PASS stage=5 authoritative completion sequence=6 start=3673721.226 completedAt=3673724.464 seconds=3.23800000036135 observedBursts=1 maxFollowGap=0.05555872 speed=4
+2026-11-16T11:30:51.0624444Z PASS exactly one target completion sound in stage=5
+2026-11-16T11:30:51.0634517Z PASS victory rescue leaves locked scores unchanged
+2026-11-16T11:30:51.0634517Z PASS both feedback sounds use game effects mixer
+2026-11-16T11:30:52.0621279Z stage=6 sequence=6 phase=Ending
+2026-11-16T11:30:59.0721638Z PASS no duplicate completion after receipt settled
+2026-11-16T11:31:00.0602285Z stage=7 sequence=6 phase=Ending
+2026-11-16T11:31:00.0602285Z DONE

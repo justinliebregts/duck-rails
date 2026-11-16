@@ -1,0 +1,8 @@
+Actual Enemy.SubmitSwing callback and ordinary stats transport; not natural melee contact. Repel increments at locally accepted dispatch, before authority confirmation; this probe separately verifies authority reaction.
+2026-11-16T13:37:30.8478599Z PASS same authenticated room/run
+2026-11-16T13:37:36.8502923Z BASELINE target=109 enemy=RailSpider(Clone) senderActor=2 senderRepels=0 ownerRepels=0 state=Wander
+2026-11-16T13:37:36.8518123Z BASELINE observed senderRepels=0 localRepels=0
+2026-11-16T13:37:39.6374113Z PASS authority observed actual new enemy hit reaction state=Wander
+2026-11-16T13:37:44.9738712Z INCOMPLETE System.Exception: Peer aborted: peer: other participants receive no repel credit
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.CommandScript.Tick () [0x000d6] in <248b849e98084d45b90c118ef9cdb5b6>:0 
+2026-11-16T13:37:44.9762052Z END INCOMPLETE; distinguish setup/no-target from assertion failure checks=1; observer unsubscribed; genuine hit reaction and recorded stat retained; no rig/input/settings changed

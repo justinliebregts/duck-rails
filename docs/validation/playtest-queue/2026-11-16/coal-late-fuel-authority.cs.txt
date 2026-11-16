@@ -1,0 +1,104 @@
+// Install the SAME command on BOTH clients of an already-ready private Running expedition.
+// Change RUN on both clients before rerunning. Keep train stopped and hands empty.
+// Bound180s including rendezvous; typically45–90s. No Play launch, room-property seeding,
+// receipt/presentation reset, distance reset, or diagnostic-report reads.
+// The NONMASTER calls the real Fuel100 handler, then picks up/throws one actual coal using
+// the established candidate/ownership/release fixture path. This is controlled palm/rig
+// placement and release velocity, not natural keyboard/VR throwing.
+// After both see its committed receipt and old effects expire, NONMASTER leaves through
+// the real session API into Compound, then joins the retained expedition code. Its observer
+// is armed before leaving. Master stays. Real coal/fuel/credit remain committed afterward.
+// Expected cleanup: same two users back in expedition, train stopped, peer restored to its
+// original cabin-relative position. Failure during networking may require ordinary regroup.
+using System;using System.IO;using System.Linq;using System.Collections.Generic;
+using UnityEngine;using UnityEditor;using Photon.Pun;using Game.Audio;
+internal class CommandScript:IRunCommand {
+ const string RUN="20261116-coal-late-fuel-2";
+ [Serializable] class Receipt {public int id;public string token;public float fuel;}
+ string folder,path,role,room,run,status,motion;int initialActor,oldExpedition,checks;float initialFuel;
+ double began,start,ackAt,joinReadyAt,lastTick,maxGap,nextStateLog;bool master,done,fuelCalled,grabbed,released,history,leftObserved,joining,restorable;
+ Vector3 origin;Quaternion heading;Receipt receipt;RailCoal selected;
+ readonly HashSet<string> freshSoundTypes=new HashSet<string>();
+ readonly HashSet<string> audio=new HashSet<string>(),seenBursts=new HashSet<string>(),seenPopups=new HashSet<string>();
+ int freshCoalAudio;float initialDistance;string burstName;bool sawFreshBurst,sawFreshPopup;
+ string F(string suffix)=>folder+"/"+RUN+"-"+suffix;
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){checks++;Log((ok?"PASS ":"FAIL ")+s);if(!ok)throw new Exception(s);}
+ object Get(object o,string field)=>RailRemoteBridge.Get(o,field);
+ string Motion()=>string.Join("|",PhotonSession.Get(RailSessionRules.Motion,new object[]{0d,0f,0f,0f}).Select(x=>Convert.ToString(x,System.Globalization.CultureInfo.InvariantCulture)));
+ bool Ready=>Application.isPlaying&&PhotonNetwork.InRoom&&PhotonSession.Instance!=null&&PhotonSession.Instance.WorldReady&&!PhotonSession.Instance.HasRoomRequest;
+ public void Execute(ExecutionResult r){
+  if(!Ready||!PhotonSession.IsPrivate||PhotonSession.Phase!=RailPhase.Running||PhotonNetwork.CurrentRoom.PlayerCount!=2||RailExpedition.Instance==null||RailTrain.Instance==null)throw new Exception("Need exactly two ready private Running clients");
+  if(PhotonSession.DriveGripActor!=0||Mathf.Abs(RailTrain.Instance.Speed)>.01f||Mathf.Abs(Convert.ToSingle(PhotonSession.Get(RailSessionRules.Motion,new object[]{0d,0f,0f,0f})[3]))>.001f)throw new Exception("Need stopped train and no lease");
+  if(RailExpedition.LocalDown||RailWorld.InputBlocked||GR.Player.instance.leftPlayerHand.IsHolding||GR.Player.instance.rightPlayerHand.IsHolding)throw new Exception("Need awake unblocked empty-handed clients");
+  var sim=SimulatedRigInput.Instance;if(sim==null||!sim.IsSimulating||sim.UseInjectedInput||sim.Buttons.move!=Vector2.zero||sim.Buttons.grip)throw new Exception("Need neutral simulated rig, no competing injection");
+  master=PhotonNetwork.IsMasterClient;role=master?"master":"peer";initialActor=PhotonNetwork.LocalPlayer.ActorNumber;room=PhotonNetwork.CurrentRoom.Name;run=PhotonSession.RunId;status=RailTestTools.Status;
+  string root=Application.dataPath.Replace('\\','/');int vp=root.IndexOf("/Library/VP/",StringComparison.OrdinalIgnoreCase);root=vp<0?Path.GetDirectoryName(root):root.Substring(0,vp);
+  folder=root+"/Temp/rails-coal-late-fuel";Directory.CreateDirectory(folder);path=root+"/docs/validation/playtest-queue/2026-11-16/coal-late-fuel-"+role+".txt";
+  if(File.Exists(F(role+".ready"))||File.Exists(F("start")))throw new Exception("Change RUN; stale rendezvous exists");
+  File.WriteAllText(path,"Controlled actual coal + real leave/Compound/rejoin; no fabricated history. Fuel100 direct handler, not UI hit testing. No audible/headset acceptance.\n");
+  initialFuel=PhotonSession.CurrentFuel;motion=Motion();initialDistance=RailTrain.Instance.Distance;
+  if(initialFuel>=99.9f)throw new Exception("Fuel must be below99.9 so rejection has an observable unchanged value; do not silently accept capped100");
+  var furnace=UnityEngine.Object.FindFirstObjectByType<RailFurnaceModule>();if(furnace==null||furnace.coalBurstPrefab==null)throw new Exception("Need authored furnace burst");burstName=furnace.coalBurstPrefab.name+"(Clone)";
+  if(UnityEngine.Object.FindObjectsByType<GoldRewardText>(FindObjectsSortMode.None).Length>0||UnityEngine.Object.FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None).Any(x=>x.transform.root.name==burstName))throw new Exception("Wait for existing reward effects to finish before arming positive control");
+  if(!master){var p=NewPlayer.instance;origin=RailTrain.Instance.transform.InverseTransformPoint(new Vector3(p.headCollider.transform.position.x,p.transform.position.y,p.headCollider.transform.position.z));heading=Quaternion.Inverse(RailTrain.Instance.transform.rotation)*p.transform.rotation;restorable=true;}
+  Scan(true);began=EditorApplication.timeSinceStartup;lastTick=began;File.WriteAllText(F(role+".ready"),room+"\n"+run);EditorApplication.update+=Tick;
+  r.Log("Armed "+role+"; install same RUN on other client. Master stays; peer deposits then leaves/rejoins; bound180s.");
+ }
+ void Tick(){if(done)return;try{
+  double now=EditorApplication.timeSinceStartup;double gap=now-lastTick;lastTick=now;if(history&&Ready&&PhotonSession.RunId==run)maxGap=Math.Max(maxGap,gap);
+  if(!Application.isPlaying||now-began>180)throw new Exception("Play ended or180s deadline");
+  if(File.Exists(F("abort")))throw new Exception("Peer aborted: "+File.ReadAllText(F("abort")));
+  if(start==0){if(master&&File.Exists(F("peer.ready"))&&!File.Exists(F("start"))){Check(File.ReadAllText(F("peer.ready"))==room+"\n"+run,"same real room/run rendezvous");File.WriteAllText(F("start"),(PhotonNetwork.Time+2).ToString("R",System.Globalization.CultureInfo.InvariantCulture));}
+   if(File.Exists(F("start"))){Check(Ready&&PhotonNetwork.CurrentRoom.Name==room&&PhotonSession.RunId==run,"convert rendezvous only inside original ready room/run");double scheduled=double.Parse(File.ReadAllText(F("start")),System.Globalization.CultureInfo.InvariantCulture);start=now+(scheduled-PhotonNetwork.Time);Log("CLOCK anchored local monotonic start="+start.ToString("F3")+"; Photon clock used only for initial same-room rendezvous");}return;}
+  double age=now-start;if(now>=nextStateLog){nextStateLog=now+2;Log("STATE monotonicAge="+age.ToString("F2")+" room="+(PhotonNetwork.CurrentRoom==null?"none":PhotonNetwork.CurrentRoom.Name)+" ready="+Ready+" phase="+PhotonSession.Phase+" history="+history+" joining="+joining+" receipt="+(receipt==null?0:receipt.id));}if(age<0)return;Scan(false);
+  if(master){if(!Ready||PhotonNetwork.CurrentRoom.Name!=room||PhotonSession.RunId!=run||!PhotonNetwork.IsMasterClient)throw new Exception("Master must retain original run/authority");}
+  if(age<3){
+   if(!master&&!fuelCalled){fuelCalled=true;Check(!RailTestTools.CanMutate,"nonmaster cannot mutate test fuel");RailTestTools.SetFuel(100);Check(RailTestTools.Status=="Only the private run's master can set fuel","actual Fuel100 handler rejects nonmaster");Log("INPUT direct RailTestTools.SetFuel(100), no UI press claim");}
+   if(age>2&&!File.Exists(F(role+".fuel"))){Check(Mathf.Abs(PhotonSession.CurrentFuel-initialFuel)<.001f&&Motion()==motion,"Fuel100 rejection leaves observed fuel and retained motion unchanged on "+role);File.WriteAllText(F(role+".fuel"),"PASS");}return;
+  }
+  if(!File.Exists(F("master.fuel"))||!File.Exists(F("peer.fuel")))throw new Exception("Fuel rejection phase was not sampled on both clients");
+  if(receipt==null&&File.Exists(F("receipt")))receipt=JsonUtility.FromJson<Receipt>(File.ReadAllText(F("receipt")));
+  if(!master&&!released&&!history){Deposit();return;}
+  if(receipt!=null&&!File.Exists(F(role+".receipt"))&&Ready&&PhotonSession.RunId==run&&RailExpedition.Instance.State.WasConsumed(receipt.id,receipt.token)&&PhotonView.Find(receipt.id)==null){
+   Check(Mathf.Abs(RailTrain.Instance.Distance-initialDistance)<.02f,"coal deposited without distance reset or train travel");
+   float expected=Mathf.Min(100,receipt.fuel+RailResourceBalance.CoalValue(RailRoute.Instance.Selection.resourceCrew));Check(Mathf.Abs(PhotonSession.CurrentFuel-expected)<.02f,"real coal committed expected shared fuel");
+   File.WriteAllText(F(role+".receipt"),"PASS");ackAt=now;Log("RECEIPT real id="+receipt.id+" spawn="+receipt.token+" fuel="+PhotonSession.CurrentFuel);
+  }
+  if(!master&&!history&&File.Exists(F("master.receipt"))&&File.Exists(F("peer.receipt"))&&now-ackAt>5){
+   Check(sawFreshBurst&&sawFreshPopup&&freshSoundTypes.Count==3,"observer positive control saw fresh coal burst, popup and all3 coal audio events before departure");
+   Check(UnityEngine.Object.FindObjectsByType<GoldRewardText>(FindObjectsSortMode.None).Length==0&&!UnityEngine.Object.FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None).Any(x=>x.transform.root.name==burstName),"original popup/burst expired before historical window");
+   oldExpedition=RailExpedition.Instance.GetInstanceID();history=true;freshCoalAudio=0;seenBursts.Clear();seenPopups.Clear();maxGap=0;Log("INPUT ordinary LeaveCurrentRoom; historical observer active before transition");PhotonSession.Instance.LeaveCurrentRoom();return;
+  }
+  if(!master&&history){
+   if(!Ready||PhotonNetwork.CurrentRoom.Name!=room)leftObserved=true;
+   if(!joining&&Ready&&PhotonSession.Phase==RailPhase.Compound){joining=true;Log("INPUT ready Compound reached; RequestJoinCode retained expedition "+room);PhotonSession.Instance.RequestJoinCode(room);return;}
+   if(joining&&Ready&&PhotonNetwork.CurrentRoom.Name==room&&PhotonSession.RunId==run&&RailExpedition.Instance!=null){
+    if(joinReadyAt==0){joinReadyAt=now;Check(leftObserved&&!PhotonNetwork.IsMasterClient&&PhotonNetwork.LocalPlayer.ActorNumber!=initialActor,"genuine returning nonmaster membership after Compound");Check(RailExpedition.Instance.GetInstanceID()!=oldExpedition,"new expedition presentation instance, no manually reset cache");}
+    if(now-joinReadyAt>6){var shown=Get(RailExpedition.Instance,"shownFuel") as HashSet<string>;Check(RailExpedition.Instance.State.WasConsumed(receipt.id,receipt.token)&&shown!=null&&shown.Contains(receipt.id+"|"+receipt.token),"historical committed receipt seeds new presentation cache");Check(freshCoalAudio==0&&seenBursts.Count==0&&seenPopups.Count==0,"no historical coal audio leases, burst instances or popup plays during rejoin window");Check(maxGap<.5,"ready-world observation gap below500ms; measured="+maxGap);File.WriteAllText(F("late.pass"),"PASS");Finish("PASS late coal suppression + Fuel100 rejection");}
+   }
+  }
+  if(master&&File.Exists(F("late.pass"))){Check(PhotonNetwork.CurrentRoom.PlayerCount==2&&PhotonSession.DriveGripActor==0&&RailTrain.Instance.Speed<.01f,"peer returned to same retained stopped two-client run");Finish("PASS master retained receipt and witnessed peer return; peer log owns no-replay evidence");}
+ }catch(Exception e){if(path!=null)Log("INCONCLUSIVE/FAIL "+e);if(folder!=null)File.WriteAllText(F("abort"),role+": "+e.Message);Finish("INCOMPLETE; inspect preceding assertion or setup failure");}}
+ void Deposit(){
+  if(!PhotonMasterHandoff.LocalAvailable)return;
+  if(!grabbed){selected=UnityEngine.Object.FindObjectsByType<RailCoal>(FindObjectsSortMode.None).FirstOrDefault(c=>!c.GetComponent<PhotonGrabbable>().IsHeldByAnyPlayer);if(selected==null)throw new Exception("No available naturally spawned coal");
+   var item=selected.GetComponent<PhotonGrabbable>();var view=selected.GetComponent<PhotonView>();var hand=GR.Player.instance.rightPlayerHand;NewPlayer.instance.Warp(item.transform.position+Vector3.left,Quaternion.identity);var local=hand.HoldPoint.localPosition;
+   try{hand.HoldPoint.position=item.transform.position;Physics.SyncTransforms();Check(hand.FindGrabCandidate()==item&&hand.TryGrab(item),"actual coal candidate selection and grip accepted");}finally{hand.HoldPoint.localPosition=local;}
+   grabbed=true;receipt=new Receipt{id=view.ViewID,token=view.SpawnToken,fuel=PhotonSession.CurrentFuel};File.WriteAllText(F("receipt"),JsonUtility.ToJson(receipt));return;
+  }
+  var pv=PhotonView.Find(receipt.id);if(pv==null||!pv.IsMine||!pv.GetComponent<PhotonGrabbable>().IsHeld)return;
+  var furnace=RailExpedition.Instance.furnace;var point=furnace.position+furnace.forward*.72f-Vector3.up*.08f;
+  if(Vector3.Distance(point,pv.transform.position)>.14f){var p=NewPlayer.instance;var stand=new Vector3(p.headCollider.transform.position.x,p.transform.position.y,p.headCollider.transform.position.z);p.Warp(stand+point-pv.transform.position,Quaternion.LookRotation(-RailTrain.Instance.transform.forward));return;}
+  GR.Player.instance.rightPlayerHand.Release();pv.GetComponent<Rigidbody>().linearVelocity=-furnace.forward*4f+Vector3.up;released=true;Log("INPUT actual release outside firebox mouth, controlled4m/s throw; no intake teleport");
+ }
+ void Scan(bool baseline){
+  var am=UnityEngine.Object.FindFirstObjectByType<AudioManager>();var bank=RailAudio.Bank;if(am!=null&&bank!=null&&Get(am,"voices") is Array voices)foreach(var v in voices){var sound=Get(v,"Event") as SoundEvent;if(sound!=bank.coalThud&&sound!=bank.fireFlare&&sound!=bank.fuelChime)continue;if(sound==null)continue;string key=am.GetInstanceID()+":"+Array.IndexOf(voices,v)+":"+Get(v,"Generation");if(audio.Add(key)&&!baseline){if(history){freshCoalAudio++;Log("HISTORICAL_AUDIO "+sound.name+" "+key);}else freshSoundTypes.Add(sound==bank.coalThud?"thud":sound==bank.fireFlare?"flare":"chime");}}
+  foreach(var ps in UnityEngine.Object.FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None)){if(ps.transform.root.name!=burstName)continue;if(history)seenBursts.Add(ps.transform.root.GetInstanceID().ToString());else if(!baseline)sawFreshBurst=true;}
+  foreach(var popup in UnityEngine.Object.FindObjectsByType<GoldRewardText>(FindObjectsSortMode.None)){if(history)seenPopups.Add(popup.GetInstanceID()+":"+Get(popup,"startTime"));else if(!baseline)sawFreshPopup=true;}
+ }
+ void Finish(string result){if(done)return;done=true;EditorApplication.update-=Tick;RailTestTools.Status=status;
+  if(!master&&restorable&&Application.isPlaying&&NewPlayer.instance!=null){if(grabbed&&!released)GR.Player.instance.rightPlayerHand.Release();if(Ready&&PhotonNetwork.CurrentRoom.Name==room&&RailTrain.Instance!=null)NewPlayer.instance.Warp(RailTrain.Instance.transform.TransformPoint(origin),RailTrain.Instance.transform.rotation*heading);}
+  if(path!=null)Log("END "+result+" checks="+checks+" historicalAudio="+freshCoalAudio+" historicalBursts="+seenBursts.Count+" historicalPopups="+seenPopups.Count+" maxReadyGap="+maxGap+"; actual coal remains consumed; no manual/audio-quality acceptance");
+ }
+}

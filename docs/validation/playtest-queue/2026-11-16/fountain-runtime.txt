@@ -1,0 +1,13 @@
+Actual live collision/contact sound mapping. Mapping only; no dispatched playback, listening or natural cadence acceptance.
+PASS basin -1,-1 hit=Water audio collider y=0.33 surface=Water hands=HandHit_Water feet=
+PASS basin -1,0 hit=Water audio collider y=0.33 surface=Water hands=HandHit_Water feet=
+PASS basin -1,1 hit=Water audio collider y=0.33 surface=Water hands=HandHit_Water feet=
+PASS basin 0,-1 hit=Water audio collider y=0.33 surface=Water hands=HandHit_Water feet=
+PASS basin 0,1 hit=Water audio collider y=0.33 surface=Water hands=HandHit_Water feet=
+PASS basin 1,-1 hit=Water audio collider y=0.33 surface=Water hands=HandHit_Water feet=
+PASS basin 1,0 hit=Water audio collider y=0.33 surface=Water hands=HandHit_Water feet=
+PASS basin 1,1 hit=Water audio collider y=0.33 surface=Water hands=HandHit_Water feet=
+PASS pedestal hit=Fountain y=0.74 surface= hands=HandHit_Default feet=
+PASS rim hit=Fountain y=0.298 surface= hands=HandHit_Default feet=
+PASS outside hit=Fountain y=0.01 surface= hands=HandHit_Default feet=
+

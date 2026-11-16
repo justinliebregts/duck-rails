@@ -1,0 +1,17 @@
+Real posed-finger collision + production button/hold lease; controlled placement, public train drive API; no perceived voice-quality acceptance.
+2026-11-16T13:34:40.5928771Z PASS start stopped and drive unowned
+2026-11-16T13:34:40.5928771Z PASS enough existing fuel for short moving hold
+2026-11-16T13:34:40.5971276Z PASS actual integrated radio initially enabled and unpressed
+2026-11-16T13:34:40.5976638Z PASS no existing radio hold actor=1
+2026-11-16T13:34:40.5976638Z PASS no existing radio hold actor=4
+2026-11-16T13:34:40.5976638Z PASS fresh RUN rendezvous
+2026-11-16T13:34:41.8143578Z PASS same room/run rendezvous
+2026-11-16T13:34:46.8358823Z PASS actual contact establishes radio lease/transmitter on this client
+2026-11-16T13:34:47.8201209Z INPUT public drive request begins controlled train motion
+2026-11-16T13:34:51.8176045Z PASS radio lease/transmitter remains live during actual train travel
+2026-11-16T13:34:57.8228736Z PASS published radio lease renews throughout moving hold
+2026-11-16T13:35:01.8209430Z PASS real control disable clears local/remote lease and transmitter
+2026-11-16T13:35:07.8404334Z PASS restored control remains idle after genuine withdrawal
+2026-11-16T13:35:07.8409368Z PASS public drive release brakes without distance reset
+2026-11-16T13:35:11.8213519Z PASS all scoped phases observed
+2026-11-16T13:35:11.8223567Z END checks=14 failures=0; controlled placement/contact only, no audio quality or natural VR acceptance

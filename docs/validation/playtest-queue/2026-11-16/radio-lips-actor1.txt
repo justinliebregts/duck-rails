@@ -1,0 +1,61 @@
+2026-11-16T10:46:58.8208676Z BEGIN mode=lips unity=6000.3.24f1 graphics=Direct3D12 room=11111 actor=1
+2026-11-16T10:46:58.8272096Z PASS selected live lips active skin=0
+2026-11-16T10:46:58.8287179Z PASS actual local capture method binds current visible lips to local Photon mouth
+2026-11-16T10:46:58.8292412Z PASS local mic pose targets selected lip transforms
+2026-11-16T10:46:58.8292412Z PASS actual microphone pose preserves selected local pivot positions
+2026-11-16T10:46:58.8292412Z OBSERVED local skin=0 top=-15877152 bottom=-15877144 topPivot=(0.00, 0.14, 0.22) bottomPivot=(0.00, 0.14, 0.22) sampledMic=0.002658929
+2026-11-16T10:46:58.8302455Z PASS live Photon face binding view=1001 local=True
+2026-11-16T10:46:58.8307479Z PASS live Photon face binding view=2001 local=False
+2026-11-16T10:46:58.8307479Z BLOCKED Physical hand contact/reach, icon/label appearance, headset lip alignment and natural microphone/remote voice quality require human acceptance
+2026-11-16T10:46:58.8307479Z BLOCKED Direct PoseCaptureFace verifies live source wiring only; native LIV preview/recording and scene-transition capture audio are not exercised
+2026-11-16T10:46:58.8307479Z BLOCKED Current DX12 editor LIV backend unsupported: no native LIV acceptance claim
+2026-11-16T10:46:58.8317513Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_quackbear
+2026-11-16T10:46:58.8322539Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_huggy
+2026-11-16T10:46:58.8322539Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_scrap_duck
+2026-11-16T10:46:58.8327669Z END mode=lips checks=6 failures=0; scoped plumbing only
+2026-11-16T10:48:21.2441633Z BEGIN mode=radio unity=6000.3.24f1 graphics=Direct3D12 room=11111 actor=1
+2026-11-16T10:48:21.2493992Z SNAPSHOT phase=Running run=fce8a22c482d4241be02083ecca889ea onTrain=True muted=False
+2026-11-16T10:48:21.2504073Z actor=1 local=True liveLease=False transmitter=False transmitterActor=0 radioDistance=0.764
+2026-11-16T10:48:21.2509117Z actor=3 local=False liveLease=False transmitter=False transmitterActor=0 radioDistance=5.741
+2026-11-16T10:48:21.2509117Z PASS installed radio creates actual WalkieSpeaker/AudioSource
+2026-11-16T10:48:21.2509117Z PASS station speaker configured to exclude own local actor
+2026-11-16T10:48:21.2519163Z PASS station streaming clip and spatial playback configured
+2026-11-16T10:48:21.2519163Z OBSERVED audio playing=True volume=1 mute=False (source state alone does not prove sound)
+2026-11-16T10:48:21.2519163Z radio button=False focused=True paused=False
+2026-11-16T10:48:21.2519163Z PASS actual installed PressableButton.Press accepted
+2026-11-16T10:48:21.2519163Z STARTED asynchronous probe; wait for END; no Play Mode start/stop requested
+2026-11-16T10:48:23.2628514Z PASS button remains held through real frames
+2026-11-16T10:48:23.2628514Z PASS installed cap completes authored travel 0.018m
+2026-11-16T10:48:23.2628514Z PASS ordinary radio hold publishes live run-scoped lease
+2026-11-16T10:48:23.2628514Z PASS ordinary LateUpdate registers local station transmitter
+2026-11-16T10:48:23.2638520Z SNAPSHOT phase=Running run=fce8a22c482d4241be02083ecca889ea onTrain=True muted=False
+2026-11-16T10:48:23.2638520Z actor=1 local=True liveLease=True transmitter=True transmitterActor=1 radioDistance=0.764
+2026-11-16T10:48:23.2643571Z actor=3 local=False liveLease=False transmitter=False transmitterActor=0 radioDistance=5.741
+2026-11-16T10:48:23.2643571Z PASS installed radio creates actual WalkieSpeaker/AudioSource
+2026-11-16T10:48:23.2643571Z PASS station speaker configured to exclude own local actor
+2026-11-16T10:48:23.2648748Z PASS station streaming clip and spatial playback configured
+2026-11-16T10:48:23.2648748Z OBSERVED audio playing=True volume=1 mute=False (source state alone does not prove sound)
+2026-11-16T10:48:23.2648748Z radio button=True focused=True paused=False
+2026-11-16T10:48:23.2648748Z HELD remote snapshot window now until second 12
+2026-11-16T10:48:33.4932474Z PASS hold heartbeat renews beyond one-second initial lease
+2026-11-16T10:48:33.4932474Z RELEASE invoked installed button path
+2026-11-16T10:48:36.8650964Z PASS button release remains released
+2026-11-16T10:48:36.8650964Z PASS cap returns to original rest
+2026-11-16T10:48:36.8650964Z PASS released station lease inactive
+2026-11-16T10:48:36.8650964Z PASS released station transmitter removed
+2026-11-16T10:48:36.8660955Z SNAPSHOT phase=Running run=fce8a22c482d4241be02083ecca889ea onTrain=True muted=False
+2026-11-16T10:48:36.8660955Z actor=1 local=True liveLease=False transmitter=False transmitterActor=0 radioDistance=0.764
+2026-11-16T10:48:36.8660955Z actor=3 local=False liveLease=False transmitter=False transmitterActor=0 radioDistance=5.741
+2026-11-16T10:48:36.8660955Z PASS installed radio creates actual WalkieSpeaker/AudioSource
+2026-11-16T10:48:36.8660955Z PASS station speaker configured to exclude own local actor
+2026-11-16T10:48:36.8670962Z PASS station streaming clip and spatial playback configured
+2026-11-16T10:48:36.8670962Z OBSERVED audio playing=True volume=1 mute=False (source state alone does not prove sound)
+2026-11-16T10:48:36.8670962Z radio button=False focused=True paused=False
+2026-11-16T10:48:36.8675989Z OBSERVED actual mic meter samples=51 peakAverageAmplitude=7.136027E-06 (not voice quality or audible delivery)
+2026-11-16T10:48:36.8686057Z BLOCKED Physical hand contact/reach, icon/label appearance, headset lip alignment and natural microphone/remote voice quality require human acceptance
+2026-11-16T10:48:36.8686057Z BLOCKED Direct PoseCaptureFace verifies live source wiring only; native LIV preview/recording and scene-transition capture audio are not exercised
+2026-11-16T10:48:36.8691091Z BLOCKED Current DX12 editor LIV backend unsupported: no native LIV acceptance claim
+2026-11-16T10:48:36.8691091Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_quackbear
+2026-11-16T10:48:36.8696617Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_huggy
+2026-11-16T10:48:36.8696617Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_scrap_duck
+2026-11-16T10:48:36.8701708Z END mode=radio checks=19 failures=0; scoped plumbing only

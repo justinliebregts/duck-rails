@@ -1,0 +1,58 @@
+// Execute ONLY on idle cut-role/nonmaster before the public ending, no competing injection.
+// Bound75s, ordinary spawned flashlight candidate/hand claim + injected trigger edge;
+// controlled operator Warp/palm placement. No stats payload, fake counter or flag mutation.
+// Needs existing free flashlight near train. Leaves actual pickup/drop/stat receipts committed.
+using System;using System.IO;using System.Linq;using System.Collections.Generic;
+using UnityEngine;using UnityEditor;using Photon.Pun;
+internal class CommandScript:IRunCommand {
+ string path,run;double began,litAt;float baseline;int stage,edgeFrame,checks;bool done,oldInject,oldOn,saved,restored;
+ SimulatedRigInput sim;SimulatedRigInput.Frame oldFrame;NewPlayer motor;PlayerHand hand;HandFlashlight light;PhotonGrabbable item;PhotonView view;
+ Vector3 origin,itemOrigin,velocity,angular;Quaternion heading;readonly Dictionary<string,object> poses=new Dictionary<string,object>();
+ object Get(object x,string field)=>RailRemoteBridge.Get(x,field);
+ bool On=>(bool)Get(light,"isOn");
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){checks++;Log((ok?"PASS ":"FAIL ")+s);if(!ok)throw new Exception(s);}
+ void Frame(bool trigger=false)=>sim.InjectedInput=new SimulatedRigInput.Frame{grip=true,rightReach=true,trigger=trigger};
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||PhotonNetwork.IsMasterClient||PhotonSession.Phase!=RailPhase.Running||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||RailExpedition.Instance==null||RailWorld.InputBlocked||RailExpedition.LocalDown)throw new Exception("Need idle ready awake nonmaster in Running");
+  sim=SimulatedRigInput.Instance;motor=NewPlayer.instance;hand=GR.Player.instance.rightPlayerHand;
+  if(sim==null||!sim.IsSimulating||sim.UseInjectedInput||sim.Buttons.grip||sim.Buttons.trigger||sim.Buttons.move!=Vector2.zero||sim.Buttons.look!=Vector2.zero||hand.IsHolding||GR.Player.instance.leftPlayerHand.IsHolding)throw new Exception("Need idle neutral simulated rig and empty hands; do not override public fixture input");
+  light=UnityEngine.Object.FindObjectsByType<HandFlashlight>(FindObjectsSortMode.None).FirstOrDefault(x=>!x.GetComponent<PhotonGrabbable>().IsHeldByAnyPlayer&&!x.GetComponent<PhotonGrabbable>().IsStashed&&Vector3.Distance(x.transform.position,RailTrain.Instance.transform.position)<9);
+  if(light==null)throw new Exception("No free actual train flashlight; defer to private batch rather than fabricate or buy during public run");
+  item=light.GetComponent<PhotonGrabbable>();view=light.GetComponent<PhotonView>();run=PhotonSession.RunId;
+  string root=Application.dataPath.Replace('\\','/');int vp=root.IndexOf("/Library/VP/",StringComparison.OrdinalIgnoreCase);root=vp<0?Path.GetDirectoryName(root):root.Substring(0,vp);
+  path=root+"/docs/validation/playtest-queue/2026-11-16/flashlight-sixty-actor"+PhotonNetwork.LocalPlayer.ActorNumber+".txt";
+  File.WriteAllText(path,"Actual flashlight hold/on timer through normal3s stats flush; controlled palm/rig placement and injected ordinary trigger, no stats request/flag injection.\n");
+  baseline=RailExpedition.Instance.LocalParticipant.flashlightSeconds;oldOn=On;oldInject=sim.UseInjectedInput;oldFrame=sim.InjectedInput;velocity=motor.rb.linearVelocity;angular=motor.rb.angularVelocity;
+  origin=RailTrain.Instance.transform.InverseTransformPoint(new Vector3(motor.headCollider.transform.position.x,motor.transform.position.y,motor.headCollider.transform.position.z));heading=Quaternion.Inverse(RailTrain.Instance.transform.rotation)*motor.transform.rotation;itemOrigin=RailTrain.Instance.transform.InverseTransformPoint(item.transform.position);
+  foreach(string n in new[]{"headPosition","leftPosition","rightPosition","headRotation","leftRotation","rightRotation","yaw","pitch","reach","handRoll","awaitNeutral","awaitThrottleNeutral","throttleKeyWasHeld","Buttons","ThrottleHeld"})poses[n]=Get(sim,n);
+  saved=true;try{sim.UseInjectedInput=true;Frame();motor.Warp(item.transform.position+Vector3.left,Quaternion.identity);var palm=hand.HoldPoint.localPosition;
+  try{hand.HoldPoint.position=item.transform.position;Physics.SyncTransforms();Check(hand.FindGrabCandidate()==item&&hand.TryGrab(item),"actual flashlight candidate and ordinary hand claim accepted");}finally{hand.HoldPoint.localPosition=palm;}
+  began=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;r.Log("Started bounded75s real flashlight stat probe; must restore before Ending");}catch{Restore();throw;}
+ }
+ void Tick(){if(done)return;try{
+  double now=EditorApplication.timeSinceStartup;if(!Application.isPlaying||PhotonSession.RunId!=run||PhotonSession.Phase!=RailPhase.Running||RailExpedition.LocalDown)throw new Exception("World/run/phase changed before completion");
+  if(now-began>75)throw new Exception("75-second bound reached before60 shared seconds");
+  if(stage==0){Frame();if(hand.Held!=item||!item.IsHeld||!view.IsMine){if(now-began>7)throw new Exception("Flashlight ownership did not settle");return;}
+   motor.Warp(RailTrain.Instance.transform.TransformPoint(origin),RailTrain.Instance.transform.rotation*heading);if(!On){Frame(true);edgeFrame=Time.frameCount;stage=1;}else{litAt=now;stage=2;}return;
+  }
+  if(stage==1){Frame(true);if(Time.frameCount-edgeFrame<3)return;Frame();Check(On,"ordinary injected use-trigger edge enabled real held flashlight");litAt=now;stage=2;return;}
+  if(stage==2){Frame();CheckHeld();float delta=RailExpedition.Instance.LocalParticipant.flashlightSeconds-baseline;
+   if(delta>=60&&now-litAt>=60){Check(delta>=60,"authoritative participant gained at least60 flashlight seconds delta="+delta+" baseline="+baseline+" heldWall="+(now-litAt));if(On!=oldOn){Frame(true);edgeFrame=Time.frameCount;stage=3;}else stage=4;return;}
+   return;
+  }
+  if(stage==3){Frame(true);if(Time.frameCount-edgeFrame<3)return;Frame();Check(On==oldOn,"ordinary trigger restored flashlight original on/off state");stage=4;}
+  if(stage==4){Vector3 desired=RailTrain.Instance.transform.TransformPoint(itemOrigin);if(Vector3.Distance(item.transform.position,desired)>.12f){Vector3 stand=new Vector3(motor.headCollider.transform.position.x,motor.transform.position.y,motor.headCollider.transform.position.z);motor.Warp(stand+desired-item.transform.position);return;}Finish("PASS actual held/on flashlight attributed>=60 shared seconds");}
+ }catch(Exception e){if(path!=null)Log("INCOMPLETE "+e);Finish("INCOMPLETE; no stat acceptance");}}
+ void CheckHeld(){if(light==null||item==null||hand.Held!=item||!item.IsHeld||item.IsStashed||!On)throw new Exception("Lost actual held/on/not-stashed flashlight condition");}
+ void Finish(string result){if(done)return;done=true;EditorApplication.update-=Tick;Restore();if(path!=null)Log("END "+result+" checks="+checks+" restored="+restored+" sharedDelta="+(RailExpedition.Instance!=null&&RailExpedition.Instance.LocalParticipant!=null?RailExpedition.Instance.LocalParticipant.flashlightSeconds-baseline:-1));}
+ void Restore(){if(!saved||restored)return;restored=true;
+  if(motor!=null&&sim!=null){
+   if(hand!=null&&item!=null&&hand.Held==item)hand.Release();
+   if(light!=null&&!oldOn&&On){bool enabled=light.enabled;light.enabled=false;light.enabled=enabled;Log("CLEANUP actual HandFlashlight disable/re-enable resets originally-off lamp after abnormal exit; no private on-flag write");}
+   foreach(var pair in poses)RailRemoteBridge.Set(sim,pair.Key,pair.Value);RailRemoteBridge.Call(sim,"WriteSimulatedPose");sim.UseInjectedInput=oldInject;sim.InjectedInput=oldFrame;
+   if(RailTrain.Instance!=null)motor.Warp(RailTrain.Instance.transform.TransformPoint(origin),RailTrain.Instance.transform.rotation*heading);if(!motor.rb.isKinematic){motor.rb.linearVelocity=velocity;motor.rb.angularVelocity=angular;}
+   Log("RESTORED input/poses/cabin stand; actual held light released (successful path first returns it near original train-relative location); on-state="+(light!=null?On:false)+" original="+oldOn+" (actual lifecycle cleanup restores originally-off state if needed)");
+  }
+ }
+}

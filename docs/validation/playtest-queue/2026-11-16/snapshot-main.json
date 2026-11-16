@@ -1,0 +1,24 @@
+{
+    "role": "main",
+    "run": "dbd7ad2a730440349fbcdab413e5b89b",
+    "phase": "Running",
+    "utc": "2026-11-16T10:35:23.2631850Z",
+    "clients": 2,
+    "master": 2,
+    "ready": true,
+    "distance": 142.44400024414063,
+    "fuel": 5.486249923706055,
+    "owned": [
+        "duckrails_quackbear_bundle=False",
+        "duckrails_huggy_bundle=False",
+        "duckrails_scrap_duck_bundle=False"
+    ],
+    "cameras": [
+        "CenterEyeAnchor far=120 on=True target=0",
+        "RightEyeAnchor far=120 on=False target=0",
+        "LeftEyeAnchor far=120 on=False target=0",
+        "SecurityCameraEye far=25 on=False target=256",
+        "Warm helicopter feed far=25 on=True target=256",
+        "SecurityCameraEye far=25 on=False target=256"
+    ]
+}

@@ -1,0 +1,47 @@
+using System;using System.IO;using System.Linq;using UnityEngine;using UnityEditor;using Photon.Pun;
+internal class CommandScript:IRunCommand{
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!PhotonNetwork.InRoom||PhotonNetwork.IsMasterClient||PhotonSession.Phase!=RailPhase.Running||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||RailExpedition.Instance==null||RailExpedition.Instance.State.finished)
+   throw new Exception("Arm ready non-master before an independently driven real bridge crash");
+  var g=new GameObject("Optional pre-impact retained-actor recovery");UnityEngine.Object.DontDestroyOnLoad(g);g.AddComponent<CollapseActiveArrival>();r.RegisterObjectCreation(g);r.Log("Optional arrival attempt armed; ordinary reconnect only, no clocks/duration/train state changed");
+ }
+}
+[DefaultExecutionOrder(30000)] internal class CollapseActiveArrival:MonoBehaviour{
+ const string P="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/collapse-active-arrival.txt";
+ string room,run;double began,cutAt,firstAge=-1;bool cut,offline,done,failed;int actor,sceneBefore,effect;float maxMove,maxError;Vector3[] firstPositions;
+ void Log(string s)=>File.AppendAllText(P,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Start(){room=PhotonNetwork.CurrentRoom.Name;run=PhotonSession.RunId;actor=PhotonNetwork.LocalPlayer.ActorNumber;sceneBefore=RailExpedition.Instance.GetInstanceID();began=EditorApplication.timeSinceStartup;
+  File.WriteAllText(P,"Optional timing attempt: disconnect non-master ~1.5s before actual impact at ordinary4m/s; retain actor and use unmodified automatic reconnect. No cold scene reconstruction/manual visual/audio claim. NOT_REACHED if actual recovery misses section motion window.\n");EditorApplication.update+=Watchdog;}
+ void Watchdog(){if(done)return;if(!Application.isPlaying||EditorApplication.timeSinceStartup-began>120||(cut&&EditorApplication.timeSinceStartup-cutAt>30))End("BLOCKED bounded wait ended");}
+ void LateUpdate(){if(done)return;try{
+  if(!cut){var e=RailExpedition.Instance;var train=RailTrain.Instance;if(e==null||train==null)return;
+   if(e.State.finished){End("NOT_REACHED impact occurred before pre-impact trigger");return;}
+   if(PhotonNetwork.IsMasterClient){End("BLOCKED observer became master");return;}
+   float headway=e.bridgeZ-train.transform.position.z-5;
+   if(train.Speed<3.8f||headway>6||headway<=.3f)return;
+   if(e.State.BridgeProgress(PhotonNetwork.Time)>=1){End("BLOCKED raised bridge required for actual crash");return;}
+   if(RailRemoteBridge.Get(e,"collapse") as RailBridgeCollapse!=null){End("BLOCKED unexpected pre-impact collapse");return;}
+   cut=true;cutAt=EditorApplication.timeSinceStartup;Log("CUT headway="+headway+" speed="+train.Speed+" estimatedSecondsBeforeImpact="+(headway/train.Speed)+" actor="+actor+" room="+room);PhotonNetwork.Disconnect();return;
+  }
+  if(!PhotonNetwork.InRoom){offline=true;return;}
+  if(PhotonNetwork.CurrentRoom.Name!=room){End("BLOCKED recovered into different room");return;}
+  var current=RailExpedition.Instance;if(current==null||!PhotonSession.Instance.WorldReady||PhotonSession.Instance.HasRoomRequest||current.State.run!=run)return;
+  if(!current.State.finished||current.State.reason!="Bridge collision"){End("NOT_REACHED ready recovery did not observe crash state");return;}
+  var fx=RailRemoteBridge.Get(current,"collapse") as RailBridgeCollapse;if(fx==null)return;double age=PhotonNetwork.Time-current.State.finishedAt;
+  if(firstAge<0){firstAge=age;effect=fx.GetInstanceID();firstPositions=fx.sections.Select(x=>x.localPosition).ToArray();
+   Log("ARRIVAL age="+age+" reconnectSeconds="+(EditorApplication.timeSinceStartup-cutAt)+" scene="+current.GetInstanceID()+" retainedScene="+(current.GetInstanceID()==sceneBefore)+" effect="+effect+" finishedAt="+current.State.finishedAt+" actor="+PhotonNetwork.LocalPlayer.ActorNumber);
+   if(!offline||PhotonNetwork.LocalPlayer.ActorNumber!=actor){End("BLOCKED retained-actor recovery was not established");return;}
+   if(age>=2.96){End("NOT_REACHED actual arrival after last section settled; no active-fall PASS");return;}
+  }
+  failed|=effect!=fx.GetInstanceID()||Math.Abs(PhotonSession.Get(RailSessionRules.Deadline,0d)-current.State.finishedAt-32)>.02;
+  var start=Quaternion.Euler(-80*(1-current.State.BridgeProgress(current.State.finishedAt)),0,0);
+  for(int i=0;i<fx.sections.Length;i++){RailBridgeCollapse.Pose(i,start,(float)age,out var p,out var q);float t=Mathf.Clamp01(((float)age-i*.14f)/2.4f);p.y+=(fx.restHeights[i]+8.6f)*t*t;
+   maxError=Mathf.Max(maxError,Vector3.Distance(p,fx.sections[i].localPosition));maxMove=Mathf.Max(maxMove,Vector3.Distance(firstPositions[i],fx.sections[i].localPosition));}
+  // Arrival before age1 can legitimately show the current impact; after age1 it cannot replay it.
+  if(firstAge>=1&&RailRemoteBridge.Get(fx,"burst") as GameObject!=null)failed=true;
+  if(age<4)return;failed|=maxMove<.0001f||maxError>.15f;
+  End((failed?"FAIL ":"PASS ")+"active fall observed firstAge="+firstAge+" remainingMovement="+maxMove+" poseError="+maxError+"; no audible/headset/cold-scene claim");
+ }catch(Exception ex){End("BLOCKED fixture "+ex);}}
+ void End(string status){if(done)return;done=true;EditorApplication.update-=Watchdog;Log(status);UnityEngine.Object.Destroy(gameObject);}
+ void OnDestroy(){EditorApplication.update-=Watchdog;}
+}

@@ -1,0 +1,27 @@
+Unity 6000.3.24f1; 1 authenticated desktop client, controlled train commands/test tools; no keyboard/controller delivery or audible-quality acceptance.
+2026-11-16T10:07:46.6938918Z PASS acknowledged Fuel100 attempts=1 status=Set fuel and stopped train
+2026-11-16T10:07:46.6954090Z PASS Fuel 100 authoritative shared value
+2026-11-16T10:07:46.6954090Z PASS four live wheel bindings
+2026-11-16T10:07:47.9390767Z PASS menu summoned in passenger frame
+2026-11-16T10:07:56.9429983Z PASS normal driving accelerates to 4m/s max=20
+2026-11-16T10:07:56.9435221Z PASS menu follows moving train without dismissal error=0
+2026-11-16T10:07:56.9460400Z PASS moving rumble source plays with volume=0.6
+2026-11-16T10:08:00.9625156Z PASS stop brakes to rest
+2026-11-16T10:08:01.9753692Z PASS wheel phase frozen at rest
+2026-11-16T10:08:01.9753692Z PASS acknowledged 5x speed attempts=0 status=Returned to train
+2026-11-16T10:08:08.0294276Z PASS 5x speed reached max=20
+2026-11-16T10:08:14.4621103Z PASS acknowledged 1x speed attempts=13 status=Train speed restored to 1x
+2026-11-16T10:08:14.4621103Z PASS wheel rotation matches actual shared distance max angle error=0 samples=103
+2026-11-16T10:08:14.4621103Z PASS axles and suspension mount rotations remain fixed
+2026-11-16T10:08:15.4080885Z PASS reopening resummons at new head location
+2026-11-16T10:08:15.7990612Z PASS acknowledged Fuel0 attempts=2 status=Set fuel and stopped train
+2026-11-16T10:08:15.7990612Z PASS zero fuel applied
+2026-11-16T10:08:15.9699330Z PASS acknowledged Fuel100 attempts=1 status=Set fuel and stopped train
+2026-11-16T10:08:15.9709370Z PASS refuel applied
+2026-11-16T10:08:16.9918696Z PASS acknowledged success preview attempts=5 status=Success preview started: bridge, tunnel and dawn ride
+2026-11-16T10:08:17.6934125Z PASS success before 12s retains predawn and 120m
+2026-11-16T10:08:31.6936568Z PASS 12-20s fog/view transition density=0.0360317 view=137.4604
+2026-11-16T10:08:37.7079828Z PASS successful dawn uses saved density and 175m
+2026-11-16T10:08:50.9674894Z PASS all shared ending stages observed
+2026-11-16T10:08:50.9674894Z PASS private ending returns to staging
+2026-11-16T10:08:50.9674894Z PASS DONE failures=0

@@ -1,0 +1,43 @@
+Natural-success transient-reconnect observer. No simulated finish, movement, authority or room-property mutation. Local retryAt delays normal authenticated RejoinRoom for 12 editor-clock seconds. Ending rooms reject fresh code joins; this uses the retained inactive actor. Runtime fog/camera values are not manual visual/audio or headset acceptance.
+2026-11-16T12:27:18.1132802Z ARM room=68415 run=e103a1d9a9274e3ea057e29072d02a21 actor=2 ttl=120000
+2026-11-16T12:34:37.6488610Z CUT finishedAt=982120.877 originalAge=0.150000000023283 deadline=982152.877 distance=1016.524 actor=2 master=3 scene=719090 roomOpen=True
+2026-11-16T12:34:49.6594090Z RECOVERY_RELEASE localElapsed=12.0111591 offlineObserved=True resumeRoom=68415
+2026-11-16T12:34:49.6811890Z RECOVER status=Reconnecting... error=
+2026-11-16T12:34:51.6920133Z RECOVER status=Rejoining your crew... error=
+2026-11-16T12:34:52.0061420Z REJOIN currentRoomAge=14.6180000000168 localElapsed=14.3594251999998 actor=2 master=3 scene=719090 path=retained scene
+2026-11-16T12:34:52.3762211Z ENDING age=14.9740000000456 progress=1.311844 expected=1.311844 fog=0.03627887 color=RGBA(0.139, 0.146, 0.103, 1.000) view=137.1514 trainDistance=1075.82 speed=4 deadline=982152.877
+2026-11-16T12:34:52.8987698Z ENDING age=15.5060000000522 progress=1.407846 expected=1.407846 fog=0.03205478 color=RGBA(0.175, 0.183, 0.132, 1.000) view=142.4315 trainDistance=1077.948 speed=4 deadline=982152.877
+2026-11-16T12:34:53.4316514Z ENDING age=16.0350000000326 progress=1.506562 expected=1.506562 fog=0.02771126 color=RGBA(0.211, 0.222, 0.161, 1.000) view=147.8609 trainDistance=1080.064 speed=4 deadline=982152.877
+2026-11-16T12:34:53.9366762Z ENDING age=16.5439999999944 progress=1.601371 expected=1.601371 fog=0.02353967 color=RGBA(0.247, 0.259, 0.189, 1.000) view=153.0754 trainDistance=1082.1 speed=4 deadline=982152.877
+2026-11-16T12:34:54.4653133Z ENDING age=17.0729999999749 progress=1.696362 expected=1.696362 fog=0.01936008 color=RGBA(0.282, 0.297, 0.217, 1.000) view=158.2999 trainDistance=1084.216 speed=4 deadline=982152.877
+2026-11-16T12:34:55.0943148Z ENDING age=17.2850000000326 progress=1.732649 expected=1.732649 fog=0.01776344 color=RGBA(0.295, 0.311, 0.227, 1.000) view=160.2957 trainDistance=1085.064 speed=4 deadline=982152.877
+2026-11-16T12:34:55.5985052Z ENDING age=18.2079999999842 progress=1.871951 expected=1.871951 fog=0.01163416 color=RGBA(0.347, 0.365, 0.268, 1.000) view=167.9573 trainDistance=1088.756 speed=4 deadline=982152.877
+2026-11-16T12:34:56.0980882Z ENDING age=18.7129999999888 progress=1.930685 expected=1.930685 fog=0.009049869 color=RGBA(0.369, 0.389, 0.285, 1.000) view=171.1877 trainDistance=1090.776 speed=4 deadline=982152.877
+2026-11-16T12:34:56.6334731Z ENDING age=19.2330000000075 progress=1.974186 expected=1.974186 fog=0.007135798 color=RGBA(0.385, 0.406, 0.298, 1.000) view=173.5802 trainDistance=1092.856 speed=4 deadline=982152.877
+2026-11-16T12:34:57.1437708Z ENDING age=19.7560000000522 progress=1.997266 expected=1.997266 fog=0.006120294 color=RGBA(0.393, 0.415, 0.305, 1.000) view=174.8496 trainDistance=1094.948 speed=4 deadline=982152.877
+2026-11-16T12:34:57.6612090Z ENDING age=20.2739999999758 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1097.02 speed=4 deadline=982152.877
+2026-11-16T12:34:58.1920779Z ENDING age=20.7989999999991 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1099.12 speed=4 deadline=982152.877
+2026-11-16T12:34:58.6963940Z ENDING age=21.3009999999776 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1101.128 speed=4 deadline=982152.877
+2026-11-16T12:34:59.2145828Z ENDING age=21.8209999999963 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1103.208 speed=4 deadline=982152.877
+2026-11-16T12:34:59.7247614Z ENDING age=22.3360000000102 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1105.268 speed=4 deadline=982152.877
+2026-11-16T12:35:00.2648427Z ENDING age=22.859999999986 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1107.364 speed=4 deadline=982152.877
+2026-11-16T12:35:00.7724134Z ENDING age=23.375 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1109.424 speed=4 deadline=982152.877
+2026-11-16T12:35:01.2837618Z ENDING age=23.890000000014 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1111.484 speed=4 deadline=982152.877
+2026-11-16T12:35:01.8043245Z ENDING age=24.4139999999898 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1113.58 speed=4 deadline=982152.877
+2026-11-16T12:35:02.3280691Z ENDING age=24.9340000000084 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1115.66 speed=4 deadline=982152.877
+2026-11-16T12:35:02.8343097Z ENDING age=25.4429999999702 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1117.696 speed=4 deadline=982152.877
+2026-11-16T12:35:03.3415302Z ENDING age=25.9479999999749 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1119.716 speed=4 deadline=982152.877
+2026-11-16T12:35:03.8416827Z ENDING age=26.4520000000484 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1121.732 speed=4 deadline=982152.877
+2026-11-16T12:35:04.3476383Z ENDING age=26.9470000000438 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1123.712 speed=4 deadline=982152.877
+2026-11-16T12:35:04.8713919Z ENDING age=27.4770000000717 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1125.832 speed=4 deadline=982152.877
+2026-11-16T12:35:05.3777946Z ENDING age=27.9820000000764 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1127.852 speed=4 deadline=982152.877
+2026-11-16T12:35:05.8883967Z ENDING age=28.4869999999646 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1129.872 speed=4 deadline=982152.877
+2026-11-16T12:35:06.4151188Z ENDING age=29.0210000000661 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1132.008 speed=4 deadline=982152.877
+2026-11-16T12:35:06.9305126Z ENDING age=29.5280000000494 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1134.036 speed=4 deadline=982152.877
+2026-11-16T12:35:07.4522395Z ENDING age=30.0570000000298 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1136.152 speed=4 deadline=982152.877
+2026-11-16T12:35:07.9829014Z ENDING age=30.5870000000577 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1138.272 speed=4 deadline=982152.877
+2026-11-16T12:35:08.4921996Z ENDING age=31.0999999999767 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1140.324 speed=4 deadline=982152.877
+2026-11-16T12:35:09.0087971Z ENDING age=31.6199999999953 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1142.404 speed=4 deadline=982152.877
+2026-11-16T12:35:09.5405158Z ENDING age=32.1480000000447 progress=2 expected=2 fog=0.006 color=RGBA(0.394, 0.416, 0.306, 1.000) view=175 trainDistance=1144.516 speed=4 deadline=982152.877
+2026-11-16T12:35:15.2488508Z STAGING sharedElapsed=37.8760000000475 localElapsed=37.6011579999999 viewDistance=120
+2026-11-16T12:35:15.2496058Z PASS DONE stage=3 samples=521 failures=0 dawn=True returning=True observer removed

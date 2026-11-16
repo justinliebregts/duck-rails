@@ -1,0 +1,103 @@
+// PREPARED ONLY. Main runs after route, ready Compound, empty hands, no concurrent input.
+// Captures actual live HelicopterMirror textures at two FLOOR-derived stand points.
+// Current mount versus world-down 0.20m, unchanged rotation/FOV/store/geometry.
+// No AudioManager calls, Camera.Render(), scene saves, or source/prefab changes.
+// Global 45s deadline, including readiness waits. Restores mount, exact root pose,
+// kinematic/movement flags and simulated input in cleanup. PNGs are visual evidence,
+// not automatic face-readability/VR acceptance. Do not use the old elevated capture pose.
+using System;using System.IO;using System.Linq;using UnityEngine;using UnityEditor;using Photon.Pun;
+internal class CommandScript:IRunCommand {
+ const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ const string LogPath=Root+"compound-store-grounded-camera-ab.txt";
+ NewPlayer player;SimulatedRigInput sim;HelicopterMirror mirror;Transform terminal,mount;
+ Vector3 rootPosition,mountPosition;Quaternion rootRotation,mountRotation;
+ bool wasKinematic,wasDisabled,wasInjected,done,poseActive;
+ SimulatedRigInput.Frame oldFrame;double start,entered;int stage,poseFrame;string room;
+ Vector3[] stands=new Vector3[2];
+ void Log(string s)=>File.AppendAllText(LogPath,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ bool Ready()=>PhotonSession.Instance!=null&&PhotonSession.Instance.WorldReady&&!PhotonSession.Instance.HasRoomRequest;
+ public void Execute(ExecutionResult r){
+  string data=Application.dataPath.Replace('\\','/');
+  if(data!="X:/Work/duck-rails/Assets"||!Application.isPlaying||!Ready()||PhotonSession.Phase!=RailPhase.Compound||!PhotonNetwork.InRoom)
+   throw new Exception("Need main Duck Rails ready Compound after other fixtures finish");
+  player=NewPlayer.instance;sim=SimulatedRigInput.Instance;
+  if(player==null||sim==null||GR.Player.instance==null||GR.Player.instance.IsDead||GR.Player.instance.leftPlayerHand.IsHolding||GR.Player.instance.rightPlayerHand.IsHolding)
+   throw new Exception("Need current live simulated rig and empty hands");
+  var stores=UnityEngine.Object.FindObjectsByType<StoreUI>(FindObjectsSortMode.None).Where(x=>x.isActiveAndEnabled).ToArray();
+  if(stores.Length!=1)throw new Exception("Need exactly one active Compound store");
+  mirror=stores[0].GetComponentsInChildren<HelicopterMirror>().Single(x=>x.isActiveAndEnabled);
+  mount=(Transform)RailRemoteBridge.Get(mirror,"cameraMount");terminal=stores[0].transform.parent;
+  if(mount==null||terminal==null)throw new Exception("Missing camera mount or terminal parent");
+  var probes=new[]{new Vector3(6.0f,1f,3.28f),new Vector3(6.6f,1f,3.3f)};
+  for(int i=0;i<2;i++){
+   var origin=terminal.TransformPoint(probes[i]);
+   if(!Physics.Raycast(origin,-terminal.up,out var hit,3f,1<<6,QueryTriggerInteraction.Ignore)||Vector3.Dot(hit.normal,terminal.up)<.9f)
+    throw new Exception("No walkable floor under grounded position "+i);
+   if(Mathf.Abs(terminal.InverseTransformPoint(hit.point).y)>.20f)throw new Exception("Target "+i+" lands on prop/elevated surface, not bay floor");
+   stands[i]=hit.point;
+  }
+  room=PhotonNetwork.CurrentRoom.Name;rootPosition=player.transform.position;rootRotation=player.transform.rotation;
+  mountPosition=mount.localPosition;mountRotation=mount.localRotation;
+  wasKinematic=player.rb.isKinematic;wasDisabled=player.disableMovement;wasInjected=sim.UseInjectedInput;oldFrame=sim.InjectedInput;
+  start=entered=EditorApplication.timeSinceStartup;
+  Log("START grounded A/B; current mount local="+mountPosition+"; actual head height preserved; no elevated camera-forward stand target");
+  EditorApplication.update+=Tick;r.Log("Started four grounded feed captures; global deadline45s; cleanup automatic");
+ }
+ void Tick(){
+  if(done)return;
+  try{
+   if(!Application.isPlaying||EditorApplication.timeSinceStartup-start>=45){Log("BLOCKED deadline/play stopped");Finish();return;}
+   if(NewPlayer.instance!=player||!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.Name!=room||PhotonSession.Phase!=RailPhase.Compound){
+    Log("BLOCKED room/rig changed; no cross-world pose restoration");Finish();return;
+   }
+   if(!Ready())return;
+   if(stage>=4){Log("CAPTURES COMPLETE four actual rendered textures; visual review required");Finish();return;}
+   int position=stage/2;bool alternate=(stage%2)==1;
+   if(!poseActive){
+    mount.localPosition=mountPosition;mount.localRotation=mountRotation;
+    if(alternate)mount.position-=terminal.up*.20f;
+    player.disableMovement=true;player.rb.isKinematic=true;sim.UseInjectedInput=true;sim.InjectedInput=default;
+    var look=Vector3.ProjectOnPlane(mount.position-stands[position],Vector3.up);
+    player.Warp(stands[position],Quaternion.LookRotation(look.normalized,Vector3.up));
+    player.disableMovement=true;player.rb.isKinematic=true;
+    Physics.SyncTransforms();
+    Log("POSE "+position+" "+(alternate?"down020":"current")+" floor="+stands[position]+" root="+player.transform.position+" head="+player.headCollider.transform.position+" headAboveFloor="+Vector3.Dot(player.headCollider.transform.position-stands[position],terminal.up)+" mountWorld="+mount.position+" forward="+mount.forward);
+    poseFrame=Time.frameCount;entered=EditorApplication.timeSinceStartup;poseActive=true;return;
+   }
+   if(EditorApplication.timeSinceStartup-entered<1.5||Time.frameCount-poseFrame<4)return;
+   var texture=RailRemoteBridge.Get(mirror,"_texture") as RenderTexture;
+   bool have=(bool)RailRemoteBridge.Get(mirror,"_haveFrame"),near=(bool)RailRemoteBridge.Get(mirror,"_near");
+   if(texture==null||!texture.IsCreated()||!have||!near){
+    if(EditorApplication.timeSinceStartup-entered<6)return;
+    throw new Exception("Feed not ready after six seconds; haveFrame="+have+" near="+near);
+   }
+   var previous=RenderTexture.active;Texture2D png=null;
+   string path=Root+"compound-store-grounded-"+(alternate?"down020":"current")+"-p"+position+".png";
+   try{
+    RenderTexture.active=texture;png=new Texture2D(texture.width,texture.height,TextureFormat.RGB24,false);
+    png.ReadPixels(new Rect(0,0,texture.width,texture.height),0,0);png.Apply();File.WriteAllBytes(path,png.EncodeToPNG());
+   }finally{RenderTexture.active=previous;if(png!=null)UnityEngine.Object.Destroy(png);}
+   Log("CAPTURE "+path+" near="+near+" haveFrame="+have+" renderedFramesSincePose="+(Time.frameCount-poseFrame));
+   stage++;poseActive=false;
+  }catch(Exception e){Log("FIXTURE ERROR "+e);Finish();}
+ }
+ void Finish(){
+  if(done)return;done=true;EditorApplication.update-=Tick;
+  try{
+   if(mount!=null){mount.localPosition=mountPosition;mount.localRotation=mountRotation;Log("RESTORED original camera mount local pose");}
+   if(player!=null){
+    try{
+     if(Application.isPlaying&&NewPlayer.instance==player&&PhotonNetwork.InRoom&&PhotonNetwork.CurrentRoom.Name==room&&PhotonSession.Phase==RailPhase.Compound){
+      player.transform.SetPositionAndRotation(rootPosition,rootRotation);player.rb.position=rootPosition;player.rb.rotation=rootRotation;
+      player.ReseedTrackingPose();Physics.SyncTransforms();Log("RESTORED exact original rig root pose");
+     }else Log("RESTORATION INCOMPLETE rig pose: original room/rig unavailable");
+    }finally{player.disableMovement=wasDisabled;player.rb.isKinematic=wasKinematic;}
+   }
+  }catch(Exception e){Log("CLEANUP ERROR "+e);}
+  finally{
+   if(sim!=null){sim.InjectedInput=oldFrame;sim.UseInjectedInput=wasInjected;}
+   Log("DONE captures="+stage+"/4; original movement/kinematic/input flags restored where instances survive");
+  }
+ }
+}
+

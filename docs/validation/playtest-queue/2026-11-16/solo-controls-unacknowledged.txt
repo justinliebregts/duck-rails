@@ -1,0 +1,18 @@
+Unity 6000.3.24f1; 1 authenticated desktop client, controlled train commands/test tools; no keyboard/controller delivery or audible-quality acceptance.
+2026-11-16T10:06:15.7066073Z FAIL Fuel 100 authoritative shared value
+2026-11-16T10:06:15.7066073Z PASS four live wheel bindings
+2026-11-16T10:06:16.9222149Z PASS menu summoned in passenger frame
+2026-11-16T10:06:25.9257825Z PASS normal driving accelerates to 4m/s max=4
+2026-11-16T10:06:25.9272951Z PASS menu follows moving train without dismissal error=7.629395E-06
+2026-11-16T10:06:25.9365204Z PASS moving rumble source plays with volume=0.6
+2026-11-16T10:06:29.9424412Z PASS stop brakes to rest
+2026-11-16T10:06:30.9566213Z PASS wheel phase frozen at rest
+2026-11-16T10:06:37.5111809Z FAIL 5x speed reached max=4
+2026-11-16T10:06:41.5182928Z PASS wheel rotation matches actual shared distance max angle error=0 samples=99
+2026-11-16T10:06:41.5193567Z PASS axles and suspension mount rotations remain fixed
+2026-11-16T10:06:42.4466138Z PASS reopening resummons at new head location
+2026-11-16T10:06:43.4522545Z FAIL zero fuel applied
+2026-11-16T10:06:44.4570196Z FAIL refuel applied
+2026-11-16T10:07:22.4653134Z FAIL all shared ending stages observed
+2026-11-16T10:07:22.4653134Z FAIL private ending returns to staging
+2026-11-16T10:07:22.4663202Z FAIL DONE failures=6

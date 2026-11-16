@@ -1,0 +1,158 @@
+using System;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using UnityEditor;
+using Photon.Pun;
+
+internal class CommandScript : IRunCommand
+{
+    const string Root = "X:/Work/duck-rails/";
+    const string Evidence = Root + "docs/validation/playtest-queue/2026-11-16/";
+    readonly float[] progress = { 0f };
+    readonly string[] names = { "reconnect-during-checked" };
+    int trial, stage, failures;
+    double at, retry;
+    string oldRun, commandId, baselineRenderers, baselineColliders;
+    bool initialized;
+
+    void Log(string s) => File.AppendAllText(Evidence + "bridge-reconnect-during-checked-orchestration.txt",
+        DateTime.UtcNow.ToString("O") + " " + s + "\n");
+
+    void Next(int value) { stage = value; at = EditorApplication.timeSinceStartup; retry = 0; }
+
+    bool Ready()
+    {
+        var session = PhotonSession.Instance;
+        if (session == null || !session.WorldReady || session.HasRoomRequest || !PhotonNetwork.InRoom) return false;
+        var players = PhotonNetwork.PlayerList.Where(p => !p.IsInactive).ToArray();
+        string token = PhotonSession.RunId + ":" + PhotonSession.Phase;
+        return players.Length == 2 && players.All(p =>
+            ((System.Collections.IDictionary)RailRemoteBridge.Get(p,"CustomProperties"))[RailSessionRules.Ready] is string ready && ready == token);
+    }
+
+    public void Execute(ExecutionResult r)
+    {
+        if (!Application.isPlaying || !PhotonSession.IsPrivate || !PhotonNetwork.IsMasterClient ||
+            !Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor || PhotonSession.Phase != RailPhase.Running)
+            throw new Exception("Need main editor master of a ready private two-client run");
+        Directory.CreateDirectory(Evidence);
+        Directory.CreateDirectory(Root + "Temp/rails-remote");
+        File.WriteAllText(Evidence + "bridge-reconnect-during-checked-orchestration.txt",
+            "One actual drive-to-impact trial. Bridge progress and stopped approach are controlled fixtures. Normal return deadlines retained.\n");
+        Next(0); EditorApplication.update += Tick;
+        r.Log("Started raised/half/almost/success bridge sequence");
+    }
+
+    void Tick()
+    {
+        try
+        {
+            if (!Application.isPlaying)
+            { Log("BLOCKED Play Mode ended"); EditorApplication.update -= Tick; return; }
+            double now = EditorApplication.timeSinceStartup;
+            if (now - at > 180) throw new Exception("Timeout trial=" + names[trial] + " stage=" + stage);
+            if (!PhotonNetwork.IsMasterClient) throw new Exception("Main lost authority; stop this normal-trial orchestrator");
+            var session = PhotonSession.Instance;
+            var e = RailExpedition.Instance;
+            var train = RailTrain.Instance;
+
+            if (stage == 0)
+            {
+                if (!Ready() || PhotonSession.Phase != RailPhase.Running || e == null || train == null || !RailRoute.Instance.Ready) return;
+                string rs = string.Join(",", e.bridgeDeck.GetComponentsInChildren<Renderer>(true).Select(x => x.enabled ? "1" : "0"));
+                string cs = string.Join(",", e.bridgeDeck.GetComponentsInChildren<Collider>(true).Select(x => x.enabled ? "1" : "0"));
+                if (!initialized) { baselineRenderers = rs; baselineColliders = cs; initialized = true; }
+                bool restored = rs == baselineRenderers && cs == baselineColliders &&
+                    (RailRemoteBridge.Get(e, "collapse") as RailBridgeCollapse) == null;
+                Log((restored ? "PASS " : "FAIL ") + names[trial] + " fresh bridge renderer/collider restoration run=" + PhotonSession.RunId);
+                if (!restored) failures++;
+                oldRun = PhotonSession.RunId; Next(1);
+            }
+            else if (stage == 1)
+            {
+                if (!Ready() || e == null || e.State.finished) return;
+                float wanted = RailRoute.Instance.FinaleStart + 45f;
+                bool acknowledged = Mathf.Abs(train.Distance - wanted) < .02f && train.Speed < .01f &&
+                    PhotonSession.CurrentFuel > 99f && Mathf.Abs(e.State.BridgeProgress(PhotonNetwork.Time) - progress[trial]) < .0001f;
+                if (acknowledged) { RailTestTools.Board(); ArmObservers(); Next(2); return; }
+                if (now < retry) return;
+                retry = now + 1.5;
+                var s = JsonUtility.FromJson<RailRunState>(JsonUtility.ToJson(e.State));
+                s.bridgeElapsed = progress[trial] * RailRunState.BridgeSeconds;
+                s.bridgeHeldAt = s.bridgeHoldUntil = 0;
+                s.bridgeAt = progress[trial] > 0 ? PhotonNetwork.Time : 0;
+                RailBridgeHoldFixture.SetHeld(false);
+                if (e.bridgeButton != null) e.bridgeButton.GetComponent<RailHoldControl>()?.button.Release();
+                bool sent = RailRemoteBridge.Commit(RailExpedition.StateKey, JsonUtility.ToJson(s),
+                    RailSessionRules.Fuel, 100f, RailSessionRules.Motion,
+                    new object[] { PhotonNetwork.Time, wanted, 0f, 0f });
+                Log("PREPARE " + names[trial] + " sent=" + sent + " progress=" + progress[trial]);
+            }
+            else if (stage == 2)
+            {
+                string output = Root + "Temp/rails-remote/Player2-out.txt";
+                if (!File.Exists(output)) return;
+                string response = File.ReadAllText(output);
+                if (!response.StartsWith("id: " + commandId + "\n", StringComparison.Ordinal)) return;
+                if (response.Contains("COMPILE FAILED") || response.IndexOf("exception", StringComparison.OrdinalIgnoreCase) >= 0)
+                    throw new Exception("Peer observer failed: " + response);
+                if (!response.Contains("Armed crash observer") || now - at < 1) return;
+                session.SetTrainMoving(true);
+                Log("DRIVE " + names[trial] + " distance=" + train.Distance + " progress=" + e.State.BridgeProgress(PhotonNetwork.Time));
+                Next(3);
+            }
+            else if (stage == 3)
+            {
+                if (e == null || !e.State.finished) return;
+                bool expected = trial < 3 ? e.State.reason == "Bridge collision" && !e.State.success
+                    : e.State.reason == "Bridge crossed" && e.State.success;
+                double delta = PhotonSession.Get(RailSessionRules.Deadline, 0d) - e.State.finishedAt;
+                bool deadline = Math.Abs(delta - 32) < .01;
+                Log((expected && deadline ? "PASS " : "FAIL ") + names[trial] + " real gate outcome=" + e.State.reason +
+                    " success=" + e.State.success + " finishedAt=" + e.State.finishedAt.ToString("F6") + " deadlineDelta=" + delta.ToString("F6"));
+                if (!expected || !deadline) failures++;
+                Next(4);
+            }
+            else if (stage == 4)
+            {
+                // Keep the authentic return timer; observers finish before scene teardown.
+                if (PhotonSession.Phase != RailPhase.Staging || !Ready() || RailWorld.HasLiveCargo) return;
+                Log("RETURN " + names[trial] + " ready private Staging");
+                trial++;
+                if (trial == names.Length)
+                {
+                    Log("DONE outcome/restoration failures=" + failures + "; inspect both observer files for each trial separately");
+                    EditorApplication.update -= Tick; return;
+                }
+                session.StartPrivateRun(); Next(5);
+            }
+            else if (stage == 5)
+            {
+                if (PhotonSession.Phase == RailPhase.Running && PhotonSession.RunId != oldRun && Ready()) Next(0);
+                else if (PhotonSession.Phase == RailPhase.Staging && Ready() && !RailWorld.HasLiveCargo && now >= retry)
+                { retry = now + 2; session.StartPrivateRun(); }
+            }
+        }
+        catch (Exception ex) { Log("FIXTURE ERROR " + ex); EditorApplication.update -= Tick; }
+    }
+
+    void ArmObservers()
+    {
+        string code = File.ReadAllText(Evidence + "bridge-observer.cs.txt").Replace(
+            "const string Label=\"raised\"", "const string Label=\"" + names[trial] + "\"");
+        // RailRemoteBridge.Run is private static string Run(string code); Call resolves it.
+        string local = RailRemoteBridge.Call(typeof(RailRemoteBridge), "Run", code) as string;
+        if (local == null || !local.Contains("Armed crash observer") || local.Contains("COMPILE FAILED") ||
+            local.IndexOf("exception", StringComparison.OrdinalIgnoreCase) >= 0)
+            throw new Exception("Main observer failed: " + local);
+        Log("MAIN observer " + local);
+        string peer = code.Replace("var go=new GameObject", "RailTestTools.Board();var go=new GameObject");
+        commandId = "bridge-" + names[trial] + "-" + Guid.NewGuid().ToString("N");
+        File.WriteAllText(Root + "Temp/rails-remote/Player2-in.cs", "// id: " + commandId + "\n" + peer);
+    }
+}
+
+
+
+

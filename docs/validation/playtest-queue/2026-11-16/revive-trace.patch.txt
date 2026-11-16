@@ -1,0 +1,28 @@
+diff --git a/Assets/Editor/RailReviveLiveChecks.cs b/Assets/Editor/RailReviveLiveChecks.cs
+index 524c24b90..dba5a88f5 100644
+--- a/Assets/Editor/RailReviveLiveChecks.cs
++++ b/Assets/Editor/RailReviveLiveChecks.cs
+@@ -119,13 +119,21 @@ public static class RailReviveLiveChecks
+                 if (Host && !action) { baseline = revives; Teleport(P0); action = true; }
+                 if (Host && age > 1 && !back) { RailExpedition.RequestDown(); back = true; }
+                 if (!Host && !action && h.down) { Teleport(P0 + (Second ? Vector3.right : Vector3.left) * .5f); action = true; }
+-                if (!Host && action && !away && h.down && PhotonSession.Get("test.revive.leaver", "") == myId) { Board(); away = true; }
++                if (!Host && action && !away && h.down && PhotonSession.Get("test.revive.leaver", "") == myId) { Board(); away = true; Record("Current helper left; root=" + NewPlayer.instance.transform.position); }
+                 if (Host && t0 > 0 && !away && EditorApplication.timeSinceStartup - tRec > 1.0)
+-                { PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { ["test.revive.leaver"] = startRescuer }); away = true; }
++                { PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { ["test.revive.leaver"] = startRescuer }); away = true; Record("Requested helper leave " + startRescuer); }
+                 if (Host && t0 <= 0 && h.down && h.reviveAt > 0) { t0 = h.reviveAt; tRec = EditorApplication.timeSinceStartup; Record("Revive started, rescuer=" + h.rescuer); startRescuer = h.rescuer; }
+                 if (Host && t0 > 0 && !checkedHandover && EditorApplication.timeSinceStartup - tRec > 1.9)
+                 {
+                     checkedHandover = true;
++                    var targetAvatar = PhotonPlayer.ForActor(h.actor);
++                    if (targetAvatar != null && targetAvatar.TryGetHeadPosition(out var rescuePoint))
++                        foreach (var helper in run.State.players.Where(p => p.actor != h.actor))
++                        {
++                            var avatar = PhotonPlayer.ForActor(helper.actor);
++                            if (avatar != null && avatar.TryGetHandPose(true, out var left, out _) && avatar.TryGetHandPose(false, out var right, out _))
++                                Record("Handover pose actor=" + helper.actor + " rescuer=" + h.rescuer + " target=" + rescuePoint + " hands=" + left + "/" + right + " nearest=" + Math.Min(Vector3.Distance(left, rescuePoint), Vector3.Distance(right, rescuePoint)));
++                        }
+                     Require(h.down, "Still down at handover check");
+                     Require(Math.Abs(h.reviveAt - t0) < .01, "Handover kept progress (reviveAt " + t0 + " -> " + h.reviveAt + ")");
+                     Require(!string.IsNullOrEmpty(h.rescuer) && h.rescuer != startRescuer, "Second helper took over");

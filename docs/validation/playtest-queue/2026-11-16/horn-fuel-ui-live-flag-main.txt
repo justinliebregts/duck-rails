@@ -1,0 +1,168 @@
+Runtime evidence only: controlled native PressableButton.Press calls and operator Warp; no mouse/VR touch, manual visual or audible quality claim. Fuel 50/0/100 controlled values. Native FUEL 100 action rebases stopped motion at its unchanged distance. Horn uses dedicated AudioSource, not AudioManager voice pool.
+2026-11-16T11:54:20.5196039Z START driver=True actor=1 room=84026 run=c6b07268ff1d41558c8b8e9ec949ca93 distance=0
+2026-11-16T11:54:20.5344210Z BACKING fuel=(-0.55, 0.24, 0.02) distance=(-1.26, 0.24, 0.02) scale=(1.00, 1.00, 1.00)
+2026-11-16T11:54:20.5541435Z FUEL_RECEIVED value=50 revision=627
+2026-11-16T11:54:20.5541435Z STATE stage=0 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:20.5541435Z ACK stage=0 target=50
+2026-11-16T11:54:21.0559591Z STATE stage=0 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:21.5765472Z STATE stage=0 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:22.0919336Z STATE stage=0 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:22.6030731Z STATE stage=0 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:23.1072915Z STATE stage=0 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:23.5582130Z FIRE fuel=50 system=0 ratio=1 playing=True
+2026-11-16T11:54:23.5592178Z FIRE fuel=50 system=1 ratio=1 playing=True
+2026-11-16T11:54:23.5602381Z FUEL_SETTLED shared=50 retained=50 revision=642 indices=30 text=FUEL  50.0 idle=1
+2026-11-16T11:54:23.6203725Z STATE stage=1 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:23.8346755Z NATIVE_BUTTON name=FUEL 100 status=Room update pending; try again
+2026-11-16T11:54:24.1322250Z STATE stage=1 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:24.6447712Z STATE stage=1 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:25.1710071Z STATE stage=1 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:25.3400888Z NATIVE_BUTTON name=FUEL 100 status=Room update pending; try again
+2026-11-16T11:54:25.6874981Z STATE stage=1 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:26.1928906Z STATE stage=1 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:26.7046017Z STATE stage=1 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:26.8428833Z NATIVE_BUTTON name=FUEL 100 status=Set fuel and stopped train
+2026-11-16T11:54:27.0074924Z FUEL_RECEIVED value=100 revision=662
+2026-11-16T11:54:27.0090062Z ACK stage=1 target=100
+2026-11-16T11:54:27.2261402Z STATE stage=1 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:27.7363138Z STATE stage=1 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:28.2455330Z STATE stage=1 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:28.7803581Z STATE stage=1 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:29.2944165Z STATE stage=1 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:29.8074850Z STATE stage=1 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:30.3481943Z STATE stage=1 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:30.3487003Z FIRE fuel=100 system=0 ratio=1 playing=True
+2026-11-16T11:54:30.3492039Z FIRE fuel=100 system=1 ratio=1 playing=True
+2026-11-16T11:54:30.3492039Z FUEL_SETTLED shared=100 retained=100 revision=678 indices=60 text=FUEL  100.0 idle=1
+2026-11-16T11:54:30.6156210Z FUEL_REQUEST target=50 accepted=False
+2026-11-16T11:54:30.8608174Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:31.3657090Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:31.8777334Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:32.1249695Z FUEL_REQUEST target=50 accepted=False
+2026-11-16T11:54:32.3840678Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:32.8847225Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:33.3940447Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:33.6514596Z FUEL_REQUEST target=50 accepted=False
+2026-11-16T11:54:33.9157496Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:34.7907331Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:35.1532784Z FUEL_REQUEST target=50 accepted=False
+2026-11-16T11:54:35.3078390Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:35.8502807Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:36.3615301Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:36.6666484Z FUEL_REQUEST target=50 accepted=False
+2026-11-16T11:54:36.8736839Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:37.3952216Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:37.8981446Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:38.1753842Z FUEL_REQUEST target=50 accepted=False
+2026-11-16T11:54:38.4121234Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:38.9123514Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:39.4130037Z STATE stage=2 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:39.6771124Z FUEL_REQUEST target=50 accepted=True
+2026-11-16T11:54:39.8347709Z FUEL_RECEIVED value=50 revision=726
+2026-11-16T11:54:39.8347709Z ACK stage=2 target=50
+2026-11-16T11:54:39.9141356Z STATE stage=2 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:40.4244289Z STATE stage=2 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:40.9552794Z STATE stage=2 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:41.4575112Z STATE stage=2 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:41.9613074Z STATE stage=2 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:42.4651823Z STATE stage=2 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:42.8544422Z FIRE fuel=50 system=0 ratio=1 playing=True
+2026-11-16T11:54:42.8549649Z FIRE fuel=50 system=1 ratio=1 playing=True
+2026-11-16T11:54:42.8549649Z FUEL_SETTLED shared=50 retained=50 revision=745 indices=30 text=FUEL  50.0 idle=1
+2026-11-16T11:54:42.9790730Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:43.1296216Z FUEL_REQUEST target=0 accepted=False
+2026-11-16T11:54:43.4905147Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:43.9917575Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:44.5055068Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:44.6326945Z FUEL_REQUEST target=0 accepted=False
+2026-11-16T11:54:45.0255564Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:45.5472523Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:46.0501275Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:46.1392970Z FUEL_REQUEST target=0 accepted=False
+2026-11-16T11:54:46.5836449Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:47.1055789Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:47.6176569Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:47.6545955Z FUEL_REQUEST target=0 accepted=False
+2026-11-16T11:54:48.1288276Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:48.6479983Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:49.1595966Z STATE stage=3 fuel=50 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:49.1601080Z FUEL_REQUEST target=0 accepted=True
+2026-11-16T11:54:49.3493274Z AUDIO fresh=Train_OutOfFuel lease=-19239486:2:66 playing=True loop=False
+2026-11-16T11:54:49.3498414Z FUEL_RECEIVED value=0 revision=782
+2026-11-16T11:54:49.3498414Z ACK stage=3 target=0
+2026-11-16T11:54:49.6754954Z STATE stage=3 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:50.1770674Z STATE stage=3 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:50.6931437Z STATE stage=3 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:51.2131478Z STATE stage=3 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:51.7455022Z STATE stage=3 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:52.2504499Z STATE stage=3 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:52.3874379Z FIRE fuel=0 system=0 ratio=0.12 playing=True
+2026-11-16T11:54:52.3884388Z FIRE fuel=0 system=1 ratio=0.12 playing=True
+2026-11-16T11:54:52.3884388Z FUEL_SETTLED shared=0 retained=0 revision=797 indices=0 text=FUEL  0.0 idle=0.12
+2026-11-16T11:54:52.6463818Z FUEL_REQUEST target=100 accepted=False
+2026-11-16T11:54:52.7533490Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:53.2690807Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:53.7755726Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:54.1570883Z FUEL_REQUEST target=100 accepted=False
+2026-11-16T11:54:54.2861713Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:54.7905894Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:55.3230733Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:55.6650208Z FUEL_REQUEST target=100 accepted=False
+2026-11-16T11:54:55.8306019Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:56.3354575Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:56.8372394Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:57.1860935Z FUEL_REQUEST target=100 accepted=False
+2026-11-16T11:54:57.3415749Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:57.8699937Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:58.3763636Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:58.6925008Z FUEL_REQUEST target=100 accepted=False
+2026-11-16T11:54:58.9156230Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:59.4439201Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:54:59.9564384Z STATE stage=4 fuel=0 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:55:00.1940772Z FUEL_REQUEST target=100 accepted=True
+2026-11-16T11:55:00.3402912Z AUDIO fresh=Furnace_Fire_loop lease=-19239486:7:44 playing=True loop=True
+2026-11-16T11:55:00.3402912Z FUEL_RECEIVED value=100 revision=841
+2026-11-16T11:55:00.3402912Z ACK stage=4 target=100
+2026-11-16T11:55:00.4683395Z STATE stage=4 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:55:00.9715015Z STATE stage=4 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:55:01.4862569Z STATE stage=4 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:55:02.0000297Z STATE stage=4 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:55:02.5272491Z STATE stage=4 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:55:03.0341901Z STATE stage=4 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:55:03.3419980Z FIRE fuel=100 system=0 ratio=1 playing=True
+2026-11-16T11:55:03.3419980Z FIRE fuel=100 system=1 ratio=1 playing=True
+2026-11-16T11:55:03.3430016Z FUEL_SETTLED shared=100 retained=100 revision=855 indices=60 text=FUEL  100.0 idle=1
+2026-11-16T11:55:03.5414450Z STATE stage=5 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=0
+2026-11-16T11:55:03.8562386Z HORN hold starts; 12 seconds
+2026-11-16T11:55:03.8964377Z HORN_START count=1 clip=Train_Horn_01 duration=3.644807 loop=False
+2026-11-16T11:55:04.0600789Z STATE stage=6 fuel=100 hornPlaying=True hornHeld=True active=True time=0.1599773 volume=1 starts=1
+2026-11-16T11:55:05.4197623Z STATE stage=6 fuel=100 hornPlaying=True hornHeld=True active=True time=1.498662 volume=1 starts=1
+2026-11-16T11:55:05.9307289Z STATE stage=6 fuel=100 hornPlaying=True hornHeld=True active=True time=2.005329 volume=1 starts=1
+2026-11-16T11:55:06.4317877Z STATE stage=6 fuel=100 hornPlaying=True hornHeld=True active=True time=2.517324 volume=1 starts=1
+2026-11-16T11:55:06.9589499Z STATE stage=6 fuel=100 hornPlaying=True hornHeld=True active=True time=3.039977 volume=1 starts=1
+2026-11-16T11:55:07.4818087Z STATE stage=6 fuel=100 hornPlaying=True hornHeld=True active=True time=3.557324 volume=1 starts=1
+2026-11-16T11:55:07.9879299Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:08.5282750Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:09.0345403Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:09.5499146Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:10.0748191Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:10.5810740Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:11.0859389Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:11.5886062Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:12.0960121Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:12.6123027Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:13.1233996Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:13.6465392Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:14.1653096Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:14.6791749Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:15.1939804Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:15.7260620Z STATE stage=6 fuel=100 hornPlaying=False hornHeld=True active=True time=0 volume=1 starts=1
+2026-11-16T11:55:15.8739462Z HORN release, observe two seconds
+2026-11-16T11:55:16.2596984Z STATE stage=7 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=1
+2026-11-16T11:55:16.7710260Z STATE stage=7 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=1
+2026-11-16T11:55:17.2963772Z STATE stage=7 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=1
+2026-11-16T11:55:17.8107917Z STATE stage=7 fuel=100 hornPlaying=False hornHeld=False active=False time=0 volume=1 starts=1
+2026-11-16T11:55:17.9112494Z HORN_START count=1 clip=Train_Horn_01 duration=3.644807 loop=False
+2026-11-16T11:55:18.2389208Z HORN short pulse release for fade measurement
+2026-11-16T11:55:18.3263562Z STATE stage=9 fuel=100 hornPlaying=True hornHeld=False active=False time=0.4053288 volume=0.4753653 starts=1
+2026-11-16T11:55:18.7543576Z PASS DONE driver=True stage=9 failures=0 settledChecks=5 fuel=100 outCues=1 fireCues=1 fadeObserved=True duration=58.2354634000221

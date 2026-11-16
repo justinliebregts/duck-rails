@@ -1,0 +1,5 @@
+using System;using System.IO;using UnityEditor;using UnityEngine;
+internal class CommandScript:IRunCommand{
+public void Execute(ExecutionResult r){EditorApplication.update+=Tick;r.Log("Waiting to attach revive observer at expedition load");}
+void Tick(){if(!Application.isPlaying||RailExpedition.Instance==null)return;EditorApplication.update-=Tick;Debug.Log(RailRemoteBridge.Call(typeof(RailRemoteBridge),"Run",File.ReadAllText("X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/revive-observer.cs.txt")));}
+}

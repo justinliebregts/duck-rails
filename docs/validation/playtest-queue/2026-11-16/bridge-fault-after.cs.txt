@@ -1,0 +1,46 @@
+using System;using System.IO;using UnityEngine;using UnityEditor;using Photon.Pun;
+internal class CommandScript:IRunCommand{
+ const string Label="reconnect-after";const double CutAge=4;const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ double started,finished,deadline,progress;bool cut,offline;int actor,master,collapseBefore,burstBefore;string run,role;
+ void Log(string s)=>File.AppendAllText(Root+"fault-"+Label+"-"+role+".txt",DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ public void Execute(ExecutionResult r){role=Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor?"main":"Player2";started=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;r.Log("Fault armed "+Label);}
+ void Tick(){try{
+  if(!Application.isPlaying){EditorApplication.update-=Tick;return;}
+  if(EditorApplication.timeSinceStartup-started>150)throw new Exception("Reconnect timeout");
+  var e=RailExpedition.Instance;
+  if(!cut){
+   if(e==null||!e.State.finished||e.State.reason!="Bridge collision"||PhotonNetwork.Time-e.State.finishedAt<CutAge)return;
+   run=e.State.run;finished=e.State.finishedAt;deadline=PhotonSession.Get(RailSessionRules.Deadline,0d);progress=e.State.BridgeProgress(finished);
+   actor=PhotonNetwork.LocalPlayer.ActorNumber;master=PhotonNetwork.MasterClient.ActorNumber;
+   var before=RailRemoteBridge.Get(e,"collapse") as RailBridgeCollapse;
+   var burst=before!=null?RailRemoteBridge.Get(before,"burst") as GameObject:null;
+   collapseBefore=before!=null?before.GetInstanceID():0;burstBefore=burst!=null?burst.GetInstanceID():0;
+   Log("CUT age="+(PhotonNetwork.Time-finished)+" run="+run+" actor="+actor+" master="+master+" finished="+finished+" deadline="+deadline+" progress="+progress+" collapse="+collapseBefore+" burst="+burstBefore);
+   cut=true;PhotonNetwork.Disconnect();return;
+  }
+  if(!PhotonNetwork.InRoom){offline=true;return;}
+  if(!offline||e==null||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||e.State.run!=run)return;
+  var after=RailRemoteBridge.Get(e,"collapse") as RailBridgeCollapse;
+  // Wait for normal Present() before judging reconstruction.
+  if(after==null)return;
+  var afterBurst=RailRemoteBridge.Get(after,"burst") as GameObject;
+  int collapseAfter=after.GetInstanceID(),burstAfter=afterBurst!=null?afterBurst.GetInstanceID():0;
+  double age=PhotonNetwork.Time-finished;
+  bool retained=e.State.finishedAt==finished&&Math.Abs(e.State.BridgeProgress(finished)-progress)<.00001&&PhotonSession.Get(RailSessionRules.Deadline,0d)==deadline;
+  Log((retained?"PASS ":"FAIL ")+"REJOIN age="+age+" actor="+PhotonNetwork.LocalPlayer.ActorNumber+" master="+PhotonNetwork.MasterClient.ActorNumber+" retained finish/progress/deadline="+retained+" finished="+e.State.finishedAt+" deadline="+PhotonSession.Get(RailSessionRules.Deadline,0d)+" progress="+e.State.BridgeProgress(finished)+" collapse="+collapseAfter+" burst="+burstAfter);
+  if(collapseBefore!=0&&collapseAfter==collapseBefore){
+   // A transient disconnect may keep the scene, original observer, and impact
+   // object alive. Continued existence is not replay. Do not clobber its log.
+   bool noNewBurst=burstAfter==0||burstAfter==burstBefore;
+   Log((noNewBurst?"PASS ":"FAIL ")+"persistent collapse; no new impact object="+noNewBurst+" before="+collapseBefore+"/"+burstBefore+" after="+collapseAfter+"/"+burstAfter+"; original observer/evidence preserved, no rearm");
+  }else{
+   Log("RECONSTRUCTED collapse before="+collapseBefore+" after="+collapseAfter+"; late observer uses a separate evidence label");
+   // Separate evidence also avoids collision if an old observer unexpectedly survives.
+   string lateLabel=Label+"-reconstructed";
+   string code=File.ReadAllText(Root+"bridge-observer.cs.txt").Replace("const string Label=\"raised\"","const string Label=\""+lateLabel+"\"");
+   Log("REARM "+RailRemoteBridge.Call(typeof(RailRemoteBridge),"Run",code));
+  }
+  EditorApplication.update-=Tick;
+ }catch(Exception ex){Log("FIXTURE ERROR "+ex);EditorApplication.update-=Tick;}}
+}
+

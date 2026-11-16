@@ -1,0 +1,20 @@
+Unity 6000.3.24f1 RUN=20261116-throttle-edge-2 roleActor=4 nonMasterDriver=3; controlled RPC edges + ordinary simulated hand, no listening/headset acceptance
+2026-11-16T11:58:51.5365330Z PASS initial shared lever free and target stopped
+2026-11-16T11:58:51.5365330Z PASS initial local gameplay input allowed
+2026-11-16T11:58:51.5365330Z PASS fresh rendezvous RUN token
+2026-11-16T11:58:51.5405849Z PASS peer rendezvous same room/run
+2026-11-16T11:58:54.5414417Z INPUT concurrent public acquire request token=20261116-throttle-edge-2-lease-4
+2026-11-16T11:58:56.5441085Z PASS concurrent requests resolve to one real actor=4
+2026-11-16T11:58:58.5398071Z PASS loser heartbeat/release cannot steal or clear winning lease
+2026-11-16T11:58:59.5435602Z INPUT each actor releases only own contest token
+2026-11-16T11:59:02.5524005Z PASS contest release settles to no lease and STOP without distance reset
+2026-11-16T11:59:06.5436694Z PASS pre-ack release leaves no ghost lease on this client
+2026-11-16T11:59:14.5621551Z PASS driver published measured post-pose attached-palm sample
+2026-11-16T11:59:14.5626648Z PASS peer sample identifies currently granted real driver
+2026-11-16T11:59:14.5626648Z PASS remote interpolated hand pose available after LateUpdate
+2026-11-16T11:59:14.5626648Z MEASURE peer frame=17358 earlyUpdateFrame=17358 earlyGap=0.08497757 postPoseGap=0.008542074 speed=4 dt=0.0226101 expectedFrameTravel=0.09044039
+2026-11-16T11:59:14.5636688Z PASS real peer stream carries attached right palm and closed index after cabin rebasing gap=0.008542074
+2026-11-16T11:59:24.5481494Z PASS controlled focus-loss callback settles shared lease/target to stopped
+2026-11-16T11:59:28.5434074Z PASS all required phases actually sampled
+2026-11-16T11:59:28.5439107Z PASS final shared state stopped/unowned
+2026-11-16T11:59:28.5449297Z END checks=15 failures=0; menu/default-return-window/OSfocus/headset acceptance not covered

@@ -1,0 +1,17 @@
+// Bounded setup only. Install peer then main after two-client launch. Change Code per fresh run.
+using System;using System.IO;using UnityEngine;using UnityEditor;using Photon.Pun;
+internal class CommandScript:IRunCommand {
+ const string Role="peer",Code="68433";
+ const string Flag="X:/Work/duck-rails/Temp/queue-private-ready-"+Code+".txt";
+ double began,next;bool requested;
+ public void Execute(ExecutionResult r){began=EditorApplication.timeSinceStartup;EditorApplication.update+=Tick;r.Log("Private setup armed "+Role+" code="+Code);}
+ void Tick(){if(EditorApplication.timeSinceStartup-began>120){EditorApplication.update-=Tick;Debug.LogError("Private setup deadline "+Role);return;}if(!Application.isPlaying||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||PhotonSession.Instance.HasRoomRequest)return;
+  var s=PhotonSession.Instance;
+  if(PhotonNetwork.CurrentRoom?.Name==Code&&PhotonSession.IsPrivate){
+   if(PhotonSession.Phase==RailPhase.Running){EditorApplication.update-=Tick;Debug.Log("Private setup ready "+Role+" "+Code);return;}
+   if(Role=="main"&&PhotonSession.Phase==RailPhase.Staging){if(!File.Exists(Flag))File.WriteAllText(Flag,Code);if(PhotonNetwork.CurrentRoom.PlayerCount==2&&EditorApplication.timeSinceStartup>=next){next=EditorApplication.timeSinceStartup+1;s.StartPrivateRun();}}return;
+  }
+  if(requested)return;
+  if(Role=="main"){requested=true;s.RequestCreatePrivate(Code);}else if(File.Exists(Flag)){requested=true;s.RequestJoinCode(Code);}
+ }
+}

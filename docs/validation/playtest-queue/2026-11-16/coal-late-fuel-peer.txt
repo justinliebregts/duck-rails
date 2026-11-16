@@ -1,0 +1,35 @@
+Controlled actual coal + real leave/Compound/rejoin; no fabricated history. Fuel100 direct handler, not UI hit testing. No audible/headset acceptance.
+2026-11-16T13:33:45.0905332Z PASS convert rendezvous only inside original ready room/run
+2026-11-16T13:33:45.0905332Z CLOCK anchored local monotonic start=1809.730; Photon clock used only for initial same-room rendezvous
+2026-11-16T13:33:45.1160895Z STATE monotonicAge=-1.97 room=68432 ready=True phase=Running history=False joining=False receipt=0
+2026-11-16T13:33:47.1089530Z PASS nonmaster cannot mutate test fuel
+2026-11-16T13:33:47.1089530Z PASS actual Fuel100 handler rejects nonmaster
+2026-11-16T13:33:47.1094668Z INPUT direct RailTestTools.SetFuel(100), no UI press claim
+2026-11-16T13:33:47.1313967Z STATE monotonicAge=0.05 room=68432 ready=True phase=Running history=False joining=False receipt=0
+2026-11-16T13:33:49.1062672Z PASS Fuel100 rejection leaves observed fuel and retained motion unchanged on peer
+2026-11-16T13:33:49.1637250Z STATE monotonicAge=2.08 room=68432 ready=True phase=Running history=False joining=False receipt=0
+2026-11-16T13:33:50.0941897Z PASS actual coal candidate selection and grip accepted
+2026-11-16T13:33:50.3434713Z INPUT actual release outside firebox mouth, controlled4m/s throw; no intake teleport
+2026-11-16T13:33:51.1725688Z STATE monotonicAge=4.09 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:33:51.2700557Z PASS coal deposited without distance reset or train travel
+2026-11-16T13:33:51.2715588Z PASS real coal committed expected shared fuel
+2026-11-16T13:33:51.2715588Z RECEIPT real id=107 spawn=ef4d84e1f78b4948a905f8ab217cf0ea fuel=65.625
+2026-11-16T13:33:53.1748178Z STATE monotonicAge=6.09 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:33:55.1765030Z STATE monotonicAge=8.09 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:33:56.2853720Z PASS observer positive control saw fresh coal burst, popup and all3 coal audio events before departure
+2026-11-16T13:33:56.2878781Z PASS original popup/burst expired before historical window
+2026-11-16T13:33:56.2878781Z INPUT ordinary LeaveCurrentRoom; historical observer active before transition
+2026-11-16T13:33:57.1924096Z STATE monotonicAge=10.11 room=none ready=False phase=Compound history=True joining=False receipt=107
+2026-11-16T13:33:58.8980155Z INPUT ready Compound reached; RequestJoinCode retained expedition 68432
+2026-11-16T13:33:59.2079008Z STATE monotonicAge=12.12 room=69714 ready=False phase=Compound history=True joining=True receipt=107
+2026-11-16T13:34:02.3816278Z STATE monotonicAge=15.30 room=68432 ready=False phase=Running history=True joining=True receipt=107
+2026-11-16T13:34:04.5927289Z STATE monotonicAge=17.51 room=68432 ready=False phase=Running history=True joining=True receipt=107
+2026-11-16T13:34:06.1612156Z PASS genuine returning nonmaster membership after Compound
+2026-11-16T13:34:06.1612156Z PASS new expedition presentation instance, no manually reset cache
+2026-11-16T13:34:06.6142867Z STATE monotonicAge=19.53 room=68432 ready=True phase=Running history=True joining=True receipt=107
+2026-11-16T13:34:08.6285829Z STATE monotonicAge=21.54 room=68432 ready=True phase=Running history=True joining=True receipt=107
+2026-11-16T13:34:10.6544238Z STATE monotonicAge=23.57 room=68432 ready=True phase=Running history=True joining=True receipt=107
+2026-11-16T13:34:12.1616031Z PASS historical committed receipt seeds new presentation cache
+2026-11-16T13:34:12.1633350Z PASS no historical coal audio leases, burst instances or popup plays during rejoin window
+2026-11-16T13:34:12.1633350Z PASS ready-world observation gap below500ms; measured=0.312570900000082
+2026-11-16T13:34:12.1643417Z END PASS late coal suppression + Fuel100 rejection checks=14 historicalAudio=0 historicalBursts=0 historicalPopups=0 maxReadyGap=0.312570900000082; actual coal remains consumed; no manual/audio-quality acceptance

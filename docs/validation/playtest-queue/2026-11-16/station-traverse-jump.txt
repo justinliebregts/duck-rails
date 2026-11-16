@@ -1,0 +1,15 @@
+Actual simulated room-scale collision; warp only to route starts, 1.8m/s input, existing jump on stairs/gaps; endpoint .35m XZ and correct grounded height. No natural VR acceptance.
+2026-11-16T09:49:57.0132998Z PASS platform -1 head=(-4.50, 1.48, 64.21) target=(-4.50, 1.00, 64.00) xz=0.2147371 support=True
+2026-11-16T09:50:16.0342124Z FAIL lower stairs -1 head=(-11.50, 3.00, 69.45) target=(-11.50, 3.55, 66.50) xz=2.954872 support=True
+2026-11-16T09:50:35.0654149Z FAIL upper stairs -1 head=(-11.47, 4.37, 65.11) target=(-11.50, 6.10, 60.00) xz=5.111682 support=True
+2026-11-16T09:50:39.2565338Z PASS board gap -1 head=(-1.74, 1.45, 70.01) target=(-1.50, 1.00, 70.00) xz=0.2442308 support=True
+2026-11-16T09:50:47.7184265Z PASS platform 1 head=(4.50, 1.47, 64.24) target=(4.50, 1.00, 64.00) xz=0.2390766 support=True
+2026-11-16T09:51:06.7360003Z FAIL lower stairs 1 head=(11.50, 3.00, 69.55) target=(11.50, 3.55, 66.50) xz=3.049294 support=True
+2026-11-16T09:51:25.7741005Z FAIL upper stairs 1 head=(11.17, 5.56, 62.87) target=(11.50, 6.10, 60.00) xz=2.886392 support=True
+2026-11-16T09:51:29.9470054Z PASS board gap 1 head=(1.72, 1.45, 70.00) target=(1.50, 1.00, 70.00) xz=0.2242407 support=True
+2026-11-16T09:51:45.6838852Z PASS bridge crossing head=(10.77, 6.57, 59.50) target=(11.00, 6.10, 59.50) xz=0.225325 support=True
+2026-11-16T09:51:50.8061968Z PASS supplies doorway head=(-15.76, 1.47, 78.00) target=(-16.00, 1.00, 78.00) xz=0.2394163 support=True
+2026-11-16T09:51:57.0894241Z PASS shop aisle head=(-19.00, 1.47, 80.26) target=(-19.00, 1.00, 80.50) xz=0.2359889 support=True
+2026-11-16T09:52:02.2815927Z PASS washroom head=(15.77, 1.47, 74.70) target=(16.00, 1.00, 74.70) xz=0.2293313 support=True
+2026-11-16T09:52:10.8831653Z PASS office head=(15.77, 1.47, 80.61) target=(16.00, 1.00, 80.60) xz=0.2334979 support=True
+2026-11-16T09:52:10.8836733Z DONE

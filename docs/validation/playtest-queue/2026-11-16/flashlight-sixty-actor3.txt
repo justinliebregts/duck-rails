@@ -1,0 +1,7 @@
+Actual flashlight hold/on timer through normal3s stats flush; controlled palm/rig placement and injected ordinary trigger, no stats request/flag injection.
+2026-11-16T13:20:00.5091985Z PASS actual flashlight candidate and ordinary hand claim accepted
+2026-11-16T13:20:00.7755991Z PASS ordinary injected use-trigger edge enabled real held flashlight
+2026-11-16T13:21:12.0325607Z PASS authoritative participant gained at least60 flashlight seconds delta=61.18078 baseline=0 heldWall=71.2570172
+2026-11-16T13:21:12.1335588Z PASS ordinary trigger restored flashlight original on/off state
+2026-11-16T13:21:12.1760618Z RESTORED input/poses/cabin stand; actual held light released (successful path first returns it near original train-relative location); on-state=False original=False (actual lifecycle cleanup restores originally-off state if needed)
+2026-11-16T13:21:12.1765741Z END PASS actual held/on flashlight attributed>=60 shared seconds checks=4 restored=True sharedDelta=61.18078

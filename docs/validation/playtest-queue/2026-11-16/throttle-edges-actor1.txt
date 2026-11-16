@@ -1,0 +1,19 @@
+Unity 6000.3.24f1 RUN=20261116-throttle-edge-1 roleActor=1 nonMasterDriver=2; controlled RPC edges + ordinary simulated hand, no listening/headset acceptance
+2026-11-16T11:56:08.7741744Z PASS initial shared lever free and target stopped
+2026-11-16T11:56:08.7749006Z PASS initial local gameplay input allowed
+2026-11-16T11:56:08.7749006Z PASS fresh rendezvous RUN token
+2026-11-16T11:56:08.7784660Z PASS peer rendezvous same room/run
+2026-11-16T11:56:11.7880750Z INPUT concurrent public acquire request token=20261116-throttle-edge-1-lease-1
+2026-11-16T11:56:13.7913208Z PASS concurrent requests resolve to one real actor=1
+2026-11-16T11:56:15.7923679Z PASS loser heartbeat/release cannot steal or clear winning lease
+2026-11-16T11:56:16.8257748Z INPUT each actor releases only own contest token
+2026-11-16T11:56:19.7789763Z PASS contest release settles to no lease and STOP without distance reset
+2026-11-16T11:56:23.7854219Z PASS pre-ack release leaves no ghost lease on this client
+2026-11-16T11:56:31.7909707Z PASS driver published measured attached-palm sample
+2026-11-16T11:56:31.7929760Z PASS peer sample identifies currently granted real driver
+2026-11-16T11:56:31.7929760Z PASS remote interpolated hand pose available
+2026-11-16T11:56:31.7934800Z FAIL real peer stream carries attached right palm and closed index gap=0.08895601
+2026-11-16T11:56:31.7934800Z FAIL System.Exception: real peer stream carries attached right palm and closed index gap=0.08895601
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.QueueThrottleEdges.Check (System.Boolean b, System.String s) [0x00033] in <f6b25cede47f41d29cff72a4f8c8bb58>:0 
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.QueueThrottleEdges.Update () [0x006ec] in <f6b25cede47f41d29cff72a4f8c8bb58>:0 
+2026-11-16T11:56:31.7949927Z END checks=12 failures=1; menu/default-return-window/OSfocus/headset acceptance not covered

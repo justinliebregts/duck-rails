@@ -1,0 +1,95 @@
+// Install SAME command on both ready clients. Fresh RUN for rerun; 28s after rendezvous,
+// hard90s. Nonmaster's real posed finger overlaps actual radio BoxCollider; production
+// PressableButton handles contact. NO Press(), SetHeld(), published hold seeding or mute spoof.
+// This is controlled operator Warp/PoseNow placement, NOT natural keyboard/VR reach.
+// Master moves train through public drive-request API, then releases it; no distance reset.
+// Operator disables the real RailHoldControl while still touching, withdraws, then restores.
+// No microphone intelligibility, audible/spatial quality, headset comfort or LIV claims.
+using System;using System.IO;using System.Linq;using System.Collections;using System.Collections.Generic;
+using UnityEngine;using Photon.Pun;using Photon.Voice.PUN;using Game.Animation;
+internal class CommandScript:IRunCommand {
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.PlayerCount!=2||PhotonSession.Phase!=RailPhase.Running||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady)throw new Exception("Need two ready authenticated Running clients");
+  if(GameObject.Find("Radio contact moving probe")!=null)throw new Exception("Probe already present");
+  var go=new GameObject("Radio contact moving probe");var probe=go.AddComponent<QueueRadioContact>();go.AddComponent<QueueRadioContactObserve>().owner=probe;r.RegisterObjectCreation(go);r.Log("Armed radio contact/moving/disable; install same RUN on peer, read both END logs");
+ }
+}
+[DefaultExecutionOrder(60)] internal class QueueRadioContact:MonoBehaviour {
+ const string RUN="20261116-radio-contact-1";
+ string folder,path,room,run,token;int actor,operatorActor,remote,checks,failures,lastPoseFrame=-1;
+ double began,start,nextSend,firstExpiry;float initialDistance;bool done,armed,master,ownsDrive,saved,disabled,restored;
+ RailHoldControl radio;BoxCollider volume;SimulatedRigInput sim;NewPlayer motor;LocalBodyDriver body;SphereCollider finger;
+ bool oldInject,oldEnabled;SimulatedRigInput.Frame oldFrame;Vector3 origin,oldVelocity,oldAngular;Quaternion heading;
+ readonly Dictionary<string,object> poses=new Dictionary<string,object>();readonly HashSet<string> once=new HashSet<string>();
+ string F(string s)=>folder+"/"+RUN+"-"+s;
+ object Get(object x,string s)=>RailRemoteBridge.Get(x,s);
+ bool Once(string s)=>once.Add(s);
+ float Target=>Convert.ToSingle(PhotonSession.Get(RailSessionRules.Motion,new object[]{0d,0f,0f,0f})[3]);
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){checks++;Log((ok?"PASS ":"FAIL ")+s);if(!ok)throw new Exception(s);}
+ object HoldValue(){var player=PhotonNetwork.CurrentRoom.GetPlayer(operatorActor);return player==null?null:((IDictionary)Get(player,"CustomProperties"))["rails.radioHold"];}
+ bool Live()=>RailHoldControl.IsLive(HoldValue(),run,PhotonNetwork.Time);
+ bool Transmitting()=>WalkieRadio.TryTransmitter(-100000-operatorActor,out int source)&&source==operatorActor;
+ void Start(){try{
+  master=PhotonNetwork.IsMasterClient;actor=PhotonNetwork.LocalPlayer.ActorNumber;remote=PhotonNetwork.PlayerList.Single(x=>!x.IsLocal).ActorNumber;operatorActor=PhotonNetwork.PlayerList.Single(x=>!x.IsMasterClient).ActorNumber;
+  room=PhotonNetwork.CurrentRoom.Name;run=PhotonSession.RunId;token=RUN+"-drive";
+  string root=Application.dataPath.Replace('\\','/');int vp=root.IndexOf("/Library/VP/",StringComparison.OrdinalIgnoreCase);root=vp<0?Path.GetDirectoryName(root):root.Substring(0,vp);
+  folder=root+"/Temp/rails-radio-contact";Directory.CreateDirectory(folder);path=root+"/docs/validation/playtest-queue/2026-11-16/radio-contact-actor"+actor+".txt";
+  File.WriteAllText(path,"Real posed-finger collision + production button/hold lease; controlled placement, public train drive API; no perceived voice-quality acceptance.\n");
+  Check(PhotonSession.DriveGripActor==0&&Mathf.Abs(Target)<.001f&&RailTrain.Instance.Speed<.01f,"start stopped and drive unowned");Check(PhotonSession.CurrentFuel>10,"enough existing fuel for short moving hold");
+  radio=UnityEngine.Object.FindObjectsByType<RailHoldControl>(FindObjectsSortMode.None).Single(x=>x.radio&&x.GetComponentInParent<RailTrain>()!=null);volume=radio.button.GetComponent<BoxCollider>();
+  Check(radio.isActiveAndEnabled&&radio.button.isActiveAndEnabled&&radio.button.interactable&&!radio.button.IsPressed,"actual integrated radio initially enabled and unpressed");
+  foreach(var player in PhotonNetwork.PlayerList)Check(!RailHoldControl.IsLive(((IDictionary)Get(player,"CustomProperties"))["rails.radioHold"],run,PhotonNetwork.Time),"no existing radio hold actor="+player.ActorNumber);
+  if(!master){
+   sim=SimulatedRigInput.Instance;motor=NewPlayer.instance;body=motor.GetComponent<LocalBodyDriver>();
+   Check(sim!=null&&sim.IsSimulating&&!sim.UseInjectedInput&&!sim.Buttons.grip&&sim.Buttons.move==Vector2.zero&&sim.Buttons.look==Vector2.zero&&!RailWorld.InputBlocked&&!RailExpedition.LocalDown,"operator neutral simulated rig");
+   Check(!GR.Player.instance.leftPlayerHand.IsHolding&&!GR.Player.instance.rightPlayerHand.IsHolding&&!PhotonVoiceChat.IsLocallyMuted&&(bool)Get(radio,"focused")&&!(bool)Get(radio,"paused"),"operator naturally unmuted/focused and empty-handed");
+   body.PoseNow();finger=body.Body.RightHand.GetComponentInChildren<SphereCollider>();Check(finger!=null&&finger.enabled,"actual visible hand supplies active finger collider");
+   oldInject=sim.UseInjectedInput;oldFrame=sim.InjectedInput;oldEnabled=radio.enabled;oldVelocity=motor.rb.linearVelocity;oldAngular=motor.rb.angularVelocity;
+   origin=RailTrain.Instance.transform.InverseTransformPoint(new Vector3(motor.headCollider.transform.position.x,motor.transform.position.y,motor.headCollider.transform.position.z));heading=Quaternion.Inverse(RailTrain.Instance.transform.rotation)*motor.transform.rotation;
+   foreach(string name in new[]{"headPosition","leftPosition","rightPosition","headRotation","leftRotation","rightRotation","yaw","pitch","reach","handRoll","awaitNeutral","awaitThrottleNeutral","throttleKeyWasHeld","Buttons","ThrottleHeld"})poses[name]=Get(sim,name);
+   saved=true;sim.UseInjectedInput=true;sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true};
+  }
+  Check(!File.Exists(F(actor+".ready"))&&!File.Exists(F("start"))&&!File.Exists(F("abort")),"fresh RUN rendezvous");initialDistance=RailTrain.Instance.Distance;began=Time.realtimeSinceStartupAsDouble;armed=true;File.WriteAllText(F(actor+".ready"),room+"\n"+run);
+ }catch(Exception e){Fail(e);}}
+ void Update(){if(done||!armed)return;try{
+  if(!Application.isPlaying||!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.Name!=room||PhotonSession.RunId!=run||PhotonNetwork.CurrentRoom.PlayerCount!=2)throw new Exception("Room/run/crew changed");
+  if(Time.realtimeSinceStartupAsDouble-began>90)throw new Exception("90-second deadline");if(File.Exists(F("abort")))throw new Exception("Peer aborted: "+File.ReadAllText(F("abort")));
+  if(start==0){if(master&&File.Exists(F(remote+".ready"))&&!File.Exists(F("start"))){Check(File.ReadAllText(F(remote+".ready"))==room+"\n"+run,"same room/run rendezvous");File.WriteAllText(F("start"),(PhotonNetwork.Time+2).ToString("R",System.Globalization.CultureInfo.InvariantCulture));}if(File.Exists(F("start")))start=double.Parse(File.ReadAllText(F("start")),System.Globalization.CultureInfo.InvariantCulture);return;}
+  double age=PhotonNetwork.Time-start;if(age<0)return;
+  if(master&&age>=4&&age<18){if(!ownsDrive){ownsDrive=true;PhotonSession.Instance.RequestDriveGrip(run,token,0,0);Log("INPUT public drive request begins controlled train motion");}if(PhotonNetwork.Time>=nextSend){nextSend=PhotonNetwork.Time+.15;PhotonSession.Instance.RequestDriveGrip(run,token,1,.6f);}}
+  if(master&&age>=18&&ownsDrive&&Once("releaseDrive"))PhotonSession.Instance.RequestDriveGrip(run,token,2,0);
+  if(!master&&age>=16&&!disabled){disabled=true;radio.enabled=false;Log("INPUT actual RailHoldControl.enabled=false while real finger remains in contact");}
+  if(!master&&age>=21&&Once("reenable")){radio.enabled=oldEnabled;Log("INPUT restore radio after withdrawal; no Press or SetHeld callback");}
+  if(age>=28){Check(once.Contains("moving")&&once.Contains("renewed")&&once.Contains("cleared")&&once.Contains("restored"),"all scoped phases observed");Finish();}
+ }catch(Exception e){Fail(e);}}
+ // Run once per render frame after normal rig posing and before PressableButton(75).
+ // Same standing-point correction as the validated bridge helper; never use tracking-origin Warp.
+ void LateUpdate(){if(done||!saved||start==0||lastPoseFrame==Time.frameCount)return;try{
+  double age=PhotonNetwork.Time-start;if(age<0)return;lastPoseFrame=Time.frameCount;
+  sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true};body.PoseNow();
+  Vector3 desired=volume.transform.TransformPoint(volume.center);if(age<2||age>=19)desired+=volume.transform.right*.5f;
+  Vector3 delta=desired-finger.transform.TransformPoint(finger.center);Vector3 stand=new Vector3(motor.headCollider.transform.position.x,motor.transform.position.y,motor.headCollider.transform.position.z);motor.Warp(stand+delta);body.PoseNow();
+ }catch(Exception e){Fail(e);}}
+ public void Observe(){if(done||!armed||start==0)return;try{double age=PhotonNetwork.Time-start;
+  if(age>3&&Once("stationary")){Check(Live()&&Transmitting(),"actual contact establishes radio lease/transmitter on this client");if(!master)Check(GR.Player.instance.rightPlayerHand.TouchesButton(volume)&&radio.button.IsPressed&&(bool)Get(radio,"held"),"real finger overlap drives production button and hold");}
+  if(age>8&&Once("moving")){Check(RailTrain.Instance.Distance>initialDistance+1&&RailTrain.Instance.Speed>.5f&&Live()&&Transmitting(),"radio lease/transmitter remains live during actual train travel");if(HoldValue() is object[] data)firstExpiry=Convert.ToDouble(data[1]);if(!master)Check(radio.button.IsPressed&&GR.Player.instance.rightPlayerHand.TouchesButton(volume),"physical finger contact retained on moving console");}
+  if(age>14&&Once("renewed")){Check(Live()&&Transmitting()&&HoldValue() is object[] d&&Convert.ToDouble(d[1])>firstExpiry+4,"published radio lease renews throughout moving hold");}
+  if(!master&&disabled&&age<19&&Once("disabledContact"))Check(!radio.button.IsPressed&&!(bool)Get(radio,"held")&&GR.Player.instance.rightPlayerHand.TouchesButton(volume),"disable releases button/held state while finger still touches");
+  if(age>18&&Once("cleared")){Check(!Live()&&!Transmitting(),"real control disable clears local/remote lease and transmitter");if(!master)Check(once.Contains("disabledContact"),"sampled disabled control before withdrawal");}
+  if(age>24&&Once("restored")){Check(radio.enabled&&!radio.button.IsPressed&&!Live()&&!Transmitting(),"restored control remains idle after genuine withdrawal");Check(PhotonSession.DriveGripActor==0&&Mathf.Abs(Target)<.001f&&RailTrain.Instance.Speed<.05f,"public drive release brakes without distance reset");if(!master)Check(!GR.Player.instance.rightPlayerHand.TouchesButton(volume)&&!VRButtonPressLock.Blocked,"withdrawal rearms actual touch lock");}
+ }catch(Exception e){Fail(e);}}
+ void Fail(Exception e){if(done)return;failures++;if(path!=null)Log("FAIL "+e);if(folder!=null)File.WriteAllText(F("abort"),"actor="+actor+" "+e.Message);Finish();}
+ void Finish(){if(done)return;done=true;Restore();if(path!=null)Log("END checks="+checks+" failures="+failures+"; controlled placement/contact only, no audio quality or natural VR acceptance");Destroy(gameObject);}
+ void Restore(){if(restored)return;restored=true;
+  if(master&&ownsDrive&&PhotonNetwork.InRoom&&PhotonNetwork.CurrentRoom.Name==room&&PhotonSession.Instance!=null)PhotonSession.Instance.RequestDriveGrip(run,token,2,0);
+  if(saved&&sim!=null&&motor!=null){
+   // Move away before re-enabling so cleanup cannot manufacture a new poke.
+   if(RailTrain.Instance!=null)motor.Warp(RailTrain.Instance.transform.TransformPoint(origin),RailTrain.Instance.transform.rotation*heading);
+   foreach(var p in poses)RailRemoteBridge.Set(sim,p.Key,p.Value);RailRemoteBridge.Call(sim,"WriteSimulatedPose");sim.UseInjectedInput=oldInject;sim.InjectedInput=oldFrame;body.PoseNow();
+   if(radio!=null){radio.enabled=false;radio.enabled=oldEnabled;}if(!motor.rb.isKinematic){motor.rb.linearVelocity=oldVelocity;motor.rb.angularVelocity=oldAngular;}Log("RESTORED operator cabin position, input/poses/velocity, original radio enabled state; no distance reset");
+  }
+ }
+ void OnDestroy(){Restore();}
+}
+[DefaultExecutionOrder(30000)] internal class QueueRadioContactObserve:MonoBehaviour {public QueueRadioContact owner;void LateUpdate(){if(owner!=null)owner.Observe();}}

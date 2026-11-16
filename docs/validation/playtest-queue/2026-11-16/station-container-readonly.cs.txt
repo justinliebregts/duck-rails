@@ -1,0 +1,80 @@
+// PREPARED NOT RUN. Ready current Play route including StartingStation and Container Yard.
+// Synchronous bounded (<30s) static geometry/visibility test. No player/train/route transforms or input touched.
+// Only RailBlockVisibility.ApplyViewerPosition changes render visibility, restored exactly in finally.
+// Coordinates from ArtSource/StartingStation/build_station.py: rear68, side13, portal140, fences+/-47,
+// station length160; envelope from docs/validation/station-v3/checks.txt: X+/-2.75 Y.3..5.2 Z75..160.
+// Tests current actual colliders. Not natural traversal, passenger/prop/particle clearance or headset visuals.
+using System;using UnityEditor;using System.IO;using System.Linq;using System.Collections;using System.Collections.Generic;using UnityEngine;
+internal class CommandScript:IRunCommand {
+ const string Out="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/station-container-readonly.txt";
+ readonly List<string> lines=new List<string>();int checks,fail,blocked;double began;
+ void Check(bool ok,string s){checks++;if(!ok)fail++;lines.Add((ok?"PASS ":"FAIL ")+s);}
+ void Limit(){if((EditorApplication.timeSinceStartup-began)>20)throw new Exception("20s work bound exceeded");}
+ public void Execute(ExecutionResult r){
+  string p=Application.dataPath.Replace('\\','/');if(!(p=="X:/Work/duck-rails/Assets"||(p.StartsWith("X:/Work/duck-rails/Library/VP/")&&p.EndsWith("/Assets"))))throw new Exception("Wrong project");
+  if(!Application.isPlaying||RailRoute.Instance==null||!RailRoute.Instance.Ready)throw new Exception("Need ready loaded route");
+  began=EditorApplication.timeSinceStartup;lines.Add(DateTime.UtcNow.ToString("O")+" current static authored station geometry + Container visibility; no traversal/visual claim");
+  try{Station();Visibility();}catch(Exception e){fail++;lines.Add("FIXTURE ERROR "+e);}finally{lines.Add("DONE checks="+checks+" failures="+fail+" blocked="+blocked+" elapsed="+(EditorApplication.timeSinceStartup-began));File.WriteAllLines(Out,lines);r.Log(string.Join("\n",lines));}
+ }
+ void Station(){
+  var route=RailRoute.Instance;var station=route.startingStation;if(station==null){blocked++;lines.Add("BLOCKED missing starting station");return;}
+  var city=station.transform.Find("Env/City station v3");if(city==null||!city.gameObject.activeInHierarchy){blocked++;lines.Add("BLOCKED active City station v3 root not present");return;}
+  var colliders=station.GetComponentsInChildren<Collider>().Where(c=>c.enabled&&!c.isTrigger&&c.gameObject.layer==6).ToArray();
+  Check(colliders.Length>0,"active Environment station colliders="+colliders.Length);
+  string Names(IEnumerable<Collider> c)=>string.Join(",",c.Select(x=>x.name+"#"+x.GetInstanceID()));
+  void Block(string label,Vector3 localOrigin,Vector3 localDirection,float distance,string expected){
+   Limit();var ray=new Ray(station.transform.TransformPoint(localOrigin),station.transform.TransformDirection(localDirection));
+   var hits=new List<RaycastHit>();foreach(var c in colliders)if(c.Raycast(ray,out var h,distance))hits.Add(h);
+   var nearest=hits.OrderBy(h=>h.distance).FirstOrDefault();bool hit=nearest.collider!=null;
+   Check(hit&&nearest.collider.name==expected,label+" origin="+localOrigin+" dir="+localDirection+" max="+distance+" nearest="+(hit?nearest.collider.name+"#"+nearest.collider.GetInstanceID()+" atLocal="+station.transform.InverseTransformPoint(nearest.point)+" distance="+nearest.distance:"none"));
+  }
+  Block("rear rolling doors",new Vector3(0,2,70),Vector3.back,4,"Station_Shell");
+  Block("sealed concourse gate",new Vector3(-8,2,70),Vector3.back,4,"Station_Shell");
+  Block("west station wall",new Vector3(-12,5,84),Vector3.left,3,"Station_Shell");
+  Block("east station wall",new Vector3(12,5,84),Vector3.right,3,"Station_Shell");
+  Block("retaining wall west",new Vector3(-10,2,142),Vector3.back,4,"Portal_Wall");
+  Block("retaining wall east",new Vector3(10,2,142),Vector3.back,4,"Portal_Wall");
+  foreach(float z in new[]{140.2f,150f,159.8f}){
+   Block("west yard fence z="+z,new Vector3(-46,1,z),Vector3.left,2,"Guard");
+   Block("east yard fence z="+z,new Vector3(46,1,z),Vector3.right,2,"Guard");
+  }
+  // Narrow-phase overlap against actual scene colliders; filter station static roots, excluding train/items/actors.
+  var envelope=Physics.OverlapBox(station.transform.TransformPoint(new Vector3(0,2.75f,117.5f)),new Vector3(2.75f,2.45f,42.5f),station.transform.rotation,1<<6,QueryTriggerInteraction.Ignore).Where(c=>colliders.Contains(c)).ToArray();
+  Check(envelope.Length==0,"authored train/tunnel static envelope X+/-2.75 Y.3..5.2 Z75..160 overlaps="+Names(envelope));
+  var next=route.TravelBlocks.OrderBy(b=>b.transform.position.z).FirstOrDefault();
+  if(next==null){blocked++;lines.Add("BLOCKED no first travel block for seam");return;}
+  Vector3 exit=station.transform.TransformPoint(new Vector3(0,0,station.length));
+  Check(Mathf.Abs(station.length-160)<.001f&&Vector3.Distance(next.transform.position,exit)<.01f,"station160 end matches first block actual origin distance="+Vector3.Distance(next.transform.position,exit));
+  var seamColliders=colliders.Concat(next.GetComponentsInChildren<Collider>().Where(c=>c.enabled&&!c.isTrigger&&c.gameObject.layer==6)).ToArray();
+  foreach(float dz in new[]{-.1f,.1f}){
+   Limit();var ray=new Ray(exit+station.transform.forward*dz+Vector3.up,Vector3.down);var hits=new List<RaycastHit>();foreach(var c in seamColliders)if(c.Raycast(ray,out var h,2))hits.Add(h);var nearest=hits.OrderBy(h=>h.distance).FirstOrDefault();bool hit=nearest.collider!=null;
+   Check(hit&&Mathf.Abs(nearest.point.y-exit.y)<.03f,"centreline seam support dz="+dz+" collider="+(hit?nearest.collider.name:"none")+" heightDelta="+(hit?nearest.point.y-exit.y:float.NaN));
+  }
+ }
+ void Visibility(){
+  var vis=UnityEngine.Object.FindFirstObjectByType<RailBlockVisibility>();if(vis==null){blocked++;lines.Add("BLOCKED no visibility controller");return;}
+  var rows=((IEnumerable)RailRemoteBridge.Get(vis,"groups")).Cast<object>().ToArray();
+  var blocks=rows.Select(x=>(RailBlock)RailRemoteBridge.Get(x,"block")).ToArray();
+  int target=Array.FindIndex(blocks,b=>b!=null&&((b.id??"").IndexOf("container",StringComparison.OrdinalIgnoreCase)>=0||b.name.IndexOf("container",StringComparison.OrdinalIgnoreCase)>=0));
+  if(target<0){blocked++;lines.Add("BLOCKED Container not on loaded route; route NOT mutated; loaded="+string.Join(",",blocks.Select(b=>b?b.id:"null")));return;}
+  var renderers=rows.SelectMany(x=>((IEnumerable)RailRemoteBridge.Get(x,"renderers")).Cast<Renderer>()).Where(x=>x!=null).Distinct().ToArray();
+  var original=renderers.Select(x=>x.forceRenderingOff).ToArray();int oldCurrent=Convert.ToInt32(RailRemoteBridge.Get(vis,"current"));
+  var cs=RailRoute.Instance.GetComponentsInChildren<Collider>(true);var enabled=cs.Select(x=>x.enabled).ToArray();var active=cs.Select(x=>x.gameObject.activeInHierarchy).ToArray();
+  try{
+   vis.ApplyViewerPosition(new Vector3(0,0,float.NaN));
+   var shown=renderers.ToDictionary(x=>x,x=>x.forceRenderingOff);
+   foreach(int at in Enumerable.Range(0,rows.Length)){
+    Limit();vis.ApplyViewerPosition(blocks[at].transform.position+blocks[at].transform.forward*.01f);
+    bool hidden=Convert.ToBoolean(RailRemoteBridge.Get(rows[target],"hidden"));bool expect=Math.Abs(at-target)>1;
+    var rs=((IEnumerable)RailRemoteBridge.Get(rows[target],"renderers")).Cast<Renderer>().Where(x=>x!=null).ToArray();
+    Check(hidden==expect&&rs.Length>0&&(expect?rs.All(x=>x.forceRenderingOff):rs.All(x=>x.forceRenderingOff==shown[x])&&rs.Any(x=>!x.forceRenderingOff)),"Container neighbor visibility viewer="+blocks[at].id+" targetIndex="+target+" hidden="+hidden+" expected="+expect+" renderers="+rs.Length);
+   }
+   Check(cs.Select((c,i)=>c.enabled==enabled[i]&&c.gameObject.activeInHierarchy==active[i]).All(x=>x),"visibility leaves every route collider enabled/active state unchanged");
+  }finally{
+   vis.ApplyViewerPosition(new Vector3(0,0,float.NaN));
+   if(oldCurrent>=0&&oldCurrent<blocks.Length)vis.ApplyViewerPosition(blocks[oldCurrent].transform.position+blocks[oldCurrent].transform.forward*.01f);
+   Check(renderers.Select((x,i)=>x.forceRenderingOff==original[i]).All(x=>x),"RESTORED exact original renderer visibility flags");
+  }
+  Check(UnityEngine.Object.FindObjectsByType<RailBakedBlockLighting>(FindObjectsSortMode.None).All(x=>x.Ready&&string.IsNullOrEmpty(x.Failure)),"companion owners ready after synchronous hide/show");
+ }
+}

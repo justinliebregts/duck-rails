@@ -1,0 +1,15 @@
+2026-11-16T11:57:32.9498108Z START injected rig/summon/grab callbacks; real menu Update, grab/release events and room requests. No physical input or natural-traversal claim. room=84026
+2026-11-16T11:57:33.0320246Z PASS aboard summon captures actual train frame
+2026-11-16T11:57:33.0320246Z PASS menu remains outside train hierarchy
+2026-11-16T11:57:33.0425303Z PASS injected TryGrab(item): actual OnGrabbed clears frame and grab collider
+2026-11-16T11:57:33.0460078Z PASS actual Release event: no train frame, gravity enabled, grab collider restored
+2026-11-16T11:57:33.5706338Z PASS ashore summon has no train frame
+2026-11-16T11:57:35.0214253Z PASS ashore menu stays world-fixed during injected 0.25m rig movement
+2026-11-16T11:57:36.0280829Z PASS ordinary menu Update dismisses beyond configured distance
+2026-11-16T11:57:36.5598236Z PASS aboard resummon recaptures frame after drop and dismissal
+2026-11-16T11:57:39.8163866Z FAIL original menu survives train/world unload
+2026-11-16T11:57:39.8178971Z PASS public Compound resummon uses current head pose with no stale train frame
+2026-11-16T11:57:46.5484739Z PASS rejoined original retained private room
+2026-11-16T11:57:46.5542743Z RESTORED original room and train-relative root pose; menu closed
+2026-11-16T11:57:46.5542743Z RESTORED movement and kinematic flags
+2026-11-16T11:57:46.5552754Z DONE failures=1 interrupted=False; callback injection and synthetic rig poses only; human grip/comfort remain open

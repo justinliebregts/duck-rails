@@ -1,0 +1,15 @@
+Actual Enemy.SubmitSwing callback and ordinary stats transport; not natural melee contact. Repel increments at locally accepted dispatch, before authority confirmation; this probe separately verifies authority reaction.
+2026-11-16T13:37:36.8672116Z PASS same actual enemy spawn token
+2026-11-16T13:37:36.8672116Z BASELINE observed senderRepels=0 localRepels=0
+2026-11-16T13:37:37.8526973Z PASS sender is nonowner of existing awake target
+2026-11-16T13:37:37.8526973Z PASS no pending local repel or prior-hit rate-limit contamination
+2026-11-16T13:37:37.8526973Z PASS ordinary local enemy hit gate ready
+2026-11-16T13:37:37.8666326Z PASS one real accepted local submission entered EnemyNetSync
+2026-11-16T13:37:37.8666326Z INPUT one Enemy.SubmitSwing callback sequence=1 speed=10; no weapon/contact claim
+2026-11-16T13:37:38.1308052Z PASS sender received actual authority hit confirmation sequence=1
+2026-11-16T13:37:44.8538639Z PASS observed real authority reaction/confirmation independently of stat dispatch
+2026-11-16T13:37:44.8548635Z FAIL other participants receive no repel credit
+2026-11-16T13:37:44.8574446Z INCOMPLETE System.Exception: other participants receive no repel credit
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.CommandScript.Check (System.Boolean ok, System.String s) [0x00033] in <32e3a6133d5b423cb1bd9255895936c0>:0 
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.CommandScript.Tick () [0x0095f] in <32e3a6133d5b423cb1bd9255895936c0>:0 
+2026-11-16T13:37:44.8574446Z END INCOMPLETE; distinguish setup/no-target from assertion failure checks=7; observer unsubscribed; genuine hit reaction and recorded stat retained; no rig/input/settings changed

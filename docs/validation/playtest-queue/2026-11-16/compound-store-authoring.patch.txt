@@ -1,0 +1,82 @@
+PREPARED PATCH TEXT ONLY. Assets source has NOT been edited; do not apply during Play Mode.
+Owner should first instantiate the existing shared prefab in an isolated scene at terminal-local (6.9,0,-1.6), identity rotation, scale 1 and validate the 17 display collider/TV/camera clearances against the actual terminal meshes. These are source-derived placement bounds, not a Unity physics result.
+After applying/compiling in Edit Mode, run RailSharedStoreSetup.InstallCompoundStore(), then Validate() and ValidateActiveCompound() with Compound loaded. This saves only the current terminal prefab; it does not save either scene or reactivate the retired SubwayV2 root. Preserve the user's Compound scene hint text/color changes. Inspect resulting prefab diff and active scene store before live purchase/camera checks.
+
+*** Begin Patch
+*** Update File: Assets/Editor/RailSharedStoreSetup.cs
+@@
+-    const string Module = "Assets/DuckRails/Compound/SubwayV2/Modules/05 Walk-through supplies store.prefab";
++    const string Module = "Assets/DuckRails/Compound/SubwayTerminal/SubwayTerminal.prefab";
+@@
+-        Edit(Module,root =>
+-        {
+-            var old=root.transform.Find("RailBundleWall"); if(old!=null)old.gameObject.SetActive(false);
+-            var store=Mount(root.transform,new Vector3(-3.25f,0,0),Quaternion.Euler(0,90,0));
+-            // Full-size store; the user will adjust the compound around any overlap.
+-            store.transform.localScale=Vector3.one;
+-        });
++        InstallCompoundStore();
+@@
+-    [MenuItem("Duck Rails/Store/Validate shared store")]
++    // The retired SubwayV2 instance remains inactive and untouched. Install into
++    // the current terminal asset so its existing scene instance inherits the store.
++    // This entry point avoids rewriting the other two stores or either scene.
++    [MenuItem("Duck Rails/Store/Install shared store in current Compound")]
++    public static void InstallCompoundStore()
++    {
++        if (Application.dataPath.Replace('\\','/') != "X:/Work/duck-rails/Assets" || EditorApplication.isPlaying)
++            throw new Exception("Duck Rails Edit Mode required");
++        if (Load<GameObject>(Path) == null || Load<GameObject>(Module) == null)
++            throw new Exception("Current terminal or shared store prefab is missing");
++        Edit(Module, root =>
++        {
++            if (root.transform.Find("Shared Store") != null) return; // Preserve later authored placement.
++            var store = Mount(root.transform, new Vector3(6.9f, 0, -1.6f), Quaternion.identity);
++            store.transform.localScale = Vector3.one;
++        });
++        AssetDatabase.SaveAssets();
++    }
++
++    [MenuItem("Duck Rails/Store/Validate active Compound store")]
++    public static void ValidateActiveCompound()
++    {
++        var scene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/Compound.unity");
++        if (!scene.IsValid() || !scene.isLoaded)
++            throw new Exception("Load Compound to validate its active store; prefab-only checks are insufficient");
++        var stores = scene.GetRootGameObjects()
++            .SelectMany(root => root.GetComponentsInChildren<StoreUI>(true))
++            .Where(store => store.isActiveAndEnabled).ToArray();
++        if (stores.Length != 1) throw new Exception("Expected exactly one active Compound StoreUI, found " + stores.Length);
++        var store = stores[0];
++        if (PrefabUtility.GetCorrespondingObjectFromSource(store.gameObject) != Load<GameObject>(Path))
++            throw new Exception("Active Compound store is not the shared store prefab");
++        var parent = store.transform.parent;
++        if (parent == null || !parent.gameObject.activeInHierarchy ||
++            PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(parent.gameObject) != Module)
++            throw new Exception("Shared store is not under the active current terminal");
++        var displays = store.GetComponentsInChildren<StoreWallItem>();
++        if (displays.Length != 17 || displays.Any(display => !display.isActiveAndEnabled) ||
++            displays.Select(Key).Distinct().Count() != 17)
++            throw new Exception("Active Compound must expose all 17 distinct displays");
++        foreach (var display in displays)
++            if (new SerializedObject(display).FindProperty("store").objectReferenceValue != store)
++                throw new Exception("Compound display is bound to a different store");
++        var mirrors = store.GetComponentsInChildren<HelicopterMirror>();
++        if (mirrors.Length != 1 || !mirrors[0].isActiveAndEnabled)
++            throw new Exception("Active Compound shared store must expose one mirror");
++        var cameraMount = (Transform)new SerializedObject(mirrors[0]).FindProperty("cameraMount").objectReferenceValue;
++        var cameraRoot = store.transform.Find("SecurityCam");
++        if (cameraMount == null || cameraRoot == null || !cameraMount.IsChildOf(cameraRoot))
++            throw new Exception("Compound mirror is bound outside its own shared camera");
++        Debug.Log("Active Compound store checks pass: current terminal, one enabled store, 17 distinct displays, local mirror/camera binding.");
++    }
++
++    [MenuItem("Duck Rails/Store/Validate shared store")]
+@@
+-        Debug.Log("Shared store checks pass: three instances, 17 items each, seven price coins, three bundles, one locally bound SecurityCam/TV each.");
++        var compoundScene = UnityEngine.SceneManagement.SceneManager.GetSceneByPath("Assets/Scenes/Compound.unity");
++        if (compoundScene.IsValid() && compoundScene.isLoaded) ValidateActiveCompound();
++        else Debug.Log("Compound scene is not loaded: active ancestor validation remains untested; run ValidateActiveCompound in Compound.");
++        Debug.Log("Shared store prefab checks pass: three current-location assets, 17 items each, seven price coins, three bundles, one locally bound SecurityCam/TV each.");
+*** End Patch
+

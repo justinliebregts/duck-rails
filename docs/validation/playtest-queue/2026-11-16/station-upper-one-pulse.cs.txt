@@ -1,0 +1,95 @@
+// ONE bounded west upper-stair route. Already-running authenticated simulated rig only.
+// Ordinary simulated room-scale input, neutral/retracted hands, ordinary crouch, at most
+// ONE single-frame jump request through SimulatedRigInput (existing10m/s behavior unchanged).
+// No held jump, repeated auto-jump, upward velocity injection, collision changes or focus spoofing.
+// Warp only to authored landing, then restore original stand location/heading/input/rig state.
+// A pass proves this single keyboard route; it does not prove tread-walking or VR ergonomics.
+// ACTUAL_CONTACT = Rigidbody callback; SYNTHETIC_QUERY = read-only ray/sphere query, not a solver contact.
+using System;using System.IO;using System.Linq;using System.Collections.Generic;
+using UnityEngine;using UnityEditor;using Photon.Pun;
+internal class CommandScript:IRunCommand {
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||NewPlayer.instance==null||SimulatedRigInput.Instance==null||!SimulatedRigInput.Instance.IsSimulating||RailRoute.Instance==null||!RailRoute.Instance.Ready)
+   throw new Exception("Requires ready live route and existing simulated rig");
+  if(NewPlayer.instance.GetComponents<MonoBehaviour>().Any(x=>x!=null&&x.GetType().Name=="QueueWestUpperStair"))throw new Exception("Stair probe already attached");
+  NewPlayer.instance.gameObject.AddComponent<QueueWestUpperStair>();r.Log("Started single west upper route, max30s including settle; input and location restored on completion");
+ }
+}
+[DefaultExecutionOrder(-16300)] internal class QueueWestUpperStair:MonoBehaviour {
+ const string P="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/station-upper-one-pulse.txt";
+ NewPlayer p;SimulatedRigInput sim;Transform block,returnFrame;Vector3 savedStand,target,savedVelocity,savedAngular;Quaternion savedHeading;
+ bool oldInject,oldDisable,oldKinematic,changed,done,jumped,arrived;SimulatedRigInput.Frame oldInput;
+ double began,nextSample,nextContact,stableSince;int jumpRequests,samples,contacts;
+ readonly Dictionary<string,object> saved=new Dictionary<string,object>();
+ void Log(string s)=>File.AppendAllText(P,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ string PathOf(Transform t){var names=new List<string>();for(;t!=null;t=t.parent)names.Add(t.name+"["+t.GetSiblingIndex()+"]");names.Reverse();return string.Join("/",names);}
+ string Describe(RaycastHit h)=>PathOf(h.collider.transform)+" collider="+h.collider.GetType().Name+" id="+h.collider.GetInstanceID()+" tri="+h.triangleIndex+" pointLocal="+block.InverseTransformPoint(h.point)+" normal="+h.normal+" distance="+h.distance;
+ bool External(Collider c)=>c!=null&&!c.transform.IsChildOf(p.transform);
+ RaycastHit? Ray(Vector3 at,Vector3 direction,float length){
+  foreach(var hit in Physics.RaycastAll(at,direction,length,p.locomotionEnabledLayers,QueryTriggerInteraction.Ignore).OrderBy(x=>x.distance))if(External(hit.collider))return hit;return null;
+ }
+ void Start(){try{
+  p=NewPlayer.instance;sim=SimulatedRigInput.Instance;block=RailRoute.Instance.startingStation.transform;
+  if(RailWorld.InputBlocked||RailExpedition.LocalDown||p.disableMovement||p.rb.isKinematic||sim.ThrottleHeld||sim.Buttons.grip||sim.Buttons.move!=Vector2.zero||sim.Buttons.look!=Vector2.zero)
+   throw new Exception("Need neutral awake rig, normal movement/physics, no input blocking or throttle");
+  if(GR.Player.instance.leftPlayerHand.IsHolding||GR.Player.instance.rightPlayerHand.IsHolding)throw new Exception("Empty hands required; no held item will be released by fixture");
+  if(RailTrain.Instance==null||Mathf.Abs(RailTrain.Instance.Speed)>.05f||PhotonSession.DriveGripActor!=0)throw new Exception("Stop train and release controls before isolated stair route");
+  File.WriteAllText(P,"Single west upper flight: start(-11.5,3.55,76.5), target(-11.5,6.1,69.9), block-local. Neutral/retracted hands, ordinary crouch; at most1 ordinary single-frame jump; movement3.6m/s. No production edits.\n");
+  oldInject=sim.UseInjectedInput;oldInput=sim.InjectedInput;oldDisable=p.disableMovement;oldKinematic=p.rb.isKinematic;savedVelocity=p.rb.linearVelocity;savedAngular=p.rb.angularVelocity;
+  savedStand=new Vector3(p.headCollider.transform.position.x,p.transform.position.y,p.headCollider.transform.position.z);
+  savedHeading=Quaternion.LookRotation(Vector3.ProjectOnPlane(p.headCollider.transform.forward,Vector3.up));
+  if(RailTrain.Instance!=null&&RailTrain.Instance.Contains(p.headCollider.transform.position)){returnFrame=RailTrain.Instance.transform;savedStand=returnFrame.InverseTransformPoint(savedStand);savedHeading=Quaternion.Inverse(returnFrame.rotation)*savedHeading;}
+  foreach(var name in new[]{"headPosition","leftPosition","rightPosition","headRotation","leftRotation","rightRotation","yaw","pitch","reach","handRoll","awaitNeutral","awaitThrottleNeutral","throttleKeyWasHeld","Buttons","ThrottleHeld"})saved[name]=RailRemoteBridge.Get(sim,name);
+  changed=true;sim.UseInjectedInput=true;sim.InjectedInput=default;RailRemoteBridge.Set(sim,"yaw",0f);RailRemoteBridge.Set(sim,"pitch",0f);RailRemoteBridge.Set(sim,"reach",.3f);RailRemoteBridge.Set(sim,"headRotation",Quaternion.identity);RailRemoteBridge.Call(sim,"WriteSimulatedPose");
+  p.Warp(block.TransformPoint(new Vector3(-11.5f,3.65f,76.5f)),Quaternion.LookRotation(-block.forward,Vector3.up));
+  target=block.TransformPoint(new Vector3(-11.5f,6.1f,69.9f));
+  // Floor and overhead profile helps disambiguate authored tread surfaces from ribs/guard collision.
+  for(float z=76.5f;z>=69.5f;z-=.34f){
+   var floor=Ray(block.TransformPoint(new Vector3(-11.5f,7.35f,z)),Vector3.down,5);
+   if(floor.HasValue){Log("SYNTHETIC_PROFILE down "+Describe(floor.Value));var roof=Ray(floor.Value.point+Vector3.up*.6f,Vector3.up,6);if(roof.HasValue)Log("SYNTHETIC_PROFILE up "+Describe(roof.Value));}
+   else Log("SYNTHETIC_PROFILE no floor at z="+z);
+  }
+  began=Time.realtimeSinceStartupAsDouble;Log("START neutral retracted hands; settling crouch for2s; no focus/kinematic overrides");
+ }catch(Exception e){Finish("FIXTURE ERROR "+e);}}
+ void Update(){if(done||!changed)return;try{
+  if(!Application.isPlaying||p==null||sim==null||block==null||RailWorld.InputBlocked)throw new Exception("World/input state changed");
+  double age=Time.realtimeSinceStartupAsDouble-began;if(age>30){Finish("INCONCLUSIVE timeout: single route not completed; inspect actual contacts and labelled queries, do not infer bad stairs");return;}
+  var local=block.InverseTransformPoint(p.headCollider.transform.position);
+  if(local.x<-12.8f||local.x>-10.2f||local.z<68.5f||local.z>78f){Finish("INCONCLUSIVE left narrow test corridor localHead="+local);return;}
+  Vector3 delta=target-p.headCollider.transform.position;delta.y=0;
+  if(age>=2&&delta.magnitude<.25f)arrived=true;
+  bool pulse=false;
+  if(age>=2&&!arrived&&!jumped&&local.z<=76.1f&&sim.HasBodySupport&&p.rb.linearVelocity.y<.25f){jumped=true;pulse=true;jumpRequests++;Log("INPUT one-frame ordinary jump requested at localHead="+local+" bodySupport="+sim.HasBodySupport+" vy="+p.rb.linearVelocity.y);}
+  Vector3 move=age>=2&&!arrived?p.transform.InverseTransformDirection(delta.normalized*.4f):Vector3.zero;
+  sim.InjectedInput=new SimulatedRigInput.Frame{move=new Vector2(move.x,move.z),crouch=!arrived,jump=pulse,leftReach=false,rightReach=false,grip=false};
+  if(arrived){
+   var floor=Ray(p.bodyCollider.bounds.center,Vector3.down,p.bodyCollider.bounds.extents.y+.4f);
+   bool onDeck=sim.HasBodySupport&&floor.HasValue&&Mathf.Abs(block.InverseTransformPoint(floor.Value.point).y-6.1f)<.08f&&delta.magnitude<.35f;
+   if(onDeck){if(stableSince==0)stableSince=Time.realtimeSinceStartupAsDouble;if(Time.realtimeSinceStartupAsDouble-stableSince>1.5){Finish("PASS single west upper route settled on actual6.1m bridge floor; jumpRequests="+jumpRequests+"; tread-walking/VR acceptance unverified");return;}}
+   else stableSince=0;
+  }
+ }catch(Exception e){Finish("FIXTURE ERROR "+e);}}
+ void LateUpdate(){if(done||!changed||p==null||block==null||Time.realtimeSinceStartupAsDouble<nextSample)return;try{
+  nextSample=Time.realtimeSinceStartupAsDouble+.2;samples++;
+  Log("STATE t="+(Time.realtimeSinceStartupAsDouble-began).ToString("F2")+" headLocal="+block.InverseTransformPoint(p.headCollider.transform.position)+" bodyBottom="+block.InverseTransformPoint(new Vector3(p.bodyCollider.bounds.center.x,p.bodyCollider.bounds.min.y,p.bodyCollider.bounds.center.z))+" leftTouch="+p.wasLeftHandTouching+" rightTouch="+p.wasRightHandTouching+" headTouch="+p.wasHeadTouching+" bodySupport="+sim.HasBodySupport+" grounded="+p.IsGrounded()+" velocity="+p.rb.linearVelocity+" jumpsRequested="+jumpRequests);
+  Vector3 forward=Vector3.ProjectOnPlane(target-p.headCollider.transform.position,Vector3.up).normalized;
+  Probe("head",p.headCollider.transform.position,p.headCollider.radius*Mathf.Max(p.headCollider.transform.lossyScale.x,p.headCollider.transform.lossyScale.y,p.headCollider.transform.lossyScale.z),forward);
+  Probe("trackedLeftHand",p.leftHandTransform.position,p.minimumRaycastDistance,forward);Probe("trackedRightHand",p.rightHandTransform.position,p.minimumRaycastDistance,forward);
+ }catch(Exception e){Finish("FIXTURE ERROR measurement "+e);}}
+ void Probe(string label,Vector3 point,float radius,Vector3 forward){
+  foreach(var direction in new[]{forward,Vector3.up}){
+   foreach(var hit in Physics.SphereCastAll(point,Mathf.Max(.01f,radius),direction,.7f,p.locomotionEnabledLayers,QueryTriggerInteraction.Ignore).OrderBy(x=>x.distance))
+    if(External(hit.collider)){Log("SYNTHETIC_QUERY "+label+" dir="+direction+" radius="+radius+" "+Describe(hit));break;}
+  }
+ }
+ void OnCollisionStay(Collision collision){if(done||!changed||block==null||Time.realtimeSinceStartupAsDouble<nextContact)return;
+  nextContact=Time.realtimeSinceStartupAsDouble+.2;
+  for(int i=0;i<Mathf.Min(collision.contactCount,4);i++){var c=collision.GetContact(i);contacts++;Log("ACTUAL_CONTACT self="+PathOf(c.thisCollider.transform)+" other="+PathOf(c.otherCollider.transform)+" collider="+c.otherCollider.GetType().Name+" id="+c.otherCollider.GetInstanceID()+" pointLocal="+block.InverseTransformPoint(c.point)+" normal="+c.normal+" separation="+c.separation);}
+ }
+ void Finish(string message){if(done)return;done=true;
+  if(changed&&sim!=null&&p!=null){sim.InjectedInput=default;foreach(var entry in saved)RailRemoteBridge.Set(sim,entry.Key,entry.Value);RailRemoteBridge.Call(sim,"WriteSimulatedPose");sim.UseInjectedInput=oldInject;sim.InjectedInput=oldInput;p.disableMovement=oldDisable;p.rb.isKinematic=oldKinematic;
+   p.Warp(returnFrame!=null?returnFrame.TransformPoint(savedStand):savedStand,returnFrame!=null?returnFrame.rotation*savedHeading:savedHeading);if(!oldKinematic){p.rb.linearVelocity=savedVelocity;p.rb.angularVelocity=savedAngular;}}
+  Log(message);Log("END samples="+samples+" actualContacts="+contacts+" jumpRequests="+jumpRequests+" restored="+changed+"; collision geometry unchanged");Destroy(this);
+ }
+ void OnDestroy(){if(!done)Finish("CANCELLED component destroyed; restore attempted");}
+}

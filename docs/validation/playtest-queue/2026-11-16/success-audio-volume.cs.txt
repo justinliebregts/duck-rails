@@ -1,0 +1,64 @@
+// PREPARED NOT RUN. Fresh ready PRIVATE Running; main/master retries normal success request until receipt, peers may arm first as observers.
+// 60s global monotonic bound. Uses actual RailTestTools.SimulateSuccess (controlled32s Ending, not natural finish).
+// Actual game-volume setter locally sweeps0/50/100 while real success music plays; saved prefs never changed.
+// Restores original manager remembered percent/has-value and actual Effects mixer dB on every exit.
+// No AudioManager.Play calls, no fabricated events, no rig/input writes. Coordinate other fixtures: this ends run.
+using System;using System.IO;using System.Collections.Generic;using UnityEditor;using UnityEngine;using Photon.Pun;using Game.Audio;
+internal class CommandScript:IRunCommand {
+ const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ readonly HashSet<string> seen=new HashSet<string>(),errors=new HashSet<string>();readonly Dictionary<int,int> ticks=new Dictionary<int,int>();
+ double began,nextLog,nextSuccessAttempt,finishedAt=-1;string path;bool driver,triggered,done,saved,oldHas,sawMusic,sawFull,sawFade,sawReturn,sawStopped,completedReturn;
+ int oldPercent,volumeStage;float oldDb,peak;UnityEngine.Audio.AudioMixer mixer;
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){if(ok)Log("PASS "+s);else if(errors.Add(s))Log("FAIL "+s);}
+ public void Execute(ExecutionResult r){
+  string p=Application.dataPath.Replace('\\','/');if(!(p=="X:/Work/duck-rails/Assets"||(p.StartsWith("X:/Work/duck-rails/Library/VP/")&&p.EndsWith("/Assets"))))throw new Exception("Wrong project");
+  if(!Application.isPlaying||!PhotonSession.IsPrivate||PhotonSession.Phase!=RailPhase.Running||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||RailExpedition.Instance==null||RailExpedition.Instance.State.finished)throw new Exception("Need fresh ready private Running");
+  var am=UnityEngine.Object.FindFirstObjectByType<AudioManager>();var bank=RailAudio.Bank;
+  if(am==null||am.Settings==null||am.Settings.effects==null||bank==null||bank.bridgeMusic==null||bank.clockTick==null)throw new Exception("Missing current audio prerequisites");
+  driver=PhotonNetwork.IsMasterClient;if(driver&&!RailTestTools.CanMutate)throw new Exception("Master needs normal private test authority");
+  mixer=am.Settings.effects.audioMixer;if(mixer==null||!mixer.GetFloat("EffectsVolume",out oldDb))throw new Exception("EffectsVolume not exposed");
+  oldPercent=Convert.ToInt32(RailRemoteBridge.Get(typeof(AudioManager),"gameVolumePercent"));oldHas=Convert.ToBoolean(RailRemoteBridge.Get(typeof(AudioManager),"hasGameVolume"));saved=true;
+  path=Root+"success-audio-volume-actor"+PhotonNetwork.LocalPlayer.ActorNumber+".txt";File.WriteAllText(path,"Controlled success preview; actual music/countdown path and local Effects0/50/100 sweep; no audible-quality/natural-finish claim.\n");
+  began=EditorApplication.timeSinceStartup;Scan(true);EditorApplication.update+=Tick;r.Log("Success audio armed60s driver="+driver+"; master retries controlled ending once/sec until receipt; avoid other finish/fuel/route mutations");
+ }
+ void End(string why){if(done)return;done=true;EditorApplication.update-=Tick;
+  try{if(saved){AudioManager.SetGameVolume(oldPercent);RailRemoteBridge.Set(typeof(AudioManager),"hasGameVolume",oldHas);if(mixer!=null)mixer.SetFloat("EffectsVolume",oldDb);float after=0;Check(mixer!=null&&mixer.GetFloat("EffectsVolume",out after)&&Mathf.Abs(after-oldDb)<.01f,"RESTORED original actual Effects gain "+oldDb+" dB and remembered percent="+oldPercent+" has="+oldHas);}}
+  finally{Log("DONE failures="+errors.Count+" reason="+why+" stages="+volumeStage+" music="+sawMusic+" full="+sawFull+" fade="+sawFade+" return="+sawReturn+" stopped="+sawStopped+"; settings restored; returnObserved="+completedReturn+"; no run rollback");}
+ }
+ void Tick(){try{
+  if(!Application.isPlaying){Check(false,"Play ended before observation complete");End("Play stopped");return;}
+  double now=EditorApplication.timeSinceStartup;if(now-began>60){Check(false,"60s global bound reached before complete evidence");End("timeout");return;}
+  if(driver&&now-began>=1&&now>=nextSuccessAttempt&&RailExpedition.Instance!=null&&!RailExpedition.Instance.State.finished){nextSuccessAttempt=now+1;triggered=true;RailTestTools.SimulateSuccess();Log("REQUEST actual RailTestTools.SimulateSuccess age="+(now-began)+" status="+RailTestTools.Status+"; normal controlled32s deadline only after successful receipt");}
+  Scan(false);
+  var e=RailExpedition.Instance;if(finishedAt<0&&e!=null&&e.State.finished&&e.State.success){finishedAt=e.State.finishedAt;Log("ACK successful Ending finishedAt="+finishedAt+" deadline="+PhotonSession.Get(RailSessionRules.Deadline,0d));}
+  if(finishedAt<0){if(now-began>14){Check(false,"controlled success acknowledged within14s; status="+RailTestTools.Status);End("no finish");}return;}
+  var d=UnityEngine.Object.FindFirstObjectByType<RailAudioDirector>();if(d==null)return;
+  var music=RailRemoteBridge.Get(d,"music") as AudioSource;var am=UnityEngine.Object.FindFirstObjectByType<AudioManager>();var bank=RailAudio.Bank;
+  double age=PhotonNetwork.Time-finishedAt;bool ending=PhotonSession.Phase==RailPhase.Ending||PhotonSession.Phase==RailPhase.Returning;
+  if(music!=null&&music.isPlaying&&ending){sawMusic=true;peak=Mathf.Max(peak,music.volume);
+   if(age>2&&age<25&&Mathf.Abs(music.volume-bank.musicVolume)<.02f&&!sawFull){sawFull=true;Check(true,"real success music reaches configured full source gain="+music.volume);}
+   if(age>29&&music.volume<peak*.8f&&music.volume>0&&!sawFade){sawFade=true;Check(true,"success music source gain fades before cleanup volume="+music.volume+" peak="+peak+" age="+age);}
+   if(age>=4&&volumeStage==0){Check(music.clip==bank.bridgeMusic&&music.loop==bank.loopMusic&&am!=null&&music.outputAudioMixerGroup==am.Settings.effects,"real success clip/loop routed to Effects");AudioManager.SetGameVolume(0);volumeStage=1;Log("SET actual local Effects percent0");}
+   else if(age>=6&&volumeStage==1){Gain(-80,"0percent silence attenuation");AudioManager.SetGameVolume(50);volumeStage=2;}
+   else if(age>=8&&volumeStage==2){Gain(20*Mathf.Log10(.5f),"50percent half gain");AudioManager.SetGameVolume(100);volumeStage=3;}
+   else if(age>=10&&volumeStage==3){Gain(0,"100percent unity gain");AudioManager.SetGameVolume(oldPercent);volumeStage=4;Log("Restored original percent early; exact mixer value restored on exit");}
+  }
+  if(PhotonSession.Phase==RailPhase.Returning)sawReturn=true;
+  if(sawMusic&&!ending&&music!=null&&!music.isPlaying&&music.volume<=.001f)sawStopped=true;
+  if(now>=nextLog){nextLog=now+.5;Log("SAMPLE phase="+PhotonSession.Phase+" age="+age+" music="+(music?music.isPlaying+","+music.volume:"none")+" returnSeconds="+RailSessionRules.ReturnCountdown(PhotonSession.Phase,PhotonSession.Get(RailSessionRules.Deadline,0d),PhotonNetwork.Time));}
+  if(sawStopped&&PhotonSession.Instance!=null&&PhotonSession.Instance.WorldReady&&!PhotonSession.Instance.HasRoomRequest&&age>34){
+   Check(sawFull&&sawFade&&sawReturn,"full music/fade/Returning phases actually observed");Check(volumeStage==4,"all actual Effects gain stages observed");
+   for(int n=1;n<=5;n++)Check(ticks.TryGetValue(n,out int count)&&count==1,"exactly one actual return tick at "+n+" count="+(ticks.ContainsKey(n)?ticks[n]:0));
+   Check(ticks.Count==5,"no zero/above5/after-transfer tick generations");completedReturn=true;End("natural private return complete");
+  }
+ }catch(Exception e){Check(false,"fixture exception "+e);End("exception");}}
+ void Gain(float expected,string label){float actual=999;Check(mixer!=null&&mixer.GetFloat("EffectsVolume",out actual)&&Mathf.Abs(actual-expected)<.02f,"actual Effects mixer "+label+" expected="+expected+" actual="+actual);}
+ void Scan(bool baseline){var am=UnityEngine.Object.FindFirstObjectByType<AudioManager>();var d=UnityEngine.Object.FindFirstObjectByType<RailAudioDirector>();var bank=RailAudio.Bank;if(am==null||d==null||bank==null)return;var voices=RailRemoteBridge.Get(am,"voices") as Array;if(voices==null)return;
+  for(int i=0;i<voices.Length;i++){var v=voices.GetValue(i);if(RailRemoteBridge.Get(v,"Event") as SoundEvent!=bank.clockTick)continue;string key=am.GetInstanceID()+":"+i+":"+RailRemoteBridge.Get(v,"Generation");if(!seen.Add(key)||baseline)continue;
+   int displayed=Convert.ToInt32(RailRemoteBridge.Get(d,"previousCountdown"));ticks.TryGetValue(displayed,out int prior);ticks[displayed]=prior+1;
+   var source=RailRemoteBridge.Get(v,"Source") as AudioSource;Check(source!=null&&am.Settings!=null&&source.outputAudioMixerGroup==am.Settings.effects,"actual ClockTick lease routed to Effects second="+displayed);
+   Log("TICK second="+displayed+" phase="+PhotonSession.Phase+" deadline="+PhotonSession.Get(RailSessionRules.Deadline,0d)+" networkTime="+PhotonNetwork.Time+" generation="+key);
+  }
+ }
+}

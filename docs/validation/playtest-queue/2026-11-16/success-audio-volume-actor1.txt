@@ -1,0 +1,102 @@
+Controlled success preview; actual music/countdown path and local Effects0/50/100 sweep; no audible-quality/natural-finish claim.
+2026-11-16T13:49:33.0003527Z REQUEST actual RailTestTools.SimulateSuccess age=1.01136020000013 status=Room update pending; try again; normal controlled32s deadline only after successful receipt
+2026-11-16T13:49:34.0277425Z REQUEST actual RailTestTools.SimulateSuccess age=2.03954879999992 status=Room update pending; try again; normal controlled32s deadline only after successful receipt
+2026-11-16T13:49:35.0462744Z REQUEST actual RailTestTools.SimulateSuccess age=3.05715120000013 status=Room update pending; try again; normal controlled32s deadline only after successful receipt
+2026-11-16T13:49:36.0827919Z REQUEST actual RailTestTools.SimulateSuccess age=4.09247219999997 status=Success preview started: bridge, tunnel and dawn ride; normal controlled32s deadline only after successful receipt
+2026-11-16T13:49:36.4300192Z ACK successful Ending finishedAt=595812.057 deadline=595844.057
+2026-11-16T13:49:36.4365717Z SAMPLE phase=Ending age=0.233999999938533 music=True,0.1099325 returnSeconds=34
+2026-11-16T13:49:36.9514035Z SAMPLE phase=Ending age=0.895999999949709 music=True,0.8 returnSeconds=34
+2026-11-16T13:49:37.4806320Z SAMPLE phase=Ending age=1.4079999999376 music=True,0.8 returnSeconds=33
+2026-11-16T13:49:37.9915476Z SAMPLE phase=Ending age=1.91499999992084 music=True,0.8 returnSeconds=33
+2026-11-16T13:49:38.0757930Z PASS real success music reaches configured full source gain=0.8
+2026-11-16T13:49:38.5164658Z SAMPLE phase=Ending age=2.4429999999702 music=True,0.8 returnSeconds=32
+2026-11-16T13:49:39.0466466Z SAMPLE phase=Ending age=2.99099999992177 music=True,0.8 returnSeconds=32
+2026-11-16T13:49:39.5488032Z SAMPLE phase=Ending age=3.49699999997392 music=True,0.8 returnSeconds=31
+2026-11-16T13:49:40.0694632Z PASS real success clip/loop routed to Effects
+2026-11-16T13:49:40.0694632Z SET actual local Effects percent0
+2026-11-16T13:49:40.0699837Z SAMPLE phase=Ending age=4.0109999999404 music=True,0.8 returnSeconds=30
+2026-11-16T13:49:40.5746233Z SAMPLE phase=Ending age=4.52099999994971 music=True,0.8 returnSeconds=30
+2026-11-16T13:49:41.0862489Z SAMPLE phase=Ending age=5.03799999994226 music=True,0.8 returnSeconds=29
+2026-11-16T13:49:41.5867051Z SAMPLE phase=Ending age=5.54099999996834 music=True,0.8 returnSeconds=29
+2026-11-16T13:49:42.0631024Z PASS actual Effects mixer 0percent silence attenuation expected=-80 actual=-80
+2026-11-16T13:49:42.1038434Z SAMPLE phase=Ending age=6.04599999997299 music=True,0.8 returnSeconds=28
+2026-11-16T13:49:42.6083814Z SAMPLE phase=Ending age=6.55999999993946 music=True,0.8 returnSeconds=28
+2026-11-16T13:49:43.1279178Z SAMPLE phase=Ending age=7.08100000000559 music=True,0.8 returnSeconds=27
+2026-11-16T13:49:43.6578554Z SAMPLE phase=Ending age=7.60599999991246 music=True,0.8 returnSeconds=27
+2026-11-16T13:49:44.0997830Z PASS actual Effects mixer 50percent half gain expected=-6.0206 actual=-6.0206
+2026-11-16T13:49:44.1590954Z SAMPLE phase=Ending age=8.11099999991711 music=True,0.8 returnSeconds=26
+2026-11-16T13:49:44.6901632Z SAMPLE phase=Ending age=8.63299999991432 music=True,0.8 returnSeconds=26
+2026-11-16T13:49:45.2295390Z SAMPLE phase=Ending age=9.16499999992084 music=True,0.8 returnSeconds=25
+2026-11-16T13:49:45.7639811Z SAMPLE phase=Ending age=9.70799999998417 music=True,0.8 returnSeconds=25
+2026-11-16T13:49:46.0728999Z PASS actual Effects mixer 100percent unity gain expected=0 actual=0
+2026-11-16T13:49:46.0734147Z Restored original percent early; exact mixer value restored on exit
+2026-11-16T13:49:46.2704284Z SAMPLE phase=Ending age=10.2199999999721 music=True,0.8 returnSeconds=24
+2026-11-16T13:49:46.7912524Z SAMPLE phase=Ending age=10.7389999999432 music=True,0.8 returnSeconds=24
+2026-11-16T13:49:47.3106371Z SAMPLE phase=Ending age=11.262999999919 music=True,0.8 returnSeconds=23
+2026-11-16T13:49:47.8396653Z SAMPLE phase=Ending age=11.7889999999898 music=True,0.8 returnSeconds=23
+2026-11-16T13:49:48.3677254Z SAMPLE phase=Ending age=12.3159999999916 music=True,0.8 returnSeconds=22
+2026-11-16T13:49:48.9144840Z SAMPLE phase=Ending age=12.8439999999246 music=True,0.8 returnSeconds=22
+2026-11-16T13:49:49.4376015Z SAMPLE phase=Ending age=13.3699999999953 music=True,0.8 returnSeconds=21
+2026-11-16T13:49:49.9421054Z SAMPLE phase=Ending age=13.8730000000214 music=True,0.8 returnSeconds=21
+2026-11-16T13:49:50.7296488Z SAMPLE phase=Ending age=14.2239999999292 music=True,0.8 returnSeconds=20
+2026-11-16T13:49:51.2643269Z SAMPLE phase=Ending age=15.2010000000009 music=True,0.8 returnSeconds=19
+2026-11-16T13:49:51.7714813Z SAMPLE phase=Ending age=15.7060000000056 music=True,0.8 returnSeconds=19
+2026-11-16T13:49:52.2980543Z SAMPLE phase=Ending age=16.2419999999693 music=True,0.8 returnSeconds=18
+2026-11-16T13:49:52.8059380Z SAMPLE phase=Ending age=16.7530000000261 music=True,0.8 returnSeconds=18
+2026-11-16T13:49:53.3180609Z SAMPLE phase=Ending age=17.2700000000186 music=True,0.8 returnSeconds=17
+2026-11-16T13:49:53.8295969Z SAMPLE phase=Ending age=17.7820000000065 music=True,0.8 returnSeconds=17
+2026-11-16T13:49:54.3343241Z SAMPLE phase=Ending age=18.2859999999637 music=True,0.8 returnSeconds=16
+2026-11-16T13:49:54.8566793Z SAMPLE phase=Ending age=18.8040000000037 music=True,0.8 returnSeconds=16
+2026-11-16T13:49:55.3939445Z SAMPLE phase=Ending age=19.2099999999627 music=True,0.8 returnSeconds=15
+2026-11-16T13:49:55.9084587Z SAMPLE phase=Ending age=19.8589999999385 music=True,0.8 returnSeconds=15
+2026-11-16T13:49:56.4118753Z SAMPLE phase=Ending age=20.3630000000121 music=True,0.8 returnSeconds=14
+2026-11-16T13:49:56.9277541Z SAMPLE phase=Ending age=20.8689999999478 music=True,0.8 returnSeconds=14
+2026-11-16T13:49:57.4716050Z SAMPLE phase=Ending age=21.3919999999925 music=True,0.8 returnSeconds=13
+2026-11-16T13:49:57.9975744Z SAMPLE phase=Ending age=21.935999999987 music=True,0.8 returnSeconds=13
+2026-11-16T13:49:58.5029440Z SAMPLE phase=Ending age=22.4510000000009 music=True,0.8 returnSeconds=12
+2026-11-16T13:49:59.0117860Z SAMPLE phase=Ending age=22.9629999999888 music=True,0.8 returnSeconds=12
+2026-11-16T13:49:59.5189294Z SAMPLE phase=Ending age=23.4710000000196 music=True,0.8 returnSeconds=11
+2026-11-16T13:50:00.0347723Z SAMPLE phase=Ending age=23.9839999999385 music=True,0.8 returnSeconds=11
+2026-11-16T13:50:00.5533737Z SAMPLE phase=Ending age=24.4969999999739 music=True,0.8 returnSeconds=10
+2026-11-16T13:50:01.0697928Z SAMPLE phase=Ending age=25.0239999999758 music=True,0.8 returnSeconds=9
+2026-11-16T13:50:01.5823310Z SAMPLE phase=Ending age=25.5339999999851 music=True,0.8 returnSeconds=9
+2026-11-16T13:50:02.1031748Z SAMPLE phase=Ending age=26.0349999999162 music=True,0.8 returnSeconds=8
+2026-11-16T13:50:02.6086559Z SAMPLE phase=Ending age=26.561999999918 music=True,0.8 returnSeconds=8
+2026-11-16T13:50:03.1520076Z SAMPLE phase=Ending age=27.0910000000149 music=True,0.8 returnSeconds=7
+2026-11-16T13:50:03.6760929Z SAMPLE phase=Ending age=27.6269999999786 music=True,0.8 returnSeconds=7
+2026-11-16T13:50:04.1797430Z SAMPLE phase=Ending age=28.1309999999357 music=True,0.8 returnSeconds=6
+2026-11-16T13:50:04.6976886Z SAMPLE phase=Ending age=28.6509999999544 music=True,0.8 returnSeconds=6
+2026-11-16T13:50:05.0784486Z PASS actual ClockTick lease routed to Effects second=5
+2026-11-16T13:50:05.0789505Z TICK second=5 phase=Ending deadline=595844.057 networkTime=595841.086 generation=-1872526:6:219
+2026-11-16T13:50:05.2140200Z SAMPLE phase=Ending age=29.1679999999469 music=True,0.8 returnSeconds=5
+2026-11-16T13:50:05.7280238Z SAMPLE phase=Ending age=29.6809999999823 music=True,0.8 returnSeconds=5
+2026-11-16T13:50:06.0654179Z PASS actual ClockTick lease routed to Effects second=4
+2026-11-16T13:50:06.0654179Z TICK second=4 phase=Ending deadline=595844.057 networkTime=595842.077 generation=-1872526:7:116
+2026-11-16T13:50:06.2476622Z SAMPLE phase=Ending age=30.1999999999534 music=True,0.8 returnSeconds=4
+2026-11-16T13:50:06.7544183Z SAMPLE phase=Ending age=30.6979999999749 music=True,0.8 returnSeconds=4
+2026-11-16T13:50:07.0691002Z PASS actual ClockTick lease routed to Effects second=3
+2026-11-16T13:50:07.0701053Z TICK second=3 phase=Ending deadline=595844.057 networkTime=595843.08 generation=-1872526:3:355
+2026-11-16T13:50:07.2769565Z SAMPLE phase=Ending age=31.2289999999339 music=True,0.7389333 returnSeconds=3
+2026-11-16T13:50:07.6721924Z PASS success music source gain fades before cleanup volume=0.6368 peak=0.8 age=31.6119999999646
+2026-11-16T13:50:07.7893539Z SAMPLE phase=Ending age=31.7409999999218 music=True,0.6024 returnSeconds=3
+2026-11-16T13:50:08.0814096Z PASS actual ClockTick lease routed to Effects second=2
+2026-11-16T13:50:08.0814096Z TICK second=2 phase=Ending deadline=595844.057 networkTime=595844.091 generation=-1872526:4:238
+2026-11-16T13:50:08.3026520Z SAMPLE phase=Returning age=32.2530000000261 music=True,0.2566747 returnSeconds=2
+2026-11-16T13:50:08.8162875Z SAMPLE phase=Returning age=32.7669999999925 music=True,0 returnSeconds=2
+2026-11-16T13:50:09.1563058Z PASS actual ClockTick lease routed to Effects second=1
+2026-11-16T13:50:09.1563058Z TICK second=1 phase=Returning deadline=595846.161 networkTime=595845.164 generation=-1872526:3:357
+2026-11-16T13:50:09.3396014Z SAMPLE phase=Returning age=33.2770000000019 music=True,0 returnSeconds=1
+2026-11-16T13:50:09.8367575Z SAMPLE phase=Returning age=33.7899999999208 music=True,0 returnSeconds=1
+2026-11-16T13:50:10.3772518Z SAMPLE phase=Staging age=34.3179999999702 music=False,0 returnSeconds=0
+2026-11-16T13:50:10.9083720Z SAMPLE phase=Staging age=34.8530000000028 music=False,0 returnSeconds=0
+2026-11-16T13:50:11.8649243Z SAMPLE phase=Staging age=35.7659999999451 music=False,0 returnSeconds=0
+2026-11-16T13:50:11.8649243Z PASS full music/fade/Returning phases actually observed
+2026-11-16T13:50:11.8659291Z PASS all actual Effects gain stages observed
+2026-11-16T13:50:11.8669492Z PASS exactly one actual return tick at 1 count=1
+2026-11-16T13:50:11.8674663Z PASS exactly one actual return tick at 2 count=1
+2026-11-16T13:50:11.8674663Z PASS exactly one actual return tick at 3 count=1
+2026-11-16T13:50:11.8674663Z PASS exactly one actual return tick at 4 count=1
+2026-11-16T13:50:11.8674663Z PASS exactly one actual return tick at 5 count=1
+2026-11-16T13:50:11.8674663Z PASS no zero/above5/after-transfer tick generations
+2026-11-16T13:50:11.8689780Z PASS RESTORED original actual Effects gain 0 dB and remembered percent=100 has=True
+2026-11-16T13:50:11.8689780Z DONE failures=0 reason=natural private return complete stages=4 music=True full=True fade=True return=True stopped=True; settings restored; returnObserved=True; no run rollback

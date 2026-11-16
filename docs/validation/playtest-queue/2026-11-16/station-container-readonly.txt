@@ -1,0 +1,29 @@
+2026-11-16T13:41:32.9661757Z current static authored station geometry + Container visibility; no traversal/visual claim
+PASS active Environment station colliders=21
+PASS rear rolling doors origin=(0.00, 2.00, 70.00) dir=(0.00, 0.00, -1.00) max=4 nearest=Station_Shell#-1657290 atLocal=(0.00, 2.00, 67.74) distance=2.260002
+PASS sealed concourse gate origin=(-8.00, 2.00, 70.00) dir=(0.00, 0.00, -1.00) max=4 nearest=Station_Shell#-1657290 atLocal=(-8.00, 2.00, 67.96) distance=2.044998
+PASS west station wall origin=(-12.00, 5.00, 84.00) dir=(-1.00, 0.00, 0.00) max=3 nearest=Station_Shell#-1657290 atLocal=(-13.00, 5.00, 84.00) distance=0.9999924
+PASS east station wall origin=(12.00, 5.00, 84.00) dir=(1.00, 0.00, 0.00) max=3 nearest=Station_Shell#-1657290 atLocal=(13.00, 5.00, 84.00) distance=1.000008
+PASS retaining wall west origin=(-10.00, 2.00, 142.00) dir=(0.00, 0.00, -1.00) max=4 nearest=Portal_Wall#-1657260 atLocal=(-10.00, 2.00, 140.00) distance=2
+PASS retaining wall east origin=(10.00, 2.00, 142.00) dir=(0.00, 0.00, -1.00) max=4 nearest=Portal_Wall#-1657260 atLocal=(10.00, 2.00, 140.00) distance=2
+PASS west yard fence z=140.2 origin=(-46.00, 1.00, 140.20) dir=(-1.00, 0.00, 0.00) max=2 nearest=Guard#-1657380 atLocal=(-46.94, 1.00, 140.20) distance=0.94
+PASS east yard fence z=140.2 origin=(46.00, 1.00, 140.20) dir=(1.00, 0.00, 0.00) max=2 nearest=Guard#-1657386 atLocal=(46.94, 1.00, 140.20) distance=0.94
+PASS west yard fence z=150 origin=(-46.00, 1.00, 150.00) dir=(-1.00, 0.00, 0.00) max=2 nearest=Guard#-1657380 atLocal=(-46.94, 1.00, 150.00) distance=0.94
+PASS east yard fence z=150 origin=(46.00, 1.00, 150.00) dir=(1.00, 0.00, 0.00) max=2 nearest=Guard#-1657386 atLocal=(46.94, 1.00, 150.00) distance=0.94
+PASS west yard fence z=159.8 origin=(-46.00, 1.00, 159.80) dir=(-1.00, 0.00, 0.00) max=2 nearest=Guard#-1657380 atLocal=(-46.94, 1.00, 159.80) distance=0.94
+PASS east yard fence z=159.8 origin=(46.00, 1.00, 159.80) dir=(1.00, 0.00, 0.00) max=2 nearest=Guard#-1657386 atLocal=(46.94, 1.00, 159.80) distance=0.94
+PASS authored train/tunnel static envelope X+/-2.75 Y.3..5.2 Z75..160 overlaps=
+PASS station160 end matches first block actual origin distance=0
+PASS centreline seam support dz=-0.1 collider=Station ground heightDelta=0
+PASS centreline seam support dz=0.1 collider=Sculpted orchard and ditch heightDelta=0
+PASS Container neighbor visibility viewer=starting-station-v1 targetIndex=4 hidden=True expected=True renderers=1440
+PASS Container neighbor visibility viewer=farm-silos-v1 targetIndex=4 hidden=True expected=True renderers=1440
+PASS Container neighbor visibility viewer=canyon-v1 targetIndex=4 hidden=True expected=True renderers=1440
+PASS Container neighbor visibility viewer=midpoint-helipad-v1 targetIndex=4 hidden=False expected=False renderers=1440
+PASS Container neighbor visibility viewer=container-yard-v1 targetIndex=4 hidden=False expected=False renderers=1440
+PASS Container neighbor visibility viewer=skyscraper-works-v1 targetIndex=4 hidden=False expected=False renderers=1440
+PASS Container neighbor visibility viewer=bridge-finale-v1 targetIndex=4 hidden=True expected=True renderers=1440
+PASS visibility leaves every route collider enabled/active state unchanged
+PASS RESTORED exact original renderer visibility flags
+PASS companion owners ready after synchronous hide/show
+DONE checks=27 failures=0 blocked=0 elapsed=0.0350014999999075

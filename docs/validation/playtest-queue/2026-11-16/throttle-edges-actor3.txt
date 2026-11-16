@@ -1,0 +1,28 @@
+Unity 6000.3.24f1 RUN=20261116-throttle-edge-2 roleActor=3 nonMasterDriver=3; controlled RPC edges + ordinary simulated hand, no listening/headset acceptance
+2026-11-16T11:58:51.4722753Z PASS initial shared lever free and target stopped
+2026-11-16T11:58:51.4729896Z PASS initial local gameplay input allowed
+2026-11-16T11:58:51.4729896Z PASS non-master has neutral actual simulated rig
+2026-11-16T11:58:51.4729896Z PASS non-master hands empty
+2026-11-16T11:58:51.4729896Z PASS fresh rendezvous RUN token
+2026-11-16T11:58:54.5312787Z INPUT concurrent public acquire request token=20261116-throttle-edge-2-lease-3
+2026-11-16T11:58:56.5407628Z PASS concurrent requests resolve to one real actor=4
+2026-11-16T11:58:57.5467673Z INPUT losing actor attempts ordinary release with its own rejected token
+2026-11-16T11:58:58.5458430Z PASS loser heartbeat/release cannot steal or clear winning lease
+2026-11-16T11:58:59.5370230Z INPUT each actor releases only own contest token
+2026-11-16T11:59:02.5418009Z PASS contest release settles to no lease and STOP without distance reset
+2026-11-16T11:59:03.5590310Z PASS pre-ack case starts unowned
+2026-11-16T11:59:03.5605651Z PASS non-master queued acquire/release before any observable grant in same callback
+2026-11-16T11:59:06.5411545Z PASS pre-ack release leaves no ghost lease on this client
+2026-11-16T11:59:08.5482472Z INPUT ordinary simulated right-hand grip starts; only local art returnDuration temporarily2.5s
+2026-11-16T11:59:12.5450843Z PASS ordinary physical grip acquires non-master lease
+2026-11-16T11:59:13.5441727Z PASS ordinary forward arc reaches GO with attached visual palm/closed index; keyboard throttle remains off
+2026-11-16T11:59:15.9941658Z INPUT fresh actual grip during visible return progress=0.9193451
+2026-11-16T11:59:16.0520861Z PASS live regrip captures current returning angle without snapping OFF captured=0.8982293 requested=0.9193451
+2026-11-16T11:59:20.5431819Z PASS fresh physical regrip gets new shared lease during extended return
+2026-11-16T11:59:21.5466345Z INPUT controlled OnApplicationFocus(false) callback; OS focus not manipulated
+2026-11-16T11:59:23.5515693Z PASS focus-loss callback releases physical grip and rendered palm constraint
+2026-11-16T11:59:24.5334670Z PASS controlled focus-loss callback settles shared lease/target to stopped
+2026-11-16T11:59:28.5449297Z PASS all required phases actually sampled
+2026-11-16T11:59:28.5454636Z PASS final shared state stopped/unowned
+2026-11-16T11:59:28.5465024Z RESTORED rig injection, stored poses, movement/rigidbody, returnDuration, original train-relative position; no train distance reset
+2026-11-16T11:59:28.5470119Z END checks=19 failures=0; menu/default-return-window/OSfocus/headset acceptance not covered

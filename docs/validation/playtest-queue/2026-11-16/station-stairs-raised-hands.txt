@@ -1,0 +1,6 @@
+Actual simulated room-scale collision; warp only to route starts, 1.8m/s input, existing jump, raised simulated hands pitch -60 reach 1; endpoint .35m XZ and correct grounded height. No natural VR acceptance.
+2026-11-16T10:04:37.5516111Z PASS lower stairs -1 head=(-11.24, 4.02, 66.64) target=(-11.50, 3.55, 66.50) xz=0.2928815 support=True
+2026-11-16T10:04:56.7928888Z FAIL upper stairs -1 head=(-11.39, 7.78, 61.72) target=(-11.50, 6.10, 60.00) xz=1.726977 support=False
+2026-11-16T10:05:06.6382756Z PASS lower stairs 1 head=(11.18, 4.03, 66.59) target=(11.50, 3.55, 66.50) xz=0.3358105 support=True
+2026-11-16T10:05:25.6561467Z FAIL upper stairs 1 head=(11.41, 7.21, 63.42) target=(11.50, 6.10, 60.00) xz=3.425388 support=False
+2026-11-16T10:05:25.6571469Z DONE

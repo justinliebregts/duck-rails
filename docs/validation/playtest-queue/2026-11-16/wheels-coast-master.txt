@@ -1,0 +1,43 @@
+Actual normal fuel exhaustion/coast and wheel transforms; real moving fresh-scene rejoin. Controlled starting fuel30; original fuel restored after observations. No distance reset/replay/headset claim.
+2026-11-16T13:44:00.2313914Z PASS same room/run rendezvous
+2026-11-16T13:44:00.2323913Z PASS convert rendezvous only inside original ready room/run
+2026-11-16T13:44:00.2372050Z CLOCK anchored local monotonic start=3719.913; Photon clock used only for initial same-room rendezvous
+2026-11-16T13:44:00.2794309Z STATE monotonicAge=-1.95 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:02.2450828Z SETUP controlled fuel30 at existing stopped distance
+2026-11-16T13:44:02.2849931Z STATE monotonicAge=0.05 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:03.2455623Z SETUP controlled fuel30 at existing stopped distance
+2026-11-16T13:44:04.2514266Z SETUP controlled fuel30 at existing stopped distance
+2026-11-16T13:44:04.2990047Z STATE monotonicAge=2.07 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:05.2559452Z SETUP controlled fuel30 at existing stopped distance
+2026-11-16T13:44:06.2764396Z SETUP controlled fuel30 at existing stopped distance
+2026-11-16T13:44:06.3140464Z STATE monotonicAge=4.08 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:07.2824792Z SETUP controlled fuel30 at existing stopped distance
+2026-11-16T13:44:08.2835265Z SETUP controlled fuel30 at existing stopped distance
+2026-11-16T13:44:08.3235217Z STATE monotonicAge=6.09 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:09.2996869Z SETUP controlled fuel30 at existing stopped distance
+2026-11-16T13:44:09.4330940Z GO actual30 fuel, distance=0
+2026-11-16T13:44:09.4553002Z PASS actual fresh train has four bound wheels
+2026-11-16T13:44:10.3430156Z STATE monotonicAge=8.11 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:12.3538208Z STATE monotonicAge=10.12 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:14.3624650Z STATE monotonicAge=12.13 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:16.3837538Z STATE monotonicAge=14.15 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:18.5748527Z STATE monotonicAge=16.34 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:20.6131899Z STATE monotonicAge=18.38 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:22.6180564Z STATE monotonicAge=20.39 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:24.6329760Z STATE monotonicAge=22.40 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:26.6529761Z STATE monotonicAge=24.42 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:28.6654580Z STATE monotonicAge=26.43 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:30.6764232Z STATE monotonicAge=28.45 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:32.6859216Z STATE monotonicAge=30.46 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=0 stopped=False
+2026-11-16T13:44:34.6364936Z COAST fuel=0 speed=3.968 distance=96.06374
+2026-11-16T13:44:34.7156950Z STATE monotonicAge=32.49 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=2 stopped=False
+2026-11-16T13:44:36.6186612Z PASS actual empty-fuel train advances through multiple coast frames before stopping
+2026-11-16T13:44:36.6191810Z PASS natural96m powered budget plus normal coast, no distance reset travelled=100
+2026-11-16T13:44:36.6191810Z STOP coastSamples=76 travelled=100
+2026-11-16T13:44:36.7181417Z STATE monotonicAge=34.49 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=76 stopped=True
+2026-11-16T13:44:38.6278395Z PASS wheel phase freezes at naturally exhausted rest
+2026-11-16T13:44:38.6283532Z PASS actual four-wheel phases agree with shared distance maxError=0 samples=1257
+2026-11-16T13:44:38.6630178Z CLEANUP release actual drive lease after natural stop
+2026-11-16T13:44:38.7261013Z STATE monotonicAge=36.50 room=68434 ready=True phase=Running departed=False joining=False movingJoin=False coastSamples=76 stopped=True
+2026-11-16T13:44:39.0738519Z PASS restoring original fuel preserves final distance
+2026-11-16T13:44:39.0748565Z END PASS coast/wheels; master verified original fuel restored at final distance checks=8 coastSamples=76 wheelSamples=1278 maxError=0 movingJoin=False; no input/settings edits, no fresh-run replay/headset acceptance

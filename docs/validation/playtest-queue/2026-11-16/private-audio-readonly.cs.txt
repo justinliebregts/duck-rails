@@ -1,0 +1,53 @@
+// PREPARED, NOT RUN. Either client; ready PRIVATE Staging/Running. Safe alongside coal/control/flashlight fixtures.
+// 55 s EditorApplication bound. Reads existing manager/director/voices/mixer only: no Play calls, settings,
+// route, input, rig or authority writes. Current Effects gain/routing is evidence, NOT an exercised volume sweep.
+// Sparse clack/speed/music observations are descriptive; do not claim missed public success-fade/ticks were tested.
+using System;using System.IO;using System.Collections.Generic;using UnityEditor;using UnityEngine;using Photon.Pun;using Game.Audio;
+internal class CommandScript:IRunCommand {
+ const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ readonly HashSet<string> seen=new HashSet<string>();readonly HashSet<string> errors=new HashSet<string>();
+ double start,nextLog,lastSample,quietSeconds,stableSince;string path;float lastSpeed=-999;int newTicks,joints,gainSamples,rumbleSamples;bool done;
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Fail(string s){if(errors.Add(s))Log("FAIL "+s);}
+ public void Execute(ExecutionResult r){
+  string p=Application.dataPath.Replace('\\','/');if(!(p=="X:/Work/duck-rails/Assets"||(p.StartsWith("X:/Work/duck-rails/Library/VP/")&&p.EndsWith("/Assets"))))throw new Exception("Wrong project");
+  if(!Application.isPlaying||!PhotonSession.IsPrivate||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady)throw new Exception("Needs ready private room");
+  start=lastSample=EditorApplication.timeSinceStartup;stableSince=start;
+  path=Root+"private-audio-readonly-actor"+PhotonNetwork.LocalPlayer.ActorNumber+".txt";
+  File.WriteAllText(path,"Read-only55s private audio observer. Existing sources/voice generations/mixer gain only; no volume sweep or fabricated audio.\n");
+  Sample(true);EditorApplication.update+=Tick;r.Log("Read-only audio observer armed55s; no rig/input/audio/room mutations");
+ }
+ void End(string reason){if(done)return;done=true;EditorApplication.update-=Tick;
+  Log((errors.Count>0?"FAIL ":quietSeconds>=10&&gainSamples>0?"PASS ":"INCONCLUSIVE ")+"DONE reason="+reason+" failures="+errors.Count+" eligiblePrivateSilentSeconds="+quietSeconds+" newUnexpectedTicks="+newTicks+" gainSamples="+gainSamples+" rumbleSamples="+rumbleSamples+" observedJoints="+joints+"; no audio/rig state changed; volume sweep/music fade/return tick curve NOT exercised");
+ }
+ void Tick(){try{if(!Application.isPlaying){End("Play stopped");return;}if(EditorApplication.timeSinceStartup-start>=55){End("bounded window complete");return;}Sample(false);}catch(Exception e){Fail("observer exception "+e);End("error");}}
+ void Sample(bool baseline){
+  double now=EditorApplication.timeSinceStartup;double dt=Math.Min(.2,Math.Max(0,now-lastSample));lastSample=now;
+  var am=UnityEngine.Object.FindFirstObjectByType<AudioManager>();var director=UnityEngine.Object.FindFirstObjectByType<RailAudioDirector>();var bank=RailAudio.Bank;
+  if(am==null||director==null||bank==null)return;
+  bool quiet=PhotonSession.IsPrivate&&PhotonSession.Instance!=null&&PhotonSession.Instance.WorldReady&&!PhotonSession.Instance.HasRoomRequest&&(PhotonSession.Phase==RailPhase.Staging||PhotonSession.Phase==RailPhase.Running);
+  if(quiet&&!baseline)quietSeconds+=dt;
+  var voices=RailRemoteBridge.Get(am,"voices") as Array;
+  if(voices!=null)for(int i=0;i<voices.Length;i++){
+   object v=voices.GetValue(i);var evt=RailRemoteBridge.Get(v,"Event") as SoundEvent;if(evt==null)continue;
+   string key=am.GetInstanceID()+":"+i+":"+RailRemoteBridge.Get(v,"Generation");if(!seen.Add(key)||baseline)continue;
+   var src=RailRemoteBridge.Get(v,"Source") as AudioSource;
+   if(evt==bank.clockTick){Log("TICK phase="+PhotonSession.Phase+" private="+PhotonSession.IsPrivate+" deadline="+PhotonSession.Get(RailSessionRules.Deadline,0d)+" networkTime="+PhotonNetwork.Time+" gain="+(src?src.volume:-1));if(quiet){newTicks++;Fail("clock tick during ready private Staging/Running");}}
+   if(evt==bank.railJoint){joints++;Log("JOINT distance="+(RailTrain.Instance?RailTrain.Instance.Distance:-1)+" speed="+(RailTrain.Instance?RailTrain.Instance.Speed:-1)+" sourceVolume="+(src?src.volume:-1));}
+  }
+  if(now<nextLog&&!baseline)return;nextLog=now+1;
+  float speed=RailTrain.Instance?Mathf.Abs(RailTrain.Instance.Speed):0;
+  if(Mathf.Abs(speed-lastSpeed)>.03f){lastSpeed=speed;stableSince=now;}
+  var effects=am.Settings!=null?am.Settings.effects:null;float db=0;
+  bool haveGain=effects!=null&&effects.audioMixer!=null&&effects.audioMixer.GetFloat("EffectsVolume",out db);
+  int preference=PlayerPrefs.GetInt(AudioManager.GameVolumePrefsKey,AudioManager.DefaultGameVolume);
+  // Read actual applied gain; preference is logged, not imposed (another fixture/user may change it).
+  if(haveGain)gainSamples++;
+  var rumble=RailRemoteBridge.Get(director,"rumble") as AudioSource;var music=RailRemoteBridge.Get(director,"music") as AudioSource;
+  float blend=Convert.ToSingle(RailRemoteBridge.Get(director,"aboardBlend"));
+  if(rumble!=null&&rumble.isPlaying){rumbleSamples++;if(rumble.outputAudioMixerGroup!=effects)Fail("playing rumble not routed to configured Effects group");
+   if(now-stableSince>3&&blend>.999f&&speed>.3f){float n=Mathf.Clamp01(speed/bank.rumbleFullSpeed);float expected=bank.rumbleVolume*Mathf.SmoothStep(0,1,n*2);float pitch=Mathf.Lerp(bank.rumbleMinPitch,bank.rumbleMaxPitch,n);if(Mathf.Abs(rumble.volume-expected)>.025f||Mathf.Abs(rumble.pitch-pitch)>.025f)Fail("settled aboard rumble differs from bank speed gain/pitch");}}
+  if(music!=null&&music.isPlaying&&music.outputAudioMixerGroup!=effects)Fail("playing music not routed to configured Effects group");
+  Log("SAMPLE phase="+PhotonSession.Phase+" speed="+speed+" distance="+(RailTrain.Instance?RailTrain.Instance.Distance:-1)+" EffectsGet="+haveGain+" dB="+db+" savedPercent="+preference+" aboardBlend="+blend+" rumble="+(rumble?rumble.isPlaying+","+rumble.volume+","+rumble.pitch:"none")+" music="+(music?music.isPlaying+","+music.volume:"none"));
+ }
+}

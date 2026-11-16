@@ -1,0 +1,124 @@
+2026-11-16T11:48:13.1247559Z BEGIN Unity=6000.3.24f1 real local NewPlayer.bodyLandingSounds collision path; hand callback INJECTED, never direct AudioManager.Play. Dispatch/source evidence only, no listening, cadence, remote footsteps or natural VR acceptance.
+2026-11-16T11:48:13.1306288Z TARGET Fountain basin -0.85 point=(0.00, 0.33, 1.20) collider=Water audio collider surface=Water foliage= body=HandHit_Water hand=HandHit_Water
+2026-11-16T11:48:13.1306288Z TARGET Fountain basin 0.85 point=(1.20, 0.33, 0.00) collider=Water audio collider surface=Water foliage= body=HandHit_Water hand=HandHit_Water
+2026-11-16T11:48:13.1316337Z TARGET Fountain outside point=(1.98, 0.01, -1.98) collider=Fountain surface= foliage= body=HandHit_Default hand=HandHit_Default
+2026-11-16T11:48:13.1321380Z NOT_PRESENT Farm (run again with Farm loaded)
+2026-11-16T11:48:13.1321380Z PASS Fountain basin -0.85 current hand/body mappings are HandHit_Water
+2026-11-16T11:48:13.1321380Z PASS Fountain basin 0.85 current hand/body mappings are HandHit_Water
+2026-11-16T11:48:13.1321380Z PASS Fountain outside dry control restores non-water/non-foliage mappings
+2026-11-16T11:48:13.1758959Z DROP Fountain basin -0.85 real body; scripted start/velocity, normal movement/collision callbacks enabled
+2026-11-16T11:48:13.5616576Z ACTUAL BODY COLLISION collider=Water audio collider point=(0.00, 0.44, 1.14) normal=(0.00, 1.00, 0.00) speed=6.5425 expected=HandHit_Water
+2026-11-16T11:48:13.5642720Z LEASE stage=body event=HandHit_Water point=(0.00, 0.44, 1.14) key=-18863794:-18869920:2 playing=True volume=0.4756712
+2026-11-16T11:48:15.1971701Z PASS Fountain basin -0.85 actual body landing dispatch=HandHit_Water matchingLeases=1 impact=6.5425
+2026-11-16T11:48:15.1971701Z INJECTED PlayHandHit collider=Water audio collider point=(0.00, 0.33, 1.20) volume=.6 target=Fountain basin -0.85
+2026-11-16T11:48:15.2032095Z LEASE stage=injected-hand event=HandHit_Water point=(0.00, 0.33, 1.20) key=-18863794:-18869920:3 playing=True volume=0.2490817
+2026-11-16T11:48:15.4082556Z PASS Fountain basin -0.85 INJECTED hand callback dispatch expected=HandHit_Water matchingLeases=1
+2026-11-16T11:48:15.8199435Z DROP Fountain basin 0.85 real body; scripted start/velocity, normal movement/collision callbacks enabled
+2026-11-16T11:48:16.2266475Z ACTUAL BODY COLLISION collider=Water audio collider point=(1.20, 0.36, -0.06) normal=(0.00, 1.00, 0.00) speed=6.678751 expected=HandHit_Water
+2026-11-16T11:48:16.2296810Z LEASE stage=body event=HandHit_Water point=(1.20, 0.36, -0.06) key=-18863794:-18869920:4 playing=True volume=0.4569919
+2026-11-16T11:48:17.8234507Z PASS Fountain basin 0.85 actual body landing dispatch=HandHit_Water matchingLeases=1 impact=6.678751
+2026-11-16T11:48:17.8234507Z INJECTED PlayHandHit collider=Water audio collider point=(1.20, 0.33, 0.00) volume=.6 target=Fountain basin 0.85
+2026-11-16T11:48:17.8244537Z LEASE stage=injected-hand event=HandHit_Water point=(1.20, 0.33, 0.00) key=-18863794:-18869920:5 playing=True volume=0.2756132
+2026-11-16T11:48:18.0250030Z PASS Fountain basin 0.85 INJECTED hand callback dispatch expected=HandHit_Water matchingLeases=1
+2026-11-16T11:48:18.4349143Z DROP Fountain outside real body; scripted start/velocity, normal movement/collision callbacks enabled
+2026-11-16T11:48:18.8211471Z ACTUAL BODY COLLISION collider=Terminal_Shell point=(1.98, 0.04, -2.04) normal=(0.00, 1.00, 0.00) speed=6.678751 expected=HandHit_Default
+2026-11-16T11:48:18.8211471Z ACTUAL BODY COLLISION collider=Fountain point=(1.98, 0.04, -2.04) normal=(-0.01, 1.00, 0.01) speed=6.678751 expected=HandHit_Default
+2026-11-16T11:48:18.8231539Z LEASE stage=body event=HandHit_Default point=(1.98, 0.04, -2.04) key=-18863794:-18869920:6 playing=True volume=0.4147205
+2026-11-16T11:48:18.8231539Z LEASE stage=body event=HandHit_Default point=(1.98, 0.04, -2.04) key=-18863794:-18869928:1 playing=True volume=0.4527057
+2026-11-16T11:48:20.4396889Z PASS Fountain outside actual body landing dispatch=HandHit_Default matchingLeases=2 impact=6.678751
+2026-11-16T11:48:20.4401925Z INJECTED PlayHandHit collider=Fountain point=(1.98, 0.01, -1.98) volume=.6 target=Fountain outside
+2026-11-16T11:48:20.4407047Z LEASE stage=injected-hand event=HandHit_Default point=(1.98, 0.01, -1.98) key=-18863794:-18869920:7 playing=True volume=0.2641041
+2026-11-16T11:48:20.6414708Z PASS Fountain outside INJECTED hand callback dispatch expected=HandHit_Default matchingLeases=1
+2026-11-16T11:48:21.0442687Z DONE pass=9 fail=0 blocked=0; actual body collision and INJECTED hand cases are separate acceptance scopes
+2026-11-16T11:48:21.0447737Z RESTORED local stand/input/view; sounds end normally
+2026-11-16T11:57:04.3406627Z BEGIN Unity=6000.3.24f1 real local NewPlayer.bodyLandingSounds collision path; hand callback INJECTED, never direct AudioManager.Play. Dispatch/source evidence only, no listening, cadence, remote footsteps or natural VR acceptance.
+2026-11-16T11:57:04.3543495Z NOT_PRESENT Compound fountain (run again in Compound)
+2026-11-16T11:57:04.3603762Z TARGET Farm stalk patch 0 point=(-41.56, 0.00, 156.45) collider=Sculpted orchard and ditch surface=Grass foliage=Foliage body=HandHit_Foliage hand=HandHit_Foliage
+2026-11-16T11:57:04.3618834Z TARGET Farm stalk patch 1 point=(-41.45, 0.00, 164.63) collider=Sculpted orchard and ditch surface=Grass foliage=Foliage body=HandHit_Foliage hand=HandHit_Foliage
+2026-11-16T11:57:04.3618834Z TARGET Farm dry railway-side ground point=(6.00, 0.00, 200.00) collider=Sculpted orchard and ditch surface=Grass foliage= body=HandHit_Grass hand=HandHit_Grass
+2026-11-16T11:57:04.3624225Z TARGET Farm ditch water priority point=(12.00, -0.37, 180.00) collider=Ditch water contact collider surface=Water foliage= body=HandHit_Water hand=HandHit_Water
+2026-11-16T11:57:04.3624225Z PASS Farm stalk patch 0 current hand/body mappings are HandHit_Foliage
+2026-11-16T11:57:04.3629361Z PASS Farm stalk patch 1 current hand/body mappings are HandHit_Foliage
+2026-11-16T11:57:04.3629361Z PASS Farm dry railway-side ground dry control restores non-water/non-foliage mappings
+2026-11-16T11:57:04.3629361Z PASS Farm ditch water priority current hand/body mappings are HandHit_Water
+2026-11-16T11:57:04.9127022Z DROP Farm stalk patch 0 real body; scripted start/velocity, normal movement/collision callbacks enabled
+2026-11-16T11:57:04.9596113Z LEASE stage=body event=ZombieSpider_Idle point=(-47.25, 0.91, 990.96) key=-19239486:-19240658:60 playing=True volume=1
+2026-11-16T11:57:05.0928545Z LEASE stage=body event=ZombieBomber_Idle point=(7.36, 0.00, 382.65) key=-19239486:-19240674:117 playing=True volume=1
+2026-11-16T11:57:05.3814745Z ACTUAL BODY COLLISION collider=Sculpted orchard and ditch point=(-41.56, 0.11, 156.39) normal=(0.00, 1.00, 0.00) speed=6.5425 expected=HandHit_Foliage
+2026-11-16T11:57:05.3869882Z LEASE stage=body event=HandHit_Foliage point=(-41.56, 0.11, 156.39) key=-19239486:-19240666:128 playing=True volume=0.4181273
+2026-11-16T11:57:05.4478867Z LEASE stage=body event=ZombieSpider_Idle point=(-46.66, 0.00, 310.00) key=-19239486:-19240682:97 playing=True volume=1
+2026-11-16T11:57:05.6199134Z LEASE stage=body event=ZombieSmasher_Idle point=(27.68, 0.05, 491.73) key=-19239486:-19240690:97 playing=True volume=1
+2026-11-16T11:57:05.7549739Z LEASE stage=body event=ZombieSpider_Idle point=(-41.85, 0.00, 690.00) key=-19239486:-19240666:129 playing=True volume=1
+2026-11-16T11:57:06.4440966Z LEASE stage=body event=ZombieHook_Idle point=(-21.46, -0.01, 234.66) key=-19239486:-19240658:61 playing=True volume=1
+2026-11-16T11:57:06.5212488Z LEASE stage=body event=ZombieMinion_Idle point=(-9.61, -0.01, 619.28) key=-19239486:-19240698:85 playing=True volume=1
+2026-11-16T11:57:06.8481679Z LEASE stage=body event=ZombieSpider_Footsteps point=(-30.08, 0.00, 160.98) key=-19239486:-19240666:130 playing=True volume=1
+2026-11-16T11:57:06.9314422Z PASS Farm stalk patch 0 actual body landing dispatch=HandHit_Foliage matchingLeases=1 impact=6.5425
+2026-11-16T11:57:06.9319613Z INJECTED PlayHandHit collider=Sculpted orchard and ditch point=(-41.56, 0.00, 156.45) volume=.6 target=Farm stalk patch 0
+2026-11-16T11:57:06.9319613Z LEASE stage=injected-hand event=HandHit_Foliage point=(-41.56, 0.00, 156.45) key=-19239486:-19240682:98 playing=True volume=0.2436546
+2026-11-16T11:57:06.9359948Z LEASE stage=injected-hand event=ZombieSpider_Footsteps point=(-29.21, 0.00, 160.65) key=-19239486:-19240666:131 playing=True volume=1
+2026-11-16T11:57:07.0239728Z LEASE stage=injected-hand event=ZombieSpider_Footsteps point=(-28.99, 0.00, 160.95) key=-19239486:-19240666:132 playing=True volume=1
+2026-11-16T11:57:07.0810234Z LEASE stage=injected-hand event=ZombieSpider_Aggro point=(-29.74, 0.00, 161.12) key=-19239486:-19240690:98 playing=True volume=1
+2026-11-16T11:57:07.1087790Z LEASE stage=injected-hand event=ZombieBomber_Idle point=(27.68, 2.40, 295.34) key=-19239486:-19240666:133 playing=True volume=1
+2026-11-16T11:57:07.1588991Z PASS Farm stalk patch 0 INJECTED hand callback dispatch expected=HandHit_Foliage matchingLeases=1
+2026-11-16T11:57:07.6013845Z DROP Farm stalk patch 1 real body; scripted start/velocity, normal movement/collision callbacks enabled
+2026-11-16T11:57:07.7187153Z LEASE stage=body event=ZombieSpider_Footsteps point=(-31.84, 0.00, 160.10) key=-19239486:-19240658:62 playing=True volume=1
+2026-11-16T11:57:07.8595425Z LEASE stage=body event=ZombieSpider_Footsteps point=(-31.95, 0.00, 159.01) key=-19239486:-19240658:63 playing=True volume=1
+2026-11-16T11:57:08.0029979Z LEASE stage=body event=ZombieSpider_Footsteps point=(-31.83, 0.00, 158.98) key=-19239486:-19240658:64 playing=True volume=1
+2026-11-16T11:57:08.0462282Z ACTUAL BODY COLLISION collider=Sculpted orchard and ditch point=(-41.45, 0.03, 164.57) normal=(0.00, 1.00, 0.00) speed=6.678751 expected=HandHit_Foliage
+2026-11-16T11:57:08.0512302Z LEASE stage=body event=HandHit_Foliage point=(-41.45, 0.03, 164.57) key=-19239486:-19240682:102 playing=True volume=0.4971337
+2026-11-16T11:57:08.1827086Z LEASE stage=body event=ZombieSpider_Footsteps point=(-33.46, 0.00, 159.63) key=-19239486:-19240658:65 playing=True volume=1
+2026-11-16T11:57:08.2678802Z LEASE stage=body event=ZombieSpider_Footsteps point=(-33.20, 0.00, 159.34) key=-19239486:-19240658:66 playing=True volume=1
+2026-11-16T11:57:08.4041909Z LEASE stage=body event=ZombieSpider_Footsteps point=(-33.21, 0.00, 161.03) key=-19239486:-19240658:67 playing=True volume=1
+2026-11-16T11:57:08.5531730Z LEASE stage=body event=ZombieSpider_Footsteps point=(-34.43, 0.00, 160.58) key=-19239486:-19240658:68 playing=True volume=1
+2026-11-16T11:57:08.6595089Z LEASE stage=body event=ZombieSpider_Footsteps point=(-34.18, 0.00, 160.32) key=-19239486:-19240658:69 playing=True volume=1
+2026-11-16T11:57:08.8599757Z LEASE stage=body event=ZombieSpider_Footsteps point=(-35.20, 0.00, 161.35) key=-19239486:-19240658:70 playing=True volume=1
+2026-11-16T11:57:08.9294647Z LEASE stage=body event=ZombieHook_Idle point=(36.83, 0.00, 827.58) key=-19239486:-19240674:118 playing=True volume=1
+2026-11-16T11:57:08.9931674Z LEASE stage=body event=ZombieSpider_Footsteps point=(-34.71, 0.00, 162.56) key=-19239486:-19240658:71 playing=True volume=1
+2026-11-16T11:57:09.1589364Z LEASE stage=body event=ZombieSpider_Footsteps point=(-35.89, 0.00, 161.86) key=-19239486:-19240658:72 playing=True volume=1
+2026-11-16T11:57:09.3078415Z LEASE stage=body event=ZombieSpider_Footsteps point=(-36.06, 0.00, 163.01) key=-19239486:-19240658:73 playing=True volume=1
+2026-11-16T11:57:09.3766607Z LEASE stage=body event=ZombieSpider_Footsteps point=(-35.89, 0.00, 161.78) key=-19239486:-19240682:103 playing=True volume=1
+2026-11-16T11:57:09.4603534Z LEASE stage=body event=ZombieSpider_Footsteps point=(-35.69, 0.00, 162.79) key=-19239486:-19240658:74 playing=True volume=1
+2026-11-16T11:57:09.5890671Z LEASE stage=body event=ZombieSmasher_Idle point=(16.49, 0.00, 192.73) key=-19239486:-19240658:75 playing=True volume=1
+2026-11-16T11:57:09.6299387Z PASS Farm stalk patch 1 actual body landing dispatch=HandHit_Foliage matchingLeases=1 impact=6.678751
+2026-11-16T11:57:09.6299387Z INJECTED PlayHandHit collider=Sculpted orchard and ditch point=(-41.45, 0.00, 164.63) volume=.6 target=Farm stalk patch 1
+2026-11-16T11:57:09.6299387Z LEASE stage=injected-hand event=HandHit_Foliage point=(-41.45, 0.00, 164.63) key=-19239486:-19240682:104 playing=True volume=0.2633006
+2026-11-16T11:57:09.6574660Z LEASE stage=injected-hand event=ZombieSpider_Footsteps point=(-36.80, 0.00, 163.70) key=-19239486:-19240690:99 playing=True volume=1
+2026-11-16T11:57:09.8917571Z PASS Farm stalk patch 1 INJECTED hand callback dispatch expected=HandHit_Foliage matchingLeases=1
+2026-11-16T11:57:10.3302443Z DROP Farm dry railway-side ground real body; scripted start/velocity, normal movement/collision callbacks enabled
+2026-11-16T11:57:10.3342566Z LEASE stage=body event=ZombieBomber_Idle point=(-29.97, 0.16, 570.63) key=-19239486:-19240674:121 playing=True volume=1
+2026-11-16T11:57:10.4629007Z LEASE stage=body event=ZombieSmasher_Footsteps point=(18.42, 0.00, 190.84) key=-19239486:-19240698:86 playing=True volume=1
+2026-11-16T11:57:10.6460780Z LEASE stage=body event=ZombieBomber_Idle point=(7.03, 0.00, 387.07) key=-19239486:-19240666:134 playing=True volume=1
+2026-11-16T11:57:10.6868591Z LEASE stage=body event=ZombieSmasher_Idle point=(40.35, -0.01, 943.68) key=-19239486:-19240722:56 playing=True volume=1
+2026-11-16T11:57:10.7739402Z ACTUAL BODY COLLISION collider=Sculpted orchard and ditch point=(6.00, 0.03, 199.94) normal=(0.00, 1.00, 0.00) speed=6.678751 expected=HandHit_Grass
+2026-11-16T11:57:10.7785569Z LEASE stage=body event=HandHit_Grass point=(6.00, 0.03, 199.94) key=-19239486:-19240714:69 playing=True volume=0.4241298
+2026-11-16T11:57:10.9044933Z LEASE stage=body event=ZombieSmasher_Footsteps point=(19.05, 0.00, 191.87) key=-19239486:-19240658:76 playing=True volume=1
+2026-11-16T11:57:11.1144954Z LEASE stage=body event=ZombieMinion_Idle point=(28.70, 12.00, 950.37) key=-19239486:-19240730:41 playing=True volume=1
+2026-11-16T11:57:11.2794357Z LEASE stage=body event=ZombieSmasher_Idle point=(-12.18, 0.00, 791.31) key=-19239486:-19240682:106 playing=True volume=1
+2026-11-16T11:57:11.7426760Z LEASE stage=body event=ZombieSpider_Idle point=(-46.59, 0.00, 310.00) key=-19239486:-19240690:102 playing=True volume=1
+2026-11-16T11:57:12.3362421Z PASS Farm dry railway-side ground actual body landing dispatch=HandHit_Grass matchingLeases=1 impact=6.678751
+2026-11-16T11:57:12.3362421Z INJECTED PlayHandHit collider=Sculpted orchard and ditch point=(6.00, 0.00, 200.00) volume=.6 target=Farm dry railway-side ground
+2026-11-16T11:57:12.3377469Z LEASE stage=injected-hand event=HandHit_Grass point=(6.00, 0.00, 200.00) key=-19239486:-19240658:77 playing=True volume=0.2989455
+2026-11-16T11:57:12.4246560Z LEASE stage=injected-hand event=ZombieSmasher_Idle point=(-36.37, 5.57, 443.26) key=-19239486:-19240698:87 playing=True volume=1
+2026-11-16T11:57:12.5414149Z PASS Farm dry railway-side ground INJECTED hand callback dispatch expected=HandHit_Grass matchingLeases=1
+2026-11-16T11:57:12.9818081Z DROP Farm ditch water priority real body; scripted start/velocity, normal movement/collision callbacks enabled
+2026-11-16T11:57:13.4367059Z ACTUAL BODY COLLISION collider=Ditch water contact collider point=(12.00, -0.34, 179.94) normal=(0.00, 1.00, 0.00) speed=6.678751 expected=HandHit_Water
+2026-11-16T11:57:13.4442694Z LEASE stage=body event=HandHit_Water point=(12.00, -0.34, 179.94) key=-19239486:-19240690:103 playing=True volume=0.4869635
+2026-11-16T11:57:13.6125643Z LEASE stage=body event=ZombieBomber_Idle point=(-18.36, 5.16, 920.63) key=-19239486:-19240714:70 playing=True volume=1
+2026-11-16T11:57:13.8538989Z LEASE stage=body event=ZombieBomber_Idle point=(29.98, 0.34, 291.02) key=-19239486:-19240674:122 playing=True volume=1
+2026-11-16T11:57:13.9201000Z LEASE stage=body event=ZombieHook_Idle point=(-24.65, 0.09, 228.63) key=-19239486:-19240698:88 playing=True volume=1
+2026-11-16T11:57:14.0781665Z LEASE stage=body event=ZombieSmasher_Idle point=(34.31, 0.05, 490.34) key=-19239486:-19240690:104 playing=True volume=1
+2026-11-16T11:57:14.1622445Z LEASE stage=body event=ZombieSmasher_Footsteps point=(19.76, 0.00, 191.05) key=-19239486:-19240682:108 playing=True volume=1
+2026-11-16T11:57:14.2926414Z LEASE stage=body event=ZombieSmasher_Footsteps point=(19.39, 0.00, 189.89) key=-19239486:-19240722:57 playing=True volume=1
+2026-11-16T11:57:14.5034947Z LEASE stage=body event=ZombieSmasher_Footsteps point=(20.69, 0.00, 190.59) key=-19239486:-19240666:135 playing=True volume=1
+2026-11-16T11:57:14.6236560Z LEASE stage=body event=ZombieSmasher_Footsteps point=(20.56, 0.00, 189.33) key=-19239486:-19240730:42 playing=True volume=1
+2026-11-16T11:57:14.7006397Z LEASE stage=body event=ZombieSpider_Idle point=(-41.16, 0.00, 690.42) key=-19239486:-19240738:23 playing=True volume=1
+2026-11-16T11:57:14.7304196Z LEASE stage=body event=ZombieMinion_Idle point=(22.79, -0.01, 722.57) key=-19239486:-19240746:10 playing=True volume=1
+2026-11-16T11:57:14.7811765Z LEASE stage=body event=ZombieSmasher_Footsteps point=(21.56, 0.00, 190.14) key=-19239486:-19240754:3 playing=True volume=1
+2026-11-16T11:57:14.9491937Z LEASE stage=body event=ZombieSmasher_Footsteps point=(21.46, 0.00, 188.84) key=-19239486:-19240762:2 playing=True volume=1
+2026-11-16T11:57:15.0023353Z PASS Farm ditch water priority actual body landing dispatch=HandHit_Water matchingLeases=1 impact=6.678751
+2026-11-16T11:57:15.0028397Z INJECTED PlayHandHit collider=Ditch water contact collider point=(12.00, -0.37, 180.00) volume=.6 target=Farm ditch water priority
+2026-11-16T11:57:15.0089045Z LEASE stage=injected-hand event=HandHit_Water point=(12.00, -0.37, 180.00) key=-19239486:-19240770:1 playing=True volume=0.249576
+2026-11-16T11:57:15.0935158Z LEASE stage=injected-hand event=ZombieSmasher_Idle point=(21.32, -0.01, 189.60) key=-19239486:-19240682:109 playing=True volume=0.88
+2026-11-16T11:57:15.2858823Z PASS Farm ditch water priority INJECTED hand callback dispatch expected=HandHit_Water matchingLeases=1
+2026-11-16T11:57:15.6942528Z DONE pass=12 fail=0 blocked=0; actual body collision and INJECTED hand cases are separate acceptance scopes
+2026-11-16T11:57:15.6942528Z RESTORED local stand/input/view; sounds end normally

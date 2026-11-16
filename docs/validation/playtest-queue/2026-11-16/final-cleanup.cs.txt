@@ -1,0 +1,56 @@
+using System;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+internal class CommandScript : IRunCommand
+{
+    public void Execute(ExecutionResult r)
+    {
+        if (Application.dataPath.Replace('\\', '/') != "X:/Work/duck-rails/Assets" ||
+            EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling ||
+            RailRegressionLauncher.Status != "NotRunning" || RailTestRunner.Running)
+            throw new Exception("Requires idle Duck Rails editor and stopped runners");
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+            if (SceneManager.GetSceneAt(i).isDirty) throw new Exception("Preserve unsaved scene; do not discard");
+        RailRegressionLauncher.Stop();
+        RailRemoteBridge.Call(typeof(RailTestRunner), "Disarm");
+        RailRemoteBridge.Call(typeof(RailTestRunner), "Select", "");
+        EditorPrefs.SetBool(DesktopPlay.PrefKey, false);
+        EditorPrefs.SetBool("DuckRails.DesktopPlay", false);
+        DesktopPlay.SetSessionSimulation(null);
+        RailEditorQuickStart.Enabled = false;
+        RailTestLighting.Gameplay();
+        var ids = new[] { "farm-silos-v1", "canyon-v1", "container-yard-v1", "skyscraper-works-v1" };
+        var blocks = ids.Select(id => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/" + id + ".prefab").GetComponent<RailBlock>()).ToList();
+        if (blocks.Any(b => b == null)) throw new Exception("Missing original block");
+        var settings = RailTestBlockOrder.instance;
+        settings.blocks = blocks;
+        settings.useOrder = true;
+        settings.invincibleFromEnemies = true;
+        settings.Persist();
+        RailTestBlockOrderPanel.PublishPlayerOptions();
+        int disarmed = 0;
+        foreach (var player in new[] { "Player2", "Player3" })
+        {
+            string input = "Temp/rails-remote/" + player + "-in.cs";
+            if (!File.Exists(input)) continue;
+            File.WriteAllText(input, "// id: final-queue-idle-20261116\ninternal class CommandScript : IRunCommand { public void Execute(ExecutionResult r) { r.Log(\"Queue fixture disarmed\"); } }\n");
+            disarmed++;
+        }
+        const string scene = "Assets/DuckRails/Lighting/StartingStation/StartingStation-bake.unity";
+        EditorSceneManager.OpenScene(scene, OpenSceneMode.Single);
+        string report = "UTC=" + DateTime.UtcNow.ToString("o") + " project=" + Application.dataPath +
+            " unity=" + Application.unityVersion + " play=" + EditorApplication.isPlaying +
+            " scenario=" + RailTestRunner.ScenarioState + " runner=" + RailTestRunner.Running +
+            " desktop=" + DesktopPlay.UseDesktop + " quick=" + RailEditorQuickStart.Enabled +
+            " order=" + string.Join(",", ids) + " useOrder=" + settings.useOrder +
+            " invincible=" + settings.invincibleFromEnemies + " bright=" + RailTestLighting.BrightRequested +
+            " scene=" + SceneManager.GetActiveScene().path + " dirty=" + SceneManager.GetActiveScene().isDirty +
+            " remoteInputsDisarmed=" + disarmed + " regressionPending=" + SessionState.GetBool("Rails.DeepRegression", false);
+        File.WriteAllText("docs/validation/playtest-queue/2026-11-16/final-editor-cleanup.txt", report + "\nOriginal four-block order recovered exactly. Original November16 boolean backup lost on restart; restored last recorded logical flags, not byte-identical November16 preferences.\n");
+        r.Log(report);
+    }
+}

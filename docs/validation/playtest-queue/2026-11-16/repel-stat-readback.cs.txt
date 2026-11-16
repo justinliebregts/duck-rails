@@ -1,0 +1,23 @@
+// READ ONLY runtime snapshot. Execute on both current clients. No hit, stat flush,
+// message, property/counter write, input or scene changes. Writes evidence file only.
+using System;using System.IO;using System.Linq;using UnityEngine;using Photon.Pun;using Game.AI;
+internal class CommandScript:IRunCommand {
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!PhotonNetwork.InRoom||RailExpedition.Instance==null)throw new Exception("Need current live expedition");
+  string root=Application.dataPath.Replace('\\','/');int vp=root.IndexOf("/Library/VP/",StringComparison.OrdinalIgnoreCase);root=vp<0?Path.GetDirectoryName(root):root.Substring(0,vp);
+  string folder=root+"/docs/validation/playtest-queue/2026-11-16/",role=PhotonNetwork.IsMasterClient?"master":"peer",path=folder+"repel-stat-readback-"+role+".txt";
+  Action<string> log=s=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+  log("BEGIN READONLY room="+PhotonNetwork.CurrentRoom.Name+" run="+PhotonSession.RunId+" localActor="+PhotonNetwork.LocalPlayer.ActorNumber+" localUserId="+PhotonNetwork.LocalPlayer.UserId+" master="+PhotonNetwork.IsMasterClient+" unityUnscaled="+Time.unscaledTime+" unityTime="+Time.time);
+  var expedition=RailExpedition.Instance;
+  foreach(var p in expedition.State.players)log("CACHED id="+p.id+" actor="+p.actor+" repels="+p.repels);
+  string json=PhotonSession.Get(RailExpedition.StateKey,"");if(!string.IsNullOrEmpty(json)){var raw=JsonUtility.FromJson<RailRunState>(json);foreach(var p in raw.players)log("RETAINED id="+p.id+" actor="+p.actor+" repels="+p.repels);}
+  foreach(string field in new[]{"run","repels","lastRepel","nextFlush"})log("LOCAL_RAILSTATS "+field+"="+RailRemoteBridge.Get(typeof(RailStats),field));
+  foreach(var net in UnityEngine.Object.FindObjectsByType<EnemyNetSync>(FindObjectsSortMode.None)){
+   int seq=(int)RailRemoteBridge.Get(net,"_hitSequence");var view=net.GetComponent<PhotonView>();if(seq==0&&view.ViewID!=109)continue;
+   log("LOCAL_SUBMISSIONS view="+view.ViewID+" enemy="+net.name+" controller="+view.ControllerActorNr+" localSequence="+seq+" pending="+RailRemoteBridge.Get(net,"_pendingHit")+" confirmed="+RailRemoteBridge.Get(net,"_hitConfirmed")+" confirmedServerTimestamp="+RailRemoteBridge.Get(net,"_confirmedTime"));
+  }
+  string baseline=folder+"repel-stat-"+role+".txt";if(File.Exists(baseline))foreach(string line in File.ReadAllLines(baseline).Where(x=>x.Contains("BASELINE")||x.Contains("INPUT")||x.Contains("FAIL ")||x.Contains("PASS authority")||x.Contains("PASS sender")))log("ORIGINAL_LOG "+line);
+  string target=root+"/Temp/rails-repel-stat/20261116-repel-stat-1-target";if(File.Exists(target))log("ORIGINAL_TARGET "+File.ReadAllText(target));
+  log("END READONLY. Original beforeOthers dictionary was not serialized; do not invent it. Local hit sequences persist only for currently loaded enemy instances; zero/missing does not disprove earlier unloaded submissions.");r.Log("Read-only attribution snapshot appended to "+path);
+ }
+}

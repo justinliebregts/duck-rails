@@ -1,0 +1,101 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;
+using UnityEngine;using UnityEditor;using Photon.Pun;
+// Transient reconnect, NOT Leave -> Compound -> fresh JoinRoom.
+// Source restriction: PhotonSession.TickAuthority closes Ending/Returning rooms;
+// Begin/LeaveCurrentRoom uses LeaveRoom(false), so fresh code joins cannot enter.
+// Supported path: RailSessionRules.Options sets private PlayerTtl=120000;
+// PhotonSession.OnDisconnected retains resumeRoom and ExecuteRequest calls RejoinRoom.
+// Only local retryAt is delayed. No room properties, authority, train, finish or awards are written.
+internal class CommandScript:IRunCommand{
+ const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ string path,room,run;int stage,actor,master,sceneBefore,sceneAfter,samples;bool ended,sawOffline,sawReturning,sawDawn,holdingRetry;
+ double began,cutReal,releaseReal,rejoinedReal,finished,deadline,nextLog;float finishDistance;RailAtmosphereSettings settings;
+ readonly HashSet<string> failures=new HashSet<string>();
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){if(!ok&&failures.Add(s))Log("FAIL "+s);}
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!PhotonNetwork.InRoom||PhotonNetwork.IsMasterClient||!PhotonSession.IsPrivate||PhotonSession.Phase!=RailPhase.Running||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||PhotonSession.Instance.HasRoomRequest||PhotonNetwork.PlayerList.Count(p=>!p.IsInactive)<2)
+   throw new Exception("Arm a ready non-master private Running peer; another active client must retain the room");
+  if(RailTestLighting.BrightRequested||RailQuestPerformance.FarClipOverride>0)throw new Exception("Need gameplay lighting and no benchmark far-clip override on observer");
+  string role=Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor?"main":Unity.Multiplayer.PlayMode.CurrentPlayer.Tags.FirstOrDefault()??"peer";
+  path=Root+"ending-latejoin-"+role+".txt";room=PhotonNetwork.CurrentRoom.Name;run=PhotonSession.RunId;actor=PhotonNetwork.LocalPlayer.ActorNumber;
+  settings=Resources.Load<RailAtmosphereSettings>(RailAtmosphereSettings.ResourcePath);began=EditorApplication.timeSinceStartup;
+  File.WriteAllText(path,"Natural-success transient-reconnect observer. No simulated finish, movement, authority or room-property mutation. Local retryAt delays normal authenticated RejoinRoom for 12 editor-clock seconds. Ending rooms reject fresh code joins; this uses the retained inactive actor. Runtime fog/camera values are not manual visual/audio or headset acceptance.\n");
+  Log("ARM room="+room+" run="+run+" actor="+actor+" ttl="+PhotonNetwork.CurrentRoom.PlayerTtl);
+  EditorApplication.update+=Tick;r.Log("Natural ending reconnect observer armed: 600s pre-finish, 90s after cut, 12s local recovery delay");
+ }
+ void Tick(){try{
+  double real=EditorApplication.timeSinceStartup;var session=PhotonSession.Instance;
+  if(!Application.isPlaying||session==null)throw new Exception("Play/session ended");
+  if(stage==0&&real-began>600)throw new Exception("600s natural-success wait expired");
+  if(stage>0&&real-cutReal>90)throw new Exception("90s post-cut bound expired");
+  if(stage==0){
+   if(!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.Name!=room||PhotonSession.RunId!=run)throw new Exception("Original run changed before natural success");
+   if(PhotonNetwork.IsMasterClient)throw new Exception("Observer became master; refusing to disconnect authority");
+   var e=RailExpedition.Instance;if(e==null||!e.State.finished)return;
+   if(!e.State.success||e.State.reason!="Bridge crossed")throw new Exception("Run ended without natural bridge success: "+e.State.reason);
+   if(PhotonSession.Phase!=RailPhase.Ending||!session.WorldReady||session.HasRoomRequest)return;
+   finished=e.State.finishedAt;deadline=PhotonSession.Get(RailSessionRules.Deadline,0d);finishDistance=RailTrain.Instance.Distance;
+   master=PhotonNetwork.MasterClient.ActorNumber;sceneBefore=e.GetInstanceID();Check(Math.Abs(deadline-finished-32)<.02,"normal 32-second ending retained before cut");
+   cutReal=real;releaseReal=real+12;stage=1;holdingRetry=true;
+   Log("CUT finishedAt="+finished.ToString("R")+" originalAge="+(PhotonNetwork.Time-finished)+" deadline="+deadline.ToString("R")+" distance="+finishDistance+" actor="+actor+" master="+master+" scene="+sceneBefore+" roomOpen="+PhotonNetwork.CurrentRoom.IsOpen);
+   PhotonNetwork.Disconnect();return;
+  }
+  if(stage==1){
+   if(!PhotonNetwork.InRoom)sawOffline=true;
+   if(real<releaseReal){
+    // OnDisconnected sets retryAt=local realtime+2. Keep only this local retry
+    // gated until the editor-clock deadline; never compare foreign Photon clocks.
+    RailRemoteBridge.Set(session,"retryAt",Time.realtimeSinceStartupAsDouble+(releaseReal-real)+.1);return;
+   }
+   RailRemoteBridge.Set(session,"retryAt",Time.realtimeSinceStartupAsDouble);holdingRetry=false;stage=2;
+   Log("RECOVERY_RELEASE localElapsed="+(real-cutReal)+" offlineObserved="+sawOffline+" resumeRoom="+RailRemoteBridge.Get(session,"resumeRoom"));return;
+  }
+  if(stage==2){
+   if(!PhotonNetwork.InRoom){if(real>=nextLog){nextLog=real+2;Log("RECOVER status="+session.Status+" error="+session.LastError);}return;}
+   if(PhotonNetwork.CurrentRoom.Name!=room)throw new Exception("Recovery entered different room: "+PhotonNetwork.CurrentRoom.Name);
+   if(!session.WorldReady||session.HasRoomRequest)return;
+   if(PhotonSession.Phase!=RailPhase.Ending)throw new Exception("Recovered too late for Ending observation; phase="+PhotonSession.Phase);
+   var e=RailExpedition.Instance;if(e==null||e.State.run!=run||!e.State.finished)return;
+   rejoinedReal=real;sceneAfter=e.GetInstanceID();stage=3;nextLog=0;
+   Check(sawOffline,"actual disconnect observed");Check(PhotonNetwork.LocalPlayer.ActorNumber==actor,"inactive actor identity restored");
+   Check(PhotonNetwork.MasterClient.ActorNumber==master&&!PhotonNetwork.IsMasterClient,"remaining master retained authority");
+   Log("REJOIN currentRoomAge="+(PhotonNetwork.Time-e.State.finishedAt)+" localElapsed="+(real-cutReal)+" actor="+PhotonNetwork.LocalPlayer.ActorNumber+" master="+PhotonNetwork.MasterClient.ActorNumber+" scene="+sceneAfter+" path="+(sceneAfter==sceneBefore?"retained scene":"new scene instance"));return;
+  }
+  if(!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.Name!=room)throw new Exception("Lost original private room after rejoin");
+  if(PhotonSession.Phase==RailPhase.Returning){sawReturning=true;Check(PhotonNetwork.Time>=deadline-.1,"natural Returning begins after original deadline");}
+  if(PhotonSession.Phase==RailPhase.Staging&&session.WorldReady&&!session.HasRoomRequest){
+   Check(sawReturning,"natural Returning phase observed");Check(sawDawn&&samples>2,"rejoined Ending observed through full dawn");
+   Check(string.IsNullOrEmpty(PhotonSession.RunId)&&!RailWorld.HasLiveCargo,"private Staging clears run and cargo");
+   var e=RailExpedition.Instance;Check(e==null||e.results==null||!e.results.gameObject.activeInHierarchy,"old result board hidden after return");
+   Check(Mathf.Abs(RailAtmosphere.PlayerViewDistance-120)<.05f,"view distance restored to night after return");
+   Log("STAGING sharedElapsed="+(PhotonNetwork.Time-finished)+" localElapsed="+(real-cutReal)+" viewDistance="+RailAtmosphere.PlayerViewDistance);
+   End(true);return;
+  }
+  if(PhotonSession.Phase!=RailPhase.Ending||!session.WorldReady||session.HasRoomRequest||real-rejoinedReal<.35)return;
+  var current=RailExpedition.Instance;if(current==null||RailTrain.Instance==null||RailRoute.Instance==null)return;
+  Check(current.State.finishedAt==finished&&current.State.success&&current.State.reason=="Bridge crossed"&&current.State.run==run,"original finish identity retained on rejoin");
+  Check(PhotonSession.Get(RailSessionRules.Deadline,0d)==deadline,"original Ending deadline retained on rejoin");
+  double age=PhotonNetwork.Time-current.State.finishedAt;
+  var atmosphere=RailRemoteBridge.Get(current,"atmosphere");float actual=Convert.ToSingle(RailRemoteBridge.Get(atmosphere,"lastProgress"));
+  float into=RailTrain.Instance.Distance-RailRoute.Instance.FinaleStart;
+  float expected=RailAtmosphere.Progress(into,true,age),earlier=RailAtmosphere.Progress(into,true,Math.Max(0,age-Math.Max(.2,Time.unscaledDeltaTime*2)));
+  Check(!float.IsNaN(actual)&&actual>=earlier-.015f&&actual<=expected+.015f,"rendered dawn tracks current retained finish age");
+  float blend=Mathf.Clamp01(actual-1);float density=Mathf.Lerp(settings!=null?settings.preDawnDensity:.05f,settings!=null?settings.dawnDensity:.0125f,blend);
+  Color color=Color.Lerp(settings!=null?settings.preDawnColor:RailAtmosphere.PreFog,settings!=null?settings.dawnColor:RailAtmosphere.DawnFog,blend);
+  Check(RenderSettings.fog&&RenderSettings.fogMode==FogMode.ExponentialSquared&&Mathf.Abs(RenderSettings.fogDensity-density)<.0005f,"rendered fog density follows retained dawn");
+  Check(Mathf.Abs(RenderSettings.fogColor.r-color.r)<.005f&&Mathf.Abs(RenderSettings.fogColor.g-color.g)<.005f&&Mathf.Abs(RenderSettings.fogColor.b-color.b)<.005f,"rendered fog color follows retained dawn");
+  Check(Mathf.Abs(RailAtmosphere.PlayerViewDistance-Mathf.Lerp(120,175,blend))<.05f,"shared presentation view-distance blend matches dawn");
+  if(age>20.5){
+   sawDawn=true;Check(Mathf.Abs(RailAtmosphere.PlayerViewDistance-175)<.05f,"full dawn reaches 175m player view distance");
+   var views=UnityEngine.Object.FindObjectsByType<RailPlayerViewDistance>(FindObjectsSortMode.None);int cameras=0;
+   foreach(var view in views)foreach(var camera in view.GetComponentsInChildren<Camera>(true))if(camera.stereoTargetEye!=StereoTargetEyeMask.None){cameras++;Check(Mathf.Abs(camera.farClipPlane-175)<.05f,"local player camera reaches 175m far clip");}
+   Check(cameras>0,"at least one player view camera measured");
+  }
+  samples++;if(real>=nextLog){nextLog=real+.5;Log("ENDING age="+age+" progress="+actual+" expected="+expected+" fog="+RenderSettings.fogDensity+" color="+RenderSettings.fogColor+" view="+RailAtmosphere.PlayerViewDistance+" trainDistance="+RailTrain.Instance.Distance+" speed="+RailTrain.Instance.Speed+" deadline="+PhotonSession.Get(RailSessionRules.Deadline,0d));}
+ }catch(Exception ex){Log("BLOCKED "+ex);End(false);}}
+ void End(bool complete){if(ended)return;ended=true;EditorApplication.update-=Tick;
+  if(holdingRetry&&PhotonSession.Instance!=null){RailRemoteBridge.Set(PhotonSession.Instance,"retryAt",Time.realtimeSinceStartupAsDouble);holdingRetry=false;Log("CLEANUP released local reconnect delay");}
+  Log((failures.Count>0?"FAIL ":complete?"PASS ":"BLOCKED ")+"DONE stage="+stage+" samples="+samples+" failures="+failures.Count+" dawn="+sawDawn+" returning="+sawReturning+" observer removed");
+ }
+}

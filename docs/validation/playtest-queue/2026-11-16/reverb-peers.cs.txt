@@ -1,0 +1,111 @@
+// PREPARED revision, not executed. Current bounded two-client run: Player2=West bunker,
+// including real leave/rejoin; main remains in expedition with listener outside that box.
+// Set TargetOverride="" and RunLifecycleOverride=false for legacy role defaults:
+// Player2=Arcade (local check), Player3=West bunker (local check plus lifecycle).
+// Main retains the ready five-digit private expedition. Peers need empty hands,
+// no concurrent movement fixture/input. Injected kinematic listener placement;
+// actual BoxReverbZone.LateUpdate. No claim of three simultaneous listeners. Audio quality manual.
+// One 90-second deadline BEFORE readiness; recovery starts at 60 seconds.
+using System;using System.IO;using System.Linq;using UnityEditor;using UnityEngine;using Photon.Pun;using Game.Audio;
+internal class CommandScript:IRunCommand{
+ const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ const string TargetOverride="West bunker";
+ const bool RunLifecycleOverride=true;
+ string role,path,room,zoneName,otherName;BoxReverbZone target,other;BoxReverbZone[] oldZones;
+ NewPlayer originalPlayer;Vector3 origin,localOrigin;Quaternion rotation,localRotation;
+ bool kin,disabled,aboard,done,interrupted,captured;double started,entered;int stage,failures;
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){if(!ok)failures++;Log((ok?"PASS ":"FAIL ")+s);}
+ bool Ready(){var s=PhotonSession.Instance;return s!=null&&s.WorldReady&&!s.HasRoomRequest&&NewPlayer.instance!=null;}
+ bool OriginalRoom()=>PhotonNetwork.InRoom&&PhotonNetwork.CurrentRoom.Name==room;
+ void Next(int value){stage=value;entered=EditorApplication.timeSinceStartup;}
+ public void Execute(ExecutionResult r){
+  string data=Application.dataPath.Replace('\\','/');
+  bool railsPath=data=="X:/Work/duck-rails/Assets"||(data.StartsWith("X:/Work/duck-rails/Library/VP/",StringComparison.OrdinalIgnoreCase)&&data.EndsWith("/Assets",StringComparison.OrdinalIgnoreCase));
+  if(!railsPath||!Application.isPlaying||!Ready()||!PhotonNetwork.InRoom||PhotonSession.Phase!=RailPhase.Running||PhotonNetwork.CurrentRoom.PlayerCount<2)throw new Exception("Need ready Rails main/virtual-player private expedition with another client retaining room");
+  role=Unity.Multiplayer.PlayMode.CurrentPlayer.Tags.FirstOrDefault();
+  if(role!="Player2"&&role!="Player3")throw new Exception("Run only on Player2 or Player3");
+  room=PhotonNetwork.CurrentRoom.Name;
+  if(room.Length!=5||!room.All(char.IsDigit))throw new Exception("Need five-digit private room");
+  if(GR.Player.instance==null||GR.Player.instance.IsDead||GR.Player.instance.leftPlayerHand.IsHolding||GR.Player.instance.rightPlayerHand.IsHolding)throw new Exception("Need alive player and empty hands");
+  zoneName=TargetOverride.Length>0?TargetOverride:(role=="Player2"?"Arcade":"West bunker");
+  if(zoneName!="Arcade"&&zoneName!="West bunker")throw new Exception("TargetOverride must be Arcade, West bunker, or empty");
+  otherName=zoneName=="Arcade"?"West bunker":"Arcade";
+  oldZones=UnityEngine.Object.FindObjectsByType<BoxReverbZone>(FindObjectsSortMode.None);
+  target=oldZones.Single(x=>x.name==zoneName);other=oldZones.Single(x=>x.name==otherName);
+  if(AudioManager.instance==null||AudioManager.instance.ListenerTransform==null)throw new Exception("No local listener");
+  originalPlayer=NewPlayer.instance;origin=originalPlayer.transform.position;rotation=originalPlayer.transform.rotation;
+  kin=originalPlayer.rb.isKinematic;disabled=originalPlayer.disableMovement;
+  aboard=RailTrain.TryPassengerFrame(out var frame);
+  if(aboard){localOrigin=frame.InverseTransformPoint(origin);localRotation=Quaternion.Inverse(frame.rotation)*rotation;}
+  path=Root+"reverb-independent-"+role+".txt";started=entered=EditorApplication.timeSinceStartup;captured=true;
+  Log("START bounded revision; injected listener-center pose, actual LateUpdate. target="+zoneName+" other="+otherName+" origin="+origin+" aboard="+aboard);
+  EditorApplication.update+=Tick;r.Log("Started "+role+" target="+zoneName+" center="+target.transform.position+"; total deadline 90s");
+ }
+ void PlaceListener(){
+  var p=NewPlayer.instance;p.disableMovement=true;p.rb.isKinematic=true;
+  if(RailTrain.Instance!=null&&RailTrain.Instance.cabin!=null)RailTrain.Instance.cabin.ReleasePassenger();
+  p.transform.position+=target.transform.position-AudioManager.instance.ListenerTransform.position;
+  p.rb.position=p.transform.position;p.ReseedTrackingPose();Physics.SyncTransforms();
+ }
+ void RestoreLocal(bool pose){
+  if(!captured)return;var p=NewPlayer.instance!=null?NewPlayer.instance:originalPlayer;if(p==null)return;
+  try{
+   if(pose&&OriginalRoom()&&Ready()){
+    if(!aboard||RailTrain.Instance!=null){
+     var pos=aboard?RailTrain.Instance.transform.TransformPoint(localOrigin):origin;
+     var rot=aboard?RailTrain.Instance.transform.rotation*localRotation:rotation;
+     if(RailTrain.Instance!=null&&RailTrain.Instance.cabin!=null)RailTrain.Instance.cabin.ReleasePassenger();
+     p.transform.SetPositionAndRotation(pos,rot);p.rb.position=pos;p.rb.rotation=rot;p.ReseedTrackingPose();Physics.SyncTransforms();
+     Log("RESTORED exact root pose"+(aboard?" relative to current train":" in original world")+"; no Warp stand-point reinterpretation");
+    }else Log("RESTORATION INCOMPLETE train-relative pose: train missing");
+   }
+  }finally{
+   p.disableMovement=disabled;p.rb.isKinematic=kin;
+   if(originalPlayer!=null&&originalPlayer!=p){originalPlayer.disableMovement=disabled;originalPlayer.rb.isKinematic=kin;}
+  }
+ }
+ void Tick(){
+  if(done)return;
+  try{
+   double elapsed=EditorApplication.timeSinceStartup-started,age=EditorApplication.timeSinceStartup-entered;
+   if(!Application.isPlaying||elapsed>=90){interrupted=true;Log("BLOCKED global deadline stage="+stage);Finish();return;}
+   if(elapsed>60&&stage<8){interrupted=true;Log("BLOCKED scenario budget exhausted; restoring");RestoreLocal(true);Next(8);}
+   if(!Ready())return;
+   if(stage==0){
+    PlaceListener();if(age<3)return;Next(1); // Leave a real LateUpdate before assertion.
+   }else if(stage==1&&age>.2){
+    var zone=(AudioReverbZone)RailRemoteBridge.Get(target,"zone");var oz=(AudioReverbZone)RailRemoteBridge.Get(other,"zone");
+    var listener=AudioManager.instance.ListenerTransform;
+    float own=Vector3.Distance(zone.transform.position,listener.position),outside=Vector3.Distance(oz.transform.position,listener.position);
+    Check(own<.02f&&outside>oz.maxDistance,"local listener inside "+zoneName+" only; targetDistance="+own+" otherDistance="+outside+" otherMax="+oz.maxDistance+"; compare separate peer log for peer position");
+    RestoreLocal(true);
+    if(RunLifecycleOverride||role=="Player3"){PhotonSession.Instance.RequestJoinRandom();Next(2);}else Finish();
+   }else if(stage==2&&PhotonSession.Phase==RailPhase.Compound){
+    int remaining=oldZones.Count(x=>x!=null);
+    Check(remaining==0,"captured expedition reverb components destroyed on unload; oldRemaining="+remaining+" currentTotal="+UnityEngine.Object.FindObjectsByType<BoxReverbZone>(FindObjectsSortMode.None).Length);
+    PhotonSession.Instance.RequestJoinCode(room);Next(3);
+   }else if(stage==3&&OriginalRoom()&&PhotonSession.Phase==RailPhase.Running){
+    var zones=UnityEngine.Object.FindObjectsByType<BoxReverbZone>(FindObjectsSortMode.None);
+    Check(zones.Any(x=>x.name==zoneName)&&zones.Any(x=>x.name==otherName)&&oldZones.All(x=>x==null),"fresh Arcade and West bunker components recreated on original-room rejoin");
+    Finish();
+   }else if(stage==8){
+    if(OriginalRoom())Finish();else{PhotonSession.Instance.RequestJoinCode(room);Next(9);}
+   }else if(stage==9&&OriginalRoom()&&PhotonSession.Phase==RailPhase.Running)Finish();
+  }catch(Exception e){
+   interrupted=true;Log("FIXTURE ERROR stage="+stage+" "+e);
+   try{RestoreLocal(true);}catch(Exception cleanup){Log("LOCAL CLEANUP ERROR "+cleanup);}
+   if(stage>=8)Finish();else Next(8);
+  }
+ }
+ void Finish(){
+  if(done)return;done=true;EditorApplication.update-=Tick;
+  try{
+   if(Application.isPlaying)RestoreLocal(true);
+   if(!OriginalRoom()||!Ready())Log("RESTORATION INCOMPLETE room/pose: original="+room+" current="+(PhotonNetwork.InRoom?PhotonNetwork.CurrentRoom.Name:"none")+"; flags restored where player exists");
+   else Log("RESTORED original room and movement/kinematic flags");
+  }catch(Exception e){Log("CLEANUP ERROR "+e);}
+  Log("DONE bounded revision failures="+failures+" interrupted="+interrupted+"; no audible-quality assertion");
+ }
+}
+

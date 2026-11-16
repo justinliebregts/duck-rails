@@ -1,0 +1,23 @@
+2026-11-16T11:30:01.2103203Z BEGIN seeded-down feedback run=7a1b94efb7274d69a36325dc4e43b75a; controlled normal32s moving success; actual shared progress/audio/particles
+2026-11-16T11:30:04.0625179Z stage=0 sequence=3 phase=Running
+2026-11-16T11:30:12.0567910Z stage=1 sequence=3 phase=Running
+2026-11-16T11:30:19.0680864Z PASS stage=1 authoritative completion sequence=4 start=3673689.364 completedAt=3673692.365 seconds=3.00100000016391 observedBursts=1 maxFollowGap=0.1520535 speed=4
+2026-11-16T11:30:19.0685915Z PASS exactly one target completion sound in stage=1
+2026-11-16T11:30:19.0685915Z PASS both feedback sounds use game effects mixer
+2026-11-16T11:30:20.0474059Z stage=2 sequence=4 phase=Running
+2026-11-16T11:30:27.0835366Z PASS long hand withdrawal resets progress and stops loop
+2026-11-16T11:30:28.0472123Z stage=3 sequence=4 phase=Running
+2026-11-16T11:30:35.0656337Z PASS stage=3 authoritative completion sequence=5 start=3673705.417 completedAt=3673708.518 seconds=3.10100000025705 observedBursts=1 maxFollowGap=0.1760101 speed=4
+2026-11-16T11:30:35.0656337Z PASS exactly one target completion sound in stage=3
+2026-11-16T11:30:35.0656337Z PASS two helpers do not accelerate three-second rescue
+2026-11-16T11:30:35.0671429Z PASS both feedback sounds use game effects mixer
+2026-11-16T11:30:36.0460908Z stage=4 sequence=5 phase=Running
+2026-11-16T11:30:44.0646055Z stage=5 sequence=5 phase=Ending
+2026-11-16T11:30:51.0578727Z PASS stage=5 authoritative completion sequence=6 start=3673721.226 completedAt=3673724.464 seconds=3.23800000036135 observedBursts=1 maxFollowGap=0.1879883 speed=4
+2026-11-16T11:30:51.0578727Z PASS exactly one target completion sound in stage=5
+2026-11-16T11:30:51.0578727Z PASS victory rescue leaves locked scores unchanged
+2026-11-16T11:30:51.0588713Z PASS both feedback sounds use game effects mixer
+2026-11-16T11:30:52.0606257Z stage=6 sequence=6 phase=Ending
+2026-11-16T11:30:59.0709906Z PASS no duplicate completion after receipt settled
+2026-11-16T11:31:00.0700193Z stage=7 sequence=6 phase=Ending
+2026-11-16T11:31:00.0705354Z DONE

@@ -1,0 +1,127 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using Photon.Pun;
+
+internal class CommandScript : IRunCommand
+{
+    public void Execute(ExecutionResult r)
+    {
+        if(!Application.isPlaying || !PhotonNetwork.InRoom || RailExpedition.Instance==null)
+            throw new Exception("Need ready live expedition");
+        var go=new GameObject("Results report-only observer");
+        UnityEngine.Object.DontDestroyOnLoad(go);
+        go.AddComponent<ResultsQueueObserver>();
+        r.RegisterObjectCreation(go);
+        r.Log("Results report-only observer armed; no stats or session mutations");
+    }
+}
+
+[DefaultExecutionOrder(30000)] internal class ResultsQueueObserver : MonoBehaviour
+{
+    const string Label="current";
+    const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+    string path,run,locked,reason,lastPhase;
+    double began,finished,endingDeadline,nextLog;
+    bool sawFinish,sawReturning,success,done;
+    int samples,visibleSamples;
+    readonly HashSet<string> failures=new HashSet<string>();
+
+    void Start()
+    {
+        string role=Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor?"main":
+            Unity.Multiplayer.PlayMode.CurrentPlayer.Tags.FirstOrDefault()??"peer";
+        path=Root+"results-"+Label+"-"+role+".txt";
+        began=Time.realtimeSinceStartupAsDouble;
+        run=RailExpedition.Instance.State.run;
+        File.WriteAllText(path,"REPORT-ONLY Unity="+Application.unityVersion+" clients="+
+            PhotonNetwork.CurrentRoom.PlayerCount+" actor="+PhotonNetwork.LocalPlayer.ActorNumber+" run="+run+"\n");
+        Log("PRE-FINISH actual current state="+JsonUtility.ToJson(RailExpedition.Instance.State));
+        Log("No attribution or finish was fabricated by this observer; ending trigger must be disclosed separately.");
+    }
+    void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+    void Check(bool ok,string s){if(!ok&&failures.Add(s))Log("FAIL "+s);}
+    string Safe(string s)=>(s??"Duck").Replace("<","").Replace(">","");
+    string Row(RailParticipant p)=>Safe(p.name)+" — "+(p.escaped?"Escaped":"Didn't make it")+
+        "\n<size=65%>Coal "+p.coal+"   Gold "+p.gold+"   Revives "+p.revives+"   Downs "+p.downs+
+        "  •  "+(string.IsNullOrEmpty(p.award)?RailAwards.Fallback:p.award)+"</size>";
+    int Occurrences(string text,string value){int count=0,at=0;while((at=text.IndexOf(value,at,StringComparison.Ordinal))>=0){count++;at+=value.Length;}return count;}
+    string Locked(RailRunState s)=>string.Join("\n",s.players.OrderBy(p=>p.id).Select(p=>string.Join("|",new object[]{
+        p.id,p.actor,p.award,p.escaped,p.coal,p.gold,p.revives,p.downs,p.revived,p.repels,p.spent,p.drops,p.pickups,
+        p.downSeconds,p.throttleSeconds,p.bridgeSeconds,p.flashlightSeconds,p.trackedSeconds,p.aboardSeconds,
+        p.offTrainSeconds,p.loneSeconds,p.nearSeconds,p.stillSeconds,p.maxFromTrain})));
+
+    void LateUpdate()
+    {
+        if(done)return;
+        try
+        {
+            if(Time.realtimeSinceStartupAsDouble-began>180){Log("BLOCKED observer timeout; finish/return not fully observed");done=true;return;}
+            var session=PhotonSession.Instance;
+            if(session==null||!PhotonNetwork.InRoom)return;
+            string phase=PhotonSession.Phase.ToString();
+            if(phase!=lastPhase){Log("PHASE "+phase+" run="+PhotonSession.RunId+" master="+PhotonNetwork.MasterClient.ActorNumber);lastPhase=phase;}
+            if(sawFinish && PhotonSession.Phase==RailPhase.Returning)sawReturning=true;
+            var e=RailExpedition.Instance;
+            if(e!=null&&e.State.run==run&&e.State.finished)
+            {
+                var s=e.State;
+                double age=PhotonNetwork.Time-s.finishedAt;
+                if(!sawFinish)
+                {
+                    sawFinish=true;finished=s.finishedAt;reason=s.reason;success=s.success;
+                    endingDeadline=PhotonSession.Get(RailSessionRules.Deadline,0d);locked=Locked(s);
+                    Log("FINISH age="+age+" finishedAt="+finished+" deadlineDelta="+(endingDeadline-finished)+
+                        " reason="+reason+" success="+success+" state="+JsonUtility.ToJson(s));
+                    Log("LOCKED\n"+locked);
+                    Check(Math.Abs(endingDeadline-finished-32)<.02,"32-second ending deadline");
+                    var assigned=s.players.Select(p=>p.award).ToArray();
+                    Check(assigned.All(a=>!string.IsNullOrEmpty(a)&&RailAwards.Titles.Contains(a)),"one recognized nonempty title per participant");
+                    // Precious Cargo is the explicit shared fallback; only earned titles are unique.
+                    var earned=assigned.Where(a=>a!=RailAwards.Fallback).ToArray();
+                    Check(earned.Distinct().Count()==earned.Length,"no duplicate earned title");
+                    Check(s.players.Select(p=>p.id).Distinct().Count()==s.players.Count,"no duplicate participant rows");
+                }
+                Check(s.finishedAt==finished&&s.reason==reason&&s.success==success,"finish identity/outcome retained");
+                Check(Locked(s)==locked,"all locked counters and award assignments frozen");
+                if(PhotonSession.Phase==RailPhase.Ending)
+                    Check(PhotonSession.Get(RailSessionRules.Deadline,0d)==endingDeadline,"ending deadline retained");
+                bool shouldShow=s.reason!="Bridge collision"||age>=RailBridgeCollapse.Duration;
+                Check(e.results!=null,"results label exists");
+                if(e.results!=null)
+                {
+                    bool shown=e.results.gameObject.activeInHierarchy;
+                    Check(shown==shouldShow,"results visibility matches ending type/age");
+                    if(shown)
+                    {
+                        visibleSamples++;
+                        string text=e.results.text;
+                        foreach(var p in s.players)Check(Occurrences(text,Row(p))==1,"rendered counter/title row exactly once: "+p.id);
+                        Check(text.Contains(success?">SUCCESS</color>":">FAIL</color>"),"rendered outcome matches state");
+                        int seconds=RailSessionRules.ReturnCountdown(PhotonSession.Phase,PhotonSession.Get(RailSessionRules.Deadline,0d),PhotonNetwork.Time);
+                        string heading=seconds>0?"Returning to compound in "+seconds+"s":"Returning to compound…";
+                        // Avoid a false failure when the integer clock ticks between Update and LateUpdate.
+                        bool countdown=text.Contains(heading)||(seconds>=0&&text.Contains("Returning to compound in "+(seconds+1)+"s"));
+                        Check(countdown,"rendered normal return countdown");
+                        if(PhotonNetwork.Time>=nextLog){nextLog=PhotonNetwork.Time+1;Log("BOARD age="+age.ToString("F3")+" phase="+phase+" text="+text.Replace("\n"," / "));}
+                    }
+                }
+                samples++;
+            }
+            if(sawFinish && PhotonSession.Phase==RailPhase.Staging && session.WorldReady && !session.HasRoomRequest)
+            {
+                Check(sawReturning,"normal Returning phase observed");
+                Check(string.IsNullOrEmpty(PhotonSession.RunId),"private return clears run ID");
+                Check(e==null||e.results==null||!e.results.gameObject.activeInHierarchy,"old results not visible in ready Staging");
+                Check(samples>1&&visibleSamples>1,"live finished board sampled over multiple frames");
+                Log((failures.Count==0?"PASS ":"FAIL ")+"DONE report-only board/state/freeze/normal-return samples="+samples+
+                    " visible="+visibleSamples+" distinctFailures="+failures.Count+" elapsedSinceFinish="+(PhotonNetwork.Time-finished));
+                Log("Controlled finish, human threshold feel, natural attribution for unperformed actions, headset appearance and cross-client agreement require separate evidence/review.");
+                done=true;
+            }
+        }
+        catch(Exception ex){Log("FIXTURE ERROR "+ex);done=true;}
+    }
+}

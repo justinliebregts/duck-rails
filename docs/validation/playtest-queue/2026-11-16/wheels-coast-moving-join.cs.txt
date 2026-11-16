@@ -1,0 +1,75 @@
+// SAME command on two ready private clients; normal4m/s mode, stopped/unowned train,
+// empty hands and >=150m before finale. Fresh RUN each rerun. HARD60s including rendezvous.
+// Master sets controlled starting fuel30 while STOPPED, then public drive API consumes it
+// naturally (96m powered + ~4m coast). Peer genuinely leaves to Compound and rejoins moving.
+// Both measure all four wheels/mounts through actual depletion/coasting/stopping. Original
+// fuel is restored through SetFuel only AFTER the stopped observations. Distance never resets.
+// No replay/headset/voice acceptance. On failed networking, ordinary regroup may be needed.
+using System;using System.IO;using System.Linq;using UnityEngine;using UnityEditor;using Photon.Pun;
+internal class CommandScript:IRunCommand {
+ const string RUN="20261116-wheel-coast-1";
+ string folder,path,role,room,run,token,status;int actor,oldTrain,frame=-1,coastFrame=-1,checks,samples,coastSamples;double began,start,nextFuel,nextBeat,goAt,stoppedAt,nextStateLog;
+ bool master,done,driving,departed,joining,movingJoin,coasted,stopped,releaseSent,restoreRequested,originalSaved;
+ float originalFuel,initialDistance,coastDistance,coastAngle,stopDistance,maxError;Quaternion stopPhase;Vector3 stand;Quaternion heading;
+ RailTrain measured;Vector3[] pivots;Quaternion[] mounts;
+ string F(string suffix)=>folder+"/"+RUN+"-"+suffix;
+ bool Ready=>Application.isPlaying&&PhotonNetwork.InRoom&&PhotonSession.Instance!=null&&PhotonSession.Instance.WorldReady&&!PhotonSession.Instance.HasRoomRequest;
+ bool Original=>Ready&&PhotonNetwork.CurrentRoom.Name==room&&PhotonSession.RunId==run&&PhotonSession.Phase==RailPhase.Running;
+ float Target=>Convert.ToSingle(PhotonSession.Get(RailSessionRules.Motion,new object[]{0d,0f,0f,0f})[3]);
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){checks++;Log((ok?"PASS ":"FAIL ")+s);if(!ok)throw new Exception(s);}
+ public void Execute(ExecutionResult r){
+  if(!Ready||!PhotonSession.IsPrivate||PhotonSession.Phase!=RailPhase.Running||PhotonNetwork.CurrentRoom.PlayerCount!=2||RailTrain.Instance==null||RailTestTools.FastTrainEnabled||RailWorld.InputBlocked||RailExpedition.LocalDown)throw new Exception("Need two ready normal-speed private clients");
+  if(PhotonSession.DriveGripActor!=0||RailTrain.Instance.Speed>.01f||Mathf.Abs(Target)>.001f||RailRoute.Instance.FinaleStart-RailTrain.Instance.Distance<150)throw new Exception("Need stopped/unowned train with150m clear route before finale");
+  var sim=SimulatedRigInput.Instance;if(sim==null||sim.UseInjectedInput||sim.Buttons.move!=Vector2.zero||sim.Buttons.grip||GR.Player.instance.leftPlayerHand.IsHolding||GR.Player.instance.rightPlayerHand.IsHolding)throw new Exception("Need idle empty-handed clients, no competing fixture");
+  master=PhotonNetwork.IsMasterClient;role=master?"master":"peer";actor=PhotonNetwork.LocalPlayer.ActorNumber;room=PhotonNetwork.CurrentRoom.Name;run=PhotonSession.RunId;token=RUN+"-drive";status=RailTestTools.Status;
+  string root=Application.dataPath.Replace('\\','/');int vp=root.IndexOf("/Library/VP/",StringComparison.OrdinalIgnoreCase);root=vp<0?Path.GetDirectoryName(root):root.Substring(0,vp);folder=root+"/Temp/rails-wheel-coast";Directory.CreateDirectory(folder);path=root+"/docs/validation/playtest-queue/2026-11-16/wheels-coast-"+role+".txt";
+  if(File.Exists(F(role+".ready"))||File.Exists(F("start"))||File.Exists(F("abort")))throw new Exception("Change RUN before rerun");
+  File.WriteAllText(path,"Actual normal fuel exhaustion/coast and wheel transforms; real moving fresh-scene rejoin. Controlled starting fuel30; original fuel restored after observations. No distance reset/replay/headset claim.\n");
+  originalFuel=PhotonSession.CurrentFuel;originalSaved=true;initialDistance=RailTrain.Instance.Distance;oldTrain=RailTrain.Instance.GetInstanceID();
+  var motor=NewPlayer.instance;stand=RailTrain.Instance.transform.InverseTransformPoint(new Vector3(motor.headCollider.transform.position.x,motor.transform.position.y,motor.headCollider.transform.position.z));heading=Quaternion.Inverse(RailTrain.Instance.transform.rotation)*motor.transform.rotation;
+  began=EditorApplication.timeSinceStartup;File.WriteAllText(F(role+".ready"),room+"\n"+run);EditorApplication.update+=Tick;r.Log("Armed wheel coast/real moving join "+role+"; install same RUN on peer;60s hard bound");
+ }
+ void Tick(){if(done)return;try{
+  double now=EditorApplication.timeSinceStartup;if(!Application.isPlaying||now-began>60)throw new Exception("60-second bound or Play ended");if(File.Exists(F("abort")))throw new Exception("Peer aborted: "+File.ReadAllText(F("abort")));
+  if(master&&!Original)throw new Exception("Master must retain original ready run");
+  if(start==0){if(master&&File.Exists(F("peer.ready"))&&!File.Exists(F("start"))){Check(File.ReadAllText(F("peer.ready"))==room+"\n"+run,"same room/run rendezvous");File.WriteAllText(F("start"),(PhotonNetwork.Time+2).ToString("R",System.Globalization.CultureInfo.InvariantCulture));}if(File.Exists(F("start"))){Check(Original,"convert rendezvous only inside original ready room/run");double scheduled=double.Parse(File.ReadAllText(F("start")),System.Globalization.CultureInfo.InvariantCulture);start=now+(scheduled-PhotonNetwork.Time);Log("CLOCK anchored local monotonic start="+start.ToString("F3")+"; Photon clock used only for initial same-room rendezvous");}return;}
+  if(now>=nextStateLog){nextStateLog=now+2;Log("STATE monotonicAge="+(now-start).ToString("F2")+" room="+(PhotonNetwork.CurrentRoom==null?"none":PhotonNetwork.CurrentRoom.Name)+" ready="+Ready+" phase="+PhotonSession.Phase+" departed="+departed+" joining="+joining+" movingJoin="+movingJoin+" coastSamples="+coastSamples+" stopped="+stopped);}if(now<start)return;
+  if(master&&!driving){
+   if(Mathf.Abs(PhotonSession.CurrentFuel-30)<.001f&&Mathf.Abs(Target)<.001f){driving=true;goAt=now;PhotonSession.Instance.RequestDriveGrip(run,token,0,0);File.WriteAllText(F("go"),DateTime.UtcNow.ToString("O"));Log("GO actual30 fuel, distance="+RailTrain.Instance.Distance);}
+   else if(now>=nextFuel){nextFuel=now+1;RailTestTools.SetFuel(30);Log("SETUP controlled fuel30 at existing stopped distance");}return;
+  }
+  if(master&&driving&&!releaseSent&&now>=nextBeat){nextBeat=now+.15;PhotonSession.Instance.RequestDriveGrip(run,token,1,1);}
+  if(!master&&!departed&&Original&&File.Exists(F("go"))&&RailTrain.Instance.Speed>3.9f){departed=true;Log("INPUT ordinary LeaveCurrentRoom from moving expedition");PhotonSession.Instance.LeaveCurrentRoom();return;}
+  if(!master&&departed&&!joining&&Ready&&PhotonSession.Phase==RailPhase.Compound){joining=true;Log("INPUT ready Compound reached; RequestJoinCode original expedition");PhotonSession.Instance.RequestJoinCode(room);return;}
+  if(!Original||RailTrain.Instance==null)return;
+  if(!master&&joining&&!movingJoin){Check(RailTrain.Instance.GetInstanceID()!=oldTrain&&PhotonNetwork.LocalPlayer.ActorNumber!=actor,"genuine fresh train instance and new actor after Compound");Check(RailTrain.Instance.Speed>.5f,"fresh client arrives while train genuinely moving");movingJoin=true;Log("MOVING_JOIN distance="+RailTrain.Instance.Distance+" speed="+RailTrain.Instance.Speed);}
+  SampleWheels();
+  var train=RailTrain.Instance;float fuel=PhotonSession.CurrentFuel;
+  if(fuel<=.001f&&train.Speed>.1f){
+   if(!coasted){coasted=true;coastDistance=train.Distance;coastAngle=train.wheels[0].localEulerAngles.x;Log("COAST fuel="+fuel+" speed="+train.Speed+" distance="+train.Distance);}
+   if(coastFrame!=Time.frameCount){coastFrame=Time.frameCount;coastSamples++;}
+  }
+  if(coasted&&train.Speed<.001f&&!stopped){stopped=true;stoppedAt=now;stopDistance=train.Distance;stopPhase=train.wheels[0].localRotation;
+   Check(coastSamples>=2&&stopDistance>coastDistance+.01f,"actual empty-fuel train advances through multiple coast frames before stopping");Check(stopDistance-initialDistance>96&&stopDistance-initialDistance<100.2f,"natural96m powered budget plus normal coast, no distance reset travelled="+(stopDistance-initialDistance));Log("STOP coastSamples="+coastSamples+" travelled="+(stopDistance-initialDistance));}
+  if(stopped&&now-stoppedAt>2&&!File.Exists(F(role+".observed"))){
+   Check(Mathf.Abs(train.Distance-stopDistance)<.002f&&Quaternion.Angle(stopPhase,train.wheels[0].localRotation)<.01f,"wheel phase freezes at naturally exhausted rest");Check(maxError<.1f&&samples>10,"actual four-wheel phases agree with shared distance maxError="+maxError+" samples="+samples);if(!master)Check(movingJoin,"moving fresh-instance reconstruction observed before coast");File.WriteAllText(F(role+".observed"),"PASS");}
+  if(master&&File.Exists(F("master.observed"))&&File.Exists(F("peer.observed"))){
+   if(!releaseSent){releaseSent=true;PhotonSession.Instance.RequestDriveGrip(run,token,2,0);Log("CLEANUP release actual drive lease after natural stop");return;}
+   if(PhotonSession.DriveGripActor!=0)return;
+   if(Mathf.Abs(PhotonSession.CurrentFuel-originalFuel)<.001f&&Mathf.Abs(Target)<.001f){Check(Mathf.Abs(train.Distance-stopDistance)<.002f,"restoring original fuel preserves final distance");File.WriteAllText(F("restored"),originalFuel.ToString("R",System.Globalization.CultureInfo.InvariantCulture));Finish("PASS coast/wheels; master verified original fuel restored at final distance");}
+   else if(now>=nextFuel){nextFuel=now+1;restoreRequested=true;RailTestTools.SetFuel(originalFuel);}
+  }
+  if(!master&&File.Exists(F("restored"))){float wanted=float.Parse(File.ReadAllText(F("restored")),System.Globalization.CultureInfo.InvariantCulture);if(Mathf.Abs(PhotonSession.CurrentFuel-wanted)<.001f&&PhotonSession.DriveGripActor==0)Finish("PASS moving fresh-client wheel reconstruction and coasting; peer sees cleanup");}
+ }catch(Exception e){if(path!=null)Log("INCOMPLETE "+e);if(folder!=null)File.WriteAllText(F("abort"),role+": "+e.Message);Finish("INCOMPLETE; no replay claim");}}
+ void SampleWheels(){var train=RailTrain.Instance;if(frame==Time.frameCount)return;frame=Time.frameCount;
+  if(measured!=train){measured=train;Check(train.wheels.Length==4&&train.wheels.All(w=>w!=null),"actual fresh train has four bound wheels");pivots=train.wheels.Select(w=>w.localPosition).ToArray();mounts=train.wheels.Select(w=>w.parent.localRotation).ToArray();}
+  Quaternion expected=Quaternion.AngleAxis((float)((double)train.Distance/train.wheelRadius*Mathf.Rad2Deg%360),Vector3.right);
+  for(int i=0;i<4;i++){var wheel=train.wheels[i];maxError=Mathf.Max(maxError,Quaternion.Angle(wheel.localRotation,expected));if(Vector3.Distance(wheel.localPosition,pivots[i])>.0001f||Quaternion.Angle(wheel.parent.localRotation,mounts[i])>.001f)throw new Exception("Wheel axle or mount moved relative to train");}samples++;
+ }
+ void Finish(string result){if(done)return;done=true;EditorApplication.update-=Tick;
+  if(master&&Original&&originalSaved&&!File.Exists(F("restored"))){if(driving)PhotonSession.Instance.RequestDriveGrip(run,token,2,0);RailTestTools.SetFuel(originalFuel);Log("ABNORMAL CLEANUP requested lease release/fuel restoration at current distance; acknowledgment not established");}
+  if(!master&&Original&&NewPlayer.instance!=null&&RailTrain.Instance!=null)NewPlayer.instance.Warp(RailTrain.Instance.transform.TransformPoint(stand),RailTrain.Instance.transform.rotation*heading);
+  RailTestTools.Status=status;if(path!=null)Log("END "+result+" checks="+checks+" coastSamples="+coastSamples+" wheelSamples="+samples+" maxError="+maxError+" movingJoin="+movingJoin+"; no input/settings edits, no fresh-run replay/headset acceptance");
+ }
+}

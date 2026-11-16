@@ -1,0 +1,143 @@
+// Execute through Unity MCP's runtime C# command in the already-running authenticated world.
+// MODE: "radio" starts a 15-second real-frame press/hold/release; "snapshot" is read-only
+// on either peer; "lips" checks current live bindings; "lips-switch" uses ordinary equip
+// for Default + already-owned skins, then restores the original skin (real loadout saves).
+// Run only one active probe per process. For radio, stand within 4m of the actual train
+// console; unmute using normal UI if needed. No warp, fake focus, leases, audio or ownership.
+// During radio, take remote snapshots at seconds 4-10 and again after second 15.
+// Invoke lips/snapshot again after an ordinary world transition or late join.
+using System;using System.IO;using System.Linq;using System.Collections.Generic;
+using UnityEngine;using UnityEditor;using Photon.Pun;using Photon.Voice.PUN;
+using Game.Animation;
+internal class CommandScript:IRunCommand {
+ const string MODE="snapshot";
+ string path;int checks,failures,step;double began,next;RailHoldControl radio;
+ Vector3 capRest;StoreItem original;EquippedLoadout loadout;List<StoreItem> skins;
+ bool switched,finished,ownsRadioPress;float peak;int micSamples;
+ void Log(string s){File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");}
+ void Check(bool ok,string s){checks++;if(!ok)failures++;Log((ok?"PASS ":"FAIL ")+s);}
+ void Block(string s)=>Log("BLOCKED "+s);
+ object Get(object o,string field)=>RailRemoteBridge.Get(o,field);
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!PhotonNetwork.InRoom)throw new Exception("Requires existing authenticated Play world");
+  string root=Application.dataPath.Replace('\\','/');int vp=root.IndexOf("/Library/VP/",StringComparison.OrdinalIgnoreCase);
+  root=vp<0?Path.GetDirectoryName(root):root.Substring(0,vp);
+  path=root+"/docs/validation/playtest-queue/2026-11-16/radio-lips-actor"+PhotonNetwork.LocalPlayer.ActorNumber+".txt";
+  Directory.CreateDirectory(Path.GetDirectoryName(path));
+  Log("BEGIN mode="+MODE+" unity="+Application.unityVersion+" graphics="+SystemInfo.graphicsDeviceType+" room="+PhotonNetwork.CurrentRoom.Name+" actor="+PhotonNetwork.LocalPlayer.ActorNumber);
+  radio=UnityEngine.Object.FindObjectsByType<RailHoldControl>(FindObjectsSortMode.None).FirstOrDefault(x=>x.radio&&x.GetComponentInParent<RailTrain>()!=null);
+  if(MODE=="snapshot"){Snapshot();Limits();Finish();return;}
+  if(MODE=="lips"){Lips();Limits();Finish();return;}
+  if(MODE=="radio"){
+   if(radio==null||radio.button==null||radio.button.cap==null){Block("Integrated train radio is not loaded");Finish();return;}
+   int actor=PhotonNetwork.LocalPlayer.ActorNumber;
+   bool near=RailExpedition.Position(actor,out var p)&&Vector3.Distance(p,radio.transform.position)<4;
+   if(!PhotonSession.OnTrain||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||RailWorld.InputBlocked||RailExpedition.LocalDown||PhotonVoiceChat.IsLocallyMuted||!near){Snapshot();Block("Radio preconditions: ready expedition, nearby live player, unblocked and naturally unmuted required");Finish();return;}
+   if(radio.button.IsPressed||WalkieRadio.TryTransmitter(-100000-actor,out _)){Block("Radio already in use; refusing to release another hold");Finish();return;}
+   capRest=radio.button.cap.localPosition;Snapshot();
+   ownsRadioPress=radio.button.Press();Check(ownsRadioPress,"actual installed PressableButton.Press accepted");
+   if(!ownsRadioPress){Finish();return;}
+  }else if(MODE=="lips-switch"){
+   loadout=EquippedLoadout.Instance;var wallet=DuckzWallet.Instance;var catalog=GameConfig.Current!=null?GameConfig.Current.storeCatalog:null;
+   if(loadout==null||wallet==null||!wallet.Loaded||!UserPlayerPrefs.IsReady||catalog==null){Block("Real loaded account/loadout/catalog required for ordinary skin equip");Finish();return;}
+   original=loadout.Get(StoreItemType.Skin);
+   skins=new List<StoreItem>{null};
+   foreach(var item in catalog.items.Where(x=>x.type==StoreItemType.Skin&&!x.IsDefault)){
+    if(wallet.Owns(item.key))skins.Add(item);else Block("Skin unavailable without real entitlement: "+item.key+" bundle="+item.bundleSku);
+   }
+   // Never infer ownership from a zero price or bypass StoreUI's ownership boundary.
+   Lips();switched=true;loadout.Unequip(StoreItemType.Skin);
+  }else throw new Exception("Unknown MODE");
+  began=EditorApplication.timeSinceStartup;next=began+2;EditorApplication.update+=Tick;
+  Log("STARTED asynchronous probe; wait for END; no Play Mode start/stop requested");
+ }
+ void Tick(){try{
+  if(!Application.isPlaying||!PhotonNetwork.InRoom){Block("World ended before probe completed");Finish();return;}
+  double now=EditorApplication.timeSinceStartup;if(now<next)return;next=now+.25;
+  if(MODE=="radio"){
+   if(radio==null||radio.button==null){Check(false,"Console survived probe");Finish();return;}
+   int actor=PhotonNetwork.LocalPlayer.ActorNumber;double age=now-began;
+   var voice=UnityEngine.Object.FindAnyObjectByType<PunVoiceClient>();var meter=voice!=null&&voice.PrimaryRecorder!=null?voice.PrimaryRecorder.LevelMeter:null;
+   if(meter!=null){peak=Mathf.Max(peak,meter.CurrentAvgAmp);micSamples++;}
+   if(step==0&&age>=2){
+    Check(radio.button.IsPressed,"button remains held through real frames");
+    Check(Vector3.Distance(radio.button.cap.localPosition,capRest+radio.button.pressOffset)<.001f,"installed cap completes authored travel "+radio.button.pressOffset.magnitude+"m");
+    Check(RailHoldControl.IsLive(((System.Collections.IDictionary)Get(PhotonNetwork.LocalPlayer,"CustomProperties"))["rails.radioHold"],PhotonSession.RunId,PhotonNetwork.Time),"ordinary radio hold publishes live run-scoped lease");
+    Check(WalkieRadio.TryTransmitter(-100000-actor,out var sender)&&sender==actor,"ordinary LateUpdate registers local station transmitter");
+    Snapshot();step=1;Log("HELD remote snapshot window now until second 12");
+   }
+   if(step==1&&age>=12){
+    Check(RailHoldControl.IsLive(((System.Collections.IDictionary)Get(PhotonNetwork.LocalPlayer,"CustomProperties"))["rails.radioHold"],PhotonSession.RunId,PhotonNetwork.Time),"hold heartbeat renews beyond one-second initial lease");
+    radio.button.Release();ownsRadioPress=false;step=2;Log("RELEASE invoked installed button path");
+   }
+   if(step==2&&age>=15){
+    Check(!radio.button.IsPressed,"button release remains released");
+    Check(Vector3.Distance(radio.button.cap.localPosition,capRest)<.001f,"cap returns to original rest");
+    Check(!RailHoldControl.IsLive(((System.Collections.IDictionary)Get(PhotonNetwork.LocalPlayer,"CustomProperties"))["rails.radioHold"],PhotonSession.RunId,PhotonNetwork.Time),"released station lease inactive");
+    Check(!WalkieRadio.TryTransmitter(-100000-actor,out _),"released station transmitter removed");
+    Snapshot();Log("OBSERVED actual mic meter samples="+micSamples+" peakAverageAmplitude="+peak+" (not voice quality or audible delivery)");Limits();Finish();
+   }
+  }else{
+   // Two real seconds for ordinary skin event/Photon propagation; no direct Apply override.
+   Lips();byte expected=skins[step]!=null?skins[step].skinId:(byte)0;
+   Check(DuckSkinVisuals.LocalSkinId()==expected,"ordinary equip selected skin="+expected);
+   step++;if(step>=skins.Count){Limits();Finish();return;}
+   loadout.Equip(skins[step]);next=now+2;
+  }
+ }catch(Exception e){Check(false,e.ToString());Finish();}}
+ void Snapshot(){
+  Log("SNAPSHOT phase="+PhotonSession.Phase+" run="+PhotonSession.RunId+" onTrain="+PhotonSession.OnTrain+" muted="+PhotonVoiceChat.IsLocallyMuted);
+  foreach(var player in PhotonNetwork.PlayerList){
+   bool live=RailHoldControl.IsLive(((System.Collections.IDictionary)Get(player,"CustomProperties"))["rails.radioHold"],PhotonSession.RunId,PhotonNetwork.Time);
+   bool tx=WalkieRadio.TryTransmitter(-100000-player.ActorNumber,out int sender);
+   bool pos=RailExpedition.Position(player.ActorNumber,out var p);
+   Log("actor="+player.ActorNumber+" local="+player.IsLocal+" liveLease="+live+" transmitter="+tx+" transmitterActor="+sender+" radioDistance="+(pos&&radio!=null?Vector3.Distance(p,radio.transform.position).ToString("F3"):"unknown"));
+  }
+  if(radio!=null){
+   var speaker=radio.GetComponent<WalkieSpeaker>();var source=radio.GetComponent<AudioSource>();
+   Check(speaker!=null&&source!=null,"installed radio creates actual WalkieSpeaker/AudioSource");
+   if(speaker!=null&&source!=null){
+    Check((bool)Get(speaker,"configured")&&(bool)Get(speaker,"receiveOnly"),"station speaker configured to exclude own local actor");
+    Check(source.clip!=null&&source.clip.name=="Walkie"&&source.loop&&source.spatialBlend==1,"station streaming clip and spatial playback configured");
+    Log("OBSERVED audio playing="+source.isPlaying+" volume="+source.volume+" mute="+source.mute+" (source state alone does not prove sound)");
+   }
+   Log("radio button="+(radio.button!=null&&radio.button.IsPressed)+" focused="+Get(radio,"focused")+" paused="+Get(radio,"paused"));
+  }else Block("No integrated train radio currently loaded");
+ }
+ void Lips(){
+  var local=PhotonPlayer.Active.FirstOrDefault(x=>x!=null&&x.IsLocalHuman);
+  var mouth=local!=null?local.GetComponent<PhotonVoiceMouth>():null;
+  var driver=LocalBodyDriver.Active.FirstOrDefault(x=>x!=null&&x.Body!=null&&NewPlayer.instance!=null&&x.gameObject==NewPlayer.instance.gameObject);
+  if(driver==null||mouth==null){Block("Local human body/Photon mouth unavailable; no stand-in rig created");return;}
+  var visuals=driver.Body.GetComponent<DuckSkinVisuals>();
+  if(visuals==null||!visuals.TryGetFace(out var left,out var right,out var top,out var bottom)){Check(false,"selected live skin exposes face binding");return;}
+  Check(top!=null&&bottom!=null&&top.gameObject.activeInHierarchy&&bottom.gameObject.activeInHierarchy,"selected live lips active skin="+DuckSkinVisuals.LocalSkinId());
+  if(top==null||bottom==null)return;
+  Vector3 tp=top.localPosition,bp=bottom.localPosition;
+  mouth.SampleLocal();RailRemoteBridge.Call(driver,"PoseCaptureFace");
+  Check(Get(driver,"_mouth")==mouth&&Get(driver,"_topLip")==top&&Get(driver,"_bottomLip")==bottom,"actual local capture method binds current visible lips to local Photon mouth");
+  Check(Get(mouth,"_poseTop")==top&&Get(mouth,"_poseBottom")==bottom,"local mic pose targets selected lip transforms");
+  Check(top.localPosition==tp&&bottom.localPosition==bp,"actual microphone pose preserves selected local pivot positions");
+  Log("OBSERVED local skin="+DuckSkinVisuals.LocalSkinId()+" top="+top.GetInstanceID()+" bottom="+bottom.GetInstanceID()+" topPivot="+tp+" bottomPivot="+bp+" sampledMic="+mouth.SampledLoudness);
+  foreach(var player in PhotonPlayer.Active.Where(x=>x!=null)){
+   var pm=player.GetComponent<PhotonVoiceMouth>();var pv=player.GetComponentInChildren<DuckSkinVisuals>(true);
+   if(pm!=null&&pv!=null&&pv.TryGetFace(out _,out _,out var t,out var b))
+    Check(Get(pm,"topLip")==t&&Get(pm,"bottomLip")==b,"live Photon face binding view="+player.GetComponent<PhotonView>().ViewID+" local="+player.IsLocalHuman);
+  }
+ }
+ void Limits(){
+  Block("Physical hand contact/reach, icon/label appearance, headset lip alignment and natural microphone/remote voice quality require human acceptance");
+  Block("Direct PoseCaptureFace verifies live source wiring only; native LIV preview/recording and scene-transition capture audio are not exercised");
+  if(SystemInfo.graphicsDeviceType==UnityEngine.Rendering.GraphicsDeviceType.Direct3D12)Block("Current DX12 editor LIV backend unsupported: no native LIV acceptance claim");
+  var wallet=DuckzWallet.Instance;var catalog=GameConfig.Current!=null?GameConfig.Current.storeCatalog:null;
+  if(catalog!=null)foreach(var item in catalog.items.Where(x=>x.type==StoreItemType.Skin&&x.InBundle))
+   if(wallet==null||!wallet.Loaded||!wallet.Owns(item.key))Block("Bundle lip/equip coverage needs real entitlement: "+item.key);
+ }
+ void Finish(){
+  if(finished)return;finished=true;EditorApplication.update-=Tick;
+  if(ownsRadioPress&&radio!=null&&radio.button!=null)radio.button.Release();
+  if(switched&&loadout!=null){if(original==null)loadout.Unequip(StoreItemType.Skin);else loadout.Equip(original);Log("RESTORED original ordinary loadout="+(original!=null?original.key:"default")+"; backend persistence not asserted");}
+  Log("END mode="+MODE+" checks="+checks+" failures="+failures+"; scoped plumbing only");
+ }
+}
+

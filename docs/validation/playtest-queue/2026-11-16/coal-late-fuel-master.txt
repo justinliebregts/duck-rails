@@ -1,0 +1,24 @@
+Controlled actual coal + real leave/Compound/rejoin; no fabricated history. Fuel100 direct handler, not UI hit testing. No audible/headset acceptance.
+2026-11-16T13:33:45.0481401Z PASS same real room/run rendezvous
+2026-11-16T13:33:45.0481401Z PASS convert rendezvous only inside original ready room/run
+2026-11-16T13:33:45.0543424Z CLOCK anchored local monotonic start=3104.714; Photon clock used only for initial same-room rendezvous
+2026-11-16T13:33:45.0875092Z STATE monotonicAge=-1.96 room=68432 ready=True phase=Running history=False joining=False receipt=0
+2026-11-16T13:33:47.1051709Z STATE monotonicAge=0.06 room=68432 ready=True phase=Running history=False joining=False receipt=0
+2026-11-16T13:33:49.0701646Z PASS Fuel100 rejection leaves observed fuel and retained motion unchanged on master
+2026-11-16T13:33:49.1216161Z STATE monotonicAge=2.07 room=68432 ready=True phase=Running history=False joining=False receipt=0
+2026-11-16T13:33:51.1471416Z STATE monotonicAge=4.10 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:33:51.3995312Z PASS coal deposited without distance reset or train travel
+2026-11-16T13:33:51.4010466Z PASS real coal committed expected shared fuel
+2026-11-16T13:33:51.4015772Z RECEIPT real id=107 spawn=ef4d84e1f78b4948a905f8ab217cf0ea fuel=65.625
+2026-11-16T13:33:53.1632857Z STATE monotonicAge=6.12 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:33:55.1633398Z STATE monotonicAge=8.12 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:33:57.1683191Z STATE monotonicAge=10.12 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:33:59.1746441Z STATE monotonicAge=12.13 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:34:01.1831716Z STATE monotonicAge=14.14 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:34:03.1862934Z STATE monotonicAge=16.14 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:34:05.2045563Z STATE monotonicAge=18.16 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:34:07.2096086Z STATE monotonicAge=20.16 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:34:09.2428166Z STATE monotonicAge=22.20 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:34:11.2615179Z STATE monotonicAge=24.21 room=68432 ready=True phase=Running history=False joining=False receipt=107
+2026-11-16T13:34:12.1770552Z PASS peer returned to same retained stopped two-client run
+2026-11-16T13:34:12.1770552Z END PASS master retained receipt and witnessed peer return; peer log owns no-replay evidence checks=6 historicalAudio=0 historicalBursts=0 historicalPopups=0 maxReadyGap=0; actual coal remains consumed; no manual/audio-quality acceptance

@@ -1,0 +1,15 @@
+2026-11-16T13:40:09.0719949Z BEGIN READONLY room=68433 run=e6b085e30814494dbe5360eff06d0b86 localActor=1 localUserId=3724467550970486 master=True unityUnscaled=219.8448 unityTime=184.36
+2026-11-16T13:40:09.0719949Z CACHED id=3724467550970486 actor=1 repels=1
+2026-11-16T13:40:09.0719949Z CACHED id=7077434625647384 actor=2 repels=1
+2026-11-16T13:40:09.0729944Z RETAINED id=3724467550970486 actor=1 repels=1
+2026-11-16T13:40:09.0729944Z RETAINED id=7077434625647384 actor=2 repels=1
+2026-11-16T13:40:09.0729944Z LOCAL_RAILSTATS run=e6b085e30814494dbe5360eff06d0b86
+2026-11-16T13:40:09.0729944Z LOCAL_RAILSTATS repels=0
+2026-11-16T13:40:09.0734993Z LOCAL_RAILSTATS lastRepel=70.42538
+2026-11-16T13:40:09.0734993Z LOCAL_RAILSTATS nextFlush=221.2372
+2026-11-16T13:40:09.0771483Z LOCAL_SUBMISSIONS view=109 enemy=RailSpider(Clone) controller=1 localSequence=2 pending=0 confirmed=False confirmedServerTimestamp=0
+2026-11-16T13:40:09.0776512Z ORIGINAL_LOG 2026-11-16T13:37:36.8502923Z BASELINE target=109 enemy=RailSpider(Clone) senderActor=2 senderRepels=0 ownerRepels=0 state=Wander
+2026-11-16T13:40:09.0781637Z ORIGINAL_LOG 2026-11-16T13:37:36.8518123Z BASELINE observed senderRepels=0 localRepels=0
+2026-11-16T13:40:09.0781637Z ORIGINAL_LOG 2026-11-16T13:37:39.6374113Z PASS authority observed actual new enemy hit reaction state=Wander
+2026-11-16T13:40:09.0781637Z ORIGINAL_TARGET {"view":109,"actor":2,"baseline":0,"masterBaseline":0,"spawn":"40ac5f91f03649e4b3bdb557c9a1ceab"}
+2026-11-16T13:40:09.0781637Z END READONLY. Original beforeOthers dictionary was not serialized; do not invent it. Local hit sequences persist only for currently loaded enemy instances; zero/missing does not disprove earlier unloaded submissions.

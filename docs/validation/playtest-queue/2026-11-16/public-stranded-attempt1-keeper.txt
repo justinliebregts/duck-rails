@@ -1,0 +1,375 @@
+Real public departure/full route/production return token. Controlled operator Warp, actual hand claims/releases/coal throws, actual bridge contact and normal SetTrainMoving. No direct room state, test properties, fuel, progress, finish or award writes. Keeper temporarily disables only its local PhotonSession during Ending to retain the old gameplay room; Photon transport stays active. This fault injection is NOT the natural headset repro.
+2026-11-16T13:06:41.6714152Z ARM role=keeper compound=18422 actor=1 master=3
+2026-11-16T13:06:55.7177497Z BOARD controlled occupancy; normal20s countdown
+2026-11-16T13:07:26.2788668Z PURCHASE_CLEANUP old fresh token absent after ordinary public departure=7af0f402eb4c467ab71c6f120a409140
+2026-11-16T13:07:26.2803703Z RUN room=01351 run=run-faae81a4e1e843598891d06a7be4b9ad sourceCrew=3 estimatedCrossing=855.2463 coalValue=5.681818 budgetWith5fuelMargin=40 initialFuel=50
+2026-11-16T13:07:26.3111068Z COAL_CLAIM view=106 token=c22a605a0450470eb5b80b27eef2a641
+2026-11-16T13:07:26.3121077Z STATE phase=Running room=01351 ready=True request=False fuel=50 distance=0 bridge=0 role=keeper paused=False status=Ready
+2026-11-16T13:07:26.9521156Z COAL_THROW view=106 offset=(0.00, -0.16, 0.72) beforeFuel=50
+2026-11-16T13:07:27.3102350Z STATE phase=Running room=01351 ready=True request=False fuel=50 distance=0 bridge=0 role=keeper paused=False status=Ready
+2026-11-16T13:07:27.4160352Z COAL_RECEIPT count=1 fuel=55.68182 expected=55.68182
+2026-11-16T13:07:27.5207059Z COAL_CLAIM view=100 token=d68e5a5f95c9487dba94ae97b3c811b5
+2026-11-16T13:07:27.9370054Z COAL_THROW view=100 offset=(0.00, -0.12, 0.72) beforeFuel=55.68182
+2026-11-16T13:07:28.3164178Z STATE phase=Running room=01351 ready=True request=False fuel=55.68182 distance=0 bridge=0.0364 role=keeper paused=False status=Ready
+2026-11-16T13:07:28.5397186Z COAL_RECEIPT count=2 fuel=61.36363 expected=61.36363
+2026-11-16T13:07:28.6604331Z COAL_CLAIM view=107 token=e1ef57641ca94992a7624ed4779667f6
+2026-11-16T13:07:29.0978697Z COAL_THROW view=107 offset=(0.00, -0.15, 0.72) beforeFuel=61.36363
+2026-11-16T13:07:29.3365745Z STATE phase=Running room=01351 ready=True request=False fuel=61.36363 distance=0 bridge=0.07006667 role=keeper paused=False status=Ready
+2026-11-16T13:07:29.5558389Z COAL_RECEIPT count=3 fuel=67.04545 expected=67.04545
+2026-11-16T13:07:29.6719787Z COAL_CLAIM view=97 token=7cc122d61ff24c4f8e6f83b0e4a6c653
+2026-11-16T13:07:30.1317298Z COAL_THROW view=97 offset=(0.00, -0.13, 0.72) beforeFuel=67.04545
+2026-11-16T13:07:30.3621353Z STATE phase=Running room=01351 ready=True request=False fuel=67.04545 distance=0 bridge=0.1044667 role=keeper paused=False status=Ready
+2026-11-16T13:07:30.6730668Z COAL_RECEIPT count=4 fuel=72.72726 expected=72.72726
+2026-11-16T13:07:30.8089669Z COAL_CLAIM view=96 token=38f974e601224815b60605dc1ac36f7f
+2026-11-16T13:07:31.2407264Z COAL_THROW view=96 offset=(0.00, -0.13, 0.72) beforeFuel=72.72726
+2026-11-16T13:07:31.3701114Z STATE phase=Running room=01351 ready=True request=False fuel=72.72726 distance=0 bridge=0.1381667 role=keeper paused=False status=Ready
+2026-11-16T13:07:31.6913274Z COAL_RECEIPT count=5 fuel=78.40908 expected=78.40908
+2026-11-16T13:07:32.3720374Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.1714333 role=keeper paused=False status=Ready
+2026-11-16T13:07:33.3855925Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.2049333 role=keeper paused=False status=Ready
+2026-11-16T13:07:34.3921618Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.2386333 role=keeper paused=False status=Ready
+2026-11-16T13:07:35.4042577Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.2726333 role=keeper paused=False status=Ready
+2026-11-16T13:07:36.4132122Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.3062333 role=keeper paused=False status=Ready
+2026-11-16T13:07:37.4246498Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.3399667 role=keeper paused=False status=Ready
+2026-11-16T13:07:38.4385775Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.3737 role=keeper paused=False status=Ready
+2026-11-16T13:07:39.4519824Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.4073667 role=keeper paused=False status=Ready
+2026-11-16T13:07:40.4690275Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.4414333 role=keeper paused=False status=Ready
+2026-11-16T13:07:41.4782545Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.4751333 role=keeper paused=False status=Ready
+2026-11-16T13:07:42.4907838Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.5088333 role=keeper paused=False status=Ready
+2026-11-16T13:07:43.5100628Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.5428333 role=keeper paused=False status=Ready
+2026-11-16T13:07:44.5133309Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.5763333 role=keeper paused=False status=Ready
+2026-11-16T13:07:45.5176209Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.6097667 role=keeper paused=False status=Ready
+2026-11-16T13:07:46.5292872Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.6434667 role=keeper paused=False status=Ready
+2026-11-16T13:07:47.5299944Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.6768333 role=keeper paused=False status=Ready
+2026-11-16T13:07:48.5358397Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.7098666 role=keeper paused=False status=Ready
+2026-11-16T13:07:49.5386544Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.7438 role=keeper paused=False status=Ready
+2026-11-16T13:07:50.5455742Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.7773666 role=keeper paused=False status=Ready
+2026-11-16T13:07:51.5672979Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.8114333 role=keeper paused=False status=Ready
+2026-11-16T13:07:52.5843184Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.8449667 role=keeper paused=False status=Ready
+2026-11-16T13:07:53.5841938Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.8754666 role=keeper paused=False status=Ready
+2026-11-16T13:07:54.5971625Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.9095666 role=keeper paused=False status=Ready
+2026-11-16T13:07:55.6105080Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.9433333 role=keeper paused=False status=Ready
+2026-11-16T13:07:56.6189962Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=0.9768333 role=keeper paused=False status=Ready
+2026-11-16T13:07:57.6510664Z STATE phase=Running room=01351 ready=True request=False fuel=78.40908 distance=0 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:07:58.6696377Z STATE phase=Running room=01351 ready=True request=False fuel=77.98495 distance=1.357225 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:07:59.6901443Z STATE phase=Running room=01351 ready=True request=False fuel=76.92908 distance=4.736 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:00.6929620Z STATE phase=Running room=01351 ready=True request=False fuel=75.67158 distance=8.76 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:01.2975619Z COAL_CLAIM view=99 token=9d72e3246ec641cbb7389f63ab421602
+2026-11-16T13:08:01.7175019Z STATE phase=Running room=01351 ready=True request=False fuel=74.39658 distance=12.84 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:01.7465379Z COAL_THROW view=99 offset=(0.00, -0.13, 0.74) beforeFuel=74.36283
+2026-11-16T13:08:02.1852210Z COAL_RECEIPT count=6 fuel=79.4959 expected=79.4959
+2026-11-16T13:08:02.7190078Z STATE phase=Running room=01351 ready=True request=False fuel=78.82089 distance=16.864 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:03.7205399Z STATE phase=Running room=01351 ready=True request=False fuel=77.56964 distance=20.868 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:04.7397862Z STATE phase=Running room=01351 ready=True request=False fuel=76.29839 distance=24.936 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:05.7522159Z STATE phase=Running room=01351 ready=True request=False fuel=75.04214 distance=28.956 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:05.8068004Z COAL_CLAIM view=104 token=f4c9e70ebade431dad2f790d03efdaac
+2026-11-16T13:08:06.2787242Z COAL_THROW view=104 offset=(0.00, -0.14, 0.71) beforeFuel=74.3709
+2026-11-16T13:08:06.7415057Z COAL_RECEIPT count=7 fuel=79.47896 expected=79.47897
+2026-11-16T13:08:06.7672150Z STATE phase=Running room=01351 ready=True request=False fuel=79.44771 distance=33.04 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:07.7739048Z STATE phase=Running room=01351 ready=True request=False fuel=78.18146 distance=37.092 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:08.7862548Z STATE phase=Running room=01351 ready=True request=False fuel=76.92271 distance=41.12 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:09.8079015Z STATE phase=Running room=01351 ready=True request=False fuel=75.64771 distance=45.2 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:10.4306384Z COAL_CLAIM view=98 token=cab3851f28844c198d5a16567065ff45
+2026-11-16T13:08:10.8082786Z STATE phase=Running room=01351 ready=True request=False fuel=74.4052 distance=49.176 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:10.8856698Z COAL_THROW view=98 offset=(0.00, -0.14, 0.74) beforeFuel=74.29896
+2026-11-16T13:08:11.3364791Z COAL_RECEIPT count=8 fuel=79.41827 expected=79.41827
+2026-11-16T13:08:11.8223448Z STATE phase=Running room=01351 ready=True request=False fuel=78.81078 distance=53.26 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:12.8248000Z STATE phase=Running room=01351 ready=True request=False fuel=77.55328 distance=57.284 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:13.8443758Z STATE phase=Running room=01351 ready=True request=False fuel=76.27827 distance=61.364 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:14.8582801Z STATE phase=Running room=01351 ready=True request=False fuel=75.02328 distance=65.38 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:14.9740797Z COAL_CLAIM view=108 token=df7e078d28964bd393c47f2f3608ed82
+2026-11-16T13:08:15.3984052Z COAL_THROW view=108 offset=(0.00, -0.15, 0.72) beforeFuel=74.33703
+2026-11-16T13:08:15.7414803Z COAL_RECEIPT count=9 fuel=79.59135 expected=79.59135
+2026-11-16T13:08:15.8715265Z STATE phase=Running room=01351 ready=True request=False fuel=79.43009 distance=69.46 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:16.8931427Z STATE phase=Running room=01351 ready=True request=False fuel=78.15134 distance=73.552 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:17.9014822Z STATE phase=Running room=01351 ready=True request=False fuel=76.88884 distance=77.592 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:18.9197788Z STATE phase=Running room=01351 ready=True request=False fuel=75.6176 distance=81.66 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:19.4942676Z COAL_CLAIM view=102 token=614076b30ce5427cb1a8ddcf69885ee0
+2026-11-16T13:08:19.9167693Z COAL_THROW view=102 offset=(-0.01, -0.13, 0.80) beforeFuel=74.37385
+2026-11-16T13:08:19.9528252Z STATE phase=Running room=01351 ready=True request=False fuel=74.34135 distance=85.744 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:20.3661989Z COAL_RECEIPT count=10 fuel=79.50316 expected=79.50317
+2026-11-16T13:08:20.9648104Z STATE phase=Running room=01351 ready=True request=False fuel=78.74191 distance=89.844 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:21.9882070Z STATE phase=Running room=01351 ready=True request=False fuel=77.46441 distance=93.932 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:22.9950167Z STATE phase=Running room=01351 ready=True request=False fuel=76.20316 distance=97.968 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:23.9774408Z COAL_CLAIM view=101 token=ae53de150ba84088831a77e4721923b9
+2026-11-16T13:08:24.0110303Z STATE phase=Running room=01351 ready=True request=False fuel=74.94691 distance=101.988 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:24.4439793Z COAL_THROW view=101 offset=(-0.04, -0.15, 0.70) beforeFuel=74.41191
+2026-11-16T13:08:24.8792455Z COAL_RECEIPT count=11 fuel=79.53123 expected=79.53123
+2026-11-16T13:08:25.0162664Z STATE phase=Running room=01351 ready=True request=False fuel=79.35748 distance=106.056 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:26.0178220Z STATE phase=Running room=01351 ready=True request=False fuel=78.10498 distance=110.064 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:27.0181802Z STATE phase=Running room=01351 ready=True request=False fuel=76.85998 distance=114.048 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:28.0209705Z STATE phase=Running room=01351 ready=True request=False fuel=75.60123 distance=118.076 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:28.5389095Z COAL_CLAIM view=105 token=7cf871b588f647c9895a080f77ae5ddf
+2026-11-16T13:08:28.9882184Z COAL_THROW view=105 offset=(-0.06, -0.13, 0.78) beforeFuel=74.39248
+2026-11-16T13:08:29.0360380Z STATE phase=Running room=01351 ready=True request=False fuel=74.33748 distance=122.12 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:29.4542536Z COAL_RECEIPT count=12 fuel=79.50179 expected=79.5018
+2026-11-16T13:08:30.0402657Z STATE phase=Running room=01351 ready=True request=False fuel=78.7618 distance=126.144 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:31.0627002Z STATE phase=Running room=01351 ready=True request=False fuel=77.48305 distance=130.236 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:32.0755755Z STATE phase=Running room=01351 ready=True request=False fuel=76.22179 distance=134.272 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:33.0704875Z COAL_CLAIM view=103 token=9b1cc8f2df394c02ad70641391a1eb9d
+2026-11-16T13:08:33.0947512Z STATE phase=Running room=01351 ready=True request=False fuel=74.94304 distance=138.364 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:33.5080781Z COAL_THROW view=103 offset=(-0.05, -0.13, 0.76) beforeFuel=74.42805
+2026-11-16T13:08:33.9706449Z COAL_RECEIPT count=13 fuel=79.53236 expected=79.53236
+2026-11-16T13:08:34.1067981Z STATE phase=Running room=01351 ready=True request=False fuel=79.36236 distance=142.404 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:35.1187433Z STATE phase=Running room=01351 ready=True request=False fuel=78.10611 distance=146.424 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:36.1540556Z STATE phase=Running room=01351 ready=True request=False fuel=76.81985 distance=150.54 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:37.1556774Z STATE phase=Running room=01351 ready=True request=False fuel=75.54861 distance=154.608 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:37.6524013Z COAL_CLAIM view=119 token=1bedfddf07be41cfa527f60942c48dd7
+2026-11-16T13:08:38.1254856Z COAL_THROW view=119 offset=(-0.01, -0.15, 0.70) beforeFuel=74.33986
+2026-11-16T13:08:38.1742963Z STATE phase=Running room=01351 ready=True request=False fuel=74.27736 distance=158.676 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:38.5861205Z COAL_RECEIPT count=14 fuel=79.44418 expected=79.44418
+2026-11-16T13:08:39.1838470Z STATE phase=Running room=01351 ready=True request=False fuel=78.70042 distance=162.704 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:40.2051318Z STATE phase=Running room=01351 ready=True request=False fuel=77.42168 distance=166.796 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:41.2316521Z STATE phase=Running room=01351 ready=True request=False fuel=76.16418 distance=170.82 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:42.2202043Z COAL_CLAIM view=112 token=ff772121e5534caea4fa0526717df30a
+2026-11-16T13:08:42.2501565Z STATE phase=Running room=01351 ready=True request=False fuel=74.86792 distance=174.968 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:42.6739442Z COAL_THROW view=112 offset=(0.03, -0.13, 0.76) beforeFuel=74.33292
+2026-11-16T13:08:43.1324278Z COAL_RECEIPT count=15 fuel=79.45724 expected=79.45724
+2026-11-16T13:08:43.2538703Z STATE phase=Running room=01351 ready=True request=False fuel=79.29224 distance=178.992 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:44.2545277Z STATE phase=Running room=01351 ready=True request=False fuel=78.03724 distance=183.008 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:45.2660056Z STATE phase=Running room=01351 ready=True request=False fuel=76.78724 distance=187.008 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:46.2840532Z STATE phase=Running room=01351 ready=True request=False fuel=75.50474 distance=191.112 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:46.7056825Z COAL_CLAIM view=121 token=7e7e741c24694852b3b731a8e62110ae
+2026-11-16T13:08:47.1595083Z COAL_THROW view=121 offset=(0.06, -0.14, 0.75) beforeFuel=74.40599
+2026-11-16T13:08:47.3107390Z STATE phase=Running room=01351 ready=True request=False fuel=74.22599 distance=195.204 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:47.5996093Z COAL_RECEIPT count=16 fuel=79.53906 expected=79.53905
+2026-11-16T13:08:48.3176091Z STATE phase=Running room=01351 ready=True request=False fuel=78.6403 distance=199.26 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:49.3248251Z STATE phase=Running room=01351 ready=True request=False fuel=77.38406 distance=203.28 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:50.3402976Z STATE phase=Running room=01351 ready=True request=False fuel=76.1153 distance=207.34 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:51.2698538Z COAL_CLAIM view=110 token=1c0b996c6e16406d9da0a5fa5327ea70
+2026-11-16T13:08:51.3416291Z STATE phase=Running room=01351 ready=True request=False fuel=74.86156 distance=211.352 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:51.6853608Z COAL_THROW view=110 offset=(0.06, -0.12, 0.82) beforeFuel=74.44656
+2026-11-16T13:08:52.2546009Z COAL_RECEIPT count=17 fuel=79.40212 expected=79.40213
+2026-11-16T13:08:52.3575298Z STATE phase=Running room=01351 ready=True request=False fuel=79.27213 distance=215.42 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:53.3653596Z STATE phase=Running room=01351 ready=True request=False fuel=78.01838 distance=219.432 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:54.3841431Z STATE phase=Running room=01351 ready=True request=False fuel=76.73962 distance=223.524 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:55.4727367Z STATE phase=Running room=01351 ready=True request=False fuel=75.90712 distance=226.188 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:55.8275098Z COAL_CLAIM view=111 token=156f0e4fcf8f4d0699296c603722a119
+2026-11-16T13:08:56.2693012Z COAL_THROW view=111 offset=(0.03, -0.15, 0.73) beforeFuel=74.38338
+2026-11-16T13:08:56.4934401Z STATE phase=Running room=01351 ready=True request=False fuel=74.10338 distance=231.96 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:57.5041898Z STATE phase=Running room=01351 ready=True request=False fuel=78.51894 distance=236.012 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:57.5286574Z COAL_RECEIPT count=18 fuel=78.49144 expected=78.49144
+2026-11-16T13:08:58.5205350Z STATE phase=Running room=01351 ready=True request=False fuel=77.25019 distance=240.072 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:08:59.5272744Z STATE phase=Running room=01351 ready=True request=False fuel=76.00644 distance=244.052 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:00.3853490Z COAL_CLAIM view=116 token=a69f8268fce540f09c2681eabd61e52e
+2026-11-16T13:09:00.5348277Z STATE phase=Running room=01351 ready=True request=False fuel=74.73769 distance=248.112 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:00.8322500Z COAL_THROW view=116 offset=(0.00, -0.13, 0.74) beforeFuel=74.36394
+2026-11-16T13:09:01.2836616Z COAL_RECEIPT count=19 fuel=79.47575 expected=79.47575
+2026-11-16T13:09:01.5553817Z STATE phase=Running room=01351 ready=True request=False fuel=79.14201 distance=252.2 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:02.5609944Z STATE phase=Running room=01351 ready=True request=False fuel=77.88451 distance=256.224 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:03.5800789Z STATE phase=Running room=01351 ready=True request=False fuel=76.62076 distance=260.268 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:04.5963510Z STATE phase=Running room=01351 ready=True request=False fuel=75.33701 distance=264.376 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:04.8881100Z COAL_CLAIM view=109 token=32f4fbdad9b4448eb28a7bf160181a9d
+2026-11-16T13:09:05.3215090Z COAL_THROW view=109 offset=(0.00, -0.13, 0.77) beforeFuel=74.42826
+2026-11-16T13:09:05.6045341Z STATE phase=Running room=01351 ready=True request=False fuel=74.07701 distance=268.408 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:05.7564652Z COAL_RECEIPT count=20 fuel=79.57509 expected=79.57509
+2026-11-16T13:09:06.6098309Z STATE phase=Running room=01351 ready=True request=False fuel=78.50134 distance=272.432 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:07.6201897Z STATE phase=Running room=01351 ready=True request=False fuel=77.25258 distance=276.428 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:08.6364020Z STATE phase=Running room=01351 ready=True request=False fuel=75.96883 distance=280.536 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:09.5384053Z COAL_CLAIM view=114 token=3770b7f76e2643c2b14af36da9b78070
+2026-11-16T13:09:09.6555550Z STATE phase=Running room=01351 ready=True request=False fuel=74.69633 distance=284.608 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:10.0170733Z COAL_THROW view=114 offset=(0.00, -0.15, 0.71) beforeFuel=74.24883
+2026-11-16T13:09:10.5553749Z COAL_RECEIPT count=21 fuel=79.2594 expected=79.2594
+2026-11-16T13:09:10.6601669Z STATE phase=Running room=01351 ready=True request=False fuel=79.12189 distance=288.628 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:11.6842581Z STATE phase=Running room=01351 ready=True request=False fuel=77.84314 distance=292.72 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:12.7135730Z STATE phase=Running room=01351 ready=True request=False fuel=76.5644 distance=296.812 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:13.7321732Z STATE phase=Running room=01351 ready=True request=False fuel=75.2819 distance=300.916 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:14.0355408Z COAL_CLAIM view=120 token=eb1b8e7c60a948b5b38f4f54124dfb02
+2026-11-16T13:09:14.4803813Z COAL_THROW view=120 offset=(0.00, -0.15, 0.73) beforeFuel=74.35439
+2026-11-16T13:09:14.7521781Z STATE phase=Running room=01351 ready=True request=False fuel=74.0144 distance=304.972 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:14.8413184Z COAL_RECEIPT count=22 fuel=79.59871 expected=79.59871
+2026-11-16T13:09:15.7703588Z STATE phase=Running room=01351 ready=True request=False fuel=78.41747 distance=309.064 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:16.7767091Z STATE phase=Running room=01351 ready=True request=False fuel=77.15746 distance=313.096 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:17.7849298Z STATE phase=Running room=01351 ready=True request=False fuel=75.89746 distance=317.128 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:18.5214551Z COAL_CLAIM view=115 token=14f3389574e24eaa81887223a01ab954
+2026-11-16T13:09:18.7894736Z STATE phase=Running room=01351 ready=True request=False fuel=74.63997 distance=321.152 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:18.9664200Z COAL_THROW view=115 offset=(0.00, -0.13, 0.77) beforeFuel=74.42122
+2026-11-16T13:09:19.3977048Z COAL_RECEIPT count=23 fuel=79.56554 expected=79.56554
+2026-11-16T13:09:19.8030685Z STATE phase=Running room=01351 ready=True request=False fuel=79.05678 distance=325.2 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:20.8212896Z STATE phase=Running room=01351 ready=True request=False fuel=77.78303 distance=329.276 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:21.8368692Z STATE phase=Running room=01351 ready=True request=False fuel=76.52678 distance=333.296 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:22.8531269Z STATE phase=Running room=01351 ready=True request=False fuel=75.24303 distance=337.404 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:23.1499827Z COAL_CLAIM view=117 token=efdab893ee044e6a88499de25a5c17e5
+2026-11-16T13:09:23.5782960Z COAL_THROW view=117 offset=(0.00, -0.14, 0.78) beforeFuel=74.34053
+2026-11-16T13:09:23.8650470Z STATE phase=Running room=01351 ready=True request=False fuel=73.98804 distance=341.42 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:24.1314743Z COAL_RECEIPT count=24 fuel=79.33609 expected=79.33609
+2026-11-16T13:09:24.8663066Z STATE phase=Running room=01351 ready=True request=False fuel=78.40735 distance=345.46 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:25.8829205Z STATE phase=Running room=01351 ready=True request=False fuel=77.13734 distance=349.524 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:26.9013209Z STATE phase=Running room=01351 ready=True request=False fuel=75.86609 distance=353.592 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:27.7139789Z COAL_CLAIM view=118 token=c1fdc4a4a82a4788acc38e2cfc0262f5
+2026-11-16T13:09:27.9104026Z STATE phase=Running room=01351 ready=True request=False fuel=74.60109 distance=357.64 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:28.1673767Z COAL_THROW view=118 offset=(0.00, -0.15, 0.72) beforeFuel=74.28234
+2026-11-16T13:09:28.6445859Z COAL_RECEIPT count=25 fuel=79.37416 expected=79.37416
+2026-11-16T13:09:28.9121385Z STATE phase=Running room=01351 ready=True request=False fuel=79.04916 distance=361.588 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:29.9357468Z STATE phase=Running room=01351 ready=True request=False fuel=77.75665 distance=365.724 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:30.9511310Z STATE phase=Running room=01351 ready=True request=False fuel=76.48666 distance=369.788 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:31.9654907Z STATE phase=Running room=01351 ready=True request=False fuel=75.2179 distance=373.848 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:32.1862433Z COAL_CLAIM view=113 token=25582bfaaedb4174b21acb40ef3609be
+2026-11-16T13:09:32.6267223Z COAL_THROW view=113 offset=(0.00, -0.15, 0.72) beforeFuel=74.38915
+2026-11-16T13:09:32.9856498Z STATE phase=Running room=01351 ready=True request=False fuel=79.62723 distance=377.92 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:33.0636196Z COAL_RECEIPT count=26 fuel=79.53347 expected=79.53347
+2026-11-16T13:09:34.0062726Z STATE phase=Running room=01351 ready=True request=False fuel=78.34972 distance=382.008 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:35.0292912Z STATE phase=Running room=01351 ready=True request=False fuel=77.07848 distance=386.076 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:36.0512228Z STATE phase=Running room=01351 ready=True request=False fuel=75.79097 distance=390.196 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:36.7838677Z COAL_CLAIM view=150 token=589e7b14e80b4dbe8ccef64c8b9a6250
+2026-11-16T13:09:37.0594584Z STATE phase=Running room=01351 ready=True request=False fuel=74.53222 distance=394.224 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:37.2295584Z COAL_THROW view=150 offset=(0.00, -0.15, 0.72) beforeFuel=74.32097
+2026-11-16T13:09:37.7107074Z COAL_RECEIPT count=27 fuel=79.39903 expected=79.39903
+2026-11-16T13:09:38.0664145Z STATE phase=Running room=01351 ready=True request=False fuel=78.96029 distance=398.236 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:39.0801779Z STATE phase=Running room=01351 ready=True request=False fuel=77.68779 distance=402.308 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:40.0846630Z STATE phase=Running room=01351 ready=True request=False fuel=76.43904 distance=406.304 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:41.0918245Z STATE phase=Running room=01351 ready=True request=False fuel=75.17279 distance=410.356 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:41.2561551Z COAL_CLAIM view=148 token=c55320a28a604c1f90ef717d572504ac
+2026-11-16T13:09:41.7261480Z COAL_THROW view=148 offset=(0.00, -0.15, 0.72) beforeFuel=74.38654
+2026-11-16T13:09:42.0943584Z STATE phase=Running room=01351 ready=True request=False fuel=73.91403 distance=414.384 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:42.1981774Z COAL_RECEIPT count=28 fuel=79.47585 expected=79.47585
+2026-11-16T13:09:43.1015255Z STATE phase=Running room=01351 ready=True request=False fuel=78.3471 distance=418.38 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:44.1017406Z STATE phase=Running room=01351 ready=True request=False fuel=77.09585 distance=422.384 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:45.1089600Z STATE phase=Running room=01351 ready=True request=False fuel=75.8296 distance=426.436 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:45.8302920Z COAL_CLAIM view=151 token=67bff6e40622487c9f34a4305f60e6f9
+2026-11-16T13:09:46.1177811Z STATE phase=Running room=01351 ready=True request=False fuel=74.57335 distance=430.456 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:46.2731096Z COAL_THROW view=151 offset=(0.00, -0.12, 0.76) beforeFuel=74.37711
+2026-11-16T13:09:46.7053459Z COAL_RECEIPT count=29 fuel=79.51641 expected=79.51642
+2026-11-16T13:09:47.1302276Z STATE phase=Running room=01351 ready=True request=False fuel=78.98641 distance=434.516 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:48.1414565Z STATE phase=Running room=01351 ready=True request=False fuel=77.72516 distance=438.552 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:49.1577028Z STATE phase=Running room=01351 ready=True request=False fuel=76.46266 distance=442.592 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:50.1714053Z STATE phase=Running room=01351 ready=True request=False fuel=75.19016 distance=446.664 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:50.3261044Z COAL_CLAIM view=149 token=d1f6536603664a3594fc8f9a77d0511a
+2026-11-16T13:09:50.7924340Z COAL_THROW view=149 offset=(0.00, -0.14, 0.74) beforeFuel=74.41266
+2026-11-16T13:09:51.1754986Z STATE phase=Running room=01351 ready=True request=False fuel=73.93017 distance=450.696 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:51.2527681Z COAL_RECEIPT count=30 fuel=79.52448 expected=79.52448
+2026-11-16T13:09:52.1971726Z STATE phase=Running room=01351 ready=True request=False fuel=78.33572 distance=454.78 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:53.1992043Z STATE phase=Running room=01351 ready=True request=False fuel=77.08823 distance=458.772 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:54.2020659Z STATE phase=Running room=01351 ready=True request=False fuel=75.83322 distance=462.788 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:54.9805944Z COAL_CLAIM view=134 token=8d983cead84945b794d94a433833d44e
+2026-11-16T13:09:55.5061911Z STATE phase=Running room=01351 ready=True request=False fuel=74.74197 distance=466.28 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:55.8394619Z COAL_THROW view=134 offset=(0.00, -0.14, 0.75) beforeFuel=73.78948
+2026-11-16T13:09:56.5125838Z STATE phase=Running room=01351 ready=True request=False fuel=72.94198 distance=472.04 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:57.4494958Z COAL_RECEIPT count=31 fuel=77.45129 expected=77.45129
+2026-11-16T13:09:57.5342330Z STATE phase=Running room=01351 ready=True request=False fuel=77.34754 distance=476.124 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:58.5339998Z STATE phase=Running room=01351 ready=True request=False fuel=76.1038 distance=480.104 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:59.5064773Z COAL_CLAIM view=126 token=95fd0e096325423b913f5e872fdb73dd
+2026-11-16T13:09:59.5537739Z STATE phase=Running room=01351 ready=True request=False fuel=74.82005 distance=484.212 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:09:59.9546826Z COAL_THROW view=126 offset=(0.00, -0.15, 0.73) beforeFuel=74.32504
+2026-11-16T13:10:00.4966082Z COAL_RECEIPT count=32 fuel=79.33062 expected=79.33062
+2026-11-16T13:10:00.5659665Z STATE phase=Running room=01351 ready=True request=False fuel=79.23686 distance=488.26 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:01.5752972Z STATE phase=Running room=01351 ready=True request=False fuel=77.97562 distance=492.296 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:02.5984814Z STATE phase=Running room=01351 ready=True request=False fuel=76.70937 distance=496.348 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:03.6138636Z STATE phase=Running room=01351 ready=True request=False fuel=75.42812 distance=500.448 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:04.0412426Z COAL_CLAIM view=128 token=3604399e07bd4228a2751d0f7039f540
+2026-11-16T13:10:04.4597614Z COAL_THROW view=128 offset=(0.00, -0.13, 0.80) beforeFuel=74.37312
+2026-11-16T13:10:04.6395981Z STATE phase=Running room=01351 ready=True request=False fuel=74.15312 distance=504.528 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:04.8957667Z COAL_RECEIPT count=33 fuel=79.50869 expected=79.50869
+2026-11-16T13:10:05.6538745Z STATE phase=Running room=01351 ready=True request=False fuel=78.56119 distance=508.604 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:06.6585007Z STATE phase=Running room=01351 ready=True request=False fuel=77.30369 distance=512.628 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:07.6912943Z STATE phase=Running room=01351 ready=True request=False fuel=76.02744 distance=516.712 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:08.6104917Z COAL_CLAIM view=130 token=38fd8cb9c3ed4fa3bdbec274d8b4f1c2
+2026-11-16T13:10:08.7067684Z STATE phase=Running room=01351 ready=True request=False fuel=74.74868 distance=520.804 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:09.0204784Z COAL_THROW view=130 offset=(0.00, -0.13, 0.80) beforeFuel=74.35368
+2026-11-16T13:10:09.4720298Z COAL_RECEIPT count=34 fuel=79.47175 expected=79.47175
+2026-11-16T13:10:09.7247456Z STATE phase=Running room=01351 ready=True request=False fuel=79.15302 distance=524.892 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:10.7501627Z STATE phase=Running room=01351 ready=True request=False fuel=77.87301 distance=528.988 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:11.7514115Z STATE phase=Running room=01351 ready=True request=False fuel=76.63676 distance=532.944 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:12.7701680Z STATE phase=Running room=01351 ready=True request=False fuel=75.34801 distance=537.068 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:13.1524590Z COAL_CLAIM view=122 token=541c64c903ce46f2b7edc32849e26678
+2026-11-16T13:10:13.5776232Z COAL_THROW view=122 offset=(0.00, -0.13, 0.79) beforeFuel=74.33926
+2026-11-16T13:10:13.7811067Z STATE phase=Running room=01351 ready=True request=False fuel=74.08425 distance=541.112 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:14.1420515Z COAL_RECEIPT count=35 fuel=79.31233 expected=79.31233
+2026-11-16T13:10:14.7923010Z STATE phase=Running room=01351 ready=True request=False fuel=78.50858 distance=545.136 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:15.8011701Z STATE phase=Running room=01351 ready=True request=False fuel=77.24108 distance=549.192 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:16.8238302Z STATE phase=Running room=01351 ready=True request=False fuel=75.96232 distance=553.284 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:17.7003526Z COAL_CLAIM view=132 token=3f20e322e82545aa9bb9769053752d21
+2026-11-16T13:10:17.8369856Z STATE phase=Running room=01351 ready=True request=False fuel=74.69733 distance=557.332 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:18.1539446Z COAL_THROW view=132 offset=(0.00, -0.14, 0.79) beforeFuel=74.31607
+2026-11-16T13:10:18.7025966Z COAL_RECEIPT count=36 fuel=79.29663 expected=79.29663
+2026-11-16T13:10:18.8463806Z STATE phase=Running room=01351 ready=True request=False fuel=79.12413 distance=561.348 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:19.8545797Z STATE phase=Running room=01351 ready=True request=False fuel=77.86789 distance=565.368 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:20.8655011Z STATE phase=Running room=01351 ready=True request=False fuel=76.59288 distance=569.448 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:21.8713090Z STATE phase=Running room=01351 ready=True request=False fuel=75.33662 distance=573.468 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:22.2515180Z COAL_CLAIM view=124 token=676016ee61a14e6b99a1b2fcf36c6589
+2026-11-16T13:10:22.7054044Z COAL_THROW view=124 offset=(0.00, -0.13, 0.78) beforeFuel=74.29289
+2026-11-16T13:10:22.8737440Z STATE phase=Running room=01351 ready=True request=False fuel=74.08662 distance=577.468 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:23.0298541Z COAL_RECEIPT count=37 fuel=79.57593 expected=79.57594
+2026-11-16T13:10:23.8812758Z STATE phase=Running room=01351 ready=True request=False fuel=78.55594 distance=581.348 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:24.9006109Z STATE phase=Running room=01351 ready=True request=False fuel=77.23094 distance=585.588 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:25.9019834Z STATE phase=Running room=01351 ready=True request=False fuel=75.97592 distance=589.6041 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:26.7954591Z COAL_CLAIM view=127 token=db18df1bfc9847ac8371d6a1ff371b76
+2026-11-16T13:10:26.9111475Z STATE phase=Running room=01351 ready=True request=False fuel=74.72218 distance=593.616 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:27.2535214Z COAL_THROW view=127 offset=(0.00, -0.15, 0.72) beforeFuel=74.28593
+2026-11-16T13:10:27.5731689Z COAL_RECEIPT count=38 fuel=79.57275 expected=79.57276
+2026-11-16T13:10:27.9388834Z STATE phase=Running room=01351 ready=True request=False fuel=79.12526 distance=597.708 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:28.9445126Z STATE phase=Running room=01351 ready=True request=False fuel=77.85525 distance=601.772 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:29.9580741Z STATE phase=Running room=01351 ready=True request=False fuel=76.589 distance=605.824 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:30.9702313Z STATE phase=Running room=01351 ready=True request=False fuel=75.32275 distance=609.876 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:31.2547072Z COAL_CLAIM view=123 token=59da950f81674c5e965672322f8d4198
+2026-11-16T13:10:31.6793703Z COAL_THROW view=123 offset=(0.00, -0.15, 0.70) beforeFuel=74.439
+2026-11-16T13:10:31.9922926Z STATE phase=Running room=01351 ready=True request=False fuel=74.05775 distance=613.924 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:32.2303483Z COAL_RECEIPT count=39 fuel=79.43583 expected=79.43583
+2026-11-16T13:10:33.0129736Z STATE phase=Running room=01351 ready=True request=False fuel=78.45457 distance=618.036 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:34.0189392Z STATE phase=Running room=01351 ready=True request=False fuel=77.19708 distance=622.06 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:35.0379818Z STATE phase=Running room=01351 ready=True request=False fuel=75.92459 distance=626.132 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:35.8231605Z COAL_CLAIM view=133 token=d91819ec56e64ccb95d42c5b9161761c
+2026-11-16T13:10:36.0551971Z STATE phase=Running room=01351 ready=True request=False fuel=74.65459 distance=630.196 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:36.2483192Z COAL_THROW view=133 offset=(0.00, -0.13, 0.78) beforeFuel=74.42583
+2026-11-16T13:10:36.8237107Z COAL_RECEIPT count=40 fuel=79.3689 expected=79.3689
+2026-11-16T13:10:37.0573203Z STATE phase=Running room=01351 ready=True request=False fuel=79.0889 distance=634.188 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:38.0687680Z STATE phase=Running room=01351 ready=True request=False fuel=77.81391 distance=638.2679 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:39.0740189Z STATE phase=Running room=01351 ready=True request=False fuel=76.55389 distance=642.3 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:40.1009189Z STATE phase=Running room=01351 ready=True request=False fuel=75.28265 distance=646.368 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:41.1081187Z STATE phase=Running room=01351 ready=True request=False fuel=74.02641 distance=650.3879 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:42.1160439Z STATE phase=Running room=01351 ready=True request=False fuel=72.75265 distance=654.464 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:43.1369686Z STATE phase=Running room=01351 ready=True request=False fuel=71.4789 distance=658.54 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:44.1416001Z STATE phase=Running room=01351 ready=True request=False fuel=70.22141 distance=662.564 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:45.1467913Z STATE phase=Running room=01351 ready=True request=False fuel=68.98016 distance=666.5359 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:46.1556380Z STATE phase=Running room=01351 ready=True request=False fuel=67.71015 distance=670.6 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:47.1703944Z STATE phase=Running room=01351 ready=True request=False fuel=66.44016 distance=674.6639 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:48.1821491Z STATE phase=Running room=01351 ready=True request=False fuel=65.17265 distance=678.72 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:49.2025053Z STATE phase=Running room=01351 ready=True request=False fuel=63.9089 distance=682.764 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:50.2118055Z STATE phase=Running room=01351 ready=True request=False fuel=62.63765 distance=686.832 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:51.2157091Z STATE phase=Running room=01351 ready=True request=False fuel=61.38515 distance=690.84 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:52.2380479Z STATE phase=Running room=01351 ready=True request=False fuel=60.11015 distance=694.92 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:53.2407290Z STATE phase=Running room=01351 ready=True request=False fuel=58.86015 distance=698.92 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:54.2612253Z STATE phase=Running room=01351 ready=True request=False fuel=57.57515 distance=703.032 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:55.5070369Z STATE phase=Running room=01351 ready=True request=False fuel=56.52515 distance=706.392 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:56.5100120Z STATE phase=Running room=01351 ready=True request=False fuel=54.76391 distance=712.028 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:57.5147395Z STATE phase=Running room=01351 ready=True request=False fuel=53.50765 distance=716.048 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:58.5208373Z STATE phase=Running room=01351 ready=True request=False fuel=52.2464 distance=720.084 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:10:59.5338505Z STATE phase=Running room=01351 ready=True request=False fuel=50.99016 distance=724.1039 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:00.5365280Z STATE phase=Running room=01351 ready=True request=False fuel=49.72891 distance=728.14 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:01.5541260Z STATE phase=Running room=01351 ready=True request=False fuel=48.45516 distance=732.2159 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:02.5621096Z STATE phase=Running room=01351 ready=True request=False fuel=47.21516 distance=736.184 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:03.5772302Z STATE phase=Running room=01351 ready=True request=False fuel=45.9289 distance=740.3 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:04.5915418Z STATE phase=Running room=01351 ready=True request=False fuel=44.65891 distance=744.364 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:05.6110682Z STATE phase=Running room=01351 ready=True request=False fuel=43.38264 distance=748.448 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:06.6339800Z STATE phase=Running room=01351 ready=True request=False fuel=42.10766 distance=752.528 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:07.6362252Z STATE phase=Running room=01351 ready=True request=False fuel=40.86765 distance=756.496 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:08.6433634Z STATE phase=Running room=01351 ready=True request=False fuel=39.59766 distance=760.5599 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:09.6618785Z STATE phase=Running room=01351 ready=True request=False fuel=38.3214 distance=764.644 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:10.6691430Z STATE phase=Running room=01351 ready=True request=False fuel=37.06516 distance=768.6639 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:11.6685691Z STATE phase=Running room=01351 ready=True request=False fuel=35.8139 distance=772.668 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:12.6945863Z STATE phase=Running room=01351 ready=True request=False fuel=34.54016 distance=776.744 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:13.6967871Z STATE phase=Running room=01351 ready=True request=False fuel=33.2789 distance=780.78 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:14.7204361Z STATE phase=Running room=01351 ready=True request=False fuel=32.0014 distance=784.868 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:15.7222307Z STATE phase=Running room=01351 ready=True request=False fuel=30.7439 distance=788.892 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:16.7446174Z STATE phase=Running room=01351 ready=True request=False fuel=29.46766 distance=792.976 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:17.7500466Z STATE phase=Running room=01351 ready=True request=False fuel=28.2139 distance=796.988 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:18.7540293Z STATE phase=Running room=01351 ready=True request=False fuel=26.96014 distance=801 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:19.7595924Z STATE phase=Running room=01351 ready=True request=False fuel=25.69765 distance=805.04 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:20.7681227Z STATE phase=Running room=01351 ready=True request=False fuel=24.44016 distance=809.064 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:21.7752481Z STATE phase=Running room=01351 ready=True request=False fuel=23.1864 distance=813.076 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:22.7882535Z STATE phase=Running room=01351 ready=True request=False fuel=21.91391 distance=817.1479 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:23.8076716Z STATE phase=Running room=01351 ready=True request=False fuel=20.6389 distance=821.228 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:24.8205244Z STATE phase=Running room=01351 ready=True request=False fuel=19.37141 distance=825.2839 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:25.8367504Z STATE phase=Running room=01351 ready=True request=False fuel=18.10141 distance=829.348 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:26.8590879Z STATE phase=Running room=01351 ready=True request=False fuel=16.84265 distance=833.376 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:27.8768750Z STATE phase=Running room=01351 ready=True request=False fuel=15.55389 distance=837.5 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:28.8994899Z STATE phase=Running room=01351 ready=True request=False fuel=14.27391 distance=841.5959 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:29.9171793Z STATE phase=Running room=01351 ready=True request=False fuel=13.0014 distance=845.668 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:30.9275127Z STATE phase=Running room=01351 ready=True request=False fuel=11.73765 distance=849.712 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:31.9342354Z STATE phase=Running room=01351 ready=True request=False fuel=10.48141 distance=853.7319 bridge=1 role=keeper paused=False status=Ready
+2026-11-16T13:11:32.7323176Z NATURAL_SUCCESS finishedAt=3761473.928 deadline=3761505.928 distance=856.3879 deposits=40
+2026-11-16T13:11:32.7338592Z KEEPER fault: local session disabled; gameplay connection stays active until cut returns
+2026-11-16T13:11:32.9491767Z STATE phase=Ending room=01351 ready=True request=False fuel=99.37125 distance=857.792 bridge=1 role=keeper paused=True status=Ready
+2026-11-16T13:11:33.9652638Z STATE phase=Ending room=01351 ready=True request=False fuel=98.10375 distance=861.848 bridge=1 role=keeper paused=True status=Ready
+2026-11-16T13:11:34.5090740Z BLOCKED Other role aborted: cut: cut must not be authority
+2026-11-16T13:11:34.5111135Z CLEANUP keeper session restored
+2026-11-16T13:11:34.5111135Z BLOCKED DONE role=keeper deposits=40 naturalFinish=True originalRejoin=False elapsed=292.8460733

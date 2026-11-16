@@ -1,0 +1,169 @@
+using System;using System.IO;using System.Linq;using System.Collections;using UnityEngine;using UnityEditor;using Photon.Pun;using Game.Animation;
+internal class CommandScript:IRunCommand{
+ const string Role="cut"; // Inject keeper, cut, then driver; replace this literal for each client.
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||PhotonSession.Kind!=RailSessionRules.CompoundKind||PhotonSession.Phase!=RailPhase.Compound||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||PhotonSession.Instance.HasRoomRequest||PhotonNetwork.PlayerList.Count(x=>!x.IsInactive)!=3)
+   throw new Exception("Need exactly3 ready authenticated clients in one public Compound");
+  if(PhotonSession.Get(RailSessionRules.Deadline,0d)>0||RailWorld.IsLocalOnPlatform())throw new Exception("Begin idle, all operators off boarding platform");
+  if((Role=="driver")!=PhotonNetwork.IsMasterClient)throw new Exception("Driver must initially be master; cut/keeper must be non-master");
+  if(SimulatedRigInput.Instance==null||!SimulatedRigInput.Instance.IsSimulating||SimulatedRigInput.Instance.UseInjectedInput||RailWorld.InputBlocked||RailDiagnosticPanel.BlocksDesktopInput||NewPlayer.instance==null||GR.Player.instance.rightPlayerHand.Held!=null)
+   throw new Exception("Need unblocked Keyboard rig, empty right hand, no competing injected fixture");
+  var g=new GameObject("Actual public route and stranded-return fixture");UnityEngine.Object.DontDestroyOnLoad(g);g.AddComponent<PublicStrandedQueue>().Arm(Role);r.RegisterObjectCreation(g);
+  r.Log("Public3 fixture armed role="+Role+";500s bound; actual physical fuel only; no public test-property writes");
+ }
+}
+[DefaultExecutionOrder(25)] internal class PublicStrandedQueue:MonoBehaviour{
+ const string Root="X:/Work/duck-rails/",Ev=Root+"docs/validation/playtest-queue/2026-11-16/";
+ string role,path,compound,room,run,sync,token="",coalToken,purchaseToken="";bool armed,done,boarded,started,authorityReady,purchaseWasPresent,bridgeDone,cut,gate,paused,oldEnabled,readyWritten,oldInjection,oldBridgeFocus,bridgeFocusSaved,joinedOriginal,leftOriginal,finishedSeen;
+ int actor,mainActor,cutActor,keeperActor,coalId,coalStage,deposits;float previousDistance,beforeFuel,beforeDistance,crossingDistance;double began,startPhoton,authorityAt,nextAuthority,nextLog,nextDrive,nextCoal,coalAt,finished,finishReal,cutReal,rejoinedReal,leftReal,endingDeadline,initialDeadline;
+ SimulatedRigInput sim;SimulatedRigInput.Frame oldFrame;RailHoldControl bridge;PhotonGrabbable item;PlayerHand hand;PhotonSession session;Vector3 stand;Quaternion heading;
+ string FileAt(string name)=>sync+name+".txt";
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Require(bool ok,string s){if(!ok)throw new Exception(s);}
+ public void Arm(string mode){
+  role=mode;compound=PhotonNetwork.CurrentRoom.Name;actor=PhotonNetwork.LocalPlayer.ActorNumber;mainActor=PhotonNetwork.MasterClient.ActorNumber;
+  path=Ev+"public-stranded-"+role+".txt";session=PhotonSession.Instance;sim=SimulatedRigInput.Instance;hand=GR.Player.instance.rightPlayerHand;
+  oldInjection=sim.UseInjectedInput;oldFrame=sim.InjectedInput;stand=new Vector3(NewPlayer.instance.headCollider.transform.position.x,NewPlayer.instance.transform.position.y,NewPlayer.instance.headCollider.transform.position.z);heading=NewPlayer.instance.transform.rotation;
+  began=EditorApplication.timeSinceStartup;armed=true;session.RoomMembershipChanged+=Membership;session.RoomRequestStarted+=RequestStarted;EditorApplication.update+=Tick;
+  File.WriteAllText(path,"Real public departure/full route/production return token. Controlled operator Warp, actual hand claims/releases/coal throws, actual bridge contact and normal SetTrainMoving. After public transfer, normal SDK SetMasterClient establishes driver authority with all3 client acknowledgements before gameplay. No synthetic gameplay state, test properties, fuel, progress, finish or award writes. Keeper temporarily disables only its local PhotonSession during Ending to retain the old gameplay room; Photon transport stays active. This fault injection is NOT the natural headset repro.\n");
+  Log("ARM role="+role+" compound="+compound+" actor="+actor+" master="+mainActor);
+  string purchaseFile=Ev+"compound-purchase-cleanup-departure-token.txt";
+  if(File.Exists(purchaseFile)){purchaseToken=File.ReadAllText(purchaseFile).Trim();purchaseWasPresent=purchaseToken.Length>0&&UnityEngine.Object.FindObjectsByType<PhotonView>(FindObjectsInactive.Include,FindObjectsSortMode.None).Any(v=>v!=null&&v.SpawnToken==purchaseToken);}
+  Log(purchaseWasPresent?"PURCHASE_BASELINE current Compound contains fresh prelude token="+purchaseToken:"SKIP purchase cleanup: token not currently present; attempt1 already validated its departure cleanup");
+  if(role=="driver"){startPhoton=PhotonNetwork.Time+3;File.WriteAllLines(Root+"Temp/queue-public-stranded-start.txt",new[]{compound,startPhoton.ToString("R",System.Globalization.CultureInfo.InvariantCulture)});}
+ }
+ void Membership(){if(!armed||done||!cut||!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.Name!=room)return;
+  try{var state=JsonUtility.FromJson<RailRunState>(PhotonSession.Get(RailExpedition.StateKey,""));
+   Require(state!=null&&state.run==run&&state.finishedAt==finished,"rejoin retains original public finish identity");
+   Require(PhotonSession.Phase==RailPhase.Returning&&PhotonSession.Get(RailSessionRules.Destination,"")==token,"rejoin actually enters original token-bearing Returning room");
+   Require(PhotonNetwork.LocalPlayer.ActorNumber==actor,"rejoin restores inactive actor");
+   Require(PhotonNetwork.MasterClient.ActorNumber==keeperActor&&!PhotonNetwork.IsMasterClient,"retainer is authority when cut actor rejoins original room");
+   Require(!PhotonSession.Get(RailSessionRules.TransferUsers,Array.Empty<string>()).Contains(PhotonNetwork.LocalPlayer.UserId),"disconnected actor excluded from original return crew");
+   joinedOriginal=true;rejoinedReal=EditorApplication.timeSinceStartup;Log("REJOIN_ORIGINAL token="+token+" room="+room+" actor="+actor+" phase="+PhotonSession.Phase+" finishedAt="+state.finishedAt);
+  }catch(Exception ex){Abort(ex.Message);}}
+ void RequestStarted(){if(joinedOriginal&&!leftOriginal&&PhotonNetwork.InRoom&&PhotonNetwork.CurrentRoom.Name==room){leftOriginal=true;leftReal=EditorApplication.timeSinceStartup;Log("LEAVE_REQUEST secondsFromRejoin="+(leftReal-rejoinedReal)+" message="+session.Status);}}
+ void Tick(){if(done||!armed)return;try{
+  double now=EditorApplication.timeSinceStartup;Require(Application.isPlaying&&session!=null,"Play/session ended");Require(now-began<500,"500-second whole-scenario bound expired");
+  if(started&&File.Exists(FileAt("abort")))throw new Exception("Other role aborted: "+File.ReadAllText(FileAt("abort")));
+  if(!started){
+   if(PhotonSession.Kind==RailSessionRules.CompoundKind&&PhotonNetwork.CurrentRoom?.Name==compound){
+    if(startPhoton==0){string p=Root+"Temp/queue-public-stranded-start.txt";if(!File.Exists(p))return;var rows=File.ReadAllLines(p);if(rows.Length<2||rows[0]!=compound)return;double proposed=double.Parse(rows[1],System.Globalization.CultureInfo.InvariantCulture);if(PhotonNetwork.Time-proposed>1||proposed-PhotonNetwork.Time>10)return;startPhoton=proposed;}
+    if(!boarded&&PhotonNetwork.Time>=startPhoton){var b=RailWorld.Instance.boardingTrigger.bounds;NewPlayer.instance.Warp(new Vector3(b.center.x+(role=="driver"?-.6f:role=="cut"?0:.6f),NewPlayer.instance.transform.position.y,b.center.z));boarded=true;Log("BOARD controlled occupancy; normal20s countdown");}
+    double d=PhotonSession.Get(RailSessionRules.Deadline,0d);if(d>0){if(initialDeadline==0)initialDeadline=d;Require(Math.Abs(d-initialDeadline)<.01,"public countdown retained");}return;
+   }
+   if(PhotonSession.Kind!=RailSessionRules.ExpeditionKind||PhotonSession.Phase!=RailPhase.Running||!session.WorldReady||session.HasRoomRequest)return;
+   Require(boarded&&EditorApplication.timeSinceStartup-began>=19,"actual public countdown/departure observed");Require(PhotonNetwork.PlayerList.Count(x=>!x.IsInactive)==3,"three actual clients arrive in expedition");
+   room=PhotonNetwork.CurrentRoom.Name;run=PhotonSession.RunId;sync=Root+"Temp/public-stranded-"+run+"-";started=true;authorityAt=now;
+   int oldActor=actor;actor=PhotonNetwork.LocalPlayer.ActorNumber;File.WriteAllText(FileAt(role+"-actor"),actor.ToString());
+   Log("EXPEDITION_ACTOR role="+role+" compoundActor="+oldActor+" newActor="+actor+" arrivalMaster="+PhotonNetwork.MasterClient.ActorNumber);
+   sim=SimulatedRigInput.Instance;hand=GR.Player.instance.rightPlayerHand;Require(sim!=null&&sim.IsSimulating&&hand!=null&&hand.Held==null,"ready expedition Keyboard rig and empty fuel hand");
+   if(purchaseWasPresent){
+    Require(!UnityEngine.Object.FindObjectsByType<PhotonView>(FindObjectsInactive.Include,FindObjectsSortMode.None).Any(v=>v!=null&&v.SpawnToken==purchaseToken),"Compound purchase token absent from active expedition views");
+    Require(!PhotonSession.Get(RailSessionRules.Cargo,Array.Empty<int>()).Any(id=>{var v=PhotonView.Find(id);return v!=null&&v.SpawnToken==purchaseToken;}),"current expedition manifest does not resolve Compound purchase token");Log("PURCHASE_CLEANUP old fresh token absent after ordinary public departure="+purchaseToken);}
+   Require(Mathf.Abs(RailTrain.Instance.Distance)<.05f&&RailTrain.Instance.Speed<.01f,"fresh expedition starts at0");Require(Mathf.Abs(RailTestTools.TrainCruiseSpeed-4)<.001f,"normal public4m/s mode");
+   var motion=PhotonSession.Get(RailSessionRules.Motion,new object[]{0d,0f,0f,0f});Require(Convert.ToSingle(motion[2])==0&&Convert.ToSingle(motion[3])==0,"fresh stopped motion");
+   // Finale track is straight: add remaining world-Z distance from finale entry to the bridge nose crossing.
+   crossingDistance=RailRoute.Instance.FinaleStart+(RailExpedition.Instance.bridgeZ-RailRoute.Instance.finaleRoot.position.z)-5;
+   Require(RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time)<.0001f,"fresh bridge starts fully raised");
+   float value=RailResourceBalance.CoalValue(RailRoute.Instance.Selection.resourceCrew);int budget=Mathf.CeilToInt(Mathf.Max(0,crossingDistance*RailSessionRules.FuelPerMetre+5-PhotonSession.CurrentFuel)/value);
+   Log("RUN room="+room+" run="+run+" sourceCrew="+RailRoute.Instance.Selection.resourceCrew+" estimatedCrossing="+crossingDistance+" coalValue="+value+" budgetWith5fuelMargin="+budget+" initialFuel="+PhotonSession.CurrentFuel);
+   if(role=="cut")File.WriteAllLines(FileAt("cut-user"),new[]{PhotonNetwork.LocalPlayer.UserId,actor.ToString()});
+   return;
+  }
+  if(!authorityReady){if(!EstablishAuthority(now))return;authorityReady=true;Log("AUTHORITY_BARRIER complete driver="+mainActor+" cut="+cutActor+" keeper="+keeperActor+" localActor="+actor);}
+  if(cut&&gate){
+   RailRemoteBridge.Set(session,"retryAt",Time.realtimeSinceStartupAsDouble+2);
+   Require(now-cutReal<95,"rejoin gate exceeded95s; inactive actor TTL120s must not be exhausted");
+   if(File.Exists(FileAt("token"))&&File.Exists(FileAt("driver-ready"))){var rows=File.ReadAllLines(FileAt("token"));Require(rows.Length>=3&&rows[0]==room&&rows[1].StartsWith("return-"),"keeper supplied original production token");token=rows[1];Require(double.Parse(rows[2],System.Globalization.CultureInfo.InvariantCulture)==finished,"keeper token retains finish");gate=false;RailRemoteBridge.Set(session,"retryAt",Time.realtimeSinceStartupAsDouble);Log("REJOIN_RELEASE after natural token and driver ready Compound; offlineSeconds="+(now-cutReal));}return;
+  }
+  bool original=PhotonNetwork.InRoom&&PhotonNetwork.CurrentRoom.Name==room;
+  if(role=="cut"&&joinedOriginal&&!original&&!leftOriginal){leftOriginal=true;leftReal=now;Log("LEFT_ORIGINAL observed seconds="+(leftReal-rejoinedReal));}
+  if(original){
+   Require(PhotonNetwork.LocalPlayer.ActorNumber==actor,"current role retains expedition actor identity");
+   if(PhotonSession.Phase==RailPhase.Running||PhotonSession.Phase==RailPhase.Ending)
+    Require(PhotonNetwork.MasterClient.ActorNumber==mainActor&&(role=="driver")==PhotonNetwork.IsMasterClient,"driver remains authority through Running and Ending");
+   if(PhotonSession.Phase==RailPhase.Returning)
+    Require(PhotonNetwork.MasterClient.ActorNumber==mainActor||PhotonNetwork.MasterClient.ActorNumber==keeperActor,"Returning authority is original driver or remaining keeper");
+   var e=RailExpedition.Instance;
+   if(PhotonSession.Phase==RailPhase.Running&&session.WorldReady&&!session.HasRoomRequest){
+    Require(e!=null&&!e.State.finished,"run instance ready");Require(!RailExpedition.LocalDown,"operator downed; public fixture does not invoke private revive tools");
+    Require(RailTrain.Instance.Distance>=previousDistance-.05f&&RailTrain.Instance.Speed<=4.05f,"ordinary monotonic route at normal speed");previousDistance=RailTrain.Instance.Distance;
+    if(role=="driver"&&bridgeDone&&now>=nextDrive&&RailTrain.Instance.Speed<.05f){nextDrive=now+1;session.SetTrainMoving(true);}
+    if(role=="keeper"&&now>=nextCoal){nextCoal=now+.1;Fuel(now);}
+   }
+   if(e!=null&&e.State.finished){
+    Require(e.State.success&&e.State.reason=="Bridge crossed","actual public bridge success required; no simulated ending accepted");
+    if(!finishedSeen){finishedSeen=true;finished=e.State.finishedAt;finishReal=now;endingDeadline=PhotonSession.Get(RailSessionRules.Deadline,0d);Require(Math.Abs(endingDeadline-finished-32)<.02,"normal32s ending deadline");RestoreInputs();Log("NATURAL_SUCCESS finishedAt="+finished+" deadline="+endingDeadline+" distance="+RailTrain.Instance.Distance+" deposits="+deposits);}
+    if(role=="keeper"&&!paused&&PhotonSession.Phase==RailPhase.Ending){oldEnabled=session.enabled;session.enabled=false;paused=true;Log("KEEPER fault: local session disabled; gameplay connection stays active until cut returns");}
+    if(role=="cut"&&!cut&&PhotonSession.Phase==RailPhase.Ending&&PhotonNetwork.Time-finished>=2){Require(!PhotonNetwork.IsMasterClient,"cut must not be authority");cut=true;gate=true;cutReal=now;Log("CUT during actual Ending age="+(PhotonNetwork.Time-finished));PhotonNetwork.Disconnect();return;}
+   }
+   string liveToken=PhotonSession.Get(RailSessionRules.Destination,"");
+   if(role=="keeper"&&paused&&liveToken.StartsWith("return-")){
+    Require(PhotonSession.Phase==RailPhase.Returning,"token created only in normal Returning");Require(PhotonSession.Get(RailSessionRules.TransferUntil,0d)>PhotonNetwork.Time,"original token reservation live");
+    if(token.Length==0){token=liveToken;Require(File.Exists(FileAt("cut-user")),"cut identity recorded");var rows=File.ReadAllLines(FileAt("cut-user"));Require(!PhotonSession.Get(RailSessionRules.TransferUsers,Array.Empty<string>()).Contains(rows[0]),"original token excludes disconnected user");
+     File.WriteAllLines(FileAt("token"),new[]{room,token,finished.ToString("R",System.Globalization.CultureInfo.InvariantCulture)});Log("ORIGINAL_TOKEN observed="+token+" retainedRoom="+room+" master="+PhotonNetwork.MasterClient.ActorNumber+" finishAge="+(PhotonNetwork.Time-finished));}
+    if(File.Exists(FileAt("cut-ready"))){session.enabled=oldEnabled;paused=false;Log("KEEPER restored normal session after cut recovered; production return resumes");}
+   }
+  }
+  if(finishedSeen&&!original&&PhotonSession.Kind==RailSessionRules.CompoundKind&&session.WorldReady&&!session.HasRoomRequest){
+   if(!readyWritten){
+    if(role=="cut"){Require(joinedOriginal&&leftOriginal,"actual old-room rejoin and departure observed");Require(leftReal-rejoinedReal<=5,"stranded peer begins leaving within5s of original-room rejoin");}
+    Require(!RailWorld.HasLiveCargo,"ready Compound has no expedition cargo");readyWritten=true;File.WriteAllText(FileAt(role+"-ready"),PhotonNetwork.CurrentRoom.Name);Log("READY_COMPOUND room="+PhotonNetwork.CurrentRoom.Name+" secondsAfterFinishLocal="+(now-finishReal)+(role=="cut"?" afterRejoin="+(now-rejoinedReal):""));
+   }
+   if(File.Exists(FileAt("driver-ready"))&&File.Exists(FileAt("cut-ready"))&&File.Exists(FileAt("keeper-ready"))){Log("DESTINATIONS driver="+File.ReadAllText(FileAt("driver-ready"))+" cut="+File.ReadAllText(FileAt("cut-ready"))+" keeper="+File.ReadAllText(FileAt("keeper-ready"))+"; safety acceptance is leave old train, not forced matchmaking equality");End(true);return;}
+  }
+  if(now>=nextLog){nextLog=now+1;Log("STATE phase="+PhotonSession.Phase+" room="+(PhotonNetwork.CurrentRoom?.Name??"offline")+" ready="+session.WorldReady+" request="+session.HasRoomRequest+" fuel="+(original?PhotonSession.CurrentFuel:-1)+" distance="+(original&&RailTrain.Instance!=null?RailTrain.Instance.Distance:-1)+" bridge="+(original&&RailExpedition.Instance!=null?RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time):-1)+" role="+role+" paused="+paused+" status="+session.Status);}
+ }catch(Exception ex){Abort(ex.Message);}}
+ bool EstablishAuthority(double now){
+  Require(PhotonNetwork.InRoom&&PhotonNetwork.CurrentRoom.Name==room&&PhotonSession.Phase==RailPhase.Running,"authority barrier stays in fresh public expedition");
+  Require(now-authorityAt<20,"20-second expedition authority acknowledgement bound expired");
+  if(!File.Exists(FileAt("authority-go")))Require(Mathf.Abs(RailTrain.Instance.Distance)<.05f&&RailTrain.Instance.Speed<.01f&&RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time)<.0001f,"no bridge/fuel/drive actions before role authority barrier");
+  if(!File.Exists(FileAt("driver-actor"))||!File.Exists(FileAt("cut-actor"))||!File.Exists(FileAt("keeper-actor")))return false;
+  mainActor=int.Parse(File.ReadAllText(FileAt("driver-actor")));cutActor=int.Parse(File.ReadAllText(FileAt("cut-actor")));keeperActor=int.Parse(File.ReadAllText(FileAt("keeper-actor")));
+  Require(new[]{mainActor,cutActor,keeperActor}.Distinct().Count()==3&&new[]{mainActor,cutActor,keeperActor}.All(id=>PhotonNetwork.PlayerList.Any(p=>p.ActorNumber==id&&!p.IsInactive)),"three distinct current expedition role actors");
+  Require(actor==(role=="driver"?mainActor:role=="cut"?cutActor:keeperActor),"role file maps to current local actor");
+  if(role=="driver"&&PhotonNetwork.MasterClient.ActorNumber!=mainActor&&now>=nextAuthority){nextAuthority=now+1;Log("AUTHORITY_REQUEST driver="+mainActor+" observedMaster="+PhotonNetwork.MasterClient.ActorNumber+" accepted="+PhotonNetwork.SetMasterClient(PhotonNetwork.LocalPlayer));}
+  if(PhotonNetwork.MasterClient.ActorNumber!=mainActor)return false;
+  if(role=="driver"&&!File.Exists(FileAt("authority-ack"))){File.WriteAllText(FileAt("authority-ack"),mainActor.ToString());Log("AUTHORITY_ACK current master confirmed="+mainActor);}
+  if(!File.Exists(FileAt("authority-ack"))||int.Parse(File.ReadAllText(FileAt("authority-ack")))!=mainActor)return false;
+  if(!File.Exists(FileAt(role+"-authority-seen"))){File.WriteAllText(FileAt(role+"-authority-seen"),mainActor.ToString());Log("AUTHORITY_SEEN role="+role+" currentMaster="+PhotonNetwork.MasterClient.ActorNumber);}
+  if(!File.Exists(FileAt("driver-authority-seen"))||!File.Exists(FileAt("cut-authority-seen"))||!File.Exists(FileAt("keeper-authority-seen")))return false;
+  if(role=="driver"&&!File.Exists(FileAt("authority-go")))File.WriteAllText(FileAt("authority-go"),(PhotonNetwork.Time+1).ToString("R",System.Globalization.CultureInfo.InvariantCulture));
+  return File.Exists(FileAt("authority-go"))&&PhotonNetwork.Time>=double.Parse(File.ReadAllText(FileAt("authority-go")),System.Globalization.CultureInfo.InvariantCulture);
+ }
+ void LateUpdate(){if(done||!started||!authorityReady||role!="driver"||bridgeDone||PhotonSession.Phase!=RailPhase.Running||!session.WorldReady||session.HasRoomRequest)return;try{
+  Require(!RailExpedition.LocalDown,"bridge operator downed; no public self-revive");
+  if(bridge==null){bridge=RailExpedition.Instance.bridgeButton.GetComponent<RailHoldControl>();oldBridgeFocus=(bool)RailRemoteBridge.Get(bridge,"focused");bridgeFocusSaved=true;}
+  float progress=RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time);
+  if(progress>=1){bridgeDone=true;RestoreInputs();NewPlayer.instance.Warp(RailTrain.Instance.AboardPoint(actor),RailTrain.Instance.transform.rotation);Log("BRIDGE fully lowered by actual contact; trainDistance="+RailTrain.Instance.Distance);return;}
+  Require(Mathf.Abs(RailTrain.Instance.Distance)<.05f&&RailTrain.Instance.Speed<.01f,"bridge hold precedes train departure from0");
+  RailRemoteBridge.Set(bridge,"focused",true);sim.UseInjectedInput=true;sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true};
+  var driver=GR.Player.instance.GetComponent<LocalBodyDriver>();driver.PoseNow();var finger=driver.Body.RightHand.GetComponentInChildren<SphereCollider>();var volume=bridge.button.GetComponent<BoxCollider>();var rig=NewPlayer.instance;
+  Vector3 delta=volume.transform.TransformPoint(volume.center)-finger.transform.TransformPoint(finger.center);rig.Warp(new Vector3(rig.headCollider.transform.position.x,rig.transform.position.y,rig.headCollider.transform.position.z)+delta);driver.PoseNow();
+ }catch(Exception ex){Abort(ex.Message);}}
+ void Fuel(double now){
+  var e=RailExpedition.Instance;var train=RailTrain.Instance;float remaining=Mathf.Max(0,(crossingDistance-train.Distance)*RailSessionRules.FuelPerMetre)+5;
+  if(coalStage==0){if(PhotonSession.CurrentFuel>=75||PhotonSession.CurrentFuel>=remaining)return;
+   var coal=UnityEngine.Object.FindObjectsByType<RailCoal>(FindObjectsSortMode.None).Where(c=>{var g=c.GetComponent<PhotonGrabbable>();return g!=null&&!g.IsHeldByAnyPlayer&&!g.IsStashed&&g.CanBeGrabbed;}).OrderBy(c=>Vector3.Distance(c.transform.position,train.transform.position)).FirstOrDefault();Require(coal!=null,"no ordinary unheld coal available for actual fuel");
+   item=coal.GetComponent<PhotonGrabbable>();var view=coal.GetComponent<PhotonView>();coalId=view.ViewID;coalToken=view.SpawnToken;coalAt=now;NewPlayer.instance.Warp(coal.transform.position+Vector3.left);
+   sim.UseInjectedInput=true;sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true,grip=true};var saved=hand.HoldPoint.localPosition;
+   try{hand.HoldPoint.position=item.transform.position;Physics.SyncTransforms();Require(hand.FindGrabCandidate()==item&&hand.TryGrab(item),"actual palm candidate/hand pickup accepted");}finally{hand.HoldPoint.localPosition=saved;}
+   coalStage=1;Log("COAL_CLAIM view="+coalId+" token="+coalToken);return;
+  }
+  Require(now-coalAt<12,"physical coal attempt exceeded12s; view="+coalId+" stage="+coalStage);
+  if(coalStage==1){var view=PhotonView.Find(coalId);if(view==null||!view.IsMine||hand.Held!=item)return;
+   Vector3 release=e.furnace.position+e.furnace.forward*.72f-Vector3.up*.08f;
+   if(Vector3.Distance(release,item.transform.position)>.14f){var rig=NewPlayer.instance;Vector3 point=new Vector3(rig.headCollider.transform.position.x,rig.transform.position.y,rig.headCollider.transform.position.z);rig.Warp(point+(release+train.Velocity*.12f-item.transform.position),Quaternion.LookRotation(-train.transform.forward));return;}
+   beforeFuel=PhotonSession.CurrentFuel;beforeDistance=train.Distance;hand.Release();sim.InjectedInput=default;item.GetComponent<Rigidbody>().linearVelocity=train.Velocity-e.furnace.forward*4+Vector3.up;coalStage=2;Log("COAL_THROW view="+coalId+" offset="+(item.transform.position-e.furnace.position)+" beforeFuel="+beforeFuel);return;
+  }
+  if(e.State.WasConsumed(coalId,coalToken)&&PhotonView.Find(coalId)==null){float expected=beforeFuel+RailResourceBalance.CoalValue(RailRoute.Instance.Selection.resourceCrew)-(train.Distance-beforeDistance)*RailSessionRules.FuelPerMetre;Require(Mathf.Abs(PhotonSession.CurrentFuel-expected)<.2f,"actual coal receipt/fuel credit matches consumption");deposits++;coalStage=0;sim.UseInjectedInput=oldInjection;sim.InjectedInput=oldFrame;NewPlayer.instance.Warp(train.AboardPoint(actor),train.transform.rotation);Log("COAL_RECEIPT count="+deposits+" fuel="+PhotonSession.CurrentFuel+" expected="+expected);}
+ }
+ void RestoreInputs(){if(hand!=null&&hand.Held!=null&&item!=null&&hand.Held==item)hand.Release();if(sim!=null){sim.InjectedInput=oldFrame;sim.UseInjectedInput=oldInjection;}if(bridge!=null&&bridgeFocusSaved){bridge.button.Release();RailRemoteBridge.Set(bridge,"focused",oldBridgeFocus);}}
+ void Abort(string why){if(done)return;Log("BLOCKED "+why);if(started)File.WriteAllText(FileAt("abort"),role+": "+why);End(false);}
+ void End(bool ok){if(done)return;done=true;EditorApplication.update-=Tick;if(session!=null){session.RoomMembershipChanged-=Membership;session.RoomRequestStarted-=RequestStarted;if(paused){session.enabled=oldEnabled;paused=false;Log("CLEANUP keeper session restored");}if(gate){RailRemoteBridge.Set(session,"retryAt",Time.realtimeSinceStartupAsDouble);gate=false;}}
+  RestoreInputs();if(!ok&&role=="driver"&&session!=null&&PhotonSession.Phase==RailPhase.Running)session.SetTrainMoving(false);
+  Log((ok?"PASS ":"BLOCKED ")+"DONE role="+role+" deposits="+deposits+" naturalFinish="+finishedSeen+" originalRejoin="+joinedOriginal+" elapsed="+(EditorApplication.timeSinceStartup-began));UnityEngine.Object.Destroy(gameObject);
+ }
+ void OnDestroy(){if(armed&&!done){Log("BLOCKED fixture destroyed");End(false);}}
+}
+

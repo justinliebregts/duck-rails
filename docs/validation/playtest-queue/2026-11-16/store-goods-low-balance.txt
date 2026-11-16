@@ -1,0 +1,28 @@
+Real wall grab/pull, backend coin charge, actual spawned cargo. Controlled rig positioning; no entitlements fabricated.
+2026-11-16T10:25:44.5634132Z SHOP 0 (-19.02, 1.00, 75.38) wallet=69
+2026-11-16T10:25:44.5634132Z BLOCKED owned-bundle cases: missing entitlement duckrails_quackbear_bundle
+2026-11-16T10:25:44.5634132Z BLOCKED owned-bundle cases: missing entitlement duckrails_huggy_bundle
+2026-11-16T10:25:44.5634132Z BLOCKED owned-bundle cases: missing entitlement duckrails_scrap_duck_bundle
+2026-11-16T10:25:44.5834270Z PASS Default avatar equip free at shop 0
+2026-11-16T10:25:44.5834270Z BLOCKED insufficient test wallet weapon_nail_bat needs=275 have=69
+2026-11-16T10:25:44.6251731Z BLOCKED insufficient test wallet weapon_fry_pan needs=175 have=69
+2026-11-16T10:25:44.6700996Z BLOCKED insufficient test wallet item_helmet needs=75 have=69
+2026-11-16T10:25:46.8719658Z PASS Exactly one coin charge item_flashlight 69 -> 44
+2026-11-16T10:25:46.8724769Z PASS Real network item item_flashlight view=1002 token=c6340e99d5354b28b4b778702aa29e92 held=PhotonGrabbable
+2026-11-16T10:25:47.5833683Z BLOCKED insufficient test wallet item_walkie_talkie needs=50 have=44
+2026-11-16T10:25:47.6164943Z BLOCKED insufficient test wallet item_night_vision_goggles needs=300 have=44
+2026-11-16T10:25:47.6546396Z BLOCKED insufficient test wallet bag_basic needs=100 have=44
+2026-11-16T10:25:48.4445460Z SHOP 1 (-22.80, 0.20, 659.83) wallet=44
+2026-11-16T10:25:48.4445460Z BLOCKED owned-bundle cases: missing entitlement duckrails_quackbear_bundle
+2026-11-16T10:25:48.4445460Z BLOCKED owned-bundle cases: missing entitlement duckrails_huggy_bundle
+2026-11-16T10:25:48.4445460Z BLOCKED owned-bundle cases: missing entitlement duckrails_scrap_duck_bundle
+2026-11-16T10:25:48.4455463Z PASS Default avatar equip free at shop 1
+2026-11-16T10:25:48.4460499Z BLOCKED insufficient test wallet weapon_nail_bat needs=275 have=44
+2026-11-16T10:25:48.4762252Z BLOCKED insufficient test wallet weapon_fry_pan needs=175 have=44
+2026-11-16T10:25:48.5068167Z BLOCKED insufficient test wallet item_helmet needs=75 have=44
+2026-11-16T10:25:50.7688779Z PASS Exactly one coin charge item_flashlight 44 -> 19
+2026-11-16T10:25:50.7688779Z PASS Real network item item_flashlight view=1003 token=d01691c5397d41fbb9a3e06118e1212b held=PhotonGrabbable
+2026-11-16T10:25:51.4776689Z BLOCKED insufficient test wallet item_walkie_talkie needs=50 have=19
+2026-11-16T10:25:51.5100327Z BLOCKED insufficient test wallet item_night_vision_goggles needs=300 have=19
+2026-11-16T10:25:51.5588571Z BLOCKED insufficient test wallet bag_basic needs=100 have=19
+2026-11-16T10:25:52.3079134Z DONE

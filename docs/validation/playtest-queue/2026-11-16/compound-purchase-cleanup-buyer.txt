@@ -1,0 +1,19 @@
+Prepared fixture executing: actual purchases + hard buyer leave/rejoin; controlled desktop pickup, no economy fabrication.
+2026-11-16T13:06:01.6009253Z PASS flashlight actual price 25
+2026-11-16T13:06:03.0210952Z PASS actual wall display accepted TryGrab callback (range selection bypassed)
+2026-11-16T13:06:05.5346524Z PASS actual network Compound purchase with lifetime tag
+2026-11-16T13:06:05.5346524Z PASS exact single 25-coin charge 191 -> 166
+2026-11-16T13:06:05.6758159Z Requested actual hard leave to temporary public Compound
+2026-11-16T13:06:07.3844674Z PASS buyer genuinely moved to different public Compound
+2026-11-16T13:06:07.4095599Z Requested actual join original PUBLIC room code=18422
+2026-11-16T13:06:08.8814529Z PASS rejoined original PUBLIC Compound
+2026-11-16T13:06:11.8893117Z PASS departed buyer's first purchase did not replay on fresh scene join
+2026-11-16T13:06:11.8893117Z PASS first genuine charge survives leave/rejoin
+2026-11-16T13:06:11.9015567Z PASS flashlight actual price 25
+2026-11-16T13:06:13.3221262Z PASS actual wall display accepted TryGrab callback (range selection bypassed)
+2026-11-16T13:06:14.1280074Z PASS actual network Compound purchase with lifetime tag
+2026-11-16T13:06:14.1295313Z PASS exact single 25-coin charge 166 -> 141
+2026-11-16T13:06:14.1300667Z PASS second purchase has fresh lifetime
+2026-11-16T13:06:16.1413413Z PASS second fresh purchase remains active with buyer in public Compound
+2026-11-16T13:06:16.1418671Z PASS two genuine purchases total 50 coins
+2026-11-16T13:06:16.1423923Z DONE fail=0 off-plate pose restored; fresh purchase awaits public departure; no countdown initiated

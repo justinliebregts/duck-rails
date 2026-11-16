@@ -1,0 +1,118 @@
+// PREPARED, NOT RUN. Start MAIN observer first, then Player2 BUYER in same ready PUBLIC Compound.
+// Third client stays off plate. Costs two genuine 25-coin flashlights (50 total). No wallet/entitlement seeding.
+// Actual StoreWallItem.TryGrab/pull with injected desktop grip + controlled rig translation;
+// actual PhotonSession.RequestCreatePublic -> LeaveRoom(false), then RequestJoinCode(original public room).
+// RequestJoinCode accepts any valid five-digit Rails room; it does not reject public rooms (PhotonSession.OnJoinedRoom).
+// All rig/input changes restored before scene changes and on failure. New scene rig captured independently.
+// Buyer must already use desktop simulation, have empty hands, >=50 coins. No fresh-room or token mutation.
+// Bound: 150 s each editor. Stops before countdown. After both DONE run public-stranded fixture.
+// Departure token file contains ONLY the fresh second purchase SpawnToken; bridge fixture should assert no matching
+// PhotonNetwork.PhotonViewCollection token after Expedition ready. Do not use old ViewID alone (IDs can be reused).
+using System;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using UnityEditor;
+using Photon.Pun;
+internal class CommandScript : IRunCommand {
+ const string Root="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/";
+ const string Prefix="compound-purchase-cleanup-";
+ bool observer, done, captured; int stage, fail, buyerActor, initialCoins, beforeCoins, purchase;
+ double started, entered; string path, room, run, firstToken, secondToken;
+ StoreUI store; StoreWallItem wall; StoreItem item; PlayerHand hand; NewPlayer rig; SimulatedRigInput sim;
+ Vector3 savedPosition; Quaternion savedRotation; bool savedDisable,savedKinematic,savedLeft,savedUse;
+ SimulatedRigInput.Frame savedInput;
+ string F(string name)=>Root+Prefix+name+".txt";
+ void Log(string message)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+message+"\n");
+ string Read(string name)=>File.Exists(F(name))?File.ReadAllText(F(name)).Trim():"";
+ void Write(string name,string text)=>File.WriteAllText(F(name),text);
+ bool Has(string token)=>!string.IsNullOrEmpty(token)&&UnityEngine.Object.FindObjectsByType<PhotonView>(FindObjectsInactive.Include,FindObjectsSortMode.None).Any(v=>v!=null&&v.SpawnToken==token);
+ void Check(bool ok,string message){Log((ok?"PASS ":"FAIL ")+message);if(!ok){fail++;throw new Exception(message);}}
+ void Next(int n){stage=n;entered=EditorApplication.timeSinceStartup;}
+ bool Settled(double seconds)=>EditorApplication.timeSinceStartup-entered>=seconds;
+ bool Ready()=>PhotonNetwork.InRoom&&PhotonSession.Instance!=null&&PhotonSession.Instance.WorldReady&&!PhotonSession.Instance.HasRoomRequest&&NewPlayer.instance!=null;
+ public void Execute(ExecutionResult result){
+  string data=Application.dataPath.Replace('\\','/');
+  if(!(data=="X:/Work/duck-rails/Assets"||(data.StartsWith("X:/Work/duck-rails/Library/VP/")&&data.EndsWith("/Assets"))))throw new Exception("Wrong project");
+  if(!Application.isPlaying||!Ready()||PhotonSession.OnTrain||PhotonSession.IsPrivate)throw new Exception("Needs ready PUBLIC Compound");
+  observer=Unity.Multiplayer.PlayMode.CurrentPlayer.IsMainEditor;
+  if(observer&&!PhotonNetwork.IsMasterClient)throw new Exception("Main observer must be master; buyer must be nonmaster");
+  if(!observer&&PhotonNetwork.IsMasterClient)throw new Exception("Buyer must be nonmaster");
+  room=PhotonNetwork.CurrentRoom.Name;run=PhotonSession.RunId;started=entered=EditorApplication.timeSinceStartup;
+  path=F(observer?"main":"buyer");File.WriteAllText(path,"Prepared fixture executing: actual purchases + hard buyer leave/rejoin; controlled desktop pickup, no economy fabrication.\n");
+  if(observer){foreach(string n in new[]{"first","seen","removed","returned","departure-token","buyer-ready"})Write(n,"");Write("armed",room+"|"+DateTime.UtcNow.Ticks);}
+  else {
+   var a=Read("armed").Split('|');
+   if(a.Length!=2||a[0]!=room||DateTime.UtcNow-new DateTime(long.Parse(a[1]),DateTimeKind.Utc)>TimeSpan.FromSeconds(60))throw new Exception("Arm main observer first (same room, within 60 s)");
+   if(SimulatedRigInput.Instance==null||!SimulatedRigInput.Instance.IsSimulating)throw new Exception("Buyer needs existing desktop simulation");
+   if(GR.Player.instance.leftPlayerHand.IsHolding||GR.Player.instance.rightPlayerHand.IsHolding)throw new Exception("Buyer hands must be empty");
+   initialCoins=DuckzWallet.Instance.Coins;if(initialCoins<50)throw new Exception("Need 50 real coins");
+  }
+  EditorApplication.update+=Tick;result.Log("Armed "+(observer?"MAIN observer":"Player2 buyer")+" public room="+room+" bound=150 s");
+ }
+ void Capture(){
+  rig=NewPlayer.instance;sim=SimulatedRigInput.Instance;hand=GR.Player.instance.rightPlayerHand;
+  if(rig==null||sim==null||!sim.IsSimulating||hand.IsHolding||GR.Player.instance.leftPlayerHand.IsHolding)throw new Exception("Expected ready desktop rig/empty hands");
+  savedPosition=rig.transform.position;savedRotation=rig.transform.rotation;savedDisable=rig.disableMovement;savedKinematic=rig.rb.isKinematic;
+  savedLeft=GR.Player.instance.leftPlayerHand.enabled;savedUse=sim.UseInjectedInput;savedInput=sim.InjectedInput;captured=true;
+  GR.Player.instance.leftPlayerHand.enabled=false;rig.disableMovement=true;rig.rb.isKinematic=true;sim.UseInjectedInput=true;sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true};
+  store=UnityEngine.Object.FindObjectsByType<StoreUI>(FindObjectsSortMode.None).First(s=>s.Catalog.items.Any(i=>i.key=="item_flashlight")&&s.GetComponentsInChildren<StoreWallItem>().Any(w=>object.ReferenceEquals(RailRemoteBridge.Get(w,"store"),s)));
+  item=store.Catalog.items.First(i=>i.key=="item_flashlight");Check(store.Price(item)==25,"flashlight actual price 25");
+  wall=store.GetComponentsInChildren<StoreWallItem>().First(w=>(string)RailRemoteBridge.Get(w,"itemKey")==item.key);
+  beforeCoins=DuckzWallet.Instance.Coins;
+ }
+ // Exact controlled translation, not natural traversal. Avoid Warp's standing-point/root ambiguity.
+ void Move(Vector3 delta){rig.transform.position+=delta;rig.rb.position=rig.transform.position;rig.ReseedTrackingPose();Physics.SyncTransforms();}
+ void Restore(){if(!captured)return;captured=false;
+  if(hand!=null)hand.Release();
+  if(sim!=null){sim.InjectedInput=savedInput;sim.UseInjectedInput=savedUse;}
+  if(rig!=null){rig.transform.SetPositionAndRotation(savedPosition,savedRotation);rig.rb.position=savedPosition;rig.rb.rotation=savedRotation;rig.rb.isKinematic=savedKinematic;rig.disableMovement=savedDisable;rig.ReseedTrackingPose();}
+  if(GR.Player.instance!=null)GR.Player.instance.leftPlayerHand.enabled=savedLeft;Physics.SyncTransforms();
+ }
+ void Finish(string reason){if(done)return;done=true;EditorApplication.update-=Tick;try{Restore();}finally{Log("DONE fail="+fail+" "+reason);}}
+ void Tick(){
+  if(done)return;
+  try{
+   if(!Application.isPlaying){Finish("Play stopped; incomplete");return;}
+   if(EditorApplication.timeSinceStartup-started>150){fail++;Finish("GLOBAL TIMEOUT stage="+stage);return;}
+   if(observer){Observe();return;}
+   Buy();
+  }catch(Exception e){if(fail==0)fail++;Log("FIXTURE/ASSERT ERROR "+e);Finish("aborted; no forced room rollback");}
+ }
+ void Observe(){
+  if(!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.Name!=room)throw new Exception("Observer left original room");
+  if(stage==0){var p=Read("first").Split('|');if(p.Length!=2)return;buyerActor=int.Parse(p[0]);firstToken=p[1];if(!Has(firstToken))return;Check(true,"first purchased flashlight visible on observer token="+firstToken);Write("seen",firstToken);Next(1);}
+  else if(stage==1){
+   if(PhotonNetwork.PlayerList.Any(p=>p.ActorNumber==buyerActor))return;
+   if(Has(firstToken)){if(Settled(25))Check(false,"first purchase removed after hard buyer leave");return;}
+   Check(true,"buyer actor removed and first purchase absent while observer stays original Compound");Write("removed",firstToken);Next(2);
+  }else if(stage==2){
+   if(Read("returned")!=firstToken)return;Check(!Has(firstToken),"first token not replayed after buyer rejoined");Next(3);
+  }else if(stage==3){
+   secondToken=Read("departure-token");if(string.IsNullOrEmpty(secondToken)||!Has(secondToken)||Read("buyer-ready")!=secondToken)return;
+   Check(secondToken!=firstToken&&Has(secondToken),"fresh second purchase visible before natural public departure token="+secondToken);
+   Check(!Has(firstToken),"departed-buyer purchase remains absent");Finish("ready for public route; fresh token persisted, departure cleanup NOT YET tested");
+  }
+ }
+ void Buy(){
+  if(stage==0){if(!Ready())return;Capture();Next(1);}
+  else if(stage==1){if(!Settled(.7))return;Move(wall.transform.position-hand.HoldPoint.position);Next(2);}
+  else if(stage==2){if(!Settled(.7))return;Check(hand.TryGrab(wall),"actual wall display accepted TryGrab callback (range selection bypassed)");sim.InjectedInput=new SimulatedRigInput.Frame{rightReach=true,grip=true};Next(3);}
+  else if(stage==3){if(!Settled(.7))return;Move(Vector3.back*.55f);Next(4);}
+  else if(stage==4){
+   var held=hand.Held;var view=held!=null&&held!=wall?held.GetComponent<PhotonView>():null;
+   if(view==null){if(Settled(25))Check(false,"actual wall pull spawned paid flashlight");return;}
+   Check(view.ViewID!=0&&!string.IsNullOrEmpty(view.SpawnToken)&&RailCargo.IsCompoundPurchase(view),"actual network Compound purchase with lifetime tag");
+   Check(DuckzWallet.Instance.Coins==beforeCoins-25,"exact single 25-coin charge "+beforeCoins+" -> "+DuckzWallet.Instance.Coins);
+   string token=view.SpawnToken;hand.Release();sim.InjectedInput=default;Restore();
+   if(purchase==0){firstToken=token;Write("first",PhotonNetwork.LocalPlayer.ActorNumber+"|"+token);Next(5);}
+   else{secondToken=token;Check(firstToken!=secondToken,"second purchase has fresh lifetime");Write("departure-token",secondToken);Next(10);}
+  }else if(stage==5){if(Read("seen")!=firstToken)return;PhotonSession.Instance.RequestCreatePublic();Next(6);Log("Requested actual hard leave to temporary public Compound");}
+  else if(stage==6){if(!Ready()||PhotonNetwork.CurrentRoom.Name==room)return;Check(!PhotonSession.OnTrain&&!PhotonSession.IsPrivate,"buyer genuinely moved to different public Compound");Next(7);}
+  else if(stage==7){if(Read("removed")!=firstToken)return;PhotonSession.Instance.RequestJoinCode(room);Next(8);Log("Requested actual join original PUBLIC room code="+room);}
+  else if(stage==8){if(!Ready()||PhotonNetwork.CurrentRoom.Name!=room)return;Check(!PhotonSession.IsPrivate&&!PhotonSession.OnTrain,"rejoined original PUBLIC Compound");Next(9);}
+  else if(stage==9){if(!Settled(3))return;Check(!Has(firstToken),"departed buyer's first purchase did not replay on fresh scene join");Check(DuckzWallet.Instance.Coins==initialCoins-25,"first genuine charge survives leave/rejoin");Write("returned",firstToken);purchase=1;Next(0);}
+  else if(stage==10){if(!Settled(2))return;Check(Ready()&&PhotonNetwork.CurrentRoom.Name==room&&Has(secondToken),"second fresh purchase remains active with buyer in public Compound");Check(DuckzWallet.Instance.Coins==initialCoins-50,"two genuine purchases total 50 coins");Write("buyer-ready",secondToken);Finish("off-plate pose restored; fresh purchase awaits public departure; no countdown initiated");}
+ }
+}
+

@@ -1,0 +1,10 @@
+2026-11-16T10:27:43.6704965Z PASS local listener inside Arcade only; other client region outside; targetDistance=0
+2026-11-16T10:27:43.6710100Z DONE
+2026-11-16T11:57:04.1527574Z START bounded revision; injected listener-center pose, actual LateUpdate. target=West bunker other=Arcade origin=(0.35, -0.11, 91.00) aboard=True
+2026-11-16T11:57:07.3751969Z PASS local listener inside West bunker only; targetDistance=0 otherDistance=298.5 otherMax=1; compare separate peer log for peer position
+2026-11-16T11:57:07.3768689Z RESTORED exact root pose relative to current train; no Warp stand-point reinterpretation
+2026-11-16T11:57:10.2970888Z PASS captured expedition reverb components destroyed on unload; oldRemaining=0 currentTotal=0
+2026-11-16T11:57:18.9485541Z PASS fresh Arcade and West bunker components recreated on original-room rejoin
+2026-11-16T11:57:18.9500768Z RESTORED exact root pose relative to current train; no Warp stand-point reinterpretation
+2026-11-16T11:57:18.9500768Z RESTORED original room and movement/kinematic flags
+2026-11-16T11:57:18.9500768Z DONE bounded revision failures=0 interrupted=False; no audible-quality assertion

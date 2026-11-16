@@ -1,0 +1,32 @@
+2026-11-16T10:48:28.4990692Z BEGIN mode=snapshot unity=6000.3.24f1 graphics=Direct3D12 room=11111 actor=3
+2026-11-16T10:48:28.5043346Z SNAPSHOT phase=Running run=fce8a22c482d4241be02083ecca889ea onTrain=True muted=False
+2026-11-16T10:48:28.5053348Z actor=1 local=False liveLease=True transmitter=True transmitterActor=1 radioDistance=0.712
+2026-11-16T10:48:28.5053348Z actor=3 local=True liveLease=False transmitter=False transmitterActor=0 radioDistance=5.705
+2026-11-16T10:48:28.5053348Z PASS installed radio creates actual WalkieSpeaker/AudioSource
+2026-11-16T10:48:28.5068385Z PASS station speaker configured to exclude own local actor
+2026-11-16T10:48:28.5068385Z PASS station streaming clip and spatial playback configured
+2026-11-16T10:48:28.5078428Z OBSERVED audio playing=True volume=1 mute=False (source state alone does not prove sound)
+2026-11-16T10:48:28.5078428Z radio button=False focused=True paused=False
+2026-11-16T10:48:28.5083463Z BLOCKED Physical hand contact/reach, icon/label appearance, headset lip alignment and natural microphone/remote voice quality require human acceptance
+2026-11-16T10:48:28.5083463Z BLOCKED Direct PoseCaptureFace verifies live source wiring only; native LIV preview/recording and scene-transition capture audio are not exercised
+2026-11-16T10:48:28.5083463Z BLOCKED Current DX12 editor LIV backend unsupported: no native LIV acceptance claim
+2026-11-16T10:48:28.5093501Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_quackbear
+2026-11-16T10:48:28.5093501Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_huggy
+2026-11-16T10:48:28.5093501Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_scrap_duck
+2026-11-16T10:48:28.5093501Z END mode=snapshot checks=3 failures=0; scoped plumbing only
+2026-11-16T10:48:46.3941581Z BEGIN mode=snapshot unity=6000.3.24f1 graphics=Direct3D12 room=11111 actor=3
+2026-11-16T10:48:46.3991991Z SNAPSHOT phase=Running run=fce8a22c482d4241be02083ecca889ea onTrain=True muted=False
+2026-11-16T10:48:46.3991991Z actor=1 local=False liveLease=False transmitter=False transmitterActor=0 radioDistance=0.712
+2026-11-16T10:48:46.4004859Z actor=3 local=True liveLease=False transmitter=False transmitterActor=0 radioDistance=5.705
+2026-11-16T10:48:46.4004859Z PASS installed radio creates actual WalkieSpeaker/AudioSource
+2026-11-16T10:48:46.4004859Z PASS station speaker configured to exclude own local actor
+2026-11-16T10:48:46.4014907Z PASS station streaming clip and spatial playback configured
+2026-11-16T10:48:46.4014907Z OBSERVED audio playing=True volume=1 mute=False (source state alone does not prove sound)
+2026-11-16T10:48:46.4014907Z radio button=False focused=True paused=False
+2026-11-16T10:48:46.4014907Z BLOCKED Physical hand contact/reach, icon/label appearance, headset lip alignment and natural microphone/remote voice quality require human acceptance
+2026-11-16T10:48:46.4029968Z BLOCKED Direct PoseCaptureFace verifies live source wiring only; native LIV preview/recording and scene-transition capture audio are not exercised
+2026-11-16T10:48:46.4029968Z BLOCKED Current DX12 editor LIV backend unsupported: no native LIV acceptance claim
+2026-11-16T10:48:46.4029968Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_quackbear
+2026-11-16T10:48:46.4029968Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_huggy
+2026-11-16T10:48:46.4040035Z BLOCKED Bundle lip/equip coverage needs real entitlement: skin_duck_scrap_duck
+2026-11-16T10:48:46.4045077Z END mode=snapshot checks=3 failures=0; scoped plumbing only

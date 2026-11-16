@@ -1,0 +1,11 @@
+2026-11-16T09:29:28.4090790Z PASS physical obstacle rejects approach
+2026-11-16T09:29:28.4105835Z Actual maintenance-depot-v1 + actual train + actual minion; start=(7.50, 0.02, 70.50) target=(0.00, 2.00, 75.80)
+2026-11-16T09:29:32.9957906Z PASS fast train rejects boarding
+2026-11-16T09:29:35.3157523Z PASS departure interrupts active transfer
+2026-11-16T09:29:39.6986442Z PASS natural chase, approach and boarding at (0.12, 0.99, 75.83)
+2026-11-16T09:29:44.7303848Z PASS accelerating translation, yaw and slope carry; local error=2.975747E-05
+2026-11-16T09:29:48.7315496Z PASS ordinary brain/pathfinding chases aboard, position=(-0.14, -0.03, -0.41)
+2026-11-16T09:29:53.1351911Z PASS voluntary dismount and continued pursuit on block graph
+2026-11-16T09:29:55.6309190Z PASS reboards after chasing off train
+2026-11-16T09:29:58.6391913Z PASS real melee shove detaches and falls, world=(-1.67, -0.01, 94.87)
+2026-11-16T09:29:58.6396972Z PASS isolated Play Mode boarding/riding/chasing/dismount/reboarding/knock-off loop

@@ -1,0 +1,9 @@
+Controlled actual coal + real leave/Compound/rejoin; no fabricated history. Fuel100 direct handler, not UI hit testing. No audible/headset acceptance.
+2026-11-16T13:30:45.9029035Z PASS same real room/run rendezvous
+2026-11-16T13:30:49.9276754Z PASS Fuel100 rejection leaves observed fuel and retained motion unchanged on master
+2026-11-16T13:30:51.8246253Z PASS coal deposited without distance reset or train travel
+2026-11-16T13:30:51.8246253Z PASS real coal committed expected shared fuel
+2026-11-16T13:30:51.8264166Z RECEIPT real id=74 spawn=32c8c0e6bc0241ebafa3a5492cb0943c fuel=57.8125
+2026-11-16T13:33:05.0265942Z INCONCLUSIVE/FAIL System.Exception: Peer aborted: Fixture clock used previous game-server PhotonTime after room transfer; current3681166.606 vs start3762629.387. No gameplay failure.
+  at Unity.AI.Assistant.Agent.Dynamic.Extension.Editor.CommandScript.Tick () [0x000c1] in <27e843684b4344028f5ddc873a0f2af3>:0 
+2026-11-16T13:33:05.0275912Z END INCOMPLETE; inspect preceding assertion or setup failure checks=4 historicalAudio=0 historicalBursts=0 historicalPopups=0 maxReadyGap=0; actual coal remains consumed; no manual/audio-quality acceptance

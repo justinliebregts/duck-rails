@@ -1,0 +1,98 @@
+*** Begin Patch
+*** Update File: Assets/Editor/RailEnemyBoardingNetworkChecks.cs
+@@
+-    static string ArmPath => Root + "/Temp/rails-boarding-arm.txt";
++    static string ArmPath => Root + "/Temp/rails-boarding-arm.txt";
++    static string ModePath => Root + "/Temp/rails-boarding-mode.txt";
++    static bool spiderProof;
++    static string Prefix => spiderProof || RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "";
+@@
+-    static string LogPath => Root + "/docs/validation/enemy-boarding/" + (RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "") + "network-" + (CurrentPlayer.IsMainEditor ? "main" : "remote") + ".txt";
++    static string LogPath => Root + "/docs/validation/enemy-boarding/" + Prefix + "network-" + (CurrentPlayer.IsMainEditor ? "main" : "remote") + ".txt";
+@@
+-    public static void Run()
+-    {
++    public static void Run() => Start(false);
++    [MenuItem("Duck Rails/Tests/Enemy Boarding/Run Two Client Spider Network Loop")]
++    public static void RunSpider() => Start(true);
++    static void Start(bool spider)
++    {
+@@
+-        var manager = Scenario;
+-        var property = manager.GetType().GetProperty("ActivePlayModeConfig");
++        spiderProof = spider;
++        var manager = Scenario;
++        var property = manager.GetType().GetProperty("ActivePlayModeConfig");
+@@
+-        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + (RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "") + "network-main.txt", "");
+-        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + (RailEnemySpawns.ForcedEnemyType == 3 ? "spider-" : "") + "network-remote.txt", "");
++        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + Prefix + "network-main.txt", "");
++        File.WriteAllText(Root + "/docs/validation/enemy-boarding/" + Prefix + "network-remote.txt", "");
+@@
+-        File.WriteAllText(ArmPath, DateTime.UtcNow.AddMinutes(12).ToString("O"));
++        string arm = DateTime.UtcNow.AddMinutes(12).ToString("O");
++        // Both editor processes reload the mode after domain reload. Publish the
++        // matching arm last so a stale marker cannot select another mode.
++        File.WriteAllText(ModePath, arm + "\n" + (spider ? "spider" : "normal"));
++        File.WriteAllText(ArmPath, arm);
+@@
+-        File.WriteAllText(ArmPath, "");
+-        var manager = Scenario;
++        File.WriteAllText(ArmPath, "");
++        File.WriteAllText(ModePath, "");
++        var manager = Scenario;
+@@
+-                SessionState.SetBool(RunKey, false); File.WriteAllText(ArmPath, "");
++                SessionState.SetBool(RunKey, false); File.WriteAllText(ArmPath, ""); File.WriteAllText(ModePath, "");
+@@
+-        if (arm != token) { token = arm; stage = pendingStage = -1; preparedEnemy = 0; done = rejoining = rendezvousAttempted = false; started = EditorApplication.timeSinceStartup; Record("Started real-client network proof"); }
++        if (arm != token)
++        {
++            token = arm; stage = pendingStage = -1; preparedEnemy = 0;
++            done = rejoining = rendezvousAttempted = false; started = EditorApplication.timeSinceStartup;
++            string mode = File.Exists(ModePath) ? File.ReadAllText(ModePath) : "";
++            if (mode == arm + "\nspider") spiderProof = true;
++            else if (mode == arm + "\nnormal") spiderProof = false;
++            else { Record("FAIL missing or stale network fixture mode token"); done = true; return; }
++            Record("Started real-client network proof; selection=" + (spiderProof ? "natural spider" : "normal boarding enemy"));
++        }
+@@
+-                preparedEnemy = enemy.GetInstanceID();
+-                if (enemy.GetComponent<RailBoardingFixtureFreeze>() == null)
++                Require(!spiderProof || enemy.Locomotion is ClimbLocomotion, "Selected spider identity replicated to peer");
++                preparedEnemy = enemy.GetInstanceID();
++                if (enemy.GetComponent<RailBoardingFixtureFreeze>() == null)
+@@
+-                enemy = Enemy.Active.FirstOrDefault(e => e.Boarding != null && e.HasAuthority);
+-                if (enemy == null) return;
++                enemy = Enemy.Active.FirstOrDefault(e => e.Boarding != null && e.HasAuthority
++                    && (!spiderProof || e.Locomotion is ClimbLocomotion));
++                if (enemy == null)
++                {
++                    if (spiderProof) Require(age < 25, "No naturally spawned authoritative spider available in fixture route");
++                    return;
++                }
++                Record("Selected natural " + enemy.name + " view=" + enemy.GetComponent<PhotonView>().ViewID);
+@@
+-                // A climbing spider can retain the rear face after a shove.
+-                // Check support-loss replication independently of that valid adhesion.
+-                if (age > 5 && enemy.HasAuthority && enemy.Locomotion is ClimbLocomotion && sawMelee && !action)
++                // Preserve the legacy transport-only fallback in normal mode.
++                // Spider proof must detach through the actual non-owner melee path.
++                if (!spiderProof && age > 5 && enemy.HasAuthority && enemy.Locomotion is ClimbLocomotion && sawMelee && !action)
+@@
+-                if (age > 5 && !enemy.Boarding.IsAboard)
+-                {
+-                    Ack();
++                if (age > 5 && !enemy.Boarding.IsAboard)
++                {
++                    Require(!spiderProof || !enemy.HasAuthority || sawMelee, "Authority observed melee before natural spider detachment");
++                    if (spiderProof && !(PhotonNetwork.LocalPlayer.CustomProperties[AckKey] is int ack && ack == stage))
++                        Record("PASS natural spider detachment after non-owner hit; authority=" + enemy.HasAuthority);
++                    Ack();
+@@
+-            { Record("PASS actual two-client carry, moving host migration, non-owner hit/support-loss detachment, leave/rejoin, left exit/reboard, right exit and diagnostic snapshot"); done = true; }
++            { Record("PASS actual two-client carry, moving host migration, " +
++                (spiderProof ? "natural non-owner spider melee detachment" : "non-owner hit/support-loss detachment") +
++                ", leave/rejoin, left exit/reboard, right exit and diagnostic snapshot"); done = true; }
+*** End Patch

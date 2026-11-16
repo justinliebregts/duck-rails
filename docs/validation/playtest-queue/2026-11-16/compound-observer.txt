@@ -1,0 +1,56 @@
+Unity 6000.3.24f1 actual public Compound, observed audio leases, no listening acceptance
+2026-11-16T09:43:39.3698590Z INITIAL rest=(0.00, -0.03, 0.00) surface=Metal
+2026-11-16T09:43:41.6289277Z EXPECTED tick=20
+2026-11-16T09:43:41.6289277Z EDGE True
+2026-11-16T09:43:41.6299356Z AUDIO PressurePlate_On second=20 phase=Compound lease=-12735034:0:3 spatial=1 pitch=1
+2026-11-16T09:43:41.6299356Z AUDIO ClockTick second=20 phase=Compound lease=-12735034:1:1 spatial=0 pitch=1
+2026-11-16T09:43:42.3621574Z EDGE False
+2026-11-16T09:43:42.3626658Z AUDIO PressurePlate_Off second=0 phase=Compound lease=-12735034:0:4 spatial=1 pitch=1
+2026-11-16T09:43:44.4407414Z EXPECTED tick=20
+2026-11-16T09:43:44.4407414Z EDGE True
+2026-11-16T09:43:44.4422594Z AUDIO PressurePlate_On second=20 phase=Compound lease=-12735034:0:5 spatial=1 pitch=1
+2026-11-16T09:43:44.4422594Z AUDIO ClockTick second=20 phase=Compound lease=-12735034:1:2 spatial=0 pitch=1
+2026-11-16T09:43:45.3317458Z EXPECTED tick=19
+2026-11-16T09:43:45.3322476Z AUDIO ClockTick second=19 phase=Compound lease=-12735034:0:6 spatial=0 pitch=1
+2026-11-16T09:43:46.3320337Z EXPECTED tick=18
+2026-11-16T09:43:46.3325359Z AUDIO ClockTick second=18 phase=Compound lease=-12735034:0:7 spatial=0 pitch=1
+2026-11-16T09:43:47.3325434Z EXPECTED tick=17
+2026-11-16T09:43:47.3335464Z AUDIO ClockTick second=17 phase=Compound lease=-12735034:0:8 spatial=0 pitch=1
+2026-11-16T09:43:48.3301987Z EXPECTED tick=16
+2026-11-16T09:43:48.3301987Z AUDIO ClockTick second=16 phase=Compound lease=-12735034:0:9 spatial=0 pitch=1
+2026-11-16T09:43:49.3303387Z EXPECTED tick=15
+2026-11-16T09:43:49.3303387Z AUDIO ClockTick second=15 phase=Compound lease=-12735034:0:10 spatial=0 pitch=1
+2026-11-16T09:43:50.3321350Z EXPECTED tick=14
+2026-11-16T09:43:50.3321350Z AUDIO ClockTick second=14 phase=Compound lease=-12735034:0:11 spatial=0 pitch=1
+2026-11-16T09:43:51.3306480Z EXPECTED tick=13
+2026-11-16T09:43:51.3316507Z AUDIO ClockTick second=13 phase=Compound lease=-12735034:0:12 spatial=0 pitch=1
+2026-11-16T09:43:52.3364587Z EXPECTED tick=12
+2026-11-16T09:43:52.3369807Z AUDIO ClockTick second=12 phase=Compound lease=-12735034:0:13 spatial=0 pitch=1
+2026-11-16T09:43:53.3304181Z EXPECTED tick=11
+2026-11-16T09:43:53.3304181Z AUDIO ClockTick second=11 phase=Compound lease=-12735034:0:14 spatial=0 pitch=1
+2026-11-16T09:43:54.3370889Z EXPECTED tick=10
+2026-11-16T09:43:54.3370889Z AUDIO ClockTick second=10 phase=Compound lease=-12735034:0:15 spatial=0 pitch=1
+2026-11-16T09:43:55.3371223Z EXPECTED tick=9
+2026-11-16T09:43:55.3371223Z AUDIO ClockTick second=9 phase=Compound lease=-12735034:0:16 spatial=0 pitch=1
+2026-11-16T09:43:56.3298254Z EXPECTED tick=8
+2026-11-16T09:43:56.3298254Z AUDIO ClockTick second=8 phase=Compound lease=-12735034:0:17 spatial=0 pitch=1
+2026-11-16T09:43:57.3324299Z EXPECTED tick=7
+2026-11-16T09:43:57.3329380Z AUDIO ClockTick second=7 phase=Compound lease=-12735034:0:18 spatial=0 pitch=1
+2026-11-16T09:43:58.3307007Z EXPECTED tick=6
+2026-11-16T09:43:58.3322633Z AUDIO ClockTick second=6 phase=Compound lease=-12735034:0:19 spatial=0 pitch=1
+2026-11-16T09:43:59.3334810Z EXPECTED tick=5
+2026-11-16T09:43:59.3334810Z AUDIO ClockTick second=5 phase=Compound lease=-12735034:0:20 spatial=0 pitch=1
+2026-11-16T09:44:00.3318770Z EXPECTED tick=4
+2026-11-16T09:44:00.3318770Z AUDIO ClockTick second=4 phase=Compound lease=-12735034:0:21 spatial=0 pitch=1
+2026-11-16T09:44:01.3327608Z EXPECTED tick=3
+2026-11-16T09:44:01.3347856Z AUDIO ClockTick second=3 phase=Compound lease=-12735034:0:22 spatial=0 pitch=1
+2026-11-16T09:44:02.3315260Z EXPECTED tick=2
+2026-11-16T09:44:02.3320457Z AUDIO ClockTick second=2 phase=Compound lease=-12735034:0:23 spatial=0 pitch=1
+2026-11-16T09:44:03.5639192Z EXPECTED tick=1
+2026-11-16T09:44:03.5639192Z AUDIO ClockTick second=1 phase=Compound lease=-12735034:0:24 spatial=0 pitch=1
+2026-11-16T09:44:04.5444840Z EDGE False
+2026-11-16T09:44:04.5450039Z AUDIO PressurePlate_Off second=0 phase=Compound lease=-12735034:0:25 spatial=1 pitch=1
+2026-11-16T09:44:11.7816421Z PASS plate motion max=0.03 collider movement=0 wrongFrames=0
+2026-11-16T09:44:11.7816421Z PASS plate cues starts=2/2 stops=2/2
+2026-11-16T09:44:11.7821446Z PASS clock ticks=21 expected=21
+2026-11-16T09:44:11.7821446Z DONE boarding=Walking onto platform

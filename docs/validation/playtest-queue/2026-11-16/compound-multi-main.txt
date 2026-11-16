@@ -1,0 +1,79 @@
+Unity=6000.3.24f1 clients=2 room=04658 actor=1
+Controlled Warp occupancy, not natural locomotion. Audio evidence counts fresh leases, not audible quality. Master is not assumed.
+2026-11-16T11:49:34.7306738Z CONTROLLED occupancy=False target=(-0.45, -1.08, 4.30)
+2026-11-16T11:49:34.7306738Z INITIAL rest=(0.00, -0.03, 0.00) surface=Metal collider=(0.00, 0.01, 7.10) size=(3.54, 0.11, 2.54)
+2026-11-16T11:49:34.7334609Z SYNC start=979420.704 age=-3 mainActor=1 peerActor=2
+2026-11-16T11:49:37.7310702Z CONTROLLED occupancy=True target=(-0.45, -1.08, 7.10)
+2026-11-16T11:49:37.7401911Z STATE age=0.008 localOn=True roster= deadline=0.000000 master=1
+2026-11-16T11:49:38.0357396Z EDGE pressed=True age=0.287999999942258 starts=1 stops=0
+2026-11-16T11:49:38.0357396Z AUDIO PressurePlate_On lease=-18863794:0:9 On=1 Off=0
+2026-11-16T11:49:38.2461147Z STATE age=0.514 localOn=True roster=1 deadline=979440.843000 master=1
+2026-11-16T11:49:38.7478362Z STATE age=1.015 localOn=True roster=1 deadline=979440.843000 master=1
+2026-11-16T11:49:39.2561351Z STATE age=1.524 localOn=True roster=1 deadline=979440.843000 master=1
+2026-11-16T11:49:39.7576181Z STATE age=2.026 localOn=True roster=1 deadline=979440.843000 master=1
+2026-11-16T11:49:40.2628487Z STATE age=2.530 localOn=True roster=1 deadline=979440.843000 master=1
+2026-11-16T11:49:40.7811922Z STATE age=3.048 localOn=True roster=1 deadline=979440.843000 master=1
+2026-11-16T11:49:41.2854942Z STATE age=3.552 localOn=True roster=1,2 deadline=979440.843000 master=1
+2026-11-16T11:49:41.7903205Z STATE age=4.058 localOn=True roster=1,2 deadline=979440.843000 master=1
+2026-11-16T11:49:42.2945868Z STATE age=4.562 localOn=True roster=1,2 deadline=979440.843000 master=1
+2026-11-16T11:49:42.8021553Z STATE age=5.069 localOn=True roster=1,2 deadline=979440.843000 master=1
+2026-11-16T11:49:43.3084189Z STATE age=5.576 localOn=True roster=1,2 deadline=979440.843000 master=1
+2026-11-16T11:49:43.7320189Z CONTROLLED occupancy=False target=(-0.45, -1.08, 4.30)
+2026-11-16T11:49:43.8151759Z STATE age=6.083 localOn=False roster=1,2 deadline=979440.843000 master=1
+2026-11-16T11:49:44.3200299Z STATE age=6.588 localOn=False roster=2 deadline=979440.843000 master=1
+2026-11-16T11:49:44.8240544Z STATE age=7.092 localOn=False roster=2 deadline=979440.843000 master=1
+2026-11-16T11:49:45.3282324Z STATE age=7.597 localOn=False roster=2 deadline=979440.843000 master=1
+2026-11-16T11:49:45.8330729Z STATE age=8.101 localOn=False roster=2 deadline=979440.843000 master=1
+2026-11-16T11:49:46.3507260Z STATE age=8.619 localOn=False roster=2 deadline=979440.843000 master=1
+2026-11-16T11:49:46.8597455Z STATE age=9.127 localOn=False roster=2 deadline=979440.843000 master=1
+2026-11-16T11:49:47.1118026Z EDGE pressed=False age=9.38199999998324 starts=1 stops=1
+2026-11-16T11:49:47.1133101Z AUDIO PressurePlate_Off lease=-18863794:1:5 On=1 Off=1
+2026-11-16T11:49:47.3655486Z STATE age=9.633 localOn=False roster= deadline=0.000000 master=1
+2026-11-16T11:49:47.8678149Z STATE age=10.137 localOn=False roster= deadline=0.000000 master=1
+2026-11-16T11:49:48.3762253Z STATE age=10.643 localOn=False roster= deadline=0.000000 master=1
+2026-11-16T11:49:48.8802207Z STATE age=11.150 localOn=False roster= deadline=0.000000 master=1
+2026-11-16T11:49:49.3877254Z STATE age=11.655 localOn=False roster= deadline=0.000000 master=1
+2026-11-16T11:49:49.7315598Z CONTROLLED occupancy=True target=(-0.45, -1.08, 7.10)
+2026-11-16T11:49:49.8905120Z STATE age=12.158 localOn=True roster= deadline=0.000000 master=1
+2026-11-16T11:49:50.1380258Z EDGE pressed=True age=12.4079999999376 starts=2 stops=1
+2026-11-16T11:49:50.1395307Z AUDIO PressurePlate_On lease=-18863794:2:2 On=2 Off=1
+2026-11-16T11:49:50.3972041Z STATE age=12.666 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:50.9480917Z STATE age=13.214 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:51.4511801Z STATE age=13.719 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:51.9526370Z STATE age=14.219 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:52.4591829Z STATE age=14.728 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:52.9752408Z STATE age=15.243 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:53.4865412Z STATE age=15.755 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:53.9876396Z STATE age=16.255 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:54.5025775Z STATE age=16.770 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:55.0101598Z STATE age=17.279 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:55.5118792Z STATE age=17.780 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:56.0158402Z STATE age=18.285 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:56.5242550Z STATE age=18.793 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:57.0252719Z STATE age=19.293 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:57.5257408Z STATE age=19.795 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:58.0317967Z STATE age=20.299 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:58.5381215Z STATE age=20.807 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:59.0702859Z STATE age=21.338 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:49:59.5846695Z STATE age=21.852 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:00.0861841Z STATE age=22.353 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:00.5966699Z STATE age=22.865 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:01.1008123Z STATE age=23.369 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:01.6201853Z STATE age=23.886 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:02.1295069Z STATE age=24.397 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:02.6520603Z STATE age=24.918 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:03.1640488Z STATE age=25.430 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:03.6720553Z STATE age=25.941 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:04.1742845Z STATE age=26.443 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:04.6884544Z STATE age=26.958 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:05.1974766Z STATE age=27.465 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:05.7025039Z STATE age=27.971 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:06.2130743Z STATE age=28.481 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:06.7209367Z STATE age=28.989 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:07.2298921Z STATE age=29.497 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:07.7866041Z STATE age=30.053 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:08.2895826Z STATE age=30.558 localOn=True roster=1,2 deadline=979452.942000 master=1
+2026-11-16T11:50:10.1422220Z EDGE pressed=False age=32.4096361999982 starts=2 stops=2
+2026-11-16T11:50:10.1427344Z AUDIO PressurePlate_Off lease=-18863794:0:39 On=2 Off=2
+2026-11-16T11:50:18.2052633Z READY expedition room=76087 run=run-90f2f82f40b040c681d06f80e18b27f4 activeClients=2
+2026-11-16T11:50:18.2057672Z PASS DONE ready expedition reached failures=0 starts=2 stops=2 On=2 Off=2 maxDrop=0.03 colliderMove=0 colliderSize=0 colliderRotation=0 downSamples=2429 upSamples=678

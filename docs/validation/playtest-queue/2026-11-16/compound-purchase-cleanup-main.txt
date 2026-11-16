@@ -1,0 +1,7 @@
+Prepared fixture executing: actual purchases + hard buyer leave/rejoin; controlled desktop pickup, no economy fabrication.
+2026-11-16T13:06:05.6682829Z PASS first purchased flashlight visible on observer token=0c80deb4151f424684ba7cede5d06fa4
+2026-11-16T13:06:05.9058651Z PASS buyer actor removed and first purchase absent while observer stays original Compound
+2026-11-16T13:06:11.8953338Z PASS first token not replayed after buyer rejoined
+2026-11-16T13:06:16.1445260Z PASS fresh second purchase visible before natural public departure token=7af0f402eb4c467ab71c6f120a409140
+2026-11-16T13:06:16.1450683Z PASS departed-buyer purchase remains absent
+2026-11-16T13:06:16.1458324Z DONE fail=0 ready for public route; fresh token persisted, departure cleanup NOT YET tested

@@ -1,0 +1,40 @@
+using System;using System.IO;using UnityEngine;using Photon.Pun;using Game.Animation;
+internal class CommandScript:IRunCommand{
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!RailTestTools.CanMutate||RailExpedition.Instance==null||NewPlayer.instance==null||SimulatedRigInput.Instance==null||!SimulatedRigInput.Instance.IsSimulating)
+   throw new Exception("Need existing full-route bridge hold stage in ready private Running master");
+  if(RailTrain.Instance.Speed>.01f||Mathf.Abs(RailTrain.Instance.Distance)>.05f)throw new Exception("Recovery only before driving at distance zero");
+  RailBridgeHoldFixture.SetHeld(false);
+  SimulatedRigInput.Instance.UseInjectedInput=true;SimulatedRigInput.Instance.InjectedInput=new SimulatedRigInput.Frame{rightReach=true};
+  var g=new GameObject("Bounded bridge stand-point correction");g.AddComponent<BridgeHoldRecovery>();r.RegisterObjectCreation(g);
+  r.Log("Old editor-tick placement disabled. Correct standing-point Warp once per LateUpdate before real button contact; existing full-route controller continues.");
+ }
+}
+// LocalBodyDriver poses at default order; PlayerHand=50, PressableButton=75,
+// RailHoldControl=100. Pose before and after Warp so contact sees current skin.
+[DefaultExecutionOrder(25)] internal class BridgeHoldRecovery:MonoBehaviour{
+ const string P="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/bridge-hold-recovery.txt";
+ double began,nextLog;bool done;int frames;string run;
+ void Start(){began=Time.realtimeSinceStartupAsDouble;run=PhotonSession.RunId;File.WriteAllText(P,"Fixture correction only: Warp takes standing point, not rig origin. Actual production fingertip penetration/hold publishes bridge intent. One correction per Unity frame; no distance/state/finish writes. Existing full-route controller owns original input/focus restore.\n");}
+ void Log(string s)=>File.AppendAllText(P,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void LateUpdate(){if(done)return;try{
+  double now=Time.realtimeSinceStartupAsDouble;var e=RailExpedition.Instance;
+  if(now-began>65)throw new Exception("65-second bounded hold recovery expired");
+  if(e==null||PhotonSession.RunId!=run||PhotonSession.Phase!=RailPhase.Running)throw new Exception("Original run left Running");
+  float progress=e.State.BridgeProgress(PhotonNetwork.Time);if(progress>=1){Log("PASS bridge lowered through physical contact; frames="+frames+" distance="+RailTrain.Instance.Distance);End();return;}
+  if(RailTrain.Instance.Speed>.01f||Mathf.Abs(RailTrain.Instance.Distance)>.05f)throw new Exception("Train moved before bridge lowering completed");
+  if(RailExpedition.LocalDown){e.Request("editor-revive");return;}
+  var rig=NewPlayer.instance;var driver=GR.Player.instance.GetComponent<LocalBodyDriver>();var control=e.bridgeButton.GetComponent<RailHoldControl>();
+  RailRemoteBridge.Set(control,"focused",true);SimulatedRigInput.Instance.UseInjectedInput=true;SimulatedRigInput.Instance.InjectedInput=new SimulatedRigInput.Frame{rightReach=true};
+  driver.PoseNow();var finger=driver.Body.RightHand.GetComponentInChildren<SphereCollider>();var volume=control.button.GetComponent<BoxCollider>();
+  Vector3 before=finger.transform.TransformPoint(finger.center),delta=volume.transform.TransformPoint(volume.center)-before;
+  Vector3 stand=new Vector3(rig.headCollider.transform.position.x,rig.transform.position.y,rig.headCollider.transform.position.z);
+  rig.Warp(stand+delta);driver.PoseNow();frames++;
+  if(now>=nextLog){nextLog=now+.5;Vector3 after=finger.transform.TransformPoint(finger.center);Log("CONTACT frame="+Time.frameCount+" delta="+delta+" finger="+after+" head="+rig.headCollider.transform.position+" target="+volume.transform.TransformPoint(volume.center)+" overlap="+PlayerHand.ButtonContact(volume,finger)+" pressed="+control.button.IsPressed+" held="+RailRemoteBridge.Get(control,"held")+" progress="+progress+" distance="+RailTrain.Instance.Distance);}
+ }catch(Exception ex){Log("BLOCKED "+ex);End();}}
+ void End(){if(done)return;done=true;RailBridgeHoldFixture.SetHeld(false);
+  var sim=SimulatedRigInput.Instance;if(sim!=null&&sim.UseInjectedInput){sim.InjectedInput=default;sim.UseInjectedInput=false;}
+  var e=RailExpedition.Instance;if(e!=null&&e.bridgeButton!=null)e.bridgeButton.GetComponent<RailHoldControl>().button.Release();
+  Log("CLEANUP correction removed; original full-route controller retains ownership of continuation");UnityEngine.Object.Destroy(gameObject);
+ }
+}

@@ -1,0 +1,40 @@
+Four actual drive-to-impact/crossing trials. Bridge progress and stopped approach are controlled fixtures. Normal return deadlines retained.
+2026-11-16T10:12:39.2948345Z PASS raised fresh bridge renderer/collider restoration run=e41ba939a66f46668351eb0d440fb411
+2026-11-16T10:12:39.3195268Z PREPARE raised sent=False progress=0
+2026-11-16T10:12:41.3190261Z PREPARE raised sent=True progress=0
+2026-11-16T10:12:41.9755712Z MAIN observer [Log] Armed crash observer
+2026-11-16T10:12:42.9949431Z DRIVE raised distance=985.2463 progress=0
+2026-11-16T10:12:51.7803462Z PASS raised real gate outcome=Bridge collision success=False finishedAt=973615.099000 deadlineDelta=32.000000
+2026-11-16T10:13:28.9966468Z RETURN raised ready private Staging
+2026-11-16T10:13:35.7110543Z PASS half fresh bridge renderer/collider restoration run=99c99634a7b246188b515142c6a78a52
+2026-11-16T10:13:35.7294230Z PREPARE half sent=True progress=0.5
+2026-11-16T10:13:36.8913709Z MAIN observer [Log] Armed crash observer
+2026-11-16T10:13:37.9057945Z DRIVE half distance=985.2463 progress=0.5
+2026-11-16T10:13:46.7808938Z PASS half real gate outcome=Bridge collision success=False finishedAt=973670.165000 deadlineDelta=32.000000
+2026-11-16T10:14:24.5380191Z RETURN half ready private Staging
+2026-11-16T10:14:31.5670126Z PASS almost fresh bridge renderer/collider restoration run=056218c8fbd34aacafb8f805b3a69206
+2026-11-16T10:14:31.5991252Z PREPARE almost sent=False progress=0.99
+2026-11-16T10:14:33.1213039Z PREPARE almost sent=False progress=0.99
+2026-11-16T10:14:34.6381714Z PREPARE almost sent=False progress=0.99
+2026-11-16T10:14:36.3732034Z PREPARE almost sent=False progress=0.99
+2026-11-16T10:14:37.8905463Z PREPARE almost sent=False progress=0.99
+2026-11-16T10:14:39.4041098Z PREPARE almost sent=True progress=0.99
+2026-11-16T10:14:40.0211130Z MAIN observer [Log] Armed crash observer
+2026-11-16T10:14:41.3971498Z DRIVE almost distance=985.2463 progress=0.99
+2026-11-16T10:14:50.1563134Z PASS almost real gate outcome=Bridge collision success=False finishedAt=973733.519000 deadlineDelta=32.000000
+2026-11-16T10:15:28.1584216Z RETURN almost ready private Staging
+2026-11-16T10:15:35.2042549Z PASS success fresh bridge renderer/collider restoration run=d0aca38139a04aa997217935b8c22da7
+2026-11-16T10:15:35.2321654Z PREPARE success sent=False progress=1
+2026-11-16T10:15:36.9969529Z PREPARE success sent=True progress=1
+2026-11-16T10:15:38.5062933Z PREPARE success sent=False progress=1
+2026-11-16T10:15:40.0244455Z PREPARE success sent=False progress=1
+2026-11-16T10:15:41.5658009Z PREPARE success sent=False progress=1
+2026-11-16T10:15:43.0950625Z PREPARE success sent=False progress=1
+2026-11-16T10:15:44.6060764Z PREPARE success sent=False progress=1
+2026-11-16T10:15:46.1210649Z PREPARE success sent=False progress=1
+2026-11-16T10:15:47.6250662Z PREPARE success sent=True progress=1
+2026-11-16T10:15:48.2363428Z MAIN observer [Log] Armed crash observer
+2026-11-16T10:15:49.2480069Z DRIVE success distance=985.2463 progress=1
+2026-11-16T10:15:58.2492829Z PASS success real gate outcome=Bridge crossed success=True finishedAt=973801.422000 deadlineDelta=32.000000
+2026-11-16T10:16:35.7092685Z RETURN success ready private Staging
+2026-11-16T10:16:35.7102716Z DONE outcome/restoration failures=0; inspect both observer files for each trial separately

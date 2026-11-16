@@ -1,0 +1,158 @@
+using System;
+using System.IO;
+using System.Text;
+using UnityEngine;
+using UnityEditor;
+using Photon.Pun;
+
+internal class CommandScript : IRunCommand
+{
+    const string P="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/full-route-main.txt";
+    int stage,samples,errors;
+    double began,lastLog,nextAction,lastSampleTime;
+    float previous;
+    bool nearBridge,oldInjection,oldFocus,oldBridgeFocus,ended;
+    SimulatedRigInput sim;
+    SimulatedRigInput.Frame oldFrame;
+    PhotonMasterHandoff handoff;
+    RailHoldControl bridgeControl;
+
+    void Log(string s)=>File.AppendAllText(P,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+    public void Execute(ExecutionResult r)
+    {
+        if(!Application.isPlaying||!RailTestTools.CanMutate||PhotonSession.Phase!=RailPhase.Running||
+            RailRoute.Instance==null||!RailRoute.Instance.Ready||RailTrain.Instance==null)
+            throw new Exception("Need ready private running master expedition");
+        if(Mathf.Abs(RailTrain.Instance.Distance)>.05f||RailTrain.Instance.Speed>.01f)
+            throw new Exception("Start a fresh stopped run at distance zero; this fixture never resets distance");
+        if(RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time)>.0001f)
+            throw new Exception("Need fresh fully raised bridge for actual fingertip hold");
+        sim=SimulatedRigInput.Instance;
+        if(sim==null||!sim.IsSimulating||sim.UseInjectedInput)
+            throw new Exception("Need Keyboard shared rig with no other injected-input fixture");
+        if(RailWorld.InputBlocked||RailDiagnosticPanel.BlocksDesktopInput)
+            throw new Exception("Close session/diagnostic panels and clear hovered diagnostic overlay before starting");
+        bridgeControl=RailExpedition.Instance.bridgeButton.GetComponent<RailHoldControl>();
+        oldBridgeFocus=(bool)RailRemoteBridge.Get(bridgeControl,"focused");
+        oldInjection=sim.UseInjectedInput;oldFrame=sim.InjectedInput;
+        handoff=UnityEngine.Object.FindFirstObjectByType<PhotonMasterHandoff>();
+        if(handoff!=null)oldFocus=(bool)RailRemoteBridge.Get(handoff,"focused");
+        File.WriteAllText(P,"Actual full route from zero; no distance writes. Explicit normal 4 m/s mode. " +
+            "Controlled fuel=1000 supplies uninterrupted travel, not fuel-balance acceptance. " +
+            "RailBridgeHoldFixture uses production fingertip contact with test operator placement and may self-revive the operator. " +
+            "Desktop focus is supplied during the fixture, then restored. No historical defender claim.\n");
+        Log("START Unity="+Application.unityVersion+" clients="+PhotonNetwork.CurrentRoom.PlayerCount+
+            " run="+PhotonSession.RunId+" distance="+RailTrain.Instance.Distance+
+            " finale="+RailRoute.Instance.FinaleStart+" initiallyFast="+RailTestTools.FastTrainEnabled);
+        began=EditorApplication.timeSinceStartup;previous=RailTrain.Instance.Distance;lastSampleTime=PhotonNetwork.Time;
+        Sample();EditorApplication.update+=Tick;r.Log("Full-route drive fixture armed, 500-second maximum");
+    }
+    void Tick()
+    {
+        try
+        {
+            if(!Application.isPlaying){Log("BLOCKED Play ended");End();return;}
+            if(EditorApplication.timeSinceStartup-began>500){Log("BLOCKED 500-second timeout stage="+stage);End();return;}
+            var run=RailExpedition.Instance;var train=RailTrain.Instance;
+            if(run==null||train==null||!PhotonNetwork.IsMasterClient)throw new Exception("Lost world or master authority");
+            if(handoff!=null)RailRemoteBridge.Set(handoff,"focused",true);
+            if(stage<=1&&bridgeControl!=null)RailRemoteBridge.Set(bridgeControl,"focused",true);
+            double now=EditorApplication.timeSinceStartup;
+            if(stage<3 && (Mathf.Abs(train.Distance)>.05f||train.Speed>.01f))
+                throw new Exception("Train moved before authorized drive stage");
+            if(stage<4 && run.State.finished)throw new Exception("Run ended before full-route driving: "+run.State.reason);
+            if(stage==0)
+            {
+                if(RailTestTools.FastTrainEnabled)
+                {if(now>=nextAction){nextAction=now+1.5;RailTestTools.ToggleTrainSpeed();}return;}
+                if(Mathf.Abs(RailTestTools.TrainCruiseSpeed-4)>.001f)throw new Exception("Normal mode is not 4 m/s");
+                RailBridgeHoldFixture.SetHeld(true);stage=1;lastLog=now;
+                Log("HOLD actual fingertip contact started at zero train distance");return;
+            }
+            if(stage==1)
+            {
+                if(now-lastLog>2){lastLog=now;Log("HOLD progress="+run.State.BridgeProgress(PhotonNetwork.Time)+" distance="+train.Distance);}
+                if(run.State.BridgeProgress(PhotonNetwork.Time)<1)return;
+                ReleaseHold();
+                Log("PASS bridge lowered through actual hold fixture; distance remains="+train.Distance);
+                NewPlayer.instance.Warp(train.AboardPoint(PhotonNetwork.LocalPlayer.ActorNumber),train.transform.rotation);
+                stage=2;nextAction=0;return;
+            }
+            if(stage==2)
+            {
+                if(PhotonSession.CurrentFuel<999f)
+                {if(now>=nextAction){nextAction=now+1.5;Log("FUEL commit="+RailRemoteBridge.Commit(RailSessionRules.Fuel,1000f));}return;}
+                Sample();stage=3;nextAction=0;
+                Log("PASS acknowledged controlled fuel="+PhotonSession.CurrentFuel+" normalSpeed="+RailTestTools.TrainCruiseSpeed);
+            }
+            if(stage==3)
+            {
+                if(now>=nextAction){nextAction=now+1;PhotonSession.Instance.SetTrainMoving(true);}
+                if(train.Speed>.1f){stage=4;lastLog=now;Log("DRIVE actual acceleration observed distance="+train.Distance+" speed="+train.Speed);}
+                return;
+            }
+            if(stage==4)
+            {
+                if(RailTestTools.FastTrainEnabled||train.Speed>4.05f)throw new Exception("Normal-speed invariant failed");
+                if(now-lastLog>=1||run.State.finished){lastLog=now;Sample();}
+                if(!run.State.finished)return;
+                bool pass=errors==0&&nearBridge&&samples>=20&&run.State.success&&run.State.reason=="Bridge crossed";
+                Log((pass?"PASS ":"FAIL ")+"DONE full route samples="+samples+" sampleErrors="+errors+
+                    " nearBridge="+nearBridge+" finish="+run.State.reason+" success="+run.State.success+
+                    " distance="+train.Distance+" elapsed="+(now-began)+"; no peer/headset acceptance inferred");
+                End();
+            }
+        }
+        catch(Exception ex){Log("FIXTURE ERROR "+ex);End();}
+    }
+    void Sample()
+    {
+        var train=RailTrain.Instance;var display=UnityEngine.Object.FindFirstObjectByType<RailDistanceDisplay>(FindObjectsInactive.Include);
+        if(display==null||display.label==null)throw new Exception("Distance display missing");
+        float distance=train.Distance;
+        string raw=display.label.text;
+        string plain=PlainText(raw);
+        int wanted=Mathf.Max(0,Mathf.RoundToInt(distance*RailDistanceDisplay.BridgeMetres/RailRoute.Instance.FinaleStart));
+        int shown=-1;bool parsed=ParseDistance(plain,out shown);
+        bool correct=parsed&&Mathf.Abs(shown-wanted)<=2;
+        double t=PhotonNetwork.Time,dt=Math.Max(0,t-lastSampleTime);
+        bool monotonic=distance>=previous-.05f;
+        bool noJump=distance-previous<=4.1f*(float)dt+.15f;
+        if(!correct||!monotonic||!noJump)errors++;
+        samples++;previous=distance;lastSampleTime=t;
+        if(distance>=RailRoute.Instance.FinaleStart&&!nearBridge){nearBridge=true;Log("PASS bridge approach reached through continuous actual travel");}
+        Log("SAMPLE distance="+distance+" speed="+train.Speed+" raw="+raw.Replace("\n"," / ")+
+            " shown="+shown+" expected="+wanted+" match="+correct+" monotonic="+monotonic+" noJump="+noJump);
+    }
+    static string PlainText(string raw)
+    {
+        var text=new StringBuilder();bool tag=false;
+        foreach(char c in raw??""){if(c=='<'){tag=true;continue;}if(c=='>'&&tag){tag=false;continue;}if(!tag)text.Append(c);}
+        return text.ToString();
+    }
+    static bool ParseDistance(string text,out int value)
+    {
+        value=-1;int at=text.IndexOf("DISTANCE",StringComparison.Ordinal);if(at<0)return false;
+        at+="DISTANCE".Length;while(at<text.Length&&char.IsWhiteSpace(text[at]))at++;
+        int begin=at;while(at<text.Length&&char.IsDigit(text[at]))at++;
+        if(begin==at||!int.TryParse(text.Substring(begin,at-begin),out value))return false;
+        while(at<text.Length&&char.IsWhiteSpace(text[at]))at++;
+        return at<text.Length&&text[at]=='m'&&(at+1==text.Length||!char.IsLetterOrDigit(text[at+1]));
+    }
+    void ReleaseHold()
+    {
+        RailBridgeHoldFixture.SetHeld(false);
+        if(bridgeControl!=null)RailRemoteBridge.Set(bridgeControl,"focused",oldBridgeFocus);
+        if(RailExpedition.Instance!=null&&RailExpedition.Instance.bridgeButton!=null)
+            RailExpedition.Instance.bridgeButton.GetComponent<RailHoldControl>()?.button.Release();
+        if(sim!=null){sim.InjectedInput=oldFrame;sim.UseInjectedInput=oldInjection;}
+    }
+    void End()
+    {
+        if(ended)return;ended=true;EditorApplication.update-=Tick;
+        ReleaseHold();
+        if(handoff!=null)RailRemoteBridge.Set(handoff,"focused",oldFocus);
+        if(Application.isPlaying&&PhotonSession.Phase==RailPhase.Running)PhotonSession.Instance?.SetTrainMoving(false);
+        Log("CLEANUP bridge hold released, injected input and focus restored; ordinary running train requested STOP if unfinished");
+    }
+}

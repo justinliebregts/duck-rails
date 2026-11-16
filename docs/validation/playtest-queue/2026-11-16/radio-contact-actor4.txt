@@ -1,0 +1,26 @@
+Real posed-finger collision + production button/hold lease; controlled placement, public train drive API; no perceived voice-quality acceptance.
+2026-11-16T13:34:41.6509370Z PASS start stopped and drive unowned
+2026-11-16T13:34:41.6509370Z PASS enough existing fuel for short moving hold
+2026-11-16T13:34:41.6542825Z PASS actual integrated radio initially enabled and unpressed
+2026-11-16T13:34:41.6548131Z PASS no existing radio hold actor=1
+2026-11-16T13:34:41.6548131Z PASS no existing radio hold actor=4
+2026-11-16T13:34:41.6548131Z PASS operator neutral simulated rig
+2026-11-16T13:34:41.6548131Z PASS operator naturally unmuted/focused and empty-handed
+2026-11-16T13:34:41.6548131Z PASS actual visible hand supplies active finger collider
+2026-11-16T13:34:41.6563476Z PASS fresh RUN rendezvous
+2026-11-16T13:34:46.8343711Z PASS actual contact establishes radio lease/transmitter on this client
+2026-11-16T13:34:46.8343711Z PASS real finger overlap drives production button and hold
+2026-11-16T13:34:51.8495775Z PASS radio lease/transmitter remains live during actual train travel
+2026-11-16T13:34:51.8500935Z PASS physical finger contact retained on moving console
+2026-11-16T13:34:57.8344329Z PASS published radio lease renews throughout moving hold
+2026-11-16T13:34:59.8335569Z INPUT actual RailHoldControl.enabled=false while real finger remains in contact
+2026-11-16T13:34:59.8365804Z PASS disable releases button/held state while finger still touches
+2026-11-16T13:35:01.8426849Z PASS real control disable clears local/remote lease and transmitter
+2026-11-16T13:35:01.8426849Z PASS sampled disabled control before withdrawal
+2026-11-16T13:35:04.8497083Z INPUT restore radio after withdrawal; no Press or SetHeld callback
+2026-11-16T13:35:07.8394283Z PASS restored control remains idle after genuine withdrawal
+2026-11-16T13:35:07.8404334Z PASS public drive release brakes without distance reset
+2026-11-16T13:35:07.8404334Z PASS withdrawal rearms actual touch lock
+2026-11-16T13:35:11.8422360Z PASS all scoped phases observed
+2026-11-16T13:35:11.8447439Z RESTORED operator cabin position, input/poses/velocity, original radio enabled state; no distance reset
+2026-11-16T13:35:11.8447439Z END checks=21 failures=0; controlled placement/contact only, no audio quality or natural VR acceptance

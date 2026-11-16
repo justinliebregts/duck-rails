@@ -1,0 +1,75 @@
+// SAME command on BOTH clients of ready private Running expedition; fresh RUN per rerun.
+// ~15s after rendezvous;45s hard bound. Master selects one existing active nonreacting enemy.
+// Nonmaster invokes Enemy.SubmitSwing ONCE (controlled hit callback, not a natural weapon strike).
+// No enemy spawn/teleport/brain edits, stat payload, counter write, ownership change or rig changes.
+// Observe real authority reaction + sender confirmation + normal3s stats flush on BOTH clients.
+// SOURCE SEMANTICS: Enemy.SubmitSwing gates local dormant/speed/cooldown first; then
+// EnemyNetSync.SubmitHit calls RailStats.Repel BEFORE authority confirmation. Thus the stat
+// counts locally accepted submissions, rate-limited1s; it is not an authority-confirmed-hit counter.
+using System;using System.IO;using System.Linq;using System.Collections.Generic;
+using UnityEngine;using UnityEditor;using Photon.Pun;using Game.AI;
+internal class CommandScript:IRunCommand {
+ const string RUN="20261116-repel-stat-1";
+ [Serializable] class Target {public int view,actor,baseline,masterBaseline;public string spawn;}
+ string folder,path,room,run,role;int actor,sender,checks,sequence;double began,start;bool master,done,sent,sawReaction,sawConfirmation,baselineRead;
+ Target target;Enemy enemy;EnemyNetSync net;Dictionary<string,int> beforeOthers;
+ string F(string suffix)=>folder+"/"+RUN+"-"+suffix;
+ object Get(object x,string member)=>RailRemoteBridge.Get(x,member);
+ void Log(string s)=>File.AppendAllText(path,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool ok,string s){checks++;Log((ok?"PASS ":"FAIL ")+s);if(!ok)throw new Exception(s);}
+ RailParticipant Sender()=>RailExpedition.Instance.State.players.Single(p=>p.actor==sender);
+ public void Execute(ExecutionResult r){
+  if(!Application.isPlaying||!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.PlayerCount!=2||!PhotonSession.IsPrivate||PhotonSession.Phase!=RailPhase.Running||PhotonSession.Instance==null||!PhotonSession.Instance.WorldReady||RailExpedition.Instance==null||RailExpedition.LocalDown)throw new Exception("Need two ready awake private Running clients");
+  master=PhotonNetwork.IsMasterClient;role=master?"master":"peer";actor=PhotonNetwork.LocalPlayer.ActorNumber;sender=PhotonNetwork.PlayerList.Single(p=>!p.IsMasterClient).ActorNumber;room=PhotonNetwork.CurrentRoom.Name;run=PhotonSession.RunId;
+  string root=Application.dataPath.Replace('\\','/');int vp=root.IndexOf("/Library/VP/",StringComparison.OrdinalIgnoreCase);root=vp<0?Path.GetDirectoryName(root):root.Substring(0,vp);folder=root+"/Temp/rails-repel-stat";Directory.CreateDirectory(folder);
+  path=root+"/docs/validation/playtest-queue/2026-11-16/repel-stat-"+role+".txt";
+  if(File.Exists(F(role+".ready"))||File.Exists(F("start"))||File.Exists(F("abort")))throw new Exception("Change RUN on both clients; stale rendezvous");
+  File.WriteAllText(path,"Actual Enemy.SubmitSwing callback and ordinary stats transport; not natural melee contact. Repel increments at locally accepted dispatch, before authority confirmation; this probe separately verifies authority reaction.\n");
+  began=EditorApplication.timeSinceStartup;File.WriteAllText(F(role+".ready"),room+"\n"+run);EditorApplication.update+=Tick;r.Log("Armed repel attribution "+role+"; same command on other client; no rig/input changes");
+ }
+ void Tick(){if(done)return;try{
+  if(!Application.isPlaying||!PhotonNetwork.InRoom||PhotonNetwork.CurrentRoom.Name!=room||PhotonSession.RunId!=run||PhotonSession.Phase!=RailPhase.Running||PhotonNetwork.CurrentRoom.PlayerCount!=2||PhotonNetwork.IsMasterClient!=master)throw new Exception("Room/run/crew/authority changed");
+  if(EditorApplication.timeSinceStartup-began>45)throw new Exception("45-second bound");if(File.Exists(F("abort")))throw new Exception("Peer aborted: "+File.ReadAllText(F("abort")));
+  if(start==0){if(master&&File.Exists(F("peer.ready"))&&!File.Exists(F("start"))){Check(File.ReadAllText(F("peer.ready"))==room+"\n"+run,"same authenticated room/run");File.WriteAllText(F("start"),(PhotonNetwork.Time+2).ToString("R",System.Globalization.CultureInfo.InvariantCulture));}if(File.Exists(F("start")))start=double.Parse(File.ReadAllText(F("start")),System.Globalization.CultureInfo.InvariantCulture);return;}
+  double age=PhotonNetwork.Time-start;if(age<0)return;
+  if(master&&age>4&&target==null){
+   // Four quiet seconds allow an earlier normal stats batch to flush before baseline.
+   enemy=UnityEngine.Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None).Where(x=>x.isActiveAndEnabled&&x.HasAuthority&&!x.IsDormant&&!x.HitMovementActive&&!x.SwingLocked&&x.Root!=null&&x.GetComponent<EnemyNetSync>()!=null&&x.GetComponent<PhotonView>()!=null&&x.GetComponent<PhotonView>().ViewID>0).OrderBy(x=>Vector3.Distance(x.Root.position,RailTrain.Instance.transform.position)).FirstOrDefault();
+   if(enemy==null)throw new Exception("BLOCKED no existing active nonreacting network enemy; do not spawn or wake a stand-in");var view=enemy.GetComponent<PhotonView>();
+   target=new Target{view=view.ViewID,spawn=view.SpawnToken,actor=sender,baseline=Sender().repels,masterBaseline=RailExpedition.Instance.LocalParticipant.repels};
+   File.WriteAllText(F("target"),JsonUtility.ToJson(target));Log("BASELINE target="+view.ViewID+" enemy="+enemy.name+" senderActor="+sender+" senderRepels="+target.baseline+" ownerRepels="+target.masterBaseline+" state="+enemy.CurrentState);
+  }
+  if(target==null&&File.Exists(F("target")))target=JsonUtility.FromJson<Target>(File.ReadAllText(F("target")));
+  if(target==null)return;
+  if(enemy==null){var view=PhotonView.Find(target.view);if(view==null)return;Check(view.SpawnToken==target.spawn,"same actual enemy spawn token");enemy=view.GetComponent<Enemy>();}
+  if(net==null)net=enemy.GetComponent<EnemyNetSync>();
+  if(!baselineRead){
+   if(Sender().repels!=target.baseline){if(age<7)return;throw new Exception("Baseline did not agree after quiet normal flush");}
+   beforeOthers=RailExpedition.Instance.State.players.Where(p=>p.actor!=sender).ToDictionary(p=>p.id,p=>p.repels);baselineRead=true;
+   Log("BASELINE observed senderRepels="+Sender().repels+" localRepels="+RailExpedition.Instance.LocalParticipant.repels);File.WriteAllText(F(role+".baseline"),"READY");
+  }
+  if(!master&&!sent&&age>5&&File.Exists(F("master.baseline"))){
+   Check(!enemy.HasAuthority&&!enemy.IsDormant&&enemy.Root!=null,"sender is nonowner of existing awake target");
+   int pending=(int)RailRemoteBridge.Get(typeof(RailStats),"repels");float last=(float)RailRemoteBridge.Get(typeof(RailStats),"lastRepel");
+   Check(pending==0&&Time.unscaledTime-last>1,"no pending local repel or prior-hit rate-limit contamination");
+   Check(Time.time>=(float)Get(enemy,"_nextHitTime"),"ordinary local enemy hit gate ready");
+   int before=(int)Get(net,"_hitSequence");Vector3 velocity=-RailTrain.Instance.transform.forward*Mathf.Max(10,enemy.MinHitSpeed+2);
+   enemy.SubmitSwing(velocity,1,enemy.Root.position);sequence=(int)Get(net,"_hitSequence");Check(sequence!=before,"one real accepted local submission entered EnemyNetSync");sent=true;
+   File.WriteAllText(F("sent"),sequence.ToString());Log("INPUT one Enemy.SubmitSwing callback sequence="+sequence+" speed="+velocity.magnitude+"; no weapon/contact claim");
+  }
+  if(File.Exists(F("sent"))){
+   if(master&&enemy.HitMovementActive&&!sawReaction){sawReaction=true;Log("PASS authority observed actual new enemy hit reaction state="+enemy.CurrentState);File.WriteAllText(F("reaction"),"PASS");}
+   if(!master&&(bool)Get(net,"_hitConfirmed")&&!sawConfirmation){sawConfirmation=true;Log("PASS sender received actual authority hit confirmation sequence="+sequence);}
+   int delta=Sender().repels-target.baseline;if(delta>1)throw new Exception("Repel delta exceeds one; concurrent input or duplicate attribution");
+   if(age>12&&delta==1){
+    Check(master?sawReaction:sawConfirmation,"observed real authority reaction/confirmation independently of stat dispatch");
+    Check(RailExpedition.Instance.State.players.Where(p=>p.actor!=sender).All(p=>beforeOthers.TryGetValue(p.id,out int n)&&p.repels==n),"other participants receive no repel credit");
+    Check(Sender().repels==target.baseline+1,"ordinary shared stats flush credits exactly one repel to actual sender actor="+sender);
+    File.WriteAllText(F(role+".pass"),"PASS");
+    if(File.Exists(F("master.pass"))&&File.Exists(F("peer.pass"))){Finish("PASS actual callback hit and exactly-one authoritative sender attribution on both clients");return;}
+   }
+  }
+  if(age>17)throw new Exception("Scoped17-second sample ended without both reaction/confirmation and shared+1; no stat retry or manual flush");
+ }catch(Exception e){if(path!=null)Log("INCOMPLETE "+e);if(folder!=null)File.WriteAllText(F("abort"),role+": "+e.Message);Finish("INCOMPLETE; distinguish setup/no-target from assertion failure");}}
+ void Finish(string text){if(done)return;done=true;EditorApplication.update-=Tick;if(path!=null)Log("END "+text+" checks="+checks+"; observer unsubscribed; genuine hit reaction and recorded stat retained; no rig/input/settings changed");}
+}
