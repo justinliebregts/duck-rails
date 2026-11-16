@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ee60a1ce50828b46a94d9e158358ff3, type: 3}
+  m_Name: Atmosphere
+  m_EditorClassIdentifier: Assembly-CSharp::RailAtmosphereSettings
+  nightColor: {r: 0.008, g: 0.008, b: 0.004, a: 1}
+  nightDensity: 0.06
+  preDawnColor: {r: 0.023529412, g: 0.023529412, b: 0.011764706, a: 1}
+  preDawnDensity: 0.05
+  dawnColor: {r: 0.39438224, g: 0.41568628, b: 0.30588236, a: 1}
+  dawnDensity: 0.006

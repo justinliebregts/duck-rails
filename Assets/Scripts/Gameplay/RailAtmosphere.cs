@@ -21,6 +21,12 @@ public sealed class RailAtmosphere
     FogMode fogMode;
     AmbientMode ambientMode;
     float lastProgress = float.NaN;
+    RailAtmosphereSettings settings;
+
+    public RailAtmosphere(RailAtmosphereSettings settings = null)
+    {
+        this.settings = settings;
+    }
 
     // Route distance gives late joiners and a replacement master the same pre-dawn state.
     // Success blends during the automatic bridge/tunnel ride; failures never receive dawn.
@@ -32,6 +38,7 @@ public sealed class RailAtmosphere
 
     public void Apply(float progress)
     {
+        if (settings == null) settings = Resources.Load<RailAtmosphereSettings>(RailAtmosphereSettings.ResourcePath);
         // Use the same success/dawn blend as fog, including late joins and replay.
         PlayerViewDistance = Mathf.Lerp(NightViewDistance, DawnViewDistance, Mathf.Clamp01(progress - 1f));
         if (sky == null)
@@ -59,8 +66,14 @@ public sealed class RailAtmosphere
         sky.SetColor("_GroundColor", new Color(.12f, .13f, .16f));
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogDensity = Mathf.Lerp(dawn ? .05f : .06f, dawn ? .0125f : .05f, blend);
-        RenderSettings.fogColor = Color.Lerp(dawn ? PreFog : NightFog, dawn ? DawnFog : PreFog, blend);
+        float nightDensity = settings != null ? settings.nightDensity : .06f;
+        float preDensity = settings != null ? settings.preDawnDensity : .05f;
+        float dawnDensity = settings != null ? settings.dawnDensity : .0125f;
+        Color nightColor = settings != null ? settings.nightColor : NightFog;
+        Color preColor = settings != null ? settings.preDawnColor : PreFog;
+        Color dawnColor = settings != null ? settings.dawnColor : DawnFog;
+        RenderSettings.fogDensity = Mathf.Max(0, Mathf.Lerp(dawn ? preDensity : nightDensity, dawn ? dawnDensity : preDensity, blend));
+        RenderSettings.fogColor = Color.Lerp(dawn ? preColor : nightColor, dawn ? dawnColor : preColor, blend);
         RenderSettings.ambientMode = AmbientMode.Flat;
         RenderSettings.ambientLight = Color.Lerp(dawn ? PreAmbient : NightAmbient, dawn ? DawnAmbient : PreAmbient, blend);
         if (sun != null)

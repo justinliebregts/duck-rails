@@ -150,6 +150,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 
 ### Quackbear lip pivot normalization — queued 2026-11-15
+### Saved fog settings and atmosphere tuner — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: shared saved night/pre-dawn/dawn fog endpoints and an Edit Mode Scene View preview. Existing defaults and transition timing retained; see docs/block-lighting.md.
+- Cheap checks: Unity compilation; 14 Edit Mode checks for saved resource, endpoints, restoration, unchanged scene dirty state, custom interpolation and timing.
+- Setup: private development expedition; Gameplay Lighting; Test success - bridge and dawn ride. Use saved tuner values, then replay; two real clients for matching visuals.
+- Check: game uses saved fog colours/densities, transitions through the tunnel at 12–20 seconds, and returns to night on replay. Closing the tuner/entering Play leaves no preview override.
+- Needs human: headset horizon continuity, visibility and visual preference.
+- Priority: normal.
+
 - Commit(s): uncommitted.
 - Changed: `Lips_Quackbear.fbx` Lip_B and Lip_T now exactly match Default local position/rotation. Removed compensating root/lip rotations and baked pivot offsets into mesh vertices, preserving resting geometry and existing asset IDs.
 - Cheap checks: verified Duck Rails editor; FBX reimport passed; exact imported position/quaternion equality with Default for both lips; all 247 imported vertices retained with maximum world-position difference 0.000000067 m.

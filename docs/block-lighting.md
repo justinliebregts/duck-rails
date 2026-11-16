@@ -187,6 +187,16 @@ Validation: `output/shared-moonlight/export-validation.txt` records 19 passing e
 
 The user reported Unity crashing during the subsequent exit-from-Play interval. PASS and complete teardown were written before exit; the crash cause is not established. After restart, MCP verified Duck Rails in Edit Mode, the saved shared prefab and all 19 exports. Removed the temporary proof scene without opening or replacing the user's current scene. No diagnostic reports were inspected. Headset/multiplayer acceptance and visual seam review remain open.
 
+## Edit Mode fog tuner — November 15, 2026
+
+Open **Duck Rails > Lighting > Atmosphere Tuner**. **Open Expedition and frame dawn exit** opens the production scene (prompting to save existing scene work), frames the far-side landscape and enables the Scene View preview. Alternatively use **Preview in Scene View** in the currently open scene. Select **Dawn**, or scrub 0 (night), 1 (pre-dawn), 2 (dawn). Edit the three stages' colour/density and click **Save fog settings**. Lower density means clearer air. Undo works on setting edits; stopping preview does not undo tuning.
+
+Saved gameplay values live in `Assets/Resources/Rails/Atmosphere.asset`. Existing 0.06 / 0.05 / 0.0125 densities and colours are preserved initially. Gameplay loads the same asset; transition timing, sky, ambient and sun curves remain unchanged. Fog tuning does not require rebaking. Restart a running game to pick up tuning reliably.
+
+Preview temporarily applies the shared controller while the selected Scene View camera renders, restoring the environment immediately afterward. It enables Scene View fog/sky/lighting while active and restores those toggles when stopped/closed or entering Play Mode. A scene without a procedural sky temporarily uses ExpeditionSky. Preview position is not saved gameplay progress. Baked lighting, route loading, headset visibility and actual player-camera clipping are not simulated.
+
+Validation: verified Duck Rails editor, compilation and **Check Atmosphere Tuner** passed 14 Edit Mode checks: resource identity, three fog endpoints, per-render restoration, unchanged scene dirty state, custom midpoint/dawn and unchanged success/failure timing. Full gameplay/headset review is queued; no Play Mode launched.
+
 ## Starting Station interior allocation — November 16, 2026
 
 User reported blocky lighting after raising resolution to 16 and flood shadow radius to 0.25. Read-only inspection of the verified station bake scene found two loaded 1024 maps, Station_Shell/Rooms/StairsBridge at Scale in Lightmap 1, City_Deck already 0.02, City_Backdrop without a lightmap binding, and the 96 x 160 m Station ground at 0.25. No UV overlap diagnosis has been established; large rectangular patches may be actual cast shadows.

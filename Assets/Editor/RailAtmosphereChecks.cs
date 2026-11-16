@@ -26,6 +26,7 @@ public static class RailAtmosphereChecks
         var ambient = RenderSettings.ambientLight; var mode = RenderSettings.ambientMode;
         var rotation = RenderSettings.sun.transform.rotation; var intensity = RenderSettings.sun.intensity;
         var controller = new RailAtmosphere();
+        var settings = Resources.Load<RailAtmosphereSettings>(RailAtmosphereSettings.ResourcePath);
         var go = new GameObject("Atmosphere capture") { hideFlags = HideFlags.HideAndDontSave };
         var camera = go.AddComponent<Camera>(); camera.enabled = false;
         camera.clearFlags = CameraClearFlags.Skybox; camera.fieldOfView = 70;
@@ -44,7 +45,7 @@ public static class RailAtmosphereChecks
                 Check(RenderSettings.skybox != original, "Isolated sky material");
                 Check(RenderSettings.skybox.shader.name == "Skybox/Procedural", "Built-in sky");
                 Check(RenderSettings.skybox.GetFloat("_SunDisk") == 0, "Sun disk hidden");
-                Check(Mathf.Approximately(RenderSettings.fogDensity, i == 0 ? .1f : i == 1 ? .065f : .0125f), "Stage fog");
+                Check(Mathf.Approximately(RenderSettings.fogDensity, i == 0 ? settings.nightDensity : i == 1 ? settings.preDawnDensity : settings.dawnDensity), "Stage fog");
                 camera.targetTexture = rt; camera.Render(); RenderTexture.active = rt;
                 var image = new Texture2D(960, 540, TextureFormat.RGB24, false);
                 image.ReadPixels(new Rect(0, 0, 960, 540), 0, 0); image.Apply();
