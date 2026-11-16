@@ -1,0 +1,13 @@
+2026-11-16T09:33:21.1187428Z PASS physical obstacle rejects approach
+2026-11-16T09:33:21.1198965Z Actual roadside-motel-v1 + actual train + actual spider; start=(7.50, 0.02, 70.50) target=(0.00, 2.00, 75.80)
+2026-11-16T09:33:25.1271314Z PASS fast train rejects boarding
+2026-11-16T09:33:27.0887302Z PASS departure interrupts active transfer
+2026-11-16T09:33:31.2417881Z PASS natural chase, approach and boarding at (0.12, 0.99, 75.83)
+2026-11-16T09:33:36.2445878Z PASS accelerating translation, yaw and slope carry; local error=3.683488E-05
+2026-11-16T09:33:40.2485787Z PASS ordinary brain/pathfinding chases aboard, position=(0.02, -0.03, -0.52)
+2026-11-16T09:33:42.9594421Z PASS voluntary dismount and continued pursuit on block graph
+2026-11-16T09:33:48.1929433Z PASS blocked exit keeps minion aboard
+2026-11-16T09:33:51.1982336Z PASS fast train rejects voluntary dismount
+2026-11-16T09:33:55.3969678Z PASS voluntary dismount and continued pursuit on block graph
+2026-11-16T09:33:57.6381641Z PASS reboards after chasing off train
+2026-11-16T09:34:00.6413257Z FAIL Rear melee shove did not detach enemy

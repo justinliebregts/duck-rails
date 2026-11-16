@@ -1,0 +1,41 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using UnityEngine;using UnityEditor;using Game.AI;
+internal class CommandScript:IRunCommand {
+ const string P="X:/Work/duck-rails/docs/validation/playtest-queue/2026-11-16/spider-hit-regression.txt";
+ const int Mask=1<<6;int checks,failures;ExecutionResult result;List<GameObject> made=new List<GameObject>();EnemyManager manager;bool oldEnabled;Enemy actor,predicted;ClimbLocomotion mover;
+ void Log(string s)=>File.AppendAllText(P,DateTime.UtcNow.ToString("O")+" "+s+"\n");
+ void Check(bool b,string s){checks++;if(!b)failures++;Log((b?"PASS ":"FAIL ")+s);}
+ GameObject Track(GameObject g){made.Add(g);result.RegisterObjectCreation(g);return g;}
+ GameObject Box(string name,Vector3 at,Quaternion rotation,Vector3 size){var g=Track(new GameObject(name));g.layer=6;g.transform.SetPositionAndRotation(at,rotation);g.AddComponent<BoxCollider>().size=size;return g;}
+ void Place(Vector3 at,Quaternion rotation){actor.Teleport(at,rotation);Physics.SyncTransforms();}
+ public void Execute(ExecutionResult r){result=r;if(!Application.isPlaying||Photon.Pun.PhotonNetwork.InRoom)throw new Exception("Requires isolated offline Play, never authenticated gameplay");if(RailTrain.Instance!=null)throw new Exception("Requires an empty offline scene with no train: this fixture creates its own remote train and must not replace another train singleton");
+ File.WriteAllText(P,"Unity "+Application.unityVersion+"; synchronous actual Physics queries during isolated Play. Real Rails spider prefab and own train at remote (3400,5,0), with no terrain below its exits. These scoped method/call-path checks supplement actual frame-driven rear/side/surface loops; not peer/headset acceptance. Any-surface support assertions are valid only in this isolated placement, not aboard a train close to block terrain.\n");
+ manager=EnemyManager.Instance;
+ try {
+ if(manager==null){var g=Track(new GameObject("Hit regression manager"));g.SetActive(false);manager=g.AddComponent<EnemyManager>();RailRemoteBridge.Set(manager,"graphAsset",AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/maintenance-depot-v1.prefab").GetComponent<RailBlock>().graph);RailRemoteBridge.Set(manager,"surfaceMask",(LayerMask)Mask);RailRemoteBridge.Set(manager,"maxEnemies",0);RailRemoteBridge.Set(manager,"crawlBoundaryTerrainNames",Array.Empty<string>());g.SetActive(true);}
+ oldEnabled=manager.enabled;if(manager.SurfaceMask.value!=Mask)throw new Exception("Fixture expects surface layer 6 only");manager.enabled=false;
+ var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/RailSpider.prefab");actor=Track(UnityEngine.Object.Instantiate(prefab)).GetComponent<Enemy>();predicted=Track(UnityEngine.Object.Instantiate(prefab)).GetComponent<Enemy>();mover=actor.GetComponent<ClimbLocomotion>();var pm=predicted.GetComponent<ClimbLocomotion>();
+ foreach(float angle in new[]{0f,31f,50f,90f}){
+ var q=Quaternion.Euler(angle,0,0);var origin=new Vector3(3000+angle*3,20,0);var floor=Box("Hit plane "+angle,origin-q*Vector3.up*.25f,q,new Vector3(30,.5f,30));Physics.SyncTransforms();
+ Place(origin,q);var start=actor.Root.position;var normal=mover.SurfaceNormal;var end=mover.DisplaceHit(start,q*Vector3.forward*3,Mask);
+ Check(Vector3.Distance(end,start+q*Vector3.forward*3)<.001f,"plane "+angle+" 3m tangent displacement");Check(!mover.Overlaps(end,Mask)&&mover.HasSurfaceSupport(end,Mask),"plane "+angle+" nonoverlapping supported endpoint");Check(Vector3.Dot(normal,mover.SurfaceNormal)>.99999f,"plane "+angle+" contact normal retained");
+ var blocker=Box("Solid stop "+angle,origin+q*new Vector3(0,1,2),q,new Vector3(8,2,.2f));Physics.SyncTransforms();Place(origin,q);end=mover.DisplaceHit(origin,q*Vector3.forward*8,Mask);var local=Quaternion.Inverse(q)*(end-origin);
+ Check(local.z>1.5f&&local.z<1.9f&&!mover.Overlaps(end,Mask),"plane "+angle+" 8m sweep stops at solid face z="+local.z);
+ Place(origin+q*Vector3.left,q);end=mover.DisplaceHit(actor.Root.position,q*new Vector3(2,0,3),Mask);local=Quaternion.Inverse(q)*(end-origin);
+ Check(local.x>.9f&&local.z<1.9f&&!mover.Overlaps(end,Mask),"plane "+angle+" diagonal wall slide remains clear local="+local);
+ blocker.SetActive(false);Physics.SyncTransforms();
+ foreach(int hz in new[]{30,90,144}){
+ var a=origin+q*new Vector3(-3,0,-3);var b=origin+q*new Vector3(3,0,-3);actor.Teleport(a,q);predicted.Teleport(b,q);Physics.SyncTransforms();var velocity=q*Vector3.forward*10;float remaining=predicted.LocalPushDistance(velocity,out var direction);actor.ReceiveTrustedHit(velocity,a);Check((bool)RailRemoteBridge.Get(actor,"_shoveActive"),"plane "+angle+" "+hz+"Hz real hit starts shove");float maxError=0,maxBudgetError=0;int count=hz==30?10:20;
+ for(int i=0;i<count;i++){RailRemoteBridge.Call(actor,"TickMeleeShove",manager,1f/hz);remaining=predicted.MoveLocalPush(direction,remaining,1f/hz);maxError=Mathf.Max(maxError,Vector3.Distance(actor.Root.position-a,predicted.Root.position-b));maxBudgetError=Mathf.Max(maxBudgetError,Mathf.Abs((float)RailRemoteBridge.Get(actor,"_shoveRemaining")-remaining));}
+ Check(maxError<.001f&&maxBudgetError<.001f,"plane "+angle+" "+hz+"Hz local/authority path parity maxPosition="+maxError+" budget="+maxBudgetError);
+ Check(!mover.Overlaps(actor.Root.position,Mask)&&!pm.Overlaps(predicted.Root.position,Mask)&&mover.HasSurfaceSupport(actor.Root.position,Mask),"plane "+angle+" "+hz+"Hz repeated hit steps supported and clear");}
+ floor.SetActive(false);Physics.SyncTransforms();}
+ var train=Track(UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(RailEnemyBoardingAuthoring.TrainPath))).GetComponent<RailTrain>();train.transform.SetPositionAndRotation(new Vector3(3400,5,0),Quaternion.Euler(8,37,0));Physics.SyncTransforms();
+ foreach(int side in new[]{-1,1}){
+ var start=train.transform.TransformPoint(new Vector3(side*1.5f,-.03f,0));Place(start,train.transform.rotation);var end=mover.DisplaceHit(start,train.transform.right*side*1.5f,Mask);var local=train.transform.InverseTransformPoint(end);Check(side*local.x>2.8f&&!mover.Overlaps(end,Mask)&&!mover.HasSurfaceSupport(end,Mask),"train side gap "+side+" allows outward swept hit, support ends local="+local);
+ start=train.transform.TransformPoint(new Vector3(side*1.2f,-.03f,-3));Place(start,train.transform.rotation);end=mover.DisplaceHit(start,train.transform.right*side*3,Mask);local=train.transform.InverseTransformPoint(end);Check(side*local.x<2&&side*local.x>1.3f&&!mover.Overlaps(end,Mask),"train solid side rail "+side+" blocks swept hit local="+local);}
+ var rear=train.transform.TransformPoint(new Vector3(0,-.03f,-4.4f));Place(rear,train.transform.rotation);var rearEnd=mover.DisplaceHit(rear,-train.transform.forward*2,Mask);var rearLocal=train.transform.InverseTransformPoint(rearEnd);Check(rearLocal.z< -6.3f&&!mover.Overlaps(rearEnd,Mask)&&!mover.HasSurfaceSupport(rearEnd,Mask),"train rear swept hit clears edge without adhesion local="+rearLocal);
+ }catch(Exception e){failures++;Log("FIXTURE ERROR "+e);}
+ finally {if(manager!=null)manager.enabled=oldEnabled;for(int i=made.Count-1;i>=0;i--)if(made[i])result.DestroyObject(made[i]);Physics.SyncTransforms();}
+ Log((failures==0?"PASS":"FAIL")+" DONE checks="+checks+" failures="+failures);r.Log("Spider hit regression checks="+checks+" failures="+failures+" evidence="+P);
+ }
+}

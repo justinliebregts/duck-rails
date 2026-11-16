@@ -947,7 +947,7 @@ namespace Game.AI
             Vector3 delta = _meleeShoveDir * step;
             Vector3 next;
             if (_ground != null) next = _ground.Displace(pos, delta, mask);
-            else if (_climb != null) next = _climb.Displace(pos, delta, mask);
+            else if (_climb != null) next = _climb.DisplaceHit(pos, delta, mask);
             else next = SlideOnSurface(pos, delta, mask);
 
             float along = Vector3.Dot(next - pos, _meleeShoveDir);
@@ -1455,7 +1455,7 @@ namespace Game.AI
             Vector3 delta = direction * Mathf.Min(remaining, MeleePushSpeed * dt);
             Vector3 next = _airborne ? SlideOnSurface(pos, delta, mask)
                 : _ground != null ? _ground.Displace(pos, delta, mask)
-                : _climb != null ? _climb.Displace(pos, delta, mask) : SlideOnSurface(pos, delta, mask);
+                : _climb != null ? _climb.DisplaceHit(pos, delta, mask) : SlideOnSurface(pos, delta, mask);
             SetRootPose(next, root.rotation);
             float moved = Vector3.Dot(next - pos, direction);
             return moved <= MeleePushBlocked ? 0f : Mathf.Max(0f, remaining - moved);

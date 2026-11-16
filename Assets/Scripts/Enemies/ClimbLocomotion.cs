@@ -307,6 +307,30 @@ namespace Game.AI
             return MoveOnSurface(position, position + tangent, _surfaceUp, distance, mask);
         }
 
+        /// <summary>Slide a hit along the starting face without crawl adhesion pulling it back at an edge.</summary>
+        public Vector3 DisplaceHit(Vector3 position, Vector3 delta, LayerMask mask)
+        {
+            Vector3 normal = _surfaceUp.sqrMagnitude > 1e-6f ? _surfaceUp.normalized : Vector3.up;
+            float radius = WorldRadius();
+            float clearance = radius + CollisionSkin;
+            Vector3 center = position + normal * clearance;
+            Vector3 remaining = Vector3.ProjectOnPlane(delta, normal);
+            for (int i = 0; i < 5 && remaining.sqrMagnitude > 1e-8f; i++)
+            {
+                Vector3 direction = remaining.normalized;
+                if (!Physics.SphereCast(center, radius, direction, out RaycastHit hit,
+                    remaining.magnitude + CollisionSkin, mask, QueryTriggerInteraction.Ignore))
+                {
+                    center += remaining;
+                    break;
+                }
+                float travel = Mathf.Clamp(hit.distance - CollisionSkin, 0f, remaining.magnitude);
+                center += direction * travel;
+                remaining = Vector3.ProjectOnPlane(remaining - direction * travel, hit.normal);
+            }
+            return center - normal * clearance;
+        }
+
         public bool HasHitClearance(Vector3 position, Vector3 direction, LayerMask mask)
         {
             float radius = WorldRadius();
