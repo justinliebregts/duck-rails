@@ -43,6 +43,36 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Compound countdown plate animation and SFX — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: plate follows shared public countdown; sinks 0.03 m and plays PressurePlate_On on start, rises and plays PressurePlate_Off on stop. Collider is stationary and tagged Metal.
+- Cheap checks: Unity compilation, saved prefab collider separation, Metal surface, travel and both clip references pass; verification-tool limitations recorded in docs/subway-compound.md.
+- Setup: public Compound, two real clients; enter, add second player, remove one, remove last, restart; also complete countdown and inspect private room.
+- Check: one On per countdown start; no extra cue when someone joins/leaves while another remains; one Off on stop. Movement is 3 cm from authored rest; collision stays fixed, metal contact audio works. Private room without a countdown stays at rest. Check existing -0.03 m scene rest override for visual/contact fit.
+- Needs human: audible balance and headset contact feel.
+- Priority: normal.
+
+
+### Compound fountain water sounds — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: dedicated Water AudioSurface collider 1 cm below the fountain water; removed the visual water plane from solid mesh collision only.
+- Cheap checks: 11 Edit Mode basin/rim/pedestal/outside rays passed; footsteps and hand hits resolve HandHit_Water; Console error query empty. See docs/subway-compound.md.
+- Setup: Compound; move through basin and touch water, rim and pedestal.
+- Check: basin contacts play water SFX; rim, pedestal and surrounding floor keep their usual sounds; no snagging at basin edges.
+- Needs human: audible SFX and headset contact feel; review the November 16 blue fountain apron border under gameplay lighting.
+- Priority: normal.
+
+
+### Compound pressure plate dark-metal finish — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: moving slab top now uses dark grey Industrial metal; yellow/black hazard border retained. Source Blender model and generator updated.
+- Cheap checks: Unity import/command compilation, zero yellow slab UVs, retained collider, empty Console errors, actual Edit Mode appearance capture; see docs/subway-compound.md.
+- Setup: Compound, stand on/off the departure pressure plate.
+- Check: dark interior and yellow striped border remain readable while the slab lowers/returns.
+- Needs human: headset appearance and preference.
+- Priority: low.
+
+
 ### Quackbear lip pivot normalization — queued 2026-11-15
 - Commit(s): uncommitted.
 - Changed: `Lips_Quackbear.fbx` Lip_B and Lip_T now exactly match Default local position/rotation. Removed compensating root/lip rotations and baked pivot offsets into mesh vertices, preserving resting geometry and existing asset IDs.
@@ -158,10 +188,10 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ### Subway terminal model swapped into Compound — queued 2026-11-15
 - Commit(s): uncommitted.
-- Changed: Compound now shows the Blender-modelled `SubwayTerminal` prefab (mesh colliders plus four invisible guards) instead of the SubwayV2 blockout, which is disabled, not deleted. Later the same day: gate lower sheets given concourse-side faces, and a two-sided alpha-clipped wire mesh (`Mesh_Fence`, no collider) added above the barricades on both track sides and the Platforms end; rebaked. Boarding trigger, countdown, launch button, private-room hint, rating and Discord stations were re-placed; new baked lights; rebaked. See [subway compound](subway-compound.md).
+- Changed: Compound now shows the Blender-modelled `SubwayTerminal` prefab (mesh colliders plus four invisible guards) instead of the SubwayV2 blockout, which is disabled, not deleted. Later the same day: gate lower sheets given concourse-side faces, and a two-sided alpha-clipped wire mesh (`Mesh_Fence`, no collider) added above the barricades on both track sides and the Platforms end; rebaked. Then the Supplies south wall and all shelving were removed (stall open and empty); rebaked again. Then the fountain was rebuilt as a rotated centre piece on a dark apron, and a pressure plate (`RailPressurePlate`, visual only, sinks 3 cm while the boarding trigger is occupied) was added at the gate; the boarding trigger was shrunk from 6 x 3.6 m to the 3.6 x 2.6 m plate. Boarding trigger, countdown, launch button, private-room hint, rating and Discord stations were re-placed; new baked lights; rebaked. See [subway compound](subway-compound.md).
 - Cheap checks: Edit Mode only. Floor raycasts at spawn, player start, boarding area, both stalls and stair landing hit; track, gate and stair guards block; spawn-to-gate line clear; 8/8 meshes lightmapped, 347 probes; after the mesh addition, rays at 4-5 m height toward both tracks and past the gate still hit the guards; all labels CutePixel SDF; Console error query empty. `Validate Subway Blockout` was not run and is expected to fail, since it checks SubwayV2.
 - Setup: one desktop client in Keyboard mode from Login into the public Compound; then two real clients.
-- Check: spawn on the floor clear of pillars and the stairs for all spawn slots; walk around the fountain, into Station Info and through both Supplies openings; cannot pass or climb the side barricades, the Platforms gate line or the stair barricade; boarding trigger starts the countdown in front of the gate, cancels on leaving, and the full countdown transfers to a ready expedition; private owner can press Launch Expedition on the gate; RATE GAME and JOIN DISCORD buttons are reachable and respond. `RailBoardingLiveChecks` should still derive its positions from the moved trigger.
+- Check: spawn on the floor clear of pillars and the stairs for all spawn slots; walk around the fountain, into Station Info and through both Supplies openings and its now-open stair side; cannot pass or climb the side barricades, the Platforms gate line or the stair barricade; boarding trigger starts the countdown only when standing on the pressure plate (not beside it), the plate sinks for local and remote ducks and rises when empty, the 5 cm plate lip and 1 cm fountain apron do not snag walking, up to eight ducks fit on the plate, the countdown cancels on leaving, and the full countdown transfers to a ready expedition; private owner can press Launch Expedition on the gate; RATE GAME and JOIN DISCORD buttons are reachable and respond. `RailBoardingLiveChecks` should still derive its positions from the moved trigger.
 - Needs human: headset climbing and hand contact on the one-sided fence panels and thin props, button reach at duck height, text readability on the gate, lighting mood, whether the wire mesh shimmers or reads too dense in the headset, the gate sheets visible from the concourse, and Quest frame time with twelve players.
 - Priority: blocks other Compound work.
 

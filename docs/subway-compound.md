@@ -62,6 +62,44 @@ queued for playtest; it is not verified in Play Mode, multiplayer or headset.
   [gate close](../output/subway-terminal-model/scene-fence-gate-close.png),
   [track side](../output/subway-terminal-model/scene-fence-side.png).
 
+### Supplies stall opened — November 15, 2026
+
+- User review: the stall south wall (Unity Z -2.6, pillar to track barricade) and all five
+  shelf units with their stock are removed, so the stall is open from the stair side and
+  empty for real shop items. A timber corner post and header now carry the canopy edge.
+- Kept: canopy and three hanging bulbs, the back wall (track barricade panels), the north
+  and front walls, sign, the two stacked crates inside and the crates by the entrance.
+  Model total is now 8,234 triangles. Rebaked; the scene `Supplies A/B` lights are unchanged.
+- Edit Mode rays: the old wall line is open, the back wall still blocks, floor hit inside.
+  Captures: [from the stair side](../output/subway-terminal-model/scene-supplies-open-south.png),
+  [inside](../output/subway-terminal-model/scene-supplies-open-inside.png).
+- `build_terminal.py` was run with headless Blender (`blender -b SubwayTerminal.blend
+  --python ...`) for this change, because the live Blender session had another file open.
+
+### Fountain centre piece and pressure plate — November 15, 2026
+
+- Fountain (user review against the subway concept): turned 45 degrees, on a dark tiled
+  apron with a red border (6.2 m square, 1 cm above the floor), a 10 cm step, a
+  blue-banded rim 0.46 m high with a few chipped blocks, raised water and a two-tier
+  pedestal topping out at 0.74 m. Kept low on purpose for duck eye height.
+- Pressure plate in front of the Platforms gate, 3.6 x 2.6 m centred at Z 7.1:
+  `Pressure_Plate_Frame` (static, lightmapped: hazard border, steel curb, dark pit) and
+  `Pressure_Plate` (moving yellow slab with tread bars, not static, probe lit, its own
+  BoxCollider). The slab rests 5 cm above the floor and sinks 3 cm.
+- `Assets/Scripts/Gameplay/RailPressurePlate.cs` on the prefab root moves the slab. It
+  is visual only: each client lowers it while `RailWorld.IsLocalOnPlatform()` or any
+  remote actor's `IsActorOnPlatform` is true, the same test the countdown uses. Nothing
+  is networked and the countdown logic is unchanged.
+- The `Departure occupancy trigger` was shrunk from 6 x 3.6 m to the plate footprint
+  (3.6 x 3 x 2.6 m, still centred at Z 7.1), so standing beside the plate no longer counts.
+  This is a trial value; eight ducks must fit on 3.6 x 2.6 m.
+- Model total 8,774 triangles in eleven meshes. Rebaked. Edit Mode rays: plate top at
+  0.06 (tread bar), fountain pedestal 0.74, spawn floor 0. Captures:
+  [fountain](../output/subway-terminal-model/scene-fountain-high.png),
+  [fountain at duck eye](../output/subway-terminal-model/scene-fountain-duck-eye.png),
+  [plate](../output/subway-terminal-model/scene-plate-high.png),
+  [plate at duck eye](../output/subway-terminal-model/scene-plate-duck-eye.png).
+
 - Unity assets in `Assets/DuckRails/Compound/SubwayTerminal`: `SubwayTerminal.fbx`
   (eight meshes, no cameras, lights or animation), six URP Lit materials in `Materials`
   (the two atlas materials reuse the existing Quackville textures; lens, bulb, glow and
@@ -268,3 +306,23 @@ Verified in the Duck Rails editor: command compilation, saved mesh references an
 Installed approved `↑ QUACKVILLE` prop with exactly one upward arrow on the left. Reuses the platform sign's olive/timber atlas construction, CutePixel-derived 22 mm raised lettering and `RaisedSignIvory` material. Standalone prefab: `Assets/DuckRails/Compound/SubwayTerminal/QuackvilleExitSign.prefab`, nested in SubwayTerminal. Center (0, 5.35, -11.86), yaw 180; short supports reach the lintel at 6.30 m. Lowered below the ceiling pipes after the initial editor view showed text occlusion.
 
 Source: `ArtSource/SubwayTerminal/build_quackville_sign.py` and `QuackvilleSign/` (board JSON and lettering Blender/JSON). Two probe-lit renderers, no runtime scripts or new lights. Existing terminal geometry, blockers and scene overrides preserved; no scene save or lighting rebake required. Verified project target, command compilation, mesh/material references, single scene instance, saved prefab diff and visual editor capture. Console error query empty. Capture: `output/subway-terminal-model/quackville-exit-sign.png`. Live/headset readability is queued for playtest; no Play Mode run.
+
+### Pressure plate dark-metal finish — November 15, 2026
+- Replaced only the moving slab top's yellow atlas mapping with the existing Industrial `darkmetal` tile (24 UV corners). Updated `build_terminal.py`, editable `.blend`, and exported FBX; hazard frame, geometry, materials and movement code retained.
+- Verified Duck Rails editor import and command compilation; slab has 296 vertices, zero yellow-tile UVs, and retained 3.54 x 0.11 x 2.54 m BoxCollider. Console error query empty. Probe-lit slab needs no lighting rebake.
+- Actual Edit Mode appearance: [dark-metal plate](../output/subway-terminal-model/scene-plate-dark-metal.png). Live/headset visual review queued; no Play Mode run.
+
+### Fountain water audio collider — November 16, 2026
+- Added `Fountain/Water audio collider` to `SubwayTerminal.prefab`: Environment-layer non-trigger BoxCollider, 2.6 x 0.1 x 2.6 m, centre Y 0.28, yaw 45 degrees. Its top is 1 cm under the visible water. `AudioSurface.type` references `Assets/Audio/Surfaces/Water.asset`.
+- Fountain's MeshCollider now uses `Meshes/FountainSolidCollision.asset`, a copy of the visual mesh excluding only the eight water-plane triangles at Y 0.34; otherwise the original collider would intercept contacts before the water collider. Visible mesh, rim, pedestal and surrounding geometry retained. Regenerate this collision copy if fountain geometry changes later.
+- Verified Duck Rails editor, command compilation and 11 actual Compound Edit Mode rays: eight basin locations hit Water at Y 0.33; pedestal, rim and outside remain non-water. Player footsteps and hand hits both resolve Water to `HandHit_Water`. Console errors empty. Audible/headset acceptance queued; no Play Mode run.
+
+### Countdown-driven pressure plate — November 16, 2026
+- Supersedes the occupancy-driven behaviour above: `RailPressurePlate` reads the shared public Compound countdown deadline only. A positive deadline depresses the visual by 0.03 m relative to its authored rest; clearing it raises the visual. No independent player checks. Local clock expiry does not prematurely release the plate.
+- State edges request `PressurePlate_On` / `PressurePlate_Off` once through RailAudio; unchanged countdown state does not replay them. Spatial SoundEvent assets reference the supplied WAVs. Private rooms have no public countdown and leave the plate at rest.
+- Moved the slab BoxCollider to stationary sibling `Pressure plate metal collision`; both collision and visual have Metal AudioSurface. Existing Compound slab local-position override (-0.03 m) is retained; prefab rest is zero. Collision stays fixed at the prefab-authored surface while the visual moves.
+- Unity compilation and saved-prefab checks passed: no collider on moving slab, stationary collider outside its hierarchy, Metal type, 0.03 travel and both non-null clips. Console was empty before verification; a prefab-only TypeOf check hit a null lookup on the inactive asset, then direct component and clip checks passed. A reflection-based disposable transition check was rejected by the Unity tool namespace restriction and was not run. Real countdown transitions, audible one-shot behaviour, client sync and headset feel are queued; no Play Mode run.
+
+### Blue fountain apron border — November 16, 2026
+- User approved blue-border preview. Remapped eight apron-border faces in the Fountain mesh from Town redband to Industrial blueworn; updated editable Blender file, FBX and generator. Column/wall red bands unchanged. Geometry and dedicated water/solid collision assets retained.
+- Verified Duck Rails Unity import, actual Edit Mode appearance and empty Console errors. Capture: `output/subway-terminal-model/scene-fountain-blue-border.png`. Headset appearance queued with fountain review; no Play Mode or lighting rebake.

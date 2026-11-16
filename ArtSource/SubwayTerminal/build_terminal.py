@@ -508,20 +508,31 @@ def signboard(b, lo, hi):
 
 
 def build_fountain(b):
-    R, RW = 1.6, .38
-    heights = [[.4, .4, .22, .4], [.4, .15, 0, .3], [.4, .4, .4, .4], [.28, .4, .4, .34]]
+    # Centre piece, turned 45 degrees as in the concept: dark tiled apron with a blue border, a low step,
+    # blue-banded rim, water and a low two-tier pedestal. Kept under 0.75 m because duck eye height is low.
+    R, RW, RIM, A, BW = 1.7, .4, .36, 3.1, .25
+    SIDE = [(.28, "blueworn"), (99, "plaster")]
+    b.push(Matrix.Rotation(math.radians(45), 4, "Z"))
+    b.quad((-A + BW, -A + BW, .01), (2 * (A - BW), 0, 0), (0, 2 * (A - BW), 0), "charcoal")
+    S = R + .3
+    b.box((-S, -S, 0), (S, S, .1), "concrete", skip="b")
+    heights = [[1, 1, .55, 1], [1, .45, 1, 1], [1, 1, 1, .7], [.8, 1, 1, 1]]     # a few chipped rim blocks
     seg = (2 * R - RW) / 4
     for k in range(4):
         b.push(Matrix.Rotation(math.radians(90 * k), 4, "Z"))
+        b.quad((-A, -A, .01), (2 * A - BW, 0, 0), (0, BW, 0), "blueworn")
         for j, h in enumerate(heights[k]):
-            if h: b.box((-R + j * seg, -R, 0), (-R + (j + 1) * seg, -R + RW, h), "plaster", top="concrete", skip="b")
+            b.box((-R + j * seg, -R, .1), (-R + (j + 1) * seg, -R + RW, .1 + RIM * h), SIDE, top="lightconc", skip="b")
         b.pop()
     i = R - RW
-    b.quad((-i, -i, .03), (2 * i, 0, 0), (0, 2 * i, 0), "charcoal")
-    b.quad((-i, -i, .13), (2 * i, 0, 0), (0, 2 * i, 0), "water")
-    crate(b, .1, -.05, 0, .55, .55, .34, "concrete", 12)
-    for x, y, s, yaw in ((1.9, -.5, .3, 25), (2.05, -.15, .2, -40), (.5, -1.25, .22, 60), (-.9, .4, .2, 15)):
-        crate(b, x, y, 0, s, s * .8, s * .6, "plaster", yaw)
+    b.quad((-i, -i, .14), (2 * i, 0, 0), (0, 2 * i, 0), "charcoal")
+    b.quad((-i, -i, .34), (2 * i, 0, 0), (0, 2 * i, 0), "water")
+    b.box((-.45, -.45, .1), (.45, .45, .5), SIDE, top="lightconc", skip="b")
+    b.box((-.26, -.26, .5), (.26, .26, .66), "concrete", skip="b")
+    b.box((-.42, -.42, .66), (.42, .42, .74), "lightconc")
+    for x, y, s, yaw in ((2.3, -.5, .3, 25), (2.45, -.1, .2, -40), (.5, -2.3, .22, 60), (-2.25, 1.1, .2, 15)):
+        crate(b, x, y, .01, s, s * .8, s * .6, "plaster", yaw)
+    b.pop()
     # Generator beside the fountain, cabled to the nearest pillar
     b.push(Matrix.Translation((2.95, -1.85, 0)) @ Matrix.Rotation(math.radians(24), 4, "Z"))
     b.box((-.42, -.28, .2), (.42, .28, .68), "yellowworn", fit=True)
@@ -599,7 +610,13 @@ def shelf(b, ox, oy, yaw, L, rng):
 
 def build_supplies(b):
     rng = random.Random(37)
-    fence(b, (8.85, -2.6), (4.75, -2.6), rng, 2.8, double=True)
+    # The south wall (y -2.6) was removed after review to open the stall. It is still built into a
+    # throwaway mesh so the random panels of the remaining walls keep their look.
+    gone = Builder("_discard")
+    fence(gone, (8.85, -2.6), (4.75, -2.6), rng, 2.8, double=True)
+    gone.bm.free()
+    b.beam((8.76, -2.55, 0), (8.76, -2.55, 2.9), .12, .12, "timber", up=(0, 1, 0), caps=False)      # carries the canopy edge instead
+    b.beam((8.76, -2.55, 2.84), (4.78, -2.55, 2.84), .1, .12, "timber", caps=False)
     fence(b, (4.75, 5.6), (5.3, 5.6), rng, 2.8, double=True)
     fence(b, (6.7, 5.6), (8.85, 5.6), rng, 2.8, double=True)
     fence(b, (4.75, 5.6), (4.75, 1.6), rng, 2.8, double=True)
@@ -610,11 +627,7 @@ def build_supplies(b):
     b.beam((5.3, 5.6, 2.3), (6.7, 5.6, 2.3), .1, .14, "timber", caps=False)
     canopy(b, 8.85, 6.3, -2.6, 5.6, 3.1, 2.92, 5)
     canopy(b, 6.3, 4.9, -1.9, 1.9, 2.95, 2.72, 2, "plaster")
-    shelf(b, 8.72, -2.3, 90, 3.6, rng)
-    shelf(b, 8.72, 1.6, 90, 3.7, rng)
-    shelf(b, 5.5, -2.05, 0, 2.4, rng)
-    shelf(b, 8.2, 5.05, 180, 1.4, rng)
-    shelf(b, 6.9, 2.3, 90, 2.5, rng)
+    # Shelving removed after review: the stall is left empty for real shop items.
     for x, y in ((6.6, -.6), (7.6, 1.2), (7.4, 3.9)):
         bulb(b, x, y, 2.35, 2.95)
     crate(b, 4.2, -1.85, 0, .75, .7, .65, "crate", -8)
@@ -623,6 +636,39 @@ def build_supplies(b):
     crate(b, 5.5, 1.0, 0, .8, .6, .45, "olive", 80)
     crate(b, 5.45, 1.0, .45, .6, .5, .4, "crate", 70)
     lamp(b, (PX - .5, 3 - .2, 4.3), (-1, 0, 0), (.8, 1.0, 0))
+
+
+PLATE = (1.8, 5.8, 8.4)             # matchmaking pressure plate: half width, near and far edge (Y)
+
+
+def build_plate_frame(b):
+    """Static surround of the pressure plate: hazard border on the floor, steel curb, dark pit under the plate."""
+    hw, y0, y1 = PLATE
+    W, n, m = .3, 7, 4
+    d, e = 2 * (hw + W) / n, (y1 - y0) / m
+    for i in range(n):
+        for ya in (y0 - W, y1):
+            b.quad((-hw - W + i * d, ya, .012), (d, 0, 0), (0, W, 0), "hazard", fit=True)
+    for i in range(m):
+        for xa in (-hw - W, hw):
+            b.quad((xa, y0 + i * e, .012), (W, 0, 0), (0, e, 0), "hazard", fit=True, swap=True)
+    c = .05
+    b.box((-hw - c, y0 - c, 0), (hw + c, y0, .025), "darkmetal", skip="b")
+    b.box((-hw - c, y1, 0), (hw + c, y1 + c, .025), "darkmetal", skip="b")
+    b.box((-hw - c, y0, 0), (-hw, y1, .025), "darkmetal", skip="by+y-")
+    b.box((hw, y0, 0), (hw + c, y1, .025), "darkmetal", skip="by+y-")
+    b.quad((-hw, y0, .006), (2 * hw, 0, 0), (0, y1 - y0, 0), "charcoal")
+
+
+def build_plate(b):
+    """The moving slab. Rest height 5 cm; Unity lowers it 3 cm while a duck stands in the boarding trigger."""
+    hw, y0, y1 = PLATE
+    g, top = .03, .05
+    b.box((-hw + g, y0 + g, -.05), (hw - g, y1 - g, top), "darkmetal", top="darkmetal", skip="b")
+    y = y0 + .35
+    while y < y1 - .3:
+        b.box((-hw + .3, y - .04, top), (hw - .3, y + .04, top + .01), "darkmetal", skip="b")
+        y += .38
 
 
 def build_platforms(b):
@@ -750,7 +796,8 @@ def main():
     LAMPS.clear()
     for name, fn in (("Terminal_Shell", build_shell), ("Stairway_Sealed", build_stairs), ("Stair_End_Dressing", build_dressing),
                      ("Fountain", build_fountain), ("Side_Barricades", build_barricades), ("Station_Info", build_info),
-                     ("Supplies_Store", build_supplies), ("Platforms_Gate", build_platforms), ("Mesh_Fence", build_mesh_fence)):
+                     ("Supplies_Store", build_supplies), ("Platforms_Gate", build_platforms), ("Mesh_Fence", build_mesh_fence),
+                     ("Pressure_Plate_Frame", build_plate_frame), ("Pressure_Plate", build_plate)):
         b = Builder(name)
         fn(b)
         b.finish(coll, mats)
