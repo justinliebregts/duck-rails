@@ -1,5 +1,11 @@
 # Duck Rails — execution plan
 
+- [x] November 16: isolate StartingStation square lightmap artifacts to coplanar
+  city deck/ceiling geometry; separate surfaces, preserve in builder/source prefab,
+  rebake/export and validate editor appearance plus all 91 bindings.
+  [Evidence](validation/station-lightmap-fix/README.md).
+- [ ] StartingStation corrected runtime/headset lighting and performance: queued for playtest.
+
 - [x] November 15: implement Farm screenshot geometry/lantern repairs and pond
   underside collider; rebake navigation/lighting and regenerate triangle-preserving
   Blender chunks. Authoring checks pass. [Evidence](validation/farm-silos-polish-2026-11-15/README.md).
@@ -807,6 +813,7 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] Install the approved underground split-platform station greybox on StartingStation; rebake/export lighting and fit the existing departure shop. 326 physical/track/lighting checks and Week 3 checks pass. See [station evidence](starting-station-layout.md#installed-greybox).
 - [ ] Review station stair traversal, bridge scale, both-side boarding and shop use in VR; moving-player clearance and final mountain art remain pending.
+- [ ] November 16 city station v3: user-approved layout modelled in Blender on the Quackville atlases and installed on StartingStation in place of the greybox (disabled, not deleted): doubled recessed supplies room, washroom and office, sealed rear doors, 48 m tunnel, city retaining-wall portal with unreachable derelict backdrop and fenced yard. This replaces the mountain exit. Baked/exported; 30 Edit Mode ray and overlap checks pass. Queued for playtest; no Play Mode, multiplayer, headset or Quest performance evidence. See [built model](starting-station-layout.md#built-model--november-16-2026).
 
 - [x] Apply the requested Quackville rough station material pass: 215 surfaces, 57 atlas-UV meshes, rebaked/exported lighting and 326 passing physical/track/lighting checks. See [station materials](starting-station-layout.md#quackville-rough-material-pass).
 - [ ] Review station material texel scale, repetition, dark readability and performance in VR.

@@ -186,3 +186,26 @@ Migration evidence: `output/shared-moonlight/migration.txt`. All 19 rebakes and 
 Validation: `output/shared-moonlight/export-validation.txt` records 19 passing exports; `output/shared-moonlight/runtime-proof.txt` records 84 PASS lines across four offline assembled routes (seeds 0, 5, 7, 8), covering all 16 scavenging blocks plus station, helipad and finale. Checks include readiness, texture/UV bindings, translated probes, moving-bridge exclusion, finale relocation and complete teardown. An initial editor setup attempt used unloaded prefab references; reloading those references before creating the proof resolved it. No gameplay code changes were needed.
 
 The user reported Unity crashing during the subsequent exit-from-Play interval. PASS and complete teardown were written before exit; the crash cause is not established. After restart, MCP verified Duck Rails in Edit Mode, the saved shared prefab and all 19 exports. Removed the temporary proof scene without opening or replacing the user's current scene. No diagnostic reports were inspected. Headset/multiplayer acceptance and visual seam review remain open.
+
+## Starting Station interior allocation — November 16, 2026
+
+User reported blocky lighting after raising resolution to 16 and flood shadow radius to 0.25. Read-only inspection of the verified station bake scene found two loaded 1024 maps, Station_Shell/Rooms/StairsBridge at Scale in Lightmap 1, City_Deck already 0.02, City_Backdrop without a lightmap binding, and the 96 x 160 m Station ground at 0.25. No UV overlap diagnosis has been established; large rectangular patches may be actual cast shadows.
+
+Set authoring-scene overrides: Station_Shell, Station_Rooms and Station_StairsBridge 1 -> 2; Station ground 0.25 -> 0.05. Retained global resolution 16, raised maximum atlas size 1024 -> 2048 to allow larger combined interior allocations. Preserved other renderer priorities and user light edits. Saved scene/settings. MCP edit compiled and values were checked; no bake/export or Play Mode run. Existing maps still represent the previous settings. Next: comparison bake and inspect wall/floor shadows and UV charts, then export accepted lighting. Increased interior density can increase memory; headset quality/performance remains unverified.
+
+November 16 investigation initially retained the patches in isolated no-shadow and replacement-floor bakes; see [historical investigation](validation/station-lightmap-audit/README.md).
+
+### Confirmed square-patch fix
+
+City_Deck's upward-facing surface and the station's downward-facing ceiling were
+coplanar at Y=9. Backface hits caused invalid bake texels and rectangular neighbour
+fills. Six platform hemisphere probes measured 15.6–29.7% deck backfaces against
+the bake's 90% front-face requirement. Raising only the hidden, collider-free deck
+by 0.25 m eliminated those hits and the patches in a controlled bake with original
+Auto filtering. Production is rebaked/exported; east/west native camera views and
+all 91 exported bindings pass editor checks. Runtime/headset review is queued.
+
+Preserve the City_Deck local Y=0.25 override in StartingStation and its V3 source
+prefab. RailCityStation.BuildPrefab applies it after FBX instantiation. Do not
+restore the deck to the ceiling plane. User lights, mesh UVs and interior geometry
+are unchanged. [Evidence, images and checks](validation/station-lightmap-fix/README.md).

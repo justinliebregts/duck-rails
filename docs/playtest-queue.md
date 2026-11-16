@@ -43,6 +43,18 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Starting Station raised sign lettering — queued 2026-11-16
+
+- **Change:** all four station TMP labels replaced with 2 cm solid CutePixel meshes;
+  placement/wording/signboards preserved; lighting rebaked/exported.
+- **Passed now:** four saved/reloaded meshes in source/runtime prefabs, persistent
+  MeshFilters, no duplicate TMP, compilation, 95 matched lighting bindings and
+  native close-up/station inspection.
+- **Run:** enter expedition; check all four labels remain visible and lit after
+  companion load/reload and station translation.
+- **Needs human:** Quest readability near signs/from platforms, appearance and performance.
+- **Evidence:** [checks and images](validation/station-raised-signs/README.md).
+
 ### Skyscraper raised development sign — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: solid CutePixel lettering and a bottom-mounted baked spotlight on the front development sign; isolated fascia lightmap preserves existing tower atlas lighting.
@@ -50,6 +62,36 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Check: wording and raised edges readable, uplight visible without realtime double-lighting, sign lightmap remains bound after route translation and reload.
 - Needs human: headset readability and final art approval.
 - Priority: normal.
+
+### Starting Station ceiling/deck lightmap fix — queued 2026-11-16
+
+- **Change:** separate the hidden City_Deck from the coplanar station ceiling by
+  0.25 m; preserve in source prefab/builder; production rebaked and companion exported.
+- **Passed now:** matched native east-platform before/after and west-platform
+  inspection; 768/768 sampled rays front-facing; 91 exported renderer bindings
+  match bake; no missing prefab textures or script compilation failure.
+- **Run:** enter expedition, inspect both platforms, stairs and room entrances for
+  returning rectangular patches; verify companion loading and translated binding
+  consistency. Preserve the exterior roof separation.
+- **Needs human:** Quest lighting readability and memory/performance, final visual approval.
+- **Evidence:** [cause, fix and editor checks](validation/station-lightmap-fix/README.md).
+
+### Starting Station washroom mirror and Supplies tripods — queued 2026-11-16
+
+- Added a matching hanging bulb mesh inside Supplies on the far side of the doorway. Unity Edit Mode confirmed the ceiling mount and shared warm bulb material. The fixture uses a separate FBX and has no Light component. Check placement in Expedition after user-authored lighting is ready.
+- Flipped the washroom mirror above the sinks to face into the room. Added two warm baked tripod work lights on the platform, one on either side of the Supplies entrance.
+- Edit Mode checks passed for the mirror's face direction, two warm fixtures in the saved station prefab, nine clear rays through the doorway, and lighting export with two atlases and 596 probes.
+- In Expedition, check the mirror from the washroom entrance and at the sinks. Approach Supplies from both sides, verify the warm pools of light and doorway clearance, and check for lightmap seams or overly bright patches.
+
+### City starting station v3 — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: StartingStation uses the new Blender-built city subway station (greybox disabled): open platforms, recessed supplies room with the shared store against its west and north walls (no partition), washroom, office, sealed rear, tunnel, city portal and fenced yard; rebaked with neutral Compound-style floodlights and a few warm accents after the user's review.
+- Cheap checks: compiles, Console clean, 30 Edit Mode ray/overlap checks on the first build and 15 on the reviewed build pass. See docs/starting-station-layout.md.
+- Setup: start an expedition from the Compound, single client then two clients; default block order.
+- Check: train spawns at the stop and both platforms board across the 0.5 m gap; stairs and bridge walkable with no snagging on treads; rails and bridge guard stop falls; supplies doorway and shop aisle reachable, every shared-store item pulls, prices and bundle titles readable, security TV works; washroom and office enterable; rear doors, gate, retaining wall and both yard fences block; train leaves through the tunnel with no clipping (players, smoke, lanterns); lightmaps and probes load with the station (no black or unlit surfaces, ducks lit in rooms, tunnel and yard); no seam or gap at Z 160 into the first block; late joiner aboard sees the same.
+- Needs human: VR scale and mood of the station, stair comfort, shop reach at duck height, yard darkness, Quest frame cost.
+- Priority: normal.
+
 
 ### Bridge crash collapse — queued 2026-11-16
 - Commit(s): uncommitted.

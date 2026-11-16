@@ -1,0 +1,32 @@
+Unity 6000.3.24f1 scene=StartingStation-bake bindings=91 lightmaps=2 probes=596
+PASS floor west platform 1.00 on Station_Shell
+PASS floor east platform 1.00 on Station_Shell
+PASS floor supplies aisle 1.00 on Station_Rooms
+PASS floor supplies room 1.00 on Station_Rooms
+PASS floor washroom 1.00 on Station_Rooms
+PASS floor office 1.00 on Station_Rooms
+PASS floor west landing 3.55 on Station_StairsBridge
+PASS floor east landing 3.55 on Station_StairsBridge
+PASS floor bridge 6.10 on Station_StairsBridge
+PASS floor bridge west end 6.10 on Station_StairsBridge
+PASS floor track bed 0.00 on Station ground
+PASS floor yard 0.00 on Station ground
+PASS stair treads 56 treads, 0 wrong
+PASS clear supplies doorway 
+PASS clear supplies door top 
+PASS clear washroom door 
+PASS clear office door 
+PASS clear shop aisle entrance 
+PASS clear shop aisle length 
+PASS clear bridge crossing 
+PASS clear tunnel centre 
+PASS blocked rear rolling doors by Station_Shell
+PASS blocked concourse gate by Station_Shell
+PASS blocked bridge railing by Guard
+PASS blocked west fence by Guard
+PASS blocked east fence by Guard
+PASS blocked west stair rail by Guard
+PASS blocked retaining wall by Portal_Wall
+PASS blocked shop partition by Station_Rooms
+PASS train envelope Z 75-160 X +/-2.75, Y 0.3-5.2 clear
+checks: 30 pass, 0 fail
