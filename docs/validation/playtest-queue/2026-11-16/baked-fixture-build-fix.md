@@ -11,3 +11,5 @@ Fresh offline actual Play lifecycle on ten named production/review prefabs passe
 
 Commit boundary: three prefabs already contained unrelated user art edits. The index patch adds only fixture membership against HEAD: StartingStation14 legacy fixtures, finale24, Convenience64. All other25 prefab fields are clean isolated additions. The current working StartingStation has45 fixtures, including31 nested CityStationV3 lights; those additional membership/stripped-reference changes remain with the existing uncommitted CityV3 art. Thus committed legacy metadata totals978 fixtures while the actual tested working tree totals1009. No existing art is staged or reverted.
 Android rebuild PASS: Succeeded errors=0, duration00:07:49.2006392. Native device checks still pending; see quest-build-attempt2.txt and quest-apk-sha256.txt.
+
+Follow-up: InstallFinale now records prefab instance property modifications after capturing baked fixtures and before saving its scene. This retains the captured references as scene overrides. Source review and Unity compilation passed; no scene was rewritten for this follow-up.

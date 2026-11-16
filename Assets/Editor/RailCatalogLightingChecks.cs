@@ -41,6 +41,7 @@ public static class RailCatalogLightingChecks
         targetLighting.bindings=bindings;targetLighting.lightingScene=source.lightingScene;
         if(RailBlock.FindEnvironment(target, "Baked block sample lights")==null)Object.Instantiate(RailBlock.FindEnvironment(source.transform, "Baked block sample lights").gameObject,target,false).name="Baked block sample lights";
         targetLighting.CaptureBakedFixtures();
+        PrefabUtility.RecordPrefabInstancePropertyModifications(targetLighting);
         EditorSceneManager.MarkSceneDirty(scene);EditorSceneManager.SaveScene(scene);
         Debug.Log("Finale lighting installed without replacing bridge or interaction references.");
     }
