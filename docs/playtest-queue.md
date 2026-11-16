@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### FX_Heal_02 revive completion — queued 2026-11-15
+- Commit(s): uncommitted.
+- Changed: Revived resource prefab now uses FX_Heal_02's three layers, with looping/play-on-awake disabled and local simulation. Existing trigger, audio and position retained.
+- Cheap checks: verified Duck Rails editor; save/reload confirms three layers, root ParticleSystem, manual one-shot playback, local simulation, supported primary materials and unchanged GUID. No Play Mode run.
+- Setup: two clients; revive on ground and aboard the moving train, then repeat a revive.
+- Check: healing effect plays once only on completion, follows the revived duck, finishes cleanly, and restarts on the next rescue; no particles during revive progress or historical replay on late join.
+- Needs human: headset appearance, scale/placement and nighttime material rendering.
+- Priority: normal.
+
 ### Farm Silos screenshot repairs and pond collider — queued 2026-11-15
 
 - Scope: slide side/deck collider alignment, five ramp/landing joins, north path

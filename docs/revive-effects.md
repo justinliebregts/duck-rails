@@ -1,5 +1,11 @@
 # Raider Legends revive feedback — November 12, 2026
 
+## Current particle replacement — November 15, 2026
+
+User selected `Assets/Plugins/PolygonParticleFX/Prefabs/FX_Heal_02.prefab` for completion feedback. Its three layers now replace the contents of `Assets/Resources/RailRevive/Revived.prefab`, preserving the resource path and GUID. The vendor source stays unchanged. The revive copy disables looping and play-on-awake, uses local simulation, and retains the authored scale, timing and materials. Existing completion trigger, sounds and head-minus-0.5 m placement remain unchanged.
+
+Verified Duck Rails editor: save/reload checks pass for three particle systems, root playback component, non-looping/manual playback, local simulation, supported primary materials and unchanged asset GUID. Empty trail-material slots are unused (trails disabled). Live appearance is **queued for playtest** as “FX_Heal_02 revive completion”; historical four-layer evidence below applies to the previous effect.
+
 Implemented; live multiplayer/headset acceptance is queued as **Raider Legends revive feedback** in `playtest-queue.md`.
 
 ## Source and imported assets

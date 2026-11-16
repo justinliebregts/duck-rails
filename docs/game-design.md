@@ -1,5 +1,9 @@
 # Duck Rails — V1 game design
 
+November 15 revive visuals: user selected PolygonParticleFX `FX_Heal_02` for the
+completion effect, adapted for one-shot playback following the duck. Audio and
+revive timing are unchanged; visual acceptance queued. See [revive feedback](revive-effects.md).
+
 November 15 Farm repairs: corrected slide/ramp/path geometry and lantern mounting,
 removed the two marked lights and outdoor tractor, and added a pond underside
 collider for the user's Water AudioSurface assignment. Navigation/lighting and

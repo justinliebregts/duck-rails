@@ -638,7 +638,7 @@ Acceptance:
 - [ ] Repeated grabs and acceleration do not produce divergent ownership or cargo positions.
 - [ ] Enemies never board and cannot make every boarding point unusable.
 - [ ] Revive completion/interrupt and flare lifetime agree across clients, including a late joiner.
-- [ ] Validate November 12 Raider Legends revive audio/particle import with rescuer, revived player and observer, including moving train, interruption grace, simultaneous revives, ending ride, late join/master handoff and return/replay. Implementation and 31 EditMode checks pass; live/headset acceptance remains queued. See `revive-effects.md`.
+- [ ] Validate November 12 Raider Legends revive audio/particle import with rescuer, revived player and observer, including moving train, interruption grace, simultaneous revives, ending ride, late join/master handoff and return/replay. Implementation and 31 EditMode checks pass; live/headset acceptance remains queued. November 15: completion particles replaced with user-selected FX_Heal_02; prefab checks pass, new visual acceptance queued. See `revive-effects.md`.
 - [ ] Distant handheld users and players at the train station can communicate intelligibly.
 
 Record device, client count, network conditions, and reproducible failures. Test beyond a single LAN/editor setup using the existing supported simulation tools where available.
