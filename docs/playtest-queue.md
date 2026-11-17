@@ -43,6 +43,18 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Duckz backpack downing and persistence — queued 2026-11-16
+- Commit(s): backpack downing/persistence commit containing this entry.
+- Required procedure and evidence: [backpack persistence acceptance](backpack-persistence-testing.md). Includes exact slot/identity accounting, cold restart, no-save exits, account isolation, both room kinds, cleanup timing, reconnect/late join, ownership races and headset checks. All runtime scenarios remain pending.
+- Changed: downing invokes inherited Duckz bag death cleanup (bags drop with contents intact, saved bag cleared, pending life claims invalidated). Restoring a worn bag from UserPlayerPrefs is enabled in Rails after world readiness; restored Compound bags use the existing staging lifetime tag. No separate item spill or player death state.
+- Passed now: verified Duck Rails Edit Mode target, matching Unity 6000.3.24f1 in source/destination, inherited PUN over Realtime paths inspected; Unity compilation and existing Week 2 rules checks pass. No Play Mode launched.
+- Setup: two real clients, normal loadout (DebugBagEquip None), public and private rooms; load a worn bag with mixed items and use a second held bag.
+- Check: downing releases both bags once with exact contents on both peers, cancels pending pulls, clears the worn save and leaves revival working. Ground and moving train drops stay recoverable; revival never duplicates/auto-equips the old bag. Rewearing a bag saves it again.
+- Check: quit/relaunch with a worn loaded bag restores its type and exact slots. Taking it off, holding it, dropping it, or downing before quitting restores nothing. Test changed contents, empty bags, multiple accounts, same-room reconnect, another player recovering the original and late join; never duplicate a surviving room copy.
+- Check: public/private Compound -> Expedition -> Compound and replay preserve the worn save through cleanup and restore exactly once after readiness, including rapid transitions, non-master restores and pending ownership at downing. Restored Compound bags survive periodic cleanup and remain usable after being taken off.
+- Needs human: headset backpack retrieval/drop feel.
+- Priority: normal.
+
 ### Compound and starting station reverb — queued 2026-11-16
 - Commit(s): uncommitted
 - Changed: Six authored box zones cover Compound concourse/stairs and Starting Station hall/side rooms/tunnel; tunnel has stronger reverb and 2.8 s decay versus the hall's 1.4 s. See docs/block-reverb.md.

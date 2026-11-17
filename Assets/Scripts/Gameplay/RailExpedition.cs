@@ -487,8 +487,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (local != null && local.down && !wasDown)
         {
             GR.Player.instance?.leftPlayerHand?.Release(); GR.Player.instance?.rightPlayerHand?.Release();
-            // Bags hold a locomotion shape outside PlayerHand.Held.
-            (PlayerHand.GripHandler as BagInventory)?.DropHandsForUnavailablePlayer();
+            // Match Duckz death bag cleanup while preserving Rails revival.
+            BagInventory.DropAllOnDowned();
         }
         wasDown = local?.down == true;
         reviveEffects.Present(State, transform, now);

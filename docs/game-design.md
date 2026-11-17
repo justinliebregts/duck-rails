@@ -1,5 +1,11 @@
 # Duck Rails — V1 game design
 
+November 16 backpack persistence: match Duckz. Downing drops worn/handheld bags
+with their contents retained and clears the saved bag. Only a worn bag and its
+contents persist through UserPlayerPrefs; taking it off clears that save. Restore
+on next entry, respecting an existing recovered room copy. Implemented; live
+rejoin/transition and headset acceptance is [queued for playtest](playtest-queue.md#duckz-backpack-downing-and-persistence--queued-2026-11-16).
+
 November 16 coal audio: pickups use Furnace_CoalGrab_01; dropped coal surface impacts use Furnace_CoalThud_01 through shared networked item audio. Existing furnace deposit sequence remains. Editor asset checks pass; listening/multiplayer acceptance is queued in [playtest queue](playtest-queue.md#coal-pickup-and-drop-sounds--queued-2026-11-16).
 
 November 16 supplies reach: Compound and Starting Station items sit low on the walls without stands for roughly 0.5 m Gorilla Tag-style ducks, with lowered labels and grouped bundles. Implemented with location overrides; headset reach/movement acceptance queued. See [room layouts](character-bundles.md#low-supplies-room-layouts--november-16).

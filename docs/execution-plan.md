@@ -1,5 +1,10 @@
 # Duck Rails — execution plan
 
+- [ ] November 16: validate Duckz-style backpack downing and persistence: worn/held
+  bags drop intact on downing; only worn bags restore on entry. Implementation,
+  Unity compilation and Week 2 rules checks pass; runtime acceptance is
+  [queued for playtest](playtest-queue.md#duckz-backpack-downing-and-persistence--queued-2026-11-16).
+
 - [x] November 16: isolate StartingStation square lightmap artifacts to coplanar
   city deck/ceiling geometry; separate surfaces, preserve in builder/source prefab,
   rebake/export and validate editor appearance plus all 91 bindings.

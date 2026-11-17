@@ -70,6 +70,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
     BagObject rightBag;
     Transform chest;
     bool restoreRequested;
+    string restoreWorld;
     bool debugBagPending;
     byte debugBagPendingId;
     byte debugWornId;
@@ -196,12 +197,19 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
     // Once per room: if a bag was on our back when we last left, ask for it back onto our back.
     void TryRestore()
     {
-        // Duck Rails supplies live in the room; never recreate a disk-saved bag.
-        if (PhotonSession.IsRailsRoom) return;
         if (!PhotonNetwork.InRoom)
         {
             restoreRequested = false;
+            restoreWorld = null;
             return;
+        }
+        if (PhotonSession.IsRailsRoom)
+        {
+            // Wait for scene/cargo cleanup and player placement before restoring.
+            var session = PhotonSession.Instance;
+            if (session == null || !session.WorldReady || session.InWorldTransition || session.AwaitingCrewDestination) return;
+            string world = PhotonNetwork.CurrentRoom.Name + "|" + PhotonSession.RunId + "|" + PhotonSession.OnTrain;
+            if (restoreWorld != world) { restoreWorld = world; restoreRequested = false; }
         }
         if (restoreRequested || PhotonPlayer.Local == null || IsPlayerDead())
             return;
@@ -244,7 +252,9 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         System.Array.Copy(parts, 1, keys, 0, keys.Length);
         DuckzLog.Log($"[Bag] Restoring saved bag {bagId} onto back: [{string.Join(", ", keys)}]");
         Transform anchor = chest != null ? chest : stowAnchor;
-        RoomRpc.SpawnBag(bagId, keys, anchor.position, anchor.rotation, BagObject.Target.Back);
+        // Compound lifetime tagging keeps the restored bag out of expedition-leftover cleanup.
+        RoomRpc.SpawnBag(bagId, keys, anchor.position, anchor.rotation, BagObject.Target.Back,
+            storePurchase: PhotonSession.IsRailsRoom && !PhotonSession.OnTrain);
     }
 
     // GameManager's DebugBagEquip. None takes off a bag this put on. A chosen bag is worn immediately, including mid-play.
@@ -536,6 +546,15 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
     {
         if (bag == backBag)
             SaveBack();
+    }
+
+    /// <summary>Rails downing uses Duckz's bag death cleanup without invoking player death.</summary>
+    public static void DropAllOnDowned()
+    {
+        InvalidateLife();
+        var inventory = Local != null ? Local : PlayerHand.GripHandler as BagInventory;
+        if (inventory != null) inventory.DropAllOnDeath();
+        else DropWorldBagsOnDeath();
     }
 
     /// <summary>Death: every bag we have falls where it is, contents and all. Nothing is saved.</summary>
