@@ -41,7 +41,10 @@ bake folder, prefab and `production-state.json` clean in git, and no dirty scene
    originals into a preview physics scene as MeshColliders and casting rays out
    of each light both ways (front and back faces). Lights blocked in about 25 of
    26 directions, or across their whole spot cone, are trapped. About 9 of 26
-   (only upward, under a housing) is normal for a lamp.
+   (only upward, under a housing) is normal for a lamp. Check each flagged light's
+   **Shadows** setting before calling it trapped: a light with shadows off ignores
+   occluders in the bake, so moving it out of its housing changes nothing
+   (Skyscraper, 2026-11-17).
 2. **Check the starting state.** `Rail*AtlasProduction.ValidateSaved()` passes.
    Every lightmapped original in the bake scene matches its prefab binding
    (texture and scale/offset). Save a snapshot of each original's
@@ -100,3 +103,4 @@ bake folder, prefab and `production-state.json` clean in git, and no dirty scene
 |---|---|---|---|---|---|
 | 2026-11-17 | Farm Silos | 4 yard posts, 1 attic spot, 5 pond lanterns (pond lantern glass shadows off during the bake only) | 907/907 identical, 1 lightmap | 4a583248… → 59a2d0ac… | [Farm polish README](validation/farm-silos-polish-2026-11-15/README.md#lights-only-rebake-2026-11-17-user-approved) |
 | 2026-11-17 | Container Yard | 4 yard lamp-post lights moved out of their poles; user retuned intensity/range and added 19 baked lights (now under `Added baked lights`); fixtures 40 → 59 | 1,191/1,191 identical, 2 lightmaps, 982 probes | bf95ae3b… → 4dc2e6d7… | [Container Yard atlas README](../ArtSource/ContainerYardAtlas/README.md#lights-only-rebake-2026-11-17-user-approved) |
+| 2026-11-17 | Skyscraper | 18 worklights moved out of housings (shadows off, so no visible change); user raised 2 guide lights 8 → 15, nudged 1 fill and added 9 baked point lights (`Added baked lights`); fixtures 53 → 62; raised sign off during the bake only | 2,788/2,788 identical, 3 lightmaps, 439 probes | f17b5243… → 3cf2f85d… | [Skyscraper atlas README](../ArtSource/SkyscraperAtlasLowPoly/README.md#lights-only-rebake-2026-11-17-user-approved) |

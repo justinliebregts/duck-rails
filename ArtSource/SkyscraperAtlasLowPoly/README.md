@@ -32,3 +32,20 @@ source state; `production-state.json` is checked by `RailSkyscraperAtlasProducti
 Import/open via `RailSkyscraperLowPolyAtlasReview`, which creates separate assets,
 retains original source objects disabled, and preserves lighting/gameplay data.
 See [validation and integration](../../docs/validation/skyscraper-low-poly-atlas/README.md).
+
+## Lights-only rebake (2026-11-17, user-approved)
+
+Rebaked lights-only per [the shared workflow](../../docs/atlas-lights-only-rebake.md);
+no mesh, material or binding changes. The 13 `Tower worklight` and 5
+`Baked yard worklight` spots sat inside their housings and were moved 0.10 m and
+0.12 m down. They have shadows off, so the housings never blocked them in the
+bake: the first rebake (moves only) changed nothing visible. The user then raised
+West side bridge +8m guide lights 1–2 from intensity 8 to 15, nudged one Cool
+construction fill, and added 9 baked point lights (7 warm floodlights, a cool fill
+and a foundation floodlight). They now sit under the last root child
+`Added baked lights`; inserted among siblings they had broken 3 `sourceKeys`.
+`bakedFixtures` 53 → 62. Bake-only: the raised development sign was deactivated,
+because it has its own isolated bake. Layout 2,788/2,788 identical, 3 lightmaps,
+439 probes; texture/LightingData GUIDs unchanged. Mean lightmap luminance rose
+73–131%. Approved fingerprint f17b5243… → 3cf2f85d…; `ValidateSaved` passes.
+Runtime/headset appearance is queued for playtest.

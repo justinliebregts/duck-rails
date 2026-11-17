@@ -118,6 +118,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Skyscraper lights rebake — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: 9 baked point lights added (`Added baked lights`), West side bridge +8m guide lights 1–2 brightened, 18 worklights moved out of their housings; Skyscraper rebaked lights-only with atlas bindings unchanged; new lightmap approved. See `docs/atlas-lights-only-rebake.md`.
+- Setup: Skyscraper block, single client, then 2 clients with a late joiner aboard.
+- Check: at night the tower floors, yard ground and foundation are visibly lit; no dark/blotchy atlas chunks or seams; the raised development sign still lights correctly (it has its own bake); added lights do not also render as realtime lights (no doubled brightness, no frame-time spike); late joiner sees the same lighting.
+- Needs human: headset look at brightness/feel and frame rate through the towers.
+- Priority: normal
+
 ### Container Yard lights rebake — queued 2026-11-17
 - Commit(s): uncommitted
 - Changed: 4 yard lamp-post lights moved out of their poles, intensity/range retuned, 19 baked lights added (`Added baked lights`), Container Yard rebaked lights-only with atlas bindings unchanged; new lightmap approved. See `docs/atlas-lights-only-rebake.md`.
