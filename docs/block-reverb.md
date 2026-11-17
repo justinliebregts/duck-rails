@@ -56,3 +56,17 @@ Coordinates and box sizes below are prefab-local metres (X, Y, Z). Decay is seco
 Verified Duck Rails Unity editor at `X:/Work/duck-rails/Assets`, in Edit Mode. Installer compiled/executed; saved reload checks passed for all 25 enabled boxes and their child references, positive sizes, custom presets and matching fade radii. Helicopter Shop has zero zones. Console error/exception query returned zero entries. Serialized comparison preserves all pre-existing prefab objects; only root child lists gain the new groups. No lighting/navigation rebake is needed for audio-only objects.
 
 No Play Mode or listening test was run. Queued for playtest: doorway transitions, cellar/farmhouse and motel partition overlap, tower/skybridge and container-roof bleed, tunnel entry/exit with moving train, voice and item/footstep clarity, and target-headset audio/performance. Verify local listeners on two real clients hear the space each occupies, including late join.
+
+## Compound and Starting Station — November 16, 2026
+
+Added six boxes using the same existing BoxReverbZone component, after the linked bag task completed. These are initial listening settings; no runtime code or lighting/navigation rebake is needed.
+
+Prefab-local center / size / fade / decay:
+- `Assets/DuckRails/Compound/SubwayTerminal/SubwayTerminal.prefab`: concourse (0, 3, 0) / (24.8, 8, 24) / 1.5 m / 1.4 s; stair recess (0, 3, -15) / (5.2, 6, 6) / 1 m / 1.4 s.
+- `Assets/DuckRails/StartingStation.prefab`: hall (0, 4.5, 80) / (26, 9, 24) / 1.5 m / 1.4 s; supplies (-16.5, 3, 86) / (7, 4, 12) / 0.6 m / 1.1 s; east rooms (15.5, 3, 86) / (5, 4, 12) / 0.6 m / 1.1 s; departure tunnel (0, 3.5, 116) / (8, 7, 48) / 2 m / 2.8 s.
+
+Custom StoneCorridor-derived settings: concourse/stairs/hall room -1500 and reverb -1000 mB; side rooms -1700/-1200; tunnel -1000/-300. The tunnel deliberately has both a longer decay and stronger reverb. Adjacent boxes meet at the hall/room/tunnel boundaries with a narrow fade overlap; tunnel ends at Z 140 and fades to dry by Z 142. These broad boxes do not provide wall occlusion.
+
+Edit Mode validation on the verified Duck Rails editor: all six saved boxes reload with enabled components, valid child references, positive sizes, Custom presets and matching fade distances; tunnel decay/room/reverb exceed the hall. Compound's live prefab instance inherits both zones at unit scale. Command compilation passes; scriptCompilationFailed=false; Error/Exception/Assert Console query returns zero. Serialized before/after comparison preserves every existing object, changing only StartingStation's root child list and SubwayTerminal's added-child prefab record. Open Compound scene was already dirty and was not saved or replaced.
+
+Queued for playtest: Compound/stairs, station platforms/bridge/side rooms, stronger tunnel and smooth portal exit, local listener independence and scene transitions, voice/item/footstep clarity and headset performance. No Play Mode or listening acceptance claimed.

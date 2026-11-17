@@ -964,3 +964,5 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - November 16 compound music follow-up: 1.5-second entry and 0.75-second pre-unload exit fades implemented; runtime/listening acceptance remains queued.
 
 - [ ] November 16 coal pickup/drop audio: prefab bindings, imports and network sound registration pass editor checks; two-client/headset listening remains queued in docs/playtest-queue.md (Coal pickup and drop sounds).
+
+- [ ] November 16: Compound/Starting Station reverb listening, tunnel contrast, transitions and headset/client acceptance. Six authored zones pass saved-reference/settings and Console checks; queued for playtest. See [settings](block-reverb.md#compound-and-starting-station--november-16-2026).

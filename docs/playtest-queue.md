@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Compound and starting station reverb — queued 2026-11-16
+- Commit(s): uncommitted
+- Changed: Six authored box zones cover Compound concourse/stairs and Starting Station hall/side rooms/tunnel; tunnel has stronger reverb and 2.8 s decay versus the hall's 1.4 s. See docs/block-reverb.md.
+- Setup: Two real clients; Compound then private expedition Starting Station; drive through the departure tunnel to outdoors.
+- Check: Coverage on concourse/stairs, both station platforms, footbridge and side rooms; stronger tunnel, smooth hall boundary and dry exterior beyond Z 142; separate listeners hear their own region; departure/return and late join do not retain old zones.
+- Needs human: Listen on headset for decay, transitions/overlap, voice clarity, footsteps/item sounds and audio performance.
+- Priority: normal
+
 ### Coal pickup and drop sounds — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: RailCoal uses existing networked ItemSounds: Furnace_CoalGrab_01 on pickup and Furnace_CoalThud_01 on loose surface impacts (minimum normal speed 0.5 m/s, 0.1-second cooldown). Furnace deposit audio remains active.

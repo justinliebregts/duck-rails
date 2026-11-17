@@ -832,3 +832,5 @@ November 16 bridge crash: approved and implemented five animated bridge sections
 
 November 16 compound music: supplied Max H Dark Horizons track loops throughout Compound as stereo background music. Streaming Vorbis compression configured for desktop and Quest; listening acceptance queued. See [compound music](subway-compound.md#compound-music--november-16-2026).
 Compound music follow-up: fade in over 1.5 seconds on entry and out over 0.75 seconds before normal scene departure; repeat boundaries keep looping without an extra fade.
+
+November 16 station audio: added Compound and Starting Station reverb, with stronger, longer tunnel reverb than the station hall. Saved prefab checks pass; listening/client acceptance queued. See [reverb settings](block-reverb.md#compound-and-starting-station--november-16-2026).

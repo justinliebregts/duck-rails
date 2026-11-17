@@ -1047,6 +1047,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
   type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
+--- !u!1 &3325062229268494849
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9715529020019912}
+  m_Layer: 0
+  m_Name: Reverb Zones
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9715529020019912
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3325062229268494849}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1578261045937633071}
+  - {fileID: 4586905628522268324}
+  m_Father: {fileID: 7623738818526803741}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3905198302528979492
 GameObject:
   m_ObjectHideFlags: 0
@@ -1657,6 +1690,62 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
   type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
+--- !u!1 &4985160143803978937
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8783820600718742825}
+  - component: {fileID: 522840035531957939}
+  m_Layer: 0
+  m_Name: Reverb settings
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8783820600718742825
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4985160143803978937}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1578261045937633071}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!167 &522840035531957939
+AudioReverbZone:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4985160143803978937}
+  m_Enabled: 1
+  m_MinDistance: 0.01
+  m_MaxDistance: 1.5
+  m_ReverbPreset: 27
+  m_Room: -1500
+  m_RoomHF: -900
+  m_DecayTime: 1.4
+  m_DecayHFRatio: 0.65
+  m_Reflections: -1600
+  m_ReflectionsDelay: 0.025
+  m_Reverb: -1000
+  m_ReverbDelay: 0.035
+  m_HFReference: 5000
+  m_Diffusion: 90
+  m_Density: 100
+  m_LFReference: 250
+  m_RoomLF: 0
 --- !u!1 &5027639683531786596
 GameObject:
   m_ObjectHideFlags: 0
@@ -1725,6 +1814,54 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
   type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
+--- !u!1 &5342101480661631118
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4586905628522268324}
+  - component: {fileID: 222889249046627531}
+  m_Layer: 0
+  m_Name: Compound stair recess
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4586905628522268324
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5342101480661631118}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: -15}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5199434457859113989}
+  m_Father: {fileID: 9715529020019912}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &222889249046627531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5342101480661631118}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 981e151ffa21464ebb82ff876b903476, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.BoxReverbZone
+  size: {x: 5.2, y: 6, z: 6}
+  fadeDistance: 1
+  zone: {fileID: 6962198225682137582}
 --- !u!1 &5741135026172081781
 GameObject:
   m_ObjectHideFlags: 0
@@ -1851,6 +1988,62 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
   type: {fileID: 11400000, guid: 9fd595bc7e3f4105b90a0022c71d9274, type: 2}
+--- !u!1 &5888603563699376968
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5199434457859113989}
+  - component: {fileID: 6962198225682137582}
+  m_Layer: 0
+  m_Name: Reverb settings
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5199434457859113989
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5888603563699376968}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4586905628522268324}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!167 &6962198225682137582
+AudioReverbZone:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5888603563699376968}
+  m_Enabled: 1
+  m_MinDistance: 0.01
+  m_MaxDistance: 1
+  m_ReverbPreset: 27
+  m_Room: -1500
+  m_RoomHF: -900
+  m_DecayTime: 1.4
+  m_DecayHFRatio: 0.65
+  m_Reflections: -1600
+  m_ReflectionsDelay: 0.025
+  m_Reverb: -1000
+  m_ReverbDelay: 0.035
+  m_HFReference: 5000
+  m_Diffusion: 90
+  m_Density: 100
+  m_LFReference: 250
+  m_RoomLF: 0
 --- !u!1 &6312869152878635732
 GameObject:
   m_ObjectHideFlags: 0
@@ -2429,6 +2622,54 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
   type: {fileID: 11400000, guid: 609f14f6990f4347b90f3c973da0465b, type: 2}
+--- !u!1 &7626275958096419677
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1578261045937633071}
+  - component: {fileID: 7759053845136975559}
+  m_Layer: 0
+  m_Name: Compound concourse
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1578261045937633071
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7626275958096419677}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8783820600718742825}
+  m_Father: {fileID: 9715529020019912}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7759053845136975559
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7626275958096419677}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 981e151ffa21464ebb82ff876b903476, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.BoxReverbZone
+  size: {x: 24.8, y: 8, z: 24}
+  fadeDistance: 1.5
+  zone: {fileID: 522840035531957939}
 --- !u!1 &7721317825214226634
 GameObject:
   m_ObjectHideFlags: 0
@@ -4110,6 +4351,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9bf69f4564dfb314b8a33a8ee3e3cb46, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6643834204994371259}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9bf69f4564dfb314b8a33a8ee3e3cb46, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9715529020019912}
     - targetCorrespondingSourceObject: {fileID: -9048318735376600443, guid: 9bf69f4564dfb314b8a33a8ee3e3cb46, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6165691776909013832}
