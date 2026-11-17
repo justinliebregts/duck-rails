@@ -43,6 +43,16 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Compound looping music — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: supplied Dark Horizons track loops in Compound at volume 0.0175 through Effects; stereo Vorbis quality 70, Streaming on desktop and Android. See [settings](subway-compound.md#compound-music--november-16-2026).
+- Passed now: Unity import and command compilation; saved clip and importer settings, scene loop/autoplay/mixer references checked.
+- Setup: enter Compound, stay for at least two 206.76-second cycles, depart and return; desktop and Quest.
+- Check: one continuous music source throughout the compound, clean repeat boundary, acceptable balance with voice/countdown, respects Effects volume, fades in over 1.5 seconds on entry/return and out over 0.75 seconds before departure unload; no duplicate source or Quest streaming hitches. Try departing during entry fade and with time scale zero. Direct object disable/application quit are immediate stops.
+- Needs human: listening quality, repeat boundary and headset mix/performance.
+- Priority: normal.
+
+
 ### Station and compound material contact sounds — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: active starting-station and compound environment surfaces use Stone for concrete/masonry, Metal for metal and Wood for timber, with Dirt for compound ballast and existing Water retained. Mixed Blender collision meshes are partitioned by atlas tile without changing their triangles or visible models.

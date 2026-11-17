@@ -958,3 +958,7 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] November 16: implement authored five-section bridge crash collapse and selected explosion/fire effects; compilation and 81 EditMode checks pass. See [collapse](final-escape-layout.md#bridge-crash-collapse--november-16-2026).
 - [ ] Validate bridge collapse timing, particles, reconnect/master handoff, replay and Quest visuals/performance; queued for playtest.
+
+- [x] November 16: install scene-owned Compound music loop with stereo Streaming Vorbis 70 on Android/Standalone; Unity import, command compilation and serialized settings checked.
+- [ ] Compound music listening, loop boundary, departure/return and Quest streaming acceptance; queued for playtest.
+- November 16 compound music follow-up: 1.5-second entry and 0.75-second pre-unload exit fades implemented; runtime/listening acceptance remains queued.

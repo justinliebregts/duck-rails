@@ -827,3 +827,6 @@ November 12 throttle polish: proportional speed above a 20% travel dead zone, re
 November 15: added saved fog endpoints and an Edit Mode Scene View atmosphere tuner, retaining the existing defaults and transition timing. See [fog tuner](block-lighting.md#edit-mode-fog-tuner--november-15-2026). Gameplay/headset acceptance remains queued.
 
 November 16 bridge crash: approved and implemented five animated bridge sections falling into the river, front-of-train FX_Explosion_Large_Dark_01 and persistent FX_Fire_Big_02/03 wreck fires. Shared finish time drives presentation; results wait 3.2 seconds. Editor checks pass; live acceptance queued. See [collapse](final-escape-layout.md#bridge-crash-collapse--november-16-2026).
+
+November 16 compound music: supplied Max H Dark Horizons track loops throughout Compound as stereo background music. Streaming Vorbis compression configured for desktop and Quest; listening acceptance queued. See [compound music](subway-compound.md#compound-music--november-16-2026).
+Compound music follow-up: fade in over 1.5 seconds on entry and out over 0.75 seconds before normal scene departure; repeat boundaries keep looping without an extra fade.

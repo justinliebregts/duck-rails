@@ -444,7 +444,9 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             // Preserve every runtime spawn, including room-owned coal and gold.
             if (view != null && view.ViewID != 0 && view.isRuntimeInstantiated) DontDestroyOnLoad(view.transform.root.gameObject);
         // Scene activation stalls the main thread; let the compositor veil reach full cover first.
+        CompoundMusic.BeginSceneExit();
         yield return RailTransitionVeil.WaitUntilCovered(.75f);
+        yield return CompoundMusic.WaitForSceneExit();
         var load = SceneManager.LoadSceneAsync(destinationScene, LoadSceneMode.Single);
         if (load != null) yield return load;
         loadingScene = false; PhotonNetwork.IsMessageQueueRunning = true; loginStatus = null;
