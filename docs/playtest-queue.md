@@ -1,5 +1,23 @@
 # Playtest queue
 
+## Ambient director — queued 2026-11-16
+
+- Scope: 21 approved Artlist clips, five scavenging blocks, Starting Station and
+  Bridge Finale. See [configuration and source selections](ambient-director.md).
+- Editor evidence: compilation and 352 focused checks pass; no Console errors.
+- Run: visit outdoor/interior regions in all five blocks, station hall/rooms/tunnel,
+  and both gorge elevations. Check three-second bed transitions, quiet crickets,
+  fluorescent/hum balance, localized wood/metal/water/foliage details and voice
+  clarity. Listen through complete bed loops for seams. Ghost accents should
+  remain roughly 150–300 seconds apart plus deferred quiet gaps, one at a time,
+  with no immediate repeat and none at Starting Station.
+- Check split-party clients choose their own locations, shuffled/transformed routes,
+  late join, repeat runs, disconnect/listener replacement and successful/failed
+  endings. No stale audio should continue into Compound or ending music.
+- Measure Quest streaming/CPU/memory and ambience pool use during transitions and
+  loud gameplay. Midpoint helipad has no profile in this pass.
+- Status: queued for playtest. No Play Mode or headset listening performed.
+
 Changes that need in-Unity verification (Play Mode, single or multi-client) are **queued here instead of being tested immediately**. The user asks for the queue to be run when they are away ("run the playtest queue"). Results are written back into this file.
 
 ## Rules for the agent
@@ -48,6 +66,10 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 Revision 3 (same day): Starting Station materials, north-east deck on pillars with a yard stair and bridge, west loggia and arcade, climb blocks removed. Also check frame rate on headset: the fort rose from about 6,700 to 18,566 triangles. See `docs/final-escape-layout.md`, revision 3.
 
 Far side pass (same day): low-poly hills, new trees, tunnel arch portals and ribs. Ride the full route through the tunnel into Happy Land and check that nothing clips the train, the valley edges stay hidden, and the new trees and hills read well at dawn lighting. See the far side section of the same document.
+
+Block lights (same day): 38 baked wall and floor block lights around the fort. After the lighting rebake, check the pools read well, nothing is blown out, and the floor lanterns do not block routes.
+
+Revision 4 (2026-11-17): z-fighting fixes, see-through steel walkway replacing the concrete catwalk and balcony (colliders unchanged), brighter floor concrete. Check for any remaining shimmer, and that the lever terminal and gold deposit still work on the balcony.
 - Commit(s): uncommitted
 - Changed: fort rebuilt to layout v2 (asymmetric keep/depot, stairs, new towers, moved floodlights and east tower defender, re-seated fort loot markers). Blockout only.
 - Setup: BLOCKED until navigation and lighting are rebaked for bridge-finale-v1 (see final-escape-layout.md, Blockout installed). Then: finale via Test Center / route to the bridge, single client first, then multi-client.

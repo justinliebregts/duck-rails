@@ -304,3 +304,24 @@ User request: a basic pass on the tunnel after the bridge, the hills and the tre
 - **Counts:** far-side art went from about 12,000 triangles in 185 renderers to 8,326 triangles in 9 renderers. Block renderers 1,656 → 1,479; lighting bindings pruned to 1,279.
 - **Evidence:** `RailFinaleFortArtPass.Check()` 272 passed, 0 failed, including a clear train envelope through the tunnel and solid valley ground at five sample points. Captures: `output/finale-fort-art-pass/far-*.png` (flat review lighting; distant terrain looks black in them because of the open scene's fog).
 - **Still outstanding:** lighting rebake and install (the new far side is not lightmapped), crawlgraph rebake, ride-through on headset. Queued for playtest; not verified.
+
+## Fort block lights — November 16, 2026
+
+User request: spread more of the wall block lights around the fort, including some standing on the floor, for more light sources. Built by `Assets/Editor/RailFinaleFortLights.cs` (partial of the fort builder; rebuilt by `RailFinaleFortArtPass.Apply()`).
+
+- **Wall block lights (25 new fixtures):** steel backplate, lens and hood on wall faces around the west keep, bunker room, arcade, east depot, colonnade, under the north-east and pocket decks, the gate pylons and the outer south wall. The two existing bunker-door lenses also get a light.
+- **Floor block lights (13):** small lanterns (steel foot, yellow body, glowing block, cap) on the yard, terraces, bunker roof, bastion and north-east deck. Each has a box collider.
+- **Lights:** 38 baked-only point lights under `Env/Fort architecture v2/Fixture lights`, alternating warm (range 8–9, intensity 9–10) and cool (range 9, intensity 12–13). The block now has 69 lights, all baked. They are outside `Baked block sample lights`, so that group's count is unchanged.
+- **Lenses:** cool lenses use the Compound `Emissive work-light lens`; warm lenses use the Farm Silos `Warm lantern glass`.
+- **Evidence:** `RailFinaleFortArtPass.Check()` 311 passed, 0 failed (includes: fixture lights are baked-only and none is buried in geometry; spawn markers still clear). Captures: `output/finale-fort-art-pass/lights-*.png`, an unbaked preview only.
+- **Still outstanding:** the lights do nothing in game until the finale lighting is rebaked and installed; intensities are first guesses to tune after the first bake. Queued for playtest; not verified.
+
+## Fort revision 4 — z-fighting, metal walkway, brighter floors (November 17, 2026)
+
+User feedback after viewing the block in the editor.
+
+- **Z-fighting:** the builder now records every axis-aligned face and reports same-plane, same-facing overlaps after each build (`RailFinaleFortArtPass.LastOverlaps`; `Check()` fails if any remain). First run found the three reported spots and more: keep-tower kerbs coplanar with the merlons, the west +8 deck overlapping the tower stair cheek, cap lips crossing stair landings and the blockhouse lip under the catwalk. All fixed; the report is now 0. The detector covers the builder's own rectangular faces, not slanted faces or older prefab geometry.
+- **Catwalk and button balcony:** the concrete slab renderers are disabled (objects, box colliders and audio surface kept, so it walks exactly as before) and replaced by an open steel walkway: edge beams, cross-beams every 2 m and 0.17 m slats at 0.3 m pitch that you can see through. Probe-lit, 2,756 triangles. This also removes the z-fight where the old slab met the west blockhouse.
+- **Floors:** walking surfaces (deck and terrace tops, stairs, cap courses) use a new `Fort floor concrete` material in `Assets/DuckRails/FinaleFort/ArtPass`: the same worn-concrete tile tinted about twice as bright as the shared depot material, which is unchanged. Yard asphalt stays dark.
+- **Evidence:** `Check()` 312 passed, 0 failed. Captures: `output/finale-fort-art-pass/r4-*.png`.
+- **Still outstanding:** lighting and crawlgraph rebakes; confirm on headset that the slatted walkway is comfortable to look through and that nothing shimmers. Queued for playtest; not verified.

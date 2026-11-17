@@ -115,12 +115,43 @@ public static partial class RailFinaleFortArtPass
     }
     // One planar face. It is cut on the atlas grid so each piece maps inside a single tile, exactly like the
     // Starting Station surfaces. kind "wall" picks paint / plaster / brick per cell; horizontal "wall" faces are concrete.
+    // Z-fighting detector: every axis-aligned face is recorded; faces on the same plane, facing the same way,
+    // whose rectangles overlap are reported after a build.
+    struct FaceRect { public int axis; public float sign, coord, a0, a1, b0, b1; public string region; }
+    static readonly List<FaceRect> faceRects = new();
+    public static string LastOverlaps = "";
+    static void Record(Vector3 n, List<Vector3> p)
+    {
+        int axis = Mathf.Abs(n.x) > .999f ? 0 : Mathf.Abs(n.y) > .999f ? 1 : Mathf.Abs(n.z) > .999f ? 2 : -1; if (axis < 0) return;
+        int ia = (axis + 1) % 3, ib = (axis + 2) % 3; var r = new FaceRect { axis = axis, sign = Mathf.Sign(n[axis]), coord = p[0][axis], a0 = float.MaxValue, a1 = float.MinValue, b0 = float.MaxValue, b1 = float.MinValue, region = region };
+        foreach (var q in p) { r.a0 = Mathf.Min(r.a0, q[ia]); r.a1 = Mathf.Max(r.a1, q[ia]); r.b0 = Mathf.Min(r.b0, q[ib]); r.b1 = Mathf.Max(r.b1, q[ib]); }
+        // Only true rectangles: the bounding box of a slanted polygon would give false matches.
+        float area = 0; for (int i = 1; i < p.Count - 1; i++) area += Vector3.Cross(p[i] - p[0], p[i + 1] - p[0]).magnitude / 2;
+        if (area < .98f * (r.a1 - r.a0) * (r.b1 - r.b0)) return;
+        faceRects.Add(r);
+    }
+    static string Overlaps()
+    {
+        var sb = new StringBuilder(); int count = 0; string[] names = { "x", "y", "z" };
+        foreach (var grp in faceRects.GroupBy(f => (f.axis, f.sign, Mathf.Round(f.coord * 500))))
+        {
+            var list = grp.ToList();
+            for (int i = 0; i < list.Count; i++) for (int j = i + 1; j < list.Count; j++)
+                {
+                    var a = list[i]; var b = list[j]; float w = Mathf.Min(a.a1, b.a1) - Mathf.Max(a.a0, b.a0), h = Mathf.Min(a.b1, b.b1) - Mathf.Max(a.b0, b.b0);
+                    if (w < .15f || h < .15f) continue; count++;
+                    if (count <= 80) { var c = new Vector3(); c[a.axis] = a.coord; c[(a.axis + 1) % 3] = Mathf.Max(a.a0, b.a0) + w / 2; c[(a.axis + 2) % 3] = Mathf.Max(a.b0, b.b0) + h / 2; sb.AppendLine($"  {names[a.axis]}={a.coord:F2} facing {(a.sign > 0 ? "+" : "-")}: {w:F2} x {h:F2} m at {c:F2} ({a.region}/{b.region})"); }
+                }
+        }
+        return "Coplanar overlaps: " + count + "\n" + sb;
+    }
     static void Face(string kind, float floor, Vector3 outward, params Vector3[] poly)
     {
         var n = Vector3.Cross(poly[1] - poly[0], poly[2] - poly[0]); if (n.sqrMagnitude < 1e-9f) return;
         var p = poly.ToList(); if (Vector3.Dot(n, outward) < 0) { p.Reverse(); n = -n; }
         n.Normalize();
-        if (kind == "lamp") { var lm = Vis("lamp"); for (int i = 1; i < p.Count - 1; i++) lm.Tri(p[0], p[i], p[i + 1], n); return; }
+        if (kind.EndsWith("lamp")) { var lm = Vis(kind); for (int i = 1; i < p.Count - 1; i++) lm.Tri(p[0], p[i], p[i + 1], n); return; }
+        Record(n, p);
         bool flat = Mathf.Abs(n.y) > .5f; if (kind == "wall" && flat) kind = "concrete";
         bool wall = kind == "wall";
         var U = flat ? Vector3.right : Vector3.Cross(Vector3.up, n).normalized; var V = flat ? Vector3.forward : Vector3.up;
@@ -215,7 +246,7 @@ public static partial class RailFinaleFortArtPass
     static void Deck(float x1, float z1, float x2, float z2, float top) { B("concrete", x1, z1, x2, z2, top - .5f, top); }
     static void Pillar(float x, float z, float y0, float top)
     {
-        B("mass", x - .4f, z - .4f, x + .4f, z + .4f, y0, top - .3f); B("concrete", x - .6f, z - .6f, x + .6f, z + .6f, top - .3f, top, false);
+        B("mass", x - .4f, z - .4f, x + .4f, z + .4f, y0 + .02f, top - .3f); B("concrete", x - .6f, z - .6f, x + .6f, z + .6f, top - .3f, top, false);
         B("concrete", x - .5f, z - .5f, x + .5f, z + .5f, y0, y0 + .2f, false);
     }
     // Wall along X (z1..z2 thick) with openings (from, to, sill, head).
@@ -328,8 +359,8 @@ public static partial class RailFinaleFortArtPass
         Mass(-38, 36.8f, -33, 50, 0, 4, "");                                   // wall-walk: solid behind the terrace...
         Deck(-38, 50, -33, 70, 4);                                             // ...then an arcade open to the yard and bunker room
         foreach (float z in new[] { 59.5f, 64.5f, 69.4f }) Pillar(-33.6f, z, 0, 3.5f);
-        Mass(-33, 34, -12, 46, 0, 2, "S,E,N:-22:-12");                         // A: parade terrace
-        Mass(-33, 46, -22, 50, 0, 2, "E,N:-28:-22");
+        Mass(-33, 34, -12, 46, 0, 2, "S,E:34:41.75,E:45.25:46,N:-22:-12");                         // A: parade terrace
+        Mass(-33, 46, -22, 50, 0, 2, "E:46.12:50,N:-27.75:-22");
         // Loggia: the bunker roof runs four metres south on pillars, sheltering the doors.
         Deck(-33, 54, -12, 58, 4); Lips(-33, 54, -12, 58, 3.5f, 4, "S:-27.75:-12,E");
         foreach (float x in new[] { -32.5f, -27.3f, -19.3f, -12.5f }) Pillar(x, 54.5f, 0, 3.5f);
@@ -341,12 +372,12 @@ public static partial class RailFinaleFortArtPass
         foreach (float z in new[] { 63.5f, 69.5f }) B("mass", -23, z, -22, z + 1, 0, 3.5f);
         foreach (float x in new[] { -24f, -17.5f }) { B("hazard", x, 57.9f, x + 3, 58, 2.6f, 3, false); B("lamp", x + 1.2f, 57.82f, x + 1.8f, 57.9f, 3.1f, 3.35f, false); }
         // D: blockhouse where the catwalk lands
-        Mass(-20, 64, -14, 72, 4, 8, "S,E");
+        Mass(-20, 64, -14, 72, 4, 8, "S,E:64:66.5,E:69.5:72");
         foreach (float x in new[] { -20f, -15f }) foreach (float z in new[] { 64f, 71f }) B("mass", x, z, x + 1, z + 1, 8, 10.8f);
         WallX(64, 64.5f, -19, -15, 8, 10.8f, -18.5f, -15.5f, 8.3f, 8.9f); WallX(71.5f, 72, -19, -15, 8, 10.8f, -18.5f, -15.5f, 8.3f, 8.9f);
         B("roof", -21, 63, -13, 73, 10.8f, 11.3f);
         // +8 deck: slabs on pillars standing on the bunker roof, so the roof below stays walkable
-        Deck(-30, 72, -20, 76, 8); Deck(-24.5f, 65, -20, 72, 8);
+        Deck(-30, 72, -20, 76, 8); Deck(-24.25f, 65, -20, 72, 8);
         Pillar(-20.6f, 75.4f, 4, 7.5f); Pillar(-25.3f, 75.4f, 4, 7.5f); Pillar(-23.7f, 65.6f, 4, 7.5f);
         // Keep tower
         Mass(-38, 70, -30, 78, 0, 8, "N");
@@ -354,7 +385,7 @@ public static partial class RailFinaleFortArtPass
         B("roof", -39, 69, -29, 79, 11.5f, 12.2f);
         for (int i = 0; i < 3; i++) { float x = -36.6f + i * 2.1f; B("mass", x, 77.6f, x + 1.1f, 78, 8, 9.1f); B("mass", x, 70, x + 1.1f, 70.4f, 8, 9.1f); }
         for (int i = 0; i < 3; i++) { float z = 71.4f + i * 2.1f; B("mass", -38, z, -37.6f, z + 1.1f, 8, 9.1f); }
-        B("mass", -37.3f, 77.7f, -30.7f, 78, 8, 8.3f); B("mass", -37.3f, 70, -30.7f, 70.3f, 8, 8.3f); B("mass", -38, 70.7f, -37.7f, 77.3f, 8, 8.3f);
+        B("mass", -37.3f, 77.66f, -30.7f, 77.96f, 8.01f, 8.3f); B("mass", -37.3f, 70.04f, -30.7f, 70.34f, 8.01f, 8.3f); B("mass", -37.96f, 70.7f, -37.66f, 77.3f, 8.01f, 8.3f);
         Rail(-30, 70.7f, -30, 72.5f, 8); Rail(-30, 75.5f, -30, 77.3f, 8);
         Stair(-8, 43.5f, -12, 43.5f, 0, 2, 3, 0); Stair(-29.5f, 50, -29.5f, 54, 2, 4, 3, 0); Stair(-26, 64, -26, 72, 4, 8, 3, 4);
         // rails
@@ -362,7 +393,7 @@ public static partial class RailFinaleFortArtPass
         Rail(-33, 36.8f, -33, 54, 4);
         Rail(-27.75f, 54, -12, 54, 4); Rail(-31.25f, 54, -33, 54, 4);
         Rail(-12, 54, -12, 76, 4); Rail(-12, 76, -30, 76, 4);
-        Rail(-20, 76, -30, 76, 8); Rail(-20, 72, -20, 76, 8); Rail(-30, 72, -27.75f, 72, 8); Rail(-24.5f, 65, -24.5f, 72, 8); Rail(-24.5f, 65, -20, 65, 8);
+        Rail(-20, 76, -30, 76, 8); Rail(-20, 72, -20, 76, 8); Rail(-30, 72, -27.75f, 72, 8); Rail(-24.25f, 65, -24.25f, 72, 8); Rail(-24.25f, 65, -20, 65, 8);
         Rail(-14, 65, -14, 66.5f, 8); Rail(-14, 69.5f, -14, 71, 8);
     }
 
@@ -372,7 +403,7 @@ public static partial class RailFinaleFortArtPass
     static void EastDepot()
     {
         region = "East depot";
-        Mass(12, 34, 33, 40, 0, 2, "S,W,N:12:18"); Mass(18, 40, 33, 46, 0, 2, "W,N");     // F: loading terrace around the dock
+        Mass(12, 34, 33, 40, 0, 2, "S,W:34:34.75,W:39.25:40,N:12:17.88"); Mass(18, 40, 33, 46, 0, 2, "W:40.12:46,N");     // F: loading terrace around the dock
         Prism("mass", 0, 4, Bastion);                                                      // corner bastion
         Rail(33.2f, 30.2f, 41.4f, 30.2f, 4); Rail(41.4f, 30.2f, 45.8f, 34.6f, 4); Rail(45.8f, 34.6f, 45.8f, 46.9f, 4); Rail(45.8f, 46.9f, 40.1f, 52.6f, 4);
         Rail(33, 30.2f, 33, 41.75f, 4); Rail(33, 45.25f, 33, 50, 4);
@@ -427,6 +458,22 @@ public static partial class RailFinaleFortArtPass
             foreach (float z in new[] { 66.5f, 68.9f }) B("steel", s * 7.5f - .3f, z, s * 7.5f + .3f, z + .6f, 0, 7.2f);
             B("steel", s * 7.5f - .4f, 66.5f, s * 7.5f + .4f, 69.5f, 7.2f, 7.5f);
         }
+        // Open steel walkway in place of the concrete catwalk and balcony slabs. Their box colliders remain, so it walks
+        // exactly as before; the slats are visual and let you see the yard and track below.
+        void Slat(float xa, float xb, float za, float zb)
+        {
+            Vector3 P(float x, float y, float z) => new(x, y, z); const float yt = 8, yb = 7.94f;
+            Face("rail steel", 0, Vector3.up, P(xa, yt, za), P(xa, yt, zb), P(xb, yt, zb), P(xb, yt, za)); Face("rail steel", 0, Vector3.down, P(xa, yb, za), P(xa, yb, zb), P(xb, yb, zb), P(xb, yb, za));
+            Face("rail steel", 0, Vector3.left, P(xa, yb, za), P(xa, yt, za), P(xa, yt, zb), P(xa, yb, zb)); Face("rail steel", 0, Vector3.right, P(xb, yb, za), P(xb, yt, za), P(xb, yt, zb), P(xb, yb, zb));
+        }
+        void Beam(float x1, float z1, float x2, float z2, float y1, float y2) => VBox("rail steel", new Vector3(x1, y1, z1), new Vector3(x2, y2, z2), true, 0);
+        Beam(-14, 66.5f, 14, 66.7f, 7.55f, 8); Beam(-14, 69.3f, -2, 69.5f, 7.55f, 8); Beam(2, 69.3f, 14, 69.5f, 7.55f, 8); Beam(-1.8f, 69.3f, 1.8f, 69.5f, 7.55f, 7.93f);
+        Beam(-14, 66.7f, -13.9f, 69.3f, 7.55f, 8); Beam(13.9f, 66.7f, 14, 69.3f, 7.55f, 8);
+        for (int i = -6; i <= 6; i++) Beam(i * 2 - .08f, 66.7f, i * 2 + .08f, 69.3f, 7.6f, 7.93f);
+        for (float x = -13.86f; x < 13.75f; x += .3f) Slat(x, x + .17f, 66.7f, Mathf.Abs(x + .085f) < 1.6f ? 69.5f : 69.3f);
+        Beam(-2, 69.5f, -1.8f, 72, 7.55f, 8); Beam(1.8f, 69.5f, 2, 72, 7.55f, 8); Beam(-1.8f, 71.8f, 1.8f, 72, 7.55f, 8); Beam(-1.8f, 70.6f, 1.8f, 70.76f, 7.6f, 7.93f);
+        for (float x = -13.86f; x < 13.75f; x += .3f) if (Mathf.Abs(x + .085f) < 1.6f) Slat(x, x + .17f, 69.5f, 71.8f);
+        foreach (float s in new[] { -1f, 1f }) Beam(s * 1.9f - .06f, 69.56f, s * 1.9f + .06f, 69.68f, 6.6f, 7.55f);
         Rail(-14, 66.5f, 14, 66.5f, 8); Rail(-14, 69.5f, -2, 69.5f, 8); Rail(2, 69.5f, 14, 69.5f, 8); Rail(-2, 69.5f, -2, 72, 8); Rail(2, 69.5f, 2, 72, 8); Rail(-2, 72, 2, 72, 8);
         foreach (var p in new[] { new Vector3(-9.5f, .6f, 49), new(-6.5f, 1.2f, 53.5f), new(-10.5f, 1.8f, 58), new(7, .6f, 45), new(9.5f, 1.2f, 51), new(6.8f, .6f, 63.2f), new(10, 1.8f, 61) })
             B("mass", p.x - 1.25f, p.z - 1.25f, p.x + 1.25f, p.z + 1.25f, 0, p.y);
@@ -455,14 +502,21 @@ public static partial class RailFinaleFortArtPass
     public static void Apply()
     {
         if (Application.dataPath.Replace('\\', '/') != "X:/Work/duck-rails/Assets" || EditorApplication.isPlaying) throw new Exception("Use Duck Rails in Edit Mode");
-        Directory.CreateDirectory(Folder); AssetDatabase.Refresh(); vis.Clear(); col.Clear(); holders.Clear(); mats.Clear();
+        Directory.CreateDirectory(Folder); AssetDatabase.Refresh(); vis.Clear(); faceRects.Clear(); col.Clear(); holders.Clear(); mats.Clear();
         void M(string key, string path) { mats[key] = AssetDatabase.LoadAssetAtPath<Material>(path); if (!mats[key]) throw new Exception("Missing material " + path); }
         const string depot = "Assets/DuckRails/DepotMaterials/";
         M("plaster", depot + "Stained plaster.mat"); M("paint", depot + "Faded olive paint.mat"); M("brick", depot + "Exposed brick.mat"); M("concrete", depot + "Worn concrete.mat");
+        // Walking surfaces: the same worn-concrete tile, tinted brighter than the shared depot material (which is left alone).
+        {
+            string fp = Folder + "/Fort floor concrete.mat"; var fm = AssetDatabase.LoadAssetAtPath<Material>(fp);
+            if (!fm) { fm = new Material(mats["concrete"]); AssetDatabase.CreateAsset(fm, fp); }
+            fm.SetColor("_BaseColor", new Color(1.25f, 1.25f, 1.17f)); EditorUtility.SetDirty(fm); mats["concrete"] = fm;
+        }
         M("steel", depot + "Oxidized steel.mat"); M("roof", depot + "Dark roofing.mat"); M("yellow", depot + "Worn yellow.mat"); M("asphalt", depot + "Ground asphalt.mat");
         mats["rail yellow"] = mats["yellow"]; mats["rail steel"] = mats["steel"];
         const string fort = "Assets/DuckRails/FinaleFort/";
         M("grass", fort + "Dawn grass.mat"); M("leaf", fort + "Leaf green.mat"); M("blossom", fort + "Blossom pink.mat"); M("timber", fort + "Timber.mat"); M("rock", fort + "Ridge rock.mat");
+        M("warm lamp", "Assets/DuckRails/FarmSilos/Polish/Warm lantern glass.mat");
         M("lamp", "Assets/DuckRails/Compound/LightingSample/Emissive work-light lens.mat");
         var log = new StringBuilder(); var root = PrefabUtility.LoadPrefabContents(PrefabPath);
         try
@@ -497,12 +551,18 @@ public static partial class RailFinaleFortArtPass
                 log.AppendLine($"Lighting bindings: {before} -> {lighting.bindings.Length}");
             }
 
+            foreach (var slab in new[] { "Cross-track catwalk +8", "Off-path button balcony" })
+            {
+                var t = art.Find(slab); if (!t) { log.AppendLine("WARNING: missing " + slab); continue; }
+                foreach (var r in t.GetComponentsInChildren<Renderer>(true)) { r.enabled = false; log.AppendLine($"Hid {slab} renderer; bounds {r.bounds.min:F2} to {r.bounds.max:F2}; collider kept"); }
+            }
             group = new GameObject(GroupName).transform; group.SetParent(env, false);
-            Perimeter(); WestKeep(); EastDepot(); Centre(); FarSide(root.transform, log);
+            Perimeter(); WestKeep(); EastDepot(); Centre(); FarSide(root.transform, log); Lights(log);
+            LastOverlaps = Overlaps(); log.AppendLine(LastOverlaps);
             int tris = 0;
             foreach (var kv in vis)
             {
-                var parts = kv.Key.Split('|'); bool thin = parts[1].StartsWith("rail") || parts[1] == "lamp";
+                var parts = kv.Key.Split('|'); bool thin = parts[1].StartsWith("rail") || parts[1].EndsWith("lamp");
                 var g = new GameObject(parts[0] + " " + parts[1]) { layer = 6 }; g.transform.SetParent(group, false);
                 var mesh = kv.Value.Build(parts[0] + " " + parts[1], !thin); tris += kv.Value.t.Count / 3;
                 g.AddComponent<MeshFilter>().sharedMesh = mesh; var r = g.AddComponent<MeshRenderer>(); r.sharedMaterial = mats[parts[1]];
@@ -584,6 +644,9 @@ public static partial class RailFinaleFortArtPass
                 }
                 Assert(ok && Mathf.Abs(last - s.Item6) < .05f, $"stair at ({s.Item1},{s.Item2}) climbs smoothly to +{s.Item6}");
             }
+            var fixtures = fort.Find("Fixture lights"); Assert(fixtures && fixtures.GetComponentsInChildren<Light>().Length >= 30 && fixtures.GetComponentsInChildren<Light>().All(l => l.lightmapBakeType == LightmapBakeType.Baked), "fixture lights exist and are all baked-only");
+            if (fixtures) foreach (var l in fixtures.GetComponentsInChildren<Light>()) Assert(phys.OverlapSphere(l.transform.position, .12f, hits, ~0, QueryTriggerInteraction.Ignore) == 0, l.name + " at " + l.transform.position.ToString("F1") + " is not buried in geometry");
+            Assert(LastOverlaps.StartsWith("Coplanar overlaps: 0"), "last build has no overlapping coplanar faces (z-fighting): " + LastOverlaps.Split('\n')[0]);
             // Far side: the tunnel bore is clear of the new portals and ribs, and the valley floor is solid.
             n = phys.OverlapBox(new Vector3(0, 3.25f, 140), new Vector3(4.4f, 3.05f, 22), hits, Quaternion.identity, ~0, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < n; i++) Assert(!hits[i].transform.IsChildOf(fort), "tunnel envelope is clear of " + hits[i].name);
