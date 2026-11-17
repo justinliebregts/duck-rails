@@ -1,5 +1,12 @@
 # Playtest queue
 
+## Farm northeast pond water footsteps — queued 2026-11-17
+
+- Changed: pond underside MeshCollider now has Water AudioSurface (prefab-only).
+- Check: walking through the northeast pond plays water footsteps/hand hits; the
+  shore, path and ditch bridge keep their normal sounds. Status: queued for
+  playtest; no Play Mode run.
+
 ## Ambient director — queued 2026-11-16
 
 - November 17 refinement: long details use random 8–14 second excerpts and

@@ -226,3 +226,10 @@ Geometry/catalogue/export checks passed and the regenerated ground-level capture
 Added a solid box beneath the narrow ditch water and assigned Water AudioSurface.
 Contact checks and rebuilt navigation pass; listening queued for playtest.
 
+### Northeast pond water contact — November 17
+
+The pond's underside MeshCollider (renamed `Pond water contact collider`, under
+`Pond water`) now carries the Water AudioSurface (`Assets/Audio/Surfaces/Water.asset`).
+Prefab-only change; no geometry, navigation or lighting change. Listening queued
+for playtest.
+

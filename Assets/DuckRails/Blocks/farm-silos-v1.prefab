@@ -168333,8 +168333,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1395449257252109424}
   - component: {fileID: 5377961117440367533}
+  - component: {fileID: 7483460699334497173}
   m_Layer: 6
-  m_Name: Pond underside collider - assign Water AudioSurface
+  m_Name: Pond water contact collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -168377,6 +168378,19 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 2bc3fe51606f0f94499997bf5624f03e, type: 2}
+--- !u!114 &7483460699334497173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7983914056212506717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: e784153c09a24dd981b3962aa8a4b41c, type: 2}
 --- !u!1 &7988230797155432430
 GameObject:
   m_ObjectHideFlags: 0
