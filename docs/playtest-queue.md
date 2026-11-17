@@ -61,6 +61,36 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Bridge fortress refresh and midpoint defender — queued 2026-11-17
+- Scoped live result November 17: **PASS** in one authenticated editor client for
+  both initial defenders naturally reaching controls, one reinforcement near
+  the 30-second threshold and bridge completion at exactly 60 seconds accumulated
+  holding. [Trace](../output/bridge-finale-live/trace.txt); details under Results.
+  Remaining criteria below stay queued; this is not multiplayer/headset acceptance.
+- Commit(s): uncommitted.
+- Changed: new-environment crawlgraph and loot, exported latest build lighting,
+  60-second accumulated bridge hold, two defenders approaching controls and one
+  extra zombie at 30 seconds. See [implementation/evidence](final-escape-layout.md#fortress-encounter-refresh--november-17-2026).
+- Editor evidence: compilation, 1,652 scoped checks and bridge-hold/Week 2/terminal
+  regressions pass. Both tower paths and reinforcement path reach control ground;
+  54 loot envelopes and 100 seeds/type pass. Three lightmaps/1,311 bindings/498
+  probes/69 baked fixtures exported; saved Expedition inherits them.
+- Remaining setup: rebuilt matching `tower-finale-v2` clients, bridge finale,
+  two real peers and a target-headset build. Solo Play Mode completed; no player build run.
+- Check: first physical hold spawns exactly two defenders, both naturally reach
+  the control approach without needing initial sight. Pause at 29 seconds and
+  wait: no wave. Resume past 30: exactly one additional zombie, approaching the
+  controls. Repeated release/resume, master handoff before/after 30 and late join
+  preserve count/progress. Complete at 60 seconds total, not 30. Normal pursuit,
+  repel/flare/retreat and existing boarding remain functional. Replay resets.
+- Check: third defender recovery uses its authored marker; no repeated spawn
+  loop or stacking. Loot settles on the new floors/props. In player build,
+  fortress fixtures illuminate static surfaces and moving players/items via
+  maps/probes without duplicate realtime lights; late join/replay lighting loads.
+- Needs human: natural difficulty across crew sizes, loot reach/climb readability,
+  target-headset darkness and lighting appearance/performance.
+- Priority: normal. Status: queued for playtest.
+
 ### Finale fort architecture blockout — queued 2026-11-16
 
 Revision 3 (same day): Starting Station materials, north-east deck on pillars with a yard stair and bridge, west loggia and arcade, climb blocks removed. Also check frame rate on headset: the fort rose from about 6,700 to 18,566 triangles. See `docs/final-escape-layout.md`, revision 3.
@@ -72,7 +102,7 @@ Block lights (same day): 38 baked wall and floor block lights around the fort. A
 Revision 4 (2026-11-17): z-fighting fixes, see-through steel walkway replacing the concrete catwalk and balcony (colliders unchanged), brighter floor concrete. Check for any remaining shimmer, and that the lever terminal and gold deposit still work on the balcony.
 - Commit(s): uncommitted
 - Changed: fort rebuilt to layout v2 (asymmetric keep/depot, stairs, new towers, moved floodlights and east tower defender, re-seated fort loot markers). Blockout only.
-- Setup: BLOCKED until navigation and lighting are rebaked for bridge-finale-v1 (see final-escape-layout.md, Blockout installed). Then: finale via Test Center / route to the bridge, single client first, then multi-client.
+- Setup: navigation rebuilt and current lighting exported November 17. Solo finale loading and defender approaches passed; remaining architecture checks use finale via Test Center / route to the bridge, then multi-client.
 - Check: no lighting-loader failure for the finale; all seven stairs walkable both ways without snagging; every terrace, roof, wall-walk, both towers, the gangway and the catwalk reachable; breach, collapsed-wall slope and gate usable by enemies; first hold spawns exactly two tower defenders (west keep, east watchtower) that can path to the terminal; 6 coal / 2 gold spawn on valid surfaces over several seeds; train passes the gate gantry and catwalk; no player can fall into a sealed pocket.
 - Needs human: headset stair feel at duck height, sightlines through rails, night readability with the moved floodlights, defense balance, Quest frame time.
 - Priority: normal
@@ -926,6 +956,35 @@ No new block conversion or device run occurred during this documentation task.
 
 
 ## Results
+
+### Bridge defender approaches and 60-second hold — PASS (scoped), 2026-11-17
+
+- Unity 6000.3.24f1, one authenticated private-room editor client, keyboard rig.
+  Tested working tree based on `9952d5c8d3df992cebfc988ab8db75f3dceed8df`, including
+  uncommitted finale refresh. No gameplay fix was required.
+- Production lever grab/hold via `RailBridgeHoldFixture`; actual Photon retained
+  state, room spawning, enemy brain, pathfinding and collision locomotion.
+  Train/operator initially placed through test tools; no enemy teleport or bridge
+  progress injection. Existing enemy-invincibility test option kept the operator
+  alive, so this does not establish combat difficulty.
+- Both tower defenders reached within 2 m of the control approach at **11.415 s**
+  accumulated holding; minimum distances **0.598 / 0.660 m**. They initially walked
+  toward the objective without seeing the operator, then switched to Chase.
+  No sampled movement discontinuity above 3 m was detected.
+- Exactly one `bridge-wave-0` appeared, first observed at **30.209 s** accumulated
+  work (10 Hz observation plus authority/Photon update latency). Two enemies before,
+  three afterward; no duplicate through completion. The third naturally reached
+  controls at **36.958 s**, minimum **0.597 m**, no detected teleport discontinuity.
+- Bridge reached **60.000 s / 100%**, deck local rotation **(0,0,0)**; held at 60
+  and stopped moving during the subsequent five seconds. Small physical-fixture
+  hold gaps did not count toward progress.
+- Console contained Meta XR no-headset `ErrorFormFactorUnavailable` and LCK's
+  unsupported-editor-graphics-API error. Neither prevented these gameplay checks.
+- Stopped Play and restored saved ordered-route/invincibility, scenario and
+  quick-start preferences. [Full trace](../output/bridge-finale-live/trace.txt).
+  Reproduce with `RailFinaleLiveChecks.Start()` and clean up with `.Stop()`.
+- Still queued: deliberate pause/resume around 30, real-peer agreement, late join,
+  master handoff, replay, headset/build lighting and natural difficulty.
 
 ### Queue run 2026-11-16 — scoped desktop results and remaining acceptance
 

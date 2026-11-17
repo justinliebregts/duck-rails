@@ -11,6 +11,8 @@ public sealed class RailRunState
     public string run;
     public double bridgeAt, allDownAt, finishedAt, startAt, sampleAt;
     public double bridgeElapsed, bridgeHeldAt, bridgeHoldUntil;
+    public bool bridgeReinforcementsTriggered;
+    public int bridgeReinforcementCount;
     public bool finished, success;
     public string reason;
     public List<RailGoldDeposit> gold = new List<RailGoldDeposit>();
@@ -44,7 +46,13 @@ public sealed class RailRunState
         if (bridgeHeldAt > 0 && bridgeAt <= 0) bridgeAt = now;
     }
     // Initial hold-duration tuning; solo/enemy balance still needs playtesting.
-    public const double BridgeSeconds = 30, ReviveSeconds = 3, ReviveGraceSeconds = .4,ProtectionSeconds = 3, FlareCooldown = 45, AllDownGrace = 5;
+    public const double BridgeSeconds = 60, ReviveSeconds = 3, ReviveGraceSeconds = .4,ProtectionSeconds = 3, FlareCooldown = 45, AllDownGrace = 5;
+    public void UpdateBridgeReinforcements(double now, int bridgeDefenders)
+    {
+        if (finished || bridgeReinforcementsTriggered || BridgeElapsed(now) < 30) return;
+        bridgeReinforcementsTriggered = true;
+        bridgeReinforcementCount = Mathf.CeilToInt(Mathf.Max(0, bridgeDefenders) * .3f);
+    }
     public void Finish(double now, string cause, IEnumerable<string> aboard)
     {
         if (finished) return;

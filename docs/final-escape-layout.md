@@ -1,5 +1,63 @@
 # Final escape block — concept V1
 
+## Fortress encounter refresh — November 17, 2026
+
+**Scoped live follow-up:** one authenticated Unity editor run passed November 17:
+both tower enemies naturally reached the control approach at 11.415 seconds of
+holding, the third appeared at the 30-second threshold (observed at 30.209 s) and
+also reached controls, and the bridge finished at exactly 60.000 seconds with a
+horizontal deck. No enemy teleport discontinuities detected. Test operator was
+invincible, using the real physical lever fixture; combat balance, real-peer
+replication and headset/build acceptance remain queued. See
+[trace](../output/bridge-finale-live/trace.txt) and [playtest results](playtest-queue.md#bridge-defender-approaches-and-60-second-hold--pass-scoped-2026-11-17).
+
+User requested navigation/loot updates for the new environment, build lighting,
+60 seconds of accumulated lever holding, and a 30% midpoint increase **only to
+bridge defenders**. Two initial defenders therefore become three (rounding up):
+one reinforcement at 30 seconds of actual lowering, not elapsed wall time.
+Release retains progress. The retained run snapshot records the wave count and
+trigger; master replacement/resume cannot recalculate it. Room spawn markers
+deduplicate creation. Replay resets the trigger. The extra zombie starts on the
+west upper deck at (-22, 8.05, 74), separate from the initial selection pool.
+
+Finale defenders now path toward a point just south of the control cabinet when
+not chasing/searching for a player. Normal perception, pursuit, hit reactions,
+flare retreat and boarding rules retain priority; this does not make enemies
+see players through walls. The objective is reconstructed from room spawn data
+after authority changes. Matchmaking suffix advances to `-tower-finale-v2` so
+old 30-second builds cannot share these runs; rebuild all participating clients.
+
+- Offline graph rebaked against the saved current bake scene: **73,371 nodes**,
+  656,236 edges. Both initial tower defenders and the reinforcement have complete
+  floor-only paths to the control approach (34, 36 and 25 path nodes).
+- **28 coal / 26 gold candidates**, still **6 coal / 2 gold per run**. Eight
+  truck-bed candidates per type are retained; remaining candidates redistributed
+  across parade/loading terraces, bunker interiors/roof, upper decks/towers,
+  east bastion/colonnade and yard climb blocks. Existing marker identities and
+  nested prefab references are retained. Ready for user inspection.
+- Exported the user's latest lighting bake: **three lightmaps, 1,311 renderer
+  bindings, 498 probes and 69 captured baked fixtures**. Companion contains only
+  the probe root and remains enabled in Build Settings. Expedition inherits the
+  updated prefab, with no missing binding references. Moving bridge/terminal and
+  unlit text remain outside static lightmap export. No lighting rebake was needed
+  after marker-only placement changes.
+
+Validation: compilation, 1,652 scoped EditMode checks (physical loot support and
+clearance, positive overlap control, 100 seeds/type, complete enemy paths, timing,
+wave retention and lighting references), bridge-hold, Week 2 and bridge-terminal
+regressions pass. Existing CutePixel missing-em-dash warning remains. No Play Mode
+or player build was run; actual build/headset lighting and natural encounter
+behavior are **queued for playtest**, not verified. Reproducible checks:
+`RailFinaleRefresh.Check()` in the finale bake scene. Evidence:
+[checks](../output/bridge-finale-refresh/checks.txt),
+[placements](../output/bridge-finale-refresh/placement-plan.txt).
+The pre-edit unsaved scene was preserved at `output/bridge-finale-refresh/before.unity`.
+All three approach paths also reach their goal using the runtime pathfinder's
+4,000-expansion/three-cluster budget. This is navigation evidence, not proof of
+natural enemy locomotion or encounter difficulty. Console error/exception query
+was empty. Scoped diff whitespace checks pass with Unity's generated blank-value
+line endings excluded; unrelated working-tree whitespace was left untouched.
+
 ## Low bridge lever terminal — November 16, 2026
 
 Bridge alarm follow-up: `BridgeAlarmBeep_Reverb.wav` is a separate spatial one-shot on the retained bridge control anchor (`RailBridgeAlarm`), routed to effects. First active lowering beeps immediately; subsequent starts require four seconds of monotonic real time since the last beep. Release/re-grab and component disable retain the cooldown; missed intervals never accumulate. Idle/completed bridge cannot start a beep. Release permits the baked tail to finish; disable stops playback. Existing zone reverb is bypassed for this already-reverberated source. Initial volume 0.65, linear range 5–80 m; listening remains queued.

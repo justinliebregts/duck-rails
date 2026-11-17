@@ -37,6 +37,7 @@ public sealed class RailBlock : MonoBehaviour
     [Tooltip("Zero disables enemies. Positive values are fixed finale/authoring counts; scavenging routes use crew-scaled quadrant selection.")]
     [Min(0)] public int enemyCount = 5;
     public RailSpawnSet spawnCandidates = new RailSpawnSet();
+    public Transform[] bridgeReinforcements = Array.Empty<Transform>();
     [HideInInspector] public bool spawnCandidatesMigrated;
     // Retained only for existing assets and legacy builders. Runtime merges these until migrated.
     [HideInInspector] public RailSpawnSet[] variations;

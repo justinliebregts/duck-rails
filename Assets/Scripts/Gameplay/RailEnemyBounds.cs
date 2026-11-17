@@ -22,6 +22,14 @@ public sealed class RailEnemyBounds : MonoBehaviour
         if (route == null || !route.Ready || run == null) return false;
         var data = GetComponent<PhotonView>().InstantiationData;
         string marker = data != null && data.Length >= 3 ? data[data.Length - 1] as string : null;
+        if (marker != null && marker.StartsWith("bridge-wave-") && int.TryParse(marker.Substring(12), out int wave))
+        {
+            var reinforcements = route.finale.bridgeReinforcements;
+            if (wave < 0 || reinforcements == null || reinforcements.Length == 0) return false;
+            var wavePoint = reinforcements[wave % reinforcements.Length];
+            position = wavePoint.position; rotation = wavePoint.rotation;
+            home = route.EnemyBounds(position); assigned = true; return true;
+        }
         if (marker == null || !marker.StartsWith("enemy-") || !int.TryParse(marker.Substring(6), out int index)
             || index < 0 || index >= run.enemyPoints.Length) return false;
         if (!relocated) home = route.EnemyBounds(run.enemyPoints[index].position);

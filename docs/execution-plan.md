@@ -1,5 +1,17 @@
 # Duck Rails — execution plan
 
+- [x] November 17: rebake new fortress navigation, redistribute 28 coal/26 gold
+  candidates, export current build lighting, implement 60-second bridge hold,
+  once-per-run third defender at 30 seconds and control-area navigation objective.
+  Compilation and scoped EditMode checks pass. See [finale refresh](final-escape-layout.md#fortress-encounter-refresh--november-17-2026).
+- [ ] Finale refresh natural pursuit, hold/wave replication and handoff, loot
+  reach/settling and actual build/headset lighting: queued for playtest.
+- [x] November 17 scoped solo runtime check: both initial defenders reached the
+  controls naturally at 11.415 s, third defender appeared at 30.209 s observed
+  accumulated work, bridge completed at exactly 60 s with horizontal deck.
+  Invincible test operator; multiplayer, headset and difficulty remain open.
+  [Evidence](../output/bridge-finale-live/trace.txt).
+
 - [ ] November 16: validate bridge alarm four-second start spacing, release/re-grab cooldown, completion and spatial listening on real clients/headsets; queued for playtest.
 
 - [ ] November 16: validate Duckz-style backpack downing and persistence: worn/held

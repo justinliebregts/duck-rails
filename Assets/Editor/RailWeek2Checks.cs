@@ -13,8 +13,8 @@ public static class RailWeek2Checks
         state.players.Add(new RailParticipant { id = "aboard", down = true });
         state.players.Add(new RailParticipant { id = "left-behind" });
         state.UpdateBridgeHold(100, 101);
-        Check(state.BridgeProgress(99) == 0 && Mathf.Approximately(state.BridgeProgress(100.5), .5f / 30) &&
-            Mathf.Approximately(state.BridgeProgress(160), 1f / 30), "Bridge only advances within the retained live hold");
+        Check(state.BridgeProgress(99) == 0 && Mathf.Approximately(state.BridgeProgress(100.5), .5f / (float)RailRunState.BridgeSeconds) &&
+            Mathf.Approximately(state.BridgeProgress(160), 1f / (float)RailRunState.BridgeSeconds), "Bridge only advances within the retained live hold");
         var reconstructed = JsonUtility.FromJson<RailRunState>(JsonUtility.ToJson(state));
         Check(reconstructed.BridgeProgress(145) == state.BridgeProgress(145), "Late-join/master reconstruction preserves bounded bridge progress");
         state.Finish(161, "Bridge crossed", new[] { "aboard" });

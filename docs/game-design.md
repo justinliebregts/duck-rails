@@ -1,5 +1,12 @@
 # Duck Rails — V1 game design
 
+November 17 bridge finale: user confirmed 60 seconds of accumulated lever holding,
+with one extra defender at 30 seconds (30% of the two bridge defenders, rounded
+up; no expedition-wide increase). Defenders approach the controls without needing
+initial line of sight, retaining ordinary player pursuit and combat reactions.
+New-fortress navigation, loot distribution and build lighting export are updated;
+runtime acceptance is queued. See [finale refresh](final-escape-layout.md#fortress-encounter-refresh--november-17-2026).
+
 November 16 bridge alarm: play the processed alarm on active lowering, at least four real-time seconds between starts. Stop/restart retains cooldown; idle never emits beeps and existing reverb tails finish. Runtime/headset acceptance queued.
 
 November 16 backpack persistence: match Duckz. Downing drops worn/handheld bags
@@ -656,7 +663,7 @@ Confirmed October 29, 2026: the current implementation scope is Week 2 plus the 
 November 1 confirmed change: the external bridge button requires a continuous physical hold. Releasing pauses lowering and retains all progress; anyone can resume it. This supersedes the one-touch, unattended minute-long timer. The train remains safe from enemies. See [bridge hold](bridge-hold.md) for implementation and validation.
 
 1. Warning signs before the raised bridge give the crew time to brake. Players must stop the train before it hits the raised or incompletely lowered bridge; a collision causes the train to explode and the run to fail for the whole team. Do not automatically stop the train to prevent this failure. A volunteer leaves the stopped train and holds down the external button to lower the bridge.
-2. Lowering advances only while at least one eligible player holds the button. Release, downing, leaving the control or disconnecting pauses progress without resetting it. Multiple operators do not increase speed. Additional enemies spawn after the first activation; players defend themselves with the existing repel/retreat and rescue mechanics. Once fully lowered, the bridge stays down. Initial tuning is 30 seconds of accumulated holding, not a confirmed balance target.
+2. Lowering advances only while at least one eligible player holds the lever forward. Release, downing, leaving the control or disconnecting pauses progress without resetting it. Multiple operators do not increase speed. Two defenders spawn after first activation and approach the control area; one more joins at 30 seconds of accumulated holding. Once fully lowered, the bridge stays down. November 17 confirmed duration is 60 seconds of accumulated holding; natural encounter balance remains queued for playtest.
 3. Once the bridge is fully lowered, players board and manually drive the train toward/across it.
 4. The train entering the bridge crosses the finish line. At this instant, record each participant's finish status and switch the train to automatic forward travel. Players can no longer control its motion.
 5. Anyone not aboard is teleported onto the train for the shared ending, but receives no completion credit and is marked did not finish. Downed players already aboard finish normally. Teleporting does not itself revive anyone.

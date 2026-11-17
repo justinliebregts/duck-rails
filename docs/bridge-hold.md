@@ -2,7 +2,12 @@
 
 Confirmed: players must continuously hold the external button to lower the bridge. Releasing pauses without losing progress; another player can resume it. At full lowering the bridge locks down. The train remains safe and enemies remain inside their authored block. This replaces the one-touch minute-long timer.
 
-Initial implementation tuning is 30 seconds of total holding, with no speed multiplier for extra hands or players. Enemy counts are unchanged; solo/unarmed feasibility, reaction windows, retreat routes and larger-crew pressure still need natural playtests. There is no new auto-revive or combat rule in gameplay.
+November 17 tuning is **60 seconds** of total holding, with no speed multiplier
+for extra hands or players. Two initial defenders approach the control area;
+one extra defender joins once at 30 seconds of accumulated holding (30% rounded
+up, bridge defenders only). See [current encounter](final-escape-layout.md#fortress-encounter-refresh--november-17-2026).
+Historical 30-second evidence below predates this change. Current timing,
+solo/unarmed feasibility and multiplayer encounter balance are queued for playtest.
 
 The physical `HOLD / LOWER` button uses DuckPlayer fingertip contact in both Keyboard simulation and VR, through the same `PressableButton` and `RailHoldControl` paths as the horn and radio. Withdrawing the hand releases it. The sign shows remaining holding time and lowering/paused/ready status. The old one-shot bridge action is ignored.
 
@@ -11,6 +16,13 @@ The master validates run-scoped, expiring player holds against connected, standi
 Protocol is `session-v9`: restart/update every client together. `Duck Rails > Authoring > Install Bridge Hold Button` installs the control in Expedition, the preserved Week 2 authoring baseline and the finale prefab without rebuilding geometry, graphs or lighting. Week 2/3 builders retain it. `Duck Rails > Legacy > Run Bridge Hold Checks` is included in Test Center quick regression.
 
 ## Validation
+
+- November 17 current tuning: authenticated solo editor Play Mode passes actual
+  defender approaches and production physical lever holding: both initial enemies
+  reached controls at 11.415 s accumulated work, third spawned at 30.209 s observed,
+  and bridge reached 100%/horizontal at 60.000 s. Operator invincibility enabled;
+  no enemy position or bridge-progress injection. Multiplayer/headset acceptance
+  remains open. [Trace](../output/bridge-finale-live/trace.txt).
 
 - Unity compiled the change. All 17 bridge-specific editor checks passed for pause/resume, bounded lease expiry, retained-state reconstruction, overlapping holds, completion, replay reset and physical-button installation. Existing Week 2 (24), Week 3 (607), hold-button, fingertip, drive, rig, diagnostics, economy and other quick suites passed. The initial session check expected exactly three build scenes; it was corrected to retain the Login/Compound/Expedition order while allowing the existing lighting companions. Its 40 checks then passed. Evidence: `output/bridge-hold/editor-checks.txt` and `final-checks.txt`.
 - An authenticated solo shared-rig fixture exercised the actual fingertip/button path. Downing paused at 8.479 seconds of work; returning aboard left that value unchanged through an idle wait. Resuming produced a pressed, moving state at 21.864 seconds and completed at 30 seconds, with a horizontal bridge and `BRIDGE READY / BOARD THE TRAIN` sign. The Console error/exception query was empty during the live check. Evidence: `output/bridge-hold/live-solo.txt`.

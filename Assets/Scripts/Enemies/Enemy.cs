@@ -648,6 +648,20 @@ namespace Game.AI
             switch (CurrentState)
             {
                 case State.Wander:
+                    if (RailBridgeEncounter.TryGetObjective(this, out var bridgeGoal))
+                    {
+                        if ((root.position - bridgeGoal).sqrMagnitude <= 1f) { _loco.ClearPath(); break; }
+                        _repathTimer -= dt;
+                        if (_repathTimer <= 0 && !_loco.WantsPath &&
+                            (_loco.PathDone || !_hasPathRequestGoal || _pathRequestGoal != bridgeGoal))
+                        {
+                            _repathTimer = 1f;
+                            _loco.RequestPathToWorld(m, bridgeGoal);
+                            _pathRequestGoal = bridgeGoal;
+                            _hasPathRequestGoal = true;
+                        }
+                        break;
+                    }
                     if (_jump != null && _jump.isActiveAndEnabled && _jump.TickWanderExit(this)) break;
                     if (_chaseCooldownRemaining <= 0f && _stalk != null && _stalk.isActiveAndEnabled && _stalk.TickStalk(this, m, dt))
                         break;

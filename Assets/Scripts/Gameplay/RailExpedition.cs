@@ -264,6 +264,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             return;
         }
         next.UpdateBridgeHold(now, BridgeHoldUntil(next, now));
+        next.UpdateBridgeReinforcements(now, Mathf.Max(0, enemyPoints.Length - baseEnemyCount));
         SampleStats(next, now);
         bool allDown = next.players.Any(p => IsConnected(p.actor)) && next.players.Where(p => IsConnected(p.actor)).All(p => p.down);
         if (!allDown) next.allDownAt = 0;
@@ -554,6 +555,16 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             string marker = "enemy-" + i;
             bool exists = HasMarker(PhotonSession.RunId, marker);
             if (!exists) PhotonNetwork.InstantiateRoomObject(RailEnemySpawns.ForcedEnemyType >= 0 ? RailEnemySpawns.Prefab(RailEnemySpawns.ForcedEnemyType).name : i < enemyTypes.Length ? RailEnemySpawns.Prefab(enemyTypes[i]).name : enemyPrefab.name, enemyPoints[i].position, enemyPoints[i].rotation, 0, new object[] { "rails", PhotonSession.RunId, marker });
+        }
+        var points = RailRoute.Instance != null ? RailRoute.Instance.finale.bridgeReinforcements : null;
+        if (points == null || points.Length == 0) return;
+        for (int i = 0; i < State.bridgeReinforcementCount; i++)
+        {
+            string marker = "bridge-wave-" + i;
+            if (HasMarker(PhotonSession.RunId, marker)) continue;
+            var point = points[i % points.Length];
+            PhotonNetwork.InstantiateRoomObject(RailEnemySpawns.Prefab(0).name, point.position, point.rotation,
+                0, new object[] { "rails", PhotonSession.RunId, marker });
         }
     }
     static bool HasMarker(string run, string marker)
