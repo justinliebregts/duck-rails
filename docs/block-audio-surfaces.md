@@ -35,7 +35,30 @@ is an authored collision partition, not a runtime atlas lookup. Headset listenin
 movement across partition boundaries and remote hand-contact playback remain
 **queued for playtest** under “Station and compound material contact sounds”.
 
-## Farm stalk-only foliage — November 15, 2026
+## Movement-driven corn rustle — November 16, 2026
+
+Supersedes the November 15 contact override below. The farm's sculpted ground
+collider now explicitly uses Dirt. Removed foliage mappings from player hand and
+footstep sound sets and restored normal contact resolution, including water.
+The existing 52 stalk volumes reference `HandHit_Foliage` as a separate rustle.
+
+One scene-local `FoliageRustle` follows the AudioManager listener. Horizontal
+movement inside stalk coverage repeats the supplied clip every 0.32 seconds,
+with SoundEvent pitch 0.95–1.05 and volume 0.4–0.5 selected anew each time.
+The initial gate requires 4 cm travel at at least 0.12 m/s. Idle, exit, pause,
+listener replacement and disabling stop the voice; vertical bob, tiny jitter,
+frame stalls over 0.2 seconds and movement above 15 m/s do not trigger it.
+These are initial listening-tuning values. Existing audio pooling/mixing is used;
+the rustle follows the listener and disables wall occlusion. No solid corn
+colliders, contact requirement or remote-player rustle replication were added.
+
+Verified Duck Rails EditMode: compilation and 3,809 assertions pass for 72/90 Hz
+cadence, stop/exit/warp/bob/jitter/pause, saved 52-patch/3,669-stalk coverage and
+clearing exclusions, dirt hand/foot contacts, and bounded random pitch/volume.
+Console error query empty. No Play Mode run; lifecycle, listening and headset
+feel are queued under the existing Farm foliage entry.
+
+## Historical contact version — November 15, 2026 (superseded)
 
 Added `Foliage` and `HandHit_Foliage` using the supplied `handHitFoliage.wav`.
 Player hand contacts and footsteps select this sound only within 0.6 m of an

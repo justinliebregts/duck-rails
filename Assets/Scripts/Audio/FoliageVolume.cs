@@ -3,17 +3,22 @@ using UnityEngine;
 
 namespace Game.Audio
 {
-    /// <summary>Contact sound coverage for non-solid plants, baked from their stalks.</summary>
+    /// <summary>Rustling coverage for non-solid plants, baked from their stalks.</summary>
     public sealed class FoliageVolume : MonoBehaviour
     {
         public SurfaceType surface;
+        public SoundEvent rustle;
         public Bounds bounds;
         [Tooltip("Local stalk base XYZ and height W. No physical colliders are added.")]
         public Vector4[] stalks = System.Array.Empty<Vector4>();
         [Min(0.01f)] public float radius = 0.6f;
         static readonly List<FoliageVolume> active = new List<FoliageVolume>();
 
-        void OnEnable() { if (!active.Contains(this)) active.Add(this); }
+        void OnEnable()
+        {
+            if (!active.Contains(this)) active.Add(this);
+            if (Application.isPlaying) FoliageRustle.EnsureExists();
+        }
         void OnDisable() => active.Remove(this);
 
         public bool Contains(Vector3 point)
@@ -29,10 +34,10 @@ namespace Game.Audio
             return false;
         }
 
-        public static SurfaceType Find(Vector3 point)
+        public static FoliageVolume Find(Vector3 point)
         {
             foreach (var volume in active)
-                if (volume != null && volume.surface != null && volume.Contains(point)) return volume.surface;
+                if (volume != null && volume.isActiveAndEnabled && volume.Contains(point)) return volume;
             return null;
         }
     }

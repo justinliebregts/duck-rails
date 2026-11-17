@@ -16,6 +16,7 @@ public static class RailFarmFoliage
         if (vertices.Length % verticesPerStalk != 0) throw new InvalidOperationException("Unexpected corn mesh topology");
         var volume = patch.GetComponent<FoliageVolume>() ?? patch.AddComponent<FoliageVolume>();
         volume.surface = surface;
+        volume.rustle = AssetDatabase.LoadAssetAtPath<SoundEvent>("Assets/Audio/Events/Impact/HandHit_Foliage.asset");
         volume.stalks = new Vector4[vertices.Length / verticesPerStalk];
         for (int i = 0; i < volume.stalks.Length; i++)
         {
@@ -38,6 +39,9 @@ public static class RailFarmFoliage
             var patches = root.GetComponentsInChildren<MeshFilter>(true).Where(m => m.name == "Dense corn patch").ToArray();
             if (patches.Length != 52) throw new InvalidOperationException("Expected 52 corn patches");
             foreach (var patch in patches) Configure(patch.gameObject);
+            var ground = root.GetComponentsInChildren<Collider>(true).Single(c => c.name == "Sculpted orchard and ditch");
+            var audio = ground.GetComponent<AudioSurface>() ?? ground.gameObject.AddComponent<AudioSurface>();
+            audio.type = AssetDatabase.LoadAssetAtPath<SurfaceType>("Assets/Audio/Surfaces/Dirt.asset");
             PrefabUtility.SaveAsPrefabAsset(root, RailFarmSilos.PrefabPath);
             Debug.Log("Foliage coverage saved on 52 corn patches");
         }

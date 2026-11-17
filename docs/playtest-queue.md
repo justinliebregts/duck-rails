@@ -273,11 +273,11 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ### Farm stalk-only foliage sounds — queued 2026-11-15
 - Commit(s): uncommitted.
-- Changed: Foliage surface and supplied handHitFoliage clip for player hand/foot contacts inside actual corn stalk coverage; 52 patches, 3,669 stalks, no new collision.
-- Setup: Farm expedition, one client then two clients for remote hand/foot presentation.
-- Check: existing contacts inside planted corn select foliage; paths, clearings, pond, railway and above-canopy points do not. Water keeps priority. Leaving corn restores normal contact audio; no idle loop or blocked movement. Verify runtime registration/unregistration through route load/unload and transformed blocks. Corn brushing without a physical contact is not a new sound trigger.
-- Evidence: compilation and focused EditMode geometry/mapping checks pass; see block-audio-surfaces.md. Play Mode remains unrun.
-- Needs human: headset listening, boundary feel and volume.
+- Changed November 16: supersedes contact override. Dirt ground contacts remain separate from local movement rustling inside 52 corn patches / 3,669 stalks. Repeats every 0.32 s, random pitch 0.95–1.05 and volume 0.4–0.5; no new collision.
+- Setup: Farm expedition, keyboard and headset movement; then two clients to check each local listener independently. Remote-player rustle replication is not implemented.
+- Check: move through stalks without hitting the ground/hands to hear repeats; dirt contacts still play. Stop, leave corn, enter paths/clearings, teleport, pause or unload the block: rustle stops. Tiny tracking jitter and vertical bobbing alone stay silent. Resume and cross patch boundaries without stacked voices. Check transformed blocks, route reload, pond/water priority and above-canopy silence.
+- Evidence: compilation, 3,809 EditMode assertions (cadence at 72/90 Hz, movement gates, saved coverage/references, dirt contacts, randomized selection) and empty Console error query pass; see block-audio-surfaces.md. Runtime/listening remains unrun.
+- Needs human: headset listening, cadence/boundary feel and volume balance with dirt contacts.
 - Priority: normal.
 
 

@@ -19,7 +19,7 @@
 - [x] Install approved radio console while preserving original voice/hold/button identities and settings. Compilation, 24 saved-prefab checks, installed-button checks, hold regressions and offline navigation/boarding checks pass; Unity render reviewed. See [integration](radio-console.md#unity-installation--november-15).
 - [ ] Validate new radio reach, live voice/physical contact, moving-train/multiplayer behavior and headset appearance; queued for playtest.
 
-- [ ] Farm stalk-only foliage sounds: implemented new surface/clip and baked stalk coverage; compile/EditMode checks pass. Runtime and headset listening queued in [playtest queue](playtest-queue.md#farm-stalk-only-foliage-sounds--queued-2026-11-15).
+- [ ] Farm movement-driven corn rustle (November 16 revision): dirt ground contacts plus repeated local movement rustle with pitch/volume variation. Compilation and 3,809 EditMode assertions pass; runtime and headset listening queued in [playtest queue](playtest-queue.md#farm-stalk-only-foliage-sounds--queued-2026-11-15).
 
 - [ ] Pause menu train-follow: implemented summon-time passenger anchoring and fresh placement on reopen; moving-train, off-train and headset acceptance [queued for playtest](playtest-queue.md#pause-menu-follows-the-train--queued-2026-11-15).
 
