@@ -3,9 +3,10 @@
 ## End-of-run results table — queued 2026-11-17
 
 - Changed: RESULTS label stats are now a table (`RailResultsTable`): duck names
-  on the left (green = escaped, red = didn't make it), Coal/Gold/Revives/Downs
-  columns, then Title. The top value in each stat column is yellow (ties all
-  highlighted; zeros never).
+  on the left (green = escaped, red = didn't make it; no legend line; names over
+  20 characters end in "..."), tight Coal/Gold/Revives/Downs columns, then
+  Title. The top value in each stat column is yellow (ties all highlighted;
+  zeros never).
 - Editor evidence: compiles, no Console errors; an offscreen render of an
   8-duck mock at the label's 5×4.5 size and font fits with no wrapping.
 - Check: finish a run with 2+ clients; the table is readable in headset at the
