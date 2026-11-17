@@ -23,6 +23,14 @@ focused EditMode checks pass; listening/headset acceptance queued. See
 
 November 16 bridge alarm: play the processed alarm on active lowering, at least four real-time seconds between starts. Stop/restart retains cooldown; idle never emits beeps and existing reverb tails finish. Runtime/headset acceptance queued.
 
+November 16 bridge terminal: user approved a low Blender-built olive control
+cabinet replacing the finale floor button, no rear cable, with the gold crate
+beside it. Hold its train-style lever forward using the same palm snap; release
+retains bridge progress. Integrated CutePixel 0–100% display/bar and spatial
+mechanical loop follow actual shared lowering. Installed and editor-checked;
+headset/multiplayer/listening acceptance queued. See
+[bridge terminal](final-escape-layout.md#low-bridge-lever-terminal--november-16-2026).
+
 November 16 backpack persistence: match Duckz. Downing drops worn/handheld bags
 with their contents retained and clears the saved bag. Only a worn bag and its
 contents persist through UserPlayerPrefs; taking it off clears that save. Restore

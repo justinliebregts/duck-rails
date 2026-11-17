@@ -819,7 +819,7 @@ Reduce first:
 - No spotlight.
 - Three stats and a few awards.
 - Existing cosmetics with minimal new art.
-- Keep the bridge finale to one external hold-to-lower button with retained progress and local enemy defense; no extra fuse/battery puzzle. Replacing it with a plain escape requires a design discussion rather than an automatic scope cut.
+- Keep the bridge finale to one external hold-forward lever terminal with retained progress and local enemy defense (November 16 approved replacement for the button); no extra fuse/battery puzzle. Replacing it with a plain escape requires a design discussion rather than an automatic scope cut.
 - Keep public return matchmaking simple: one coordinated, bounded search for crews of one to four, then fresh-compound fallback; no elaborate room-ranking system.
 - Repeatable block template and validation rather than an elaborate generator/editor suite.
 
@@ -998,3 +998,6 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] November 16 coal pickup/drop audio: prefab bindings, imports and network sound registration pass editor checks; two-client/headset listening remains queued in docs/playtest-queue.md (Coal pickup and drop sounds).
 
 - [ ] November 16: Compound/Starting Station reverb listening, tunnel contrast, transitions and headset/client acceptance. Six authored zones pass saved-reference/settings and Console checks; queued for playtest. See [settings](block-reverb.md#compound-and-starting-station--november-16-2026).
+
+- [x] November 16: install approved Blender bridge lever terminal with train hand snapping, shared progress display and mechanical loop. 27 terminal, 17 bridge-hold and 27 drive EditMode checks pass. See docs/final-escape-layout.md.
+- [ ] Validate bridge terminal headset feel, audio, two-client hold/release, late join/master handoff and replay; queued for playtest.
