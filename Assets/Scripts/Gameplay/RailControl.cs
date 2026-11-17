@@ -31,8 +31,11 @@ public sealed class RailControl : MonoBehaviour
     Vector3 handleRest;
     float renderedProgress, gripStartProgress, returnStart, returnElapsed;
     bool returning;
+    public bool IsBridgeLever => action == Action.Bridge && handle != null;
+    public bool BridgeForwardHeld => IsBridgeLever && (driveHand != null || simulatedDrive) && forwardLatched;
     void OnEnable() { drives.Add(this); }
-    void Awake() { if (handle != null) handleRest = handle.localPosition; }
+    void Awake() { CacheHandleRest(); }
+    void CacheHandleRest() { if (handle != null) handleRest = IsBridgeLever ? Vector3.up * handle.localPosition.magnitude : handle.localPosition; }
     void Start()
     {
         ConfigureDriveColliders();
@@ -48,10 +51,11 @@ public sealed class RailControl : MonoBehaviour
             var label = button.GetComponentInChildren<TMPro.TMP_Text>();
             label.text = hold.bridge ? "HOLD\nLOWER" : hold.radio ? "HOLD\nTALK" : "HOLD\nHORN"; label.fontSize = .65f;
         }
-        if (handle != null) handleRest = handle.localPosition;
+        CacheHandleRest();
     }
     void Update()
     {
+        if (IsBridgeLever) { UpdateBridgeLever(); return; }
         if (action == Action.Horn || action == Action.Radio || action == Action.Bridge) return;
         if (action == Action.Drive) UpdateDrive();
         if (!PhotonSession.OnTrain || GR.Player.instance == null) return;
@@ -80,7 +84,7 @@ public sealed class RailControl : MonoBehaviour
     // Keep enabled trigger shapes for grip proximity and desktop targeting.
     public void ConfigureDriveColliders()
     {
-        if (action != Action.Drive) return;
+        if (action != Action.Drive && !IsBridgeLever) return;
         foreach (var collider in GetComponentsInChildren<Collider>(true)) collider.isTrigger = true;
     }
     public static RailControl TryGripDrive(PlayerHand hand)
@@ -89,7 +93,7 @@ public sealed class RailControl : MonoBehaviour
             PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady || PhotonSession.Phase != RailPhase.Running) return null;
         foreach (var control in drives)
         {
-            if (control.action != Action.Drive || control.handle == null || control.driveHand != null || control.simulatedDrive || !control.CanRequestPhysicalGrip()) continue;
+            if ((control.action != Action.Drive && !control.IsBridgeLever) || control.handle == null || control.driveHand != null || control.simulatedDrive || !control.CanRequestPhysicalGrip()) continue;
             var collider = control.handle.GetComponent<Collider>();
             if (collider == null || Vector3.Distance(collider.ClosestPoint(hand.transform.position), hand.transform.position) > .12f) continue;
             control.driveHand = hand;
@@ -110,6 +114,7 @@ public sealed class RailControl : MonoBehaviour
     }
     bool CanRequestPhysicalGrip()
     {
+        if (IsBridgeLever) return BridgeAvailable;
         if (PhotonSession.DriveGripActor == 0) return true;
         // The local handle starts returning before the reliable release is echoed.
         // Regrip only our exact released token; the master still arbitrates the new grant.
@@ -123,7 +128,8 @@ public sealed class RailControl : MonoBehaviour
         gripRun = PhotonSession.RunId; gripToken = Guid.NewGuid().ToString("N");
         gripStarted = Time.unscaledTime; nextHeartbeat = 0;
         driveProgress = simulatedDrive ? 0 : gripStartProgress; gripGranted = forwardLatched = false;
-        PhotonSession.Instance.RequestDriveGrip(gripRun, gripToken, 0, 0);
+        if (IsBridgeLever) gripGranted = true;
+        else PhotonSession.Instance.RequestDriveGrip(gripRun, gripToken, 0, 0);
         PlayThrottle(RailAudio.Bank?.throttleGrab);
     }
     void PlayThrottle(Game.Audio.SoundEvent sound, float pitch = 1f) =>
@@ -149,13 +155,47 @@ public sealed class RailControl : MonoBehaviour
     {
         if (driveHand == null && !simulatedDrive) return;
         PlayThrottle(RailAudio.Bank?.throttleRelease);
-        PhotonSession.Instance?.RequestDriveGrip(gripRun, gripToken, 2, 0);
+        if (!IsBridgeLever) PhotonSession.Instance?.RequestDriveGrip(gripRun, gripToken, 2, 0);
         releasedToken = gripToken;
         driveHand = null; drivePalm = null; simulatedDrive = false; gripGranted = forwardLatched = false; driveProgress = 0;
         // Stop authority immediately; the unheld artwork returns separately in UpdateDrive.
     }
     void OnApplicationFocus(bool focused) { if (!focused) ReleaseDrive(); }
     void OnApplicationPause(bool paused) { if (paused) ReleaseDrive(); }
+    bool BridgeAvailable => isActiveAndEnabled && PhotonSession.OnTrain && PhotonSession.Instance != null &&
+        PhotonSession.Instance.WorldReady && PhotonSession.Phase == RailPhase.Running &&
+        !RailWorld.InputBlocked && !RailExpedition.LocalDown && RailExpedition.Instance != null &&
+        !RailExpedition.Instance.State.finished && RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time) < 1;
+
+    // Shares the train's acquisition, tracked-palm arc, visual snap and breakaway.
+    // Bridge authority stays on the existing run-scoped hold protocol, never the drive lease.
+    void UpdateBridgeLever()
+    {
+        if (driveHand != null)
+        {
+            bool released = !driveHand.isActiveAndEnabled ||
+                !driveHand.IsGripHeld || !driveHand.CanGrab || drivePalm == null ||
+                Vector3.Distance(drivePalm.position, handle.TransformPoint(gripPalmLocal)) > BreakDistance;
+            if (released || !BridgeAvailable || gripRun != PhotonSession.RunId) ReleaseDrive();
+            else
+            {
+                float travel = GripTravel(gripStartProgress, gripStartAngle, transform.InverseTransformPoint(drivePalm.position));
+                bool previous = forwardLatched;
+                forwardLatched = RailDriveLease.ForwardDetent(forwardLatched, travel);
+                driveProgress = forwardLatched ? 1 : travel;
+                if (previous != forwardLatched && driveHand != null) DetentFeedback();
+            }
+        }
+        float progress = driveHand != null || simulatedDrive ? driveProgress :
+            BridgeAvailable && RailExpedition.Instance.State.BridgeMoving(PhotonNetwork.Time) ? 1 : 0;
+        if (progress == 0 && driveHand == null && !simulatedDrive)
+        {
+            if (!returning) { returning = true; returnStart = renderedProgress; returnElapsed = 0; }
+            returnElapsed += Time.unscaledDeltaTime;
+            PoseDrive(ReturnProgress(returnStart, returnElapsed, returnDuration));
+        }
+        else { returning = false; PoseDrive(progress); }
+    }
     void UpdateDrive()
     {
         var simulator = SimulatedRigInput.Instance;

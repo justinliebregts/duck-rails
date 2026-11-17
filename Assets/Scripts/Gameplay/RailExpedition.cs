@@ -346,7 +346,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         bridgeHolders.Clear();
         if (bridgeButton == null) return 0;
         var control = bridgeButton.GetComponent<RailHoldControl>();
-        if (control == null || !control.isActiveAndEnabled || control.button == null || !control.button.interactable) return 0;
+        if (control == null || !control.isActiveAndEnabled || !control.Interactable) return 0;
         double until = 0;
         foreach (var player in PhotonNetwork.PlayerList)
         {
@@ -356,7 +356,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 !RailHoldControl.IsLive(value, state.run, now) ||
                 !Position(player.ActorNumber, out var position) || Vector3.Distance(position, bridgeButton.position) >= 3 ||
                 (RailTrain.Instance != null && RailTrain.Instance.Contains(position)) ||
-                !HandNear(player.ActorNumber, control.button.transform.position, .65f)) continue;
+                !HandNear(player.ActorNumber, control.ContactPosition, .65f)) continue;
             until = Math.Max(until, (double)((object[])value)[1]);
             bridgeHolders.Add(player.ActorNumber);
         }
@@ -463,7 +463,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         float progress = State.BridgeProgress(now);
         bridgeDeck.localRotation = Quaternion.Euler(-80 * (1 - progress), 0, 0);
         bridgeLabel.text = progress >= 1 ? "BRIDGE READY\nBOARD THE TRAIN" :
-            (State.BridgeMoving(now) ? "LOWERING BRIDGE" : State.bridgeAt > 0 ? "PAUSED — HOLD TO LOWER" : "STOP — HOLD BUTTON TO LOWER") +
+            (State.BridgeMoving(now) ? "LOWERING BRIDGE" : State.bridgeAt > 0 ? "PAUSED - HOLD LEVER FORWARD" : "HOLD LEVER FORWARD TO LOWER") +
             "\n" + Mathf.CeilToInt((float)(RailRunState.BridgeSeconds - State.BridgeElapsed(now))) + " seconds of holding left";
         foreach (var p in State.players)
         {

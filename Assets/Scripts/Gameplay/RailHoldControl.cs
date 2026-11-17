@@ -8,6 +8,9 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public sealed class RailHoldControl : MonoBehaviour
 {
     public PressableButton button;
+    public RailControl lever;
+    public bool Interactable => lever != null ? lever.isActiveAndEnabled && lever.IsBridgeLever : button != null && button.interactable;
+    public Vector3 ContactPosition => lever != null && lever.handle != null ? lever.handle.position : button != null ? button.transform.position : transform.position;
     public bool radio;
     public bool bridge;
     [SerializeField] Game.Audio.SoundEvent radioTalkOn;
@@ -76,7 +79,7 @@ public sealed class RailHoldControl : MonoBehaviour
             PhotonSession.Instance.WorldReady && !RailWorld.InputBlocked && !RailExpedition.LocalDown;
         if (bridge) allowed &= PhotonSession.Phase == RailPhase.Running && RailExpedition.Instance != null &&
             RailExpedition.Instance.State.BridgeProgress(PhotonNetwork.Time) < 1;
-        bool want = allowed && button != null && button.IsPressed && (!radio || !PhotonVoiceChat.IsLocallyMuted);
+        bool want = allowed && Interactable && (lever != null ? lever.BridgeForwardHeld : button.IsPressed) && (!radio || !PhotonVoiceChat.IsLocallyMuted);
         if (held && heldRun != PhotonSession.RunId) SetHeld(false);
         if (want != held) SetHeld(want);
         if (held && PhotonNetwork.Time >= nextHeartbeat) Publish(true);
@@ -119,6 +122,7 @@ public sealed class RailHoldControl : MonoBehaviour
     }
     void StopHold()
     {
+        if (lever != null) lever.ReleaseDrive();
         if (button != null) button.Release();
         if (held) SetHeld(false);
         foreach (int actor in listeners) WalkieRadio.ClearView(-100000 - actor);

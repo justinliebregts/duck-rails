@@ -43,12 +43,45 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Finale fort architecture blockout — queued 2026-11-16
+
+Revision 3 (same day): Starting Station materials, north-east deck on pillars with a yard stair and bridge, west loggia and arcade, climb blocks removed. Also check frame rate on headset: the fort rose from about 6,700 to 18,566 triangles. See `docs/final-escape-layout.md`, revision 3.
+- Commit(s): uncommitted
+- Changed: fort rebuilt to layout v2 (asymmetric keep/depot, stairs, new towers, moved floodlights and east tower defender, re-seated fort loot markers). Blockout only.
+- Setup: BLOCKED until navigation and lighting are rebaked for bridge-finale-v1 (see final-escape-layout.md, Blockout installed). Then: finale via Test Center / route to the bridge, single client first, then multi-client.
+- Check: no lighting-loader failure for the finale; all seven stairs walkable both ways without snagging; every terrace, roof, wall-walk, both towers, the gangway and the catwalk reachable; breach, collapsed-wall slope and gate usable by enemies; first hold spawns exactly two tower defenders (west keep, east watchtower) that can path to the terminal; 6 coal / 2 gold spawn on valid surfaces over several seeds; train passes the gate gantry and catwalk; no player can fall into a sealed pocket.
+- Needs human: headset stair feel at duck height, sightlines through rails, night readability with the moved floodlights, defense balance, Quest frame time.
+- Priority: normal
+- Mode: report-only
+
 ### Bridge alarm reverb audition — queued 2026-11-16
 - Integration checks: Unity compilation and 7 standalone alarm EditMode checks passed (cooldown/restart/boundaries and saved prefab clip binding). Earlier terminal/hold/drive checks passed before isolation. No Play Mode run.
 - Asset: `Assets/Audio/Bridge/BridgeAlarmBeep_Reverb.wav`, original retained; processed copy now bound to a separate spatial one-shot at the bridge control.
 - Processing: 35 ms end taper, 26 ms reverb predelay, damped diffuse reflections with 2.1 s nominal decay, three seconds of appended tail, final 250 ms fade; stereo 44.1 kHz/16-bit PCM. Source is 0.983 s, stereo 8-bit; conversion does not restore source detail.
 - Checks passed: output 3.983 s, peak -1.34 dBFS (no sample clipping), final samples zero; synchronous import in verified Duck Rails editor with matching duration/rate/channels.
 - Pending: hold continuously (beep starts at least four seconds apart); release/re-grab before four seconds (wait for remaining cooldown), resume after expiry (immediate beep), remain idle through expiry (silent), complete/finish (no new beeps). Check retained natural tails on release, effects volume and 5–80 m spatial falloff on real clients/headsets. Audio quality/listening acceptance is unverified.
+
+
+### Bridge lever terminal — queued 2026-11-16
+- Loop replacement: use supplied `Assets/Audio/Bridge/BridgeLower_Loop.wav`; 0.18 s pitch/volume spin-up (0.55→1 pitch), 0.22 s spin-down/fade to silence. Check smooth quick stop/resume without a playhead restart during the fade, completion/expiry tails and immediate silence on unload. Brief stop tail supersedes the earlier “no audio while paused” wording below. EditMode checks cover assigned clip and ramp boundaries/reversal; in-game listening remains queued.
+- Audio follow-up: compare directly with the train throttle—same grab sound, rising-pitch travel clicks, full-forward latch and release/return clicks. The latch follows lever engagement, not bridge completion. Shared code and all four sound-event references confirmed in Edit Mode; listening remains pending. Keep the separate mechanical loop while the bridge lowers.
+- Commit(s): uncommitted.
+- Changed: Approved Blender wedge terminal replaces the floor button; train palm snapping/arc/detent, retained bridge hold, CutePixel percentage/bar, and spatial mechanical loop; nearby gold crate unchanged. See docs/final-escape-layout.md.
+- Passed now: Unity compilation, 27 terminal + 17 bridge-hold + 27 train-drive EditMode checks; saved Expedition reference inheritance and visual preview. Evidence: output/bridge-terminal/checks.txt. No Play Mode run.
+- Setup: Two real clients at finale, then third-client late join; use updated RailBridgeHoldFixture for automated holds and manual headset grip for feel. Recheck normal train throttle afterward.
+- Check: 0% at fresh start; grip alone does not lower; push forward lowers, release/pullback/breakaway/downing/focus loss stops, progress remains and resumes without a jump. 100% only at full lowering. Both clients agree on display, bridge and mechanical loop; no audio while paused/completed/finished. Disable/unload stops audio.
+- Check: Master handoff, disconnect/lease expiry, late join during motion/pause, two simultaneous operators, fresh-run reset, bridge crash and success all retain existing authoritative behavior; bridge interaction never drives/stops/acquires the train throttle. Only first valid hold creates the two tower defenders. Gold deposit still works alongside it.
+- Needs human: Headset grip height (~45 cm), palm orientation/snapping, full throw and release comfort, small-duck reach/display readability, mechanical loop character/seam/volume/reverb, nearby gold access and night appearance.
+- Priority: normal.
+
+### Compound and starting station reverb — queued 2026-11-16
+- Commit(s): uncommitted
+- Changed: Six authored box zones cover Compound concourse/stairs and Starting Station hall/side rooms/tunnel; tunnel has stronger reverb and 2.8 s decay versus the hall's 1.4 s. See docs/block-reverb.md.
+- Setup: Two real clients; Compound then private expedition Starting Station; drive through the departure tunnel to outdoors.
+- Check: Coverage on concourse/stairs, both station platforms, footbridge and side rooms; stronger tunnel, smooth hall boundary and dry exterior beyond Z 142; separate listeners hear their own region; departure/return and late join do not retain old zones.
+- Needs human: Listen on headset for decay, transitions/overlap, voice clarity, footsteps/item sounds and audio performance.
+- Priority: normal
+
 
 ### Duckz backpack downing and persistence — queued 2026-11-16
 - Commit(s): backpack downing/persistence commit containing this entry.
@@ -62,13 +95,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: headset backpack retrieval/drop feel.
 - Priority: normal.
 
-### Compound and starting station reverb — queued 2026-11-16
-- Commit(s): uncommitted
-- Changed: Six authored box zones cover Compound concourse/stairs and Starting Station hall/side rooms/tunnel; tunnel has stronger reverb and 2.8 s decay versus the hall's 1.4 s. See docs/block-reverb.md.
-- Setup: Two real clients; Compound then private expedition Starting Station; drive through the departure tunnel to outdoors.
-- Check: Coverage on concourse/stairs, both station platforms, footbridge and side rooms; stronger tunnel, smooth hall boundary and dry exterior beyond Z 142; separate listeners hear their own region; departure/return and late join do not retain old zones.
-- Needs human: Listen on headset for decay, transitions/overlap, voice clarity, footsteps/item sounds and audio performance.
-- Priority: normal
+### Train radio press/release sounds — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: train TALK activation/release reuse the handheld WalkieTalkie_TalkOn/TalkOff SoundEvents through RoomRpc; only local hold transitions broadcast, not heartbeats or remote lease updates. Forced release also plays the off cue.
+- Passed now: verified Duck Rails MCP in Edit Mode; compilation passed, Console error query empty, saved RadioTable and nested DuckRailsTrain bindings match handheld on/off assets and retain the button reference.
+- Setup: two clients aboard stopped and moving train, plus handheld walkie for comparison.
+- Check: activation and release each sound once locally and to nearby peers; holding does not repeat; rapid taps, mute, downing and focus loss stop transmission with the release cue; horn/bridge remain unchanged.
+- Needs human: headset listening and volume/position comparison with handheld.
+- Priority: normal.
 
 ### Coal pickup and drop sounds — queued 2026-11-16
 - Commit(s): uncommitted.
@@ -79,14 +113,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: headset listening and volume balance.
 - Priority: normal.
 
-### Train radio press/release sounds — queued 2026-11-16
+### Replacement countdown tick — queued 2026-11-16
 - Commit(s): uncommitted.
-- Changed: train TALK activation/release reuse the handheld WalkieTalkie_TalkOn/TalkOff SoundEvents through RoomRpc; only local hold transitions broadcast, not heartbeats or remote lease updates. Forced release also plays the off cue.
-- Passed now: verified Duck Rails MCP in Edit Mode; compilation passed, Console error query empty, saved RadioTable and nested DuckRailsTrain bindings match handheld on/off assets and retain the button reference.
-- Setup: two clients aboard stopped and moving train, plus handheld walkie for comparison.
-- Check: activation and release each sound once locally and to nearby peers; holding does not repeat; rapid taps, mute, downing and focus loss stop transmission with the release cue; horn/bridge remain unchanged.
-- Needs human: headset listening and volume/position comparison with handheld.
+- Changed: overwrote `Assets/Audio/Menu/ClockTick.wav` with supplied InspectorJ Plastic Toy Clock Ticking Single; original filename, GUID, importer settings and SoundEvent retained.
+- Passed now: source/destination SHA256 match; Unity import and SoundEvent clip reference check (0.973 seconds, stereo, 48 kHz).
+- Setup: public compound countdown and expedition return countdown.
+- Check: new tick is heard once per countdown second, without an audible overlap or clipped tail; existing cadence and Effects volume control remain intact.
+- Needs human: listening and volume balance on headset.
 - Priority: normal.
+
 
 ### Compound looping music — queued 2026-11-16
 - Commit(s): uncommitted.
@@ -142,6 +177,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Changed: solid CutePixel lettering and a bottom-mounted baked spotlight on the front development sign; isolated fascia lightmap preserves existing tower atlas lighting.
 - Setup: Skyscraper Works in an expedition; inspect the approach sign at duck height.
 - Check: wording and raised edges readable, uplight visible without realtime double-lighting, sign lightmap remains bound after route translation and reload.
+- Public departure regression: the sign's missing additive lighting scene blocked world readiness on a route with Skyscraper. After adding the companion, one authenticated editor countdown reached Running with all three sign bindings, a cleared loading veil and input enabled. See [the fix and evidence](skyscraper-layout.md#public-departure-regression--november-16-2026).
 - Needs human: headset readability and final art approval.
 - Priority: normal.
 

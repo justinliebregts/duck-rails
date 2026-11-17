@@ -1,6 +1,67 @@
 # Final escape block — concept V1
 
+## Low bridge lever terminal — November 16, 2026
+
 Bridge alarm follow-up: `BridgeAlarmBeep_Reverb.wav` is a separate spatial one-shot on the retained bridge control anchor (`RailBridgeAlarm`), routed to effects. First active lowering beeps immediately; subsequent starts require four seconds of monotonic real time since the last beep. Release/re-grab and component disable retain the cooldown; missed intervals never accumulate. Idle/completed bridge cannot start a beep. Release permits the baked tail to finish; disable stops playback. Existing zone reverb is bypassed for this already-reverberated source. Initial volume 0.65, linear range 5–80 m; listening remains queued.
+
+User approved the shallow olive wedge concept and requested Blender construction,
+train-throttle hand snapping, integrated 0–100% progress and mechanical lowering
+audio. Installed on the existing `Env/Lower bridge button` anchor, retaining its
+identity and all route/Expedition references. This supersedes the floor-button
+presentation below. The old button is inactive; the gold deposit remains at its
+existing position immediately beside the terminal. No rear cable or pedestal.
+
+- Editable source: `ArtSource/BridgeTerminal/BridgeTerminal.blend`, reproducible
+  with `build.py` using installed Blender 5.3 in background mode (live MCP was
+  unavailable). Two Blender mesh exports become Unity mesh assets through
+  `RailBridgeTerminalArt.Install()`. Cabinet + moving lever: 2,322 triangles,
+  one pixel atlas/material, plus two simple display bars and CutePixel text.
+- Cabinet footprint 1 × 0.94 m including flange; top rises from about 0.08 to
+  0.38 m. Grip centre is 0.4485 m above the platform at either end stop, matching
+  the train's approximately 0.45 m reference. Grip collider, palm offset,
+  acquisition/snap path, 70-degree tracked-palm arc, breakaway, forward detent
+  and quarter-second return reuse `RailControl`. Like the train control, it
+  does not create a hand-locomotion wall. Keyboard simulation uses physical
+  reach/grip, not the train's T shortcut.
+- Lever feedback uses the exact train audio bank and `RailControl` sound path:
+  `Throttle_Grab`, quarter-travel `Throttle_Click` cues with the same rising
+  pitches, `Throttle_Latch` at full-forward engagement, and `Throttle_Release`
+  plus descending return clicks on letting go. Full-forward means 100% lever
+  travel, independent of the bridge completion percentage. User explicitly
+  confirmed this parity; shared code and all four asset references checked in
+  Edit Mode. Listening remains queued alongside the separate lowering loop.
+- `RailHoldControl` reads the forward-held lever and publishes the existing
+  expiring, run-scoped bridge hold. Release/pullback pauses retained progress;
+  no drive lease or train throttle request is sent. Existing master checks for
+  nearby hands, participant state and being outside the train remain. First
+  valid hold still triggers the existing two tower defenders.
+- `RailBridgeTerminal` reads the exact shared `BridgeProgress` used to pose the
+  bridge; the bar tracks it continuously and whole-number percent floors until
+  actual completion (never displays 100% early). Release retains both displays.
+  User-selected `Assets/Audio/Bridge/BridgeLower_Loop.wav` replaces the synthesized
+  loop. Spatial playback routes through the effects mixer and follows shared
+  `BridgeMoving`. Start ramps volume from silence and pitch from 0.55 to 1 over
+  0.18 s; stopping fades volume and pitch back down over 0.22 s before stopping
+  playback. Quick stop/resume reverses from the current blend without restarting
+  the playhead. Pause, completion, expiry and finish use the stop tail; disable
+  stops immediately. Late join reads current state. These timings are initial
+  tuning for the user's requested quick mechanism spin-up/down, listening queued.
+
+Validation: Unity 6000.3.24f1 compilation; 27 terminal, 17 retained bridge-hold and
+27 train-drive EditMode checks pass. Saved Expedition inherits exactly one
+terminal and its lever reference without a scene rewrite. Gold transform,
+CutePixel font, non-solid grip, end stops, progress boundaries and loop import
+checked. [Evidence](../output/bridge-terminal/checks.txt) and
+[installed Unity preview](../output/bridge-terminal/unity-installed.png).
+Preview uses temporary review lighting and 47% display; it is not a gameplay
+capture. One existing CutePixel em-dash warning from `BRAKE NOW` remains.
+No navigation or lighting rebake needed: no new solid navigation obstacle;
+terminal renderers use existing probes and the display is unlit.
+
+**Queued for playtest:** headset reach/snap/release, sound quality and loop seams,
+real-client stop/resume, competing operators, late join/master handoff, first-hold
+defenders, completion/crash/replay and the updated production-grip test fixture.
+No Play Mode or multiplayer run was performed.
 
 ## Batch level polish — November 11
 
@@ -179,3 +240,55 @@ Animation samples the retained `finishedAt` timestamp and frozen bridge progress
 Validation: verified Duck Rails MCP target, successful script compilation and 81 `RailBridgeCollapseChecks.Run()` EditMode assertions across 0%, 50% and 99% lowered angles (alignment, landing, settled state, fire and restoration). Neutral-lit geometry preview: `output/bridge-collapse/wreck-preview.png`. A temporary preview capture logged a render-target cleanup error and the existing CutePixel em-dash warning; neither came from gameplay. Initial generator skipped prefab-asset geometry; fixed to use local activation and reject empty sections before the passing checks. Live crash/explosion, multiplayer/reconnect, replay and headset cost/visual acceptance are **queued for playtest**. Still preview and editor checks do not establish runtime acceptance.
 
 Rebuild offline pieces using **Duck Rails > Authoring > Finale > Build crash sections** after bridge model changes. No Play Mode was run.
+
+## Fort architecture pass — proposal, November 16, 2026
+
+User direction (confirmed): the built fort is a basic version of the V3/V4 "proposed arena" sheet; rework the fort architecture toward it. Layout may change. Keep the red warning-post concept and the tall floodlights (floodlights may move). Bridge model and gorge width must not change.
+
+[Proposed top-down layout](../output/finale-fort-art-pass/layout-proposal.svg) — **awaiting user confirmation; nothing built.** Proposed, not approved: chamfered and buttressed 6 m containment wall with a wall-walk at +4; pylon-framed rail gate and two ragged breaches in the south wall; asymmetric sides (west L-shaped +2 terrace and enclosed bunker; east +2 loading terrace with dock notch, +4 guard house and colonnaded bunker); +8 blockhouses where the catwalk lands; steel portal frames under the catwalk; an architectural kit of base course, cap course, buttresses, framed doorways, embrasures and wall lamps. Ramps are retained instead of the concept's stairs (November 11 decision), as are the ochre/steel open rails (November 6 decision).
+
+Unchanged in the proposal: track and train envelope, Z55 stop, button balcony and gold deposit, tower enemy markers, traffic jam, recovery ramps, tunnel and Happy Land. Implementation would need spawn markers re-seated (counts retained), navigation and lighting rebakes, and the usual scoped checks.
+
+### Revision 2 — same day
+
+User feedback (confirmed): the two sides must not mirror each other; the existing fort layout need not be preserved apart from the catwalk with its button and gold crate; ramps were only chosen on November 11 because the earlier generated stairs were bad, so stairs are open again. The user likes some of the proposed additions (which ones is not yet specified).
+
+[Layout v2](../output/finale-fort-art-pass/layout-proposal-v2.svg) supersedes the first drawing — **still awaiting confirmation; nothing built.** Proposed: west is a tall stacked "keep" (L-shaped +2 terrace, porch, enclosed +4 bunker, +8 blockhouse and corner tower, full-length wall-walk); east is a lower open "depot" (+2 loading terrace with dock, projecting +4 corner bastion, collapsed south wall section, an octagonal +8 watchtower mid-wall joined to the catwalk blockhouse by a steel gangway, colonnaded +4 gun deck). The east tower defender marker would move to the new watchtower (about X34, Z64); the west marker stays.
+
+Stairs (proposed): visible treads at 0.25 m rise / 0.5 m going with cheek walls, over one smooth sloped collider per flight, so locomotion and the crawlgraph see a ramp. Flights are 4 m run per 2 m rise, start inside the compound, and the two 4 m climbs get 8 m. This addresses the November 11 complaints (runs too long, approached from outside) without the old per-tread box colliders. Traversal feel remains a playtest item.
+
+### Blockout installed — November 16, 2026
+
+User approved layout v2 ("Approve, block out"). **Installed as a rough blockout in `bridge-finale-v1.prefab`; navigation and lighting are NOT rebaked, so the finale is not playable-correct until they are.** No Play Mode, scene edits or commits.
+
+Built by `Assets/Editor/RailFinaleFortArtPass.cs` (menu **Duck Rails > Authoring > Finale > Build fort architecture v2**; re-runnable, rebuilds only its own `Env/Fort architecture v2` group). Meshes are saved under `Assets/DuckRails/FinaleFort/ArtPass/`. It uses the existing finale concrete, yard, teal steel and ochre materials and the Skyscraper Works rail materials. Pre-change prefab copy: `output/finale-fort-art-pass/backup/bridge-finale-v1.before-art-pass.prefab` (outside `Assets`, untracked).
+
+- Removed from the old fort (Z30–78): both bastions and bases, bunker walls and piers, patrol decks, landings, 36 support pillars, lookout decks/connections, both lookout towers, containment and breached walls, 10 jump plinths, all 124 old rail pieces, the six November 11 ramps and eight climb blocks. Kept untouched: catwalk slab, button balcony, bridge terminal, gold deposit, warning posts and caps, traffic jam, river retaining walls and recovery ramps, low approach walls, everything north of the bank.
+- Built as drawn in layout v2, with these deviations: the west breach sits at X-16..-10 beside the gate so it opens onto the yard rather than a terrace face; the collapsed east wall section has a toppled slab that forms a climbable slope onto the loading terrace; the watchtower sits at Z62–70 (2 m north of the drawing) so the gangway meets the blockhouse; climb blocks give yard access to both bunker roofs; the east blockhouse is open on its east side.
+- Seven stair flights: visible 0.25 m treads with cheek walls over one smooth collider slope each.
+- Moved, not rebuilt: the four floodlight assemblies (south-west wall pier, keep roof, bastion, watchtower roof; Light settings preserved, yaw re-aimed at the yard), the east bridge-control work light, 10 crates and 2 crate stacks, the East bunker reverb zone.
+- Spawn markers: counts, order and pool registration unchanged (28 coal / 26 gold / 6 enemy candidates; 6 / 2 / 2 per run). The 20 fort coal and 18 fort gold markers are re-seated and renamed for the new areas; the eight traffic markers of each type are untouched. `Enemy Northeast tower` moved to (34, 8.05, 66) on the new watchtower; the west tower marker is unchanged.
+- Lighting bindings whose renderers were removed are pruned from the block's `RailBakedBlockLighting` (1,746 → 1,464) because the runtime loader rejects a block with a missing renderer. Surviving geometry keeps its lightmaps; the new fort has none yet.
+- The existing yard mesh has cut-outs under the removed platforms. A visual underlay 2 cm below the yard closes them for now; rebuild the yard mesh in the art pass.
+
+Editor evidence: script compiles with an empty error Console; `RailFinaleFortArtPass.Check()` passes 266 static checks on the saved prefab (train envelope clear of the new fort, every re-seated coal/gold marker has floor, corner support and a clear envelope, both tower enemy markers stand on +8 decks with body clearance, all seven stairs climb smoothly, catwalk/terminal/deposit/hinge present). Prefab totals after the pass: 1,644 renderers (was 1,904), 49,811 mesh triangles of which the new fort is 6,679. Not device performance evidence. Neutral-lit captures (temporary review lights, not gameplay lighting): [south](../output/finale-fort-art-pass/blockout-south.png), [west keep](../output/finale-fort-art-pass/blockout-west-keep.png), [east depot](../output/finale-fort-art-pass/blockout-east-depot.png), [north-west](../output/finale-fort-art-pass/blockout-northwest.png), [duck eye level](../output/finale-fort-art-pass/blockout-duck-eye-yard.png), [overhead](../output/finale-fort-art-pass/blockout-overhead.png).
+
+Outstanding before this can be played or accepted:
+
+1. **Navigation rebake.** The crawlgraph still describes the old fort. The bake uses global physics over the whole block and the open, unsaved Compound scene has colliders inside those bounds, so it was not run. Until then enemies path against the old geometry and the moved east tower marker has no matching graph node.
+2. **Lighting rebake/export and Install Finale Lighting.** Needs the bake scene opened, which also requires the Compound scene to be saved or closed first.
+3. Enemy-marker graph checks, 100-seed spawn selection, the older scoped geometry/bridge-sweep checks (they reference removed object names and need updating), and reverb zone sizes against the new rooms.
+4. User review of the blockout before any finished art. Rail style (open ochre/steel) and all dimensions remain open to change.
+5. Gameplay, headset traversal and readability, multiplayer and Quest performance: **queued for playtest**, see [playtest queue](playtest-queue.md).
+
+## Fort architecture pass — revision 3 (November 16, 2026)
+
+User feedback on the blockout: more overhangs and pillars, the north-east corner was empty, the stepped climb blocks at the north end looked wrong, and the materials should match Starting Station and the Compound. Implemented in `Assets/Editor/RailFinaleFortArtPass.cs` (re-runnable; menu `Duck Rails/Authoring/Finale/Build fort architecture v2`). The bridge, gorge width, catwalk, button balcony and gold deposit are unchanged.
+
+- **Materials:** the fort now uses the shared `Assets/DuckRails/DepotMaterials` set on the Quackville atlases, with the Starting Station recipe: faces cut on the atlas grid, olive paint below 1.3 m, stained plaster above, noise-driven exposed-brick patches, worn-concrete floors, dark roofing, oxidized steel, worn-yellow handrails and hazard-stripe lintels. A visual asphalt skin 2 cm above the old yard mesh covers z 28–80 outside the track bed.
+- **North-east deck:** +4 slab on pillars over x 18–38, z 50–62 with open yard beneath; yard stair from (11, 56.5) to (18, 56.5); bridge slab x 21–25, z 62–66 to the gun deck; second +4 deck x 30–38, z 70–76 north of the watchtower. This replaces the solid east wall-walk.
+- **West:** bunker roof extended south as a loggia on pillars (z 54–58); wall-walk north of z 50 is an open arcade on pillars that also opens the bunker room to the west; the +8 deck stands on pillars above the bunker roof.
+- **Access:** both sets of stepped climb blocks are removed and their rail gaps closed. West roof: terrace stair, then loggia. East: yard stair, deck, bridge.
+- **Not undercut:** the +2 terraces stay solid because 1.5 m of clearance is not walkable.
+- **Evidence:** `RailFinaleFortArtPass.Check()` 267 passed, 0 failed (train envelope, 20 coal / 18 gold fort markers, both tower enemy markers, eight stairs, catwalk, button, deposit). Fort 18,566 triangles in 33 renderers; block 61,698 mesh triangles. Review captures: `output/finale-fort-art-pass/r3-*.png`.
+- **Still outstanding:** navigation rebake, lighting rebake and Install Finale Lighting (the fort is not lightmapped), stale older finale checks, user review, headset performance of the higher triangle count. Queued for playtest; not verified.
