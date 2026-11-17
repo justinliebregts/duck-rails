@@ -75,6 +75,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Finale catwalk metal footsteps — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: `bridge-finale-v1.prefab` `Cross-track catwalk +8` and `Off-path button balcony` AudioSurface changed Stone to Metal.
+- Setup: Expedition finale block, one client; walk the +8 catwalk and button balcony.
+- Check: footsteps and hand hits on both decks play the Metal set; the fort stairs and keep decks still play Stone.
+- Needs human: listening check
+- Priority: low
+- Mode: fix-on-fail
+
 ### Admin pause page — queued 2026-11-17
 - Layout correction: original four tab positions/scales restored exactly; Test
   sits separately to the right. Check headset reach and unchanged original row
