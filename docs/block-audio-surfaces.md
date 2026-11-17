@@ -1,5 +1,40 @@
 # Block audio surfaces — November 12, 2026
 
+## Starting station and compound — November 16, 2026
+
+Tagged the active city starting station and Blender subway compound by material:
+concrete/plaster/masonry/asphalt/ceramics/glass use Stone; steel, sheet metal,
+fixtures and guard collision use Metal; timber, boards, crates and furniture use
+Wood. Compound track ballast uses Dirt. Existing fountain Water, pressure-plate
+Metal and security equipment assignments are retained. Disabled legacy art,
+merchandise interaction volumes and collider-free scenery are outside this pass.
+
+The Blender meshes combine different materials in single colliders, including
+multiple types in the same atlas material. `RailStationAudioSurfaces` partitions
+their existing triangles using the authored atlas UV tiles and source-specific
+exceptions (olive wall paint versus crates/boards; washroom ceramics). Fifteen
+original MeshColliders remain as disabled references; 42 collider-only children
+use saved meshes under `Assets/DuckRails/StationAudioCollision`. Visual meshes,
+renderers and lighting are unchanged. Do not re-enable the original colliders.
+The Compound scene had eight explicit enabled overrides; these were removed.
+Expedition needed no such override correction and was not saved.
+
+Saved assets: `StartingStation.prefab`, `StartingStationV3/StartingStationV3.prefab`
+and `Compound/SubwayTerminal/SubwayTerminal.prefab`. All 32 compound and 29
+starting-station active solid Environment colliders resolve non-default types.
+Unity EditMode checks passed exact vertex and oriented triangle preservation,
+collider transforms/layers/materials/cooking settings, saved prefab coverage and
+loaded Compound inheritance. No original serialized records were removed; scene
+changes against the immediate backup are only those eight overrides. Final
+Console error/exception query was empty. [Counts](validation/station-audio-surfaces/partitions.txt),
+[checks](validation/station-audio-surfaces/editmode.txt).
+
+If the Blender prefabs are rebuilt, rerun **Duck Rails > Authoring > Audio > Tag
+station and compound surfaces** and check scene collider overrides again. This
+is an authored collision partition, not a runtime atlas lookup. Headset listening,
+movement across partition boundaries and remote hand-contact playback remain
+**queued for playtest** under “Station and compound material contact sounds”.
+
 ## Farm stalk-only foliage — November 15, 2026
 
 Added `Foliage` and `HandHit_Foliage` using the supplied `handHitFoliage.wav`.

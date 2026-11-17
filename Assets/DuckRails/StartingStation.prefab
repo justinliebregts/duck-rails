@@ -12968,6 +12968,7 @@ GameObject:
   - component: {fileID: 6670451407207262574}
   - component: {fileID: 6383037813806090396}
   - component: {fileID: 7652438026836714342}
+  - component: {fileID: 8112012978425938464}
   m_Layer: 6
   m_Name: Station ground
   m_TagString: Untagged
@@ -13076,6 +13077,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &8112012978425938464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2726142141732056415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08656bdcc7d54c518b38646199ac610a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Audio::Game.Audio.AudioSurface
+  type: {fileID: 11400000, guid: 72cf541cf4fd46518bfccc7cc9762990, type: 2}
 --- !u!1 &2778810203379823134
 GameObject:
   m_ObjectHideFlags: 0

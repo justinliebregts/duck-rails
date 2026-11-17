@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Station and compound material contact sounds — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: active starting-station and compound environment surfaces use Stone for concrete/masonry, Metal for metal and Wood for timber, with Dirt for compound ballast and existing Water retained. Mixed Blender collision meshes are partitioned by atlas tile without changing their triangles or visible models.
+- Passed now: Unity compilation; 61 active environment colliders have non-default types; exact original triangle/vertex coverage and physics settings preserved; loaded Compound inheritance; final Console error/exception query empty. See [evidence](block-audio-surfaces.md#starting-station-and-compound--november-16-2026).
+- Setup: visit Compound then Starting Station; one client for traversal/listening, two real clients for remote hand-contact audio.
+- Check: walk and tap concrete floors/walls/stairs, timber benches/crates/office floor, metal fences/rails/fixtures and fountain water. Sounds match each material, including mixed barricades. Traverse material boundaries and stairs without new catches or gaps; confirm the pressure plate and fountain keep their existing sounds. A second client hears matching hand contacts.
+- Needs human: headset listening and Gorilla Tag locomotion feel; real-client remote audio.
+- Priority: normal.
+
 ### Throttle grip breakaway distance — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: doubled the tracked palm's breakaway distance from the gripped contact from 18 cm to 36 cm.
