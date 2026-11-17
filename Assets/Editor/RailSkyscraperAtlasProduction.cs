@@ -50,6 +50,7 @@ public static class RailSkyscraperAtlasProduction
         }
         var lighting = root.GetComponent<RailBakedBlockLighting>();
         text.Append(lighting.lightingScene);
+        text.Append(lighting.supplementalLightingScene);
         foreach (var b in lighting.bindings)
             text.Append(b.renderer ? AnimationUtility.CalculateTransformPath(b.renderer.transform, root.transform) : "missing")
                 .Append(AssetKey(b.color)).Append(b.scaleOffset.ToString("R"));
@@ -135,6 +136,10 @@ public static class RailSkyscraperAtlasProduction
             sign.GetComponentInChildren<Light>().lightmapBakeType != LightmapBakeType.Baked ||
             root.GetComponentsInChildren<TMPro.TextMeshPro>().Length != 0))
             throw new BuildFailedException("Invalid raised development sign.");
+        if (sign && (lighting.supplementalLightingScene != RailSkyscraperSign.LightingCompanion ||
+            !AssetDatabase.LoadAssetAtPath<SceneAsset>(lighting.supplementalLightingScene) ||
+            !EditorBuildSettings.scenes.Any(s => s.enabled && s.path == lighting.supplementalLightingScene)))
+            throw new BuildFailedException("The raised development sign requires its lighting companion in the build.");
         if (chunks.Length != 648 || chunks.Any(r => !r.enabled || !r.sharedMaterial || !r.GetComponent<MeshFilter>().sharedMesh) ||
             chunks.Select(r => r.sharedMaterial).Distinct().Count() != 5 || lighting.bindings.Length != expectedBindings ||
             chunks.Sum(r => r.GetComponent<MeshFilter>().sharedMesh.triangles.Length / 3) != 37184 ||

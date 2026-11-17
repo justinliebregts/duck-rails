@@ -430627,6 +430627,7 @@ MonoBehaviour:
     - {fileID: 1696364782283399365}
     - {fileID: 2622043863883961245}
     - {fileID: 8200480601074402829}
+  bridgeReinforcements: []
   spawnCandidatesMigrated: 1
   variations: []
   track:
@@ -430724,6 +430725,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RailBakedBlockLighting
   lightingScene: Assets/DuckRails/Lighting/Blocks/skyscraper-works-v1/skyscraper-works-v1-Lighting.unity
+  supplementalLightingScene: Assets/DuckRails/SkyscraperSign/SignLighting.unity
   bindings:
   - renderer: {fileID: 29699718062226431}
     color: {fileID: 2800000, guid: 4cdb8ec22f5467e4ea6600dc67089bca, type: 3}

@@ -13,6 +13,7 @@ public static class RailSkyscraperSign
 {
     public const string Folder = "Assets/DuckRails/SkyscraperSign";
     const string Scene = Folder + "/Sign-bake.unity";
+    public const string LightingCompanion = Folder + "/SignLighting.unity";
     const string Group = "Raised CutePixel development sign";
     [Serializable] class Data { public float[] vertices; public int[] triangles; }
     static void Idle() { if(Application.dataPath.Replace('\\','/')!="X:/Work/duck-rails/Assets" || Application.isPlaying || Lightmapping.isRunning) throw new Exception("Requires idle Duck Rails editor"); }
@@ -60,12 +61,35 @@ public static class RailSkyscraperSign
             var copy=Object.Instantiate(source,root.transform); copy.name=Group; copy.transform.localPosition=source.transform.position;
             var owner=root.GetComponent<RailBakedBlockLighting>(); var bindings=owner.bindings.ToList();
             foreach(var r in source.GetComponentsInChildren<MeshRenderer>()) { var target=copy.transform.Find(r.name).GetComponent<Renderer>(); bindings.Add(new RailBakedBlockLighting.Binding{renderer=target,color=maps[r.lightmapIndex].lightmapColor,scaleOffset=r.lightmapScaleOffset}); }
-            owner.bindings=bindings.ToArray(); owner.CaptureBakedFixtures(); PrefabUtility.SaveAsPrefabAsset(root,RailSkyscraper.PrefabPath);
+            owner.bindings=bindings.ToArray(); owner.supplementalLightingScene=LightingCompanion;
+            owner.CaptureBakedFixtures(); PrefabUtility.SaveAsPrefabAsset(root,RailSkyscraper.PrefabPath);
         } finally { PrefabUtility.UnloadPrefabContents(root); }
+        ExportLightingCompanion();
         AssetDatabase.SaveAssets();
         var saved=AssetDatabase.LoadAssetAtPath<GameObject>(RailSkyscraper.PrefabPath);
         File.WriteAllText("ArtSource/SkyscraperAtlasLowPoly/production-state.json",JsonUtility.ToJson(new RailSkyscraperAtlasProduction.State{guid=AssetDatabase.AssetPathToGUID(RailSkyscraper.PrefabPath),fingerprint=RailSkyscraperAtlasProduction.Fingerprint(saved)},true));
         RailSkyscraperAtlasProduction.ValidateSaved();
+    }
+
+    public static void ExportLightingCompanion()
+    {
+        Idle();
+        var source = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+        if (source.path != Scene || source.isDirty || Lightmapping.lightingDataAsset == null)
+            throw new InvalidOperationException("Open the saved sign bake with its lighting data first.");
+        if (!EditorSceneManager.SaveScene(source, LightingCompanion, true))
+            throw new IOException("Could not copy the sign lighting scene.");
+        var companion = EditorSceneManager.OpenScene(LightingCompanion, OpenSceneMode.Additive);
+        try
+        {
+            foreach (var root in companion.GetRootGameObjects()) Object.DestroyImmediate(root);
+            if (!EditorSceneManager.SaveScene(companion))
+                throw new IOException("Could not save the sign lighting companion.");
+        }
+        finally { EditorSceneManager.CloseScene(companion, true); }
+        var scenes = EditorBuildSettings.scenes.Where(scene => scene.path != LightingCompanion).ToList();
+        scenes.Add(new EditorBuildSettingsScene(LightingCompanion, true));
+        EditorBuildSettings.scenes = scenes.ToArray();
     }
     public static void Capture()
     {

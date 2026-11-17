@@ -14,6 +14,7 @@ public sealed class RailBakedBlockLighting : MonoBehaviour
         public Vector4 scaleOffset;
     }
     public string lightingScene;
+    public string supplementalLightingScene;
     public Binding[] bindings = Array.Empty<Binding>();
     // Authored bake mode is editor-only; prefab bakingOutput does not retain it.
     // Export captures membership so player builds suppress exactly these fixtures.

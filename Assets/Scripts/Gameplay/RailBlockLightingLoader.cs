@@ -12,7 +12,7 @@ public sealed class RailBlockLightingLoader : MonoBehaviour
     {
         public RailBakedBlockLighting owner;
         public bool wanted = true;
-        public Scene scene;
+        public readonly List<Scene> scenes = new List<Scene>(2);
         public LightProbes probes;
         public Vector3[] localPositions;
     }
@@ -69,14 +69,15 @@ public sealed class RailBlockLightingLoader : MonoBehaviour
         {
             var entry = entries[i];
             if (entry.wanted && entry.owner != null) continue;
-            if (entry.scene.IsValid() && entry.scene.isLoaded)
+            foreach (var scene in entry.scenes)
             {
-                var unload = SceneManager.UnloadSceneAsync(entry.scene);
+                if (!scene.isLoaded) continue;
+                var unload = SceneManager.UnloadSceneAsync(scene);
                 if (unload != null) yield return unload;
-                RebindAndTetrahedralize();
             }
             if (entry.probes != null) Destroy(entry.probes);
             entries.RemoveAt(i);
+            if (entry.scenes.Count > 0) RebindAndTetrahedralize();
         }
         while (pending.Count > 0)
         {
@@ -89,33 +90,40 @@ public sealed class RailBlockLightingLoader : MonoBehaviour
                 Fail(owner, "Baked block lighting supports translation only, with unit scale.");
                 continue;
             }
-            if (!Application.CanStreamedLevelBeLoaded(owner.lightingScene))
+            var paths = string.IsNullOrEmpty(owner.supplementalLightingScene)
+                ? new[] { owner.lightingScene } : new[] { owner.lightingScene, owner.supplementalLightingScene };
+            foreach (string path in paths)
             {
-                Fail(owner, "Lighting companion scene missing from build: " + owner.lightingScene);
-                continue;
+                if (!entry.wanted || owner == null) break;
+                if (!Application.CanStreamedLevelBeLoaded(path))
+                {
+                    Fail(owner, "Lighting companion scene missing from build: " + path);
+                    break;
+                }
+                var before = new HashSet<int>();
+                for (int i = 0; i < SceneManager.sceneCount; i++) before.Add(SceneManager.GetSceneAt(i).handle);
+                var load = SceneManager.LoadSceneAsync(path, LoadSceneMode.Additive);
+                if (load == null) { Fail(owner, "Could not load lighting companion scene: " + path); break; }
+                yield return load;
+                Scene loaded = default;
+                for (int i = 0; i < SceneManager.sceneCount; i++)
+                {
+                    var scene = SceneManager.GetSceneAt(i);
+                    if (!before.Contains(scene.handle) && scene.path == path) { loaded = scene; break; }
+                }
+                if (!loaded.IsValid())
+                {
+                    if (owner != null && entry.wanted) Fail(owner, "Loaded lighting scene could not be identified: " + path);
+                    break;
+                }
+                entry.scenes.Add(loaded);
             }
-            var before = new HashSet<int>();
-            for (int i = 0; i < SceneManager.sceneCount; i++) before.Add(SceneManager.GetSceneAt(i).handle);
-            string path = owner.lightingScene;
-            var load = SceneManager.LoadSceneAsync(path, LoadSceneMode.Additive);
-            if (load == null) { Fail(owner, "Could not load lighting companion scene."); continue; }
-            yield return load;
-            for (int i = 0; i < SceneManager.sceneCount; i++)
-            {
-                var scene = SceneManager.GetSceneAt(i);
-                if (!before.Contains(scene.handle) && scene.path == path) entry.scene = scene;
-            }
-            if (!entry.scene.IsValid()) { if(owner != null) Fail(owner, "Loaded lighting scene could not be identified."); continue; }
-            if (!entry.wanted || owner == null)
-            {
-                yield return SceneManager.UnloadSceneAsync(entry.scene);
-                RebindAndTetrahedralize();
-                continue;
-            }
+            // The next pass releases scenes if the owner disappeared during an async load.
+            if (!entry.wanted || owner == null || entry.scenes.Count != paths.Length) continue;
             try
             {
-                // Clone per-scene native data so repeated instances never modify the source asset.
-                var probes = LightProbes.GetInstantiatedLightProbesForScene(entry.scene);
+                // The primary companion owns the block probes. The supplemental scene only supplies lightmaps.
+                var probes = LightProbes.GetInstantiatedLightProbesForScene(entry.scenes[0]);
                 entry.probes = probes;
                 if (probes == null || probes.countSelf == 0) throw new InvalidOperationException("No baked probes in companion scene.");
                 entry.localPositions = probes.GetPositionsSelf();
@@ -143,7 +151,7 @@ public sealed class RailBlockLightingLoader : MonoBehaviour
         var maps = LightmapSettings.lightmaps;
         foreach (var entry in entries)
         {
-            if (!entry.wanted || entry.owner == null || !entry.scene.IsValid() || !entry.scene.isLoaded) continue;
+            if (!entry.wanted || entry.owner == null || entry.probes == null || !entry.scenes[0].isLoaded) continue;
             foreach (var binding in entry.owner.bindings)
             {
                 if (binding.renderer == null) { Fail(entry.owner, "Baked renderer reference is missing; re-export lighting."); break; }

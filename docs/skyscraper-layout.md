@@ -25,6 +25,29 @@ baked maps with fixture direct light disabled and fog off for inspection.
 No Play Mode run; runtime translation/reload and headset readability are
 **queued for playtest** under “Skyscraper raised development sign”.
 
+### Public departure regression — November 16, 2026
+
+An authenticated editor run reproduced the loading screen after the public
+pressure-plate countdown expired. The Expedition scene opened, but the
+Skyscraper block refused readiness because its three sign renderers referenced
+an isolated lightmap that had no runtime scene. Routes without Skyscraper
+do not use that lightmap.
+
+`SignLighting.unity` now carries the isolated bake into the build. The block
+loader loads and unloads it with the primary companion and uses the primary
+scene's probes. The build guard checks that the sign companion is enabled.
+The post-fix solo public run used the real pressure plate and Photon timer,
+loaded Farm, Skyscraper, Container Yard and Convenience Store, reached
+Running, bound all three sign renderers, cleared the veil and enabled input.
+The keyboard walk-on fixture bounced out of the trigger on the first post-fix
+attempt. For the passing run, the test positioned the duck on the plate and
+let the game handle the countdown and transfer.
+
+The signed Quest 0.3.0 release APK built with zero errors and was installed
+and launched on Quest 3. The new scene and its sign lightmap are included
+in the build. The headset countdown is tracked separately from the editor
+result.
+
 ## Triangle-preserving Blender review — November 14, 2026
 
 User approved the revised floors, framing and grounded/varied materials below.
