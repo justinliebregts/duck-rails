@@ -16068,6 +16068,7 @@ MonoBehaviour:
     - {fileID: 8226330011743310320}
     - {fileID: 3701413340245730834}
     - {fileID: 2519200662661708610}
+  bridgeReinforcements: []
   spawnCandidatesMigrated: 1
   variations: []
   track:
@@ -16165,6 +16166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RailBakedBlockLighting
   lightingScene: Assets/DuckRails/Lighting/Blocks/container-yard-v1/container-yard-v1-Lighting.unity
+  supplementalLightingScene: 
   bindings:
   - renderer: {fileID: 2536793432637617061}
     color: {fileID: 2800000, guid: dc2c885055459514fb524326ea04f53a, type: 3}

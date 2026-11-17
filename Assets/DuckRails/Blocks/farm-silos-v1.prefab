@@ -16966,6 +16966,7 @@ MonoBehaviour:
     - {fileID: 7380076804854858670}
     - {fileID: 6752312770509508475}
     - {fileID: 2974989486082112887}
+  bridgeReinforcements: []
   spawnCandidatesMigrated: 1
   variations: []
   track:
@@ -17063,6 +17064,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RailBakedBlockLighting
   lightingScene: Assets/DuckRails/Lighting/Blocks/farm-silos-v1/farm-silos-v1-Lighting.unity
+  supplementalLightingScene: 
   bindings:
   - renderer: {fileID: 18724554324624156}
     color: {fileID: 2800000, guid: 84ae27bc37a016a4190ccf6cffd4e4f3, type: 3}
