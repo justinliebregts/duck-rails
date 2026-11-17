@@ -481,8 +481,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         float progress = State.BridgeProgress(now);
         bridgeDeck.localRotation = Quaternion.Euler(-80 * (1 - progress), 0, 0);
         bridgeLabel.text = progress >= 1 ? "BRIDGE READY\nBOARD THE TRAIN" :
-            (State.BridgeMoving(now) ? "LOWERING BRIDGE" : State.bridgeAt > 0 ? "PAUSED - HOLD LEVER FORWARD" : "HOLD LEVER FORWARD TO LOWER") +
-            "\n" + Mathf.CeilToInt((float)(RailRunState.BridgeSeconds - State.BridgeElapsed(now))) + " seconds of holding left";
+            (State.BridgeMoving(now) ? "LOWERING BRIDGE" : State.bridgeAt > 0 ? "PAUSED - HOLD LEVER FORWARD" : "HOLD LEVER FORWARD TO LOWER");
         foreach (var p in State.players)
         {
             if (p.flareAt > 0 && (!shownFlares.TryGetValue(p.id, out var shown) || shown != p.flareAt))
