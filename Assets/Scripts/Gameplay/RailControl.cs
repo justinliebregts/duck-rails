@@ -25,7 +25,7 @@ public sealed class RailControl : MonoBehaviour
     Transform drivePalm;
     Vector3 gripPalmLocal;
     Quaternion gripPalmRotation;
-    const float BreakDistance = .18f;
+    const float BreakDistance = .36f;
     bool gripGranted, forwardLatched;
     bool simulatedDrive, throttleWasHeld;
     Vector3 handleRest;

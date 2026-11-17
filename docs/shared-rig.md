@@ -6,6 +6,9 @@ October 30, 2026. Justin requested one gameplay rig for Quest Link/headset use a
 
 ### Attached throttle trial — November 11
 
+November 16: doubled the throttle's palm breakaway distance to 36 cm. Headset
+acceptance is queued for playtest.
+
 User-authorized live follow-up: both hands passed solo authenticated desktop
 simulation for ordinary grip acquisition, smooth arc GO, forward jitter hold,
 pull-back OFF while gripping, re-push GO, release and sideways breakaway. The
@@ -18,7 +21,7 @@ headset or multiplayer acceptance. See [live evidence](validation/shared-rig/thr
 Confirmed: physical throttle must remain actively held forward to run. The visible
 palm attaches at the acquired contact, fingers close, and the tracked palm drives
 the existing 70-degree arc. GO engages at 85% travel and cuts at 72%; this small
-hysteresis replaces the old 80%/20% latch. Grip release or more than 18 cm of
+hysteresis replaces the old 80%/20% latch. Grip release or more than 36 cm of
 tracked-to-attached palm separation releases ownership and snaps OFF. The forward
 stop produces a short haptic pulse and synthesized mechanical tone. These are
 initial feel tunings. Keyboard T toggle remains unchanged.

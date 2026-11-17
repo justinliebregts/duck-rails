@@ -43,6 +43,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Throttle grip breakaway distance — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: doubled the tracked palm's breakaway distance from the gripped contact from 18 cm to 36 cm.
+- Setup: one client in an expedition with the train throttle available.
+- Check: with either hand, hold grip and move the tracked palm sideways or upward past 18 cm. The palm should stay attached through 36 cm and detach beyond it. Regrip and confirm letting go still detaches immediately.
+- Needs human: headset grip feel through the lever's full travel.
+- Priority: normal.
+
 ### Low wall displays in both supplies rooms — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: all 17 Compound and Starting Station displays arranged low against room walls without stands (mesh bottoms at 0.25 m); item tops are 0.37–0.675 m above the floor. Prices/cooldowns lowered with items; monitor lowered; all item/monitor stands removed per user correction. Helicopter layout retained.
@@ -618,10 +626,10 @@ No new block conversion or device run occurred during this documentation task.
 - Solo live follow-up: PASS on both hands for injected physical grip, smooth forward arc GO, forward jitter tolerance, pull-back OFF, re-push GO, release and sideways breakaway. Attached-palm query/closed finger curl pass; sampled palm gap 6.3 mm. Shared target speed/lease zero afterward; normal movement/input restored and existing Play session left running. See `docs/validation/shared-rig/throttle-hands-20261111.txt`. Remaining cases below, actual skin-contact visual review, headset feel and multiplayer remain queued; this is not full acceptance.
 - Attempt 2026-11-11: user authorized solo desktop simulated-hand Play Mode. Verified Duck Rails in Edit Mode, then `RailTestRunner.Start("sandbox")` and the follow-up state query each timed out after 120 seconds. Editor process remained present; computer-use window activation failed twice (`failed to activate captured window`). Runner state remained `launching`. No interaction checks ran; no PASS claimed. On recovery inspect editor/runner state and stop through `RailTestRunner.Stop` to restore the prior scenario before retrying. Do not discard the dirty Farm bake scene.
 - Commit(s): uncommitted.
-- Changed: attached local/replicated palm and closed fingers; arc-driven lever; GO at 85%, OFF at 72%; 18 cm breakaway; detent haptic/audio; immediate state-edge requests. Keyboard T toggle retained.
+- Changed: attached local/replicated palm and closed fingers; arc-driven lever; GO at 85%, OFF at 72%; 36 cm breakaway (increased November 16); detent haptic/audio; immediate state-edge requests. Keyboard T toggle retained.
 - Cheap checks: Unity compilation, 20 Edit Mode drive checks and empty Console error query. See `docs/shared-rig.md#attached-throttle-trial--november-11`.
 - Setup: private running expedition, shared DuckPlayer simulated physical grip first; two authenticated clients with late join/master handoff; worn Quest separately.
-- Check: either hand acquires exclusively, palm stays on handle throughout slow/fast strokes and train motion; raw controller remains independent. Hold forward sustains GO with small tremor tolerance; pulling back while gripping cuts GO, pushing again resumes. Release, sideways/upward separation beyond 18 cm, downing, blocked input, focus loss and disconnect stop driving and restore free hand pose. Denied/lost lease does not attach or steal control. Peers see attached hand and matching lever; late join/host departure preserve safe ownership. Test keyboard T and ordinary pickups afterward.
+- Check: either hand acquires exclusively, palm stays on handle throughout slow/fast strokes and train motion; raw controller remains independent. Hold forward sustains GO with small tremor tolerance; pulling back while gripping cuts GO, pushing again resumes. Release, sideways/upward separation beyond 36 cm, downing, blocked input, focus loss and disconnect stop driving and restore free hand pose. Denied/lost lease does not attach or steal control. Peers see attached hand and matching lever; late join/host departure preserve safe ownership. Test keyboard T and ordinary pickups afterward.
 - Needs human: hand/finger alignment, comfortable travel/tolerance, fast-stroke breakaway, mechanical sound and haptics on both controllers.
 - Priority: normal.
 
