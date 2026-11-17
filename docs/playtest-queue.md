@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Train radio press/release sounds — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: train TALK activation/release reuse the handheld WalkieTalkie_TalkOn/TalkOff SoundEvents through RoomRpc; only local hold transitions broadcast, not heartbeats or remote lease updates. Forced release also plays the off cue.
+- Passed now: verified Duck Rails MCP in Edit Mode; compilation passed, Console error query empty, saved RadioTable and nested DuckRailsTrain bindings match handheld on/off assets and retain the button reference.
+- Setup: two clients aboard stopped and moving train, plus handheld walkie for comparison.
+- Check: activation and release each sound once locally and to nearby peers; holding does not repeat; rapid taps, mute, downing and focus loss stop transmission with the release cue; horn/bridge remain unchanged.
+- Needs human: headset listening and volume/position comparison with handheld.
+- Priority: normal.
+
 ### Compound looping music — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: supplied Dark Horizons track loops in Compound at volume 0.0175 through Effects; stereo Vorbis quality 70, Streaming on desktop and Android. See [settings](subway-compound.md#compound-music--november-16-2026).

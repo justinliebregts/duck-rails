@@ -10,6 +10,8 @@ public sealed class RailHoldControl : MonoBehaviour
     public PressableButton button;
     public bool radio;
     public bool bridge;
+    [SerializeField] Game.Audio.SoundEvent radioTalkOn;
+    [SerializeField] Game.Audio.SoundEvent radioTalkOff;
     public const string BridgeKey = "rails.bridgeHold";
     AudioSource source;
     AudioClip clip;
@@ -102,7 +104,11 @@ public sealed class RailHoldControl : MonoBehaviour
         data[0] is string id && id == run && data[1] is double until && until > now && until <= now + 2;
     void SetHeld(bool value)
     {
+        if (held == value) return;
         held = value; heldRun = PhotonSession.RunId;
+        // Like the handheld walkie, only the local interaction broadcasts each edge.
+        // Lease heartbeats and remote hold updates must not replay the cue.
+        if (radio && !bridge) RoomRpc.PlaySound(value ? radioTalkOn : radioTalkOff, transform.position);
         Publish(value);
     }
     void Publish(bool value)

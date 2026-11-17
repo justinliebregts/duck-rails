@@ -1,5 +1,15 @@
 # Integrated radio console — November 15, 2026
 
+## Talk sounds — November 16
+
+Train radio activation/release now reuse the handheld's existing WalkieTalkie_TalkOn
+and WalkieTalkie_TalkOff SoundEvents, assigned on RadioTable's RailHoldControl.
+Local hold edges broadcast through the same RoomRpc audio path as ItemSounds;
+heartbeats and remote hold updates do not replay them. Forced release uses the off
+cue too. No new audio assets. Unity compilation and saved radio/train binding
+checks passed in Edit Mode; Console error query empty. Listening and two-client
+acceptance are [queued for playtest](playtest-queue.md#train-radio-pressrelease-sounds--queued-2026-11-16).
+
 User approved the integrated yellow-edged charcoal shelf, broader teal/cream
 speaker, upright microphone, octagonal orange talk button, six sparse fasteners,
 and short cable connecting the **backs** of the two housings. This replaces the
