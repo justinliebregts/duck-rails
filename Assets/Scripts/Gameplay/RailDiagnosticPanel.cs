@@ -12,5 +12,5 @@ public sealed class RailDiagnosticPanel : MonoBehaviour
     void OnDestroy() { if (Instance == this) Instance = null; }
     public void Close() { }
     public void Toggle() { Object.FindFirstObjectByType<PauseMenu>()?.OpenFromDiagnostics(); }
-    public void Notify(string text) { Debug.Log(text); }
+    public void Notify(string text) { DuckzLog.Log(text, this); }
 }
