@@ -2299,6 +2299,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -7485203545082738850, guid: 9bf69f4564dfb314b8a33a8ee3e3cb46, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 9bf69f4564dfb314b8a33a8ee3e3cb46, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2744,7 +2748,7 @@ MonoBehaviour:
   contactSurface: {fileID: 8671892717527969945}
   pressSound: {fileID: 11400000, guid: d61d3b2fc3f6b7b43a1fd992675cc43f, type: 2}
   releaseSound: {fileID: 11400000, guid: f4b78969ff2364f47ae7a50207e22af5, type: 2}
-  travel: 0.03
+  travel: 0.05
   speed: 0.2
 --- !u!1 &7534531577214211791 stripped
 GameObject:

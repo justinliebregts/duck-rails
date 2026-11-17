@@ -131,13 +131,12 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Needs human: headset appearance and confirmation of preferred softness.
 - Priority: normal.
 
-### Compound countdown plate animation and SFX — queued 2026-11-16
+### Compound pressure plate and countdown display — queued 2026-11-16
 - Commit(s): uncommitted.
-- Changed: plate follows shared public countdown; sinks 0.03 m and plays PressurePlate_On on start, rises and plays PressurePlate_Off on stop. Collider is stationary and tagged Metal.
-- Cheap checks: Unity compilation, saved prefab collider separation, Metal surface, travel and both clip references pass; verification-tool limitations recorded in docs/subway-compound.md.
+- Changed: plate moves from local Y 0.05 to 0 when the shared countdown starts. The countdown sign is enabled again.
 - Setup: public Compound, two real clients; enter, add second player, remove one, remove last, restart; also complete countdown and inspect private room.
-- Check: one On per countdown start; no extra cue when someone joins/leaves while another remains; one Off on stop. Movement is 3 cm from authored rest; collision stays fixed, metal contact audio works. Private room without a countdown stays at rest. Check existing -0.03 m scene rest override for visual/contact fit.
-- Needs human: audible balance and headset contact feel.
+- Check: public sign shows the idle prompt, roster, and decreasing seconds, and returns to the prompt on cancellation. Plate reaches Y 0 on start and Y 0.05 on stop. One On per countdown start, no extra cue when someone joins/leaves while another remains, and one Off on stop. Collision stays fixed and metal contact audio works. Private room shows its code and the plate stays at rest.
+- Needs human: countdown readability, audible balance and headset contact feel.
 - Priority: normal.
 
 

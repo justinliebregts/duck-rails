@@ -10,7 +10,7 @@ public sealed class RailPressurePlate : MonoBehaviour
     public SoundEvent pressSound;
     public SoundEvent releaseSound;
     [Tooltip("How far the slab sinks from its authored resting position, in metres.")]
-    public float travel = .03f;
+    public float travel = .05f;
     public float speed = .2f;
 
     Vector3 rest;
