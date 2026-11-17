@@ -75,6 +75,7 @@ new bake, then re-export/rebuild/import. Do not rerun the one-time screenshot
 migration. Current production fingerprint/payload are in `FarmSilosPolish`, and
 `RailFarmSilosAtlasProduction` validates those when its production-state exists.
 The earlier FarmSilosAtlas review/source is historical and uses the previous bake.
+Light-position-only changes may use the lights-only rebake below instead.
 
 ## Ditch water follow-up
 
@@ -83,3 +84,31 @@ ditch water, with Water AudioSurface assigned. Three direct contact rays and
 Water lookup pass; Farm navigation rebuilt. Visual meshes/lightmaps unchanged,
 production atlas guard passes. Listening remains queued for playtest.
 
+## Lights-only rebake (2026-11-17, user-approved)
+
+Ten baked lamp lights were trapped inside their own meshes (shadow-casting
+lantern glass/metal, yard light post column, attic roof slope) and lit nothing.
+Moved in `farm-silos-v1.prefab` (light transforms only; not part of the fingerprint):
+yard posts x=±12/13 → 0.15 m toward the track and y 4.90 (below the housing,
+off the pole); attic spot (-31, 135) y 10.58 → 10.40; five pond lanterns
+y 1.95 → 2.30 (inside the glass, above the metal top).
+
+Procedure, usable again when only lights change (never for mesh, material or
+renderer edits; those still need the full reconcile/regenerate path):
+1. Snapshot every original renderer's lightmapIndex/scaleOffset in the bake scene
+   and confirm all match the prefab bindings (907/907).
+2. Move lights in the prefab and confirm the fingerprint is unchanged.
+3. In the bake scene only, unsaved: enable those originals, disable atlas chunks,
+   hide the usual catalogue exclusions, set `Pond lanterns Warm lantern glass` to
+   shadows Off (bake-only; the prefab keeps shadows On), then `Lightmapping.BakeAsync`.
+4. Reload the bake scene from disk without saving and compare the layout with the
+   snapshot. Result: 907/907 identical, 1 lightmap, same texture/LightingData
+   GUIDs, 554 probes (shared with `farm-silos-v1-Lighting.unity`). Any mismatch
+   means restore the bake folder from git and use the full path instead.
+5. Because the chunks sample the live lightmap through unchanged bindings, the only
+   fingerprint change is the lightmap's dependency hash. The user approved recording
+   it in `ArtSource/FarmSilosPolish/production-state.json`
+   (4a583248… → 59a2d0ac…); `ValidateSaved` passes and the Console is clear.
+
+Editor preview showed the pond lanterns now light the surrounding path. Runtime
+appearance is queued for playtest.

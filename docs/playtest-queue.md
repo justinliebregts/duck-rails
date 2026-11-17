@@ -103,6 +103,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Farm Silos lamp lights rebake — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: 10 Farm baked lamp lights moved out of their meshes (4 yard light posts, attic spot at x=-31, 5 pond lanterns) and Farm rebaked lights-only; atlas bindings unchanged, new lightmap approved. See `docs/validation/farm-silos-polish-2026-11-15/README.md`.
+- Setup: Farm Silos block, single client, then 2 clients with a late joiner aboard.
+- Check: at night the pond lanterns light the path around the pond, the yard posts light the ground beneath them, and the farmhouse attic spot lights its floor; no dark or blotchy atlas chunks or seams elsewhere on Farm compared with before; the late joiner sees the same lighting.
+- Needs human: headset look at lamp brightness/feel.
+- Priority: normal
+
 ### Finale catwalk metal footsteps — queued 2026-11-17
 - Commit(s): uncommitted
 - Changed: `bridge-finale-v1.prefab` `Cross-track catwalk +8` and `Off-path button balcony` AudioSurface changed Stone to Metal.
