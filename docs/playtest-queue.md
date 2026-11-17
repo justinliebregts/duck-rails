@@ -43,6 +43,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Coal pickup and drop sounds — queued 2026-11-16
+- Commit(s): uncommitted.
+- Changed: RailCoal uses existing networked ItemSounds: Furnace_CoalGrab_01 on pickup and Furnace_CoalThud_01 on loose surface impacts (minimum normal speed 0.5 m/s, 0.1-second cooldown). Furnace deposit audio remains active.
+- Passed now: verified Duck Rails editor in Edit Mode; sound imports, saved prefab bindings, single ItemSounds component and both network sound registry entries pass; scripts compile. Console contains MetaXR form-factor and LCK graphics-API errors, unrelated to these asset bindings.
+- Setup: two clients; pick up coal from ground and bag, release onto ground and moving train, then deposit in furnace.
+- Check: both clients hear positional pickup and impact cues once per qualifying event; held/stashed coal and gentle sliding remain silent; listen for excessive overlapping thuds during furnace insertion and bouncing.
+- Needs human: headset listening and volume balance.
+- Priority: normal.
+
 ### Train radio press/release sounds — queued 2026-11-16
 - Commit(s): uncommitted.
 - Changed: train TALK activation/release reuse the handheld WalkieTalkie_TalkOn/TalkOff SoundEvents through RoomRpc; only local hold transitions broadcast, not heartbeats or remote lease updates. Forced release also plays the off cue.

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8752997009467492748}
   - component: {fileID: 608272276042245441}
   - component: {fileID: 3662257162009201923}
+  - component: {fileID: 332670153726295241}
   m_Layer: 8
   m_Name: RailCoal
   m_TagString: Untagged
@@ -234,3 +235,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f21e2b7303720f4c928457f8ca33543, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RailCoal
+--- !u!114 &332670153726295241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5574739811840279064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a02126d43db1476e92426fff339380a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSounds
+  grab: {fileID: 11400000, guid: 4bc6633df3f244b4caf04b616a29df55, type: 2}
+  drop: {fileID: 11400000, guid: 8e96153c7242ee6418f6f22c47680c6e, type: 2}
+  minimumImpactSpeed: 0.5
+  impactSoundCooldown: 0.1
+  fleshImpact: {fileID: 0}
+  fleshImpactCooldown: 0.1
+  equip: {fileID: 0}
+  turnOn: {fileID: 0}
+  turnOff: {fileID: 0}
+  swing: {fileID: 0}
+  swingSamplePoint: {fileID: 0}
+  minimumSwingSpeed: 2
+  swingResetSpeed: 0.75
+  minimumThrowSpeed: 2
+  swingSoundCooldown: 0.25

@@ -962,3 +962,5 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [x] November 16: install scene-owned Compound music loop with stereo Streaming Vorbis 70 on Android/Standalone; Unity import, command compilation and serialized settings checked.
 - [ ] Compound music listening, loop boundary, departure/return and Quest streaming acceptance; queued for playtest.
 - November 16 compound music follow-up: 1.5-second entry and 0.75-second pre-unload exit fades implemented; runtime/listening acceptance remains queued.
+
+- [ ] November 16 coal pickup/drop audio: prefab bindings, imports and network sound registration pass editor checks; two-client/headset listening remains queued in docs/playtest-queue.md (Coal pickup and drop sounds).

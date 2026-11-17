@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 16 coal audio: pickups use Furnace_CoalGrab_01; dropped coal surface impacts use Furnace_CoalThud_01 through shared networked item audio. Existing furnace deposit sequence remains. Editor asset checks pass; listening/multiplayer acceptance is queued in [playtest queue](playtest-queue.md#coal-pickup-and-drop-sounds--queued-2026-11-16).
+
 November 16 supplies reach: Compound and Starting Station items sit low on the walls without stands for roughly 0.5 m Gorilla Tag-style ducks, with lowered labels and grouped bundles. Implemented with location overrides; headset reach/movement acceptance queued. See [room layouts](character-bundles.md#low-supplies-room-layouts--november-16).
 
 November 15 revive visuals: user selected PolygonParticleFX `FX_Heal_02` for the
