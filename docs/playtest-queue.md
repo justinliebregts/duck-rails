@@ -1,5 +1,20 @@
 # Playtest queue
 
+## Walkable collapsed bridge spans — queued 2026-11-17
+
+- Changed: each of the 5 `BridgeCollapse` spans has a "Walk colliders" child
+  (Environment layer, Metal AudioSurface): a deck box topped at rail height and
+  two thin side-railing boxes. The fall is deterministic and the rest pose is the
+  same every run, so the boxes are fixed in the prefab. `RailBridgeCollapse`
+  enables each span's boxes only once that span has landed, so falling pieces
+  never push anyone.
+- Editor evidence: compiles, no Console errors; sampling the prefab enables
+  0 boxes at 0.5 s, 6 at 2.6 s and all 15 at 3.2 s.
+- Check: after a bridge collision, drop onto the fallen spans and walk them. The
+  tops match the visible deck (no floating or sinking), the railings block, the
+  footsteps sound like metal, and a late joiner gets the same solid spans.
+  Status: queued for playtest; no Play Mode run.
+
 ## End-of-run results table — queued 2026-11-17
 
 - Changed: RESULTS label stats are now a table (`RailResultsTable`): duck names
