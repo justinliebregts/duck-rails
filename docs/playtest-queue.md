@@ -103,6 +103,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Container Yard lights rebake — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: 4 yard lamp-post lights moved out of their poles, intensity/range retuned, 19 baked lights added (`Added baked lights`), Container Yard rebaked lights-only with atlas bindings unchanged; new lightmap approved. See `docs/atlas-lights-only-rebake.md`.
+- Setup: Container Yard block, single client, then 2 clients with a late joiner aboard.
+- Check: at night the track-side yard between the lamp posts, the west/east container walls and the gantry crane feet are lit; no dark/blotchy atlas chunks or seams; the added lights do not also render as realtime lights (no doubled brightness, no frame-time spike passing the yard); late joiner sees the same lighting.
+- Needs human: headset look at brightness/feel and frame rate through the yard.
+- Priority: normal
+
 ### Farm Silos lamp lights rebake — queued 2026-11-17
 - Commit(s): uncommitted
 - Changed: 10 Farm baked lamp lights moved out of their meshes (4 yard light posts, attic spot at x=-31, 5 pond lanterns) and Farm rebaked lights-only; atlas bindings unchanged, new lightmap approved. See `docs/validation/farm-silos-polish-2026-11-15/README.md`.
