@@ -533,7 +533,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 PhotonSession.Get(RailSessionRules.Deadline, 0d), now);
             results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
                 (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
-                string.Join("\n", State.players.Select(p => Safe(p.name) + " — " + (p.escaped ? "Escaped" : "Didn't make it") + "\n<size=65%>Coal " + p.coal + "   Gold " + p.gold + "   Revives " + p.revives + "   Downs " + p.downs + "  •  " + (string.IsNullOrEmpty(p.award) ? RailAwards.Fallback : p.award) + "</size>"));
+                RailResultsTable.Build(State.players);
             bool localAboard = Position(PhotonNetwork.LocalPlayer.ActorNumber, out var localPoint) && RailTrain.Instance.ContainsPadded(localPoint);
             if (caughtRun != State.run)
             { caughtRun = State.run; if (GR.Player.instance != null && !localAboard && !RailAdminTools.NoClip) TeleportAboard(); }
@@ -667,7 +667,6 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (changed) PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable {
             [receiptKey] = receipts.Concat(issuedDrops).Where(r => r.StartsWith(State.run + ":", StringComparison.Ordinal)).Distinct().ToArray() });
     }
-    static string Safe(string text) => (text ?? "Duck").Replace("<", "").Replace(">", "");
     void TeleportAboard()
     {
         if (GR.Player.instance == null || RailTrain.Instance == null) return;

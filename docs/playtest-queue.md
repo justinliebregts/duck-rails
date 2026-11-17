@@ -1,5 +1,17 @@
 # Playtest queue
 
+## End-of-run results table — queued 2026-11-17
+
+- Changed: RESULTS label stats are now a table (`RailResultsTable`): duck names
+  on the left (green = escaped, red = didn't make it), Coal/Gold/Revives/Downs
+  columns, then Title. The top value in each stat column is yellow (ties all
+  highlighted; zeros never).
+- Editor evidence: compiles, no Console errors; an offscreen render of an
+  8-duck mock at the label's 5×4.5 size and font fits with no wrapping.
+- Check: finish a run with 2+ clients; the table is readable in headset at the
+  ending position, columns line up, highlights match the highest values, and
+  late joiners see the same table. Status: queued for playtest; no Play Mode run.
+
 ## Farm northeast pond water footsteps — queued 2026-11-17
 
 - Changed: pond underside MeshCollider now has Water AudioSurface (prefab-only).
