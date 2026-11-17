@@ -18,10 +18,10 @@ public static class RailTestTools
     public static Func<bool> EnemyInvincibilityRequested;
     // The editor's player preference applies to every test expedition, including
     // public quick-start/stability rooms. Other test mutations stay private-only.
-    public static bool EnemyInvincible => Application.isPlaying && RailDiagnostics.Development && PhotonSession.IsRailsRoom &&
+    public static bool EnemyInvincible => RailAdminTools.Invincible || (!RailAdminTools.InvincibilityOverridden && Application.isPlaying && RailDiagnostics.Development && PhotonSession.IsRailsRoom &&
         PhotonSession.Instance != null && PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest &&
         PhotonSession.Phase == RailPhase.Running &&
-        EnemyInvincibilityRequested?.Invoke() == true;
+        EnemyInvincibilityRequested?.Invoke() == true);
     static RailTestPreset preset = new RailTestPreset();
     static int[] previousNetwork;
     static bool configured;

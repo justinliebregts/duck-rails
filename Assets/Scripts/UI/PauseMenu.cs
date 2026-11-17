@@ -10,6 +10,8 @@ public class PauseMenu : MonoBehaviour
     public Transform roomsButton;
     public Transform settingsButton;
     public Transform cameraButton;
+    public Transform testButton;
+    public GameObject testPage;
 
     public PlayersMenu playersMenu;
     public RoomMenu roomMenu;
@@ -42,6 +44,7 @@ public class PauseMenu : MonoBehaviour
     Quaternion summonLocalRotation;
 
     void Awake() {
+        BindTestButtons();
         BindCameraButton("Open", OpenCameraTablet);
         BindCameraButton("Close", CloseCameraTablet);
         body = GetComponent<Rigidbody>();
@@ -96,6 +99,10 @@ public class PauseMenu : MonoBehaviour
     }
 
     private void Update() {
+        RailAdminTools.Refresh();
+        if (testButton != null) testButton.gameObject.SetActive(RailAdminTools.Available);
+        if (!RailAdminTools.Available && testPage != null && testPage.activeSelf) SetActiveButton(playersButton.GetComponent<PauseMenuButton>());
+        RefreshTestLabels();
         if (GR.Player.instance == null)
             return;
         if (GR.Player.instance.IsDead) {
@@ -145,6 +152,7 @@ public class PauseMenu : MonoBehaviour
 
     public void SetActiveButton(PauseMenuButton button) {
         activeButton = button;
+        if (testPage != null) testPage.SetActive(RailAdminTools.Available && activeButton != null && activeButton.transform == testButton);
         if (playersMenu != null) {
             playersMenu.gameObject.SetActive(activeButton != null && activeButton.transform == playersButton);
         }
@@ -153,6 +161,34 @@ public class PauseMenu : MonoBehaviour
         if (cameraPage != null) {
             cameraPage.SetActive(activeButton != null && activeButton.transform == cameraButton);
         }
+    }
+
+    void BindTestButtons() {
+        if (testPage == null) return;
+        BindTestButton("Deposit1", () => RailAdminTools.DepositCoal(1));
+        BindTestButton("Deposit50", () => RailAdminTools.DepositCoal(50));
+        BindTestButton("NoClip", () => RailAdminTools.ToggleNoClip());
+        BindTestButton("Invincibility", () => RailAdminTools.ToggleInvincibility());
+        testPage.SetActive(false);
+        if (testButton != null) testButton.gameObject.SetActive(RailAdminTools.Available);
+    }
+
+    void BindTestButton(string name, UnityAction action) {
+        var button = testPage.transform.Find(name)?.GetComponent<PauseMenuButton>();
+        if (button == null) return;
+        button.momentary = true;
+        button.pressedIn.AddListener(action);
+    }
+
+    void RefreshTestLabels() {
+        if (testPage == null || !testPage.activeInHierarchy) return;
+        SetTestLabel("NoClip", "No Clip: " + (RailAdminTools.NoClip ? "On" : "Off"));
+        SetTestLabel("Invincibility", "Invincibility: " + ((RailAdminTools.Invincible || RailTestTools.EnemyInvincible) ? "On" : "Off"));
+    }
+
+    void SetTestLabel(string name, string value) {
+        var label = testPage.transform.Find(name)?.GetComponentInChildren<TMPro.TMP_Text>(true);
+        if (label != null) label.text = value;
     }
 
     public void OpenCameraTablet() {

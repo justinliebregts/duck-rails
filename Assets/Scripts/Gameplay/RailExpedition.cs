@@ -33,6 +33,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     readonly Dictionary<string, double> shownFlares = new Dictionary<string, double>();
     string lastJson, localRun, caughtRun;
     string pendingRequestJson;
+    int pendingRequestRevision;
     double pendingRequestAt;
     bool wasDown;
     readonly RailAtmosphere atmosphere = new RailAtmosphere();
@@ -69,6 +70,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     }
     public static void RequestDown()
     {
+        if (RailAdminTools.Invincible) return;
         var instance = Instance;
         if (instance == null || PhotonNetwork.Time < instance.nextDownRequest || LocalDown) return;
         instance.nextDownRequest = PhotonNetwork.Time + .3;
@@ -76,6 +78,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     }
     public static void RequestEnemyDown(Game.AI.Enemy enemy)
     {
+        if (RailAdminTools.Invincible) return;
         var instance = Instance;
         if (instance == null || enemy == null || PhotonNetwork.Time < instance.nextDownRequest || LocalDown) return;
         instance.nextDownRequest = PhotonNetwork.Time + .3;
@@ -162,10 +165,11 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     void ReadState()
     {
         string json = PhotonSession.Get(StateKey, "");
+        if (pendingRequestJson != null && json == pendingRequestJson &&
+            PhotonSession.Get(RailSessionRules.Revision, 0) >= pendingRequestRevision)
+        { if (requests.Count > 0) requests.Dequeue(); pendingRequestJson = null; }
         if (json == lastJson && State.run == PhotonSession.RunId) return;
         lastJson = json;
-        if (pendingRequestJson != null && json == pendingRequestJson)
-        { if (requests.Count > 0) requests.Dequeue(); pendingRequestJson = null; }
         State = string.IsNullOrEmpty(json) ? new RailRunState() : JsonUtility.FromJson<RailRunState>(json);
         if (State.run != PhotonSession.RunId) State = new RailRunState { run = PhotonSession.RunId };
     }
@@ -173,6 +177,11 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     {
         if (!PhotonSession.IsRailsRoom) { reviveEffects.Reset(); return; }
         if (!PhotonNetwork.IsMessageQueueRunning || PhotonSession.Instance == null || PhotonSession.Instance.HasRoomRequest) { reviveEffects.StopProgress(); return; }
+#if UNITY_EDITOR
+        if (PhotonSession.Phase == RailPhase.Running && PhotonSession.Instance.WorldReady &&
+            !RailWorld.InputBlocked && !DuckCompanionDebug.IsTyping && RailDesktopInput.GetKeyDown(KeyCode.F))
+            Request("editor-fuel-100");
+#endif
         ReadState();
         if (!PhotonSession.OnTrain)
         {
@@ -294,8 +303,9 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (json == lastJson && changes.Count == 0)
         { if (requests.Count > 0) requests.Dequeue(); return; }
         changes[StateKey] = json;
+        int requestRevision = PhotonSession.Get(RailSessionRules.Revision, 0) + 1;
         if (PhotonSession.Instance.Commit(changes) && requests.Count > 0)
-        { pendingRequestJson = json; pendingRequestAt = now; }
+        { pendingRequestJson = json; pendingRequestRevision = requestRevision; pendingRequestAt = now; }
     }
     public static bool IsConnected(int actor) => PhotonNetwork.CurrentRoom?.GetPlayer(actor)?.IsInactive == false;
     // Actors counted as holding the bridge button on the latest master tick (superlatives only).
@@ -366,13 +376,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     void ApplyRequest(RailRunState state, RailParticipant p, Vector3 position, string action, int target, double now, Hashtable changes, object[] coalSample = null)
     {
 #if UNITY_EDITOR
-        if (action == "editor-fuel")
+        if (action == "editor-fuel" || action == "editor-fuel-100")
         {
             var currentMotion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
             RailSessionRules.EvaluateTrain(currentMotion, PhotonSession.Get(RailSessionRules.Fuel, RailResourceBalance.StartingFuel), now,
                 out var distance, out var velocity, out var remainingFuel);
             changes[RailSessionRules.Motion] = new object[] { now, distance, velocity, (float)currentMotion[3] };
-            changes[RailSessionRules.Fuel] = Mathf.Min(RailResourceBalance.Capacity, remainingFuel + 1f);
+            changes[RailSessionRules.Fuel] = Mathf.Min(RailResourceBalance.Capacity, remainingFuel + (action == "editor-fuel-100" ? 100f : 1f));
             return;
         }
         // Only the requesting participant is changed; production masters omit this action.
@@ -386,6 +396,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             return;
         }
 #endif
+        if (action == "admin-coal")
+        {
+            var sender = PhotonNetwork.CurrentRoom?.GetPlayer(p.actor);
+            if (sender?.CustomProperties[RailAdminTools.AdminProperty] is bool admin && admin &&
+                (target == 1 || target == 50)) ApplyCoalFuel(changes, now, target);
+            return;
+        }
         if (action == "stats") { RailStats.Apply(p, coalSample); return; }
         if (action == "down" || action == "enemy-down")
         {
@@ -427,13 +444,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         ApplyCoalFuel(changes, now);
     }
     // Shared by physical furnace deposits and the explicit development-panel simulation.
-    public static void ApplyCoalFuel(Hashtable changes, double now)
+    public static void ApplyCoalFuel(Hashtable changes, double now, int count = 1)
     {
         var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
         RailSessionRules.EvaluateTrain(motion, PhotonSession.Get(RailSessionRules.Fuel, RailResourceBalance.StartingFuel), now, out var z, out var speed, out var fuel);
         changes[RailSessionRules.Motion] = new object[] { now, z, speed, (float)motion[3] };
         changes[RailSessionRules.Fuel] = Mathf.Min(RailResourceBalance.Capacity,
-            fuel + RailResourceBalance.CoalValue(RailRoute.Instance?.Selection?.resourceCrew ?? 1));
+            fuel + count * RailResourceBalance.CoalValue(RailRoute.Instance?.Selection?.resourceCrew ?? 1));
     }
     readonly HashSet<string> shownFuel = new HashSet<string>();
     string fuelPopupRun;
@@ -520,8 +537,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 string.Join("\n", State.players.Select(p => Safe(p.name) + " — " + (p.escaped ? "Escaped" : "Didn't make it") + "\n<size=65%>Coal " + p.coal + "   Gold " + p.gold + "   Revives " + p.revives + "   Downs " + p.downs + "  •  " + (string.IsNullOrEmpty(p.award) ? RailAwards.Fallback : p.award) + "</size>"));
             bool localAboard = Position(PhotonNetwork.LocalPlayer.ActorNumber, out var localPoint) && RailTrain.Instance.ContainsPadded(localPoint);
             if (caughtRun != State.run)
-            { caughtRun = State.run; if (GR.Player.instance != null && !localAboard) TeleportAboard(); }
-            if (GR.Player.instance != null && !localAboard)
+            { caughtRun = State.run; if (GR.Player.instance != null && !localAboard && !RailAdminTools.NoClip) TeleportAboard(); }
+            if (GR.Player.instance != null && !localAboard && !RailAdminTools.NoClip)
             { if (fallAt <= 0) fallAt = now; if (now - fallAt > 2) TeleportAboard(); }
             else fallAt = 0;
         }

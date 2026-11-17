@@ -68,6 +68,41 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Admin pause page — queued 2026-11-17
+- Commit(s): uncommitted.
+- Changed: admin-only Test tab inside pause menu, exactly Deposit 1 coal,
+  Deposit 50 coal, No Clip and Invincibility. Removed L3 and separate test UI.
+- Evidence: Unity Editor and Android release-reference C# compilation,
+  28 focused EditMode assertions, prefab render
+  inspection. No Play Mode run. See [current behavior](testing-tools.md#admin-pause-page--november-17-2026).
+- Setup: two authenticated clients, one admin and one non-admin; repeat with
+  admin as host and peer, in public and private expeditions. Include release
+  headset builds and an Editor account without admin privileges.
+- Check: non-admin has no Test tab; admin gets only four controls. L3 does
+  nothing. Start/P, ordinary pages, grab/follow/dismiss and re-open still work.
+  Pokes fire once until withdrawal. Labels immediately reflect each toggle.
+- Check: focused Editor Game view F adds 100 fuel once per key press, capped
+  at 100; both clients agree with Editor host/peer. Ignore F while typing or
+  loading; player builds have no F shortcut. Preserve train motion.
+- Check: at partially depleted fuel, 1 coal adds one crew-scaled value and
+  50 adds fifty values capped at 100, once per press; both clients agree.
+  Train distance/speed/target remain continuous; coal stats/items unchanged.
+  Repeat rapid presses, full fuel, stationary players, late join and host handoff.
+- Check: No Clip passes through walls, train and ground, moves horizontally
+  with left stick regardless of head pitch, rises/falls with right-stick Y,
+  and hovers on release. No fall recovery or train/helicopter carry while on.
+  Menu remains pressable while flying. Off restores gravity, collision and
+  ordinary locomotion without a stale hand-launch impulse; also check warp,
+  rig disable, F2 input changes, account loss, room transfer and next run.
+- Check: Invincibility rejects enemy, bomber and hazard downs only locally;
+  Off restores them even when the old editor enemy-protection preference is on.
+  No automatic revive or prevention of shared bridge failure. Toggles reset
+  on admin revocation and room/run/account change.
+- Needs human: headset reach/readability, actual joystick mapping and flight feel.
+- Priority: normal
+
+
+
 ### Bridge fortress refresh and midpoint defender — queued 2026-11-17
 - Scoped live result November 17: **PASS** in one authenticated editor client for
   both initial defenders naturally reaching controls, one reinforcement near
@@ -907,14 +942,6 @@ No new block conversion or device run occurred during this documentation task.
 - Needs human: all of the above.
 - Priority: normal
 
-### Test panel on L3, admin-gated: controllers and dev builds (7ae3a4e70, d46433b7b) — queued 2026-11-11, manual-only
-- Regression 2026-11-13: Editor toggle and removed GoldBarDropper rerun PASS; physical L3/Esc and non-admin dev-build gating remain pending. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
-- Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: no headset dev-build/admin versus non-admin controller run; prior editor-toggle evidence retained. Shared Unity/commit metadata and evidence are in the newest Results entry.
-- Commit(s): 7ae3a4e70, d46433b7b; help-text fix aeb8c3051 (editor toggle PASSED 2026-11-11, see Results)
-- Check: Editor VR rig: L3 opens/closes the wrist panel and the menu button opens the pause menu. Esc closes the keyboard panel. Dev build: admin L3 opens the panel after sign-in; non-admin L3 does nothing and the menu button opens the pause menu; no gold bar drops on L3.
-- Needs human: controllers, admin and non-admin accounts on a headset.
-- Priority: normal
-
 ### Stranded return: three clients and the original repro (d9ab4c4fc) — queued 2026-11-11, manual-only
 - Regression 2026-11-13: Evening stranded-token case excluded; fresh normal public return and cut return-control connection PASS with three clients. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
 - Queue run 2026-11-12 evening: **BLOCKED only on original headset repro (3 clients)**: targeted desktop return/rejoin portion PASS. A disconnected non-master rejoined the retained Returning expedition after its return token, immediately entered Leaving, and recovered to Compound in 2.70 s from that sample. Public-return state was seeded in an isolated private room and third client's session updates held to retain it; not a natural public win. Shared Unity/commit metadata and evidence are in the newest Results entry.
@@ -1085,6 +1112,11 @@ Run in the ignored disposable copies `tmp/duckz-port-validation` and `-2` (synce
 - **ZombieHook pull — `ZombieHookPullChecks` re-run on HEAD: PASS** (24 pull + 6 surface cases, same values as the port run). Everything else in that entry is headset/two-client. [Evidence](validation/playtest-queue/2026-11-10-hook-pull.txt)
 
 ## Dropped
+
+### L3 test panel — superseded 2026-11-17
+Old L3/wrist/desktop panel acceptance is dropped because the user replaced it
+with the admin pause page. Historical November 11–13 evidence remains in Results.
+
 
 ### Skyscraper Works production atlas integration — superseded 2026-11-14
 The user requested restoration and revision of the original geometry before another Blender pass. The previous 394-chunk / 228,866-triangle version is retired; use the reduced-source entry above. Historical [integration evidence](validation/skyscraper-atlas/production-integration.md) remains available.

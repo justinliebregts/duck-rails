@@ -45,7 +45,7 @@ public class Helicopter : MonoBehaviour
     bool carryingPassenger;
     int releasedFrame = -1;
 
-    public bool HasLocalPassenger => localPlayer != null && localPlayer == GR.Player.instance
+    public bool HasLocalPassenger => !RailAdminTools.NoClip && localPlayer != null && localPlayer == GR.Player.instance
         && carryingPassenger && releasedFrame != Time.frameCount && TryGetAnchor(out Vector3 anchor)
         && (ContainsPassenger(anchor, true) || ExteriorSupport(anchor));
 
@@ -69,7 +69,7 @@ public class Helicopter : MonoBehaviour
         CacheLocalPlayer();
         if (!continuous) ClearSupport();
         bool hasPassenger = TryGetAnchor(out Vector3 anchor);
-        bool carry = continuous && hasPassenger && releasedFrame != Time.frameCount
+        bool carry = !RailAdminTools.NoClip && continuous && hasPassenger && releasedFrame != Time.frameCount
             && (ContainsPassenger(anchor, carryingPassenger) || ExteriorSupport(anchor));
         Vector3 localAnchor = carry ? transform.InverseTransformPoint(anchor) : Vector3.zero;
         Vector3 previousPosition = transform.position;
@@ -150,7 +150,7 @@ public class Helicopter : MonoBehaviour
     public void RefreshPassenger()
     {
         CacheLocalPlayer();
-        carryingPassenger = isActiveAndEnabled && releasedFrame != Time.frameCount && TryGetAnchor(out Vector3 anchor)
+        carryingPassenger = !RailAdminTools.NoClip && isActiveAndEnabled && releasedFrame != Time.frameCount && TryGetAnchor(out Vector3 anchor)
             && (ContainsPassenger(anchor, carryingPassenger) || ExteriorSupport(anchor));
     }
 

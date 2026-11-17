@@ -228,6 +228,7 @@ public partial class NewPlayer : MonoBehaviour
         // hand launch, body sweep across the scene, or throw velocity.
         public void ReseedTrackingPose()
         {
+            RestoreAdminFlight();
             bodyCollider.transform.position = headCollider.transform.position + BodyForwardRot() * headBodyOffset;
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
@@ -252,6 +253,7 @@ public partial class NewPlayer : MonoBehaviour
         }
 
         public void Warp(Vector3 pos) {
+          RestoreAdminFlight();
           PhotonPlayer.InvalidateLocalHookShots();
           // A warp between pose restoration and rendering must not be interpolated away.
           movementPoseRenderCancelled = true;
@@ -580,6 +582,8 @@ public partial class NewPlayer : MonoBehaviour
         const float deadGravityScale = 0.8f;
 
         void Update() {
+          RailAdminTools.Refresh();
+          if (UpdateAdminFlight()) return;
           Rotate();
           if (hookHandsActive && (_bodyDriver == null || _bodyDriver.Body == null))
               ResolveHookHands();

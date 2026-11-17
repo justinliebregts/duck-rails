@@ -14,6 +14,7 @@ public partial class NewPlayer
 
     void OnDisable()
     {
+        RestoreAdminFlight();
         ClearLaunchLock();
         EndHookHandProtection();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD

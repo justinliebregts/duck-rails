@@ -1,5 +1,13 @@
 # Duck Rails — V1 game design
 
+November 17 admin tools: the signed-in admin's pause menu has a Test tab with
+Deposit 1 coal, Deposit 50 coal, No Clip: On/Off and Invincibility: On/Off.
+The standalone L3/wrist/desktop test panel and Game-view toggle are retired.
+No Clip uses head-relative horizontal left-stick movement and right-stick
+forward/backward for vertical flight, without solid collision or fall recovery.
+Implemented; runtime/headset/multiplayer acceptance is queued.
+See [testing tools](testing-tools.md#admin-pause-page--november-17-2026).
+
 November 17 ambience refinement: long positional details play randomized excerpts
 with fades; background loops blend across their wrap points. Initial tuning is
 8–14 seconds per excerpt, 1.25-second detail fades and three-second baked bed

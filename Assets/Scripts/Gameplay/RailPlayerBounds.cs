@@ -65,6 +65,7 @@ public sealed class RailPlayerBounds : MonoBehaviour
     // ---------- Local fall recovery ----------
     void LateUpdate()
     {
+        if (RailAdminTools.NoClip) { outsideFor = 0f; return; }
         var route = RailRoute.Instance;
         var expedition = RailExpedition.Instance;
         // The victory ride keeps its own return-aboard rule; it never uses last-ground recovery.

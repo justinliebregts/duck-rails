@@ -105,6 +105,60 @@ Shared-rig update: gameplay now uses DuckPlayer in both Keyboard and VR modes, w
 
 ## In-game panel
 
+### Admin pause page — November 17, 2026
+
+Editor-only shortcut: press **F** in the focused Game view during a ready running
+expedition to add 100 fuel (capped at the tank's 100 capacity). It uses the
+master's existing editor fuel request path and preserves train motion; no
+admin account is required for this Editor shortcut. Typing/loading suppresses
+it, and both the binding and handler are excluded from player builds.
+The existing one-unit editor fixture action is retained.
+
+Current entry point: normal pause menu (Start/P) > **Test**, visible only when
+the signed-in account's PlayerSession.IsAdmin is true, including in the Editor
+and release builds. Exactly four CutePixel buttons:
+Deposit 1 coal; Deposit 50 coal; No Clip: On/Off; Invincibility: On/Off.
+
+Coal requests go to the current Photon master in a ready running public or
+private expedition, including requests from a non-master admin. Each applies
+the normal crew-scaled coal fuel value, capped at 100, preserving train motion.
+No item is consumed and test deposits do not increase coal statistics.
+The master bounds the count to 1 or 50 and checks the requesting actor's mirrored
+admin flag. This retains the existing client-side admin convenience model;
+the Photon property is not server-verified authorization.
+Fuel-only request acknowledgements now use the committed revision even when
+the expedition JSON is unchanged, preventing the request from repeating.
+
+No Clip: left stick moves horizontally relative to head yaw; right stick
+forward rises and backward descends. Initial speed is 4.5 m/s with a 0.18
+deadzone. Solid local-rig colliders, gravity and locomotion sweeps are bypassed;
+fingertip triggers remain available for menu use. Train/helicopter carry,
+fall recovery and victory catch-up are bypassed while flying. Turning it off,
+disabling the rig or warping restores saved physics and reseeds movement.
+Keyboard simulation uses WASD and Space/C. Flight does not itself grant
+invincibility.
+
+Invincibility blocks local death/down requests (enemy contacts, blasts and
+hazard deaths). It does not revive an already downed duck or prevent a shared
+expedition failure. The label also reflects the existing Test Center enemy
+protection preference; explicitly toggling here overrides that preference
+for this account/run, so Off actually disables protection.
+Both local toggles reset on account, room or run change and admin revocation.
+
+The L3 binding, wrist panel, desktop panel and top-right Game-view toggle are
+removed. The small RailDiagnosticPanel class only retains compatibility APIs
+for old fixtures; it creates no UI. Older panel workflows below are historical.
+Use Test Center for the remaining editor fixtures.
+
+Validation: Unity 6000.3.24f1 Editor and Android release-reference C# compilation
+pass (release output: ignored Temp/admin-pause-compile/release.log).
+RailAdminToolsChecks passes in
+disconnected Edit Mode (28 assertions); the prefab was rendered and inspected.
+No Play Mode was entered. Headset/release/multiplayer acceptance is queued in
+[Admin pause page](playtest-queue.md#admin-pause-page--queued-2026-11-17).
+
+
+
 ### Admin gate and L3 toggle — November 11
 In VR the test panel now opens and closes with **L3** (click the left thumbstick), not the left menu button. The menu buttons and P always open the normal pause menu. The only ways to open the panel are L3 and, in the Editor, the Game-view **Open test panel** button. In keyboard mode, Esc or the panel's Close button hides it. This replaces the earlier P shortcuts described below. The panel is always available in the Editor. In development builds it is available only when `PlayerSession.IsAdmin` is true. That flag comes from `GET admin/check` against the backend `admin_privileges` table after sign-in. This is a client-side convenience gate, not a security boundary. Release builds still exclude the panel. The old admin-only L3 gold-bar dropper (`GoldBarDropper`) was removed. Unity compilation passed; live headset checks are queued in [playtest-queue.md](playtest-queue.md).
 
@@ -190,7 +244,7 @@ Automatic uploads use the existing authenticated game session at `POST /api/v1/d
 
 Open **Duck Rails > Test Center**:
 
-**Manual sandbox** launches one authenticated client directly into a temporary private expedition. Use the Game view's **Open test panel** button (or L3) to open its panel, and use the Test Center's Stop button when finished.
+**Manual sandbox** launches one authenticated client directly into a temporary private expedition. Use the pause menu's admin-only **Test** page for the four in-game tools, and use the Test Center's Stop button when finished.
 
 1. **Quick regression** runs the existing session, desktop, quick-start, Week 2, Week 3, drive, fingertip, hold and avatar checks, plus diagnostic checks. It collects a result for every suite even if one fails.
 2. **Two clients — launch expedition** launches the main editor and Player2 through normal authentication directly into the same expedition using the existing quick-start room `11111`. This is manual play: no coal grab/release, master handoff, automated fixture or timeout. Existing test settings and reproduction presets are preserved; tools restricted to private rooms retain that restriction in this quick-start expedition. Stop when finished.

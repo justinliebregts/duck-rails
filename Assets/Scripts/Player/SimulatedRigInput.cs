@@ -298,7 +298,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
         leftRotation = Quaternion.RotateTowards(leftRotation, (frame.leftReach ? headRotation : yawRotation) * Quaternion.Euler(0, 0, handRoll), dt * 360);
         rightRotation = Quaternion.RotateTowards(rightRotation, (frame.rightReach ? headRotation : yawRotation) * Quaternion.Euler(0, 0, handRoll), dt * 360);
         WriteSimulatedPose();
-        if (!blocked && !player.disableMovement)
+        if (!blocked && !player.disableMovement && !RailAdminTools.NoClip)
         {
             // Simulated room-scale translation enters the existing head/body/hand
             // collision solver in NewPlayer.Update, including moving-platform carry.
@@ -327,6 +327,6 @@ public sealed class SimulatedRigInput : MonoBehaviour
         if (!IsSimulating) return;
         GUI.Label(new Rect(12, Screen.height - 30, 1000, 24), "Q / E reach · Right mouse grip · Left mouse trigger · Wheel reach · T toggle throttle · F1 help · F2 Quest Link");
         if (showHelp)
-            GUI.Box(new Rect(12, Screen.height - 230, 570, 195), "SHARED DUCK RIG\nWASD move · Mouse look · Space jump · C crouch\nHold Q / E to extend left / right hand; release to bring it back\nRight mouse grips both hands · Left mouse triggers both hands\nWheel adjusts reach · Z / X rolls wrists · 1–4 controller face buttons\nPress T for throttle GO; press again for STOP\nPage Down skips one block (private development expedition)\nP pause menu · L3 or top-right button test panel · Tab session tools · Esc release cursor\nF2 switches input without restarting Play\n" + Status);
+            GUI.Box(new Rect(12, Screen.height - 230, 570, 195), "SHARED DUCK RIG\nWASD move · Mouse look · Space jump · C crouch\nHold Q / E to extend left / right hand; release to bring it back\nRight mouse grips both hands · Left mouse triggers both hands\nWheel adjusts reach · Z / X rolls wrists · 1–4 controller face buttons\nPress T for throttle GO; press again for STOP\nPage Down skips one block (private development expedition)\nP pause menu (admin Test page) · Tab session tools · Esc release cursor\nF2 switches input without restarting Play\n" + Status);
     }
 }

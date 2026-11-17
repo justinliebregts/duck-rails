@@ -126,6 +126,7 @@ namespace GR {
         }
 
         void SetDeadInternal(DuckCompanion killer, int attempt, string cause, Vector3 impact, Vector3 rotation = default) {
+            if (RailAdminTools.Invincible) return;
             if (PhotonSession.IsRailsRoom) { RailExpedition.RequestDown(); return; }
             using var sample = DeathProfile.Local.Auto();
             if (IsDead) {
