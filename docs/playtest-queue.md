@@ -1,5 +1,20 @@
 # Playtest queue
 
+## Corn rustle variations — queued 2026-11-17
+
+- Changed: the Farm corn rustle now uses a new `Foliage_CornRustle` SoundEvent
+  with four 0.5 s clips (`Assets/Audio/Player/Foliage/CornRustle_01-04.wav`, cut
+  from the Autumn Weather leaves recording at 2.7/13.2/45.0/48.1 s, 25 ms fade-in,
+  150 ms fade-out, loudness-matched, 48 kHz mono) and avoids immediate repeats.
+  (First pass used 1 s clips; user found them too long.)
+  All 52 corn `FoliageVolume`s and `RailFarmFoliage.Configure` point at it;
+  `HandHit_Foliage` is unchanged for hand hits.
+- Editor evidence: clips import at 0.5 s / 48 kHz; 52/52 volumes reference the new
+  event; no Console errors.
+- Check: walk and run through the Farm corn in headset; rustles vary, have no
+  clicks at start/stop, and sit at a sensible volume. Status: queued for
+  playtest; no Play Mode run.
+
 ## Walkable collapsed bridge spans — queued 2026-11-17
 
 - Changed: each of the 5 `BridgeCollapse` spans has a "Walk colliders" child
