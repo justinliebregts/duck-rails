@@ -1,5 +1,7 @@
 # Final escape block — concept V1
 
+Bridge alarm follow-up: `BridgeAlarmBeep_Reverb.wav` is a separate spatial one-shot on the retained bridge control anchor (`RailBridgeAlarm`), routed to effects. First active lowering beeps immediately; subsequent starts require four seconds of monotonic real time since the last beep. Release/re-grab and component disable retain the cooldown; missed intervals never accumulate. Idle/completed bridge cannot start a beep. Release permits the baked tail to finish; disable stops playback. Existing zone reverb is bypassed for this already-reverberated source. Initial volume 0.65, linear range 5–80 m; listening remains queued.
+
 ## Batch level polish — November 11
 
 Tunnel corrections after review: restore floor/drawbridge visibility after bake exports, then include the static 70×50 m far bank in lightmapping with probe fallback disabled. A single warm probe had coloured the whole grass surface. Local entrance illumination now bakes onto the bank; the user's current 22 lights are preserved, including five tunnel point lights. One finale bake/export, 1,741 bindings installed into Expedition and 23 scoped editor checks pass. Actual night-to-dawn/headset review remains queued; see checklist items 22–23.

@@ -1,5 +1,7 @@
 # Duck Rails — execution plan
 
+- [ ] November 16: validate bridge alarm four-second start spacing, release/re-grab cooldown, completion and spatial listening on real clients/headsets; queued for playtest.
+
 - [ ] November 16: validate Duckz-style backpack downing and persistence: worn/held
   bags drop intact on downing; only worn bags restore on entry. Implementation,
   Unity compilation and Week 2 rules checks pass; runtime acceptance is

@@ -43,6 +43,13 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Bridge alarm reverb audition — queued 2026-11-16
+- Integration checks: Unity compilation and 7 standalone alarm EditMode checks passed (cooldown/restart/boundaries and saved prefab clip binding). Earlier terminal/hold/drive checks passed before isolation. No Play Mode run.
+- Asset: `Assets/Audio/Bridge/BridgeAlarmBeep_Reverb.wav`, original retained; processed copy now bound to a separate spatial one-shot at the bridge control.
+- Processing: 35 ms end taper, 26 ms reverb predelay, damped diffuse reflections with 2.1 s nominal decay, three seconds of appended tail, final 250 ms fade; stereo 44.1 kHz/16-bit PCM. Source is 0.983 s, stereo 8-bit; conversion does not restore source detail.
+- Checks passed: output 3.983 s, peak -1.34 dBFS (no sample clipping), final samples zero; synchronous import in verified Duck Rails editor with matching duration/rate/channels.
+- Pending: hold continuously (beep starts at least four seconds apart); release/re-grab before four seconds (wait for remaining cooldown), resume after expiry (immediate beep), remain idle through expiry (silent), complete/finish (no new beeps). Check retained natural tails on release, effects volume and 5–80 m spatial falloff on real clients/headsets. Audio quality/listening acceptance is unverified.
+
 ### Duckz backpack downing and persistence — queued 2026-11-16
 - Commit(s): backpack downing/persistence commit containing this entry.
 - Required procedure and evidence: [backpack persistence acceptance](backpack-persistence-testing.md). Includes exact slot/identity accounting, cold restart, no-save exits, account isolation, both room kinds, cleanup timing, reconnect/late join, ownership races and headset checks. All runtime scenarios remain pending.

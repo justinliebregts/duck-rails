@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 16 bridge alarm: play the processed alarm on active lowering, at least four real-time seconds between starts. Stop/restart retains cooldown; idle never emits beeps and existing reverb tails finish. Runtime/headset acceptance queued.
+
 November 16 backpack persistence: match Duckz. Downing drops worn/handheld bags
 with their contents retained and clears the saved bag. Only a worn bag and its
 contents persist through UserPlayerPrefs; taking it off clears that save. Restore
