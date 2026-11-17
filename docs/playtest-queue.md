@@ -2,6 +2,13 @@
 
 ## Ambient director — queued 2026-11-16
 
+- November 17 refinement: long details use random 8–14 second excerpts and
+  1.25-second fades; all 13 beds have baked three-second circular overlaps.
+  Compilation and 1,236 excerpt/import checks pass, plus PCM boundary checks.
+  Listen through complete compressed loops for dips/seams; verify excerpt starts
+  vary, ends fade smoothly, short accents remain whole, and pause/resume, area
+  changes and gameplay voice reclamation leave no lingering detail sounds.
+
 - Scope: 21 approved Artlist clips, five scavenging blocks, Starting Station and
   Bridge Finale. See [configuration and source selections](ambient-director.md).
 - Editor evidence: compilation and 352 focused checks pass; no Console errors.

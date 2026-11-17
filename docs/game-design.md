@@ -1,11 +1,25 @@
 # Duck Rails — V1 game design
 
+November 17 ambience refinement: long positional details play randomized excerpts
+with fades; background loops blend across their wrap points. Initial tuning is
+8–14 seconds per excerpt, 1.25-second detail fades and three-second baked bed
+overlaps. Short accents retain full playback. See [ambience](ambient-director.md);
+listening acceptance remains queued for playtest.
+
 November 17 bridge finale: user confirmed 60 seconds of accumulated lever holding,
 with one extra defender at 30 seconds (30% of the two bridge defenders, rounded
 up; no expedition-wide increase). Defenders approach the controls without needing
 initial line of sight, retaining ordinary player pursuit and combat reactions.
 New-fortress navigation, loot distribution and build lighting export are updated;
 runtime acceptance is queued. See [finale refresh](final-escape-layout.md#fortress-encounter-refresh--november-17-2026).
+
+November 16 ambient audio: user-approved Artlist selection imported with a local
+location-aware director for the five enabled scavenging blocks, starting station
+and bridge finale. Quiet beds crossfade by area; nearby details and rare ghost
+accents use randomized intervals. Timing, gains, local per-client randomness and
+station scare suppression are initial implementation defaults. Compilation and
+focused EditMode checks pass; listening/headset acceptance queued. See
+[ambience setup and approved selection](ambient-director.md).
 
 November 16 bridge alarm: play the processed alarm on active lowering, at least four real-time seconds between starts. Stop/restart retains cooldown; idle never emits beeps and existing reverb tails finish. Runtime/headset acceptance queued.
 

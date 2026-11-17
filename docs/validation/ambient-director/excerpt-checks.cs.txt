@@ -1,0 +1,48 @@
+using System;
+using System.IO;
+using UnityEngine;
+using UnityEditor;
+using Game.Audio;
+internal class CommandScript : IRunCommand {
+ public void Execute(ExecutionResult result) {
+ if(Application.dataPath!="X:/Work/duck-rails/Assets" || EditorApplication.isPlaying) throw new Exception("Wrong editor");
+ int checks=0;
+ void Check(bool ok,string label) { if(!ok) throw new Exception(label); checks++; }
+ Check(!EditorUtility.scriptCompilationFailed,"Compile");
+ var state=UnityEngine.Random.state;
+ try {
+ foreach(float pitch in new[]{0.5f,1f,2f,3f}) {
+ float first=-1; bool varied=false;
+ for(int i=0;i<100;i++) {
+ var x=AmbienceExcerpt.Select(100,pitch,new Vector2(8,14),1.25f);
+ Check(x.Duration>=8 && x.Duration<=14,"Duration");
+ Check(x.Offset>=0 && x.Offset+x.Duration*pitch<=100.0001f,"Source bounds");
+ Check(x.Fade==1.25f,"Fade");
+ if(i==0) first=x.Offset; else varied|=x.Offset!=first;
+ } Check(varied,"Random offsets");
+ }
+ foreach(float length in new[]{4.27f,7.72f,7.93f,5.42f}) {
+ var x=AmbienceExcerpt.Select(length,1,new Vector2(8,14),1.25f);
+ Check(x.Offset==0 && x.Duration==length && x.Fade==0,"Short accents intact");
+ }
+ var full=AmbienceExcerpt.Select(100,2,Vector2.zero,2);
+ Check(full.Offset==0 && full.Duration==50 && full.Fade==0,"Legacy playback");
+ var reversed=AmbienceExcerpt.Select(100,1,new Vector2(14,8),100);
+ Check(reversed.Duration>=8 && reversed.Duration<=14 && reversed.Fade==reversed.Duration/2,"Reversed range/fade clamp");
+ Check(AmbienceExcerpt.TailGain(2,1.25f)==1,"Tail full");
+ Check(AmbienceExcerpt.TailGain(.625,1.25f)==.5f,"Tail half");
+ Check(AmbienceExcerpt.TailGain(0,1.25f)==0 && AmbienceExcerpt.TailGain(-1,1.25f)==0,"Tail end");
+ } finally { UnityEngine.Random.state=state; }
+ var settings=AssetDatabase.LoadAssetAtPath<RailAmbienceSettings>("Assets/Resources/RailAmbienceSettings.asset");
+ Check(settings.detailDuration==new Vector2(8,14) && settings.detailFadeSeconds==1.25f,"Settings");
+ EditorUtility.SetDirty(settings); AssetDatabase.SaveAssetIfDirty(settings);
+ foreach(var guid in AssetDatabase.FindAssets("t:AudioClip",new[]{"Assets/Audio/Ambience"})) {
+ var path=AssetDatabase.GUIDToAssetPath(guid);
+ var clip=AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+ Check(clip!=null && clip.samples>0,"Imported "+path);
+ }
+ string output=checks+" excerpt/import EditMode checks passed; no Play Mode or listening performed.";
+ File.WriteAllText("docs/validation/ambient-director/excerpt-checks.txt",output+Environment.NewLine);
+ result.Log(output);
+ }
+}

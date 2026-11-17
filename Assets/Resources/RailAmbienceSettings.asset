@@ -1,0 +1,326 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9dd690e207c5bf429ff70408d5335ce, type: 3}
+  m_Name: RailAmbienceSettings
+  m_EditorClassIdentifier: Assembly-CSharp::RailAmbienceSettings
+  crossfadeSeconds: 3
+  detailInterval: {x: 25, y: 55}
+  detailDuration: {x: 8, y: 14}
+  detailFadeSeconds: 1.25
+  scareInterval: {x: 150, y: 300}
+  rareScares:
+  - {fileID: 11400000, guid: b1d5c25c541e2f341bf931771495ed46, type: 2}
+  - {fileID: 11400000, guid: 2069b56f7cd123646b22facde02485ff, type: 2}
+  profiles:
+  - blockId: starting-station-v1
+    outdoorBeds:
+    - {fileID: 11400000, guid: 61da7514588ee4f4e8d3e35d7805e174, type: 2}
+    outdoorDetails:
+    - {fileID: 11400000, guid: 9b8dd10e4a8d7b849a906cc69fe60ac4, type: 2}
+    allowScares: 0
+    areas:
+    - name: Supplies
+      bounds:
+        m_Center: {x: -16.5, y: 3, z: 86}
+        m_Extent: {x: 3.5, y: 3, z: 6}
+      beds:
+      - {fileID: 11400000, guid: 9315c361fe84c14429aa0b5d75485cec, type: 2}
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: East rooms
+      bounds:
+        m_Center: {x: 15.5, y: 3, z: 86}
+        m_Extent: {x: 2.5, y: 3, z: 6}
+      beds:
+      - {fileID: 11400000, guid: 5ef73cf439d680b429a261cae9e2ca2e, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+    - name: Departure tunnel
+      bounds:
+        m_Center: {x: 0, y: 3.5, z: 116}
+        m_Extent: {x: 4, y: 3.5, z: 24}
+      beds:
+      - {fileID: 11400000, guid: 667f99f63a15f2247b081540f08d806d, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Platform hall
+      bounds:
+        m_Center: {x: 0, y: 4.5, z: 80}
+        m_Extent: {x: 13, y: 4.5, z: 12}
+      beds:
+      - {fileID: 11400000, guid: 9315c361fe84c14429aa0b5d75485cec, type: 2}
+      - {fileID: 11400000, guid: 5ef73cf439d680b429a261cae9e2ca2e, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+  - blockId: skyscraper-works-v1
+    outdoorBeds:
+    - {fileID: 11400000, guid: 61da7514588ee4f4e8d3e35d7805e174, type: 2}
+    - {fileID: 11400000, guid: 667f99f63a15f2247b081540f08d806d, type: 2}
+    outdoorDetails:
+    - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - {fileID: 11400000, guid: a832a409ea71517409e8c0a4e26ef37f, type: 2}
+    allowScares: 1
+    areas:
+    - name: Tower A
+      bounds:
+        m_Center: {x: -25, y: 9.5, z: 66}
+        m_Extent: {x: 12, y: 9.5, z: 11}
+      beds:
+      - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Tower B
+      bounds:
+        m_Center: {x: 25, y: 9.5, z: 66}
+        m_Extent: {x: 12, y: 9.5, z: 11}
+      beds:
+      - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Tower C
+      bounds:
+        m_Center: {x: -25, y: 9.5, z: 98}
+        m_Extent: {x: 12, y: 9.5, z: 11}
+      beds:
+      - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Tower D
+      bounds:
+        m_Center: {x: 25, y: 9.5, z: 98}
+        m_Extent: {x: 12, y: 9.5, z: 11}
+      beds:
+      - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+  - blockId: container-yard-v1
+    outdoorBeds:
+    - {fileID: 11400000, guid: 61da7514588ee4f4e8d3e35d7805e174, type: 2}
+    - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+    outdoorDetails:
+    - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - {fileID: 11400000, guid: 9b8dd10e4a8d7b849a906cc69fe60ac4, type: 2}
+    allowScares: 1
+    areas:
+    - name: Repair shed
+      bounds:
+        m_Center: {x: -33, y: 2.5, z: 134}
+        m_Extent: {x: 8.75, y: 2.5, z: 7.75}
+      beds:
+      - {fileID: 11400000, guid: 9315c361fe84c14429aa0b5d75485cec, type: 2}
+      - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+    - name: West container passages
+      bounds:
+        m_Center: {x: -25.5, y: 1.4, z: 80}
+        m_Extent: {x: 16, y: 1.4, z: 30.5}
+      beds:
+      - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: East container passages
+      bounds:
+        m_Center: {x: 26.5, y: 1.4, z: 80.5}
+        m_Extent: {x: 17, y: 1.4, z: 31.5}
+      beds:
+      - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+  - blockId: farm-silos-v1
+    outdoorBeds:
+    - {fileID: 11400000, guid: 04a08c30fc21aaf48a3365f88bbd5378, type: 2}
+    - {fileID: 11400000, guid: 285dca57855eb744f884f1ed61f6ca10, type: 2}
+    outdoorDetails:
+    - {fileID: 11400000, guid: a832a409ea71517409e8c0a4e26ef37f, type: 2}
+    - {fileID: 11400000, guid: 9b8dd10e4a8d7b849a906cc69fe60ac4, type: 2}
+    - {fileID: 11400000, guid: 58a94d38612572d48b434067ea161a17, type: 2}
+    allowScares: 1
+    areas:
+    - name: Cellar
+      bounds:
+        m_Center: {x: -27, y: -0.25, z: 134}
+        m_Extent: {x: 8.75, y: 1.45, z: 9.75}
+      beds:
+      - {fileID: 11400000, guid: 5ef73cf439d680b429a261cae9e2ca2e, type: 2}
+      - {fileID: 11400000, guid: 667f99f63a15f2247b081540f08d806d, type: 2}
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+    - name: Farmhouse
+      bounds:
+        m_Center: {x: -27, y: 6.25, z: 134}
+        m_Extent: {x: 8.75, y: 4.65, z: 9.75}
+      beds:
+      - {fileID: 11400000, guid: 0187c367a032b4a44b49cb9814a808c9, type: 2}
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: Main barn
+      bounds:
+        m_Center: {x: 26, y: 3, z: 77.5}
+        m_Extent: {x: 8.75, y: 3, z: 11.25}
+      beds:
+      - {fileID: 11400000, guid: 0187c367a032b4a44b49cb9814a808c9, type: 2}
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Feed barn
+      bounds:
+        m_Center: {x: -25, y: 1.5, z: 76}
+        m_Extent: {x: 8.75, y: 1.5, z: 6.75}
+      beds:
+      - {fileID: 11400000, guid: 0187c367a032b4a44b49cb9814a808c9, type: 2}
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: Workshop
+      bounds:
+        m_Center: {x: -26, y: 1.5, z: 94}
+        m_Extent: {x: 7.75, y: 1.5, z: 5.75}
+      beds:
+      - {fileID: 11400000, guid: 9315c361fe84c14429aa0b5d75485cec, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: Silo
+      bounds:
+        m_Center: {x: 22, y: 9.7, z: 98}
+        m_Extent: {x: 4.25, y: 2.1, z: 4.25}
+      beds:
+      - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+  - blockId: convenience-store-v1
+    outdoorBeds:
+    - {fileID: 11400000, guid: 61da7514588ee4f4e8d3e35d7805e174, type: 2}
+    - {fileID: 11400000, guid: 4ce6e4d1744f4e344a29be8070ad0cb1, type: 2}
+    outdoorDetails:
+    - {fileID: 11400000, guid: 9b8dd10e4a8d7b849a906cc69fe60ac4, type: 2}
+    - {fileID: 11400000, guid: 58a94d38612572d48b434067ea161a17, type: 2}
+    allowScares: 1
+    areas:
+    - name: Quack Mart
+      bounds:
+        m_Center: {x: 30, y: 2, z: 74}
+        m_Extent: {x: 9.5, y: 2, z: 11.5}
+      beds:
+      - {fileID: 11400000, guid: 9315c361fe84c14429aa0b5d75485cec, type: 2}
+      - {fileID: 11400000, guid: 5ef73cf439d680b429a261cae9e2ca2e, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Arcade
+      bounds:
+        m_Center: {x: -25, y: 2, z: 76}
+        m_Extent: {x: 14.5, y: 2, z: 13.5}
+      beds:
+      - {fileID: 11400000, guid: 2d674f9e2f6635c4ab07a254229b5190, type: 2}
+      - {fileID: 11400000, guid: 5ef73cf439d680b429a261cae9e2ca2e, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Car wash
+      bounds:
+        m_Center: {x: 34, y: 1.9, z: 45}
+        m_Extent: {x: 9.5, y: 1.9, z: 8.5}
+      beds:
+      - {fileID: 11400000, guid: ef07f084568ad424ba8787f0e0590e8a, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Restaurants
+      bounds:
+        m_Center: {x: 25, y: 1.75, z: 126}
+        m_Extent: {x: 14.5, y: 1.75, z: 5.5}
+      beds:
+      - {fileID: 11400000, guid: 9315c361fe84c14429aa0b5d75485cec, type: 2}
+      - {fileID: 11400000, guid: 2d674f9e2f6635c4ab07a254229b5190, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+  - blockId: roadside-motel-v1
+    outdoorBeds:
+    - {fileID: 11400000, guid: 4ce6e4d1744f4e344a29be8070ad0cb1, type: 2}
+    - {fileID: 11400000, guid: 285dca57855eb744f884f1ed61f6ca10, type: 2}
+    outdoorDetails:
+    - {fileID: 11400000, guid: a832a409ea71517409e8c0a4e26ef37f, type: 2}
+    - {fileID: 11400000, guid: 58a94d38612572d48b434067ea161a17, type: 2}
+    allowScares: 1
+    areas:
+    - name: East guest wing
+      bounds:
+        m_Center: {x: 34, y: 3.6, z: 74}
+        m_Extent: {x: 5.75, y: 3.5, z: 19.5}
+      beds:
+      - {fileID: 11400000, guid: 0187c367a032b4a44b49cb9814a808c9, type: 2}
+      - {fileID: 11400000, guid: 5ef73cf439d680b429a261cae9e2ca2e, type: 2}
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: North guest wing
+      bounds:
+        m_Center: {x: 25, y: 3.6, z: 103}
+        m_Extent: {x: 14.5, y: 3.5, z: 5.75}
+      beds:
+      - {fileID: 11400000, guid: 0187c367a032b4a44b49cb9814a808c9, type: 2}
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: Change rooms
+      bounds:
+        m_Center: {x: -32.5, y: 1.85, z: 100}
+        m_Extent: {x: 9, y: 1.7, z: 8.75}
+      beds:
+      - {fileID: 11400000, guid: ef07f084568ad424ba8787f0e0590e8a, type: 2}
+      - {fileID: 11400000, guid: 5ef73cf439d680b429a261cae9e2ca2e, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+    - name: Pool vendor
+      bounds:
+        m_Center: {x: -16.5, y: 1.85, z: 100}
+        m_Extent: {x: 6, y: 1.7, z: 8.75}
+      beds:
+      - {fileID: 11400000, guid: 2d674f9e2f6635c4ab07a254229b5190, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+  - blockId: bridge-finale-v1
+    outdoorBeds:
+    - {fileID: 11400000, guid: 61da7514588ee4f4e8d3e35d7805e174, type: 2}
+    - {fileID: 11400000, guid: 667f99f63a15f2247b081540f08d806d, type: 2}
+    outdoorDetails:
+    - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    allowScares: 1
+    areas:
+    - name: Gorge floor
+      bounds:
+        m_Center: {x: 0, y: -6, z: 100}
+        m_Extent: {x: 48, y: 5, z: 19}
+      beds:
+      - {fileID: 11400000, guid: c53b891fe8347b04295360456186adbc, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Bridge and river banks
+      bounds:
+        m_Center: {x: 0, y: 2, z: 100}
+        m_Extent: {x: 48, y: 3, z: 19}
+      beds:
+      - {fileID: 11400000, guid: fea986e2710b2e64e9a73620fd8c1187, type: 2}
+      - {fileID: 11400000, guid: 61da7514588ee4f4e8d3e35d7805e174, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Escape tunnel
+      bounds:
+        m_Center: {x: 0, y: 3.4, z: 140}
+        m_Extent: {x: 5.4, y: 3.4, z: 19.5}
+      beds:
+      - {fileID: 11400000, guid: 667f99f63a15f2247b081540f08d806d, type: 2}
+      - {fileID: 11400000, guid: ef07f084568ad424ba8787f0e0590e8a, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}

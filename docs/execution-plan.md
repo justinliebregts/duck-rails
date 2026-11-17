@@ -1,5 +1,11 @@
 # Duck Rails — execution plan
 
+- [x] November 17: implement random bounded ambience excerpts and bake overlaps
+  into 13 background loops. Compilation, 1,236 excerpt/import EditMode checks and
+  PCM boundary checks pass; Console errors zero. See [ambience](ambient-director.md).
+- [ ] Ambience excerpt fades and compressed-loop listening acceptance on headset:
+  queued for playtest under Ambient director.
+
 - [x] November 17: rebake new fortress navigation, redistribute 28 coal/26 gold
   candidates, export current build lighting, implement 60-second bridge hold,
   once-per-run third defender at 30 seconds and control-area navigation objective.
@@ -11,6 +17,13 @@
   accumulated work, bridge completed at exactly 60 s with horizontal deck.
   Invincible test operator; multiplayer, headset and difficulty remain open.
   [Evidence](../output/bridge-finale-live/trace.txt).
+
+- [x] November 16: import 21 approved Artlist WAVs and wire location-aware ambient
+  director into route creation/replay. Seven profiles, streaming beds, quiet
+  event gains and rare randomized scares installed. Compilation and 352 focused
+  EditMode checks pass; Console error query empty. See [ambience](ambient-director.md).
+- [ ] Ambient director listening/loop seams, zone transitions, split-party and
+  late-join/replay behavior, voice clarity and Quest streaming cost are queued for playtest.
 
 - [ ] November 16: validate bridge alarm four-second start spacing, release/re-grab cooldown, completion and spatial listening on real clients/headsets; queued for playtest.
 

@@ -21,6 +21,7 @@ namespace Game.Audio
             public float LoadDeadline;
             public float FadeRemaining, FadeDuration;
             public float FadeInRemaining, FadeInDuration;
+            public AmbienceExcerpt Excerpt;
             public float BaseVolume = 1f;
             // Occlusion: 1 is open air, 0 is fully low-passed. Loudness eases separately so a source
             // just behind a wall stays louder than one deep behind geometry.
@@ -194,7 +195,13 @@ namespace Game.Audio
             => origin != null ? Request(sound, origin.position, loop ? origin : null, owner, loop,
                 ambience: true, fadeIn: loop ? fadeIn : 0f) : default;
 
-        AudioHandle Request(SoundEvent sound, Vector3 position, Transform follow, Behaviour owner, bool loop, float volumeScale = 1f, Transform ignoreOcclusionRoot = null, bool ambience = false, float fadeIn = 0f, float pitchScale = 1f)
+        public AudioHandle PlayAmbienceDetail(SoundEvent sound, Transform origin, Behaviour owner,
+            Vector2 durationRange, float fadeSeconds)
+            => origin != null ? Request(sound, origin.position, null, owner, false,
+                ambience: true, excerptDuration: durationRange, excerptFade: fadeSeconds) : default;
+
+        AudioHandle Request(SoundEvent sound, Vector3 position, Transform follow, Behaviour owner, bool loop, float volumeScale = 1f, Transform ignoreOcclusionRoot = null, bool ambience = false, float fadeIn = 0f, float pitchScale = 1f,
+            Vector2 excerptDuration = default, float excerptFade = 0f)
         {
             if (!isActiveAndEnabled || voices == null || sound == null || (owner != null && !owner.isActiveAndEnabled))
                 return default;
@@ -267,6 +274,9 @@ namespace Game.Audio
             sound.Configure(slot.Source, selection, group, loop);
             slot.Source.volume *= Mathf.Clamp01(volumeScale);
             slot.Source.pitch *= Mathf.Clamp(pitchScale, 0.1f, 3f);
+            slot.Excerpt = AmbienceExcerpt.Select(selection.Clip.length, slot.Source.pitch, excerptDuration, excerptFade);
+            if (slot.Excerpt.Fade > 0f)
+                slot.FadeInDuration = slot.FadeInRemaining = slot.Excerpt.Fade;
             slot.BaseVolume = slot.Source.volume;
             // Start at the sampled mix. Smoothing is for changes during playback, not the first buffer.
             float clear = slot.OcclusionTarget;
@@ -305,8 +315,10 @@ namespace Game.Audio
         void StartIfLoaded(Voice voice)
         {
             if (voice.Started || voice.Source.clip.loadState != AudioDataLoadState.Loaded) return;
+            voice.Source.timeSamples = Mathf.Clamp(Mathf.RoundToInt(voice.Excerpt.Offset * voice.Source.clip.frequency),
+                0, Mathf.Max(0, voice.Source.clip.samples - 1));
             voice.Source.Play();
-            voice.EndDsp = UnityEngine.AudioSettings.dspTime + voice.Source.clip.length / voice.Source.pitch;
+            voice.EndDsp = UnityEngine.AudioSettings.dspTime + voice.Excerpt.Duration;
             voice.Started = true;
         }
 
@@ -492,6 +504,8 @@ namespace Game.Audio
         {
             float fade = voice.FadeDuration > 0f ? Mathf.Clamp01(voice.FadeRemaining / voice.FadeDuration) : 1f;
             if (voice.FadeInDuration > 0f) fade *= 1f - Mathf.Clamp01(voice.FadeInRemaining / voice.FadeInDuration);
+            if (voice.Started && !voice.Loop)
+                fade *= AmbienceExcerpt.TailGain(voice.EndDsp - UnityEngine.AudioSettings.dspTime, voice.Excerpt.Fade);
             if (!occlusion || !voice.Event.UseOcclusion)
             {
                 voice.Source.volume = voice.BaseVolume * fade;

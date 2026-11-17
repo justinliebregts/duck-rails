@@ -1,0 +1,91 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using Game.Audio;
+internal class CommandScript : IRunCommand
+{
+    public void Execute(ExecutionResult result)
+    {
+        if (Application.dataPath != "X:/Work/duck-rails/Assets" || EditorApplication.isPlaying) throw new Exception("Wrong editor");
+        int checks = 0;
+        void Check(bool value, string message) { if (!value) throw new Exception(message); checks++; }
+        var settings = AssetDatabase.LoadAssetAtPath<RailAmbienceSettings>("Assets/Resources/RailAmbienceSettings.asset");
+        Check(settings != null && settings.profiles.Length == 7, "Seven profiles");
+        Check(!EditorUtility.scriptCompilationFailed, "Compilation");
+        Check(settings.scareInterval.x >= 150 && settings.scareInterval.y == 300, "Rare scare intervals");
+        Check(settings.crossfadeSeconds == 3, "Crossfade");
+        var sounds = AssetDatabase.FindAssets("t:SoundEvent", new[]{"Assets/Audio/Events/Ambience"}).Select(g=>AssetDatabase.LoadAssetAtPath<SoundEvent>(AssetDatabase.GUIDToAssetPath(g))).ToArray();
+        Check(sounds.Length == 21, "21 events");
+        var used = new HashSet<SoundEvent>(settings.rareScares);
+        var lines = new List<string>();
+        foreach (var sound in sounds)
+        {
+            var so = new SerializedObject(sound);
+            var clip = so.FindProperty("clips").GetArrayElementAtIndex(0).objectReferenceValue as AudioClip;
+            Check(clip != null && clip.length > 0 && clip.samples > 0, "Clip " + sound.name);
+            var importer = (AudioImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(clip));
+            bool bed = sound.SpatialBlend == 0;
+            Check(importer.forceToMono == !bed, "Channels " + sound.name);
+            Check(importer.loadInBackground && !importer.defaultSampleSettings.preloadAudioData, "Load " + sound.name);
+            foreach (var platform in new[]{"Android","Standalone"})
+            {
+                var sample = importer.GetOverrideSampleSettings(platform);
+                Check(sample.compressionFormat == AudioCompressionFormat.Vorbis && sample.sampleRateOverride == 24000, "Compression " + sound.name);
+                Check(sample.loadType == (bed ? AudioClipLoadType.Streaming : AudioClipLoadType.CompressedInMemory), "Load type " + sound.name);
+            }
+            Check(so.FindProperty("volumeRange").vector2Value.y <= 0.12f, "Quiet mix " + sound.name);
+            lines.Add(sound.name + " seconds=" + clip.length.ToString("F2") + " channels=" + clip.channels + " bed=" + bed);
+        }
+        foreach (var p in settings.profiles)
+        {
+            Check(p.outdoorBeds.Length <= 2 && p.outdoorBeds.All(x=>x!=null), "Bed budget " + p.blockId);
+            foreach(var s in p.outdoorBeds.Concat(p.outdoorDetails)) used.Add(s);
+            foreach(var a in p.areas)
+            {
+                Check(a.bounds.size.x>0 && a.bounds.size.y>0 && a.bounds.size.z>0, "Bounds " + a.name);
+                Check(a.beds.Length <= 2 && a.beds.Concat(a.details).All(x=>x!=null), "Area assets " + a.name);
+                foreach(var s in a.beds.Concat(a.details)) used.Add(s);
+            }
+        }
+        Check(sounds.All(used.Contains), "Every approved recording used");
+        Check(!settings.Find("starting-station-v1").allowScares, "Station scare suppression");
+        Check(settings.Find("midpoint-helipad-v1") == null, "Unrequested midpoint");
+        Check(settings.Find("farm-silos-v1").AreaAt(new Vector3(-27,0,134),null).name == "Cellar", "Cellar priority");
+        Check(settings.Find("farm-silos-v1").AreaAt(new Vector3(-27,5,134),null).name == "Farmhouse", "House");
+        Check(settings.Find("convenience-store-v1").AreaAt(new Vector3(-25,1,76),null).name == "Arcade", "Arcade");
+        Check(settings.Find("bridge-finale-v1").AreaAt(new Vector3(0,-8,100),null).name == "Gorge floor", "River low");
+        Check(settings.Find("bridge-finale-v1").AreaAt(new Vector3(0,1,100),null).name == "Bridge and river banks", "River high");
+        var testProfile = new RailAmbienceProfile { areas = new[]{ new RailAmbienceArea{bounds=new Bounds(Vector3.zero,Vector3.one*10)} } };
+        Check(testProfile.AreaAt(new Vector3(5.2f,0,0),null)==null, "Outside entry");
+        Check(testProfile.AreaAt(new Vector3(5.2f,0,0),testProfile.areas[0])!=null, "Exit hysteresis");
+        Check(testProfile.AreaAt(new Vector3(5.5f,0,0),testProfile.areas[0])==null, "Past hysteresis");
+        var randomState=UnityEngine.Random.state;
+        try {
+            SoundEvent previous=null;
+            for(int i=0;i<100;i++) {
+                var choice=RailAmbientDirector.Choose(settings.rareScares,previous);
+                Check(choice != null && choice != previous,"No immediate scare repeat");
+                previous=choice;
+            }
+            Check(RailAmbientDirector.Choose(null,null)==null,"Null pool");
+            Check(RailAmbientDirector.Choose(new SoundEvent[]{null},null)==null,"Empty pool");
+            Check(RailAmbientDirector.Choose(new[]{sounds[0]},sounds[0])==sounds[0],"Single pool");
+        } finally { UnityEngine.Random.state=randomState; }
+        var go = new GameObject("Temporary ambience checks") {hideFlags=HideFlags.HideAndDontSave};
+        try {
+            var route=go.AddComponent<RailRoute>();
+            var director=go.AddComponent<RailAmbientDirector>();
+            director.Rebuild(route); director.Rebuild(route);
+            Check(go.transform.childCount==1,"Rebuild reuses detail origin");
+            go.transform.position=new Vector3(0,0,470);
+            Check(testProfile.AreaAt(go.transform.InverseTransformPoint(new Vector3(0,0,470)),null)!=null,"Translated area center");
+        } finally { UnityEngine.Object.DestroyImmediate(go); }
+        lines.Insert(0,checks+" EditMode checks passed. No Play Mode or listening acceptance.");
+        Directory.CreateDirectory("docs/validation/ambient-director");
+        File.WriteAllLines("docs/validation/ambient-director/editor-checks.txt",lines);
+        result.Log(lines[0]);
+    }
+}

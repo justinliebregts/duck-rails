@@ -21,10 +21,8 @@
 *.uss text eol=lf
 *.yaml text eol=lf
 *.yml text eol=lf
-
 # Crawl graphs and other raw payloads must never be line-ending normalized.
 *.bytes binary
-
 # Kokoro text assets are checksummed byte-for-byte; checkout must preserve LF.
 Tools/DuckVoiceSource/*.tsv text eol=lf
 *.ogg binary
@@ -32,3 +30,4 @@ Tools/DuckVoiceSource/*.tsv text eol=lf
 *.exr binary
 # Unity bake data is binary even when scene/mesh assets use text serialization.
 **/LightingData.asset binary
+Assets/Audio/Ambience/*.wav filter=lfs diff=lfs merge=lfs -text

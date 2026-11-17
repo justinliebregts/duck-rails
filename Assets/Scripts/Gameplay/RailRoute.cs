@@ -179,6 +179,8 @@ public sealed class RailRoute : MonoBehaviour
         {
             var visibility = GetComponent<RailBlockVisibility>() ?? gameObject.AddComponent<RailBlockVisibility>();
             visibility.Rebuild(this);
+            var ambience = GetComponent<RailAmbientDirector>() ?? gameObject.AddComponent<RailAmbientDirector>();
+            ambience.Rebuild(this);
             if (GetComponent<RailPlayerBounds>() == null) gameObject.AddComponent<RailPlayerBounds>();
         }
     }
