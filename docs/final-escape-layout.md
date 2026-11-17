@@ -292,3 +292,15 @@ User feedback on the blockout: more overhangs and pillars, the north-east corner
 - **Not undercut:** the +2 terraces stay solid because 1.5 m of clearance is not walkable.
 - **Evidence:** `RailFinaleFortArtPass.Check()` 267 passed, 0 failed (train envelope, 20 coal / 18 gold fort markers, both tower enemy markers, eight stairs, catwalk, button, deposit). Fort 18,566 triangles in 33 renderers; block 61,698 mesh triangles. Review captures: `output/finale-fort-art-pass/r3-*.png`.
 - **Still outstanding:** navigation rebake, lighting rebake and Install Finale Lighting (the fort is not lightmapped), stale older finale checks, user review, headset performance of the higher triangle count. Queued for playtest; not verified.
+
+## Far side basic art pass — tunnel, hills and trees (November 16, 2026)
+
+User request: a basic pass on the tunnel after the bridge, the hills and the trees; the hills were too high-polygon and the trees too basic. Layout is unchanged from the endorsed V5 full-route plan. Built by `Assets/Editor/RailFinaleFarSideArtPass.cs`, a partial of the fort builder, so `RailFinaleFortArtPass.Apply()` rebuilds both; new geometry lives under `Env/Fort architecture v2` in the `Tunnel` and `Happy Land` regions.
+
+- **Hills:** the 8,686-triangle valley mesh is replaced by a 590-triangle faceted mesh (also its collider): a jittered 9–10 m grid on the side hills and far ridge, large flat floor pieces, and a finer strip only along the stream bed. Same footprint (flat inside |x| 27, far ridge from Z320); the side hills now have distinct lobes. Stream water plane, cottages, cliffs and track are untouched.
+- **Trees:** 32 box-trunk trees replaced by 53: broadleaf and blossom trees with tapered leaning trunks and three faceted foliage lumps, an eight-tree orchard, and conifers on the hill shoulders, far ridge and tunnel ridge (seated by raycast on the existing cliff colliders). All trees are merged into three meshes (trunks, green, pink). Trunks have box colliders.
+- **Flowers:** the 114 separate cubes are merged into the leaf and blossom meshes.
+- **Tunnel:** stone arch portals at both ends (plinths, coursed jambs, haunches, keystone with a lamp lens) replace the concrete piers and lintels; inside, chamfered haunches and five stone ribs with small lamp lenses. Interior pieces are visual only. The original tunnel walls, roof and cliffs are kept.
+- **Counts:** far-side art went from about 12,000 triangles in 185 renderers to 8,326 triangles in 9 renderers. Block renderers 1,656 → 1,479; lighting bindings pruned to 1,279.
+- **Evidence:** `RailFinaleFortArtPass.Check()` 272 passed, 0 failed, including a clear train envelope through the tunnel and solid valley ground at five sample points. Captures: `output/finale-fort-art-pass/far-*.png` (flat review lighting; distant terrain looks black in them because of the open scene's fog).
+- **Still outstanding:** lighting rebake and install (the new far side is not lightmapped), crawlgraph rebake, ride-through on headset. Queued for playtest; not verified.

@@ -46,6 +46,8 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ### Finale fort architecture blockout — queued 2026-11-16
 
 Revision 3 (same day): Starting Station materials, north-east deck on pillars with a yard stair and bridge, west loggia and arcade, climb blocks removed. Also check frame rate on headset: the fort rose from about 6,700 to 18,566 triangles. See `docs/final-escape-layout.md`, revision 3.
+
+Far side pass (same day): low-poly hills, new trees, tunnel arch portals and ribs. Ride the full route through the tunnel into Happy Land and check that nothing clips the train, the valley edges stay hidden, and the new trees and hills read well at dawn lighting. See the far side section of the same document.
 - Commit(s): uncommitted
 - Changed: fort rebuilt to layout v2 (asymmetric keep/depot, stairs, new towers, moved floodlights and east tower defender, re-seated fort loot markers). Blockout only.
 - Setup: BLOCKED until navigation and lighting are rebaked for bridge-finale-v1 (see final-escape-layout.md, Blockout installed). Then: finale via Test Center / route to the bridge, single client first, then multi-client.

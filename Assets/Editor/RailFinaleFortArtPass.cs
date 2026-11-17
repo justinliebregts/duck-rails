@@ -17,7 +17,7 @@ using Object = UnityEngine.Object;
 // Surfaces use the Starting Station / Compound recipe: Quackville atlas tiles through the shared depot
 // materials, a painted dado below plaster, and noise-driven patches of exposed brick.
 // Navigation and lighting must be rebaked afterwards.
-public static class RailFinaleFortArtPass
+public static partial class RailFinaleFortArtPass
 {
     public const string PrefabPath = "Assets/DuckRails/Blocks/bridge-finale-v1.prefab";
     public const string Folder = "Assets/DuckRails/FinaleFort/ArtPass";
@@ -461,6 +461,8 @@ public static class RailFinaleFortArtPass
         M("plaster", depot + "Stained plaster.mat"); M("paint", depot + "Faded olive paint.mat"); M("brick", depot + "Exposed brick.mat"); M("concrete", depot + "Worn concrete.mat");
         M("steel", depot + "Oxidized steel.mat"); M("roof", depot + "Dark roofing.mat"); M("yellow", depot + "Worn yellow.mat"); M("asphalt", depot + "Ground asphalt.mat");
         mats["rail yellow"] = mats["yellow"]; mats["rail steel"] = mats["steel"];
+        const string fort = "Assets/DuckRails/FinaleFort/";
+        M("grass", fort + "Dawn grass.mat"); M("leaf", fort + "Leaf green.mat"); M("blossom", fort + "Blossom pink.mat"); M("timber", fort + "Timber.mat"); M("rock", fort + "Ridge rock.mat");
         M("lamp", "Assets/DuckRails/Compound/LightingSample/Emissive work-light lens.mat");
         var log = new StringBuilder(); var root = PrefabUtility.LoadPrefabContents(PrefabPath);
         try
@@ -484,6 +486,7 @@ public static class RailFinaleFortArtPass
             foreach (var t in polish.Cast<Transform>().ToArray())
                 if (t.name.StartsWith("South inward ramp") || t.name.StartsWith("Middle ramp") || t.name.StartsWith("Upper short ramp") || t.name == "North bastion climb block")
                 { removed.TryGetValue(t.name, out int c); removed[t.name] = c + 1; Object.DestroyImmediate(t.gameObject); }
+            RemoveFarSide(art, polish, removed);
             log.AppendLine("Removed: " + (removed.Count == 0 ? "nothing" : string.Join("; ", removed.Select(k => k.Key + " x" + k.Value))));
             // The runtime loader rejects a block whose baked bindings point at destroyed renderers, so drop those
             // entries. Surviving geometry keeps its lightmaps; the new fort is unlit by lightmaps until the rebake.
@@ -495,7 +498,7 @@ public static class RailFinaleFortArtPass
             }
 
             group = new GameObject(GroupName).transform; group.SetParent(env, false);
-            Perimeter(); WestKeep(); EastDepot(); Centre();
+            Perimeter(); WestKeep(); EastDepot(); Centre(); FarSide(root.transform, log);
             int tris = 0;
             foreach (var kv in vis)
             {
@@ -580,6 +583,14 @@ public static class RailFinaleFortArtPass
                     last = h.point.y;
                 }
                 Assert(ok && Mathf.Abs(last - s.Item6) < .05f, $"stair at ({s.Item1},{s.Item2}) climbs smoothly to +{s.Item6}");
+            }
+            // Far side: the tunnel bore is clear of the new portals and ribs, and the valley floor is solid.
+            n = phys.OverlapBox(new Vector3(0, 3.25f, 140), new Vector3(4.4f, 3.05f, 22), hits, Quaternion.identity, ~0, QueryTriggerInteraction.Ignore);
+            for (int i = 0; i < n; i++) Assert(!hits[i].transform.IsChildOf(fort), "tunnel envelope is clear of " + hits[i].name);
+            foreach (var q in new[] { new Vector3(-15, 0, 200), new Vector3(15, 0, 300), new Vector3(-45, 0, 250), new Vector3(0, 0, 350), new Vector3(17 + 4 * Mathf.Sin(230 * .09f), 0, 230) })
+            {
+                bool hit = phys.Raycast(new Vector3(q.x, 60, q.z), Vector3.down, out var gh, 80, 1 << 6, QueryTriggerInteraction.Ignore);
+                Assert(hit && gh.collider.transform.IsChildOf(fort), $"valley ground is solid at ({q.x:F0}, {q.z:F0})" + (hit ? " hit " + gh.collider.name + " y " + gh.point.y.ToString("F2") : ""));
             }
             // Catwalk, button and deposit are where they were.
             var button = root.transform.Find("Env/Lower bridge button"); Assert(button && Mathf.Abs(button.localPosition.x) < 2 && button.localPosition.z > 69.5f && button.localPosition.z < 72 && button.localPosition.y > 8, "bridge button is on the balcony at " + (button ? button.localPosition.ToString() : "?"));
