@@ -69,6 +69,10 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 ## Pending
 
 ### Admin pause page — queued 2026-11-17
+- Layout correction: original four tab positions/scales restored exactly; Test
+  sits separately to the right. Check headset reach and unchanged original row
+  for both admin and non-admin accounts. Serialized transform comparison passed;
+  Unity refresh succeeded, but offscreen preview did not return.
 - Commit(s): uncommitted.
 - Changed: admin-only Test tab inside pause menu, exactly Deposit 1 coal,
   Deposit 50 coal, No Clip and Invincibility. Removed L3 and separate test UI.

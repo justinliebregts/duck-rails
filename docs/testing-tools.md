@@ -114,6 +114,11 @@ admin account is required for this Editor shortcut. Typing/loading suppresses
 it, and both the binding and handler are excluded from player builds.
 The existing one-unit editor fixture action is retained.
 
+November 17 layout correction: restore the original four tabs to their exact
+positions and scales. Test sits separately to their right; admin visibility
+does not rearrange the original row. Serialized transforms match the original prefab; Unity refresh succeeded,
+but the offscreen preview did not return. Headset reach remains queued for playtest.
+
 Current entry point: normal pause menu (Start/P) > **Test**, visible only when
 the signed-in account's PlayerSession.IsAdmin is true, including in the Editor
 and release builds. Exactly four CutePixel buttons:
