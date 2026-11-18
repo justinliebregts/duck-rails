@@ -63,10 +63,62 @@ public class SettingsMenu : MonoBehaviour
         audioPage = audio != null ? audio.gameObject : null;
         controlsPage = controls != null ? controls.gameObject : null;
 
+        Transform submit = transform.Find("SubmitBug");
+        if (submit != null) {
+            submitBugButton = submit.GetComponent<PauseMenuButton>();
+            if (submitBugButton != null) {
+                submitBugButton.momentary = true;
+                submitBugButton.pressedIn.AddListener(OnSubmitBug);
+            }
+        }
+        Transform status = transform.Find("SubmitBugStatus");
+        submitBugStatus = status != null ? status.GetComponent<TMP_Text>() : null;
+        RailDiagnostics.ReportUploaded += OnReportUploaded;
+
         UserPlayerPrefs.UserReady += OnUserReady;
     }
 
+    PauseMenuButton submitBugButton;
+    TMP_Text submitBugStatus;
+    string submitBugPendingId;
+    float submitBugStatusUntil;
+
+    // Available to every player (not admin-gated). The report is uploaded under the signed-in account.
+    void OnSubmitBug() {
+        RailDiagnostics diagnostics = RailDiagnostics.Instance;
+        if (diagnostics == null)
+            return;
+        if (diagnostics.ManualCooldownRemaining > 0f) {
+            ShowSubmitBugStatus("Too soon!", 3f);
+            return;
+        }
+
+        diagnostics.ReportBug();
+        submitBugPendingId = diagnostics.LastReportId;
+        ShowSubmitBugStatus("", 0f);
+    }
+
+    void OnReportUploaded(string id) {
+        if (string.IsNullOrEmpty(submitBugPendingId) || id != submitBugPendingId)
+            return;
+        submitBugPendingId = null;
+        ShowSubmitBugStatus("Thank you!", 5f);
+    }
+
+    void ShowSubmitBugStatus(string text, float seconds) {
+        submitBugStatusUntil = seconds > 0f ? Time.unscaledTime + seconds : 0f;
+        if (submitBugStatus != null)
+            submitBugStatus.text = text;
+    }
+
+    void Update() {
+        if (submitBugStatusUntil > 0f && Time.unscaledTime >= submitBugStatusUntil)
+            ShowSubmitBugStatus("", 0f);
+    }
+
     void OnEnable() {
+        if (submitBugStatusUntil <= Time.unscaledTime)
+            ShowSubmitBugStatus("", 0f);
         ShowNamed(pageButtons, "Audio");
         ReadPrefs();
         ShowPage("Audio");
@@ -74,6 +126,7 @@ public class SettingsMenu : MonoBehaviour
     }
 
     void OnDestroy() {
+        RailDiagnostics.ReportUploaded -= OnReportUploaded;
         UserPlayerPrefs.UserReady -= OnUserReady;
     }
 

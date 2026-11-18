@@ -1,5 +1,16 @@
 # Playtest queue
 
+## Settings Submit Bug button — queued 2026-11-18
+
+- Changed: pause menu Settings screen has a **Submit Bug** button (top right) that
+  saves/uploads a manual diagnostic report for any player (not admin-gated).
+  Backend (`duck-rails-web` diagnostics router) now returns `reporter` to admins;
+  needs an API redeploy before reports show the user ID.
+- Editor evidence: compiles; prefab reloads with `SubmitBug`; Go router tests pass.
+- Check: in a headset, open Settings, poke Submit Bug on both pages (feel, label
+  shows "Thank you!" after upload; second press within 30 s shows "Too soon!"). With a non-admin account confirm the report
+  uploads. After redeploy, confirm an admin download includes `reporter`.
+
 ## Remove time-alive counter from name badges — queued 2026-11-17
 
 - Changed: removed the Duckz time-alive counter. `PhotonPlayer` no longer keeps an

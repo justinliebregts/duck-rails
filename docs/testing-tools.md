@@ -398,3 +398,11 @@ Use **Duck Rails → Authoring → Rebake Full Playable Navigation**, or `RailFu
 
 Saved reload passed for 17 graphs, 880 connected marker prefabs and all 295 enemy positions within bounds and within 0.8 m of ground navigation. All graphs combine successfully (500,530 nodes). Route-order, catalogue-lighting and bridge editor checks passed, including the Expedition scene's bridge-hinge reference. Convenience Store retains its 244 current marker names, poses, icons, component settings and pool order; its original geometry IDs/properties are preserved. An initial temporary-instance save regenerated IDs; these were restored before final verification. No scene or lighting rebake was saved. Evidence: [full-area bake results](validation/full-area-navigation.txt). Expanded-area pursuit, balance and headset/multiplayer performance remain unverified.
 
+
+## Settings "Submit Bug" button — November 18, 2026
+
+The pause menu's Settings screen has a **Submit Bug** button (top right of the screen, visible on both Audio and Controls pages). It is available to every player, not admin-gated: it calls `RailDiagnostics.ReportBug()` (30 s cooldown), which saves a normal manual report and uploads it through the existing signed-in `POST /diagnostics/report` path (retried every 30 s). Pressing within 30 s of the last report shows "Too soon!" under the button; "Thank you!" appears there only once that report's upload is acknowledged (`RailDiagnostics.ReportUploaded`). Wiring is in `SettingsMenu.cs`; the button and `SubmitBugStatus` text are in `PauseMenu.prefab`.
+
+User ID: the backend already records the authenticated account (`reporter`, the session composed ID) on every upload; the client payload deliberately contains no account IDs. The admin list/download endpoints previously hid that column. `duck-rails-web` `router/diagnostics.go` now returns `reporter` to admins (requires an API redeploy). Until deployed, reports upload fine but show no reporter.
+
+Validation: Unity compile and prefab reload pass; Go diagnostic router tests pass. Button feel, upload from a non-admin account and the redeployed reporter field are unverified (queued).

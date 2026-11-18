@@ -205,9 +205,14 @@ public sealed class RailDiagnostics : MonoBehaviour
     {
         if (violations.Observe(key, Time.unscaledTime, grace)) Capture(key, summary);
     }
+    public const float ManualCooldown = 30f;
+    /// <summary>Raised with the report ID when a report upload is acknowledged by the backend.</summary>
+    public static event Action<string> ReportUploaded;
+    public string LastReportId { get; private set; }
+    public float ManualCooldownRemaining => Mathf.Max(0f, lastManual + ManualCooldown - Time.unscaledTime);
     public string ReportBug()
     {
-        if (Time.unscaledTime - lastManual < 5) return Notice;
+        if (ManualCooldownRemaining > 0f) return Notice;
         lastManual = Time.unscaledTime; return Capture("manual", "Player pressed Report bug");
     }
     public string Capture(string category, string summary)
@@ -226,7 +231,7 @@ public sealed class RailDiagnostics : MonoBehaviour
             Directory.CreateDirectory(Folder);
             // Never silently delete pending evidence to make room.
             if (Directory.GetFiles(Folder, "*.json").Length >= 200) return Notice = "Report storage full; export or resolve reports in Test Center";
-            Write(report); SessionReports++; nextUpload = 0;
+            Write(report); LastReportId = report.id; SessionReports++; nextUpload = 0;
             RailDiagnosticPanel.Instance?.Notify("Issue saved " + report.id.Substring(0, 8) + "\nOpen the left menu for details");
             return Notice = "Saved " + report.id.Substring(0, 8) + " · upload pending";
         }
@@ -262,7 +267,7 @@ public sealed class RailDiagnostics : MonoBehaviour
                 var payload = UploadPayload(report);
                 yield return DuckzApiClient.PostSigned<object>("diagnostics/report", payload, r => ok = r.Success);
                 if (!ok) { Notice = "Reports saved locally · upload will retry"; yield break; }
-                report.uploaded = true;
+                report.uploaded = true; ReportUploaded?.Invoke(report.id);
                 try { Write(report); Notice = "Uploaded " + report.id.Substring(0, 8); }
                 catch (Exception) { Notice = "Uploaded; local receipt could not be saved"; }
             }
