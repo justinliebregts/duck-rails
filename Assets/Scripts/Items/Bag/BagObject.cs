@@ -177,6 +177,8 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
             droppedAt = Now;
         ApplyPhysics();
         DuckzLog.Log($"[Bag] Spawned bag {bagId}, view {photonView.ViewID} ({slots.Count} slots) for actor {requester}, target {requestedTarget}: [{string.Join(", ", Keys())}]", this);
+        if (requester != 0 && requester == LocalActor)
+            BagInventory.Trace("spawned for me, target " + requestedTarget + ": " + BagInventory.Describe(this));
     }
 
     void UseLook()
@@ -563,6 +565,7 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
             orphaned = false;
             if (PhotonSession.IsRailsRoom && state != BagState.Dropped)
             {
+                BagInventory.Trace("holder #" + holderActor + " left; returning to room " + BagInventory.Describe(this));
                 // Expedition equipment remains a shared room object when its wearer leaves.
                 DropLocal(Vector3.zero);
                 PhotonHeldItems.ReturnToRoom(photonView);

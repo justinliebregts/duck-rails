@@ -1,5 +1,26 @@
 # Playtest queue
 
+## Phantom coal in worn backpack diagnostics — queued 2026-11-18
+
+- Reported: a player's backpack held 4 coal on the first block of a fresh run without
+  collecting any, and after a disconnect/rejoin he had 4 coal again after removing them.
+  Suspect (unconfirmed): the worn-bag disk save `bag.back` keeps coal from an earlier
+  session and `BagInventory.TryRestore` re-spawns it; the rejoin case may also come from a
+  stale save left when the back bag was lost without being taken off. No design change
+  until a report confirms it.
+- Changed: diagnostics only, no behaviour change. `bag: ...` lines in the `RailDiagnostics`
+  event list: restore check (context + disk save contents, whether it was saved in this
+  room), restore decision (reattached recovered / already wearing / room copy exists /
+  spawning from disk with keys), every save write/clear with reason (wore, took off back,
+  contents changed, debug), back bag lost or destroyed without clearing the save, downing
+  clearing the save, bag spawned for me, room recovery applied to my bag, and (on the host)
+  holder left so the bag returned to the room. Actor numbers, view IDs and the last 6 chars
+  of run/recovery IDs only.
+- Editor evidence: compiles, Console clean. No Play Mode run.
+- Check: when a bag shows coal you never collected, submit a bug report right away (the
+  event list keeps about 60 recent events). For the rejoin case submit right after
+  rejoining; a report from the host also helps. Queued for playtest; not verified.
+
 ## Login backdrop blocks use their baked lighting — queued 2026-11-18
 
 - Bug: the motel, skyscraper and convenience-store backdrops in `Login.unity` rendered

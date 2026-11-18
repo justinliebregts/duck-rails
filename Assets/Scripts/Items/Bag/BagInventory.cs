@@ -172,16 +172,41 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         return fallback != null ? fallback.transform : transform;
     }
 
+    // ---------- Diagnostics ----------
+
+    // Worn-bag save/restore trace for submitted reports (RailDiagnostics events). Actor numbers,
+    // view IDs and shortened recovery identities only; never user IDs, nicknames or room names.
+    internal static void Trace(string message) => RailDiagnostics.Instance?.Event("bag: " + message);
+    internal static string ShortId(string identity) =>
+        string.IsNullOrEmpty(identity) ? "-" : identity.Length <= 6 ? identity : identity.Substring(identity.Length - 6);
+    internal static string Describe(BagObject bag) => bag == null ? "none" :
+        "bag " + bag.BagId + " view " + (bag.photonView != null ? bag.photonView.ViewID : 0) + " id " + ShortId(bag.RecoveryIdentity) +
+        " state " + bag.State + " holder #" + bag.HolderActor + " [" + string.Join(",", bag.Keys()) + "]";
+    static string Context() => "actor #" + BagObject.LocalActor + " run " + ShortId(PhotonSession.RunId) +
+        " onTrain " + PhotonSession.OnTrain + " rails " + PhotonSession.IsRailsRoom;
+    static string SavedSummary()
+    {
+        string saved = UserPlayerPrefs.GetString(SaveKey, "");
+        if (string.IsNullOrEmpty(saved)) return "disk save: none";
+        string room = UserPlayerPrefs.GetString(SaveKey + ".room", "");
+        return "disk save: '" + saved + "' sameRoom " + (PhotonNetwork.CurrentRoom != null && room == PhotonNetwork.CurrentRoom.Name) +
+            " id " + ShortId(UserPlayerPrefs.GetString(SaveKey + ".identity", ""));
+    }
+
     // ---------- Save ----------
 
-    void SaveBack()
+    void SaveBack(string why)
     {
         if (!UserPlayerPrefs.IsReady)
+        {
+            Trace("save skipped (" + why + "): user prefs not ready");
             return;
+        }
         if (backBag == null)
         {
             UserPlayerPrefs.DeleteKey(SaveKey);
             DuckzLog.Log("[Bag] Back is empty; nothing saved");
+            Trace("save cleared (" + why + ") " + Context());
         }
         else
         {
@@ -190,6 +215,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
             UserPlayerPrefs.SetString(SaveKey + ".room", PhotonNetwork.CurrentRoom?.Name ?? "");
             UserPlayerPrefs.SetString(SaveKey + ".identity", backBag.RecoveryIdentity ?? "");
             DuckzLog.Log($"[Bag] Saved bag {backBag.BagId} on back: [{string.Join(", ", keys)}]");
+            Trace("save written (" + why + ") " + Describe(backBag) + " " + Context());
         }
         UserPlayerPrefs.Save();
     }
@@ -224,11 +250,18 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         if (!UserPlayerPrefs.IsReady)
             return;
         restoreRequested = true;
+        Trace("restore check " + Context() + "; back " + Describe(backBag) + "; " + SavedSummary());
         foreach (var bag in BagObject.Active)
             if (bag != null && bag.State == BagState.Stowed && bag.HolderActor == BagObject.LocalActor)
+            {
+                Trace("restore found recovered worn bag " + Describe(bag));
                 ReattachRecoveredBack(bag);
+            }
         if (backBag != null)
+        {
+            Trace("restore skipped: already wearing " + Describe(backBag));
             return;
+        }
 
         string saved = UserPlayerPrefs.GetString(SaveKey, "");
         if (string.IsNullOrEmpty(saved))
@@ -236,7 +269,11 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         // The room copy may have been picked up by somebody else while we were away.
         // Never mint a second copy from an older disk save in that room.
         if (RoomObjectRecovery.Exists(UserPlayerPrefs.GetString(SaveKey + ".room", ""),
-            UserPlayerPrefs.GetString(SaveKey + ".identity", ""))) return;
+            UserPlayerPrefs.GetString(SaveKey + ".identity", "")))
+        {
+            Trace("restore skipped: room still has the saved bag's recovered copy");
+            return;
+        }
         string[] parts = saved.Split(SaveSeparator);
         if (!byte.TryParse(parts[0], out byte bagId) || bagId == 0)
         {
@@ -251,6 +288,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         var keys = new string[parts.Length - 1];
         System.Array.Copy(parts, 1, keys, 0, keys.Length);
         DuckzLog.Log($"[Bag] Restoring saved bag {bagId} onto back: [{string.Join(", ", keys)}]");
+        Trace("restore spawning bag " + bagId + " from disk [" + string.Join(",", keys) + "] " + Context());
         Transform anchor = chest != null ? chest : stowAnchor;
         // Compound lifetime tagging keeps the restored bag out of expedition-leftover cleanup.
         RoomRpc.SpawnBag(bagId, keys, anchor.position, anchor.rotation, BagObject.Target.Back,
@@ -271,7 +309,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
             {
                 BagObject old = backBag;
                 debugWornId = 0;
-                SetBackBag(null, true);
+                SetBackBag(null, true, "debug bag none");
                 DestroyBag(old);
             }
             return;
@@ -292,7 +330,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         if (backBag != null)
         {
             BagObject old = backBag;
-            SetBackBag(null, true);
+            SetBackBag(null, true, "debug bag replace");
             DestroyBag(old);
         }
 
@@ -377,7 +415,15 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         if (leftBag != null && (!leftBag.CanControl || leftBag.State != BagState.Held)) leftBag = null;
         if (rightBag != null && (!rightBag.CanControl || rightBag.State != BagState.Held)) rightBag = null;
         if (backBag != null && (backBag.State != BagState.Stowed || backBag.HolderActor != BagObject.LocalActor))
+        {
+            Trace("back bag lost without clearing save: " + Describe(backBag) + " " + Context());
             SetBackBag(null, false);
+        }
+        else if (!ReferenceEquals(backBag, null) && backBag == null)
+        {
+            Trace("back bag destroyed without clearing save " + Context());
+            SetBackBag(null, false);
+        }
     }
 
     static bool HandActive(PlayerHand hand) => hand != null && hand.isActiveAndEnabled;
@@ -500,7 +546,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
     {
         if (!bag.CanInteract) return;
         if (bag == backBag)
-            SetBackBag(null, true);
+            SetBackBag(null, true, "took off back");
         if (bag == leftBag) leftBag = null;
         if (bag == rightBag) rightBag = null;
         SetHandBag(hand, bag);
@@ -512,7 +558,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         if (!bag.CanInteract) return;
         Transform anchor = chest != null ? chest : stowAnchor;
         bag.StowLocal(anchor, chest != null);
-        SetBackBag(bag, true);
+        SetBackBag(bag, true, "wore");
     }
 
     void DropFromHand(PlayerHand hand, BagObject bag)
@@ -521,7 +567,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         bag.DropLocal(Vector3.zero);
     }
 
-    void SetBackBag(BagObject bag, bool save)
+    void SetBackBag(BagObject bag, bool save, string why = "set back")
     {
         if (backBag != null)
             backBag.ContentsChanged -= OnBackContentsChanged;
@@ -529,7 +575,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         if (backBag != null)
             backBag.ContentsChanged += OnBackContentsChanged;
         if (save)
-            SaveBack();
+            SaveBack(why);
     }
 
     internal void ReattachRecoveredBack(BagObject bag)
@@ -539,13 +585,13 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         Transform anchor = chest != null ? chest : stowAnchor;
         if (anchor == null) return;
         bag.ReattachBack(anchor, chest != null);
-        if (backBag != bag) SetBackBag(bag, false);
+        if (backBag != bag) { Trace("reattached recovered worn bag " + Describe(bag)); SetBackBag(bag, false); }
     }
 
     void OnBackContentsChanged(BagObject bag)
     {
         if (bag == backBag)
-            SaveBack();
+            SaveBack("contents changed");
     }
 
     /// <summary>Rails downing uses Duckz's bag death cleanup without invoking player death.</summary>
@@ -583,6 +629,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
             if (bag.CanControl && bag.HolderActor == BagObject.LocalActor && bag.State != BagState.Dropped)
                 bag.DropLocal(Vector3.zero);
         }
+        Trace("downed: dropped bags, save cleared");
         if (UserPlayerPrefs.IsReady)
         {
             UserPlayerPrefs.DeleteKey(SaveKey);
