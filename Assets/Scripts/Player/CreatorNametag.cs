@@ -28,10 +28,8 @@ public class CreatorNametag : MonoBehaviour
     TMP_Text label;
     TextEffect textEffect;
     GameObject badge;
-    TMP_Text timeAlive;
     bool localPlate;
     bool shineActive;
-    int shownTimeAlive = int.MinValue;
     string appliedBadge = "\0";
     string appliedNametag = "\0";
 
@@ -56,12 +54,8 @@ public class CreatorNametag : MonoBehaviour
         if (text == null || name.GetComponent<CreatorNametag>() != null)
             return;
 
-        Transform time = chest.Find("TimeAlive");
-        TMP_Text timeLabel = time != null ? time.GetComponent<TMP_Text>() : null;
-
         CreatorNametag plate = name.gameObject.AddComponent<CreatorNametag>();
         plate.label = text;
-        plate.timeAlive = timeLabel;
         plate.localPlate = true;
         plate.RefreshLocalReadout();
         plate.ApplyCurrent();
@@ -93,15 +87,6 @@ public class CreatorNametag : MonoBehaviour
             if (label.text != displayName)
                 label.text = displayName;
         }
-
-        if (timeAlive == null)
-            return;
-        PhotonPlayer local = PhotonPlayer.Local;
-        int seconds = local != null ? local.TimeAliveSeconds : 0;
-        if (seconds == shownTimeAlive)
-            return;
-        shownTimeAlive = seconds;
-        timeAlive.text = seconds.ToString();
     }
 
     void ApplyCurrent()

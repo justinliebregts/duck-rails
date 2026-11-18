@@ -1,5 +1,19 @@
 # Playtest queue
 
+## Remove time-alive counter from name badges — queued 2026-11-17
+
+- Changed: removed the Duckz time-alive counter. `PhotonPlayer` no longer keeps an
+  alive clock, `TimeAliveSeconds`, `timeAliveLabel`, or the extra int in the pose
+  stream (living packet is now pose + dead flag; dead adds impact/rotation).
+  `CreatorNametag` no longer binds a local `TimeAlive` label. The `TimeAlive` text
+  object is gone from `PhotonPlayer`, `DuckPlayer` and `DesktopPlayer` prefabs and
+  from `StartingStationProof`. `PhotonAvatarRecoveryChecks` updated to match.
+- Editor evidence: compiles; the three prefabs load with no `TimeAlive` child.
+  Batch-mode `PhotonAvatarRecoveryChecks` not run.
+- Check: with two or more clients, remote name badges show only the name (no
+  counting number under it), poses and death/respawn still sync, and mixed old/new
+  builds are not expected to interoperate (wire format changed).
+
 ## Corn rustle variations — queued 2026-11-17
 
 - Changed: the Farm corn rustle now uses a new `Foliage_CornRustle` SoundEvent

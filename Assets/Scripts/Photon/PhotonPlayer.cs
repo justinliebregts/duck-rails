@@ -15,7 +15,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     [SerializeField] RemotePlayerBody body;  // remote render only
     [SerializeField] FingerRig fingers;
     [SerializeField] TMP_Text nameLabel;
-    [SerializeField] TMP_Text timeAliveLabel;
     [Tooltip("Minimum remote playback delay. Late packets increase it for this avatar only.")]
     [SerializeField] float interpolationDelay = 0.18f;
     [SerializeField] GameObject deathBloodPrefab;
@@ -54,11 +53,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     LocalBodyDriver _fingerSource;
     BodyPose _lastPose;
     bool _hasPose;
-    double _aliveSince;
-    int _timeAliveSeconds;
-    int _shownTimeAlive = int.MinValue;
-    bool _wasDead;
-    bool _ownerClockStarted;
     [HideInInspector] public AudioSource _voiceSource;
 
     public GameObject helmetAnchor;
@@ -87,8 +81,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     public bool IsLocalHuman => !IsCompanion && photonView != null && photonView.Owner != null && photonView.Owner.IsLocal;
     public float MinHitSpeed => minHitSpeed;
     public bool SwingLocked => Time.time < _swingLockUntil;
-
-    public int TimeAliveSeconds => _timeAliveSeconds;
 
     /// <summary>Local owner follows <see cref="GR.Player.IsDead"/>; remotes receive it over the pose stream.</summary>
     public bool IsDead => Companion != null ? Companion.IsDead : photonView != null && photonView.IsMine
@@ -223,7 +215,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         Active.Remove(this);
         ResetPoseBuffer(false);
         _hasPose = false;
-        _ownerClockStarted = false;
     }
 
     void OnDestroy()
@@ -352,9 +343,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
             }
         }
 
-        if (timeAliveLabel != null && IsLocalHuman)
-            timeAliveLabel.gameObject.SetActive(false);
-
         if (IsLocalHuman)
         {
             PlayerProps.PushCosmetics();
@@ -369,53 +357,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         }
 
         GameManager.instance.AddPhotonPlayer(this);
-    }
-
-    void Update()
-    {
-        if (photonView == null || !photonView.IsMine)
-        {
-            _ownerClockStarted = false;
-            return;
-        }
-
-        UpdateAliveClock(IsDead, Time.realtimeSinceStartupAsDouble);
-    }
-
-    void UpdateAliveClock(bool dead, double now)
-    {
-        if (!_ownerClockStarted)
-        {
-            _ownerClockStarted = true;
-            _wasDead = dead;
-            if (!dead)
-                // Resume from the received lifetime if companion authority changes.
-                _aliveSince = now - _timeAliveSeconds;
-            ApplyTimeAliveSeconds(_timeAliveSeconds);
-            return;
-        }
-
-        if (_wasDead && !dead)
-        {
-            _aliveSince = now;
-            ApplyTimeAliveSeconds(0);
-        }
-        else if (!dead)
-            // Lifetime is elapsed real time, independent of network clock corrections,
-            // server changes, timestamp wrap and gameplay timeScale.
-            ApplyTimeAliveSeconds((int)System.Math.Clamp(now - _aliveSince, 0d, int.MaxValue));
-
-        _wasDead = dead;
-    }
-
-    void ApplyTimeAliveSeconds(int seconds)
-    {
-        _timeAliveSeconds = seconds;
-        if (seconds == _shownTimeAlive)
-            return;
-        _shownTimeAlive = seconds;
-        if (timeAliveLabel != null)
-            timeAliveLabel.text = seconds.ToString();
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -467,7 +408,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
                 stream.SendNext(!IsCompanion && GR.Player.instance != null
                     ? GR.Player.instance.DeathRotationState : NoDeathImpact);
             }
-            stream.SendNext(_timeAliveSeconds);
             if (Companion != null) Companion.Serialize(stream);
             return;
         }
@@ -484,7 +424,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         bool dead = (bool)stream.ReceiveNext();
         Vector3 deathImpact = dead ? (Vector3)stream.ReceiveNext() : Vector3.zero;
         Vector3 deathRotation = dead ? (Vector3)stream.ReceiveNext() : Vector3.zero;
-        int aliveSeconds = (int)stream.ReceiveNext();
         BodyPose pose = pkt.ToBodyPose();
         if (!ValidPose(pose) || !ValidVector(deathImpact) || !ValidVector(deathRotation))
             return;
@@ -506,7 +445,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
             _hitchRecoveryPending = true;
         bool wasDead = _remoteDead;
         _remoteDead = dead;
-        ApplyTimeAliveSeconds(Mathf.Max(0, aliveSeconds));
         // Measure the motion before the buffer is cleared, so the corpse keeps it.
         RagdollLaunch launch = !wasDead && _remoteDead ? RecentLaunch() : default;
         launch.impact = deathImpact;
