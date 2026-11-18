@@ -96,7 +96,7 @@ public class KillTrigger : MonoBehaviour
                 victimPosition = GR.Player.instance.HeadCenteredGameplayPosition(victimPosition);
                 Vector3 impact = enemy.PlayerDeathLaunch(victimPosition,
                     enemy.Root != null ? enemy.Root.position : enemy.transform.position);
-                if (PhotonSession.IsRailsRoom) RailExpedition.RequestEnemyDown(enemy);
+                if (PhotonSession.IsRailsRoom) { RailAnalytics.NoteDownCause(enemy.gameObject.name); RailExpedition.RequestEnemyDown(enemy); }
                 else GR.Player.instance.SetDead(enemy.gameObject.name, impact, enemy.PlayerDeathRotation(impact));
             }
             else GR.Player.instance.SetDead("hazard");

@@ -571,7 +571,7 @@ Deliverable: runnable baseline plus a verified reuse inventory.
 
 October 28 authentication progress: separate Unity and simplified backend copies are confirmed; client/backend sign-in compatibility changes compile and local backend tests pass. See `authentication-setup.md`. Justin subsequently confirmed backend and Photon authentication setup completed. This milestone targets DesktopPlayer first; headset acceptance is deferred. The broader readiness items below are not complete.
 
-Analytics follow-up: separate Duck Rails Android keys are now entered, inherited gold polling is removed, and Rails session events are instrumented. Editor previews are local only. Actual dashboard delivery and Windows platform configuration remain pending; see `analytics-setup.md`.
+Analytics follow-up: separate Duck Rails Android keys are now entered, inherited gold polling is removed, and Rails session events are instrumented. Editor previews are local only. Actual dashboard delivery and Windows platform configuration remain pending; see `analytics-setup.md`. November 18: expedition (run outcome, blocks, fuel, bridge, downs, revives, awards) and gameplay-coin economy events added; dead Duckz events removed. Implemented, queued for playtest, not validated.
 
 - [ ] Obtain the intended Duckz source location and confirm whether this repo will be a full project fork, an imported subset, or another supported arrangement.
 - [ ] Read source/project guidance before copying or changing anything. Preserve the original Duckz project.

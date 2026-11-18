@@ -90,7 +90,6 @@ public class GameManager : MonoBehaviour
         GR.Player.instance.IsDead = false;
         GR.Player.instance.playerHUD.DisableDeathEffect();
         GR.Player.instance.ragdoll.gameObject.SetActive(false);
-        DuckzAnalytics.MarkAlive();
     }
 
     public PhotonPlayer GetPhotonPlayer(int actorNumber) {

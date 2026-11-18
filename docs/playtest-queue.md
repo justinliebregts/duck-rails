@@ -1,5 +1,27 @@
 # Playtest queue
 
+## Expedition and economy analytics events — queued 2026-11-18
+
+- Changed: new `RailAnalytics` (run start/end, last block, block time, fuel out,
+  bridge start/lowered, downs by cause and block, revives, personal summary, awards,
+  gold picked/unbanked) and economy events (coin source on deposit, coin sink and
+  `shop:*` for expedition shops, `store:*` kept for cosmetics). Removed dead
+  `death:*`, `duck:*`, `gold:count`, `presence:*`. Catalog: `analytics-setup.md`.
+- Editor evidence: verified Duck Rails MCP target; full recompile with zero Console
+  errors (after the concurrent companion removal landed). EditMode: 7 segment/block-name
+  helper assertions pass; `RailAwardsChecks` 65 superlative checks pass (covers the
+  `RailStats` change). Head-pivot/movement play checks that reference
+  `DuckzAnalytics.TryLocalHead` were not re-run. No Play Mode run.
+- Check (editor previews, enable GameAnalytics **Info Log Editor**): with 2 clients,
+  depart, take a down from an enemy and get revived, insert coal, deposit gold, buy at
+  a shop, run out of fuel once, hold the bridge, then finish. Expect on the host one
+  `run:start`, `block:time` per block, `train:fuel_out`, `bridge:start`/`lowered`, and
+  one `run:end` + `run:last_block` + `gold:unbanked`. Expect on the guest none of those,
+  but its own `down:<enemy>:<block>`, `revive:done`, progression Complete/Fail,
+  `player:*`, `award:*`. Repeat with a master handoff mid-run: no duplicate bridge/fuel
+  events. Then confirm delivery in an Android build's GameAnalytics live view.
+  Queued for playtest; not verified.
+
 ## Smaller Minion/Hook kill triggers — queued 2026-11-18
 
 - Changed: port only Duckz `a3d484e994e53c219f62de3caa99af009d20c812` collider

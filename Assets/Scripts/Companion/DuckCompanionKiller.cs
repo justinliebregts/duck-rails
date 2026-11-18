@@ -135,7 +135,6 @@ public sealed partial class DuckCompanion
             killerDeadline = PhotonNetwork.Time + 60;
             killerLineSequence = Dialogue.SpeakKillerLine("killer_before");
             LastEvent = "a possessive warning";
-            DuckzAnalytics.DuckKillAttempt();
         }
 
         var victim = PhotonPlayer.ForActor(killerActor);

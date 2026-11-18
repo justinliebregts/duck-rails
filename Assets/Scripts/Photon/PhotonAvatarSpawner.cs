@@ -68,7 +68,6 @@ public class PhotonAvatarSpawner : MonoBehaviour
         var player = avatar.GetComponent<PhotonPlayer>();
         player.BindSources(head, driver.LeftPalmSource, driver.RightPalmSource, driver);
         _boundPlayer = player;
-        DuckzAnalytics.MarkAlive();
     }
 
 }

@@ -203,6 +203,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         atmosphere.Apply(RailAtmosphere.Progress(intoFinale, State.finished && State.success, PhotonNetwork.Time - State.finishedAt));
         Present();
         RailStats.Tick();
+        RailAnalytics.Observe(State);
         ConsumeCommittedCoal();
         ShowFuelPopups();
         RailGoldReceiver.PresentRewards(this);

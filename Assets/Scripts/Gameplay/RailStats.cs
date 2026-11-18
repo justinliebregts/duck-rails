@@ -32,7 +32,10 @@ public static class RailStats
     /// <summary>Counts distinct items picked up in the run (re-grabbing the same item does not count again).</summary>
     public static void Pickup(Component item)
     {
-        if (!Active || Ignored(item)) return;
+        if (!Active || item == null) return;
+        // Gold is excluded from Loot Goblin but counted once per bar for analytics.
+        if (item.GetComponent<ItemGoldBar>() != null) { if (pickedUp.Add(Key(item))) RailAnalytics.GoldPickedUp(); return; }
+        if (Ignored(item)) return;
         if (pickedUp.Add(Key(item))) pickups++;
     }
 

@@ -255,7 +255,7 @@ public class DuckzWallet : MonoBehaviour
             Coins = response.Data.coins;
             if (!response.Data.idempotent) OnRewardCredited?.Invoke(requestId, response.Data.credited);
             DuckzLog.Log($"[DuckzWallet] Deposited {bars} bars, balance {Coins} coins");
-            DuckzAnalytics.GoldDeposited(bars);
+            DuckzAnalytics.GoldDeposited(bars, response.Data.idempotent ? 0 : response.Data.credited);
             OnChanged?.Invoke();
             yield break;
         }

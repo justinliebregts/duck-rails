@@ -247,7 +247,6 @@ public sealed class DuckCompanionDialogue : MonoBehaviourPunCallbacks
         }
         lastTopic = intent;
         nextReactive = Time.time + conversationPause;
-        DuckzAnalytics.DuckUtterance(DuckzAnalytics.UtteranceBucket(intent));
         string replyTopic = returningToFriend ? "follow_return" : intent;
         if (intent == "goodbye" || intent == "quiet" || intent == "dismiss")
             replyTopic = "creepy_" + intent;

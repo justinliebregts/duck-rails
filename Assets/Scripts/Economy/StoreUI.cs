@@ -245,7 +245,7 @@ public class StoreUI : MonoBehaviour
         if (!CanAfford(item))
         {
             PlaySound(buyFailSound);
-            DuckzAnalytics.StorePurchase(item.key, StorePurchaseResult.NotEnoughCoins);
+            DuckzAnalytics.StorePurchase(item.key, StorePurchaseResult.NotEnoughCoins, item.price, this);
             done?.Invoke(StorePurchaseResult.NotEnoughCoins);
             return;
         }
@@ -330,7 +330,7 @@ public class StoreUI : MonoBehaviour
                 onConsumablePurchased?.Invoke(item.key);
         }
         RaiseChanged();
-        DuckzAnalytics.StorePurchase(item.key, result);
+        DuckzAnalytics.StorePurchase(item.key, result, item.price, item.payment == StorePayment.Coins ? this : null);
         done?.Invoke(result);
     }
 

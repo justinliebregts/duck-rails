@@ -564,8 +564,6 @@ public sealed partial class DuckCompanion : MonoBehaviourPunCallbacks
         // Allow synthesis/scheduled playback, but never strand Duck if audio fails.
         farewellDeadline = PhotonNetwork.Time + 45;
         if (!refused && intent == "wait") { WaitHere(); waitUntil = 0; }
-        if (!refused && intent == "dismiss")
-            DuckzAnalytics.DuckDismiss();
         LastEvent = refused ? "finishing my refusal before resuming" : "finishing my response before acting";
     }
 
@@ -918,7 +916,6 @@ public sealed partial class DuckCompanion : MonoBehaviourPunCallbacks
         visitorLastProgress = visitorLastSpeech = PhotonNetwork.Time;
         visitorProgressPosition = transform.position;
         State = Activity.Following;
-        DuckzAnalytics.DuckActivated();
         // Immutable snapshots may be retained by Photon's delta comparisons.
         int index = System.Array.IndexOf(greetedVisitors, actor);
         var actors = new List<int>();
@@ -2632,7 +2629,6 @@ public sealed partial class DuckCompanion : MonoBehaviourPunCallbacks
         TargetActor = actor;
         if (State != Activity.Climbing && State != Activity.Jumping && State != Activity.Retreating) State = Activity.Following;
         nextPath = 0;
-        DuckzAnalytics.DuckFollow();
     }
 
     public void ReceivePose(in BodyPose pose)

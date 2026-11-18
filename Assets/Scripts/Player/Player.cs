@@ -127,20 +127,15 @@ namespace GR {
 
         void SetDeadInternal(DuckCompanion killer, int attempt, string cause, Vector3 impact, Vector3 rotation = default) {
             if (RailAdminTools.Invincible) return;
-            if (PhotonSession.IsRailsRoom) { RailExpedition.RequestDown(); return; }
+            if (PhotonSession.IsRailsRoom) { RailAnalytics.NoteDownCause(cause); RailExpedition.RequestDown(); return; }
             using var sample = DeathProfile.Local.Auto();
             if (IsDead) {
                 return;
             }
             DeathImpactState = impact;
             DeathRotationState = rotation;
-            float aliveSeconds = DuckzAnalytics.AliveSeconds();
-            string held = HeldItemName();
             IsDead = true;
             PhotonPlayer.InvalidateLocalHookShots();
-            if (cause == "duck")
-                DuckzAnalytics.DuckKillSuccess();
-            DuckzAnalytics.PlayerDied(cause, aliveSeconds, held);
             Vector3 deathOrigin = DeathEffectOrigin();
             Vector3 flarePosition = deathOrigin + Vector3.up * 0.35f;
             PhotonPlayer.SpawnDeathFlare(deathFlarePrefab, flarePosition);
@@ -164,14 +159,6 @@ namespace GR {
             int bloodSeed = UnityEngine.Random.Range(1, int.MaxValue);
             BloodDecalSpawner.Spawn(bloodDecalSpawner, decalSpawnPos, bloodSeed);
             PhotonPlayer.BroadcastDeathBlood(decalSpawnPos, bloodSeed);
-        }
-
-        string HeldItemName()
-        {
-            Grabbable right = rightPlayerHand != null ? rightPlayerHand.Held : null;
-            Grabbable left = leftPlayerHand != null ? leftPlayerHand.Held : null;
-            Grabbable held = right != null ? right : left;
-            return held != null ? held.name : null;
         }
 
         IEnumerator Respawn(DuckCompanion killer, int attempt) {
