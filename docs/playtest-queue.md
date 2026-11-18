@@ -1,5 +1,25 @@
 # Playtest queue
 
+## Login backdrop blocks use their baked lighting — queued 2026-11-18
+
+- Bug: the motel, skyscraper and convenience-store backdrops in `Login.unity` rendered
+  without their baked lighting.
+- Cause: the scene had removed `RailBakedBlockLighting` from the motel and skyscraper
+  instances, so they never loaded lighting. The store's spot was turned by 1.9°, which
+  failed `RailBlockLightingLoader`'s straightness check (blocks may be moved only, with
+  no rotation or scale).
+- Changed (`Login.unity` only): restored `RailBakedBlockLighting` on both instances. The
+  removed `RailBlock` and `CrawlGraphBaker` stay removed. Rotated LoginSpot3 around the store
+  pivot to rotation (0,0,0), so the store and its view are unchanged but the store is now
+  straight. All three blocks are straight with unit scale, and every lightmap binding points
+  to an active renderer.
+- Editor evidence: verified Duck Rails MCP target; zero Console errors or warnings. No Play
+  Mode run.
+- Check (editor Play Mode, then Quest): at each login spot the block shows its baked
+  lightmaps and probe lighting like it does during an expedition, with no "Block lighting:"
+  errors. Compare ambient light and fog with Expedition. Load time to Compound is not
+  noticeably longer. Queued for playtest; not verified.
+
 ## Bundle IAP items pullable right after purchase (no restart) — queued 2026-11-18
 
 - Bug (Ken, Quest, Quackbear and Lethal Company bundles): after buying, the label read
