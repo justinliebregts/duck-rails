@@ -1,5 +1,32 @@
 # Playtest queue
 
+## Late join and rejoin into running public and private expeditions — queued 2026-11-18
+
+- Regression check, no code change. Requested by Justin to confirm late joining still works after
+  recent changes.
+- Expected (user-confirmed 2026-11-18): joining an in-progress expedition works for both public
+  departures and private code rooms, and every arrival, first-time joiner or rejoiner, spawns
+  aboard the train. Restoring a rejoiner's last position is not wanted. Current code does this:
+  `RailWorld.cs:65` clears `positioned` during any room request (including `Rejoin`) and
+  `RailWorld.cs:103-111` warps the arrival aboard.
+- Check (3 clients, A host):
+  1. Public: A + B depart from the compound; once moving past block 1, C joins the running public
+     expedition. Expect C spawns aboard and sees the same block, train pose/motion, fuel, loose items,
+     bag contents, enemies and other players' down states; C can grab items and shovel coal; no
+     extra flashlight granted.
+  2. Private: A creates a code room, A + B depart; C joins by code mid-run. Same expectations.
+  3. Rejoin (both kinds): B walks off the train into the block, then disconnects (drop network or
+     quit) and rejoins within 120 s. Expect B reappears aboard the train; no duplicate avatar or
+     supplies, bag/head gear state kept. Repeat once with B rejoining
+     after a full app restart, and once with B being the master.
+  4. Edge cases (design intents user-confirmed 2026-11-18):
+     - Train stopped at a shop, other players off shopping: joiner spawns aboard, train pose
+       matches, joiner can walk off and use the shop.
+     - Mid bridge hold: joiner sees the same defenders, hold countdown and bridge state; nothing
+       already finished (e.g. the collapse) replays.
+     - Ending/return: new joins are refused cleanly; nobody lands in a finished run.
+- Queued for playtest; not verified.
+
 ## Downing drops head equipment — queued 2026-11-18
 
 - Changed: when the local player goes down, every head item they wear (helmet,
