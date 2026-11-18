@@ -22,6 +22,30 @@
   events. Then confirm delivery in an Android build's GameAnalytics live view.
   Queued for playtest; not verified.
 
+## Missing down flares diagnostics — queued 2026-11-18
+
+- Reported: in a 3-player run, at least two downs in a row (believed different
+  players) showed no flare. Suspects: flare left behind by the moving train (world-space
+  position), flare clamped under a roof, master rejecting the down, or 45 s cooldown.
+- Changed: diagnostics only, no behaviour change. `RailExpedition` writes `flare: ...`
+  lines to the `RailDiagnostics` event list (which reports include; DuckzLog output is
+  not included in reports): local down requested, master accepted/ignored/skipped (with
+  reason, aboard flag, train speed, cooldown age, attacker state), each client's "seen
+  down" and "shown" (spawned, age, ceiling-clamped `rise`, viewer distance).
+  `DeathFlare.LaunchRise` added for this. Actor numbers only.
+- Editor evidence: compiles, Console clean. No Play Mode run.
+- Check: play until a down shows no flare, then submit a bug report right away (event
+  list keeps the last 100 entries). Best if the host submits too, since master accept/ignore
+  lines only exist on the host. Queued for playtest; not verified.
+- Also changed: `RailDiagnostics` reports now include up to 40 scrubbed Console
+  warning/error/exception lines in `events` (see testing-tools.md). Editor evidence (after the
+  companion removal settled): compiles, Console clean; EditMode check with real Unity logs passed:
+  JWT/long key -> `[token]`, Bearer -> `[redacted]`, 3 identical exceptions -> one `[x3]` line,
+  `Debug.Log` excluded, 100 lines = 40 console + 60 newest events in time order, location
+  skips Debug/Logger/DuckzLog frames to name the caller. Check: in a normal build, trigger a known warning,
+  submit a bug, confirm the uploaded report shows `console Warning: ...` lines, flare lines survive,
+  and no token-like strings appear.
+
 ## Duck companion removed — queued 2026-11-18
 
 - Changed: deleted the Duckz duck companion (scripts, `DuckCompanion` prefab, dialogue,

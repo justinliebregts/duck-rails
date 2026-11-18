@@ -76,6 +76,8 @@ public sealed class DeathFlare : MonoBehaviour
     DeathEffectPool pool;
     bool prepared;
     internal string RoomEventKey { get; set; }
+    /// <summary>Diagnostics: launch height after ceiling clamping, or -1 before launch.</summary>
+    public float LaunchRise => launched ? apex.y - origin.y : -1f;
     float authoredIntensity;
     AudioHandle launchAudio;
 

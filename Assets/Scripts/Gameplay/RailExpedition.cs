@@ -31,6 +31,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     public RailRunState State { get; private set; } = new RailRunState();
     readonly Queue<(int actor, string action, int target, object[] coal)> requests = new Queue<(int, string, int, object[])>();
     readonly Dictionary<string, double> shownFlares = new Dictionary<string, double>();
+    readonly Dictionary<string, bool> tracedDown = new Dictionary<string, bool>();
     string lastJson, localRun, caughtRun;
     string pendingRequestJson;
     int pendingRequestRevision;
@@ -74,6 +75,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         var instance = Instance;
         if (instance == null || PhotonNetwork.Time < instance.nextDownRequest || LocalDown) return;
         instance.nextDownRequest = PhotonNetwork.Time + .3;
+        TraceFlare("local down requested via=self onTrain=" + PhotonSession.OnTrain + " " + LocalWhere());
         instance.Request("down");
     }
     public static void RequestEnemyDown(Game.AI.Enemy enemy)
@@ -83,8 +85,20 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (instance == null || enemy == null || PhotonNetwork.Time < instance.nextDownRequest || LocalDown) return;
         instance.nextDownRequest = PhotonNetwork.Time + .3;
         var view = enemy.GetComponent<PhotonView>();
+        TraceFlare("local down requested via=enemy view=" + (view != null ? view.ViewID : 0) + " onTrain=" + PhotonSession.OnTrain + " " + LocalWhere());
         instance.Request("enemy-down", view != null ? view.ViewID : 0);
     }
+    // Flare/down diagnostics go to the bounded RailDiagnostics event list so a submitted
+    // report carries them. Actor numbers only; never user IDs or nicknames.
+    static void TraceFlare(string message) => RailDiagnostics.Instance?.Event("flare: " + message);
+    static string Where(Vector3 point)
+    {
+        var train = RailTrain.Instance;
+        return "pos=" + point.ToString("F1") + " aboard=" + (train != null && train.Contains(point))
+            + " trainSpeed=" + (train != null ? train.Speed.ToString("F1") : "-");
+    }
+    static string LocalWhere() => PhotonNetwork.LocalPlayer != null && Position(PhotonNetwork.LocalPlayer.ActorNumber, out var point)
+        ? Where(point) : "pos=unknown";
     public void Request(string action, int target = 0)
     {
         if (!PhotonSession.IsRailsRoom || !PhotonSession.OnTrain || PhotonNetwork.LocalPlayer == null) return;
@@ -96,6 +110,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (e.Code != ActionEvent || !PhotonNetwork.IsMasterClient || PhotonSession.Phase != RailPhase.Running) return;
         if (!(e.CustomData is object[] d) || (d.Length != 3 && d.Length != 4) || d[0] as string != PhotonSession.RunId || !(d[1] is string action) || !(d[2] is int target)) return;
         if (requests.Count < 64) requests.Enqueue((e.Sender, action, target, d.Length == 4 ? d[3] as object[] : null));
+        else if (action == "down" || action == "enemy-down") TraceFlare("master dropped down actor=" + e.Sender + ": request queue full");
     }
     // Legacy test carriages retain their radius; modular fireboxes also require a point inside the cavity.
     public bool AcceptsFurnaceSample(Vector3 offset)
@@ -194,7 +209,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (RailRoute.Instance != null && !RailRoute.Instance.Ready) return;
         if (localRun != PhotonSession.RunId)
         {
-            localRun = PhotonSession.RunId; caughtRun = null; shownFlares.Clear(); wasDown = false; requests.Clear(); pendingRequestJson = null;
+            localRun = PhotonSession.RunId; caughtRun = null; shownFlares.Clear(); tracedDown.Clear(); wasDown = false; requests.Clear(); pendingRequestJson = null;
             RestoreNightAtmosphere();
             ResetCollapse();
         }
@@ -235,6 +250,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             var p = next.players.Find(x => x.actor == request.actor);
             if (p != null && Position(request.actor, out var position))
                 ApplyRequest(next, p, position, request.action, request.target, now, changes, request.coal);
+            else if (request.action == "down" || request.action == "enemy-down")
+                TraceFlare("master skipped down actor=" + request.actor + ": " + (p == null ? "no participant" : "position unavailable"));
         }
         foreach (var p in next.players.Where(p => p.down))
         {
@@ -407,17 +424,29 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (action == "stats") { RailStats.Apply(p, coalSample); return; }
         if (action == "down" || action == "enemy-down")
         {
-            if (PhotonSession.Phase != RailPhase.Running) return;
-            if (p.down || now < p.protectedUntil) return;
+            string who = "actor=" + p.actor + " via=" + action;
+            if (PhotonSession.Phase != RailPhase.Running) { TraceFlare("master ignored down " + who + ": phase " + PhotonSession.Phase); return; }
+            if (p.down) return; // Repeat while already down: expected, not traced.
+            if (now < p.protectedUntil) { TraceFlare("master ignored down " + who + ": revive protection"); return; }
             if (RailTrain.Instance.Contains(position))
             {
                 var attacker = action == "enemy-down" ? PhotonView.Find(target)?.GetComponent<Game.AI.Enemy>() : null;
                 if (attacker == null || attacker.Boarding == null || !attacker.Boarding.IsAboard || attacker.IsDormant
                     || attacker.IsKnocked || attacker.IsStunned || attacker.Root == null
-                    || Vector3.Distance(attacker.Root.position, position) >= 2f) return;
+                    || Vector3.Distance(attacker.Root.position, position) >= 2f)
+                {
+                    TraceFlare("master ignored down " + who + " " + Where(position) + ": aboard, attacker " +
+                        (attacker == null ? "none" : "aboard=" + (attacker.Boarding != null && attacker.Boarding.IsAboard) +
+                        " dormant=" + attacker.IsDormant + " knocked=" + attacker.IsKnocked + " stunned=" + attacker.IsStunned +
+                        " dist=" + (attacker.Root != null ? Vector3.Distance(attacker.Root.position, position).ToString("F1") : "-")));
+                    return;
+                }
             }
             p.down = true; p.downs++;
-            if (p.flareAt <= 0 || now - p.flareAt >= RailRunState.FlareCooldown) { p.flareAt = now; p.flarePosition = position; }
+            bool flare = p.flareAt <= 0 || now - p.flareAt >= RailRunState.FlareCooldown;
+            TraceFlare("master accepted down " + who + " " + Where(position) + " flare=" +
+                (flare ? "new" : "cooldown (last " + (now - p.flareAt).ToString("F0") + "s ago)"));
+            if (flare) { p.flareAt = now; p.flarePosition = position; }
             return;
         }
         if (p.down) return;
@@ -486,7 +515,20 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         foreach (var p in State.players)
         {
             if (p.flareAt > 0 && (!shownFlares.TryGetValue(p.id, out var shown) || shown != p.flareAt))
-            { shownFlares[p.id] = p.flareAt; DeathFlare.SpawnAfterDeath(flarePrefab, p.flarePosition, (float)(now - p.flareAt)); }
+            {
+                shownFlares[p.id] = p.flareAt;
+                var flare = DeathFlare.SpawnAfterDeath(flarePrefab, p.flarePosition, (float)(now - p.flareAt));
+                var view = Camera.main != null ? Camera.main.transform.position : (Vector3?)null;
+                TraceFlare("shown actor=" + p.actor + " age=" + (now - p.flareAt).ToString("F1") + " " + Where(p.flarePosition) +
+                    " spawned=" + (flare != null) + (flarePrefab == null ? " prefab=missing" : "") +
+                    " rise=" + (flare != null ? flare.LaunchRise.ToString("F1") : "-") +
+                    " viewerDist=" + (view.HasValue ? Vector3.Distance(view.Value, p.flarePosition).ToString("F0") : "-"));
+            }
+            bool sawDown = tracedDown.TryGetValue(p.id, out var priorDown) && priorDown;
+            if (p.down && !sawDown)
+                TraceFlare("seen down actor=" + p.actor + " lastFlare=" + (p.flareAt > 0 ? (now - p.flareAt).ToString("F1") + "s ago" : "never") +
+                    " " + (Position(p.actor, out var downAt) ? Where(downAt) : "pos=unknown"));
+            tracedDown[p.id] = p.down;
             if (!downLabels.TryGetValue(p.id, out var label))
             {
                 var go = new GameObject("Crew condition"); go.transform.SetParent(transform); label = go.AddComponent<TextMeshPro>();

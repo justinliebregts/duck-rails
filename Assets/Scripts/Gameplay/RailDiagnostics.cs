@@ -95,13 +95,49 @@ public sealed class RailDiagnostics : MonoBehaviour
         text = Regex.Replace(text, @"(?:[A-Za-z]:[\\/]|/Users/|/home/)[^\r\n]*", "[local path]");
         return text.Length > 600 ? text.Substring(0, 600) : text;
     }
+    // Console lines need stronger scrubbing than our own events: authentication libraries
+    // sometimes log credentials. JWTs and long opaque strings are treated as tokens.
+    public static string SanitizeConsole(string text)
+    {
+        text = Regex.Replace(text ?? "", @"eyJ[\w-]+\.[\w-]+\.[\w-]*", "[token]");
+        text = Regex.Replace(text, @"(?=[A-Za-z0-9+/_=-]{32,})(?=[A-Za-z0-9+/_=-]*\d)(?=[A-Za-z0-9+/_=-]*[A-Za-z])[A-Za-z0-9+/_=-]{32,}", "[token]");
+        return Sanitize(text);
+    }
     void OnLog(string message, string stack, LogType type)
     {
-        if (saving || (type != LogType.Exception && type != LogType.Error && type != LogType.Assert)) return;
-        // Do not retain arbitrary log bodies: authentication libraries sometimes log credentials.
-        string safe = "Unity " + type + " at " + Sanitize((stack ?? "").Split('\n').FirstOrDefault());
-        Event(safe);
+        if (saving || type == LogType.Log) return;
+        // First frame outside the logging plumbing, so the location names the actual caller.
+        string where = (stack ?? "").Split('\n').Select(f => f.Trim()).FirstOrDefault(f => f.Length > 0 &&
+            !f.StartsWith("UnityEngine.Debug", StringComparison.Ordinal) && !f.StartsWith("UnityEngine.Logger", StringComparison.Ordinal) &&
+            !f.StartsWith("DuckzLog", StringComparison.Ordinal)) ?? "";
+        // Token scrubbing applies to the message only, so stack paths stay readable.
+        RecordConsole(type + ": " + SanitizeConsole((message ?? "").Split('\n').FirstOrDefault())
+            + (where.Length > 0 ? " @ " + Sanitize(where) : ""));
+        if (type == LogType.Warning) return;
+        // Violation summaries stay message-free; the scrubbed message is in the console lines.
+        string safe = "Unity " + type + " at " + Sanitize(where);
         if (Development && PhotonSession.IsRailsRoom) Violation("unity-error", safe, 0);
+    }
+    // Warnings/errors/exceptions only (no Debug.Log), deduplicated when repeated back to back.
+    // Reports reserve up to ConsoleSlots of the backend's 100-entry events list for them.
+    const int ConsoleSlots = 40;
+    readonly LinkedList<(string stamp, string text, int repeats)> consoleLines = new LinkedList<(string, string, int)>();
+    void RecordConsole(string scrubbed)
+    {
+        string text = "console " + scrubbed;
+        string stamp = DateTime.UtcNow.ToString("O");
+        if (consoleLines.Last != null && consoleLines.Last.Value.text == text)
+        { var last = consoleLines.Last.Value; consoleLines.Last.Value = (stamp, text, last.repeats + 1); return; }
+        consoleLines.AddLast((stamp, text, 1));
+        while (consoleLines.Count > ConsoleSlots) consoleLines.RemoveFirst();
+    }
+    /// <summary>The events list the next report would carry: console lines merged with diagnostic events.</summary>
+    public string[] ReportEvents()
+    {
+        var lines = consoleLines.Select(c => c.stamp + " " + c.text + (c.repeats > 1 ? " [x" + c.repeats + "]" : "")).ToList();
+        lines.AddRange(events.Skip(Math.Max(0, events.Count - (100 - lines.Count))));
+        // ISO-8601 UTC stamps sort chronologically as text.
+        return lines.OrderBy(l => l, StringComparer.Ordinal).ToArray();
     }
     public void Event(string value)
     {
@@ -223,7 +259,7 @@ public sealed class RailDiagnostics : MonoBehaviour
         {
             var report = new RailDiagnosticReport { id = Guid.NewGuid().ToString("N"), created = DateTime.UtcNow.ToString("O"),
                 category = Sanitize(category), summary = Sanitize(summary), build = Application.version + "/" + Application.buildGUID,
-                platform = Application.platform.ToString(), snapshot = Snapshot(), history = samples.ToArray(), events = events.ToArray(),
+                platform = Application.platform.ToString(), snapshot = Snapshot(), history = samples.ToArray(), events = ReportEvents(),
                 preset = RailTestTools.CurrentPreset(), localOwner = UploadOwner };
             if (Application.isEditor) report.build += "/editor-" + typeof(RailDiagnostics).Module.ModuleVersionId;
             while (System.Text.Encoding.UTF8.GetByteCount(JsonUtility.ToJson(report)) > 900000 && report.history.Length > 0)
