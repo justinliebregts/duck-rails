@@ -1,5 +1,16 @@
 # Playtest queue
 
+## Revive-complete SFX via AudioManager — queued 2026-11-18
+
+- Changed: the revive-complete sound now plays through `AudioManager` (pooled voice,
+  occlusion, Effects mixer, game volume) using new SoundEvent
+  `Assets/Resources/RailRevive/ReviveSFX.asset` (clip `ReviveSFX.ogg`), attached to the
+  revived duck. The looping progress sound is unchanged (still its own AudioSource).
+- Editor evidence: none beyond file edits; Console had no errors, but a recompile after
+  the edit was not confirmed.
+- Check: revive a downed duck; everyone in range hears the complete sound at the duck,
+  once, and it respects the volume slider.
+
 ## Settings Submit Bug button — queued 2026-11-18
 
 - Changed: pause menu Settings screen has a **Submit Bug** button (top right) that
@@ -174,6 +185,15 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Check: at night the pond lanterns light the path around the pond, the yard posts light the ground beneath them, and the farmhouse attic spot lights its floor; no dark or blotchy atlas chunks or seams elsewhere on Farm compared with before; the late joiner sees the same lighting.
 - Needs human: headset look at lamp brightness/feel.
 - Priority: normal
+
+### Admin R3 noclip toggle and snap turn in noclip — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: `NewPlayer.Update` toggles `RailAdminTools.ToggleNoClip()` on right thumbstick click (admins only; non-admin dev builds keep the old R3 stickMove toggle). Snap turn (right stick left/right) now also runs while noclip flying.
+- Setup: Quest headset, admin account, snap turn enabled; also once as a non-admin.
+- Check: admin R3 enters/exits noclip; in noclip, right stick left/right snap-turns about the head; right stick up/down still lifts; smooth turn mode unchanged (no turn in noclip); non-admin R3 does nothing to noclip.
+- Needs human: headset
+- Priority: normal
+- Mode: fix-on-fail
 
 ### Finale catwalk metal footsteps — queued 2026-11-17
 - Commit(s): uncommitted

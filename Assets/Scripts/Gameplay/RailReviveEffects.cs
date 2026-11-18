@@ -8,7 +8,8 @@ public sealed class RailReviveEffects
     {
         public int sequence;
         public GameObject root;
-        public AudioSource progress, complete;
+        public AudioSource progress;
+        public Game.Audio.AudioHandle complete;
         public ParticleSystem particles;
         public RailReviveFollow follow;
         public double pendingAt;
@@ -16,7 +17,7 @@ public sealed class RailReviveEffects
 
     readonly Dictionary<string, Presentation> players = new Dictionary<string, Presentation>();
     readonly AudioClip progressClip = Resources.Load<AudioClip>("RailRevive/RevivingPlayerSFX");
-    readonly AudioClip completeClip = Resources.Load<AudioClip>("RailRevive/ReviveSFX");
+    readonly Game.Audio.SoundEvent completeSound = Resources.Load<Game.Audio.SoundEvent>("RailRevive/ReviveSFX");
     readonly GameObject particlePrefab = Resources.Load<GameObject>("RailRevive/Revived");
     string run;
 
@@ -59,7 +60,8 @@ public sealed class RailReviveEffects
             if (completing)
             {
                 fx.pendingAt = 0;
-                if (completeClip != null) fx.complete.Play();
+                if (completeSound != null && Game.Audio.AudioManager.instance != null)
+                    fx.complete = Game.Audio.AudioManager.instance.PlayAttached(completeSound, fx.root.transform);
                 if (fx.particles != null) { fx.particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear); fx.particles.Play(true); }
             }
             if (!connected)
@@ -76,7 +78,6 @@ public sealed class RailReviveEffects
         fx.root.transform.SetParent(parent, false);
         fx.follow = fx.root.AddComponent<RailReviveFollow>();
         fx.progress = Source(fx.root, progressClip, true, 40);
-        fx.complete = Source(fx.root, completeClip, false, 30);
         if (particlePrefab != null)
         {
             var particles = Object.Instantiate(particlePrefab, fx.root.transform, false);
