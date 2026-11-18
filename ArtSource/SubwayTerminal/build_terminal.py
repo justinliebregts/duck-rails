@@ -492,10 +492,13 @@ def bulb(b, x, y, z, top):
 def canopy(b, x0, x1, y0, y1, z0, z1, n, tile="corr"):
     """Sloped salvaged roof sheets, z0 at x0 to z1 at x1, visible from both sides."""
     w = (y1 - y0) / n
+    # The first quad faces down when x0 < x1 and up when x0 > x1. The up-facing sheet must sit above the
+    # down-facing one; inverted, the underside's lightmap texels see the other sheet's backface and bake black.
+    lift_first = .02 if x1 < x0 else 0
     for i in range(n):
         ya, dz = y0 + i * w, .03 * (i % 2)
-        b.quad((x0, ya + w - .03, z0 + dz), (x1 - x0, 0, z1 - z0), (0, -(w - .03), 0), tile, fit=True)
-        b.quad((x0, ya, z0 + dz + .02), (x1 - x0, 0, z1 - z0), (0, w - .03, 0), tile, fit=True)
+        b.quad((x0, ya + w - .03, z0 + dz + lift_first), (x1 - x0, 0, z1 - z0), (0, -(w - .03), 0), tile, fit=True)
+        b.quad((x0, ya, z0 + dz + .02 - lift_first), (x1 - x0, 0, z1 - z0), (0, w - .03, 0), tile, fit=True)
 
 
 def signboard(b, lo, hi):

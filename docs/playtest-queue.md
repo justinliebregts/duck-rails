@@ -1,5 +1,51 @@
 # Playtest queue
 
+## Brighter store lighting (Compound + starting station) — queued 2026-11-18
+
+- Request: both stores looked too dark. User retuned lights by hand, rebaked both and moved
+  some store items in `Compound.unity` and `Expedition.unity`.
+- Station: two new baked spots `Supplies flood N (1)` / `S (1)` plus retuned supplies lights in
+  `StartingStation.prefab`; rebaked and exported (65 baked lights, all 65 in `bakedFixtures`,
+  95 bindings). Compound: new baked `Supplies warm B (1)` and retuned lights; all 21 enabled
+  baked lights report `isBaked` in the saved bake. Edit Mode checks only.
+- Check: in-game at night fog, both stores read clearly at headset height; no doubled
+  (real-time) light from the new fixtures; moved items still pull/restock correctly.
+
+## Store prices sit under raised items (Compound + starting station) — queued 2026-11-18
+
+- Request: store items sat behind prices that lay on the floor in front. Raise items slightly
+  and put each price underneath its item (bat as the example). Compound store and the starting
+  station store only. Do not move the TV or security camera.
+- Changed: `Assets/DuckRails/Compound/SubwayTerminal/SubwayTerminal.prefab` and
+  `Assets/DuckRails/Economy/RailShop.prefab` (their overridden `Shared Store` children). The 8
+  displays (nail bat, frying pan, basic bag, default duck, helmet, flashlight, walkie, night
+  vision) are raised 0.15 m. Each `*Price` label is centered under its item's visible mesh
+  bounds, 4.5 cm below it, at the item's depth (not flat against the wall, so the item doesn't
+  cover it when viewed from above). SecurityTV/SecurityCam are unchanged. The bundle displays,
+  the `RailSharedStore.prefab` base and the helipad shop are untouched. Neither
+  `Compound.unity` nor `Expedition.unity` overrides these objects.
+- Editor evidence: offscreen renders of the compound store show every price under its item. The
+  station back wall looks the same. The station side wall (bat/pan/bag/duck) is checked by
+  numbers only, because a prefab mesh blocks the out-of-scene preview. Console has 0 errors.
+  No Play Mode run.
+- Check: in both stores at headset height, each price is readable below its item and not
+  hidden by it. Items don't clip into walls/shelves. Pull-to-buy and restock still snap back
+  to the raised spot.
+
+## Rail store bundle avatars use the default duck pose — queued 2026-11-18
+
+- Request: Scrap Duck, Huggy and Quackbear bundle avatars in the rail store were T-posing;
+  give them the default duck display's pose.
+- Changed: `Assets/DuckRails/Economy/RailSharedStore.prefab` only. Copied the 28 bone local
+  rotations under `DefaultAvatarDisplay/DefaultModel/Playermodel_Armature/Torso` (neck,
+  head, shoulders, arms, fingers; not eyes/lips) onto each
+  `skin_duck_*/Skin_*/Playermodel_Armature/Torso`. Both rigs share the same Torso frame.
+  `Assets/Editor/RailBundleSetup.cs` (old wall generator) does not apply this pose.
+- Editor evidence: offscreen camera render shows Huggy and Quackbear fists-up like the default
+  duck; Console 0 errors. No Play Mode run.
+- Check: in the store, all three bundle avatars hold the default duck pose with no clipping
+  or skin stretching; buying/pulling a skin still works. Queued for playtest; not verified.
+
 ## Held items carry between Compound and Expedition — queued 2026-11-18
 
 - Request: an item held in a hand when the world changes comes along. It drops at the
