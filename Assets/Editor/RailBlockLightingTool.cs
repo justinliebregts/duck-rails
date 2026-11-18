@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 /// Buttons for the block lighting review loop on the open bake scene: preview baked lighting,
 /// find lights trapped inside meshes, add baked lights, and rebake. Atlas-integrated blocks use
 /// the lights-only procedure in docs/atlas-lights-only-rebake.md; other blocks use the standard
-/// Bake Open Block path (plus Motel render-chunk regeneration). Nothing is approved automatically.
+/// Bake Open Block path. Nothing is approved automatically.
 /// </summary>
 [InitializeOnLoad]
 public sealed class RailBlockLightingTool : EditorWindow
@@ -24,7 +24,6 @@ public sealed class RailBlockLightingTool : EditorWindow
     const string LightingRoot = "Assets/DuckRails/Lighting/Blocks";
     const string AddedLights = "Added baked lights";
     const string PendingFile = "Temp/DuckRailsLightsOnlyRebake.json";
-    const string MotelId = "roadside-motel-v1";
 
     // ---------- Atlas-integrated block registry ----------
     sealed class AtlasBlock
@@ -49,6 +48,9 @@ public sealed class RailBlockLightingTool : EditorWindow
             stateFile = () => File.Exists(RailFarmPolishAtlas.Art + "production-state.json")
                 ? RailFarmPolishAtlas.Art + "production-state.json" : "ArtSource/FarmSilosAtlas/production-state.json",
             fingerprint = RailFarmSilosAtlasProduction.Fingerprint, validate = RailFarmSilosAtlasProduction.ValidateSaved },
+        new AtlasBlock { prefab = RailMotelAtlasProduction.Prefab, visual = RailMotelAtlasProduction.Visual,
+            stateFile = () => "ArtSource/MotelAtlasLowPoly/production-state.json",
+            fingerprint = RailMotelAtlasProduction.Fingerprint, validate = RailMotelAtlasProduction.ValidateSaved },
     };
 
     // ---------- Pending lights-only rebake (survives domain reloads via Temp/) ----------
@@ -87,8 +89,6 @@ public sealed class RailBlockLightingTool : EditorWindow
     bool showOnlyFlagged = true;
     Vector2 scroll;
     readonly List<Renderer> noShadowDuringBake = new List<Renderer>();
-    string chunkStatus;
-    string lastStandardStatus;
     int pickBlock;
 
     bool showHelp = true;
@@ -102,12 +102,11 @@ public sealed class RailBlockLightingTool : EditorWindow
         "3. Run the check again until the lights you moved show ok.\n" +
         "4. To add a light, click Add baked light (at the Scene view centre, or a copy of the selected light), then move it into place.\n\n" +
         "REBAKE\n" +
-        "Atlas blocks (Convenience Store, Skyscraper, Container Yard, Farm Silos):\n" +
+        "Atlas blocks (Convenience Store, Skyscraper, Container Yard, Farm Silos, Motel):\n" +
         "1. Click Rebake atlas block lights and wait for the bake to finish.\n" +
         "2. Look at the result, then click Approve to keep it or Discard bake to throw it away.\n" +
-        "Every other block (including the Motel, whose Blender atlas was never integrated):\n" +
-        "1. Click Rebake this block and wait for it to finish.\n" +
-        "2. Motel only: click Regenerate render chunks afterwards, or the build will fail.\n\n" +
+        "Every other block:\n" +
+        "1. Click Rebake this block and wait for it to finish.\n\n" +
         "FINISH\n" +
         "Fly around and check the new lighting. If you like it, commit. If not, discard the bake (atlas blocks) or revert with git (other blocks).";
 
@@ -182,7 +181,7 @@ public sealed class RailBlockLightingTool : EditorWindow
             return;
         }
         EditorGUILayout.LabelField(Path.GetFileNameWithoutExtension(prefab),
-            atlas != null ? "Atlas-integrated: lights-only rebake" : "Standard bake" + (IsMotel(prefab) ? " + Motel render chunks" : ""));
+            atlas != null ? "Atlas-integrated: lights-only rebake" : "Standard bake");
         if (busy) EditorGUILayout.HelpBox(Lightmapping.isRunning ? "Bake running…" : "Leave Play Mode to use these tools.", MessageType.Warning);
 
         using (new EditorGUI.DisabledScope(busy))
@@ -223,18 +222,6 @@ public sealed class RailBlockLightingTool : EditorWindow
                 if (GUILayout.Button("Rebake this block (Bake Open Block)", GUILayout.Height(28))) Run(() => StartStandard(prefab));
                 var status = RailCatalogLightingAuthoring.Status;
                 EditorGUILayout.LabelField("Bake status: " + status, EditorStyles.miniLabel);
-                if (IsMotel(prefab))
-                {
-                    if (lastStandardStatus != status && status.StartsWith("Complete")) chunkStatus = null;
-                    lastStandardStatus = status;
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        if (GUILayout.Button("Check render chunks")) Run(() => chunkStatus = MotelChunkStatus());
-                        if (GUILayout.Button("Regenerate render chunks"))
-                            Run(() => { RailMotelRenderChunks.Generate(); chunkStatus = MotelChunkStatus(); });
-                    }
-                    if (chunkStatus != null) EditorGUILayout.HelpBox(chunkStatus, chunkStatus.StartsWith("Current") ? MessageType.Info : MessageType.Warning);
-                }
             }
         }
         DrawPending();
@@ -474,27 +461,12 @@ public sealed class RailBlockLightingTool : EditorWindow
     }
 
     // ---------- 4a. Standard rebake ----------
-    static bool IsMotel(string prefab) => Path.GetFileNameWithoutExtension(prefab) == MotelId;
     static void StartStandard(string prefab)
     {
-        string extra = IsMotel(prefab) ? "\n\nThe Motel's optimized render chunks go stale after a rebake; use 'Regenerate render chunks' afterwards or the build guard will fail." : "";
         if (!EditorUtility.DisplayDialog("Rebake " + Path.GetFileNameWithoutExtension(prefab),
                 "This saves the open bake scene, bakes it, then exports bindings and baked-fixture metadata into the block prefab (applies the scene's prefab overrides, including your light edits)." +
-                extra + "\n\nUndo with git if you don't like the result.", "Save and bake", "Cancel")) return;
+                "\n\nUndo with git if you don't like the result.", "Save and bake", "Cancel")) return;
         RailCatalogLightingAuthoring.BakeOpenAndKeepOpen();
-    }
-    static string MotelChunkStatus()
-    {
-        var root = PrefabUtility.LoadPrefabContents("Assets/DuckRails/Blocks/" + MotelId + ".prefab");
-        try
-        {
-            var chunks = root.GetComponent<RailSceneryChunks>();
-            if (!chunks) return "No render chunks on the Motel prefab.";
-            return chunks.sourceFingerprint == RailMotelRenderChunks.Fingerprint(root)
-                ? "Current: render chunks match the saved lighting."
-                : "Stale: lighting or scenery changed. Regenerate render chunks before building.";
-        }
-        finally { PrefabUtility.UnloadPrefabContents(root); }
     }
 
     // ---------- 4b. Lights-only rebake (atlas blocks) ----------

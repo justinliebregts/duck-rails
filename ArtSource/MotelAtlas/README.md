@@ -1,5 +1,9 @@
 # Full Motel atlas review
 
+**Retired November 17, 2026** (triangle clipping; lighting predates the 2026-11-17
+rebake). Kept as a historical benchmark reference. The current conversion is
+[`../MotelAtlasLowPoly`](../MotelAtlasLowPoly/README.md).
+
 Current rollout decision: user accepts this optimization approach and authorizes
 the other blocks, Convenience Store next, without repeating full Quest A/Bs for
 each block. Use `docs/block-atlas-optimization.md` for the reusable procedure and

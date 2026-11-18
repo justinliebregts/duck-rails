@@ -113,6 +113,7 @@ public static class RailCatalogLightingAuthoring
         RailSkyscraperAtlasProduction.RequireOriginalLightingWorkflow(path);
         RailContainerYardAtlasProduction.RequireOriginalLightingWorkflow(path);
         RailFarmSilosAtlasProduction.RequireOriginalLightingWorkflow(path);
+        RailMotelAtlasProduction.RequireOriginalLightingWorkflow(path);
         if(File.Exists(BakePath(path)))
         {
             var existing=EditorSceneManager.OpenScene(BakePath(path));
@@ -190,6 +191,7 @@ public static class RailCatalogLightingAuthoring
         RailSkyscraperAtlasProduction.RequireOriginalLightingWorkflow(path);
         RailContainerYardAtlasProduction.RequireOriginalLightingWorkflow(path);
         RailFarmSilosAtlasProduction.RequireOriginalLightingWorkflow(path);
+        RailMotelAtlasProduction.RequireOriginalLightingWorkflow(path);
         if(Lightmapping.lightingDataAsset==null)throw new InvalidOperationException("Missing bake data");
         var root=Object.FindFirstObjectByType<RailBakedBlockLighting>();
         var bindings=root.GetComponentsInChildren<MeshRenderer>().Where(r=>!Excluded(r.transform,root.transform)&&r.lightmapIndex>=0&&r.lightmapIndex<LightmapSettings.lightmaps.Length)
@@ -244,6 +246,7 @@ public static class RailCatalogLightingAuthoring
         RailSkyscraperAtlasProduction.RequireOriginalLightingWorkflow(path);
         RailContainerYardAtlasProduction.RequireOriginalLightingWorkflow(path);
         RailFarmSilosAtlasProduction.RequireOriginalLightingWorkflow(path);
+        RailMotelAtlasProduction.RequireOriginalLightingWorkflow(path);
         if(!EditorSceneManager.SaveScene(SceneManager.GetActiveScene()))throw new InvalidOperationException("Could not save the block Bake scene.");
         Directory.CreateDirectory("output/block-lighting");
         reopenScene=keepOpen?SceneManager.GetActiveScene().path:null;

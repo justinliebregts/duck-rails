@@ -118,6 +118,14 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Motel production atlas and relit lights — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: Motel trapped lights fixed and rebaked (75 baked lights); Motel now ships a triangle-preserving Blender atlas (298 chunks, 79,948 triangles, 349 enabled renderers) instead of the runtime render chunks (`RailSceneryChunks` removed). See `ArtSource/MotelAtlasLowPoly/README.md`.
+- Setup: Motel block, single client, then 2 clients with a late joiner aboard.
+- Check: at night the streetlights, leisure lamp posts and pool floods light the ground around them; no missing, doubled, flickering or unlit (black) scenery, seams or wrong textures, especially putting greens, pool tiles, signs and interiors; neon/ceiling signs still glow; collision, coal/gold/enemy spawns and interactions unchanged; added lights do not also render as realtime lights (no doubled brightness or frame-time spike); late joiner sees the same visuals.
+- Needs human: headset look at visuals/lighting and frame rate across the Motel.
+- Priority: normal
+
 ### Skyscraper lights rebake — queued 2026-11-17
 - Commit(s): uncommitted
 - Changed: 9 baked point lights added (`Added baked lights`), West side bridge +8m guide lights 1–2 brightened, 18 worklights moved out of their housings; Skyscraper rebaked lights-only with atlas bindings unchanged; new lightmap approved. See `docs/atlas-lights-only-rebake.md`.

@@ -1,7 +1,7 @@
 # Lights-only rebake for atlas-integrated blocks
 
 Use this when a block that already ships an approved Blender atlas (Convenience
-Store, Skyscraper, Container Yard, Farm Silos) needs **only its baked lights
+Store, Skyscraper, Container Yard, Farm Silos, Motel) needs **only its baked lights
 changed**, for example a light trapped inside its own lamp mesh. It rebakes the
 block without undoing and rebuilding the atlas.
 
@@ -16,8 +16,8 @@ does not use them.
 
 **Duck Rails ▸ Lighting ▸ Block Lighting Tool** (`Assets/Editor/RailBlockLightingTool.cs`)
 runs this loop on whichever block bake scene is open. It detects the block type:
-atlas-integrated blocks get the lights-only procedure below; other blocks (including
-the Motel) get the standard **Bake Open Block** path.
+atlas-integrated blocks get the lights-only procedure below; other blocks get the
+standard **Bake Open Block** path.
 
 1. **Preview open map lighting**: atlas blocks bind each chunk to its lightmap
    (unsaved, the same as the Farm review rebind); other blocks turn on Scene view lighting.
@@ -39,9 +39,7 @@ the Motel) get the standard **Bake Open Block** path.
      `git checkout --` on the bake folder and keeps your light edits.
      Pending state is kept in `Temp/DuckRailsLightsOnlyRebake.json`.
    - Other blocks: **Rebake this block** calls Bake Open Block And Keep Open. That
-     applies all the bake scene's prefab overrides. The Motel then has buttons to
-     **check** and **regenerate render chunks**, because a rebake makes them stale
-     and the Motel build guard fails until they are regenerated.
+     applies all the bake scene's prefab overrides.
 
 The window opens with a **How to use** section listing these steps.
 Recording the run (step 7) and the playtest-queue entry remain manual.
@@ -51,9 +49,10 @@ Scripts can call `RailBlockLightingTool.PreviewOpenScene()` and
 Verified 2026-11-17: compiles with a clean Console. Preview and check ran on the
 Motel bake scene without dirtying it: 55 baked lights, 25 TRAPPED (lights inside
 their closed, shadow-casting lamp-post, streetlight and pool-flood box meshes), plus
-1 "check" at 1 m (the motel sign lamp behind its letters). The lights-only
-rebake/approve/discard buttons have not been exercised yet; the Motel uses the
-standard path.
+1 "check" at 1 m (the motel sign lamp behind its letters). The user then fixed
+those lights with the standard path before the Motel became an atlas block
+(November 17); the Motel now uses the lights-only path. The lights-only
+rebake/approve/discard buttons have not been exercised yet.
 
 ## Why it works
 
