@@ -882,3 +882,5 @@ November 16 compound music: supplied Max H Dark Horizons track loops throughout 
 Compound music follow-up: fade in over 1.5 seconds on entry and out over 0.75 seconds before normal scene departure; repeat boundaries keep looping without an extra fade.
 
 November 16 station audio: added Compound and Starting Station reverb, with stronger, longer tunnel reverb than the station hall. Saved prefab checks pass; listening/client acceptance queued. See [reverb settings](block-reverb.md#compound-and-starting-station--november-16-2026).
+
+November 18 held-item carry: an item or bag held in a hand when the player moves between Compound and Expedition (or changes room) comes along and drops at the player's feet on arrival; it is not put back in the hand. Held gold and coal carry like bagged ones. Implemented in `RailHeldCarry` and compiles; client acceptance queued. See [playtest queue](playtest-queue.md#held-items-carry-between-compound-and-expedition--queued-2026-11-18).

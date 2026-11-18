@@ -1,5 +1,32 @@
 # Playtest queue
 
+## Held items carry between Compound and Expedition — queued 2026-11-18
+
+- Request: an item held in a hand when the world changes comes along. It drops at the
+  player's feet on arrival instead of reappearing in the hand (the player may let go during
+  the veil).
+- Changed: new `Assets/Scripts/Photon/RailHeldCarry.cs`, hooked into `PhotonSession`.
+  `Begin` (every room change: public departure, crew return, Back to Compound, private
+  create/join) and `LoadWorldScene` (same-room private departure/return) record each
+  confirmed local hold (`PhotonGrabbable` items by prefab key; hand-held bags by bag type +
+  slot keys), then network-destroy the originals so no copy stays in the old world. Once
+  the destination is `WorldReady` and settled for 0.75 s (not downed/dead, not waiting for
+  the crew destination), copies drop ~0.35 m in front of the body, spread sideways, pulled
+  back from walls. Items spawn with room lifetime; bags via `RoomRpc.SpawnBag(...Dropped)`.
+  In Compound both carry the compound-purchase tag so the leftover cleanup keeps them.
+  Worn bags/head gear keep their existing restore paths. Unresolvable keys, pending pickups
+  and downed/dead players are not carried (old drop behaviour). `carry:` lines go to
+  `RailDiagnostics` events.
+- Editor evidence: Unity compiles; `RailHeldCarry` is in Assembly-CSharp with GUID
+  `9a2b53fbf34046c5b7ab0f2031e44500`; Console has 0 errors (pre-existing warnings only).
+  No Play Mode run.
+- Check (2 clients, public and private, master and non-master): hold one item, two items
+  and a loaded bag in hand through Compound → Expedition and back (success, failure, Back to
+  Compound). Each arrives once at your feet, the other client sees the same, nothing stays
+  behind in the old room, and nothing is cleared within 5 s. Also a held gold bar (it carries,
+  like gold in a worn bag) and a flashlight into Compound (prefab resolves on both clients).
+  Release grip during the veil. Queued for playtest; not verified.
+
 ## Phantom coal in worn backpack diagnostics — queued 2026-11-18
 
 - Reported: a player's backpack held 4 coal on the first block of a fresh run without

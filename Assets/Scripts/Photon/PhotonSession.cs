@@ -196,6 +196,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (allocation != null) requestedRoom = RailSessionRules.RoomCode(allocation);
         if (next == Request.Transfer) DuckzAnalytics.SessionEvent("transfer");
         WorldReady = false; MarkConnectPending(); RoomRequestStarted?.Invoke();
+        RailHeldCarry.CaptureLocalHands(); // Before the drop: carried items leave with the player.
         PhotonHeldItems.DropLocalHands(); RoomObjectRecovery.Flush();
         if (PhotonNetwork.InRoom)
         {
@@ -437,6 +438,9 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         MarkWorldLoading();
         string destinationScene = RequiredScene;
+        // A same-room swap (private departure/return) skips Begin; carry held items here too.
+        // After a room change the hands were already captured in Begin, so this finds nothing.
+        RailHeldCarry.CaptureLocalHands();
         loadingScene = true; PhotonNetwork.IsMessageQueueRunning = false; SetStatus("Loading " + destinationScene + "...");
         // Cached room objects may arrive before scene loading. Keep their Photon IDs alive.
         foreach (var view in PhotonNetwork.PhotonViewCollection)
@@ -789,6 +793,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         crewReturn?.Tick();
         TickDriveLease();
         FlushTrainControl();
+        RailHeldCarry.Tick(this);
         double now = Time.realtimeSinceStartupAsDouble;
         if (operationPending && now > operationUntil && !loadingScene)
         { operationPending = false; PhotonNetwork.Disconnect(); RetryConnection("Connection timed out."); }
