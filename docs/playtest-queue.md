@@ -1,5 +1,17 @@
 # Playtest queue
 
+## Starting station z-fighting: rib joints and supplies header — 2026-11-18
+
+- Request: remove flicker at every column/rib joint in the starting station hall and departure
+  tunnel, and under the timber header over the Supplies doorway.
+- Changed (`ArtSource/StartingStation/build_station.py`, FBX re-exported and rebaked): wall piers
+  and ceiling ribs are 4 cm narrower than the chamfer beams (hall ±0.28 vs beam ±0.30; tunnel
+  ±0.23 vs ±0.25), so the beam ends no longer share side planes with them; the Supplies header
+  underside sits 2 cm below the doorway head (was coplanar at Y 4.0). Triangle counts unchanged.
+- Check in Expedition: look up at the rib joints (wall-to-chamfer and chamfer-to-ceiling) on both
+  hall walls and along the tunnel, and at the underside of the Supplies header, from a few
+  distances. No flicker; station lighting has no new seams or dark patches.
+
 ## Loadout survives scene changes, quits, crashes and disconnects — 2026-11-18
 
 - Request: moving between Compound and Expedition keeps the worn bag (with contents) and worn
