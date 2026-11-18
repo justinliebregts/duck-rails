@@ -552,7 +552,7 @@ public partial class NewPlayer : MonoBehaviour
 
           }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (controllerInput.rightThumbstickButton.wasPressed) {
+        if (!RailAdminTools.Available && controllerInput.rightThumbstickButton.wasPressed) {
             stickMove = !stickMove;
         }
 #endif
@@ -583,7 +583,15 @@ public partial class NewPlayer : MonoBehaviour
 
         void Update() {
           RailAdminTools.Refresh();
-          if (UpdateAdminFlight()) return;
+          // R3 toggles noclip for admins only.
+          if (RailAdminTools.Available && controllerInput != null && controllerInput.rightThumbstickButton.wasPressed)
+              RailAdminTools.ToggleNoClip();
+          if (UpdateAdminFlight())
+          {
+              // Snap turning stays available in noclip (right stick left/right).
+              if (rotateMode == 0) Rotate();
+              return;
+          }
           Rotate();
           if (hookHandsActive && (_bodyDriver == null || _bodyDriver.Body == null))
               ResolveHookHands();

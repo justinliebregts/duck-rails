@@ -38,7 +38,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     double pendingRequestAt;
     bool wasDown;
     readonly RailAtmosphere atmosphere = new RailAtmosphere();
-    double nextTick, nextDownRequest, fallAt;
+    double nextTick, nextDownRequest;
     RailReviveEffects reviveEffects;
     readonly Dictionary<string, TMP_Text> downLabels = new Dictionary<string, TMP_Text>();
     RailBridgeCollapse collapse;
@@ -581,9 +581,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             bool localAboard = Position(PhotonNetwork.LocalPlayer.ActorNumber, out var localPoint) && RailTrain.Instance.ContainsPadded(localPoint);
             if (caughtRun != State.run)
             { caughtRun = State.run; if (GR.Player.instance != null && !localAboard && !RailAdminTools.NoClip) TeleportAboard(); }
-            if (GR.Player.instance != null && !localAboard && !RailAdminTools.NoClip)
-            { if (fallAt <= 0) fallAt = now; if (now - fallAt > 2) TeleportAboard(); }
-            else fallAt = 0;
+            // Teleport aboard only once per finished run; afterwards the player may walk off freely.
         }
         if (Camera.main != null) Camera.main.backgroundColor = RenderSettings.fogColor;
         if (runningLabels != null) foreach (var label in runningLabels) if (label != null) label.gameObject.SetActive(!State.finished);
@@ -717,7 +715,6 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         Vector3 position = RailTrain.Instance.AboardPoint(PhotonNetwork.LocalPlayer.ActorNumber);
         var desktop = GR.Player.instance.GetComponent<DesktopPlayer>();
         if (desktop != null) desktop.Teleport(position, Quaternion.identity, true); else NewPlayer.instance?.Warp(position, Quaternion.identity);
-        fallAt = 0;
     }
 }
 
