@@ -91,6 +91,26 @@ public sealed class RailBlockLightingTool : EditorWindow
     string lastStandardStatus;
     int pickBlock;
 
+    bool showHelp = true;
+    const string HelpText =
+        "PREVIEW\n" +
+        "1. Open the block's bake scene (Lighting/Blocks/<block>/<block>-bake.unity).\n" +
+        "2. Click Preview open map lighting.\n\n" +
+        "FIND AND FIX BAD LIGHTS\n" +
+        "1. Click Check baked lights for blocking meshes.\n" +
+        "2. For each TRAPPED light, click Select and move it out of its lamp mesh (usually just below or in front of the lamp head).\n" +
+        "3. Run the check again until the lights you moved show ok.\n" +
+        "4. To add a light, click Add baked light (at the Scene view centre, or a copy of the selected light), then move it into place.\n\n" +
+        "REBAKE\n" +
+        "Atlas blocks (Convenience Store, Skyscraper, Container Yard, Farm Silos):\n" +
+        "1. Click Rebake atlas block lights and wait for the bake to finish.\n" +
+        "2. Look at the result, then click Approve to keep it or Discard bake to throw it away.\n" +
+        "Every other block (including the Motel, whose Blender atlas was never integrated):\n" +
+        "1. Click Rebake this block and wait for it to finish.\n" +
+        "2. Motel only: click Regenerate render chunks afterwards, or the build will fail.\n\n" +
+        "FINISH\n" +
+        "Fly around and check the new lighting. If you like it, commit. If not, discard the bake (atlas blocks) or revert with git (other blocks).";
+
     [MenuItem("Duck Rails/Lighting/Block Lighting Tool")]
     static void Open() => GetWindow<RailBlockLightingTool>("Block Lighting");
 
@@ -128,11 +148,22 @@ public sealed class RailBlockLightingTool : EditorWindow
     }
 
     // ---------- GUI ----------
+    Vector2 windowScroll;
     void OnGUI()
+    {
+        windowScroll = EditorGUILayout.BeginScrollView(windowScroll);
+        try { DrawWindow(); }
+        finally { EditorGUILayout.EndScrollView(); }
+    }
+
+    void DrawWindow()
     {
         var prefab = OpenBlockPrefab();
         var atlas = prefab != null ? Atlas(prefab) : null;
         bool busy = EditorApplication.isPlayingOrWillChangePlaymode || Lightmapping.isRunning;
+
+        showHelp = EditorGUILayout.Foldout(showHelp, "How to use", true);
+        if (showHelp) EditorGUILayout.HelpBox(HelpText, MessageType.None);
 
         EditorGUILayout.LabelField("Open bake scene", EditorStyles.boldLabel);
         if (prefab == null)
@@ -185,7 +216,7 @@ public sealed class RailBlockLightingTool : EditorWindow
             if (atlas != null)
             {
                 using (new EditorGUI.DisabledScope(pending != null && pending.phase != "Failed"))
-                    if (GUILayout.Button("Rebake lights only (keeps atlas)", GUILayout.Height(28))) Run(() => StartLightsOnly(prefab, atlas, noShadowDuringBake));
+                    if (GUILayout.Button("Rebake atlas block lights", GUILayout.Height(28))) Run(() => StartLightsOnly(prefab, atlas, noShadowDuringBake));
             }
             else
             {

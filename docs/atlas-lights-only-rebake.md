@@ -29,7 +29,7 @@ the Motel) get the standard **Bake Open Block** path.
    last child of the block, at the Scene view pivot or copied from the selected light.
    Atlas blocks can also list renderers that cast no shadows during this bake only.
 4. **Rebake**:
-   - Atlas blocks, **Rebake lights only**: applies only light Light/Transform scene
+   - Atlas blocks, **Rebake atlas block lights**: applies only light Light/Transform scene
      edits to the prefab, reopens the scene from disk, runs `ValidateSaved`, snapshots
      placements, applies the temporary setup, bakes, reopens, compares placements,
      lightmap count and bake-folder GUIDs, and recaptures `bakedFixtures` if the light
@@ -43,6 +43,7 @@ the Motel) get the standard **Bake Open Block** path.
      **check** and **regenerate render chunks**, because a rebake makes them stale
      and the Motel build guard fails until they are regenerated.
 
+The window opens with a **How to use** section listing these steps.
 Recording the run (step 7) and the playtest-queue entry remain manual.
 Scripts can call `RailBlockLightingTool.PreviewOpenScene()` and
 `RailBlockLightingTool.CheckOpenScene(probe)` (returns the flagged list as text).
