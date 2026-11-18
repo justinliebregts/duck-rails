@@ -45,6 +45,9 @@ contents persist through UserPlayerPrefs; taking it off clears that save. Restor
 on next entry, respecting an existing recovered room copy. Implemented; live
 rejoin/transition and headset acceptance is [queued for playtest](playtest-queue.md#duckz-backpack-downing-and-persistence--queued-2026-11-16).
 
+November 18 head equipment on down: downing also drops any worn head items
+(helmet, night vision goggles), like the bag. Implemented; [queued for playtest](playtest-queue.md#downing-drops-head-equipment--queued-2026-11-18).
+
 November 16 coal audio: pickups use Furnace_CoalGrab_01; dropped coal surface impacts use Furnace_CoalThud_01 through shared networked item audio. Existing furnace deposit sequence remains. Editor asset checks pass; listening/multiplayer acceptance is queued in [playtest queue](playtest-queue.md#coal-pickup-and-drop-sounds--queued-2026-11-16).
 
 November 16 supplies reach: Compound and Starting Station items sit low on the walls without stands for roughly 0.5 m Gorilla Tag-style ducks, with lowered labels and grouped bundles. Implemented with location overrides; headset reach/movement acceptance queued. See [room layouts](character-bundles.md#low-supplies-room-layouts--november-16).

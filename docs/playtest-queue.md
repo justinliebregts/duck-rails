@@ -1,5 +1,21 @@
 # Playtest queue
 
+## Downing drops head equipment — queued 2026-11-18
+
+- Changed: when the local player goes down, every head item they wear (helmet,
+  night vision goggles) is dropped like a Duckz death, alongside the existing bag
+  drop. New `HeadEquipment.DropAllOnDowned()` calls the existing `DropOnDeath()`
+  (no-op for items not locally worn); called from `RailExpedition` beside
+  `BagInventory.DropAllOnDowned()`. Clears the saved head/eyes loadout slot;
+  NVG effect turns off via `LocallyUnequipped`.
+- Editor evidence: verified Duck Rails MCP target; recompile with zero Console
+  errors. No Play Mode run.
+- Check (2 clients): wear helmet + NVG and a bag, get downed by an enemy. Expect
+  helmet, goggles and bag to fall at the downed player on both clients, NVG view
+  turns off for the downed player, and either player can pick up and re-wear
+  them after revive. Late joiner sees the items on the ground, not on the head.
+  Queued for playtest; not verified.
+
 ## Expedition and economy analytics events — queued 2026-11-18
 
 - Changed: new `RailAnalytics` (run start/end, last block, block time, fuel out,

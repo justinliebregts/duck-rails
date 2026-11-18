@@ -327,6 +327,13 @@ public sealed partial class HeadEquipment : MonoBehaviour, IPunObservable, IInRo
             networkItem.NotifyEquipmentDropped();
     }
 
+    /// <summary>Rails downing: drop every locally worn head item (helmet, night vision goggles) like a Duckz death.</summary>
+    public static void DropAllOnDowned()
+    {
+        foreach (var item in FindObjectsByType<HeadEquipment>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            item.DropOnDeath();
+    }
+
     Transform FindHeadAnchor(int actorNumber)
     {
         for (int i = 0; i < PhotonPlayer.Active.Count; i++)

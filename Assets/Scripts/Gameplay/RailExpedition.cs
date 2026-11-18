@@ -549,6 +549,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             GR.Player.instance?.leftPlayerHand?.Release(); GR.Player.instance?.rightPlayerHand?.Release();
             // Match Duckz death bag cleanup while preserving Rails revival.
             BagInventory.DropAllOnDowned();
+            HeadEquipment.DropAllOnDowned();
         }
         wasDown = local?.down == true;
         reviveEffects.Present(State, transform, now);
