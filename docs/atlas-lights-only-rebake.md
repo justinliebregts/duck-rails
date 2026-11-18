@@ -12,6 +12,48 @@ The normal **Bake Open Block** / Prepare / Export commands refuse integrated blo
 on purpose (`Rail*AtlasProduction.RequireOriginalLightingWorkflow`); this procedure
 does not use them.
 
+## Editor tool (do it yourself)
+
+**Duck Rails ▸ Lighting ▸ Block Lighting Tool** (`Assets/Editor/RailBlockLightingTool.cs`)
+runs this loop on whichever block bake scene is open. It detects the block type:
+atlas-integrated blocks get the lights-only procedure below; other blocks (including
+the Motel) get the standard **Bake Open Block** path.
+
+1. **Preview open map lighting**: atlas blocks bind each chunk to its lightmap
+   (unsaved, the same as the Farm review rebind); other blocks turn on Scene view lighting.
+2. **Check baked lights for blocking meshes**: the ray check from step 1 below (26
+   directions for point lights, 25 samples across a spot cone, front and back faces,
+   adjustable probe distance; default 1 m). It lists TRAPPED / check / ok with the
+   most-hit mesh and a Select button. Re-run it after moving a light to test the position.
+3. **Add baked light**: creates a Baked light under `Added baked lights`, the
+   last child of the block, at the Scene view pivot or copied from the selected light.
+   Atlas blocks can also list renderers that cast no shadows during this bake only.
+4. **Rebake**:
+   - Atlas blocks, **Rebake lights only**: applies only light Light/Transform scene
+     edits to the prefab, reopens the scene from disk, runs `ValidateSaved`, snapshots
+     placements, applies the temporary setup, bakes, reopens, compares placements,
+     lightmap count and bake-folder GUIDs, and recaptures `bakedFixtures` if the light
+     set changed. It refuses to start if the bake folder has uncommitted changes. When
+     the result is good, it shows **Approve: record new fingerprint**, which writes
+     `production-state.json` only when you click it. **Discard bake** runs
+     `git checkout --` on the bake folder and keeps your light edits.
+     Pending state is kept in `Temp/DuckRailsLightsOnlyRebake.json`.
+   - Other blocks: **Rebake this block** calls Bake Open Block And Keep Open. That
+     applies all the bake scene's prefab overrides. The Motel then has buttons to
+     **check** and **regenerate render chunks**, because a rebake makes them stale
+     and the Motel build guard fails until they are regenerated.
+
+Recording the run (step 7) and the playtest-queue entry remain manual.
+Scripts can call `RailBlockLightingTool.PreviewOpenScene()` and
+`RailBlockLightingTool.CheckOpenScene(probe)` (returns the flagged list as text).
+
+Verified 2026-11-17: compiles with a clean Console. Preview and check ran on the
+Motel bake scene without dirtying it: 55 baked lights, 25 TRAPPED (lights inside
+their closed, shadow-casting lamp-post, streetlight and pool-flood box meshes), plus
+1 "check" at 1 m (the motel sign lamp behind its letters). The lights-only
+rebake/approve/discard buttons have not been exercised yet; the Motel uses the
+standard path.
+
 ## Why it works
 
 - Each atlas chunk's UV2 was built in lightmap space from the original meshes'
