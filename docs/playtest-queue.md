@@ -1,5 +1,16 @@
 # Playtest queue
 
+## Smaller Minion/Hook kill triggers — queued 2026-11-18
+
+- Changed: port only Duckz `a3d484e994e53c219f62de3caa99af009d20c812` collider
+  size/center values to ZombieMinion and ZombieHook; resource variants inherit them.
+- Editor evidence: verified Duck Rails MCP target; synchronous imports and all four
+  base/variant trigger size, center, enabled/isTrigger and component checks pass.
+- Check: with real clients/headsets, approach both enemies from front and sides,
+  confirm close misses outside the reduced volume survive and actual contact still
+  downs the duck. Repeat aboard the moving train without changing boarding rules.
+  Queued for playtest; no Play Mode run or runtime acceptance claimed.
+
 ## Revive-complete SFX via AudioManager — queued 2026-11-18
 
 - Changed: the revive-complete sound now plays through `AudioManager` (pooled voice,

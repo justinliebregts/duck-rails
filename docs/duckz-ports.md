@@ -1,5 +1,24 @@
 # Duckz port history
 
+## a3d484e994e53c219f62de3caa99af009d20c812 — Smaller enemy kill triggers
+
+- Status: implemented; Unity EditMode asset validation passed November 18, 2026;
+  gameplay acceptance queued for playtest.
+- Behavior/destination: copy only the new KillTrigger BoxCollider size and center
+  into `Assets/Prefabs/Enemies/ZombieMinion.prefab` and `ZombieHook.prefab`.
+  Rails' previous depth differed from the source parent; use the requested commit's
+  final dimensions exactly. All other prefab fields and GUIDs are preserved.
+- Dependencies: both projects use Unity 6000.3.24f1; enemy networking uses PUN over
+  Realtime. Existing KillTrigger components suffice; no code or new assets needed.
+- Validation: inspected exact source/parent diff (only these four property lines).
+  Verified MCP target `X:/Work/duck-rails/Assets` in Edit Mode, synchronously imported
+  both prefabs and checked sizes, centers, enabled trigger flags and KillTrigger
+  components on both bases and inherited `RailZombie`/`RailHook` resource variants:
+  all four pass. No Play Mode launched or diagnostic reports inspected.
+- Remaining: natural near-miss/contact checks on ground and moving train with real
+  clients/headsets; see [playtest queue](playtest-queue.md#smaller-minionhook-kill-triggers--queued-2026-11-18).
+- Destination commit: the commit introducing this entry (see Git history).
+
 Shared handoff for Duckz-to-Duck Rails ports. Follow the porting rules in `../AGENTS.md`.
 Source: `X:\Work\duckz` (read-only). Destination: `X:\Work\duck-rails` or its active worktree.
 
