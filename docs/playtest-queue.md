@@ -1,5 +1,25 @@
 # Playtest queue
 
+## Bundle IAP items pullable right after purchase (no restart) — queued 2026-11-18
+
+- Bug (Ken, Quest, Quackbear and Lethal Company bundles): after buying, the label read
+  "<Bundle> Owned" but pulling the skin, bag and pan snapped back red until an app restart.
+  Likely cause: `StoreUI.busy` was only cleared by the Meta checkout callback; if that callback
+  was lost (or a throwing `DuckzWallet.OnChanged` listener aborted `DuckzIap.PurchaseRoutine`
+  before it), every pull returned `Busy`.
+- Changed: `StoreUI.Purchase` takes owned bundle items and owned/equipped wearables before the
+  busy check; `StoreUI` releases the checkout (busy, `CheckingOut`, and the waiting wall item
+  as `Unlocked`) as soon as the wallet reports the checkout SKU owned, and ignores the stale
+  callback via a checkout id; `DuckzIap.PurchaseRoutine` always calls `completed` even if
+  marking ownership or analytics throws.
+- Editor evidence: verified Duck Rails MCP target; recompile with zero Console errors. No Play
+  Mode or headset run; real Meta checkout needs a human on a Quest with a test account.
+- Check (Quest, test user without the bundle): pull a bundle item, buy in the Meta modal,
+  return. Expect the label to show Owned and each bundle item (skin, bag, weapon) to pull off
+  on the first try without a restart. Also cancel a checkout once: the item snaps back and a
+  later pull reopens checkout. Coin purchases and owned-skin equips still work.
+  Queued for playtest; not verified.
+
 ## Late join and rejoin into running public and private expeditions — queued 2026-11-18
 
 - Regression check, no code change. Requested by Justin to confirm late joining still works after

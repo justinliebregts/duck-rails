@@ -27,6 +27,10 @@ public class StoreUI : MonoBehaviour
 
     bool busy;
     int lastCooldownTick = -1;
+    // The open checkout. A newer id means its callback no longer owns busy/CheckingOut.
+    int checkoutId;
+    string checkoutSku;
+    Action<StorePurchaseResult> checkoutDone;
 
     public StoreCatalog Catalog => catalogOverride != null ? catalogOverride : (GameConfig.Current != null ? GameConfig.Current.storeCatalog : null);
     public bool Busy => busy;
@@ -35,7 +39,7 @@ public class StoreUI : MonoBehaviour
 
     void OnEnable()
     {
-        DuckzWallet.Ensure().OnChanged += RaiseChanged;
+        DuckzWallet.Ensure().OnChanged += OnWalletChanged;
         EquippedLoadout.Ensure().OnEquipped += OnEquipped;
         DuckzIap.Ensure().OnPricesChanged += RaiseChanged;
     }
@@ -43,7 +47,7 @@ public class StoreUI : MonoBehaviour
     void OnDisable()
     {
         if (DuckzWallet.Instance != null)
-            DuckzWallet.Instance.OnChanged -= RaiseChanged;
+            DuckzWallet.Instance.OnChanged -= OnWalletChanged;
         if (EquippedLoadout.Instance != null)
             EquippedLoadout.Instance.OnEquipped -= OnEquipped;
         if (DuckzIap.Instance != null)
@@ -75,6 +79,30 @@ public class StoreUI : MonoBehaviour
 
     void OnEquipped(StoreItemType type, StoreItem item) => RaiseChanged();
     void RaiseChanged() => OnStateChanged?.Invoke();
+
+    // Once the SKU being checked out shows up as owned (checkout reply or a resume restore), the store is free
+    // again even if Meta's checkout reply never arrives. Otherwise every pull fails as Busy until a restart.
+    void OnWalletChanged()
+    {
+        Action<StorePurchaseResult> unlocked = null;
+        if (CheckingOut && DuckzWallet.Ensure().OwnsSku(checkoutSku))
+        {
+            DuckzLog.Log($"[Store] '{checkoutSku}' is owned, no longer waiting on its checkout");
+            unlocked = checkoutDone;
+            ReleaseCheckout();
+        }
+        RaiseChanged();
+        unlocked?.Invoke(StorePurchaseResult.Unlocked);
+    }
+
+    void ReleaseCheckout()
+    {
+        checkoutId++;
+        checkoutSku = null;
+        checkoutDone = null;
+        CheckingOut = false;
+        busy = false;
+    }
 
     public StoreItem Find(string key) => Catalog != null ? Catalog.Find(key) : null;
 
@@ -216,11 +244,6 @@ public class StoreUI : MonoBehaviour
         float cooldown = CooldownRemaining(item);
         DuckzLog.Log($"[Store] Pulled '{key}': type {item.type}, " +
                   $"bundle '{item.bundleSku}', cooldown {cooldown:0}s, busy {busy}");
-        if (busy)
-        {
-            done?.Invoke(StorePurchaseResult.Busy);
-            return;
-        }
         if (cooldown > 0f)
         {
             PlaySound(buyFailSound);
@@ -228,9 +251,11 @@ public class StoreUI : MonoBehaviour
             return;
         }
 
-        if (item.InBundle)
+        // Owned items are free and touch no checkout or coin buy, so a pending one doesn't block them.
+        if (item.InBundle && IsOwned(item))
         {
-            PurchaseBundleItem(item, done);
+            DuckzLog.Log($"[Store] '{item.key}' is owned through '{item.bundleSku}', taking it for free");
+            TakeBundleItem(item, StorePurchaseResult.Equipped, done);
             return;
         }
 
@@ -239,6 +264,19 @@ public class StoreUI : MonoBehaviour
         {
             EquippedLoadout.Ensure().Equip(item);
             done?.Invoke(StorePurchaseResult.Equipped);
+            return;
+        }
+
+        if (busy)
+        {
+            done?.Invoke(StorePurchaseResult.Busy);
+            return;
+        }
+
+        if (item.InBundle)
+        {
+            DuckzLog.Log($"[Store] '{item.key}' is part of '{item.bundleSku}', which isn't owned: opening its checkout");
+            BeginCheckout(item, item.bundleSku, done);
             return;
         }
 
@@ -270,36 +308,28 @@ public class StoreUI : MonoBehaviour
         });
     }
 
-    // Owned bundle: the item is free. Not owned: the bundle's checkout. The item stays on the wall either way.
-    void PurchaseBundleItem(StoreItem item, Action<StorePurchaseResult> done)
-    {
-        if (IsOwned(item))
-        {
-            DuckzLog.Log($"[Store] '{item.key}' is owned through '{item.bundleSku}', taking it for free");
-            TakeBundleItem(item, StorePurchaseResult.Equipped, done);
-            return;
-        }
-
-        DuckzLog.Log($"[Store] '{item.key}' is part of '{item.bundleSku}', which isn't owned: opening its checkout");
-        BeginCheckout(item, item.bundleSku, done);
-    }
-
     // The checkout unlocks the item. It is not taken off the wall; the player pulls it again once it's owned.
     void BeginCheckout(StoreItem item, string sku, Action<StorePurchaseResult> done)
     {
+        int id = ++checkoutId;
+        checkoutSku = sku;
+        checkoutDone = done;
         CheckingOut = true;
         busy = true;
         DuckzIap.Ensure().Purchase(sku, ok =>
         {
-            CheckingOut = false;
-            busy = false;
-            DuckzLog.Log($"[Store] Checkout for '{sku}' from '{item.key}' finished: {(ok ? "bought, pull it off the wall to take it" : "not bought")}");
+            // Stale when ownership already released this checkout; the wall item was told then.
+            bool current = id == checkoutId;
+            if (current)
+                ReleaseCheckout();
+            DuckzLog.Log($"[Store] Checkout for '{sku}' from '{item.key}' finished: {(ok ? "bought, pull it off the wall to take it" : "not bought")}{(current ? "" : " (already released by ownership)")}");
             if (ok)
                 RoomRpc.PlaySound(buySucceedSound, BuyerHead());
             RaiseChanged();
             StorePurchaseResult result = ok ? StorePurchaseResult.Unlocked : StorePurchaseResult.Failed;
             DuckzAnalytics.StorePurchase(sku, result);
-            done?.Invoke(result);
+            if (current)
+                done?.Invoke(result);
         });
     }
 
