@@ -103,7 +103,7 @@ namespace Game.AI
             float reach = DefenderReach + 8f * flightTime;
             foreach (var player in PhotonPlayer.Active)
             {
-                if (player == null || player.IsLocalHuman || player.IsCompanion) continue;
+                if (player == null || player.IsLocalHuman) continue;
                 if (player != target)
                 {
                     if (!player.TryGetHeadPosition(out var head)) continue;

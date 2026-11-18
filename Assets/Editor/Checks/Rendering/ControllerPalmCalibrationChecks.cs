@@ -144,15 +144,6 @@ public static class ControllerPalmCalibrationChecks
                 Require(GC.GetAllocatedBytesForCurrentThread() == before, "source sampling is allocation-free");
                 Require(left.GetComponents<Component>().Length == 1 && right.GetComponents<Component>().Length == 1, "sources are transforms only, no physics/network components");
 
-                var npc = Spawn("Assets/Resources/DuckCompanion.prefab", scene);
-                try {
-                    var npcDriver = npc.AddComponent<LocalBodyDriver>();
-                    npcDriver.controllerInput = driver.controllerInput;
-                    npcDriver.BindAnchors(driver.HeadAnchor, driver.LeftHandAnchor, driver.RightHandAnchor, npc.GetComponentInChildren<RemotePlayerBody>(true));
-                    Require(npcDriver.LeftPalmSource == driver.LeftHandAnchor && npcDriver.RightPalmSource == driver.RightHandAnchor, "companion excluded even if given a driver");
-                }
-                finally { Object.DestroyImmediate(npc); }
-
                 var desktop = Spawn("Assets/Prefabs/Player/DesktopPlayer.prefab", scene);
                 CursorLockMode cursorLock = Cursor.lockState;
                 bool cursorVisible = Cursor.visible;

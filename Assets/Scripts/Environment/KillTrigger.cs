@@ -6,10 +6,8 @@ public class KillTrigger : MonoBehaviour
     readonly System.Collections.Generic.HashSet<Collider> deferredMeleeContacts = new();
     readonly System.Collections.Generic.List<Collider> pendingEnemyContacts = new();
     public event System.Action PlayerKilled;
-    // Optional companion weapon filter; ordinary environmental/enemy triggers are unchanged.
+    // Optional contact filter; ordinary environmental/enemy triggers leave it unset.
     public System.Func<Collider, bool> ContactAllowed;
-    public DuckCompanion CompanionKiller;
-    public int CompanionAttack;
 
     private void OnTriggerEnter(Collider other) {
         QueueOrContact(other);
@@ -17,7 +15,7 @@ public class KillTrigger : MonoBehaviour
 
     private void OnTriggerStay(Collider other) {
         // Retry only contacts deferred by melee grace. Other kill triggers retain
-        // their entry-only behavior, including companion weapons and hazards.
+        // their entry-only behavior, including hazards.
         if (deferredMeleeContacts.Contains(other)) QueueOrContact(other);
     }
 
@@ -64,21 +62,6 @@ public class KillTrigger : MonoBehaviour
         // Physics can queue more contacts before the explosion disables the colliders.
         var enemy = GetComponentInParent<Game.AI.Enemy>();
         if (enemy != null && enemy.IsDormant) return false;
-        var duck = other.GetComponentInParent<DuckCompanion>();
-        if (duck != null)
-        {
-            var spider = enemy != null ? enemy.Gait as Game.Animation.SpiderGait : null;
-            Vector3 scarPosition = spider != null ? other.bounds.center : default;
-            bool killed = duck.TryKill();
-            if (killed)
-            {
-                if (spider != null) spider.ObserveKillScar(scarPosition);
-                if (enemy != null) enemy.SubmitPlayerKill(duck.transform.position);
-                DeathProfile.Accepted++;
-                using (DeathProfile.Listeners.Auto()) PlayerKilled?.Invoke();
-            }
-            return killed;
-        }
         if (other.attachedRigidbody != null && other.attachedRigidbody.CompareTag("Player") && GR.Player.instance != null && !GR.Player.instance.IsDead) {
             if (enemy != null && RailTestTools.EnemyInvincible) return false;
             if (enemy != null && enemy.ProtectsLocalPlayer)
@@ -89,8 +72,7 @@ public class KillTrigger : MonoBehaviour
             deferredMeleeContacts.Remove(other);
             var spider = enemy != null ? enemy.Gait as Game.Animation.SpiderGait : null;
             Vector3 scarPosition = spider != null ? other.bounds.center : default;
-            if (CompanionKiller != null) GR.Player.instance.SetDeadFromDuck(CompanionKiller, CompanionAttack);
-            else if (enemy != null)
+            if (enemy != null)
             {
                 Vector3 victimPosition = GR.Player.instance.transform.position;
                 victimPosition = GR.Player.instance.HeadCenteredGameplayPosition(victimPosition);

@@ -54,7 +54,7 @@ namespace Game.AI
         CrawlGraph pathGraph;
         readonly HashSet<int> trainBlockedNodes = new HashSet<int>();
         readonly Dictionary<CrawlGraph, CrawlPathfinder> graphFinders = new Dictionary<CrawlGraph, CrawlPathfinder>();
-        // Scoped per enemy, never replace the world graph for other enemies or companions.
+        // Scoped per enemy, never replace the world graph for other enemies.
         public GraphScope UseGraph(CrawlGraph graph) => new GraphScope(this, graph);
         public readonly struct GraphScope : System.IDisposable
         {
@@ -66,7 +66,7 @@ namespace Game.AI
         }
         public float PathBudgetMilliseconds => pathBudgetMilliseconds;
         // Independent mutable search state; the baked graph itself is shared.
-        public CrawlPathfinder CreateCompanionPathfinder()
+        public CrawlPathfinder CreateIndependentPathfinder()
         {
             if (Graph == null) return null;
             var result = new CrawlPathfinder(Graph, maxExpansions) { CorridorClusters = corridorClusters };

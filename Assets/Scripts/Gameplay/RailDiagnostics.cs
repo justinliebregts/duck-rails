@@ -172,7 +172,7 @@ public sealed class RailDiagnostics : MonoBehaviour
         var active = new HashSet<string>();
         var avatars = new List<PhotonView>();
         foreach (var v in PhotonNetwork.PhotonViewCollection)
-            if (v != null && v.GetComponent<PhotonPlayer>() != null && !v.GetComponent<PhotonPlayer>().IsCompanion) avatars.Add(v);
+            if (v != null && v.GetComponent<PhotonPlayer>() != null) avatars.Add(v);
         string readyToken = sample.run + ":" + sample.phase;
         foreach (var actor in PhotonNetwork.PlayerList.Where(p => !p.IsInactive))
         {

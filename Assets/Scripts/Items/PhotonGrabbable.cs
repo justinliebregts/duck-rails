@@ -610,8 +610,8 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             _hasSamplePrev = false;
             return;
         }
-        bool observeCompanion = photonView != null && PhotonNetwork.InRoom && !photonView.IsMine;
-        if (observeCompanion && !PhotonNetwork.IsMasterClient)
+        // Only the item's owner sweeps; victims are told by RPC.
+        if (photonView != null && PhotonNetwork.InRoom && !photonView.IsMine)
         {
             _hasSamplePrev = false;
             return;
@@ -630,9 +630,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         if (CanReuseSwingSamples(source, matrix)) { IdleSkips++; return; }
 
         int count = primary != null ? CopySwingSampleWorldPositions(_sampleNow, matrix) : 0;
-        bool companionOnly = count == 0 || observeCompanion;
         float radius = LocomotionRadius;
-        if (count == 0) count = CopyCompanionHitSamples(_sampleNow, out radius);
         if (count <= 0)
         {
             _hasSamplePrev = false;
@@ -678,7 +676,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         List<Enemy> enemies = Enemy.Active;
         ThrownHit firstHit = default, firstSoundOnly = default;
         Bounds sweep = default;
-        if (!companionOnly && enemies.Count > 0)
+        if (enemies.Count > 0)
         {
             sweep = new Bounds(_samplePrev[0], Vector3.zero);
             for (int i = 0; i < count; i++)
@@ -688,7 +686,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             }
             sweep.Expand(radius * 2f);
         }
-        for (int e = 0; !companionOnly && e < enemies.Count; e++)
+        for (int e = 0; e < enemies.Count; e++)
         {
             Enemy enemy = enemies[e];
             if (enemy == null) continue;
@@ -732,7 +730,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         if (firstHit.enemy != null || firstSoundOnly.enemy != null)
             ApplyThrownHit(firstHit, firstSoundOnly, dt);
 
-        TickPlayerSwings(count, dt, radius, companionOnly);
+        TickPlayerSwings(count, dt, radius);
         StoreSamples(count);
     }
 
@@ -777,12 +775,12 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
     {
         radius = LocomotionRadius;
         int count = CopySampleWorldPositions(buffer);
-        return count > 0 ? count : CopyCompanionHitSamples(buffer, out radius);
+        return count > 0 ? count : CopyFallbackHitSamples(buffer, out radius);
     }
 
     // Some items have no locomotion collider (or use a sphere/mesh). They can still
-    // hit Duck. Sample their physical shape without changing human/enemy combat.
-    int CopyCompanionHitSamples(Vector3[] buffer, out float radius)
+    // block hooks. Sample their physical shape without changing human/enemy combat.
+    int CopyFallbackHitSamples(Vector3[] buffer, out float radius)
     {
         radius = 0f;
         if (fallbackHitCollider == null || !fallbackHitCollider.enabled)
@@ -862,7 +860,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             rb.angularVelocity = spin.normalized * ThrowGlanceSpin;
     }
 
-    void TickPlayerSwings(int count, float dt, float radius, bool companionOnly = false)
+    void TickPlayerSwings(int count, float dt, float radius)
     {
         int ownerActor = photonView != null ? photonView.OwnerActorNr : 0;
         List<PhotonPlayer> players = PhotonPlayer.Active;
@@ -870,12 +868,11 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         {
             PhotonPlayer player = players[p];
             if (player == null || player.IsDead) continue;
-            if (companionOnly && !player.IsCompanion) continue;
             if (player.SwingLocked && (itemSounds == null || !itemSounds.FleshImpactReady)) continue;
             PhotonView victim = player.photonView;
-            if (!player.IsCompanion && victim != null && victim.OwnerActorNr == ownerActor) continue;
+            if (victim != null && victim.OwnerActorNr == ownerActor) continue;
 
-            float minDistance = (player.Companion != null ? player.Companion.HitReactionMinSpeed : player.MinHitSpeed) * dt;
+            float minDistance = player.MinHitSpeed * dt;
             float minDistanceSq = minDistance * minDistance;
             bool hit = false;
             float bestSq = 0f;
@@ -895,11 +892,6 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             if (!hit) continue;
 
             if (itemSounds != null) itemSounds.PlayFleshImpact(hitPosition, bestDelta);
-            if (player.IsCompanion)
-            {
-                SubmitCompanionHit(player, bestDelta / dt, hitPosition);
-                continue;
-            }
             if (player.SwingLocked) continue;
 
             player.LockSwing();
@@ -909,45 +901,6 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             if (IsHeld)
                 VibrationManager.instance?.TriggerHeldItemHit(Holder);
         }
-    }
-
-    // The master also observes remote item sweeps. A missed/late owner report must
-    // not make Duck invulnerable. PhotonPlayer's hit cooldown deduplicates both paths.
-    void SubmitCompanionHit(PhotonPlayer player, Vector3 velocity, Vector3 hitPosition)
-    {
-        if (player == null || !player.IsCompanion || player.IsDead || player.SwingLocked
-            || PickupGrowing || IsStashed || !(hasBeenPickedUp || IsHeld || remoteHeld)
-            || !PhotonNetwork.InRoom || photonView == null || photonView.ViewID == 0) return;
-        int actor = remoteHeld ? remoteHolderActorNumber : photonView.ControllerActorNr;
-        if (actor <= 0) return;
-        if (player.Companion.HasAuthority)
-        {
-            if (!player.AcceptItemHit(actor, velocity, hitPosition, 0f)) return;
-        }
-        else
-        {
-            if (!photonView.IsMine || player.photonView.ViewID == 0) return;
-            player.photonView.RPC(nameof(PhotonPlayer.ReceiveCompanionHit), RpcTarget.MasterClient, photonView.ViewID, velocity, hitPosition);
-        }
-        player.LockSwing();
-        if (IsHeld) VibrationManager.instance?.TriggerHeldItemHit(Holder);
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        // A fast thrown object can enter and bounce between render samples.
-        // Physics contacts complement sweeps; held items still use the sweep as
-        // their rigidbody deliberately has detectCollisions disabled.
-        if (rb == null || IsHeld || rb.isKinematic || !photonView.IsMine) return;
-        PhotonPlayer player = other.GetComponentInParent<PhotonPlayer>();
-        if (player == null || !player.IsCompanion) return;
-        Vector3 hitPosition = other.ClosestPoint(rb.worldCenterOfMass);
-        Vector3 velocity = rb.GetPointVelocity(hitPosition);
-        float minSpeed = player.Companion.HitReactionMinSpeed;
-        if (itemSounds != null && !player.IsDead && hasBeenPickedUp && !PickupGrowing && !IsStashed
-            && velocity.sqrMagnitude >= minSpeed * minSpeed)
-            itemSounds.PlayFleshImpact(hitPosition, velocity);
-        SubmitCompanionHit(player, velocity, hitPosition);
     }
 
     void StoreSamples(int count)

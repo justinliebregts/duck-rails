@@ -108,7 +108,7 @@ public static class RailSceneBuilder
         var gm = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Manager/GameManager.prefab"));
         gm.transform.position = Vector3.zero;
         var manager = gm.GetComponent<GameManager>(); manager.respawnPoint = spawn;
-        manager.disableEnemySpawning = true; manager.disableDuckCompanion = true;
+        manager.disableEnemySpawning = true;
         PrefabUtility.RecordPrefabInstancePropertyModifications(manager);
         var rig = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Player/DuckPlayer.prefab"));
         rig.transform.position = spawn.position;

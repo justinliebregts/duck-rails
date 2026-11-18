@@ -179,7 +179,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (!PhotonNetwork.IsMessageQueueRunning || PhotonSession.Instance == null || PhotonSession.Instance.HasRoomRequest) { reviveEffects.StopProgress(); return; }
 #if UNITY_EDITOR
         if (PhotonSession.Phase == RailPhase.Running && PhotonSession.Instance.WorldReady &&
-            !RailWorld.InputBlocked && !DuckCompanionDebug.IsTyping && RailDesktopInput.GetKeyDown(KeyCode.F))
+            !RailWorld.InputBlocked && RailDesktopInput.GetKeyDown(KeyCode.F))
             Request("editor-fuel-100");
 #endif
         ReadState();

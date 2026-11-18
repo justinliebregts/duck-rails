@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using Photon.Pun;
 
@@ -7,11 +8,23 @@ public class PlayerListItem : MonoBehaviour
     const string SelfMutedKey = "SelfMuted";
 
     Photon.Realtime.Player cachedPlayer;
-    PhotonPlayer companion;
     public TextMeshPro playerName;
     bool selfMuted;
     public PauseMenuButton muteButton;
     public TextMeshPro muteText;
+    float baseNameFontSize = -1f;
+
+    // PlayersMenu shrinks rows so a full lobby fits on one page; the mute button keeps its size.
+    public void SetRowScale(float scale, float rowHeight) {
+        LayoutElement layout = GetComponent<LayoutElement>();
+        if (layout != null)
+            layout.preferredHeight = rowHeight;
+        if (playerName == null)
+            return;
+        if (baseNameFontSize <= 0f)
+            baseNameFontSize = playerName.fontSize;
+        playerName.fontSize = baseNameFontSize * scale;
+    }
 
     public static bool ReadSelfMuted() {
         return PlayerPrefsX.GetBool(SelfMutedKey, false);
@@ -34,7 +47,6 @@ public class PlayerListItem : MonoBehaviour
 
     public void Init(Photon.Realtime.Player p) {
         cachedPlayer = p;
-        companion = null;
         bool muted = false;
         if (PhotonNetwork.LocalPlayer == p) {
             playerName.color = Color.yellow;
@@ -50,26 +62,7 @@ public class PlayerListItem : MonoBehaviour
         playerName.text = p.NickName;
     }
 
-    public void InitCompanion(PhotonPlayer duck) {
-        cachedPlayer = null;
-        companion = duck;
-        playerName.color = Color.white;
-        playerName.text = "Duck";
-        AudioSource voice = duck != null ? duck.VoiceSource : null;
-        ApplyCompanionMute(voice != null && voice.mute);
-    }
-
     public void ToggleMute() {
-        if (companion != null) {
-            AudioSource voice = companion.VoiceSource;
-            DuckCompanion duck = companion.Companion;
-            if (voice != null && duck != null && duck.SelfMute != null) {
-                duck.SelfMute.SetMuted(!voice.mute);
-                ApplyMuteText(voice.mute);
-            }
-            return;
-        }
-
         if (cachedPlayer == null)
             return;
 
@@ -104,32 +97,6 @@ public class PlayerListItem : MonoBehaviour
         selfMuted = PhotonVoiceChat.PunishmentMuted || ReadSelfMuted();
         muteButton.ShowPressed(selfMuted);
         ApplyMuteText(selfMuted);
-    }
-
-    void OnEnable() {
-        DuckCompanion.UnmutedItself += OnDuckUnmutedItself;
-        if (companion != null) {
-            AudioSource voice = companion.VoiceSource;
-            ApplyCompanionMute(voice != null && voice.mute);
-        }
-    }
-
-    void OnDisable() {
-        DuckCompanion.UnmutedItself -= OnDuckUnmutedItself;
-    }
-
-    void OnDuckUnmutedItself(DuckCompanion duck) {
-        if (companion == null || duck == null || companion.Companion != duck) {
-            return;
-        }
-        ApplyCompanionMute(false);
-    }
-
-    void ApplyCompanionMute(bool muted) {
-        ApplyMuteText(muted);
-        if (muteButton != null) {
-            muteButton.ShowPressed(muted);
-        }
     }
 
     void ApplyMuteText(bool muted) {

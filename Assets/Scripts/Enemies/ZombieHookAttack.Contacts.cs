@@ -101,7 +101,7 @@ namespace Game.AI
             {
                 if (player == null || player.IsDead || !player.TryGetHeadPosition(out Vector3 head)
                     || (head - from).sqrMagnitude > (best + 2.5f) * (best + 2.5f)) continue;
-                if (ownerReports && !player.IsCompanion)
+                if (ownerReports)
                 {
                     if (player.photonView.Owner != Photon.Pun.PhotonNetwork.LocalPlayer)
                     {

@@ -34,8 +34,6 @@ public static class PlayerRagdollLengthChecks
         CheckLengths(original, OriginalReach);
         CheckLengths(human, HumanReach);
         CheckVariantPhysics(original, human);
-        var companion = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/DuckCompanion.prefab");
-        Require(DeathPrefab(companion) == original, "companion keeps original ragdoll");
         var photonPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Photon/PhotonPlayer.prefab");
         Require(DeathPrefab(photonPrefab) == human, "Photon uses player ragdoll variant");
 
@@ -52,7 +50,7 @@ public static class PlayerRagdollLengthChecks
             VerifyImpacts(photonPrefab, human, scene, physics);
         }
         finally { EditorSceneManager.ClosePreviewScene(scene); }
-        Debug.Log("PlayerRagdollLengthChecks PASS: local VR/desktop, Photon death/respawn/reuse, all four skins, 5400 isolated physics steps, matching bones/colliders, original companion corpse. Maximum dynamic reach drift: " + maxPhysicsDrift + " m; impact arm anchor separation: " + maxImpactSeparation + " m.");
+        Debug.Log("PlayerRagdollLengthChecks PASS: local VR/desktop, Photon death/respawn/reuse, all four skins, 5400 isolated physics steps, matching bones/colliders. Maximum dynamic reach drift: " + maxPhysicsDrift + " m; impact arm anchor separation: " + maxImpactSeparation + " m.");
     }
 
     static Ragdoll DeathPrefab(GameObject root) => (Ragdoll)new SerializedObject(root.GetComponent<PhotonPlayer>())

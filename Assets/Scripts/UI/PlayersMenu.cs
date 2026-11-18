@@ -3,6 +3,7 @@ using ExitGames.Client.Photon;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayersMenu : MonoBehaviour, IInRoomCallbacks
 {
@@ -12,10 +13,12 @@ public class PlayersMenu : MonoBehaviour, IInRoomCallbacks
     readonly Dictionary<int, PlayerListItem> playerRows = new Dictionary<int, PlayerListItem>();
     readonly List<PlayerListItem> orderedRows = new List<PlayerListItem>();
     readonly List<int> missingActors = new List<int>();
-    PlayerListItem companionRow;
-    PhotonPlayer companionPlayer;
 
-    int numberOfPlayersPerPage = 5;
+    // Up to 8 players per page; a full 12-player Compound uses a second page.
+    // Rows keep their authored height for up to 5 players. Larger lobbies shrink every row
+    // equally so 8 fit in the authored 5-row area, leaving the bottom strip for the arrows.
+    const int PlayersPerPage = 8, AuthoredRows = 5;
+    float baseRowHeight = -1f;
     int currentPage = 1;
     public GameObject nextPageButton;
     public GameObject previousPageButton;
@@ -64,58 +67,9 @@ public class PlayersMenu : MonoBehaviour, IInRoomCallbacks
             added = true;
         }
 
-        bool companionChanged = SyncCompanionRow();
-        if (added || removed || companionChanged) {
+        if (added || removed) {
             OrderRows(players);
         }
-    }
-
-    // PlayerList lives under the pause menu mesh, so this only runs while the menu is open.
-    void Update() {
-        if (playerListItem == null || !PhotonNetwork.InRoom)
-            return;
-
-        PhotonPlayer duck = FindCompanion();
-        bool rowStale = companionRow != null && (duck == null || !ReferenceEquals(duck, companionPlayer));
-        bool rowMissing = companionRow == null && duck != null;
-        if (rowStale || rowMissing)
-            SyncPlayerRows();
-    }
-
-    static PhotonPlayer FindCompanion() {
-        for (int i = 0; i < PhotonPlayer.Active.Count; i++) {
-            PhotonPlayer player = PhotonPlayer.Active[i];
-            if (player != null && player.IsCompanion)
-                return player;
-        }
-        return null;
-    }
-
-    bool SyncCompanionRow() {
-        PhotonPlayer duck = FindCompanion();
-        if (duck == null) {
-            if (companionRow == null)
-                return false;
-            Destroy(companionRow.gameObject);
-            companionRow = null;
-            companionPlayer = null;
-            return true;
-        }
-
-        if (companionRow == null) {
-            companionRow = Instantiate(playerListItem, transform);
-            companionRow.gameObject.SetActive(true);
-            companionRow.InitCompanion(duck);
-            companionPlayer = duck;
-            return true;
-        }
-
-        if (ReferenceEquals(companionPlayer, duck))
-            return false;
-
-        companionRow.InitCompanion(duck);
-        companionPlayer = duck;
-        return true;
     }
 
     bool RemoveMissingRows(Player[] players) {
@@ -152,10 +106,6 @@ public class PlayersMenu : MonoBehaviour, IInRoomCallbacks
             }
         }
         playerRows.Clear();
-        if (companionRow != null)
-            Destroy(companionRow.gameObject);
-        companionRow = null;
-        companionPlayer = null;
         orderedRows.Clear();
         ApplyPage();
     }
@@ -170,18 +120,37 @@ public class PlayersMenu : MonoBehaviour, IInRoomCallbacks
         ApplyPage();
     }
 
+    void FitRows() {
+        if (orderedRows.Count > 0) {
+            if (baseRowHeight <= 0f) {
+                LayoutElement template = playerListItem.GetComponent<LayoutElement>();
+                baseRowHeight = template != null && template.preferredHeight > 0f ? template.preferredHeight : 0.05f;
+            }
+            // Same size on both pages, sized for the fuller first page.
+            int rowsOnFirstPage = Mathf.Min(orderedRows.Count, PlayersPerPage);
+            float rowHeight = Mathf.Min(baseRowHeight, baseRowHeight * AuthoredRows / rowsOnFirstPage);
+            float scale = rowHeight / baseRowHeight;
+            for (int index = 0; index < orderedRows.Count; index++) {
+                PlayerListItem row = orderedRows[index];
+                if (row != null) {
+                    row.SetRowScale(scale, rowHeight);
+                }
+            }
+        }
+        ApplyPage();
+    }
+
     void ApplyPage() {
         int pageCount = orderedRows.Count == 0
             ? 1
-            : (orderedRows.Count + numberOfPlayersPerPage - 1) / numberOfPlayersPerPage;
+            : (orderedRows.Count + PlayersPerPage - 1) / PlayersPerPage;
         currentPage = Mathf.Clamp(currentPage, 1, pageCount);
-        int first = (currentPage - 1) * numberOfPlayersPerPage;
+        int first = (currentPage - 1) * PlayersPerPage;
         for (int index = 0; index < orderedRows.Count; index++) {
             PlayerListItem row = orderedRows[index];
-            if (row == null) {
-                continue;
+            if (row != null) {
+                row.gameObject.SetActive(index >= first && index < first + PlayersPerPage);
             }
-            row.gameObject.SetActive(index >= first && index < first + numberOfPlayersPerPage);
         }
         if (previousPageButton != null) {
             previousPageButton.SetActive(currentPage > 1);
@@ -216,11 +185,7 @@ public class PlayersMenu : MonoBehaviour, IInRoomCallbacks
                 orderedRows.Add(row);
             }
         }
-        if (companionRow != null) {
-            companionRow.transform.SetSiblingIndex(sibling++);
-            orderedRows.Add(companionRow);
-        }
-        ApplyPage();
+        FitRows();
     }
 
     void RefreshPlayerName(Player player) {

@@ -28,6 +28,12 @@ Use explicit statuses such as pending, in progress, implemented (validation pend
 validated, or already present (verified). A source diff inspection alone is not port validation.
 This history starts November 8, 2026; it is not an audit of earlier imports.
 
+November 18, 2026: the Duckz duck companion is removed from Rails at the user's request
+(`DuckCompanion*`, speech/TTS `DuckSpeech` plugin and data, dialogue, companion prefab,
+skin and checks, plus every `IsCompanion` branch). Skip companion-only source changes in
+ports; when a shared file changed alongside companion code, port only the human-player part
+and do not restore companion branches.
+
 November 13 current-tree regression freshly reran the older queue evidence, including prior Claude passes: GrabbablePlayChecks, DeathLifecycleChecks, SmasherRetreatJumpChecks, ZombieHookPullChecks (24 pull/six surface cases), and two-process real-Photon FlareJoinNetworkChecks pass. Three real game clients additionally cover ground/moving-train enemy deaths with late flare joins and a natural bare-hand ground Hook pull. These supplement the historical port evidence; they do not change headset/full live gear/train/curve acceptance status. [Scenario ledger, tested commits and raw evidence](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
 
 The item and Hook batch suites were repeated after the regression's store cleanup fix `8379de0f1`; both exited 0. Their post-fix logs are linked from the ledger.

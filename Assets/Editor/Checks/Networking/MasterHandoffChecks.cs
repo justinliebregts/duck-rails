@@ -280,11 +280,6 @@ public static class MasterHandoffChecks
         sync.OnControllerChange(previous, local);
         sync.OnControllerChange(local, previous);
         Check(!Get<bool>(enemy, "_hadAuthority") && !Get<bool>(sync, "_hasSample"), "enemy clears brain ownership and stale pose across transfers without Update");
-        var duck = new GameObject("Companion repeated transfer").AddComponent<DuckCompanion>();
-        Set(duck, "wasAuthority", true);
-        duck.OnMasterClientSwitched(previous); duck.OnMasterClientSwitched(local);
-        Check(!Get<bool>(duck, "wasAuthority"), "returning companion controller must run navigation/motor recovery");
-        Object.DestroyImmediate(duck.gameObject);
         Object.DestroyImmediate(go);
     }
 

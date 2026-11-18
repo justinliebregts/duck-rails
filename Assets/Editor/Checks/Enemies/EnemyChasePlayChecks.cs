@@ -128,7 +128,7 @@ public static class EnemyChasePlayChecks
         var route = new int[128];
         int start = manager.Graph.FindNearestGroundNode(actor.transform.position, 1.5f);
         int end = manager.ResolveGroundNode(goal + Vector3.up * 1.5f);
-        var targetFinder = manager.CreateCompanionPathfinder();
+        var targetFinder = manager.CreateIndependentPathfinder();
         if (!targetFinder.FindPath(start, end, route, out int count, out bool complete, true) || !complete)
             throw new Exception("Incomplete target route " + scenario);
         targetRoute = new Vector3[count];

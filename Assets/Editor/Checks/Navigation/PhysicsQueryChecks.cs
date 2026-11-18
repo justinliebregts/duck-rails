@@ -72,22 +72,6 @@ public static class PhysicsQueryChecks
             int ground = manager.ResolveGroundNode(origin);
             Check(ground == manager.ResolveGroundNode(origin, true), "Ground-only node parity");
             Check(AIQueryProfile.TargetRaycasts == 3 && AIQueryProfile.TargetHits == 2, "Manager fresh/cached routing");
-            var duckGo = new GameObject("query Duck"); duckGo.SetActive(false);
-            var duck = duckGo.AddComponent<DuckCompanion>();
-            typeof(DuckCompanion).GetField("environment", Private).SetValue(duck, (LayerMask)mask);
-            var findGround = (Func<Vector3, bool, Vector3>)Delegate.CreateDelegate(typeof(Func<Vector3, bool, Vector3>),
-                duck, typeof(DuckCompanion).GetMethod("FindGround", Private));
-            AIQueryProfile.Reset();
-            Vector3 duckFresh = findGround(origin, false);
-            Check(findGround(origin, true).Equals(duckFresh) && findGround(origin, true).Equals(duckFresh), "Duck target parity");
-            Check(AIQueryProfile.TargetRaycasts == 2 && AIQueryProfile.TargetHits == 1, "Duck target reuse");
-            typeof(DuckCompanion).GetMethod("ResetNavigationAfterAuthorityChange", Private).Invoke(duck, null);
-            findGround(origin, true);
-            Check(AIQueryProfile.TargetRaycasts == 3, "Duck authority change invalidates observation");
-            findGround(origin, false);
-            Check(AIQueryProfile.TargetRaycasts == 4, "Duck default observation bypass remains fresh");
-            Object.DestroyImmediate(duckGo);
-            Debug.Log("PhysicsQueryChecks Duck target parity and authority invalidation PASS");
             // Cache contains observations, not nodes: ground/climb graph lookups remain independent.
             cache.Clear();
             Action old = () => { for (int i = 0; i < 1000; i++) cache.Query(origin, 4, mask, out _, false); };
@@ -97,8 +81,8 @@ public static class PhysicsQueryChecks
             Check(before == 0 && after == 0, "Steady-state queries must remain allocation-free");
             Debug.Log($"PhysicsQueryChecks GC allocation EVENTS / 1000 requests: fresh {before}; reused {after}. No allocation saving claimed.");
             Object.DestroyImmediate(managerGo);
-            Debug.Log("PhysicsQueryChecks: focused checks ALL PASSED; starting navigation/network regression suite");
-            DuckNavigationChecks.Run();
+            Debug.Log("PhysicsQueryChecks: focused checks ALL PASSED");
+            EditorApplication.Exit(0);
         }
         catch (Exception e) { Debug.LogException(e); EditorApplication.Exit(1); }
     }

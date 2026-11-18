@@ -95,9 +95,7 @@ namespace GR {
 
         public void SetDead(string cause) => SetDead(cause, Vector3.zero);
 
-        public void SetDead(string cause, Vector3 impact, Vector3 rotation = default) => SetDeadInternal(null, 0, cause, impact, rotation);
-
-        public void SetDeadFromDuck(DuckCompanion killer, int attempt) => SetDeadInternal(killer, attempt, "duck", Vector3.zero);
+        public void SetDead(string cause, Vector3 impact, Vector3 rotation = default) => SetDeadInternal(cause, impact, rotation);
 
         Vector3 DeathEffectOrigin() => HeadCenteredGameplayPosition(transform.position);
 
@@ -125,7 +123,7 @@ namespace GR {
             return false;
         }
 
-        void SetDeadInternal(DuckCompanion killer, int attempt, string cause, Vector3 impact, Vector3 rotation = default) {
+        void SetDeadInternal(string cause, Vector3 impact, Vector3 rotation = default) {
             if (RailAdminTools.Invincible) return;
             if (PhotonSession.IsRailsRoom) { RailAnalytics.NoteDownCause(cause); RailExpedition.RequestDown(); return; }
             using var sample = DeathProfile.Local.Auto();
@@ -140,7 +138,7 @@ namespace GR {
             Vector3 flarePosition = deathOrigin + Vector3.up * 0.35f;
             PhotonPlayer.SpawnDeathFlare(deathFlarePrefab, flarePosition);
             playerHUD.EnableDeathEffect();
-            StartCoroutine(Respawn(killer, attempt));
+            StartCoroutine(Respawn());
             Vector3 decalSpawnPos = deathOrigin;
             Vector3 rayOrigin = deathOrigin + Vector3.up * 0.2f;
             if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, 5f, LayerMask.GetMask("Environment"), QueryTriggerInteraction.Ignore)) {
@@ -161,27 +159,8 @@ namespace GR {
             PhotonPlayer.BroadcastDeathBlood(decalSpawnPos, bloodSeed);
         }
 
-        IEnumerator Respawn(DuckCompanion killer, int attempt) {
-            if (killer == null) yield return new WaitForSeconds(5);
-            else {
-                double started = Time.realtimeSinceStartupAsDouble;
-                double finished = double.PositiveInfinity;
-                bool heard = false;
-                while (IsDead) {
-                    double now = Time.realtimeSinceStartupAsDouble;
-                    // Absolute local deadline: missing RPCs, failed TTS, disconnects,
-                    // paused game time and destroyed companions cannot extend this wait.
-                    if (DuckCompanion.ShouldRespawnAfterKill(now - started, now - finished)) break;
-                    if (killer != null && killer.TryGetAfterKillSpeech(attempt, out int line)) {
-                        bool matching = killer.Dialogue.SpeechSequence == line;
-                        heard |= matching && killer.Dialogue.IsSpeaking;
-                        if (heard && double.IsPositiveInfinity(finished) && (!matching || !killer.Dialogue.Busy))
-                            finished = now;
-                    }
-                    if (DuckCompanion.ShouldRespawnAfterKill(now - started, now - finished)) break;
-                    yield return null;
-                }
-            }
+        IEnumerator Respawn() {
+            yield return new WaitForSeconds(5);
             if (!IsDead) yield break;
             GameManager.instance.RespawnPlayer();
             ragdoll.transform.parent = transform;

@@ -22,6 +22,35 @@
   events. Then confirm delivery in an Android build's GameAnalytics live view.
   Queued for playtest; not verified.
 
+## Duck companion removed — queued 2026-11-18
+
+- Changed: deleted the Duckz duck companion (scripts, `DuckCompanion` prefab, dialogue,
+  `DuckSpeech` plugin + StreamingAssets, skin, jump sound, companion checks/authoring) and
+  every companion branch in `PhotonPlayer`, `PhotonGrabbable` (non-owner master sweep and
+  collider-less item hits were Duck-only), voice/eye/mouth, `Player` death/respawn,
+  `KillTrigger`, enemies (hook target filter, bomber), `GameManager` fields and desktop input.
+  Pose stream format for human avatars is unchanged. See `duckz-ports.md`.
+- Editor evidence: compiles, Console clean; no remaining code references. Removed
+  companion-only cases from shared batch checks (hook impact Duck shots incl. its join-snapshot
+  blood check, knockback Duck impacts, KillTrigger multi-contact test, master-handoff,
+  avatar-recovery and allocation cases); none of the batch suites were re-run.
+- Check: 2+ clients incl. late join: voice, mouth/eye animation, name tags, item hits and
+  knockback between players, hook pulls, bomber and enemy downs, desktop movement/typing
+  focus, death flares/blood and pause-menu mute all behave as before. Queued for playtest; not verified.
+
+## Pause menu player list: 8 per page — queued 2026-11-18
+
+- Changed: pages hold 8 players (was 5), so an 8-player crew fits on one page and a full
+  12-player Compound uses the existing `<`/`>` arrows for a second page of 4. Rows keep the
+  authored 0.05 height up to 5 players; above that, every row on both pages shrinks equally
+  so 8 fit in the original 5-row area above the arrows (0.031, font 0.5 -> 0.31). Mute button
+  size/hitbox unchanged. Files: `PlayersMenu.cs`, `PlayerListItem.cs`; PauseMenu prefab unchanged.
+- Editor evidence: compiles, Console clean; editor renders of both pages of a 12-player list
+  (same size/page formula, rows filled by hand, not through Photon) show no overlap with the arrows.
+- Check: with 6-8 players, one page and no arrows; with 9-12 in the Compound, `>`/`<` switch
+  pages, names readable in-headset, each mute button hits its own row, and a join/leave keeps
+  a valid page (e.g. leaving page 2 when it empties). Queued for playtest; not verified.
+
 ## Smaller Minion/Hook kill triggers — queued 2026-11-18
 
 - Changed: port only Duckz `a3d484e994e53c219f62de3caa99af009d20c812` collider

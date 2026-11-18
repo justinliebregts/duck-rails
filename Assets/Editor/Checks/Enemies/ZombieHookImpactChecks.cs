@@ -23,7 +23,7 @@ public static class ZombieHookImpactChecks
     static readonly Type Type = typeof(ZombieHookAttack);
     static readonly Type Phase = Type.GetNestedType("Phase", BindingFlags.NonPublic);
     static readonly Type Contact = Type.GetNestedType("Contact", BindingFlags.NonPublic);
-    enum Shot { Mesh, ControllerPan, Duck, Miss, DefenderPan, DefenderBody }
+    enum Shot { Mesh, ControllerPan, Miss, DefenderPan, DefenderBody }
     static Fixture fixture;
     static IEnumerator frames;
 
@@ -133,7 +133,6 @@ public static class ZombieHookImpactChecks
         readonly GameObject inactive = new GameObject("Inactive test actors");
         readonly ZombieHookAttack hook;
         readonly EnemyManager manager;
-        readonly PhotonPlayer duck;
         readonly PhotonGrabbable pan;
         PhotonPlayer defender;
         readonly ParticleSystem sparks;
@@ -177,10 +176,6 @@ public static class ZombieHookImpactChecks
             sparks = (ParticleSystem)Type.GetField("sharedSparks", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
             pool = BloodEffectPool.Get();
             created = pool.CreatedObjects;
-            duck = Object.Instantiate(Asset("Assets/Resources/DuckCompanion.prefab"), inactive.transform).GetComponent<PhotonPlayer>();
-            Call(duck.Companion, "Awake"); // Duck builds his body capsule during initialization.
-            var capsule = duck.GetComponent<CharacterController>();
-            duck.transform.position += start + Vector3.forward * 2 - duck.transform.TransformPoint(capsule.center);
             pan = Object.Instantiate(Asset(Prefabs + "Weapons/WeaponFryPan.prefab"), inactive.transform).GetComponent<PhotonGrabbable>();
             typeof(Grabbable).GetMethod("RebuildLocomotionSamples", Private).Invoke(pan, null);
             var samples = new Vector3[Grabbable.MaxLocomotionSamples];
@@ -296,25 +291,14 @@ public static class ZombieHookImpactChecks
             Check(tetherHit[2].Equals(flesh) && tetherHit[4] == null, "Corpse crossing tether gets blood without a pull");
             Object.DestroyImmediate(corpse);
             wall.SetActive(false);
-            PhotonPlayer.Active.Add(duck);
-            var hit = Trace(start, end);
-            Check(hit[2].Equals(flesh) && Equals(hit[4], duck), "Duck intercepts the tip as flesh");
-            hook.GetComponent<Enemy>().SetRemoteState(Enemy.State.Chase);
-            typeof(Enemy).GetField("_seen", Private).SetValue(hook.GetComponent<Enemy>(), true);
-            Field<Object[]>(manager, "_slotOwner")[0] = duck;
-            Field<Vector3[]>(manager, "_slotHead")[0] = end;
-            Check(!(bool)Call(hook, "TickChase", manager, 0, .02f) && Field<object>(hook,"phase").ToString() == "Idle",
-                "A chased Duck does not trigger hook windup");
-            Field<Object[]>(manager, "_slotOwner")[0] = null;
             PhotonGrabbable.HeldItems.Add(pan);
-            Check(Trace(start, end)[2].Equals(solid), "Held pan wins ahead of Duck's body");
+            Check(Trace(start, end)[2].Equals(solid), "Held pan blocks the hook");
             PhotonGrabbable.HeldItems.Remove(pan);
-            PhotonPlayer.Active.Remove(duck);
             Check(Trace(start, end)[2].Equals(silent), "Empty throw stays silent");
             int before = Hits;
-            Apply(flesh, (Vector3)hit[3]);
+            Apply(flesh, end);
             Check(Hits == before + 1 && pool.CreatedObjects == created, "Blood borrows one warmed instance");
-            Debug.Log("Hook impact PASS: warmup, overlapping bursts, expiry, mesh, tether cover, Duck, held pan, miss and blood reuse");
+            Debug.Log("Hook impact PASS: warmup, overlapping bursts, expiry, mesh, tether cover, held pan, miss and blood reuse");
         }
 
         int Hits => pool.transform.Cast<Transform>().Count(t => t.gameObject.activeSelf && t.name.StartsWith("BloodSplatPFX"));
@@ -335,7 +319,7 @@ public static class ZombieHookImpactChecks
                 bool remoteBlock = shot == Shot.DefenderPan;
                 bool remoteDefense = remoteBlock || shot == Shot.DefenderBody;
                 if (remoteBlock && !authority) Call(handoff, "OnApplicationFocus", true);
-                object expected = shot == Shot.Miss ? silent : shot == Shot.Duck || shot == Shot.DefenderBody ? flesh : solid;
+                object expected = shot == Shot.Miss ? silent : shot == Shot.DefenderBody ? flesh : solid;
                 wall.SetActive(shot == Shot.Mesh);
                 if (remoteBlock) AddRemoteDefender(authority);
                 if (shot == Shot.DefenderBody) defender.transform.position = start + Vector3.forward * 2;
@@ -344,7 +328,6 @@ public static class ZombieHookImpactChecks
                     typeof(Grabbable).GetField("holder", Private).SetValue(pan, inactive.AddComponent<PlayerHand>());
                     PhotonGrabbable.HeldItems.Add(pan);
                 }
-                if (shot == Shot.Duck) PhotonPlayer.Active.Add(duck);
                 Physics.SyncTransforms();
                 sparks.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
                 int before = Hits;
@@ -393,19 +376,6 @@ public static class ZombieHookImpactChecks
                 Check(sparks.particleCount == (expected.Equals(solid) ? 5 : 0) && Hits == before + (expected.Equals(flesh) ? 1 : 0),
                     "Exactly one correct effect on " + (authority ? "authority " : "observer ") + shot);
                 Vector3 point = Field<Vector3>(hook, "origin");
-                if (shot == Shot.Duck)
-                {
-                    // Check the live reel before GPU readback and the position round trip can age it out.
-                    if (!authority)
-                    {
-                        Call(hook, "Stow");
-                        Type.GetField("revision", Private).SetValue(hook, 0);
-                    }
-                    Barrier("joining");
-                    if (authority) hook.OnPlayerEnteredRoom(PhotonNetwork.PlayerListOthers[0]);
-                    Pump(() => Field<object>(hook, "phase").ToString() == "Reel", "join snapshot");
-                    Check(Hits == before + 1 && sparks.particleCount == 0, "Join snapshot never replays blood");
-                }
                 if (expected.Equals(solid))
                 {
                     Check(Vector3.Distance(sparks.transform.position, point) < .001f, "Spark at replicated impact");
@@ -421,7 +391,7 @@ public static class ZombieHookImpactChecks
                     Check(particles.isPlaying, "Blood emitter is playing");
                     particles.Simulate(.03f, false, false, false);
                     Check(particles.particleCount > 0, "Received blood burst emits particles");
-                    if (shot == Shot.Duck) CheckRendered(particles);
+                    if (shot == Shot.DefenderBody) CheckRendered(particles);
                 }
                 string pointKey = "point" + shot;
                 if (authority) PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { pointKey, point } });
@@ -432,7 +402,6 @@ public static class ZombieHookImpactChecks
                     PhotonGrabbable.HeldItems.Remove(pan);
                     typeof(Grabbable).GetField("holder", Private).SetValue(pan, null);
                 }
-                if (shot == Shot.Duck) PhotonPlayer.Active.Remove(duck);
                 Debug.Log("Hook impact Photon PASS " + (authority ? "authority " : "observer ") + shot + " point=" + point.ToString("F4"));
                 Call(hook, "Stow");
             }
@@ -480,7 +449,7 @@ public static class ZombieHookImpactChecks
             Call(handoff, "OnApplicationFocus", authority);
             var chain = Field<MeshFilter>(hook, "chain");
             var brain = hook.GetComponent<Enemy>();
-            foreach (var shot in new[] { Shot.Mesh, Shot.Duck })
+            foreach (var shot in new[] { Shot.Mesh })
             {
                 Call(hook, "Stow");
                 sparks.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -507,23 +476,17 @@ public static class ZombieHookImpactChecks
                         {
                             released = true;
                             Vector3 intercept = Vector3.Lerp(Field<Vector3>(hook, "origin"), aim, .8f);
-                            if (shot == Shot.Mesh) { wall.transform.position = intercept; wall.SetActive(true); }
-                            else
-                            {
-                                duck.transform.position += intercept - duck.transform.TransformPoint(duck.GetComponent<CharacterController>().center);
-                                PhotonPlayer.Active.Add(duck);
-                            }
+                            wall.transform.position = intercept; wall.SetActive(true);
                             Physics.SyncTransforms();
                         }
                     }
                     sawChain |= chain.gameObject.activeInHierarchy;
-                    sawImpact |= shot == Shot.Mesh ? sparks.particleCount > 0 : Hits > 0;
+                    sawImpact |= sparks.particleCount > 0;
                     Check(Time.realtimeSinceStartupAsDouble < deadline, $"Frame playback {shot}: authority={authority}, phase={Field<object>(hook, "phase")}, chain={sawChain}, impact={sawImpact}");
                     yield return null;
                 }
                 Debug.Log($"Hook frame playback PASS {shot}, authority={authority}, chain and impact observed");
                 Barrier("frameDone" + shot);
-                PhotonPlayer.Active.Remove(duck);
             }
         }
 
@@ -605,7 +568,6 @@ public static class ZombieHookImpactChecks
 
         public void Dispose()
         {
-            PhotonPlayer.Active.Remove(duck);
             if (defender != null) PhotonPlayer.Active.Remove(defender);
             PhotonGrabbable.HeldItems.Remove(pan);
             typeof(EnemyManager).GetProperty("Instance").SetValue(null, null);

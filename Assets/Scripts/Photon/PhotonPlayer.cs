@@ -73,17 +73,12 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     const int LaunchStillFrames = 3;
 
     public AudioSource VoiceSource => _voiceSource;
-    DuckCompanion companion;
-    // Reacquire after a Play-mode script reload or when the companion is added
-    // after this avatar's Awake. All hit/death/pose paths must agree on identity.
-    public DuckCompanion Companion => companion != null ? companion : (companion = GetComponent<DuckCompanion>());
-    public bool IsCompanion => Companion != null;
-    public bool IsLocalHuman => !IsCompanion && photonView != null && photonView.Owner != null && photonView.Owner.IsLocal;
+    public bool IsLocalHuman => photonView != null && photonView.Owner != null && photonView.Owner.IsLocal;
     public float MinHitSpeed => minHitSpeed;
     public bool SwingLocked => Time.time < _swingLockUntil;
 
     /// <summary>Local owner follows <see cref="GR.Player.IsDead"/>; remotes receive it over the pose stream.</summary>
-    public bool IsDead => Companion != null ? Companion.IsDead : photonView != null && photonView.IsMine
+    public bool IsDead => photonView != null && photonView.IsMine
         ? GR.Player.instance != null && GR.Player.instance.IsDead
         : _remoteDead;
 
@@ -170,43 +165,24 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     [PunRPC]
     void ReceiveDeathFlare(Vector3 position, double diedAt, PhotonMessageInfo info)
     {
-        if (info.Sender != (IsCompanion ? photonView.Controller : photonView.Owner)) return;
+        if (info.Sender != photonView.Owner) return;
         RecordDeathFlare(deathFlarePrefab, position, diedAt);
     }
 
     [PunRPC]
     void ReceiveDeathBlood(Vector3 position, int seed, PhotonMessageInfo info)
     {
-        // Room-owned Duck has no Owner; its current controller is the master client.
-        if (info.Sender != (IsCompanion ? photonView.Controller : photonView.Owner)) return;
+        if (info.Sender != photonView.Owner) return;
         BloodDecalSpawner.Spawn(deathBloodPrefab, position, seed);
-    }
-
-    public void EmitCompanionDeathBlood()
-    {
-        if (Companion == null || !Companion.HasAuthority) return;
-        Vector3 flarePosition = transform.position + Vector3.up * 0.35f;
-        EmitDeathFlare(deathFlarePrefab, flarePosition);
-        // Match the human player's placement, prefab and deterministic particle burst.
-        Vector3 position = transform.position;
-        if (Physics.Raycast(position + Vector3.up * 0.2f, Vector3.down, out RaycastHit hit,
-            5f, LayerMask.GetMask("Environment"), QueryTriggerInteraction.Ignore))
-            position = hit.point + hit.normal * 0.01f;
-        int seed = UnityEngine.Random.Range(1, int.MaxValue);
-        BloodDecalSpawner.Spawn(deathBloodPrefab, position, seed);
-        // Only live peers receive the event; late joiners should not replay old bursts.
-        if (photonView.ViewID != 0)
-            photonView.RPC(nameof(ReceiveDeathBlood), RpcTarget.Others, position, seed);
     }
 
     void Awake()
     {
         BloodDecalSpawner.Prewarm(deathBloodPrefab);
         DeathFlare.Prewarm(deathFlarePrefab);
-        companion = GetComponent<DuckCompanion>();
-        _voiceSource = PhotonVoiceChat.Attach(gameObject, body != null ? body.Head : null, IsCompanion);
+        _voiceSource = PhotonVoiceChat.Attach(gameObject, body != null ? body.Head : null);
         if (body != null)
-            DuckSkinVisuals.Attach(body.gameObject, IsCompanion ? DuckSkinSource.Manual : DuckSkinSource.Networked);
+            DuckSkinVisuals.Attach(body.gameObject, DuckSkinSource.Networked);
     }
 
     void OnEnable() => Active.Add(this);
@@ -263,7 +239,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         PhotonPlayer latest = null;
         foreach (PhotonPlayer player in Active)
         {
-            if (player == null || player.IsCompanion || player.photonView == null || player.photonView.OwnerActorNr != actorNumber) continue;
+            if (player == null || player.photonView == null || player.photonView.OwnerActorNr != actorNumber) continue;
             if (player.IsLocalHuman && player.headSource != null) return player;
             // Scene transfers can leave an older cached avatar alongside the
             // current one. Its prefab head is not evidence of the player's pose.
@@ -337,9 +313,8 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
             else
             {
                 var owner = photonView.Owner;
-                nameLabel.text = IsCompanion ? "Duck" : owner != null && !string.IsNullOrEmpty(owner.NickName) ? owner.NickName : "Duck";
-                if (!IsCompanion)
-                    CreatorNametag.AttachRemote(nameLabel);
+                nameLabel.text = owner != null && !string.IsNullOrEmpty(owner.NickName) ? owner.NickName : "Duck";
+                CreatorNametag.AttachRemote(nameLabel);
             }
         }
 
@@ -403,19 +378,16 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
             // dead state handles dropped packets and late joiners without an RPC race.
             if (sendingDead)
             {
-                stream.SendNext(!IsCompanion && GR.Player.instance != null
+                stream.SendNext(GR.Player.instance != null
                     ? GR.Player.instance.DeathImpactState : NoDeathImpact);
-                stream.SendNext(!IsCompanion && GR.Player.instance != null
+                stream.SendNext(GR.Player.instance != null
                     ? GR.Player.instance.DeathRotationState : NoDeathImpact);
             }
-            if (Companion != null) Companion.Serialize(stream);
             return;
         }
 
-        // Human poses belong to their owner; room-owned companions follow their controller.
-        // Do not let an unrelated actor reseed either the clock or death state.
-        DuckCompanion sourceCompanion = Companion;
-        int sourceActor = sourceCompanion != null ? photonView.ControllerActorNr : photonView.OwnerActorNr;
+        // Poses belong to their owner. Do not let an unrelated actor reseed either the clock or death state.
+        int sourceActor = photonView.OwnerActorNr;
         // Actor identity survives a missing/rebuilt Player cache during room transitions.
         if (sourceActor <= 0 || info.Sender == null || info.Sender.ActorNumber != sourceActor)
             return;
@@ -427,7 +399,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         BodyPose pose = pkt.ToBodyPose();
         if (!ValidPose(pose) || !ValidVector(deathImpact) || !ValidVector(deathRotation))
             return;
-        if (pkt.CabinArrival < 0 || (pkt.CabinArrival > 0 && (sourceCompanion != null || pkt.CabinLanding < 0
+        if (pkt.CabinArrival < 0 || (pkt.CabinArrival > 0 && (pkt.CabinLanding < 0
             || !ValidVector(pkt.CabinPosition) || !ValidRotation(pkt.CabinRotation)))) return;
         double now = PhotonNetwork.Time;
         // Express the sender's timestamp near our clock, including the uint wrap.
@@ -437,10 +409,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         double received = Time.realtimeSinceStartupAsDouble;
         if (!AcceptPoseTimestamp(sent, now, received))
             return;
-        if (sourceCompanion == null) PhotonMasterHandoff.HolderActivity(sourceActor, info.SentServerTimestamp);
-        // Each avatar view observes this component only. Discard the companion
-        // payload with a rejected snapshot instead of replaying stale life state.
-        if (sourceCompanion != null) sourceCompanion.Serialize(stream);
+        PhotonMasterHandoff.HolderActivity(sourceActor, info.SentServerTimestamp);
         if (_playbackStarted && now - _playbackNow > PlaybackHitchSeconds)
             _hitchRecoveryPending = true;
         bool wasDead = _remoteDead;
@@ -562,9 +531,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         }
     }
 
-    public void ApplyCompanionPose(in BodyPose pose) => ApplyBody(pose);
-    public void ApplyCompanionDeath(bool dead) => SetRemoteDeathVisuals(dead);
-
     // Velocity across the last ~0.15 s of received poses.
     RagdollLaunch RecentLaunch()
     {
@@ -598,7 +564,7 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         _remoteRagdoll.gameObject.SetActive(false);
         _remoteRagdoll.transform.SetParent(null, false);
         _remoteRagdoll.Prepare(transform);
-        if (!IsCompanion) _remoteRagdoll.ApplySkin(photonView.Owner != null ? photonView.Owner.GetSkin() : (byte)0, photonView.OwnerActorNr);
+        _remoteRagdoll.ApplySkin(photonView.Owner != null ? photonView.Owner.GetSkin() : (byte)0, photonView.OwnerActorNr);
         Destroy(staging);
         DeathProfile.RagdollCreates++;
     }
@@ -625,17 +591,14 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
             return;
         }
 
-        // Room-owned companions can resolve their Photon owner to the master client.
-        // Their appearance comes from their own rig, never the master's skin/color.
-        byte ragdollSkin = IsCompanion ? (byte)0 : photonView.Owner != null ? photonView.Owner.GetSkin() : (byte)0;
-        int colorActor = IsCompanion ? 0 : photonView.OwnerActorNr;
-        DeathProfile.Trace($"[Ragdoll] Death of {(IsCompanion ? "Duck companion" : photonView.Owner?.NickName)}: skin {ragdollSkin}, color actor {colorActor}", this);
+        byte ragdollSkin = photonView.Owner != null ? photonView.Owner.GetSkin() : (byte)0;
+        int colorActor = photonView.OwnerActorNr;
+        DeathProfile.Trace($"[Ragdoll] Death of {photonView.Owner?.NickName}: skin {ragdollSkin}, color actor {colorActor}", this);
         PrepareDeathRagdoll();
         _remoteRagdoll.leftHandSource = body.LeftHand;
         _remoteRagdoll.rightHandSource = body.RightHand;
         _remoteRagdoll.sourceHip = body.Chest;
-        if (IsCompanion) _remoteRagdoll.ApplyCompanionAppearance(body.transform, Companion.KillerEyesAtDeath);
-        else _remoteRagdoll.ApplySkin(ragdollSkin, colorActor);
+        _remoteRagdoll.ApplySkin(ragdollSkin, colorActor);
         _remoteRagdoll.PoseToPlayer(body.Chest, launch);
 
         GetComponentsInChildren(true, deathRendererBuffer);
@@ -819,9 +782,8 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     {
         _lastPose = pose;
         _hasPose = true;
-        if (Companion != null) Companion.ReceivePose(pose);
         if (body != null)
-            body.ApplyPose(pose, bodyRotation: Companion != null ? (Quaternion?)transform.rotation : null);
+            body.ApplyPose(pose, bodyRotation: null);
         fingers?.Apply(pose.fingers);
     }
 
@@ -845,18 +807,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
 
     public bool OverlapsSwing(Vector3 from, Vector3 to, float sweepRadius)
     {
-        // Duck's short torso is not covered reliably by the human chest/head calibration.
-        // Include his supported body capsule, even before the first visual pose arrives.
-        if (Companion != null)
-        {
-            CharacterController capsule = Companion.GetComponent<CharacterController>();
-            if (capsule != null)
-            {
-                Vector3 center = transform.TransformPoint(capsule.center);
-                Vector3 half = Vector3.up * Mathf.Max(0f, capsule.height * 0.5f - capsule.radius);
-                if (SegmentsWithin(from, to, center - half, center + half, sweepRadius + capsule.radius)) return true;
-            }
-        }
         if (!_hasPose || body == null) return false;
 
         Transform head = body.Head;
@@ -946,21 +896,9 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     }
 
     [PunRPC]
-    public void ReceiveCompanionHit(int itemViewId, Vector3 velocity, Vector3 hitPosition, PhotonMessageInfo info)
-    {
-        if (Companion == null || !Companion.HasAuthority || info.Sender == null) return;
-        PhotonView item = PhotonView.Find(itemViewId);
-        if (item == null || item.Controller != info.Sender || item.GetComponent<PhotonGrabbable>() == null) return;
-        // The item's owner performs the same swept hit test used for human players.
-        // Allow network delay, but reject reports from items nowhere near Duck.
-        if ((item.transform.position - transform.position).sqrMagnitude > 36f) return;
-        AcceptItemHit(info.Sender.ActorNumber, velocity, hitPosition, 0f);
-    }
-
-    [PunRPC]
     public void ReceiveItemHit(int itemViewId, Vector3 velocity, Vector3 hitPosition, PhotonMessageInfo info)
     {
-        if (IsCompanion || !photonView.IsMine || info.Sender == null) return;
+        if (!photonView.IsMine || info.Sender == null) return;
         PhotonView item = PhotonView.Find(itemViewId);
         if (item == null || item.Controller != info.Sender) return;
         PhotonGrabbable grabbable = item.GetComponent<PhotonGrabbable>();
@@ -972,22 +910,20 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
         AcceptItemHit(info.Sender.ActorNumber, velocity, hitPosition, grabbable.PlayerLaunchSpeed);
     }
 
-    // Called only by the victim owner, or the master for the room-owned companion.
-    // Keep this short hit cooldown separate from Duck's longer retreat reaction.
+    // Called only by the victim owner.
     public bool AcceptItemHit(int actor, Vector3 velocity, Vector3 hitPosition, float launchSpeed)
     {
-        if (IsCompanion ? !Companion.HasAuthority : !photonView.IsMine) return false;
+        if (!photonView.IsMine) return false;
         if (IsDead || Time.time < _nextItemHitTime
             || !IsValidValue(velocity.x) || !IsValidValue(velocity.y) || !IsValidValue(velocity.z)
             || !IsValidValue(hitPosition.x) || !IsValidValue(hitPosition.y) || !IsValidValue(hitPosition.z)) return false;
-        float minimum = IsCompanion ? Companion.HitReactionMinSpeed : minHitSpeed;
+        float minimum = minHitSpeed;
         if (velocity.sqrMagnitude < minimum * minimum || velocity.sqrMagnitude < 1e-8f) return false;
         PhotonPlayer attacker = ForActor(actor);
         if (attacker == null || attacker.IsDead || attacker == this) return false;
         _nextItemHitTime = Time.time + hitCooldown;
 
-        if (IsCompanion) Companion.ReactToPlayerHit(actor, velocity);
-        else if (TryLaunchVelocity(velocity, launchSpeed, out Vector3 launch)) ReceiveWeaponLaunch(launch);
+        if (TryLaunchVelocity(velocity, launchSpeed, out Vector3 launch)) ReceiveWeaponLaunch(launch);
         return true;
     }
 
@@ -999,7 +935,6 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     public void ReceiveWeaponLaunch(Vector3 velocity)
     {
         if (photonView == null || !photonView.IsMine) return;
-        if (Companion != null) return;
         if (GR.Player.instance != null && GR.Player.instance.IsDead) return;
         if (!IsValidValue(velocity.x) || !IsValidValue(velocity.y) || !IsValidValue(velocity.z)) return;
 

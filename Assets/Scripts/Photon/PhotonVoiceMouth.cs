@@ -65,7 +65,7 @@ public class PhotonVoiceMouth : MonoBehaviour
     void Start()
     {
         var view = GetComponent<PhotonView>();
-        _local = view != null && view.IsMine && GetComponent<DuckCompanion>() == null;
+        _local = view != null && view.IsMine;
     }
 
     Transform _poseTop;
@@ -145,12 +145,6 @@ public class PhotonVoiceMouth : MonoBehaviour
     {
         if (_level != null)
             return _level;
-
-        if (GetComponent<DuckCompanion>() != null)
-        {
-            _level = GetComponentInChildren<PhotonVoiceLevel>();
-            return _level;
-        }
 
         var voice = GetComponent<PhotonVoiceView>();
         Speaker speaker = voice != null ? voice.SpeakerInUse : null;

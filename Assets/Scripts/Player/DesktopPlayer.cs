@@ -88,14 +88,14 @@ public class DesktopPlayer : MonoBehaviour
         _pressedButton = null;
     }
 
-    void UpdateMenuClick(bool typing)
+    void UpdateMenuClick()
     {
         if (!RailDesktopInput.GetMouseButton(0))
         {
             ReleaseMenuButton();
             SuppressMouseGrip = false;
         }
-        if (typing || Cursor.lockState != CursorLockMode.Locked)
+        if (Cursor.lockState != CursorLockMode.Locked)
         {
             ReleaseMenuButton();
             return;
@@ -282,11 +282,10 @@ public class DesktopPlayer : MonoBehaviour
             }
             return;
         }
-        bool typing = DuckCompanionDebug.IsTyping;
         bool simulated = false;
-        Vector2 moveInput = typing ? Vector2.zero : new Vector2(RailDesktopInput.GetAxisRaw("Horizontal"), RailDesktopInput.GetAxisRaw("Vertical"));
+        Vector2 moveInput = new Vector2(RailDesktopInput.GetAxisRaw("Horizontal"), RailDesktopInput.GetAxisRaw("Vertical"));
         Vector2 lookInput = Vector2.zero;
-        bool jumpInput = !typing && RailDesktopInput.GetKeyDown(KeyCode.Space);
+        bool jumpInput = RailDesktopInput.GetKeyDown(KeyCode.Space);
         bool sprintInput = RailDesktopInput.GetKey(KeyCode.LeftShift) || RailDesktopInput.GetKey(KeyCode.RightShift);
 #if UNITY_EDITOR
         if (_lobbySimulator != null)
@@ -303,14 +302,14 @@ public class DesktopPlayer : MonoBehaviour
         }
         else if (RailDesktopInput.GetMouseButtonDown(0)
             && Cursor.lockState != CursorLockMode.Locked
-            && !SuppressCursorCapture && !DuckCompanionDebug.IsHovered)
+            && !SuppressCursorCapture)
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
             CursorLockedFrame = Time.frameCount;
         }
 
-        if (simulated || (!typing && Cursor.lockState == CursorLockMode.Locked))
+        if (simulated || Cursor.lockState == CursorLockMode.Locked)
         {
             if (!simulated)
                 lookInput = new Vector2(RailDesktopInput.GetAxis("Mouse X"), RailDesktopInput.GetAxis("Mouse Y")) * lookSensitivity;
@@ -319,11 +318,11 @@ public class DesktopPlayer : MonoBehaviour
             _pitch.localRotation = Quaternion.Euler(_pitchAngle, 0f, 0f);
         }
 
-        if (!typing && !PhotonSession.IsRailsRoom && RailDesktopInput.GetKeyDown(KeyCode.E))
+        if (!PhotonSession.IsRailsRoom && RailDesktopInput.GetKeyDown(KeyCode.E))
             ThrowTestBat();
 
-        UpdateMenuClick(typing);
-        if (!typing && !SuppressMouseGrip) UpdateReach();
+        UpdateMenuClick();
+        if (!SuppressMouseGrip) UpdateReach();
 
         var planar = new Vector3(moveInput.x, 0f, moveInput.y);
         if (planar.sqrMagnitude > 1f)
@@ -403,7 +402,7 @@ public class DesktopPlayer : MonoBehaviour
             return;
 
         // This shortcut never calls Grab/Release. Register the player throw so
-        // companion hits and dropped-item cleanup treat it like an ordinary throw.
+        // dropped-item cleanup treat it like an ordinary throw.
         spawned.GetComponent<PhotonGrabbable>()?.NotifyPlayerThrown();
 
         Rigidbody body = spawned.GetComponent<Rigidbody>();

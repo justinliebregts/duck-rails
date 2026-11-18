@@ -264,7 +264,7 @@ public static class DeathFlareSetup
         var sound = AssetDatabase.LoadAssetAtPath<SoundEvent>(EventPath);
         Check(sound.TrySelect(null, out var selection) && selection.Clip.length > 0
             && selection.Clip == AssetDatabase.LoadAssetAtPath<AudioClip>(ClipPath), "launch sound clip");
-        foreach (string path in new[] { "Assets/Prefabs/Player/DuckPlayer.prefab", "Assets/Prefabs/Player/DesktopPlayer.prefab", "Assets/Prefabs/Photon/PhotonPlayer.prefab", "Assets/Resources/DuckCompanion.prefab" })
+        foreach (string path in new[] { "Assets/Prefabs/Player/DuckPlayer.prefab", "Assets/Prefabs/Player/DesktopPlayer.prefab", "Assets/Prefabs/Photon/PhotonPlayer.prefab" })
         {
             var asset = AssetDatabase.LoadAssetAtPath<GameObject>(path);
             Component component = asset.GetComponent<GR.Player>();

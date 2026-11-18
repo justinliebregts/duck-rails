@@ -113,7 +113,6 @@ public static class PhotonAvatarRecoveryChecks
             RejectionAndDeath();
             RagdollLifecycle();
             RecoveredDeath();
-            CompanionLifeOrdering();
             WrapAndDisable();
             Playback(.08, false, false);
             Playback(.22, false, false);
@@ -334,46 +333,6 @@ public static class PhotonAvatarRecoveryChecks
         Debug.Log("Death / respawn during timestamp recovery PASS");
     }
 
-    static DuckCompanion AttachCompanion(Fixture f)
-    {
-        var duck = f.player.gameObject.AddComponent<DuckCompanion>();
-        typeof(DuckCompanion).GetProperty("Head").SetValue(duck, f.body.Head);
-        typeof(DuckCompanion).GetProperty("LeftHand").SetValue(duck, f.body.LeftHand);
-        typeof(DuckCompanion).GetProperty("RightHand").SetValue(duck, f.body.RightHand);
-        typeof(DuckCompanion).GetProperty("Dialogue").SetValue(duck, f.player.gameObject.AddComponent<DuckCompanionDialogue>());
-        typeof(DuckCompanion).GetProperty("SelfMute").SetValue(duck, f.player.gameObject.AddComponent<DuckCompanionSelfMute>());
-        return duck;
-    }
-
-    static object[] CompanionSnapshot(DuckCompanion duck, bool dead)
-    {
-        typeof(DuckCompanion).GetProperty("State").SetValue(duck, dead ? DuckCompanion.Activity.Dead : DuckCompanion.Activity.Following);
-        var stream = new PhotonStream(true, null);
-        Set(stream, "writeData", new System.Collections.Generic.List<object>(100));
-        stream.SendNext(Pose(10)); stream.SendNext(dead);
-        if (dead) { stream.SendNext(Vector3.zero); stream.SendNext(Vector3.zero); }
-        duck.Serialize(stream);
-        return stream.ToArray();
-    }
-
-    static void CompanionLifeOrdering()
-    {
-        using var source = new Fixture(); using var target = new Fixture();
-        var sender = AttachCompanion(source); var receiver = AttachCompanion(target);
-        var alive = CompanionSnapshot(sender, false);
-        var dead = CompanionSnapshot(sender, true);
-        Deliver(target.player, 100, 0, 99.92, alive, owner);
-        Deliver(target.player, 100.05, .05, 99.97, dead, owner);
-        Check(receiver.IsDead && Get<bool>(target.player, "_remoteDead"), "Companion death payload accepted");
-        Deliver(target.player, 100.1, .1, 99.92, alive, owner);
-        Check(receiver.IsDead && Get<bool>(target.player, "_remoteDead"), "Rejected pose cannot mutate companion life payload");
-        Deliver(target.player, 100.15, .15, 100.07, alive, owner);
-        Check(!receiver.IsDead && !Get<bool>(target.player, "_remoteDead"), "Companion respawn payload accepted");
-        Deliver(target.player, 100.2, .2, 99.97, dead, owner);
-        Check(!receiver.IsDead && !Get<bool>(target.player, "_remoteDead"), "Rejected companion death cannot replay");
-        Debug.Log("Companion life payload ordering PASS");
-    }
-
     static void Playback(double delay, bool outage, bool hitch)
     {
         using var f = new Fixture(); var p = f.player;
@@ -444,7 +403,7 @@ public static class PhotonAvatarRecoveryChecks
     static void ReleaseReviewEdges()
     {
         int failures = 0;
-        foreach (Action scenario in new Action[] { DelayedStream, OwnerCache, CompanionControllerSwitch })
+        foreach (Action scenario in new Action[] { DelayedStream, OwnerCache })
         {
             try { scenario(); }
             catch (Exception e) { failures++; Debug.LogError("Release review: " + scenario.Method.Name + ": " + e.Message); }
@@ -483,21 +442,5 @@ public static class PhotonAvatarRecoveryChecks
         Receive(p, 100.05, .05, 99.97, 99, dead: true, sender: stranger);
         Check(!p.IsDead, "Foreign actor still rejected with missing Owner cache");
         Debug.Log("Owner actor identity / missing cache PASS");
-    }
-
-    static void CompanionControllerSwitch()
-    {
-        using var source = new Fixture(); using var target = new Fixture();
-        var duck = AttachCompanion(source); var peer = AttachCompanion(target);
-        var alive = CompanionSnapshot(duck, false); var dead = CompanionSnapshot(duck, true);
-        Deliver(target.player, 100, 0, 99.92, alive, owner);
-        target.player.photonView.ControllerActorNr = stranger.ActorNumber;
-        Deliver(target.player, 100.05, .05, 99.97, dead, owner);
-        Check(!peer.IsDead, "Old companion controller cannot replay death after master switch");
-        Deliver(target.player, 100.1, .1, 100.02, dead, stranger);
-        Check(peer.IsDead, "New companion controller can send death state");
-        Deliver(target.player, 100.15, .15, 100.07, alive, stranger);
-        Check(!peer.IsDead, "New companion controller can respawn");
-        Debug.Log("Companion controller handoff PASS");
     }
 }

@@ -190,7 +190,7 @@ public class PhotonVoiceChat : MonoBehaviour
         chat._recorder.TransmitEnabled = !muted;
     }
 
-    public static AudioSource Attach(GameObject player, Transform head, bool companion = false)
+    public static AudioSource Attach(GameObject player, Transform head)
     {
         if (player.GetComponent<PhotonVoiceView>() != null)
         {
@@ -223,18 +223,8 @@ public class PhotonVoiceChat : MonoBehaviour
         if (settings != null)
             source.outputAudioMixerGroup = settings.voice;
 
-        if (companion)
-        {
-            // Each peer creates its own source from the same companion prefab;
-            // no authority gate or RPC is needed for authored audio settings.
-            player.GetComponent<DuckCompanion>()?.voiceSettings?.Apply(source);
-            voice.AddComponent<PhotonVoiceLevel>();
-        }
-        else
-        {
-            voice.AddComponent<Speaker>();
-            player.AddComponent<PhotonVoiceView>();
-        }
+        voice.AddComponent<Speaker>();
+        player.AddComponent<PhotonVoiceView>();
         return source;
     }
 

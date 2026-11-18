@@ -591,7 +591,6 @@ namespace Game.AI
             float bestSq = rangeSq;
             float nearSq = nearSenseRadius * nearSenseRadius;
             int best = -1;
-            bool bestIsCompanion = false;
             Vector3 bestHead = default;
 
             for (int s = 0; s < EnemyManager.MaxTargets; s++)
@@ -601,18 +600,13 @@ namespace Game.AI
                 if (IsFlareProtected(headPos)) continue;
                 Vector3 d = headPos - eyePos;
                 float sq = d.sqrMagnitude;
-                // Hook can chase Duck, but only a human can be pulled. A nearby
-                // companion must not keep a visible player from ever being selected.
-                bool companion = _hook != null && m.TargetOwner(s) is PhotonPlayer player && player.IsCompanion;
-                if (companion && best >= 0 && !bestIsCompanion) continue;
-                if (sq > (bestIsCompanion && !companion ? rangeSq : bestSq)) continue;
+                if (sq > bestSq) continue;
                 float dist = Mathf.Sqrt(sq);
                 if (sq > nearSq && Vector3.Dot(fwd, d) < _fovCos * dist) continue;
                 if (dist > 0.01f && AIQueryProfile.VisionCast(eyePos, d / dist, out RaycastHit hit, dist, m.VisionMask)
                     && hit.distance < dist - 0.35f)
                     continue;
                 best = s;
-                bestIsCompanion = companion;
                 bestSq = sq;
                 bestHead = headPos;
             }

@@ -6,7 +6,7 @@ November 6, 2026. The user wants minions and spiders to board and ride the movin
 
 `RailTrainNavigation` loads a separate editor-baked graph from `Assets/DuckRails/Train/TrainCrawlGraph.bytes`. Its cell keys and node data stay local to the train; world queries transform through the current carriage pose. Resumable A* computes distances in graph coordinates so movement between search slices cannot invalidate its heuristic. No runtime geometry bake or block-graph reconstruction is performed.
 
-`RailZombie` and `RailSpider` opt into `RailEnemyBoarding`. They retain the existing brain, ground/climbing movers, gait, hit reactions and budgeted manager path service. Each enemy selects its navigation graph through a temporary manager scope; other enemies and companions continue using the world graph. Pathfinder instances are reused per graph.
+`RailZombie` and `RailSpider` opt into `RailEnemyBoarding`. They retain the existing brain, ground/climbing movers, gait, hit reactions and budgeted manager path service. Each enemy selects its navigation graph through a temporary manager scope; other enemies continue using the world graph. Pathfinder instances are reused per graph.
 
 Initial tuning: chase a passenger to a reachable ground graph node near the open rear or either side railing gap, walk a collision-checked and continuously supported approach, then climb onto the deck. Boarding is permitted at up to 0.6 m/s, with an approach within 8 m of an existing connected graph and a rise no greater than 1.8 m. Physical clearance is checked during the transfer. A fast departure, obstruction or excessive gap aborts the climb. These are implementation defaults, not confirmed final balance.
 
