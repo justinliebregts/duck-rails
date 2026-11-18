@@ -9,6 +9,9 @@ public sealed class EquipmentInventory : MonoBehaviourPunCallbacks
     public static EquipmentInventory Local { get; private set; }
     readonly bool[] restored = new bool[2];
     readonly string[] pendingKeys = new string[2];
+    readonly bool[] waiting = new bool[2];
+    string restoreWorld;
+    float retryAt;
 
     static string SaveKey(HeadEquipment.EquipmentSlot slot) =>
         slot == HeadEquipment.EquipmentSlot.Eyes ? EyesKey : HeadKey;
@@ -18,21 +21,40 @@ public sealed class EquipmentInventory : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
+        ResetRestore();
+        restoreWorld = null;
+    }
+
+    void ResetRestore()
+    {
         for (int i = 0; i < restored.Length; i++)
         {
             restored[i] = false;
             pendingKeys[i] = null;
+            waiting[i] = false;
         }
+        retryAt = 0f;
     }
+
+    static void Trace(string message) => RailDiagnostics.Instance?.Event("equipment: " + message);
 
     void Update()
     {
-        if (PhotonSession.IsRailsRoom) return;
         if (!PhotonNetwork.InRoom) return;
+        if (PhotonSession.IsRailsRoom)
+        {
+            // Restore once per world (room, run, aboard), after scene/cargo cleanup and player placement,
+            // like the worn bag. A transition removed the worn gear and kept its save for this.
+            var session = PhotonSession.Instance;
+            if (session == null || !session.WorldReady || session.InWorldTransition || session.AwaitingCrewDestination ||
+                RailExpedition.LocalDown) return;
+            string world = PhotonNetwork.CurrentRoom.Name + "|" + PhotonSession.RunId + "|" + PhotonSession.OnTrain;
+            if (restoreWorld != world) { restoreWorld = world; ResetRestore(); }
+        }
         var player = GR.Player.instance;
         if (!UserPlayerPrefs.IsReady || player == null || player.IsDead ||
             player.helmetAnchor == null || PhotonPlayer.Local == null) return;
-        if (restored[0] && restored[1]) return;
+        if ((restored[0] && restored[1]) || Time.unscaledTime < retryAt) return;
         if (!MigrateLegacySave()) return;
         RestoreSlot(HeadEquipment.EquipmentSlot.Head, player.helmetAnchor);
         RestoreSlot(HeadEquipment.EquipmentSlot.Eyes, player.helmetAnchor);
@@ -68,9 +90,16 @@ public sealed class EquipmentInventory : MonoBehaviourPunCallbacks
         }
         string key = UserPlayerPrefs.GetString(SaveKey(slot), "");
         if (string.IsNullOrEmpty(key)) { restored[index] = true; return; }
+        // The room copy may still be here: worn by our rejoined actor (HeadEquipment reattaches it) or awaiting
+        // removal after we dropped out. Never mint a second copy while it exists; check again shortly.
         if (RoomObjectRecovery.Exists(UserPlayerPrefs.GetString(SaveKey(slot) + ".room", ""),
             UserPlayerPrefs.GetString(SaveKey(slot) + ".identity", "")))
-        { restored[index] = true; return; }
+        {
+            if (!waiting[index]) Trace(slot + " restore waiting: room still has the saved copy");
+            waiting[index] = true;
+            retryAt = Time.unscaledTime + .5f;
+            return;
+        }
         // Registration/catalog initialization may finish after the local rig starts.
         GameObject prefab = BagObject.ResolvePrefab(key);
         if (prefab == null) return;
@@ -78,7 +107,9 @@ public sealed class EquipmentInventory : MonoBehaviourPunCallbacks
         var equipment = prefab.GetComponent<HeadEquipment>();
         if (equipment == null || equipment.Slot != slot) return;
         pendingKeys[index] = key;
-        RoomRpc.SpawnEquipment(key, anchor.position, anchor.rotation);
+        bool compound = PhotonSession.IsRailsRoom && !PhotonSession.OnTrain;
+        Trace(slot + " restoring " + key + " from save" + (compound ? " (Compound lifetime)" : ""));
+        RoomRpc.SpawnEquipment(key, anchor.position, anchor.rotation, compound);
     }
 
     public bool AcceptRestore(HeadEquipment item)

@@ -12,10 +12,14 @@ public static class RoomRpc
     const byte SpawnBagCode = 103;
     const byte SpawnEquipmentCode = 104;
 
-    public static void SpawnEquipment(string key, Vector3 position, Quaternion rotation)
+    /// <summary>
+    /// Asks the master to spawn saved head equipment for the local player. compoundLifetime tags it like a Compound
+    /// purchase so the Compound's leftover-cargo cleanup keeps it while its wearer is in the room.
+    /// </summary>
+    public static void SpawnEquipment(string key, Vector3 position, Quaternion rotation, bool compoundLifetime = false)
     {
         if (!PhotonNetwork.InRoom) return;
-        object[] request = { key, position, rotation };
+        object[] request = { key, position, rotation, compoundLifetime };
         if (PhotonNetwork.IsMasterClient)
             SpawnEquipmentAsMaster(request, PhotonNetwork.LocalPlayer.ActorNumber);
         else
@@ -25,15 +29,17 @@ public static class RoomRpc
 
     static void SpawnEquipmentAsMaster(object[] request, int actor)
     {
-        if (!PhotonNetwork.IsMasterClient || request.Length != 3 ||
+        if (!PhotonNetwork.IsMasterClient || (request.Length != 3 && request.Length != 4) ||
             !(request[0] is string key) || !(request[1] is Vector3 position) ||
             !(request[2] is Quaternion rotation)) return;
         Player owner = PhotonNetwork.CurrentRoom.GetPlayer(actor);
         GameObject prefab = BagObject.ResolvePrefab(key);
         if (owner == null || owner.IsInactive || prefab == null || prefab.GetComponent<HeadEquipment>() == null) return;
         PhotonPreparePool.Register(prefab);
-        GameObject go = PhotonNetwork.InstantiateRoomObject(prefab.name, position, rotation, 0,
-            new object[] { "equipment-restore-v1", actor });
+        object[] data = { "equipment-restore-v1", actor };
+        if (request.Length == 4 && request[3] is bool compoundLifetime && compoundLifetime)
+            data = RailCargo.WithCompoundPurchase(data, owner.UserId);
+        GameObject go = PhotonNetwork.InstantiateRoomObject(prefab.name, position, rotation, 0, data);
         if (go != null && owner != PhotonNetwork.LocalPlayer)
             go.GetComponent<PhotonView>().TransferOwnership(owner);
     }

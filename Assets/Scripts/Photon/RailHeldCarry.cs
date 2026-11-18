@@ -3,14 +3,56 @@ using Photon.Pun;
 using UnityEngine;
 
 /// <summary>
-/// Items held in the local player's hands when they change room or world scene (Compound to Expedition,
-/// crew return, Back to Compound, private departure/return) come with them. The held originals are removed
-/// from the old world, then fresh copies drop at the player's feet once the destination world is ready.
-/// Hands are never re-gripped: the player may have let go during the transition.
-/// Worn bags and worn head equipment keep their own restore paths; only hand-held items and bags are carried.
+/// What the local player has on them comes along when they change room or world scene (Compound to Expedition,
+/// crew return, Back to Compound, private departure/return):
+/// - Held items and hand-held bags: the originals are removed from the old world, then fresh copies drop at the
+///   player's feet once the destination world is ready. Hands are never re-gripped (they may let go mid-veil).
+/// - The worn bag (with contents) and worn head gear: their disk saves are refreshed and the originals removed
+///   without clearing those saves. BagInventory and EquipmentInventory restore them from disk on arrival, the same
+///   path that brings them back after a quit, crash or disconnect.
 /// </summary>
 public static class RailHeldCarry
 {
+    /// <summary>True while worn items are being removed for a transition; their removal must keep the saves.</summary>
+    public static bool RemovingWorn { get; private set; }
+
+    /// <summary>Call before a room change or world scene swap, before hands are dropped.</summary>
+    public static void CaptureForTransition()
+    {
+        CaptureLocalHands();
+        RemoveWorn();
+    }
+
+    // Leaving them would duplicate the gear (a copy left in the old room, a restored copy in the new one), and in a
+    // same-room swap Photon's DontDestroyOnLoad pass would drag the old rig along with anything parented to it.
+    static void RemoveWorn()
+    {
+        if (!PhotonNetwork.InRoom || !PhotonSession.IsRailsRoom || !UserPlayerPrefs.IsReady) return;
+        if (RailExpedition.LocalDown || (GR.Player.instance != null && GR.Player.instance.IsDead)) return;
+        RemovingWorn = true;
+        try
+        {
+            BagInventory inventory = BagInventory.Local;
+            BagObject back = inventory != null ? inventory.BackBag : null;
+            if (back != null && back.State == BagState.Stowed && Removable(back.photonView) && inventory.SaveBackForTransition())
+            {
+                Trace("worn bag saved and removed " + BagInventory.Describe(back));
+                PhotonNetwork.Destroy(back.gameObject);
+            }
+            GR.Player player = GR.Player.instance;
+            if (player != null && player.helmetAnchor != null)
+                foreach (HeadEquipment item in player.helmetAnchor.GetComponentsInChildren<HeadEquipment>(true))
+                {
+                    PhotonView view = item.GetComponent<PhotonView>();
+                    if (!item.IsLocallyEquipped || !Removable(view)) continue;
+                    EquipmentInventory.Save(item);
+                    Trace("worn " + item.Slot + " saved and removed " + EquipmentInventory.PrefabKey(item) + " view " + view.ViewID);
+                    PhotonNetwork.Destroy(item.gameObject);
+                }
+        }
+        finally { RemovingWorn = false; }
+    }
+
     const string SpawnTag = "rails-carry-v1";
     const float SettleSeconds = .75f;
 
@@ -30,10 +72,9 @@ public static class RailHeldCarry
     static void Trace(string message) => RailDiagnostics.Instance?.Event("carry: " + message);
 
     /// <summary>
-    /// Records and removes the local player's held items. Call before the hands are dropped for a room
-    /// change, and before a same-room world scene swap. Additive: a crew return passes through several rooms.
+    /// Records and removes the local player's held items. Additive: a crew return passes through several rooms.
     /// </summary>
-    public static void CaptureLocalHands()
+    static void CaptureLocalHands()
     {
         if (!PhotonNetwork.InRoom || !PhotonSession.IsRailsRoom) return;
         // Downing/death already dropped everything; never carry from a dead or downed player.

@@ -38,6 +38,12 @@
 
 - [ ] November 16: validate bridge alarm four-second start spacing, release/re-grab cooldown, completion and spatial listening on real clients/headsets; queued for playtest.
 
+- [ ] November 18: loadout persistence: the worn bag (with contents), helmet and goggles survive
+  every scene/room change and a quit, crash or disconnect; held items drop at your feet when
+  changing worlds. A single-client live fixture passes all 20 stages. Second-client views, a
+  same-room rejoin and headsets remain
+  [queued for playtest](playtest-queue.md#loadout-survives-scene-changes-quits-crashes-and-disconnects--2026-11-18).
+
 - [ ] November 16: validate Duckz-style backpack downing and persistence: worn/held
   bags drop intact on downing; only worn bags restore on entry. Implementation,
   Unity compilation and Week 2 rules checks pass; runtime acceptance is

@@ -1,5 +1,23 @@
 # Duck Rails testing tools
 
+## Loadout persistence checks — November 18, 2026
+
+- **Duck Rails > Tests > Loadout Persistence (Edit Mode)** (`RailLoadoutPersistenceChecks`):
+  disconnected Edit Mode, a few seconds. Every carriable/baggable/wearable item prefab must be
+  registered by name in GameManager's Photon pool (present in Compound and Expedition, not
+  overridden) and resolve from a fresh pool. Also covers head-restore spawn data and carry keys.
+  Run it after adding an item prefab.
+- **Duck Rails > Tests > Loadout Persistence (Live)** (`RailLoadoutLiveChecks`): from Edit Mode
+  with no MPPM scenario running and no unsaved scene. It opens Compound, enters Play Mode with
+  the main editor's account only (about 6 minutes) and returns to the original scene. It backs
+  up and clears the account's saved loadout and wears a basic bag with contents, a helmet and
+  goggles while holding a walkie. Then it runs private departure/return, a contents change,
+  Back to Compound, creating a private room, connection loss aboard and in Compound, and quit +
+  simulated crash + relaunch. Each check must hold for 5 s. It restores the account's saves
+  pass or fail. Results: `Temp/rails-loadout-live.txt`; **...(Live) - Stop** aborts.
+  - Do not edit scripts while it runs: this project stops Play Mode on script changes.
+  - It does not cover a second client's view or headsets.
+
 ## Worn head equipment on moving trains — November 14, 2026
 
 The focused cargo regression and two-client render-time measurement probe are

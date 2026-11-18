@@ -563,10 +563,13 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
         if (orphaned)
         {
             orphaned = false;
-            if (PhotonSession.IsRailsRoom && state != BagState.Dropped)
+            // A worn bag is saved on its wearer's disk and restored wherever they arrive, including after a crash or
+            // disconnect (even while they are only inactive here), so it leaves with them below. Leaving it in the
+            // room would duplicate it and its contents.
+            if (PhotonSession.IsRailsRoom && state == BagState.Held)
             {
                 BagInventory.Trace("holder #" + holderActor + " left; returning to room " + BagInventory.Describe(this));
-                // Expedition equipment remains a shared room object when its wearer leaves.
+                // A bag dropped from a departed player's hand remains a shared room object.
                 DropLocal(Vector3.zero);
                 PhotonHeldItems.ReturnToRoom(photonView);
                 RecoveryChanged();
@@ -575,6 +578,7 @@ public partial class BagObject : MonoBehaviourPunCallbacks, IPunObservable, IPun
             if (state == BagState.Stowed && PhotonNetwork.InRoom)
             {
                 DuckzLog.Log($"[Bag] Wearer #{holderActor} left with bag {bagId} on their back; it went with them", this);
+                BagInventory.Trace("wearer #" + holderActor + " left; worn bag goes with them " + BagInventory.Describe(this));
                 PhotonNetwork.Destroy(gameObject);
                 return;
             }

@@ -71,6 +71,8 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
     Transform chest;
     bool restoreRequested;
     string restoreWorld;
+    float restoreRetryAt;
+    bool restoreWaiting;
     bool debugBagPending;
     byte debugBagPendingId;
     byte debugWornId;
@@ -220,7 +222,18 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         UserPlayerPrefs.Save();
     }
 
-    // Once per room: if a bag was on our back when we last left, ask for it back onto our back.
+    /// <summary>
+    /// Refreshes the worn-bag save before a room change or world swap removes the bag (RailHeldCarry).
+    /// False when nothing could be saved, in which case the caller must leave the bag alone.
+    /// </summary>
+    internal bool SaveBackForTransition()
+    {
+        if (backBag == null || !UserPlayerPrefs.IsReady) return false;
+        SaveBack("world transition");
+        return true;
+    }
+
+    // Once per world: if a bag was on our back when we last left, ask for it back onto our back.
     void TryRestore()
     {
         if (!PhotonNetwork.InRoom)
@@ -235,9 +248,9 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
             var session = PhotonSession.Instance;
             if (session == null || !session.WorldReady || session.InWorldTransition || session.AwaitingCrewDestination) return;
             string world = PhotonNetwork.CurrentRoom.Name + "|" + PhotonSession.RunId + "|" + PhotonSession.OnTrain;
-            if (restoreWorld != world) { restoreWorld = world; restoreRequested = false; }
+            if (restoreWorld != world) { restoreWorld = world; restoreRequested = false; restoreWaiting = false; restoreRetryAt = 0f; }
         }
-        if (restoreRequested || PhotonPlayer.Local == null || IsPlayerDead())
+        if (restoreRequested || PhotonPlayer.Local == null || IsPlayerDead() || Time.unscaledTime < restoreRetryAt)
             return;
         if (!ResolveDebugBag(out byte debugId))
             return;
@@ -250,7 +263,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         if (!UserPlayerPrefs.IsReady)
             return;
         restoreRequested = true;
-        Trace("restore check " + Context() + "; back " + Describe(backBag) + "; " + SavedSummary());
+        if (!restoreWaiting) Trace("restore check " + Context() + "; back " + Describe(backBag) + "; " + SavedSummary());
         foreach (var bag in BagObject.Active)
             if (bag != null && bag.State == BagState.Stowed && bag.HolderActor == BagObject.LocalActor)
             {
@@ -266,12 +279,14 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
         string saved = UserPlayerPrefs.GetString(SaveKey, "");
         if (string.IsNullOrEmpty(saved))
             return;
-        // The room copy may have been picked up by somebody else while we were away.
-        // Never mint a second copy from an older disk save in that room.
+        // The room copy may still be here: worn by our rejoined actor (reattached above once it arrives), or
+        // awaiting removal by the master after we dropped out. Never mint a second copy while it exists;
+        // keep checking, so the disk copy is restored once the old one is gone.
         if (RoomObjectRecovery.Exists(UserPlayerPrefs.GetString(SaveKey + ".room", ""),
             UserPlayerPrefs.GetString(SaveKey + ".identity", "")))
         {
-            Trace("restore skipped: room still has the saved bag's recovered copy");
+            if (!restoreWaiting) Trace("restore waiting: room still has the saved bag's recovered copy");
+            restoreWaiting = true; restoreRequested = false; restoreRetryAt = Time.unscaledTime + .5f;
             return;
         }
         string[] parts = saved.Split(SaveSeparator);

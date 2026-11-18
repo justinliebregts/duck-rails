@@ -1,5 +1,61 @@
 # Playtest queue
 
+## Loadout survives scene changes, quits, crashes and disconnects — 2026-11-18
+
+- Request: moving between Compound and Expedition keeps the worn bag (with contents) and worn
+  helmet/night-vision goggles, as well as held items (held items drop at your feet). After a
+  quit, crash or disconnect the bag with its contents and the head gear are back when you
+  return. Held items may be lost then.
+- Changed:
+  - `RailHeldCarry.CaptureForTransition` (from `PhotonSession.Begin` and the same-room
+    `LoadWorldScene`) also refreshes the worn-bag/head-gear saves and network-destroys those
+    items without clearing the saves (`RemovingWorn`). `BagInventory.SaveBackForTransition`
+    added.
+  - `EquipmentInventory` restore now runs in Rails rooms (it was disabled), once per world
+    (room/run/aboard) after `WorldReady`, not while downed or waiting for the crew destination.
+    In Compound the restore is spawned with the Compound purchase lifetime
+    (`RoomRpc.SpawnEquipment(..., compoundLifetime)`), so leftover cleanup keeps it;
+    `HeadEquipment` accepts that longer spawn data.
+  - Bag and head restore wait (recheck every 0.5 s) while the saved copy still exists in the
+    room instead of giving up, so a slow master cleanup cannot lose the gear.
+  - When a wearer leaves a Rails room, including going inactive, the master removes their
+    worn bag ("goes with them") instead of dropping it for the room, and worn head gear no
+    longer waits for an inactive wearer. Prevents a duplicate (room copy + restored copy). A bag
+    held in a hand still drops for the room.
+  - `GameManager.prefab` pool registers `RailCoal`, `RailFlashlight`, `RailBat`, `RailHelmet`,
+    `RailGoggles`, `RailWalkie` and `RailGoldBar`, so other clients can spawn them by name when
+    they are carried into Compound or restored inside a bag or on a head. Unity's re-save also
+    dropped two stale GameManager fields from the removed duck companion.
+- Tests:
+  - `RailLoadoutPersistenceChecks` (Duck Rails > Tests > Loadout Persistence (Edit Mode)):
+    every carriable/baggable/wearable item prefab is registered by name on every client and
+    resolves from a fresh pool; GameManager is in both scenes with no pool overrides; head
+    restore data in plain and Compound forms; carry keys; offline capture is a no-op.
+  - `RailLoadoutLiveChecks` (Duck Rails > Tests > Loadout Persistence (Live)), one
+    authenticated client: private departure and failure return (same-room swaps), contents
+    change aboard saved immediately, Back to Compound (room change), creating a private room,
+    connection loss aboard (rejoin) and in a public Compound, quit and simulated crash with
+    relaunch. Each check must hold for 5 s. Backs up the account's saved loadout and restores it.
+    Results in `Temp/rails-loadout-live.txt`.
+- Evidence (Unity 6000.3.24f1, main editor, one authenticated account, no headset):
+  - Edit Mode: `RailLoadoutPersistenceChecks` PASS 6/6 (16 item prefabs covered).
+    `EquipmentPersistenceChecks` and `RailCargoEquipmentChecks` still pass (the former's
+    synthetic-room RaiseEvent errors are pre-existing). `BagClaimChecks`,
+    `HeldItemRecoveryChecks` and `RoomObjectRecoveryChecks` were not re-run: they only run in
+    a disposable batch copy. Their offline fixtures are not Rails rooms and do not assert the
+    changed branches.
+  - Live: `RailLoadoutLiveChecks` PASS, all 20 stages, every check held for 5 s:
+    [run log](validation/loadout-persistence/live-2026-11-18.txt). Earlier runs failed only on
+    fixture bugs (private room kind, bag id 1 has no slots, a dropped FinishRun commit), fixed
+    before this run. The account's 9 saved loadout keys matched the pre-test backup afterwards.
+  - Limit: after the connection loss aboard, the client came back in a public Compound, not the
+    same expedition. That run therefore covered "drop out, return elsewhere, restore from disk".
+    The same-room rejoin (reattaching the still-worn copy) was not exercised.
+  - Console: only the known Meta XR/LCK startup errors and a stale-Inspector error.
+- Still needs real clients: a second player sees one copy of your gear after each transition
+  and nothing left in the old room; a wearer dropping out of a shared expedition takes the bag
+  and head gear with them (no room copy for the crew); headset feel.
+
 ## Brighter store lighting (Compound + starting station) — queued 2026-11-18
 
 - Request: both stores looked too dark. User retuned lights by hand, rebaked both and moved
