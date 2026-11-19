@@ -27,6 +27,13 @@ see players through walls. The objective is reconstructed from room spawn data
 after authority changes. Matchmaking suffix advances to `-tower-finale-v2` so
 old 30-second builds cannot share these runs; rebuild all participating clients.
 
+November 18: while the bridge is actively lowering (lever held, progress < 100%),
+every other idle (wandering) enemy inside the finale block's enemy bounds also
+paths to the same cabinet point. Pausing the hold stops new attraction; enemies
+already en route finish that path, then resume wandering. Enemies aboard or
+crossing onto the train keep their boarding plan. Code:
+`RailBridgeEncounter.LowerAttracts`. Runtime check queued for playtest.
+
 - Offline graph rebaked against the saved current bake scene: **73,371 nodes**,
   656,236 edges. Both initial tower defenders and the reinforcement have complete
   floor-only paths to the control approach (34, 36 and 25 path nodes).
