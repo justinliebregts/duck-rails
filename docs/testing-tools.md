@@ -139,8 +139,17 @@ but the offscreen preview did not return. Headset reach remains queued for playt
 
 Current entry point: normal pause menu (Start/P) > **Test**, visible only when
 the signed-in account's PlayerSession.IsAdmin is true, including in the Editor
-and release builds. Exactly four CutePixel buttons:
-Deposit 1 coal; Deposit 50 coal; No Clip: On/Off; Invincibility: On/Off.
+and release builds. Exactly five CutePixel buttons:
+Deposit 1 coal; Deposit 50 coal; No Clip: On/Off; Invincibility: On/Off;
+Train Speed: 1x/5x (added November 18; buttons respaced to 0.055).
+
+Train Speed sends `admin-train-speed` (1 or 5) to the master, which checks the
+mirrored admin flag and writes the run-scoped `rails.test.fastTrainRun` key plus
+rebased motion/fuel (`RailTestTools.ApplyTrainSpeed`): no teleport, a moving
+train changes target to 20 or 4 m/s, a stopped train stays stopped and later
+GO uses the selected cruise. Works in public and private runs; the label reads
+the shared key, so every client sees the current speed. The key is ignored
+once the run changes. The private-room Test Center toggle shares this path.
 
 Coal requests go to the current Photon master in a ready running public or
 private expedition, including requests from a non-master admin. Each applies

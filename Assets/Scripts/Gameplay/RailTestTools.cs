@@ -31,23 +31,29 @@ public static class RailTestTools
     public static bool Authority => Allowed && PhotonNetwork.IsMasterClient;
     public static bool CanMutate => Authority && PhotonSession.Phase == RailPhase.Running;
     const string FastTrainRunKey = "rails.test.fastTrainRun";
-    public static bool FastTrainEnabled => RailDiagnostics.Development && PhotonSession.IsPrivate &&
-        PhotonSession.IsRailsRoom && PhotonSession.Phase == RailPhase.Running &&
+    // Written only by the private-run test tool or the master on an admin's request, and scoped to one run.
+    public static bool FastTrainEnabled => PhotonSession.IsRailsRoom && PhotonSession.Phase == RailPhase.Running &&
         !string.IsNullOrEmpty(PhotonSession.RunId) && PhotonSession.Get(FastTrainRunKey, "") == PhotonSession.RunId;
     public static float TrainCruiseSpeed => FastTrainEnabled ? 20f : 4f;
     public static void ToggleTrainSpeed()
     {
         if (!CanMutate) { Status = "Train speed requires the master of a ready private run"; return; }
         bool fast = !FastTrainEnabled;
-        double now = PhotonNetwork.Time;
-        var command = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
-        RailSessionRules.EvaluateTrain(command, PhotonSession.Get(RailSessionRules.Fuel, 100f), now,
-            out float distance, out float speed, out float fuel);
-        // Rebase motion and fuel together: no teleport, fuel reset or restart of a stopped train.
+        var changes = new Hashtable();
+        ApplyTrainSpeed(changes, fast, PhotonNetwork.Time);
+        Commit(changes, fast ? "Train speed 5x enabled" : "Train speed restored to 1x");
+    }
+    /// <summary>Master-side: set 1x/5x cruise for this run, rebasing motion and fuel together
+    /// (no teleport, fuel reset or restart of a stopped train). Builds on motion/fuel already in changes.</summary>
+    public static void ApplyTrainSpeed(Hashtable changes, bool fast, double now)
+    {
+        var command = changes[RailSessionRules.Motion] as object[] ?? PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
+        float storedFuel = changes[RailSessionRules.Fuel] is float f ? f : PhotonSession.Get(RailSessionRules.Fuel, 100f);
+        RailSessionRules.EvaluateTrain(command, storedFuel, now, out float distance, out float speed, out float fuel);
         float target = (float)command[3] > 0 && fuel > 0 ? (fast ? 20f : 4f) : 0f;
-        Commit(new Hashtable { [FastTrainRunKey] = fast ? PhotonSession.RunId : "",
-            [RailSessionRules.Motion] = new object[] { now, distance, speed, target },
-            [RailSessionRules.Fuel] = fuel }, fast ? "Train speed 5x enabled" : "Train speed restored to 1x");
+        changes[FastTrainRunKey] = fast ? PhotonSession.RunId : "";
+        changes[RailSessionRules.Motion] = new object[] { now, distance, speed, target };
+        changes[RailSessionRules.Fuel] = fuel;
     }
     public static RailTestPreset CurrentPreset()
     {

@@ -421,6 +421,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 (target == 1 || target == 50)) ApplyCoalFuel(changes, now, target);
             return;
         }
+        if (action == "admin-train-speed")
+        {
+            var sender = PhotonNetwork.CurrentRoom?.GetPlayer(p.actor);
+            if (sender?.CustomProperties[RailAdminTools.AdminProperty] is bool admin && admin &&
+                (target == 1 || target == 5)) RailTestTools.ApplyTrainSpeed(changes, target == 5, now);
+            return;
+        }
         if (action == "stats") { RailStats.Apply(p, coalSample); return; }
         if (action == "down" || action == "enemy-down")
         {

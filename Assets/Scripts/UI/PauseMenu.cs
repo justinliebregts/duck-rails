@@ -169,6 +169,7 @@ public class PauseMenu : MonoBehaviour
         BindTestButton("Deposit50", () => RailAdminTools.DepositCoal(50));
         BindTestButton("NoClip", () => RailAdminTools.ToggleNoClip());
         BindTestButton("Invincibility", () => RailAdminTools.ToggleInvincibility());
+        BindTestButton("TrainSpeed", () => RailAdminTools.ToggleTrainSpeed());
         testPage.SetActive(false);
         if (testButton != null) testButton.gameObject.SetActive(RailAdminTools.Available);
     }
@@ -184,6 +185,7 @@ public class PauseMenu : MonoBehaviour
         if (testPage == null || !testPage.activeInHierarchy) return;
         SetTestLabel("NoClip", "No Clip: " + (RailAdminTools.NoClip ? "On" : "Off"));
         SetTestLabel("Invincibility", "Invincibility: " + ((RailAdminTools.Invincible || RailTestTools.EnemyInvincible) ? "On" : "Off"));
+        SetTestLabel("TrainSpeed", "Train Speed: " + (RailTestTools.FastTrainEnabled ? "5x" : "1x"));
     }
 
     void SetTestLabel(string name, string value) {

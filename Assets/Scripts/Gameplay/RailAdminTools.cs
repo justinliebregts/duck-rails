@@ -50,4 +50,12 @@ public static class RailAdminTools
             PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady) return;
         RailExpedition.Instance?.Request("admin-coal", count);
     }
+    // Shared run state: the master applies it for everyone and it resets with the next run.
+    public static void ToggleTrainSpeed()
+    {
+        Refresh();
+        if (!Available || PhotonSession.Phase != RailPhase.Running ||
+            PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady) return;
+        RailExpedition.Instance?.Request("admin-train-speed", RailTestTools.FastTrainEnabled ? 1 : 5);
+    }
 }

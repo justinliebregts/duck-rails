@@ -10,6 +10,10 @@
 - [ ] Validate headset flight/collision restoration, invincibility and admin/non-admin
   visibility in release builds; verify host/peer refuelling and lifecycle reset.
   [Queued for playtest](playtest-queue.md#admin-pause-page--queued-2026-11-17).
+- [x] November 18: fifth Test button, Train Speed: 1x/5x, host-routed; Unity compile and
+  admin pause EditMode checks pass.
+- [ ] Validate the train speed toggle from master and non-master admins in a headset run.
+  [Queued for playtest](playtest-queue.md#admin-train-speed-toggle--2026-11-18).
 
 - [x] November 17: implement random bounded ambience excerpts and bake overlaps
   into 13 background loops. Compilation, 1,236 excerpt/import EditMode checks and

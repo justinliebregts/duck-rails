@@ -32,7 +32,8 @@ public static class RailAdminToolsChecks
             Check(menu.testButton != null && menu.testPage != null, "Serialized tab/page references");
             Check(!menu.testButton.gameObject.activeSelf && !menu.testPage.activeSelf, "Admin controls hidden by default");
             var buttons = menu.testPage.GetComponentsInChildren<PauseMenuButton>(true);
-            Check(buttons.Length == 4, "Exactly four page buttons");
+            Check(buttons.Length == 5, "Exactly five page buttons");
+            Check(menu.testPage.transform.Find("TrainSpeed") != null, "Train speed button present");
             var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/CutePixel SDF.asset");
             foreach (var button in buttons)
             {
@@ -68,6 +69,16 @@ public static class RailAdminToolsChecks
             Check((float)fifty[RailSessionRules.Fuel] == RailResourceBalance.Capacity, "Fifty coal respects fuel capacity");
             var motion = (object[])fifty[RailSessionRules.Motion];
             Check((float)motion[1] == 0 && (float)motion[2] == 0 && (float)motion[3] == 0, "Refuelling preserves stopped motion");
+            var speedUp = new Hashtable { [RailSessionRules.Motion] = new object[] { 1d, 10f, 4f, 4f }, [RailSessionRules.Fuel] = 50f };
+            RailTestTools.ApplyTrainSpeed(speedUp, true, 1);
+            var fastMotion = (object[])speedUp[RailSessionRules.Motion];
+            Check((float)fastMotion[1] == 10 && (float)fastMotion[2] == 4 && (float)fastMotion[3] == 20, "5x keeps position/speed and targets 20 m/s");
+            var stopped = new Hashtable { [RailSessionRules.Motion] = new object[] { 1d, 10f, 0f, 0f }, [RailSessionRules.Fuel] = 50f };
+            RailTestTools.ApplyTrainSpeed(stopped, true, 1);
+            Check((float)((object[])stopped[RailSessionRules.Motion])[3] == 0, "5x does not restart a stopped train");
+            var slowDown = new Hashtable { [RailSessionRules.Motion] = new object[] { 1d, 10f, 20f, 20f }, [RailSessionRules.Fuel] = 50f };
+            RailTestTools.ApplyTrainSpeed(slowDown, false, 1);
+            Check((float)((object[])slowDown[RailSessionRules.Motion])[3] == 4, "1x restores 4 m/s cruise");
             Debug.Log("ADMIN PAUSE: " + checks + " EditMode checks passed");
         }
         finally

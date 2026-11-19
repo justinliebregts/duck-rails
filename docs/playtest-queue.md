@@ -1,5 +1,35 @@
 # Playtest queue
 
+## Idle finale enemies seek the lowering bridge — 2026-11-18
+
+- Request: on the bridge finale, idle enemies seek the control area while the bridge is lowering.
+- Changed: `RailBridgeEncounter.TryGetObjective` now also returns the cabinet goal for
+  non-defender enemies of the current run that are wandering inside the finale enemy bounds,
+  only while `BridgeMoving` (lever held, progress < 1). Enemies aboard/crossing onto the train
+  are excluded. Defenders keep their existing always-on objective after first activation.
+- Passed: Unity compile only.
+- Check: reach the finale with base enemies wandering in the fortress (not chasing). Hold the
+  lever: they path to the catwalk south of the cabinet. Release before they arrive: no new
+  enemies are drawn; those en route finish, then wander. Enemies that see a player still chase.
+  Repeat as non-master after a master switch. Note whether the extra pressure feels fair with
+  the 60-second hold.
+
+## Admin train speed toggle — 2026-11-18
+
+- Request: dev (Test) page in the pause menu gets a toggle for train speed, 1x or 5x.
+- Changed: `PauseMenu.prefab` Test page has a fifth button `TrainSpeed` ("Train Speed: 1x/5x");
+  the five buttons are respaced (y 0.11 to -0.11). `RailAdminTools.ToggleTrainSpeed` requests
+  `admin-train-speed` from the master (`RailExpedition.ApplyRequest`), which applies
+  `RailTestTools.ApplyTrainSpeed` (4 ↔ 20 m/s cruise, rebasing motion and fuel). `FastTrainEnabled`
+  no longer requires a development build or private room, so the admin toggle works everywhere.
+- Passed: Unity compile; `RailAdminToolsChecks` (five buttons, 5x/1x targets, stopped train stays
+  stopped).
+- Check in a running expedition, as master and as a non-master admin: press Train Speed while
+  moving and while stopped; label flips on all clients; train speeds up/slows smoothly with no
+  jump; after stopping and pressing GO it resumes at the selected speed; fuel burn looks right;
+  the next run starts at 1x. All five buttons are reachable and readable in the headset.
+
+
 ## Starting station z-fighting: rib joints and supplies header — 2026-11-18
 
 - Request: remove flicker at every column/rib joint in the starting station hall and departure

@@ -6,6 +6,8 @@ The standalone L3/wrist/desktop test panel and Game-view toggle are retired.
 No Clip uses head-relative horizontal left-stick movement and right-stick
 forward/backward for vertical flight, without solid collision or fall recovery.
 Implemented; runtime/headset/multiplayer acceptance is queued.
+November 18: a fifth button, Train Speed: 1x/5x, sets the shared cruise speed
+(4 or 20 m/s) for the current run; it resets with the next run.
 See [testing tools](testing-tools.md#admin-pause-page--november-17-2026).
 
 November 17 ambience refinement: long positional details play randomized excerpts
@@ -20,6 +22,11 @@ up; no expedition-wide increase). Defenders approach the controls without needin
 initial line of sight, retaining ordinary player pursuit and combat reactions.
 New-fortress navigation, loot distribution and build lighting export are updated;
 runtime acceptance is queued. See [finale refresh](final-escape-layout.md#fortress-encounter-refresh--november-17-2026).
+
+November 18: user requested that idle finale enemies seek the bridge control area
+while the bridge is actively lowering (not while paused). Implemented for wandering
+enemies inside the finale block; chasing/searching and train-boarding enemies keep
+their behavior. Runtime acceptance queued for playtest.
 
 November 16 ambient audio: user-approved Artlist selection imported with a local
 location-aware director for the five enabled scavenging blocks, starting station
