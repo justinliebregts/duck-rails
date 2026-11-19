@@ -112,7 +112,18 @@ public sealed class RailHoldControl : MonoBehaviour
         // Like the handheld walkie, only the local interaction broadcasts each edge.
         // Lease heartbeats and remote hold updates must not replay the cue.
         if (radio && !bridge) RoomRpc.PlaySound(value ? radioTalkOn : radioTalkOff, transform.position);
+        if (value && !bridge) PressFeedback();
         Publish(value);
+    }
+    // Buzz whichever hand is touching the horn/talk button.
+    void PressFeedback()
+    {
+        var player = GR.Player.instance;
+        var volume = button != null ? button.GetComponent<Collider>() : null;
+        if (player == null || volume == null || VibrationManager.instance == null) return;
+        foreach (var hand in new[] { player.leftPlayerHand, player.rightPlayerHand })
+            if (hand != null && hand.isActiveAndEnabled && !hand.IsDesktopInput && hand.TouchesButton(volume))
+                VibrationManager.instance.TriggerButtonPress(hand);
     }
     void Publish(bool value)
     {

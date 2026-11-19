@@ -1,5 +1,11 @@
 # Playtest queue
 
+## Haptics pass — 2026-11-19
+
+- Changed: `VibrationManager` presets (grab/release tick, rail-joint thump, throttle click, button press, drift warning, both-hand downed/revived). Wired in `PlayerHand` (grab/release), `RailAudio` (rail joint, both hands, scales with speed), `RailControl` (click while held; drift warning toward the 0.36 m breakaway, starting at ~35%), `StoreWallItem` (pull warning), `RailHoldControl` (horn/radio press), `RailExpedition` (local down/revive edges). Compile and Console checked only; no Play Mode.
+- Needs human (Quest, both controllers): each is subtle enough; tick on coal/gold/any item grab and release; joint thump not annoying at full speed and never cutting off a warning; throttle drift pulses speed up before breakaway; store pull pulses speed up toward the purchase threshold; horn and radio button buzz the touching hand; downed and revive buzz both hands. Tune amplitudes in `VibrationManager`.
+- Also: handheld `WalkieTalkie` talk press buzz; bag put-in tick (take-out already ticks via `ForceGrab`).
+
 ## Idle finale enemies seek the lowering bridge — 2026-11-18
 
 - Request: on the bridge finale, idle enemies seek the control area while the bridge is lowering.

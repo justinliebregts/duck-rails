@@ -67,6 +67,8 @@ public sealed class WalkieTalkie : MonoBehaviour, IPunObservable
         transmitting = want;
         if (sounds != null)
             sounds.Play(want ? ItemSound.TurnOn : ItemSound.TurnOff);
+        if (want && grabbable != null)
+            VibrationManager.instance?.TriggerButtonPress(grabbable.Holder);
 
         int actor = PhotonNetwork.LocalPlayer != null ? PhotonNetwork.LocalPlayer.ActorNumber : 0;
         int viewId = photonView != null ? photonView.ViewID : 0;

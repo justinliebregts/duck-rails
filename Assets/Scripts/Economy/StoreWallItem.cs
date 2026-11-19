@@ -245,6 +245,8 @@ public class StoreWallItem : Grabbable
         float distance = Vector3.Distance(target, HomePosition);
         transform.position = target;
         UpdateLine(distance / pullDistance, false);
+        // Pulses speed up the further the item is pulled from the wall.
+        VibrationManager.instance?.TriggerDriftWarning(Holder, Mathf.InverseLerp(.05f, 1f, distance / pullDistance));
 
         if (distance >= pullDistance)
             BeginPurchase();

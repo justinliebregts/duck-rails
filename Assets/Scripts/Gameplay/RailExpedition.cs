@@ -557,7 +557,10 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             // Match Duckz death bag cleanup while preserving Rails revival.
             BagInventory.DropAllOnDowned();
             HeadEquipment.DropAllOnDowned();
+            VibrationManager.instance?.TriggerDowned();
         }
+        else if (local != null && !local.down && wasDown)
+            VibrationManager.instance?.TriggerRevived();
         wasDown = local?.down == true;
         reviveEffects.Present(State, transform, now);
         bool bridgeCrash = State.finished && State.reason == "Bridge collision";

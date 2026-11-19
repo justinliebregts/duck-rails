@@ -23,6 +23,68 @@ public class VibrationManager : MonoBehaviour {
         TriggerVibrationPulse(1f, 1f, 0.12f, hand);
     }
 
+    // ---- Presets. Tune amplitudes here. ----
+    readonly float[] nextWarningTimes = { -1f, -1f };
+
+    static bool IsTouchHand(PlayerHand hand) =>
+        hand != null && hand.isActiveAndEnabled && (hand.IsControllerLTouch || hand.IsControllerRTouch);
+
+    /// <summary>Very light tick when an item is picked up or let go.</summary>
+    public void TriggerGrabTick(PlayerHand hand, bool grabbed) {
+        if (!CanHaptic || !IsTouchHand(hand)) return;
+        TriggerVibrationPulse(.6f, grabbed ? .2f : .12f, .03f, hand);
+    }
+
+    /// <summary>Very subtle thump on both hands each time the rail-joint sound plays. speed01 is 0..1.</summary>
+    public void TriggerTrackJoint(float speed01) {
+        if (!CanHaptic || GR.Player.instance == null) return;
+        float amplitude = Mathf.Lerp(.03f, .1f, Mathf.Clamp01(speed01));
+        PulseHandIfIdle(GR.Player.instance.leftPlayerHand, .3f, amplitude, .035f);
+        PulseHandIfIdle(GR.Player.instance.rightPlayerHand, .3f, amplitude, .035f);
+    }
+
+    void PulseHandIfIdle(PlayerHand hand, float frequency, float amplitude, float duration) {
+        if (!IsTouchHand(hand)) return;
+        // Ambient feedback never cuts off a warning or other pulse already running on this hand.
+        if (pulseEndTimes[hand.IsControllerLTouch ? 0 : 1] >= 0f) return;
+        TriggerVibrationPulse(frequency, amplitude, duration, hand);
+    }
+
+    /// <summary>Small click as the throttle passes a detent while held.</summary>
+    public void TriggerThrottleClick(PlayerHand hand) {
+        if (!CanHaptic || !IsTouchHand(hand)) return;
+        TriggerVibrationPulse(.7f, .18f, .03f, hand);
+    }
+
+    /// <summary>Press of the train horn or radio talk button.</summary>
+    public void TriggerButtonPress(PlayerHand hand) {
+        if (!CanHaptic || !IsTouchHand(hand)) return;
+        TriggerVibrationPulse(.5f, .4f, .06f, hand);
+    }
+
+    /// <summary>Call every frame while a hand is being pulled away. t01: 0 = no warning, 1 = about to let go.
+    /// Pulses repeat faster and a bit stronger as t01 grows.</summary>
+    public void TriggerDriftWarning(PlayerHand hand, float t01) {
+        if (!CanHaptic || !IsTouchHand(hand) || t01 <= 0f) return;
+        int slot = hand.IsControllerLTouch ? 0 : 1;
+        if (Time.time < nextWarningTimes[slot]) return;
+        t01 = Mathf.Clamp01(t01);
+        nextWarningTimes[slot] = Time.time + Mathf.Lerp(.4f, .06f, t01);
+        TriggerVibrationPulse(.5f, Mathf.Lerp(.1f, .5f, t01), .03f, hand);
+    }
+
+    /// <summary>Strong buzz on both hands (downed / revived).</summary>
+    public void TriggerBothHands(float frequency, float amplitude, float duration) {
+        if (!CanHaptic || GR.Player.instance == null) return;
+        var left = GR.Player.instance.leftPlayerHand;
+        var right = GR.Player.instance.rightPlayerHand;
+        if (IsTouchHand(left)) TriggerVibrationPulse(frequency, amplitude, duration, left);
+        if (IsTouchHand(right)) TriggerVibrationPulse(frequency, amplitude, duration, right);
+    }
+
+    public void TriggerDowned() => TriggerBothHands(.8f, 1f, .45f);
+    public void TriggerRevived() => TriggerBothHands(.6f, .7f, .3f);
+
     struct PendingVibration {
         public float dueTime;
         public AudioClip audio;

@@ -156,7 +156,11 @@ public sealed class RailAudioDirector : MonoBehaviour
             int after = Mathf.FloorToInt(distance / bank.railJointSpacing);
             // A large jump is a re-sync or teleport, not wheels crossing joints.
             if (after > before && after - before <= 2 && speed > .3f)
-                RailAudio.Play(bank.railJoint, train.transform.position, Mathf.Lerp(.55f, 1f, Mathf.Clamp01(speed / bank.rumbleFullSpeed)));
+            {
+                float speed01 = Mathf.Clamp01(speed / bank.rumbleFullSpeed);
+                RailAudio.Play(bank.railJoint, train.transform.position, Mathf.Lerp(.55f, 1f, speed01));
+                if (PhotonSession.OnTrain) VibrationManager.instance?.TriggerTrackJoint(speed01);
+            }
         }
         prevDistance = distance; haveDistance = true;
         if (speed > .2f) wasMoving = true;

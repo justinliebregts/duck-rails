@@ -676,6 +676,7 @@ public class BagInventory : MonoBehaviour, IHandGripHandler
 
         if (!Despawn(item)) return false;
         bag.Put(slot, key, from, size);
+        VibrationManager.instance?.TriggerGrabTick(hand, false);
         return true;
     }
 
