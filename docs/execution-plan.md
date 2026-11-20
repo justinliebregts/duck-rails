@@ -1029,4 +1029,4 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [x] November 16: install approved Blender bridge lever terminal with train hand snapping, shared progress display and mechanical loop. 27 terminal, 17 bridge-hold and 27 drive EditMode checks pass. See docs/final-escape-layout.md.
 - [ ] Validate bridge terminal headset feel, audio, two-client hold/release, late join/master handoff and replay; queued for playtest.
 
-- [ ] Tails from the Rails is implemented on client and API. Station Info readability, real-client event attribution, reconnects and deployed end-to-end acceptance are queued in docs/playtest-queue.md.
+- [ ] Tales from the Rails is implemented on client and API. Station Info readability, real-client event attribution, reconnects and deployed end-to-end acceptance are queued in docs/playtest-queue.md.

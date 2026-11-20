@@ -895,6 +895,6 @@ November 18 held-item carry: an item or bag held in a hand when the player moves
 
 November 18 loadout persistence (user request): moving between Compound and Expedition, or changing room, keeps the worn bag with its contents and worn helmet/night vision goggles; held items drop at the player's feet. After a quit, crash or disconnect the worn bag with contents and head gear are restored when the player returns; hand-held items may be lost. A wearer who leaves a room (including dropping out) takes their worn bag and head gear with them instead of leaving them for the crew; the user confirmed that coal and gold in that bag leave the expedition with them. See [playtest queue](playtest-queue.md#loadout-survives-scene-changes-quits-crashes-and-disconnects--2026-11-18).
 
-### Tails from the Rails
+### Tales from the Rails
 
 Station Info displays five lifetime totals (individual attempts, individual escapes, coal gathered, gold gathered, and combined passenger kilometers), three weekly awards (most-looted stop by coal, deadliest zombie by duck downs, most-bonked zombie with hit count and most-used item), and the weekly and lifetime top ten escape artists side by side. First pickup of each original expedition coal or gold spawn earns collection credit. Exchanging the same item does not earn another credit. The server assigns new counter increases to the week it receives them, starting Monday at 00:00 UTC.

@@ -1,6 +1,6 @@
 # Playtest queue
 
-## Tails from the Rails — queued for playtest
+## Tales from the Rails — queued for playtest
 
 - Use two signed-in Quest clients against the updated API. Read both complete leaderboards from the Station Info bench. Check long names and an empty weekly board.
 - Begin with one rider, join the other duck late, and have one leave the train for part of the trip. Check two attempts, individual distance, and only the ducks credited at the bridge appearing among the escape artists.

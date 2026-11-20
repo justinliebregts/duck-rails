@@ -24,7 +24,7 @@ public sealed class RailCommunityBoard : MonoBehaviour
     static float refreshAt;
     public static void Install(GameObject compound)
     {
-        var go = new GameObject("Tails from the Rails", typeof(RectTransform), typeof(Canvas));
+        var go = new GameObject("Tales from the Rails", typeof(RectTransform), typeof(Canvas));
         go.transform.SetParent(compound.transform, false);
         go.transform.SetPositionAndRotation(new Vector3(-8.69f, 1.85f, 0), Quaternion.Euler(0,-90,0));
         go.transform.localScale = Vector3.one * .00195f;
@@ -58,7 +58,7 @@ public sealed class RailCommunityBoard : MonoBehaviour
     {
         panel=(RectTransform)transform; panel.sizeDelta=new Vector2(1500,900);
         Plate(0,0,1500,900,new Color32(32,45,56,255)); Plate(0,0,1500,8,yellow);
-        Text("TAILS FROM THE RAILS",30,18,1000,64,58);
+        Text("TALES FROM THE RAILS",30,18,1000,64,58);
         status=Text("",1000,25,470,45,26,false,true);
         string[] totals={"Escape attempts","Successful escapes","Coal gathered","Gold gathered","Kilometers ridden together"};
         for(int i=0;i<5;i++){
