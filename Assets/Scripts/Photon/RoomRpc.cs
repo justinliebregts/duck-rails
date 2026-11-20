@@ -40,7 +40,8 @@ public static class RoomRpc
         if (request.Length == 4 && request[3] is bool compoundLifetime && compoundLifetime)
             data = RailCargo.WithCompoundPurchase(data, owner.UserId);
         GameObject go = PhotonNetwork.InstantiateRoomObject(prefab.name, position, rotation, 0, data);
-        if (go != null && owner != PhotonNetwork.LocalPlayer)
+        // A room object's controller follows the master until the wearer explicitly owns it.
+        if (go != null)
             go.GetComponent<PhotonView>().TransferOwnership(owner);
     }
 
