@@ -202,6 +202,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             leaving = true; Started("Leaving room...");
             if (!PhotonNetwork.LeaveRoom(false)) RequestFailed("Could not leave the current room.");
+            else if (next == Request.Transfer && transferKind == RailSessionRules.ExpeditionKind)
+                RailAudioDirector.PlayDepartureHorn();
         }
         else Connect();
     }
@@ -623,7 +625,13 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (changed.ContainsKey(RailSessionRules.Phase) || changed.ContainsKey(RailSessionRules.Run))
         { WorldReady = false; loadingSince = Time.realtimeSinceStartupAsDouble; }
-        if (changed.ContainsKey(RailSessionRules.Phase)) DuckzAnalytics.SessionPhaseChanged();
+        if (changed.ContainsKey(RailSessionRules.Phase))
+        {
+            DuckzAnalytics.SessionPhaseChanged();
+            // Private launches keep the same Photon room and depart with a scene swap.
+            if (IsPrivate && Phase == RailPhase.Departing && !HasRoomRequest && GameScenes.IsLoaded(GameScenes.Compound))
+                RailAudioDirector.PlayDepartureHorn();
+        }
         if (changed.ContainsKey(RailSessionRules.Revision)) pendingRevision = -1;
         if (!GameScenes.IsLoaded(RequiredScene)) { if (!loadingScene) StartCoroutine(LoadWorldScene()); return; }
         FollowTransfer();

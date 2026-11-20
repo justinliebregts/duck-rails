@@ -667,6 +667,7 @@ Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets 
 - Show time and occupancy; clearly indicate who is aboard and when full.
 - At zero, lock the roster, transfer it, and reopen the source platform afterward.
 - Validate membership/capacity through the room's coordinating authority.
+- A two-second train horn plays once for each crew member when they leave the compound for a public or private expedition.
 
 ### Confirmed private lifecycle
 - Successful creation enters private staging; friends can arrive before or after departure.

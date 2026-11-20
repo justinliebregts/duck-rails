@@ -1,5 +1,11 @@
 # Playtest queue
 
+## Expedition departure horn
+
+- Unity recompiled the departure trigger in EditMode and resolved the two-second clip. The earlier import check confirmed stereo and silent fade endpoints. Console showed two Editor Inspector exceptions and no compiler errors.
+- Board a public departure with two players and leave a third in the compound. Confirm each boarding player hears the horn as their transfer starts, with no repeat on arrival. The player staying in the compound should hear the regular countdown without the horn.
+- Launch and replay a private expedition. Confirm host and peer each hear the cue once as they leave staging, with no repeat on arrival. Join by code after the run starts and confirm the horn stays silent. Check the cue's level against voice and the existing cockpit horn.
+
 ## Haptics pass — 2026-11-19
 
 - Changed: `VibrationManager` presets (grab/release tick, rail-joint thump, throttle click, button press, drift warning, both-hand downed/revived). Wired in `PlayerHand` (grab/release), `RailAudio` (rail joint, both hands, scales with speed), `RailControl` (click while held; drift warning toward the 0.36 m breakaway, starting at ~35%), `StoreWallItem` (pull warning), `RailHoldControl` (horn/radio press), `RailExpedition` (local down/revive edges). Compile and Console checked only; no Play Mode.

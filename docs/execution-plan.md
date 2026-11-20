@@ -1,5 +1,10 @@
 # Duck Rails — execution plan
 
+## Expedition departure horn
+
+- [x] Reuse the cockpit horn as a two-second cue when crew leave the compound for a public or private expedition.
+- [ ] Check timing and volume on host and peer, including private replay and a code join to a running expedition. [Queued for playtest](playtest-queue.md#expedition-departure-horn).
+
 ## November 17 — admin pause page
 
 - [x] Replace standalone L3 panel with an admin-only Test tab, four requested

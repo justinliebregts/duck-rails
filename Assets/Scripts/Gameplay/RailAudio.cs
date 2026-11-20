@@ -28,7 +28,7 @@ public static class RailAudio
 
 /// <summary>
 /// Drives the sounds that follow shared train state: rumble, rail joints, stop, fuel warnings,
-/// coal deposits and the ending music. Read-only on session state, so every client hears the same events.
+/// coal deposits, departure and ending cues. Read-only on session state.
 /// </summary>
 [DefaultExecutionOrder(200)]
 public sealed class RailAudioDirector : MonoBehaviour
@@ -37,7 +37,7 @@ public sealed class RailAudioDirector : MonoBehaviour
 
     static RailAudioDirector instance;
     readonly List<Cue> cues = new List<Cue>();
-    AudioSource rumble, music;
+    AudioSource rumble, music, departureHorn;
     float rumbleVolume, rumblePitch = 1f, pitchVelocity, aboardBlend, musicVolume;
     string musicRun;
     float prevDistance, prevFuel = -1f, nextWarning;
@@ -89,6 +89,18 @@ public sealed class RailAudioDirector : MonoBehaviour
         }
         UpdateMotion(bank, train);
         UpdateFuel(bank, train);
+    }
+
+    public static void PlayDepartureHorn()
+    {
+        var clip = RailAudio.Bank?.departureHorn;
+        if (instance == null || clip == null) return;
+        if (instance.departureHorn == null)
+            instance.departureHorn = instance.MakeSource("Expedition departure horn", false);
+        var source = instance.departureHorn;
+        source.outputAudioMixerGroup = EffectsGroup();
+        source.clip = clip;
+        source.Play();
     }
 
     void UpdateCountdown(RailAudioBank bank)

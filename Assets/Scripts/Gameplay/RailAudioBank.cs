@@ -21,6 +21,8 @@ public sealed class RailAudioBank : ScriptableObject
     public AudioClip rumbleLoop;
     [Tooltip("One-shots played while the horn button is held. Never loops; fades quickly on release.")]
     public AudioClip[] hornClips = new AudioClip[0];
+    [Tooltip("One-shot 2D horn heard when the expedition crew leaves the compound.")]
+    public AudioClip departureHorn;
     [Tooltip("Plays 2D for the whole successful ending, fading out as the crew returns to the compound.")]
     public AudioClip bridgeMusic;
 
