@@ -809,13 +809,14 @@ namespace Game.AI
 
         public void LockSwing() => _localSwingLock = Time.time + hitCooldown;
 
-        public void SubmitSwing(Vector3 swingVelocity, float weaponScale, Vector3 hitPosition = default)
+        public void SubmitSwing(Vector3 swingVelocity, float weaponScale, Vector3 hitPosition = default, string itemName = null)
         {
             // Match the local hit acceptance gates. Sound-only cooldown contacts and
             // RPCs received from another player must not extend this protection.
             if (IsDormant || swingVelocity.magnitude <= minHitSpeed || Time.time < _nextHitTime) return;
             _localMeleeGraceUntil = Time.time + LocalMeleeGraceSeconds;
             if (_vocal != null) _vocal.PlayWhimper();
+            RailBoardReports.Hit(gameObject.name, itemName);
             if (_net != null) _net.SubmitSwing(swingVelocity, weaponScale, hitPosition);
             else ReceiveSwing(swingVelocity, weaponScale, hitPosition);
         }
@@ -1415,13 +1416,14 @@ namespace Game.AI
             return Vector3.up;
         }
 
-        public void SubmitThrownHit(Vector3 throwVelocity, Vector3 hitPosition = default)
+        public void SubmitThrownHit(Vector3 throwVelocity, Vector3 hitPosition = default, string itemName = null)
         {
             float speed = throwVelocity.magnitude;
             if (IsDormant || speed <= minHitSpeed) return;
             if (Time.time < _nextHitTime) return;
             _localMeleeGraceUntil = Time.time + LocalMeleeGraceSeconds;
             if (_vocal != null) _vocal.PlayWhimper();
+            RailBoardReports.Hit(gameObject.name, itemName);
             if (_net != null) _net.SubmitThrownHit(throwVelocity, hitPosition);
             else ReceiveThrownHit(throwVelocity, hitPosition);
         }

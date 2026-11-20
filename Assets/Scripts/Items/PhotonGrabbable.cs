@@ -724,7 +724,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             if (enemy.SwingLocked) continue;
             enemy.LockSwing();
             Vector3 velocity = bestDelta / dt;
-            enemy.SubmitSwing(velocity, knockbackScale, hitPosition);
+            enemy.SubmitSwing(velocity, knockbackScale, hitPosition, gameObject.name);
             VibrationManager.instance?.TriggerHeldItemHit(Holder);
         }
         if (firstHit.enemy != null || firstSoundOnly.enemy != null)
@@ -766,7 +766,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         if (hit.enemy == null) return;
         hit.enemy.LockSwing();
         Vector3 velocity = hit.delta / dt;
-        hit.enemy.SubmitThrownHit(velocity, hit.contact.position);
+        hit.enemy.SubmitThrownHit(velocity, hit.contact.position, gameObject.name);
         DeflectThrown(hit.enemy, hit.contact.normal, hit.contact.separation, velocity);
     }
 

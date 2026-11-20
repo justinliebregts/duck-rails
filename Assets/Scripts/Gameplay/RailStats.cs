@@ -33,6 +33,8 @@ public static class RailStats
     public static void Pickup(Component item)
     {
         if (!Active || item == null) return;
+        if (item.GetComponent<RailCoal>() != null || item.GetComponent<ItemGoldBar>() != null)
+            RailExpedition.Instance.RequestGather(item.GetComponent<Photon.Pun.PhotonView>());
         // Gold is excluded from Loot Goblin but counted once per bar for analytics.
         if (item.GetComponent<ItemGoldBar>() != null) { if (pickedUp.Add(Key(item))) RailAnalytics.GoldPickedUp(); return; }
         if (Ignored(item)) return;

@@ -11,6 +11,7 @@ public sealed class RailRunState
     public string run;
     public double bridgeAt, allDownAt, finishedAt, startAt, sampleAt;
     public double bridgeElapsed, bridgeHeldAt, bridgeHoldUntil;
+    public float lastTrainDistance;
     public bool bridgeReinforcementsTriggered;
     public int bridgeReinforcementCount;
     public bool finished, success;
@@ -20,6 +21,7 @@ public sealed class RailRunState
     public List<int> consumed = new List<int>();
     public List<string> consumedSpawns = new List<string>();
     public List<string> consumedMarkers = new List<string>();
+    public List<string> gatheredMarkers = new List<string>();
     public List<RailCarrierState> carriers = new List<RailCarrierState>();
     public double recoveryAt;
     public bool WasConsumed(int viewId, string spawnToken)
@@ -92,6 +94,9 @@ public sealed class RailParticipant
     public int revived, repels, spent, drops, pickups;
     public float downSeconds, throttleSeconds, bridgeSeconds, flashlightSeconds, trackedSeconds, aboardSeconds,
         offTrainSeconds, loneSeconds, nearSeconds, stillSeconds, maxFromTrain;
+    public List<RailBoardReports.Metric> stopCoal;
+    public float riddenMeters;
+    public int gatheredCoal, gatheredGold;
     public bool down, escaped, sampledAboard;
     public double protectedUntil, flareAt, reviveAt, reviveLostAt;
     // Presentation receipt independent of frozen ending statistics; committed with the revival.

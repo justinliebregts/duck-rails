@@ -1,5 +1,12 @@
 # Playtest queue
 
+## Tails from the Rails — queued for playtest
+
+- Use two signed-in Quest clients against the updated API. Read both complete leaderboards from the Station Info bench. Check long names and an empty weekly board.
+- Begin with one rider, join the other duck late, and have one leave the train for part of the trip. Check two attempts, individual distance, and only the ducks credited at the bridge appearing among the escape artists.
+- Pass the same coal and gold between ducks, bag and withdraw them, and collect a carrier drop. Each original resource should count once, with coal attributed to its source stop. Hit two enemy types with different items and confirm a hazard down adds no zombie credit.
+- Reconnect, retry a checkpoint, and switch master during the run. After the cache refresh, compare the board on both clients. Check that a temporarily unavailable API keeps the previous display and resumes uploads.
+
 ## Expedition departure horn
 
 - Unity recompiled the departure trigger in EditMode and resolved the two-second clip. The earlier import check confirmed stereo and silent fade endpoints. Console showed two Editor Inspector exceptions and no compiler errors.

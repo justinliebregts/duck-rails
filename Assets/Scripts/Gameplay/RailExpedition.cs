@@ -11,6 +11,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 /// <summary>Authoritative Week 2 encounter, rescue, furnace and bridge lifecycle.</summary>
 public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
 {
+    RailRunState reportedState;
     public const string StateKey = "rails.expedition";
     const byte ActionEvent = 108;
     public static RailExpedition Instance { get; private set; }
@@ -119,6 +120,14 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         var module = furnace.GetComponentInParent<RailFurnaceModule>();
         return module == null || module.AcceptsSample(offset);
     }
+    public void RequestGather(PhotonView view)
+    {
+        if (view == null || !(view.InstantiationData is object[] data) || data.Length != 3 ||
+            data[0] as string != "rails" || data[1] as string != State.run || !(data[2] is string marker) ||
+            State.gatheredMarkers?.Contains(marker) == true) return;
+        PhotonNetwork.RaiseEvent(ActionEvent, new object[] { State.run, "gather", view.ViewID, new object[] { marker } },
+            new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
+    }
     public void RequestStats(object[] values)
     {
         if (!PhotonSession.IsRailsRoom || !PhotonSession.OnTrain || PhotonNetwork.LocalPlayer == null) return;
@@ -219,6 +228,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         Present();
         RailStats.Tick();
         RailAnalytics.Observe(State);
+        if (reportedState != State) { reportedState = State; RailBoardReports.Observe(State, LocalParticipant); }
         ConsumeCommittedCoal();
         ShowFuelPopups();
         RailGoldReceiver.PresentRewards(this);
@@ -335,9 +345,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     {
         if (s.startAt <= 0) s.startAt = now;
         float dt = s.sampleAt > 0 ? (float)Math.Min(now - s.sampleAt, .5) : 0;
+        bool sampledTrain = s.sampleAt > 0;
         s.sampleAt = now;
         var train = RailTrain.Instance;
-        if (dt <= 0 || train == null) return;
+        if (train == null) return;
+        float travelled = sampledTrain ? Mathf.Max(0, train.Distance - s.lastTrainDistance) : 0;
+        s.lastTrainDistance = train.Distance;
+        if (dt <= 0) return;
         var present = new List<(RailParticipant p, Vector3 pos)>();
         foreach (var p in s.players)
             if (IsConnected(p.actor) && Position(p.actor, out var pos)) present.Add((p, pos));
@@ -352,7 +366,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             bool hadPrevious = p.trackedSeconds > 0;
             p.trackedSeconds += dt;
             bool aboard = train.Contains(pos);
-            if (aboard) p.aboardSeconds += dt; else p.offTrainSeconds += dt;
+            if (aboard) { p.aboardSeconds += dt; if (hadPrevious && p.sampledAboard) p.riddenMeters += travelled; }
+            else p.offTrainSeconds += dt;
             if (p.down) p.downSeconds += dt;
             p.maxFromTrain = Mathf.Max(p.maxFromTrain, Vector3.Distance(pos, train.transform.position));
             if (present.Count > 1)
@@ -428,6 +443,20 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 (target == 1 || target == 5)) RailTestTools.ApplyTrainSpeed(changes, target == 5, now);
             return;
         }
+        if (action == "gather")
+        {
+            if (coalSample?.Length == 1 && coalSample[0] is string markerKey && markerKey.Length <= 64)
+            {
+                var gatheredView = PhotonView.Find(target);
+                // A bar can already be in a bag when the reliable grab reaches the master.
+                // If the original view still exists, bind the report to its actual run and marker.
+                if (gatheredView == null || (gatheredView.InstantiationData is object[] provenance &&
+                    provenance.Length == 3 && provenance[0] as string == "rails" &&
+                    provenance[1] as string == state.run && provenance[2] as string == markerKey))
+                    RecordGather(state, p, markerKey);
+            }
+            return;
+        }
         if (action == "stats") { RailStats.Apply(p, coalSample); return; }
         if (action == "down" || action == "enemy-down")
         {
@@ -477,8 +506,43 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         else if (item.IsHeldByAnyPlayer || item.IsStashed || Vector3.Distance(coal.transform.position, furnace.position) > .9f ||
             !AcceptsFurnaceSample(Quaternion.Inverse(furnace.rotation) * (coal.transform.position - furnace.position))) return;
         state.consumed.Add(target); state.consumedSpawns.Add(view.SpawnToken); p.coal++;
-        if (view.InstantiationData is object[] data && data.Length >= 3 && data[data.Length - 1] is string marker) state.consumedMarkers.Add(marker);
+        if (view.InstantiationData is object[] data && data.Length >= 3 && data[data.Length - 1] is string marker)
+            state.consumedMarkers.Add(marker);
         ApplyCoalFuel(changes, now);
+    }
+    void RecordGather(RailRunState state, RailParticipant player, string marker)
+    {
+        state.gatheredMarkers ??= new List<string>();
+        if (state.gatheredMarkers.Contains(marker)) return;
+        string[] parts = marker.Split('-');
+        Transform source;
+        if (parts.Length == 2 && int.TryParse(parts[1], out int index) && index >= 0)
+        {
+            if (parts[1] != index.ToString()) return;
+            if (parts[0] == "gold" && index < goldPoints.Length)
+            {
+                state.gatheredMarkers.Add(marker);
+                player.gatheredGold++;
+                return;
+            }
+            if (parts[0] != "coal" || index >= coalPoints.Length) return;
+            source = coalPoints[index];
+        }
+        else if (parts.Length == 4 && parts[0] == "carrier" && parts[1] == "enemy" &&
+            int.TryParse(parts[2], out int enemy) && enemy >= 0 && enemy < enemyPoints.Length &&
+            int.TryParse(parts[3], out int drop) && drop >= 0 &&
+            marker == $"carrier-enemy-{enemy}-{drop}" &&
+            state.carriers.Exists(c => c.marker == "enemy-" + enemy && drop < c.drops.Count))
+            source = enemyPoints[enemy];
+        else return;
+        state.gatheredMarkers.Add(marker);
+        player.gatheredCoal++;
+        string stop = source != null ? RailAnalytics.BlockAt(source.position) : null;
+        if (stop == null) return;
+        player.stopCoal ??= new List<RailBoardReports.Metric>();
+        var counter = player.stopCoal.Find(m => m.key == stop);
+        if (counter == null) player.stopCoal.Add(new RailBoardReports.Metric { key = stop, value = 1 });
+        else counter.value++;
     }
     // Shared by physical furnace deposits and the explicit development-panel simulation.
     public static void ApplyCoalFuel(Hashtable changes, double now, int count = 1)

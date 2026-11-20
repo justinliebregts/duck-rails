@@ -138,6 +138,7 @@ public static class RailAnalytics
             if (s.finished) return;
             string cause = Time.unscaledTime - pendingCauseAt <= CauseWindowSeconds ? DownCause(pendingCause) : "unknown";
             pendingCauseAt = -100f;
+            RailBoardReports.Down(cause);
             DuckzAnalytics.Event(RunSeconds(s, now), null, "down", cause, LocalBlock());
         }
         else if (!p.down && localDown)
