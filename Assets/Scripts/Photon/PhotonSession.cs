@@ -372,6 +372,15 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public override void OnJoinRoomFailed(short code, string message)
     {
         operationPending = false;
+        if (request == Request.JoinPrivate && code == ErrorCode.JoinFailedFoundInactiveJoiner)
+        {
+            // A freshly signed-in client can still own a reserved actor under this room code.
+            resumeRoom = requestedRoom;
+            resumeUntil = Time.realtimeSinceStartupAsDouble + RailSessionRules.ReconnectMilliseconds / 1000d;
+            request = Request.Rejoin;
+            ExecuteRequest();
+            return;
+        }
         if (IsAllocatedRequest && code == ErrorCode.GameIdAlreadyExists && RetryAllocation()) return;
         if (IsCrewRequest(request)) { CrewRequestFailed(); return; }
         if (request == Request.ReturnToCompound) { request = Request.Random; ExecuteRequest(); return; }
