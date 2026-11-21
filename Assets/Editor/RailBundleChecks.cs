@@ -38,7 +38,16 @@ public static class RailBundleChecks
             Check(skin.pullCooldown == 0 && bag.pullCooldown == 120 && weapon.pullCooldown == 120, "Cooldown settings");
             Check(new[] { skin, bag, weapon }.All(i => i.bundleSku == "duckrails_" + key + "_bundle"), "Shared SKU");
             Check(catalog.FindBagModel(bag.bagId) == bag.bagModel, "Network bag lookup");
-            Check(bag.bagModel.GetComponentsInChildren<BagSlot>(true).Length == 4, "Four-slot placeholder");
+            // Scrap Duck ships its final 8-slot bag; the others keep the four-slot placeholder.
+            Check(bag.bagModel.GetComponentsInChildren<BagSlot>(true).Length == (key == "scrap_duck" ? 8 : 4), "Bag slot count");
+            if (key == "scrap_duck")
+            {
+                // The shovel is a nail-bat variant: same grab, sounds and swing behavior, new mesh.
+                var source = PrefabUtility.GetCorrespondingObjectFromSource(weapon.prefab);
+                Check(source != null && AssetDatabase.GetAssetPath(source) == "Assets/Prefabs/Weapons/WeaponNailBat.prefab", "Shovel based on nail bat");
+                Check(weapon.prefab.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Models/WeaponScrapDuck/WeaponScrapDuck.fbx"), "Shovel mesh");
+                Check(bag.bagModel.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Skins/Bag_ScrapDuck/Bag_ScrapDuck.fbx"), "Scrap bag mesh");
+            }
             Check(weapon.prefab.GetComponent<RailCargo>() != null, "Moving-train cargo");
             var view = weapon.prefab.GetComponent<PhotonView>();
             Check(view.ObservedComponents.Contains(weapon.prefab.GetComponent<RailCargo>()), "Cargo observed by Photon");

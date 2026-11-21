@@ -1,5 +1,11 @@
 # Playtest queue
 
+## Scrap Duck final shovel and 8-slot bag — queued 2026-11-20
+
+- Pull the Scrap Duck shovel and bag in Compound, Departure Shop and the midpoint helicopter. The miniatures should grow smoothly into the held models. See [character-bundles.md](character-bundles.md#scrap-duck-final-art--november-20).
+- Swing the shovel at minions, spiders and a bigger enemy, then compare grab feel, swing/impact sounds, damage and knockback against the nail bat. Throw it and drop it on the moving train. A peer and a late joiner should see it at the same pose.
+- Equip the bag. Stow eight different items, take them back out, and check that every ring is reachable and readable from duck height on Quest. Drop and re-equip the full bag. Confirm a peer sees all eight items.
+
 ## Duplicate coal views at public expedition startup (room 26164) — queued 2026-11-20
 
 - Fix: a peer whose Photon clock is unsynchronised no longer replaces a live host. A new master now waits for the previous master's in-flight spawns (events 118/119) before seeding or spawning. See [spawn-startup.md](spawn-startup.md#november-20-room-26164--coal-views-151159-fix-implemented-queued). Compile and synthetic batch checks passed. No live run yet. RC tests 3–5 stay paused.
