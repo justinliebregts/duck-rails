@@ -76,6 +76,20 @@ namespace Photon.Pun
             }
         }
 
+        /// <summary>
+        /// Duck Rails: moves the room view ID cursor past every registered room view plus a gap.
+        /// A new master uses this when the previous master may still send room spawns it
+        /// allocated but could not send yet. Returns the first sub-ID the next allocation may use.
+        /// </summary>
+        public static int SkipRoomViewIds(int gap)
+        {
+            int highest = lastUsedViewSubIdStatic;
+            foreach (PhotonView view in photonViewList.Values)
+                if (view != null && view.ViewID > highest && view.ViewID < MAX_VIEW_IDS) highest = view.ViewID;
+            lastUsedViewSubIdStatic = (highest + gap) % MAX_VIEW_IDS;
+            return lastUsedViewSubIdStatic + 1;
+        }
+
         public static int ViewCount
         {
             get { return photonViewList.Count; }

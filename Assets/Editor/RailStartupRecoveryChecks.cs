@@ -23,8 +23,8 @@ public static class RailStartupRecoveryChecks
     static bool Main => CurrentPlayer.IsMainEditor;
     static string Role => Main ? "main" : "remote";
     static bool active, resumed, checkedResult;
-    static int mode, stage, errors;
-    static double started, settleAt, nextTick;
+    static int mode, stage, errors, lastSettling;
+    static double started, settleAt, nextTick, settleStarted;
     static string lastState;
     static RailWorld heldWorld;
 
@@ -53,7 +53,8 @@ public static class RailStartupRecoveryChecks
         if (type == LogType.Exception && stack.Contains("UnityEditor.Connect."))
         { Record("EDITOR SERVICE " + message); return; }
         if (message.Contains("PhotonView ID duplicate") || type == LogType.Exception ||
-            type == LogType.Error && !message.Contains("OVR") && !message.Contains("OpenXR") && !message.Contains("FormFactor"))
+            type == LogType.Error && !message.Contains("OVR") && !message.Contains("OpenXR") && !message.Contains("FormFactor") &&
+            !message.StartsWith("LCK requires", StringComparison.Ordinal)) // LIV capture rejects the editor's DX12 device; unrelated to startup.
         { errors++; Record("ERROR " + message + "\n" + stack); }
     }
     static void Loaded(Scene scene, LoadSceneMode loadMode)
@@ -76,7 +77,7 @@ public static class RailStartupRecoveryChecks
             if (!File.Exists(Arm)) return;
             var parts = File.ReadAllText(Arm).Split('|');
             if (parts.Length != 2 || !DateTime.TryParse(parts[0], out var expiry) || DateTime.UtcNow > expiry.ToUniversalTime()) return;
-            mode = int.Parse(parts[1]); active = true; resumed = checkedResult = false; stage = errors = 0;
+            mode = int.Parse(parts[1]); active = true; resumed = checkedResult = false; stage = errors = lastSettling = 0;
             started = EditorApplication.timeSinceStartup; settleAt = 0; heldWorld = null; lastState = null;
             Record("START fault=" + mode);
         }
@@ -92,6 +93,15 @@ public static class RailStartupRecoveryChecks
             " phase=" + PhotonSession.Phase + " ready=" + session.WorldReady + " seeded=" + PhotonSession.Get("rails.seeded", "") +
             " views=" + Views().Length + " paused=" + EditorApplication.isPaused;
         if (state != lastState) { Record(state); lastState = state; }
+        var handoff = typeof(PhotonMasterHandoff).GetField("instance", BindingFlags.Static | BindingFlags.NonPublic)?.GetValue(null);
+        int settling = handoff == null ? 0 : (int)typeof(PhotonMasterHandoff).GetField("settlingFrom", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(handoff);
+        if (settling != lastSettling)
+        {
+            if (settling != 0) { settleStarted = EditorApplication.timeSinceStartup; Record("SETTLE waiting for previous master " + settling); }
+            else Record("SETTLE ended after " + (EditorApplication.timeSinceStartup - settleStarted).ToString("F2") + " s; previous master " + lastSettling +
+                (PhotonNetwork.CurrentRoom?.GetPlayer(lastSettling) is var old && (old == null || old.IsInactive) ? " left" : " still active"));
+            lastSettling = settling;
+        }
         if (Main && stage == 0 && session.WorldReady && !session.HasRoomRequest)
         { stage = 1; session.RequestCreatePrivate(UnityEngine.Random.Range(20000, 90000).ToString()); return; }
         if (Main && stage == 1 && PhotonSession.IsPrivate && PhotonSession.Phase == RailPhase.Staging && session.WorldReady)
@@ -114,7 +124,8 @@ public static class RailStartupRecoveryChecks
             Require(!session.WorldReady, "fault must precede world readiness");
             if (mode == 1) RailExpedition.Instance.SeedCargo(); // Spawns issued; manifest not committed.
             if (mode == 2) typeof(RailWorld).GetMethod("MaintainCargo", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(heldWorld, null);
-            File.WriteAllText(Prefix + "-before", Inventory());
+            File.WriteAllText(Prefix + "-before", string.Join("\n", Views().Where(v => v.GetComponent<RailCoal>() != null || v.GetComponent<ItemGoldBar>() != null)
+                .OrderBy(v => v.ViewID).Select(v => v.ViewID + ":" + v.SpawnToken + "|" + string.Join("/", v.InstantiationData))));
             PhotonNetwork.SendAllOutgoingCommands();
             stage = 3;
             Record("PAUSE host before " + (mode == 0 ? "route selection and spawning" : mode == 1 ? "manifest commit" : "first cargo serialization"));
@@ -148,9 +159,16 @@ public static class RailStartupRecoveryChecks
             Require(loot.Count(v => v.GetComponent<ItemGoldBar>() != null) == RailExpedition.Instance.goldPoints.Length, "gold count");
             Require(loot.Select(v => string.Join("/", v.InstantiationData)).Distinct().Count() == loot.Length, "unique loot markers");
             string inventory = Inventory();
-            Require(File.ReadAllLines(Prefix + "-before").All(line => inventory.Split('\n').Contains(line)), "pre-pause loot identities retained");
+            // November 21: spawns the stalled host issued but could not send (Photon's 50-command
+            // reliable window) are replaced by the successor's copies, so require each pre-pause
+            // marker to survive exactly once rather than its original view ID and spawn token.
+            var markers = new System.Collections.Generic.HashSet<string>(loot.Select(v => string.Join("/", v.InstantiationData)));
+            var before = File.ReadAllLines(Prefix + "-before").Where(line => line.Length > 0).ToArray();
+            int kept = before.Count(line => inventory.Split('\n').Contains(line.Substring(0, line.IndexOf('|'))));
+            Require(before.All(line => markers.Contains(line.Substring(line.LastIndexOf('|') + 1))), "pre-pause loot markers retained");
+            Record("pre-pause identities kept " + kept + "/" + before.Length + "; markers kept " + before.Length + "/" + before.Length);
             File.WriteAllText(Prefix + "-" + Role + ".inventory", inventory);
-            checkedResult = true; Record("PASS ready after recovery; unique IDs/markers; exact loot counts; pre-pause identities retained");
+            checkedResult = true; Record("PASS ready after recovery; unique IDs/markers; exact loot counts; pre-pause markers retained");
         }
         if (Main && File.ReadAllText(Prefix + "-remote.inventory").Length > 0)
         {

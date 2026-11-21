@@ -1,0 +1,124 @@
+2026-11-21T18:15:14.8963209Z START defeat sting playtest; Unity 6000.3.24f1 role=player2 privateCode=34696
+2026-11-21T18:15:14.8978249Z STATE PeerCreated room= kind= phase=Compound run=- request=False step=0 ready=False players=0 open=
+2026-11-21T18:15:14.8988294Z step=0
+2026-11-21T18:15:19.1675080Z STATE ConnectingToNameServer room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open=
+2026-11-21T18:15:19.3844504Z STATE Authenticating room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open=
+2026-11-21T18:15:19.7143600Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open=
+2026-11-21T18:15:20.0588170Z STATE Authenticating room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open=
+2026-11-21T18:15:20.1751400Z STATE Joining room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open=
+2026-11-21T18:15:20.4042464Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open=
+2026-11-21T18:15:20.9961147Z STATE Authenticating room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open=
+2026-11-21T18:15:21.0999144Z STATE Joining room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open=
+2026-11-21T18:15:21.3192663Z STATE Joined room=08326 kind=compound phase=Compound run=- request=True step=0 ready=False players=2 open=True
+2026-11-21T18:15:22.4556626Z STATE Joined room=08326 kind=compound phase=Compound run=- request=False step=0 ready=True players=2 open=True
+2026-11-21T18:15:23.0560583Z STATE Joined room=08326 kind=compound phase=Compound run=- request=False step=0 ready=True players=1 open=True
+2026-11-21T18:15:27.6197782Z STATE Joined room=08326 kind=compound phase=Compound run=- request=False step=1 ready=True players=1 open=True
+2026-11-21T18:15:27.6202817Z step=1
+2026-11-21T18:15:29.7495310Z STATE Leaving room=08326 kind=compound phase=Compound run=- request=True step=1 ready=False players=0 open=True
+2026-11-21T18:15:29.8533172Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=1 ready=False players=0 open=
+2026-11-21T18:15:30.1773469Z STATE Authenticating room= kind= phase=Compound run=- request=True step=1 ready=False players=0 open=
+2026-11-21T18:15:30.2875864Z STATE Joining room= kind= phase=Compound run=- request=True step=1 ready=False players=0 open=
+2026-11-21T18:15:30.3912231Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=1 ready=False players=0 open=
+2026-11-21T18:15:30.8147245Z STATE Authenticating room= kind= phase=Compound run=- request=True step=1 ready=False players=0 open=
+2026-11-21T18:15:30.9231940Z STATE Joining room= kind= phase=Compound run=- request=True step=1 ready=False players=0 open=
+2026-11-21T18:15:31.1379229Z STATE Joined room=28959 kind=compound phase=Compound run=- request=False step=1 ready=True players=2 open=True
+2026-11-21T18:15:34.2281308Z ACK step=1 stings=0 [] music=0 reasons=[] fades=[] gathered in 28959
+2026-11-21T18:15:34.3287854Z STATE Joined room=28959 kind=compound phase=Compound run=- request=False step=2 ready=True players=2 open=True
+2026-11-21T18:15:34.3293020Z step=2
+2026-11-21T18:15:54.8908326Z STATE Leaving room=28959 kind=compound phase=Compound run=- request=True step=2 ready=False players=0 open=True
+2026-11-21T18:15:55.1033272Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open=
+2026-11-21T18:15:55.4232484Z STATE Authenticating room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open=
+2026-11-21T18:15:55.5258789Z STATE Joining room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open=
+2026-11-21T18:15:56.2569736Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open=
+2026-11-21T18:15:56.6778392Z STATE Authenticating room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open=
+2026-11-21T18:15:56.8865504Z STATE Joining room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open=
+2026-11-21T18:15:56.9925833Z STATE Joined room=34886 kind=expedition phase=Departing run=run-d3 request=True step=2 ready=False players=2 open=True
+2026-11-21T18:16:01.0657668Z STATE Joined room=34886 kind=expedition phase=Departing run=run-d3 request=False step=2 ready=False players=2 open=True
+2026-11-21T18:16:02.4263474Z STATE Joined room=34886 kind=expedition phase=Departing run=run-d3 request=False step=2 ready=True players=2 open=True
+2026-11-21T18:16:02.7675878Z STATE Joined room=34886 kind=expedition phase=Running run=run-d3 request=False step=2 ready=True players=2 open=True
+2026-11-21T18:16:05.8113819Z ARRIVED room=34886 kind=expedition phase=Running run=run-d3 request=False step=2
+2026-11-21T18:16:09.8118660Z ACK step=2 stings=0 [] music=0 reasons=[] fades=[] departed together into 34886
+2026-11-21T18:16:09.9208369Z STATE Joined room=34886 kind=expedition phase=Running run=run-d3 request=False step=3 ready=True players=2 open=True
+2026-11-21T18:16:09.9223533Z step=3
+2026-11-21T18:16:09.9233849Z WARP off train finished=False success=False reason= aboard=False localDown=False invincible=False
+2026-11-21T18:16:11.3034072Z DOWN confirmed finished=False success=False reason= aboard=False localDown=True invincible=False
+2026-11-21T18:16:16.5067811Z FINISH observed reason=Crew down success=False room=34886 kind=expedition phase=Ending run=run-d3 request=False step=3 aboard=True localDown=True
+2026-11-21T18:16:16.5067811Z STING source created; mixer=Effects clip=Train_Defeat len=14.10 spatialBlend=0 loop=False
+2026-11-21T18:16:16.5081157Z STING start #1 t=0.01 vol=1.00 room=34886 kind=expedition phase=Ending run=run-d3 request=False step=3 finished=True success=False reason=Crew down aboard=True localDown=True invincible=False
+2026-11-21T18:16:16.5081157Z STATE Joined room=34886 kind=expedition phase=Ending run=run-d3 request=False step=3 ready=True players=2 open=True
+2026-11-21T18:16:16.7190612Z STATE Joined room=34886 kind=expedition phase=Ending run=run-d3 request=False step=3 ready=True players=2 open=False
+2026-11-21T18:16:18.5134593Z STING sample t=2.02 vol=1.000 phase=Ending
+2026-11-21T18:16:20.5240278Z STING sample t=4.01 vol=1.000 phase=Ending
+2026-11-21T18:16:22.5408020Z STING sample t=6.03 vol=1.000 phase=Ending
+2026-11-21T18:16:24.5479425Z STING sample t=8.04 vol=1.000 phase=Ending
+2026-11-21T18:16:26.5636746Z STING sample t=10.05 vol=1.000 phase=Ending
+2026-11-21T18:16:28.5678402Z STING sample t=12.05 vol=1.000 phase=Ending
+2026-11-21T18:16:30.5836224Z STING sample t=14.07 vol=1.000 phase=Ending
+2026-11-21T18:16:30.6245190Z STING end after 14.12s lastT=14.09 vol=1.000 fadeSeconds=none room=34886 kind=expedition phase=Ending run=run-d3 request=False step=3
+2026-11-21T18:16:48.6062259Z STATE Joined room=34886 kind=expedition phase=Returning run=run-d3 request=False step=3 ready=True players=2 open=False
+2026-11-21T18:16:52.4139225Z STATE Leaving room=34886 kind=expedition phase=Returning run=run-d3 request=True step=3 ready=False players=0 open=False
+2026-11-21T18:16:52.5402968Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open=
+2026-11-21T18:16:52.9625967Z STATE Authenticating room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open=
+2026-11-21T18:16:53.1692220Z STATE Joining room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open=
+2026-11-21T18:16:53.2792349Z STATE ConnectedToMasterServer room= kind= phase=Compound run=- request=False step=3 ready=False players=0 open=
+2026-11-21T18:16:53.3896727Z STATE Joining room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open=
+2026-11-21T18:16:53.5104716Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open=
+2026-11-21T18:16:53.8392219Z STATE Authenticating room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open=
+2026-11-21T18:16:54.0595868Z STATE Joining room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open=
+2026-11-21T18:16:54.3000516Z STATE Joined room=14568 kind=compound phase=Compound run=- request=True step=3 ready=False players=1 open=True
+2026-11-21T18:16:55.1075745Z STATE Joined room=14568 kind=compound phase=Compound run=- request=False step=3 ready=True players=2 open=True
+2026-11-21T18:16:58.1919084Z ACK step=3 stings=1 [expedition/Ending/aboard=True/down=True] music=0 reasons=[Crew down(loss)] fades=[] returned to 14568
+2026-11-21T18:16:58.9181963Z STATE Joined room=14568 kind=compound phase=Compound run=- request=False step=4 ready=True players=2 open=True
+2026-11-21T18:16:58.9181963Z step=4
+2026-11-21T18:16:58.9192056Z ACK step=4 stings=0 [] music=0 reasons=[] fades=[] waiting
+2026-11-21T18:16:59.2312055Z STATE Joined room=14568 kind=compound phase=Compound run=- request=False step=4 ready=True players=1 open=True
+2026-11-21T18:17:03.5818630Z STATE Joined room=14568 kind=compound phase=Compound run=- request=False step=5 ready=True players=1 open=True
+2026-11-21T18:17:03.5828627Z step=5
+2026-11-21T18:17:03.6904952Z STATE Leaving room=14568 kind=compound phase=Compound run=- request=True step=5 ready=False players=0 open=True
+2026-11-21T18:17:03.7979013Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=5 ready=False players=0 open=
+2026-11-21T18:17:04.1089098Z STATE Authenticating room= kind= phase=Compound run=- request=True step=5 ready=False players=0 open=
+2026-11-21T18:17:04.2172161Z STATE Joining room= kind= phase=Compound run=- request=True step=5 ready=False players=0 open=
+2026-11-21T18:17:04.4207807Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=5 ready=False players=0 open=
+2026-11-21T18:17:04.8407049Z STATE Authenticating room= kind= phase=Compound run=- request=True step=5 ready=False players=0 open=
+2026-11-21T18:17:04.9461726Z STATE Joining room= kind= phase=Compound run=- request=True step=5 ready=False players=0 open=
+2026-11-21T18:17:05.1598657Z STATE Joined room=34696 kind=private phase=Staging run=- request=False step=5 ready=True players=2 open=True
+2026-11-21T18:17:08.2332288Z ACK step=5 stings=0 [] music=0 reasons=[] fades=[] in private staging 34696
+2026-11-21T18:17:08.3361918Z STATE Joined room=34696 kind=private phase=Staging run=- request=False step=6 ready=True players=2 open=True
+2026-11-21T18:17:08.3361918Z step=6
+2026-11-21T18:17:11.6012734Z STATE Joined room=34696 kind=private phase=Departing run=1872b0 request=True step=6 ready=False players=2 open=True
+2026-11-21T18:17:15.9915230Z STATE Joined room=34696 kind=private phase=Departing run=1872b0 request=False step=6 ready=False players=2 open=True
+2026-11-21T18:17:17.4889416Z STATE Joined room=34696 kind=private phase=Departing run=1872b0 request=False step=6 ready=True players=2 open=True
+2026-11-21T18:17:17.8164993Z STATE Joined room=34696 kind=private phase=Running run=1872b0 request=False step=6 ready=True players=2 open=True
+2026-11-21T18:17:20.8739400Z ARRIVED room=34696 kind=private phase=Running run=1872b0 request=False step=6
+2026-11-21T18:17:24.9609383Z ACK step=6 stings=0 [] music=0 reasons=[] fades=[] private run 1872b0b6d90e46949c187e9509de4ec7
+2026-11-21T18:17:25.0766123Z STATE Joined room=34696 kind=private phase=Running run=1872b0 request=False step=7 ready=True players=2 open=True
+2026-11-21T18:17:25.0766123Z step=7
+2026-11-21T18:17:25.0781302Z WARP off train finished=False success=False reason= aboard=False localDown=False invincible=False
+2026-11-21T18:17:26.8056513Z DOWN confirmed finished=False success=False reason= aboard=False localDown=True invincible=False
+2026-11-21T18:17:31.8120945Z FINISH observed reason=Crew down success=False room=34696 kind=private phase=Ending run=1872b0 request=False step=7 aboard=True localDown=True
+2026-11-21T18:17:31.8120945Z STING start #2 t=0.02 vol=1.00 room=34696 kind=private phase=Ending run=1872b0 request=False step=7 finished=True success=False reason=Crew down aboard=True localDown=True invincible=False
+2026-11-21T18:17:31.8651161Z STATE Joined room=34696 kind=private phase=Ending run=1872b0 request=False step=7 ready=True players=2 open=True
+2026-11-21T18:17:31.9674863Z STATE Joined room=34696 kind=private phase=Ending run=1872b0 request=False step=7 ready=True players=2 open=False
+2026-11-21T18:17:33.8129725Z STING sample t=2.02 vol=1.000 phase=Ending
+2026-11-21T18:17:35.8295417Z STING sample t=4.04 vol=1.000 phase=Ending
+2026-11-21T18:17:37.8327643Z STING sample t=6.04 vol=1.000 phase=Ending
+2026-11-21T18:17:39.8359387Z STING sample t=8.04 vol=1.000 phase=Ending
+2026-11-21T18:17:41.8510290Z STING sample t=10.06 vol=1.000 phase=Ending
+2026-11-21T18:17:43.8633434Z STING sample t=12.07 vol=1.000 phase=Ending
+2026-11-21T18:17:45.8650881Z STING sample t=14.07 vol=1.000 phase=Ending
+2026-11-21T18:17:45.9001671Z STING end after 14.09s lastT=14.09 vol=1.000 fadeSeconds=none room=34696 kind=private phase=Ending run=1872b0 request=False step=7
+2026-11-21T18:18:03.8115208Z STATE Joined room=34696 kind=private phase=Returning run=1872b0 request=False step=7 ready=True players=2 open=False
+2026-11-21T18:18:05.9041388Z STATE Joined room=34696 kind=private phase=Staging run=- request=True step=7 ready=False players=2 open=False
+2026-11-21T18:18:07.4051493Z STATE Joined room=34696 kind=private phase=Staging run=- request=False step=7 ready=False players=2 open=True
+2026-11-21T18:18:08.3829072Z STATE Joined room=34696 kind=private phase=Staging run=- request=False step=7 ready=True players=2 open=True
+2026-11-21T18:18:11.4172271Z ACK step=7 stings=1 [private/Ending/aboard=True/down=True] music=0 reasons=[Crew down(loss)] fades=[] back in staging
+2026-11-21T18:18:11.5206780Z STATE Joined room=34696 kind=private phase=Staging run=- request=False step=8 ready=True players=2 open=True
+2026-11-21T18:18:11.5206780Z step=8
+2026-11-21T18:18:14.7767776Z STATE Joined room=34696 kind=private phase=Departing run=3bea75 request=True step=8 ready=False players=2 open=True
+2026-11-21T18:18:18.9625544Z STATE Joined room=34696 kind=private phase=Departing run=3bea75 request=False step=8 ready=False players=2 open=True
+2026-11-21T18:18:20.7866963Z STATE Joined room=34696 kind=private phase=Departing run=3bea75 request=False step=8 ready=True players=2 open=True
+2026-11-21T18:18:21.3275216Z STATE Joined room=34696 kind=private phase=Running run=3bea75 request=False step=8 ready=True players=2 open=True
+2026-11-21T18:18:24.3778705Z ARRIVED room=34696 kind=private phase=Running run=3bea75 request=False step=8
+2026-11-21T18:18:28.3851761Z ACK step=8 stings=0 [] music=0 reasons=[] fades=[] private run 3bea7525af634e69ac4386fb26dbdf92
+2026-11-21T18:18:28.4963452Z STATE Joined room=34696 kind=private phase=Running run=3bea75 request=False step=9 ready=True players=2 open=True
+2026-11-21T18:18:28.4963452Z step=9

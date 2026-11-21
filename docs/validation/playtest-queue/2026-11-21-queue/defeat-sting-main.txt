@@ -1,0 +1,253 @@
+2026-11-21T18:22:49.2222920Z START defeat sting playtest; Unity 6000.3.24f1 role=main privateCode=48099
+2026-11-21T18:22:49.2232975Z STATE PeerCreated room= kind= phase=Compound run=- request=False step=0 ready=False players=0 open= master=False
+2026-11-21T18:22:49.2243594Z step=0
+2026-11-21T18:22:54.1913329Z STATE ConnectingToNameServer room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:22:54.4526618Z STATE Authenticating room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:22:54.6933600Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:22:55.3681477Z STATE Authenticating room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:22:55.4979385Z STATE Joining room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:22:55.7235358Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:22:56.2406400Z STATE Authenticating room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:22:56.3608942Z STATE Joining room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:22:56.4912096Z STATE Joined room=38193 kind=compound phase=Compound run=- request=True step=0 ready=False players=1 open=True master=True
+2026-11-21T18:22:57.5492361Z STATE Joined room=38193 kind=compound phase=Compound run=- request=False step=0 ready=True players=1 open=True master=True
+2026-11-21T18:22:59.2935031Z STATE Joined room=38193 kind=compound phase=Compound run=- request=False step=0 ready=True players=2 open=True master=True
+2026-11-21T18:23:00.7544903Z STATE Leaving room=38193 kind=compound phase=Compound run=- request=True step=0 ready=False players=0 open=True master=True
+2026-11-21T18:23:00.8547990Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:23:01.1758326Z STATE Authenticating room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:23:01.2825276Z STATE Joining room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:23:01.3937887Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:23:02.0280618Z STATE Authenticating room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:23:02.2399867Z STATE Joining room= kind= phase=Compound run=- request=True step=0 ready=False players=0 open= master=False
+2026-11-21T18:23:02.3470722Z STATE Joined room=55608 kind=compound phase=Compound run=- request=False step=0 ready=True players=1 open=True master=True
+2026-11-21T18:23:05.5347400Z STATE Joined room=55608 kind=compound phase=Compound run=- request=False step=1 ready=True players=1 open=True master=True
+2026-11-21T18:23:05.5352543Z step=1
+2026-11-21T18:23:09.3681953Z STATE Joined room=55608 kind=compound phase=Compound run=- request=False step=1 ready=True players=2 open=True master=True
+2026-11-21T18:23:09.5792642Z ACK step=1 stings=0 [] music=0 reasons=[] fades=[] gathered in 55608
+2026-11-21T18:23:12.6290204Z STATE Joined room=55608 kind=compound phase=Compound run=- request=False step=2 ready=True players=2 open=True master=True
+2026-11-21T18:23:12.6295238Z step=2
+2026-11-21T18:23:33.0881821Z STATE Leaving room=55608 kind=compound phase=Compound run=- request=True step=2 ready=False players=0 open=True master=True
+2026-11-21T18:23:33.1974962Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open= master=False
+2026-11-21T18:23:33.5139780Z STATE Authenticating room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open= master=False
+2026-11-21T18:23:33.7213139Z STATE Joining room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open= master=False
+2026-11-21T18:23:33.8294361Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open= master=False
+2026-11-21T18:23:34.2538334Z STATE Authenticating room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open= master=False
+2026-11-21T18:23:34.3642277Z STATE Joining room= kind= phase=Compound run=- request=True step=2 ready=False players=0 open= master=False
+2026-11-21T18:23:34.4641964Z STATE Joined room=55746 kind=expedition phase=Departing run=run-44 request=True step=2 ready=False players=1 open=True master=True
+2026-11-21T18:23:37.6779982Z STATE Joined room=55746 kind=expedition phase=Departing run=run-44 request=False step=2 ready=False players=2 open=True master=True
+2026-11-21T18:23:39.6932501Z STATE Joined room=55746 kind=expedition phase=Departing run=run-44 request=False step=2 ready=True players=2 open=True master=True
+2026-11-21T18:23:41.1136373Z STATE Joined room=55746 kind=expedition phase=Running run=run-44 request=False step=2 ready=True players=2 open=True master=True
+2026-11-21T18:23:44.2054999Z ARRIVED room=55746 kind=expedition phase=Running run=run-44 request=False step=2
+2026-11-21T18:23:48.2398207Z ACK step=2 stings=0 [] music=0 reasons=[] fades=[] departed together into 55746
+2026-11-21T18:23:48.3533809Z CASE setup public departure (no sting) PASS main=0 [] music=0 fades=[] reasons=[] (expected 0) | player2=0 [] music=0 fades=[] reasons=[] (expected 0) rooms main=55746 player2=55746 note2=departed together into 55746
+2026-11-21T18:23:48.4530712Z STATE Joined room=55746 kind=expedition phase=Running run=run-44 request=False step=3 ready=True players=2 open=True master=True
+2026-11-21T18:23:48.4530712Z step=3
+2026-11-21T18:23:48.4540749Z WARP off train finished=False success=False reason= aboard=False localDown=False invincible=False
+2026-11-21T18:23:50.0732417Z DOWN confirmed finished=False success=False reason= aboard=False localDown=True invincible=False
+2026-11-21T18:23:55.1113643Z FINISH observed reason=Crew down success=False room=55746 kind=expedition phase=Ending run=run-44 request=False step=3 aboard=True localDown=True
+2026-11-21T18:23:55.1128689Z STING source created; mixer=Effects clip=Train_Defeat len=14.10 spatialBlend=0 loop=False
+2026-11-21T18:23:55.1133860Z STING start #1 t=0.01 vol=1.00 room=55746 kind=expedition phase=Ending run=run-44 request=False step=3 finished=True success=False reason=Crew down aboard=True localDown=True invincible=False
+2026-11-21T18:23:55.1362903Z STATE Joined room=55746 kind=expedition phase=Ending run=run-44 request=False step=3 ready=True players=2 open=True master=True
+2026-11-21T18:23:55.2550928Z STATE Joined room=55746 kind=expedition phase=Ending run=run-44 request=False step=3 ready=True players=2 open=False master=True
+2026-11-21T18:23:57.1197089Z STING sample t=2.02 vol=1.000 phase=Ending
+2026-11-21T18:23:59.1205240Z STING sample t=4.02 vol=1.000 phase=Ending
+2026-11-21T18:24:01.1349397Z STING sample t=6.03 vol=1.000 phase=Ending
+2026-11-21T18:24:03.1362903Z STING sample t=8.03 vol=1.000 phase=Ending
+2026-11-21T18:24:05.1479289Z STING sample t=10.05 vol=1.000 phase=Ending
+2026-11-21T18:24:07.1483371Z STING sample t=12.05 vol=1.000 phase=Ending
+2026-11-21T18:24:09.1602677Z STING sample t=14.06 vol=1.000 phase=Ending
+2026-11-21T18:24:09.1994653Z STING end after 14.09s lastT=14.08 vol=1.000 fadeSeconds=none room=55746 kind=expedition phase=Ending run=run-44 request=False step=3
+2026-11-21T18:24:27.2982593Z STATE Joined room=55746 kind=expedition phase=Returning run=run-44 request=False step=3 ready=True players=2 open=False master=True
+2026-11-21T18:24:31.0856744Z STATE Joined room=55746 kind=expedition phase=Returning run=run-44 request=False step=3 ready=True players=1 open=False master=True
+2026-11-21T18:24:31.7574364Z STATE Leaving room=55746 kind=expedition phase=Returning run=run-44 request=True step=3 ready=False players=0 open=False master=True
+2026-11-21T18:24:31.9794053Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open= master=False
+2026-11-21T18:24:32.3100532Z STATE Authenticating room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open= master=False
+2026-11-21T18:24:32.4208493Z STATE Joining room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open= master=False
+2026-11-21T18:24:32.5278643Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open= master=False
+2026-11-21T18:24:32.9454075Z STATE Authenticating room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open= master=False
+2026-11-21T18:24:33.0495409Z STATE Joining room= kind= phase=Compound run=- request=True step=3 ready=False players=0 open= master=False
+2026-11-21T18:24:33.1661468Z STATE Joined room=31738 kind=compound phase=Compound run=- request=True step=3 ready=False players=2 open=True master=False
+2026-11-21T18:24:34.1763627Z STATE Joined room=31738 kind=compound phase=Compound run=- request=False step=3 ready=True players=2 open=True master=False
+2026-11-21T18:24:37.2006585Z ACK step=3 stings=1 [expedition/Ending/aboard=True/down=True] music=0 reasons=[Crew down(loss)] fades=[] returned to 31738
+2026-11-21T18:24:37.2021654Z CASE 1a public everyone down off-train PASS main=1 [expedition/Ending/aboard=True/down=True] music=0 fades=[] reasons=[Crew down(loss)] (expected 1) | player2=1 [expedition/Ending/aboard=True/down=True] music=0 fades=[] reasons=[Crew down(loss)] (expected 1) expectedReason=Crew down(loss) rooms main=31738 player2=31738 note2=returned to 31738
+2026-11-21T18:24:37.3052546Z STATE Joined room=31738 kind=compound phase=Compound run=- request=False step=4 ready=True players=2 open=True master=False
+2026-11-21T18:24:37.3062535Z step=4
+2026-11-21T18:24:37.4109239Z STATE Leaving room=31738 kind=compound phase=Compound run=- request=True step=4 ready=False players=0 open=True master=False
+2026-11-21T18:24:37.5164404Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- request=True step=4 ready=False players=0 open= master=False
+2026-11-21T18:24:37.8432622Z STATE Authenticating room= kind= phase=Compound run=- request=True step=4 ready=False players=0 open= master=False
+2026-11-21T18:24:37.9509126Z STATE Joining room= kind= phase=Compound run=- request=True step=4 ready=False players=0 open= master=False
+2026-11-21T18:24:38.0627142Z STATE ConnectingToGameServer room= kind= phase=Compound run=- request=True step=4 ready=False players=0 open= master=False
+2026-11-21T18:24:38.4942357Z STATE Authenticating room= kind= phase=Compound run=- request=True step=4 ready=False players=0 open= master=False
+2026-11-21T18:24:38.7121741Z STATE Joining room= kind= phase=Compound run=- request=True step=4 ready=False players=0 open= master=False
+2026-11-21T18:24:38.8215639Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=4 ready=True players=1 open=True master=True
+2026-11-21T18:24:41.9218228Z ACK step=4 stings=0 [] music=0 reasons=[] fades=[] created private 48099
+2026-11-21T18:24:42.0326266Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=5 ready=True players=1 open=True master=True
+2026-11-21T18:24:42.0331296Z step=5
+2026-11-21T18:24:43.4065542Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=5 ready=True players=2 open=True master=True
+2026-11-21T18:24:45.0844439Z ACK step=5 stings=0 [] music=0 reasons=[] fades=[] in private staging 48099
+2026-11-21T18:24:46.6422388Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=6 ready=True players=2 open=True master=True
+2026-11-21T18:24:46.6427421Z step=6
+2026-11-21T18:24:49.7047007Z LAUNCH StartPrivateRun room=48099 kind=private phase=Staging run=- request=False step=6
+2026-11-21T18:24:49.9120222Z STATE Joined room=48099 kind=private phase=Departing run=b46700 request=True step=6 ready=False players=2 open=True master=True
+2026-11-21T18:24:53.0161937Z STATE Joined room=48099 kind=private phase=Departing run=b46700 request=False step=6 ready=False players=2 open=True master=True
+2026-11-21T18:24:55.2058126Z STATE Joined room=48099 kind=private phase=Departing run=b46700 request=False step=6 ready=True players=2 open=True master=True
+2026-11-21T18:24:55.5329584Z STATE Joined room=48099 kind=private phase=Departing run=b46700 request=False step=6 ready=True players=2 open=True master=False
+2026-11-21T18:24:55.6358191Z STATE Joined room=48099 kind=private phase=Running run=b46700 request=False step=6 ready=False players=2 open=True master=False
+2026-11-21T18:24:55.7504204Z STATE Joined room=48099 kind=private phase=Running run=b46700 request=False step=6 ready=True players=2 open=True master=False
+2026-11-21T18:24:58.8091026Z ARRIVED room=48099 kind=private phase=Running run=b46700 request=False step=6
+2026-11-21T18:25:02.8950140Z ACK step=6 stings=0 [] music=0 reasons=[] fades=[] private run b467006b16334bd1af37c609e2c8b9a9
+2026-11-21T18:25:02.8965429Z CASE launch before step 7 (no sting) PASS main=0 [] music=0 fades=[] reasons=[] (expected 0) | player2=0 [] music=0 fades=[] reasons=[] (expected 0) rooms main=48099 player2=48099 note2=private run b467006b16334bd1af37c609e2c8b9a9
+2026-11-21T18:25:02.9986474Z STATE Joined room=48099 kind=private phase=Running run=b46700 request=False step=7 ready=True players=2 open=True master=False
+2026-11-21T18:25:02.9986474Z step=7
+2026-11-21T18:25:02.9986474Z WARP off train finished=False success=False reason= aboard=False localDown=False invincible=False
+2026-11-21T18:25:04.4817305Z DOWN confirmed finished=False success=False reason= aboard=False localDown=True invincible=False
+2026-11-21T18:25:09.6443720Z FINISH observed reason=Crew down success=False room=48099 kind=private phase=Ending run=b46700 request=False step=7 aboard=True localDown=True
+2026-11-21T18:25:09.6443720Z STING start #2 t=0.00 vol=1.00 room=48099 kind=private phase=Ending run=b46700 request=False step=7 finished=True success=False reason=Crew down aboard=True localDown=True invincible=False
+2026-11-21T18:25:09.7276431Z STATE Joined room=48099 kind=private phase=Ending run=b46700 request=False step=7 ready=True players=2 open=True master=False
+2026-11-21T18:25:09.9461529Z STATE Joined room=48099 kind=private phase=Ending run=b46700 request=False step=7 ready=True players=2 open=False master=False
+2026-11-21T18:25:11.6617207Z STING sample t=2.02 vol=1.000 phase=Ending
+2026-11-21T18:25:13.6731918Z STING sample t=4.03 vol=1.000 phase=Ending
+2026-11-21T18:25:15.6852340Z STING sample t=6.04 vol=1.000 phase=Ending
+2026-11-21T18:25:17.6977181Z STING sample t=8.05 vol=1.000 phase=Ending
+2026-11-21T18:25:19.7145095Z STING sample t=10.07 vol=1.000 phase=Ending
+2026-11-21T18:25:21.7300855Z STING sample t=12.08 vol=1.000 phase=Ending
+2026-11-21T18:25:23.7446111Z STING end after 14.10s lastT=14.08 vol=1.000 fadeSeconds=none room=48099 kind=private phase=Ending run=b46700 request=False step=7
+2026-11-21T18:25:41.7130803Z STATE Joined room=48099 kind=private phase=Returning run=b46700 request=False step=7 ready=True players=2 open=False master=False
+2026-11-21T18:25:43.8155582Z STATE Joined room=48099 kind=private phase=Staging run=- request=True step=7 ready=False players=2 open=False master=False
+2026-11-21T18:25:44.9824931Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=7 ready=False players=2 open=False master=False
+2026-11-21T18:25:45.2992584Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=7 ready=False players=2 open=True master=False
+2026-11-21T18:25:46.3860297Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=7 ready=True players=2 open=True master=False
+2026-11-21T18:25:49.4832758Z ACK step=7 stings=1 [private/Ending/aboard=True/down=True] music=0 reasons=[Crew down(loss)] fades=[] back in staging
+2026-11-21T18:25:49.4842833Z CASE 1b private everyone down off-train PASS main=1 [private/Ending/aboard=True/down=True] music=0 fades=[] reasons=[Crew down(loss)] (expected 1) | player2=1 [private/Ending/aboard=True/down=True] music=0 fades=[] reasons=[Crew down(loss)] (expected 1) expectedReason=Crew down(loss) rooms main=48099 player2=48099 note2=back in staging
+2026-11-21T18:25:49.5904588Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=8 ready=True players=2 open=True master=False
+2026-11-21T18:25:49.5904588Z step=8
+2026-11-21T18:25:52.7409790Z STATE Joined room=48099 kind=private phase=Departing run=b6d363 request=True step=8 ready=False players=2 open=True master=False
+2026-11-21T18:25:56.4444840Z STATE Joined room=48099 kind=private phase=Departing run=b6d363 request=False step=8 ready=False players=2 open=True master=False
+2026-11-21T18:25:59.3213525Z STATE Joined room=48099 kind=private phase=Departing run=b6d363 request=False step=8 ready=True players=2 open=True master=False
+2026-11-21T18:25:59.6552298Z STATE Joined room=48099 kind=private phase=Departing run=b6d363 request=False step=8 ready=True players=2 open=True master=True
+2026-11-21T18:25:59.9871141Z STATE Joined room=48099 kind=private phase=Running run=b6d363 request=False step=8 ready=True players=2 open=True master=True
+2026-11-21T18:26:03.0681662Z ARRIVED room=48099 kind=private phase=Running run=b6d363 request=False step=8
+2026-11-21T18:26:07.1355595Z ACK step=8 stings=0 [] music=0 reasons=[] fades=[] private run b6d363591ec3411d89d35c0ed4b111f2
+2026-11-21T18:26:07.1365642Z CASE launch before step 9 (no sting) PASS main=0 [] music=0 fades=[] reasons=[] (expected 0) | player2=0 [] music=0 fades=[] reasons=[] (expected 0) rooms main=48099 player2=48099 note2=private run b6d363591ec3411d89d35c0ed4b111f2
+2026-11-21T18:26:07.2355471Z STATE Joined room=48099 kind=private phase=Running run=b6d363 request=False step=9 ready=True players=2 open=True master=True
+2026-11-21T18:26:07.2370600Z step=9
+2026-11-21T18:26:09.2496778Z TEST Bridge(): Room update pending; try again
+2026-11-21T18:26:11.3133807Z TEST Bridge(): Room update pending; try again
+2026-11-21T18:26:13.2390458Z TEST Bridge(): Room update pending; try again
+2026-11-21T18:26:15.2768174Z TEST Bridge(): Room update pending; try again
+2026-11-21T18:26:17.2622455Z TEST Bridge(): Room update pending; try again
+2026-11-21T18:26:19.3136775Z TEST Bridge(): Train moved to bridge approach
+2026-11-21T18:26:19.5295119Z AT bridge approach distance=825.0 finaleStart=780.0 bridgeZ=930 finished=False success=False reason= aboard=True localDown=False invincible=False
+2026-11-21T18:26:22.3057153Z TRAIN SetTrainMoving(true) fuel=20.0
+2026-11-21T18:26:31.1670459Z FINISH observed reason=Bridge collision success=False room=48099 kind=private phase=Ending run=b6d363 request=False step=9 aboard=True localDown=False
+2026-11-21T18:26:31.1685504Z STING start #3 t=0.01 vol=1.00 room=48099 kind=private phase=Ending run=b6d363 request=False step=9 finished=True success=False reason=Bridge collision aboard=True localDown=False invincible=False
+2026-11-21T18:26:31.2024683Z STATE Joined room=48099 kind=private phase=Ending run=b6d363 request=False step=9 ready=True players=2 open=False master=True
+2026-11-21T18:26:33.1741673Z STING sample t=2.02 vol=1.000 phase=Ending
+2026-11-21T18:26:35.1759638Z STING sample t=4.02 vol=1.000 phase=Ending
+2026-11-21T18:26:37.1776177Z STING sample t=6.02 vol=1.000 phase=Ending
+2026-11-21T18:26:39.1898677Z STING sample t=8.04 vol=1.000 phase=Ending
+2026-11-21T18:26:41.2060245Z STING sample t=10.05 vol=1.000 phase=Ending
+2026-11-21T18:26:43.2073495Z STING sample t=12.05 vol=1.000 phase=Ending
+2026-11-21T18:26:45.2131825Z STING sample t=14.06 vol=1.000 phase=Ending
+2026-11-21T18:26:45.2661102Z STING end after 14.10s lastT=14.09 vol=1.000 fadeSeconds=none room=48099 kind=private phase=Ending run=b6d363 request=False step=9
+2026-11-21T18:27:03.2327215Z STATE Joined room=48099 kind=private phase=Returning run=b6d363 request=False step=9 ready=True players=2 open=False master=True
+2026-11-21T18:27:05.2476612Z STATE Joined room=48099 kind=private phase=Staging run=- request=True step=9 ready=False players=2 open=False master=True
+2026-11-21T18:27:06.4773579Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=9 ready=True players=2 open=True master=True
+2026-11-21T18:27:09.5768223Z ACK step=9 stings=1 [private/Ending/aboard=True/down=False] music=0 reasons=[Bridge collision(loss)] fades=[] back in staging
+2026-11-21T18:27:11.1447177Z CASE 2 bridge crash PASS main=1 [private/Ending/aboard=True/down=False] music=0 fades=[] reasons=[Bridge collision(loss)] (expected 1) | player2=1 [private/Ending/aboard=True/down=False] music=0 fades=[] reasons=[Bridge collision(loss)] (expected 1) expectedReason=Bridge collision(loss) rooms main=48099 player2=48099 note2=back in staging
+2026-11-21T18:27:11.2504663Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=10 ready=True players=2 open=True master=True
+2026-11-21T18:27:11.2504663Z step=10
+2026-11-21T18:27:14.2806995Z LAUNCH StartPrivateRun room=48099 kind=private phase=Staging run=- request=False step=10
+2026-11-21T18:27:14.4917220Z STATE Joined room=48099 kind=private phase=Departing run=8815c0 request=True step=10 ready=False players=2 open=True master=True
+2026-11-21T18:27:17.6034294Z STATE Joined room=48099 kind=private phase=Departing run=8815c0 request=False step=10 ready=False players=2 open=True master=True
+2026-11-21T18:27:19.5092913Z STATE Joined room=48099 kind=private phase=Departing run=8815c0 request=False step=10 ready=True players=2 open=True master=True
+2026-11-21T18:27:20.2908206Z STATE Joined room=48099 kind=private phase=Running run=8815c0 request=False step=10 ready=True players=2 open=True master=True
+2026-11-21T18:27:20.2918250Z ARRIVED room=48099 kind=private phase=Running run=8815c0 request=False step=10
+2026-11-21T18:27:24.3513423Z ACK step=10 stings=0 [] music=0 reasons=[] fades=[] private run 8815c0ce96fa4b5db26ec4196edc049c
+2026-11-21T18:27:27.4478179Z CASE launch before step 11 (no sting) PASS main=0 [] music=0 fades=[] reasons=[] (expected 0) | player2=0 [] music=0 fades=[] reasons=[] (expected 0) rooms main=48099 player2=48099 note2=private run 8815c0ce96fa4b5db26ec4196edc049c
+2026-11-21T18:27:27.5647192Z STATE Joined room=48099 kind=private phase=Running run=8815c0 request=False step=11 ready=True players=2 open=True master=True
+2026-11-21T18:27:27.5657232Z step=11
+2026-11-21T18:27:31.6283466Z TEST SimulateSuccess(): Success preview started: bridge, tunnel and dawn ride
+2026-11-21T18:27:31.9292824Z FINISH observed reason=Test success preview success=True room=48099 kind=private phase=Ending run=8815c0 request=False step=11 aboard=True localDown=False
+2026-11-21T18:27:31.9292824Z MUSIC start #1 room=48099 kind=private phase=Ending run=8815c0 request=False step=11
+2026-11-21T18:27:31.9298155Z STATE Joined room=48099 kind=private phase=Ending run=8815c0 request=False step=11 ready=True players=2 open=True master=True
+2026-11-21T18:27:32.0359999Z STATE Joined room=48099 kind=private phase=Ending run=8815c0 request=False step=11 ready=True players=2 open=False master=True
+2026-11-21T18:28:03.9478948Z STATE Joined room=48099 kind=private phase=Returning run=8815c0 request=False step=11 ready=True players=2 open=False master=True
+2026-11-21T18:28:05.9210730Z MUSIC end room=48099 kind=private phase=Staging run=- request=True step=11
+2026-11-21T18:28:05.9991285Z STATE Joined room=48099 kind=private phase=Staging run=- request=True step=11 ready=False players=2 open=False master=True
+2026-11-21T18:28:07.0388836Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=11 ready=True players=2 open=True master=True
+2026-11-21T18:28:10.1214277Z ACK step=11 stings=0 [] music=1 reasons=[Test success preview(success)] fades=[] back in staging
+2026-11-21T18:28:11.5818979Z CASE 3 successful escape (music, no sting) PASS main=0 [] music=1 fades=[] reasons=[Test success preview(success)] (expected 0) | player2=0 [] music=1 fades=[] reasons=[Test success preview(success)] (expected 0) expectedReason=Test success preview(success) expectedMusic=1 rooms main=48099 player2=48099 note2=back in staging
+2026-11-21T18:28:11.6853941Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=12 ready=True players=2 open=True master=True
+2026-11-21T18:28:11.6853941Z step=12
+2026-11-21T18:28:14.7367622Z LAUNCH StartPrivateRun room=48099 kind=private phase=Staging run=- request=False step=12
+2026-11-21T18:28:14.9490465Z STATE Joined room=48099 kind=private phase=Departing run=e28c26 request=True step=12 ready=False players=2 open=True master=True
+2026-11-21T18:28:18.2126390Z STATE Joined room=48099 kind=private phase=Departing run=e28c26 request=False step=12 ready=False players=2 open=True master=True
+2026-11-21T18:28:20.1895616Z STATE Joined room=48099 kind=private phase=Departing run=e28c26 request=False step=12 ready=True players=2 open=True master=True
+2026-11-21T18:28:20.9647233Z STATE Joined room=48099 kind=private phase=Running run=e28c26 request=False step=12 ready=True players=2 open=True master=True
+2026-11-21T18:28:20.9652289Z ARRIVED room=48099 kind=private phase=Running run=e28c26 request=False step=12
+2026-11-21T18:28:25.0458715Z ACK step=12 stings=0 [] music=0 reasons=[] fades=[] private run e28c2614eddb4f20a3001ec652b6ef65
+2026-11-21T18:28:28.1911916Z CASE launch before step 13 (no sting) PASS main=0 [] music=0 fades=[] reasons=[] (expected 0) | player2=0 [] music=0 fades=[] reasons=[] (expected 0) rooms main=48099 player2=48099 note2=private run e28c2614eddb4f20a3001ec652b6ef65
+2026-11-21T18:28:28.3047790Z STATE Joined room=48099 kind=private phase=Running run=e28c26 request=False step=13 ready=True players=2 open=True master=True
+2026-11-21T18:28:28.3047790Z step=13
+2026-11-21T18:28:28.3052825Z WARP off train finished=False success=False reason= aboard=False localDown=False invincible=False
+2026-11-21T18:28:29.9492101Z DOWN confirmed finished=False success=False reason= aboard=False localDown=True invincible=False
+2026-11-21T18:28:34.9774386Z FINISH observed reason=Crew down success=False room=48099 kind=private phase=Ending run=e28c26 request=False step=13 aboard=True localDown=True
+2026-11-21T18:28:34.9779564Z STING start #4 t=0.01 vol=1.00 room=48099 kind=private phase=Ending run=e28c26 request=False step=13 finished=True success=False reason=Crew down aboard=True localDown=True invincible=False
+2026-11-21T18:28:35.0361888Z STATE Joined room=48099 kind=private phase=Ending run=e28c26 request=False step=13 ready=True players=2 open=True master=True
+2026-11-21T18:28:35.1399471Z STATE Joined room=48099 kind=private phase=Ending run=e28c26 request=False step=13 ready=True players=2 open=False master=True
+2026-11-21T18:28:36.9925032Z STING sample t=2.03 vol=1.000 phase=Ending
+2026-11-21T18:28:38.9954713Z STING sample t=4.03 vol=1.000 phase=Ending
+2026-11-21T18:28:39.3057036Z FORCE Returning commit=True room=48099 kind=private phase=Ending run=e28c26 request=False step=13
+2026-11-21T18:28:39.4483726Z STING Returning reached while playing t=4.48 vol=0.99 room=48099 kind=private phase=Returning run=e28c26 request=False step=13
+2026-11-21T18:28:39.4493800Z STING sample t=4.48 vol=0.988 phase=Returning
+2026-11-21T18:28:39.5369025Z STATE Joined room=48099 kind=private phase=Returning run=e28c26 request=False step=13 ready=True players=2 open=False master=True
+2026-11-21T18:28:39.7105392Z STING sample t=4.75 vol=0.813 phase=Returning
+2026-11-21T18:28:39.9723839Z STING sample t=5.01 vol=0.643 phase=Returning
+2026-11-21T18:28:40.2288477Z STING sample t=5.26 vol=0.467 phase=Returning
+2026-11-21T18:28:40.4907236Z STING sample t=5.52 vol=0.293 phase=Returning
+2026-11-21T18:28:40.7467490Z STING sample t=5.78 vol=0.121 phase=Returning
+2026-11-21T18:28:40.9483948Z STING end after 5.97s lastT=5.96 vol=0.000 fadeSeconds=1.50 room=48099 kind=private phase=Returning run=e28c26 request=False step=13
+2026-11-21T18:28:41.5049541Z STATE Joined room=48099 kind=private phase=Staging run=- request=True step=13 ready=False players=2 open=False master=True
+2026-11-21T18:28:42.6595066Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=13 ready=True players=2 open=True master=True
+2026-11-21T18:28:45.6907090Z ACK step=13 stings=1 [private/Ending/aboard=True/down=True] music=0 reasons=[Crew down(loss)] fades=[1.50s from vol 0.99] back in staging
+2026-11-21T18:28:47.0630580Z CASE 4a forced early Returning fades the sting PASS main=1 [private/Ending/aboard=True/down=True] music=0 fades=[1.50s from vol 0.99] reasons=[Crew down(loss)] (expected 1) | player2=1 [private/Ending/aboard=True/down=True] music=0 fades=[1.49s from vol 0.98] reasons=[Crew down(loss)] (expected 1) expectedReason=Crew down(loss) rooms main=48099 player2=48099 note2=back in staging
+2026-11-21T18:28:47.1685571Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=14 ready=True players=2 open=True master=True
+2026-11-21T18:28:47.1695622Z step=14
+2026-11-21T18:28:47.2746809Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=14 ready=True players=1 open=True master=True
+2026-11-21T18:28:50.3541011Z ACK step=14 stings=0 [] music=0 reasons=[] fades=[] alone in staging
+2026-11-21T18:28:51.8250083Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=15 ready=True players=1 open=True master=True
+2026-11-21T18:28:51.8255167Z step=15
+2026-11-21T18:28:54.9111595Z LAUNCH StartPrivateRun alone room=48099 kind=private phase=Staging run=- request=False step=15
+2026-11-21T18:28:55.1212288Z STATE Joined room=48099 kind=private phase=Departing run=5e9e57 request=True step=15 ready=False players=1 open=True master=True
+2026-11-21T18:28:58.3446573Z STATE Joined room=48099 kind=private phase=Departing run=5e9e57 request=False step=15 ready=False players=1 open=True master=True
+2026-11-21T18:29:00.0151565Z STATE Joined room=48099 kind=private phase=Departing run=5e9e57 request=False step=15 ready=True players=1 open=True master=True
+2026-11-21T18:29:00.3284401Z STATE Joined room=48099 kind=private phase=Running run=5e9e57 request=False step=15 ready=True players=1 open=True master=True
+2026-11-21T18:29:00.3294720Z ARRIVED room=48099 kind=private phase=Running run=5e9e57 request=False step=15
+2026-11-21T18:29:04.4319469Z ACK step=15 stings=0 [] music=0 reasons=[] fades=[] solo private run 5e9e57d8b9aa492f9c6a84f52cc8ac38
+2026-11-21T18:29:04.5371699Z STATE Joined room=48099 kind=private phase=Running run=5e9e57 request=False step=16 ready=True players=1 open=True master=True
+2026-11-21T18:29:04.5377709Z step=16
+2026-11-21T18:29:04.5382817Z WARP off train finished=False success=False reason= aboard=False localDown=False invincible=False
+2026-11-21T18:29:05.9654835Z DOWN confirmed finished=False success=False reason= aboard=False localDown=True invincible=False
+2026-11-21T18:29:11.0325263Z FINISH observed reason=Crew down success=False room=48099 kind=private phase=Ending run=5e9e57 request=False step=16 aboard=True localDown=True
+2026-11-21T18:29:11.0330476Z STING start #5 t=0.01 vol=1.00 room=48099 kind=private phase=Ending run=5e9e57 request=False step=16 finished=True success=False reason=Crew down aboard=True localDown=True invincible=False
+2026-11-21T18:29:11.0694452Z STATE Joined room=48099 kind=private phase=Ending run=5e9e57 request=False step=16 ready=True players=1 open=True master=True
+2026-11-21T18:29:11.0699488Z ACK step=16 stings=1 [private/Ending/aboard=True/down=True] music=0 reasons=[Crew down(loss)] fades=[] ending finished=True success=False reason=Crew down aboard=True localDown=True invincible=False
+2026-11-21T18:29:11.1768205Z STATE Joined room=48099 kind=private phase=Ending run=5e9e57 request=False step=17 ready=True players=1 open=False master=True
+2026-11-21T18:29:11.1768205Z step=17
+2026-11-21T18:29:13.0377099Z STING sample t=2.01 vol=1.000 phase=Ending
+2026-11-21T18:29:15.0458534Z STING sample t=4.00 vol=1.000 phase=Ending
+2026-11-21T18:29:17.0473229Z STING sample t=6.00 vol=1.000 phase=Ending
+2026-11-21T18:29:19.0594929Z STING sample t=8.01 vol=1.000 phase=Ending
+2026-11-21T18:29:21.0664230Z STING sample t=10.02 vol=1.000 phase=Ending
+2026-11-21T18:29:23.0783884Z STING sample t=12.03 vol=1.000 phase=Ending
+2026-11-21T18:29:25.0908921Z STING sample t=14.05 vol=1.000 phase=Ending
+2026-11-21T18:29:25.1449225Z STING end after 14.11s lastT=14.08 vol=1.000 fadeSeconds=none room=48099 kind=private phase=Ending run=5e9e57 request=False step=17
+2026-11-21T18:29:43.1205885Z STATE Joined room=48099 kind=private phase=Returning run=5e9e57 request=False step=17 ready=True players=1 open=False master=True
+2026-11-21T18:29:45.2647943Z STATE Joined room=48099 kind=private phase=Staging run=- request=True step=17 ready=False players=1 open=False master=True
+2026-11-21T18:29:46.3246410Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=17 ready=True players=1 open=True master=True
+2026-11-21T18:29:49.3556439Z ACK step=17 stings=1 [private/Ending/aboard=True/down=True] music=0 reasons=[Crew down(loss)] fades=[] back in staging
+2026-11-21T18:29:49.3616864Z CASE 4b fresh join during Ending (host sting; peer refused => N/A) PASS main=1 [private/Ending/aboard=True/down=True] music=0 fades=[] reasons=[Crew down(loss)] (expected 1) | player2=0 [] music=0 fades=[] reasons=[] (expected 0) expectedReason=Crew down(loss) rooms main=48099 player2=46716 note2=join during Ending refused: This expedition is ending. Join after the crew returns.; stayed in 46716 lastError=This expedition is ending. Join after the crew returns.
+2026-11-21T18:29:49.4595881Z STATE Joined room=48099 kind=private phase=Staging run=- request=False step=18 ready=True players=1 open=True master=True
+2026-11-21T18:29:49.4595881Z step=18
+2026-11-21T18:29:49.4595881Z COMPLETE total sting starts this client=5 music starts=1

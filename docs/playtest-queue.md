@@ -27,6 +27,11 @@
 - Three authenticated desktop clients on Photon US: depart one public Compound together, repeatedly. Record each master change with its cause (clock pending, recovery, Ready handoff) and the `master settle:` diagnostics events. Pass: every client lists the same coal/gold markers with identical view IDs and spawn tokens, reports no `PhotonView ID duplicate` errors and reaches WorldReady with zero pending cargo.
 - Force a startup handoff: stall or hold the initial master during seeding (`RailStartupRecoveryChecks` faults 0–2), then ask the Ready successor to take over. Confirm the settle ends by acknowledgement for a live old master and by timeout for a stalled one. Check that no marker is spawned twice.
 - After the handoff, transport-reconnect the affected non-master peer. It must reclaim its actor, replay one instantiation per view, and reach WorldReady with the same markers and IDs as the other two clients.
+- **November 21 editor run: FAIL (stalled-host faults 1 and 2). Simultaneous departures, acknowledged handoffs and non-master reconnects PASS.** Results below are from MPPM desktop clients on real Photon, with no headset.
+  - Two clients: three simultaneous public departures with identical coal/gold view IDs and spawn tokens and no duplicates. Five handoffs settled by acknowledgement in 0.22–0.33 s. Two non-master reconnects reclaimed their actor. One three-client round also passed before Unity crashed. Three-client runs are paused because they often crash Unity.
+  - Fault 0 passed, and its settle timed out on the stalled host as designed. Faults 1 and 2 each produced 56–57 duplicate loot views. Root cause: Photon's 50-command reliable send window kept the stalled host's issued loot spawns queued past the successor's 5 s settle timeout. They then went out with the successor's IDs.
+  - Fix proposed, not applied, because it changes networking behaviour: after a timed-out settle, skip the room view ID allocator ahead and destroy any later duplicate-marker view. [Evidence, root cause and proposal](validation/playtest-queue/2026-11-21-queue/departure-settle.md)
+  - **Evening: fix implemented (Justin approved), uncommitted.** `PhotonMasterHandoff.Settle.cs` plus `PhotonNetwork.SkipRoomViewIds` in `PhotonNetworkPart.cs`. Two-client re-run: faults 0, 1 and 2 PASS, with zero duplicates, each marker present once and identical inventories. The two-client departure, handoff and reconnect regression still passes. A second simulated transport fault in the same process does not disconnect it; that is a fixture limitation. **Still needs:** a three-client rerun (paused because it crashes Unity) and a headset run. [Details](validation/playtest-queue/2026-11-21-queue/departure-settle.md#fix-and-re-run--november-21-evening-justin-approved-the-proposal)
 
 ## Tales from the Rails — queued for playtest
 
@@ -40,6 +45,11 @@
 - Unity recompiled the departure trigger in EditMode and resolved the two-second clip. The earlier import check confirmed stereo and silent fade endpoints. Console showed two Editor Inspector exceptions and no compiler errors.
 - Board a public departure with two players and leave a third in the compound. Confirm each boarding player hears the horn as their transfer starts, with no repeat on arrival. The player staying in the compound should hear the regular countdown without the horn.
 - Launch and replay a private expedition. Confirm host and peer each hear the cue once as they leave staging, with no repeat on arrival. Join by code after the run starts and confirm the horn stays silent. Check the cue's level against voice and the existing cockpit horn.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): trigger cases PASS. Level against voice and the cockpit horn still needs a human on Quest.** The harness counted starts of the horn AudioSource on each client. Audio plays in the clone: each start lasted about 2 s.
+  - Public, one boards: the boarder heard 1 horn as its transfer started and none on arrival. The stayer heard none and saw the normal 20 s countdown.
+  - Public, both board: 1 horn each and no repeat on arrival. Crew returns played no horn.
+  - Private: launch and replay each gave 1 horn per client in Departing and none on arrival or on the return to staging. A peer joining by code mid-run heard nothing.
+  - The three-player variant was not run, because three-client runs crash Unity. [Evidence](validation/playtest-queue/2026-11-21-queue/departure-horn.md)
 
 ## Lowered Compound Discord panel — queued 2026-11-20, manual-only
 
@@ -64,12 +74,20 @@
 - Changed: `PhotonGrabbable.TickSwing` only runs `TickPlayerSwings` while the item is held or within 1.5 s of last being held or thrown (`_lastActiveTime`, `PlayerHitFlightWindow`). `NotifyPlayerThrown` also stamps it. Enemy hits are unchanged. Console checked (no compile errors); no Play Mode.
 - Needs human (2+ clients): set a gold bar on the train, have another duck stand on it, start the train: no blood or hit sounds. Still hits a player when swung while held and when thrown within ~1.5 s. Check that a very slow lob that flies for more than 1.5 s still counts, or raise the window.
 - Not covered: `ItemSounds.OnCollisionEnter` can also play a flesh impact for a remote player on a resting item; check whether that still fires on the moving train.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): resting-item and `OnCollisionEnter` checks PASS. Held and throw controls PASS. Lobs flying longer than 1.5 s do not hit (finding).** Feel and a real hand swing still need a human on Quest. [Evidence](validation/playtest-queue/2026-11-21-queue/resting-items.md)
+  - Player2 stood, then crouched, on a gold bar for 32 s at 4 m/s cruise. No locks, flesh, blood or accepted hits on either client, although the bar's motion overlapped Player2 on nearly every frame. Stamping the resting bar active reproduced the spam inside 1.5 s, then it stopped.
+  - Held walk-through, a 7 m/s throw and a 1.2 s lob all hit. Lobs of 1.7 s and 2.2 s passed within 0.06 m of the head and did not hit. The window was not changed; decide whether high lobs should count.
+  - The remote avatar has no colliders on the item owner, so `OnCollisionEnter` cannot play flesh for a remote rider (0 during the run).
 
 ## Defeat sting on a lost run — 2026-11-19
 
 - Request: play the 14 s "Horror Buildup" one-shot when the players lose (crash or everyone down).
 - Changed: clip imported as `Assets/Audio/Train/Train_Defeat.wav`, assigned to the new `RailAudioBank.defeatSting` (+ `defeatVolume`). `RailAudioDirector.UpdateDefeat` plays it once per run on every client in the rails room when `State.finished && !State.success` during Ending/Returning (both loss causes go through `RailRunState.Finish`); fades out over 1.5 s when the crew is sent back. Compile and asset wiring checked only; no Play Mode.
 - Needs human: lose by crash and by everyone down; the sting plays once, 2D, on all clients including downed/off-train ducks; no sting on a successful escape (bridge music only); it fades when returning to the compound; a late joiner during Ending hears it from the start. Check the sting sits well against the bridge-crash sound.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): trigger cases PASS. The late-joiner case does not apply. Mix against the bridge crash still needs a human on Quest.** The harness counted starts of the defeat AudioSource on each client. [Evidence](validation/playtest-queue/2026-11-21-queue/defeat-sting.md)
+  - Everyone down off the train, in a public run and in a private run: 1 sting per client. Raised-bridge crash: 1 per client. Success preview: 0 stings and 1 bridge-music start per client. Departures and returns played no sting.
+  - When Returning was forced early, the sting faded to silence in 1.5 s on both clients. In normal play the fade never runs: the 14.1 s sting ends on its own about 18 s before the 32 s Ending gives way to Returning.
+  - A fresh join by code during Ending was refused ("This expedition is ending"), so no late joiner can hear the sting.
 
 ## Haptics pass — 2026-11-19
 

@@ -260,3 +260,25 @@ break predating this change and still open.
 [Batch evidence](validation/spawn-startup/coal-collision-26164-settle.txt).
 
 **Not yet verified:** the three-client acceptance described in the playtest queue.
+
+### November 21 — spawns stuck behind a stalled host's send window (fix implemented, uncommitted)
+
+The two-client stalled-host faults 1 and 2 failed with 56–57 duplicate loot views. Photon 4.1.8.17
+keeps at most `SequenceDeltaLimitSends` = 50 unacknowledged reliable commands in flight. The
+stalled host's seed (enemies, then 56+ coal/gold) was issued but partly unsent when it froze. The
+successor's settle timed out after 5 s and it seeded the same markers with the same view IDs.
+The host then resumed and sent its queued spawns.
+
+Correction (`PhotonMasterHandoff.Settle.cs`, `PhotonNetworkPart.cs`): when a settle times out while
+the previous master is still connected, the new master moves the room view ID cursor 300 past
+every registered view (`PhotonNetwork.SkipRoomViewIds`) before it spawns. For the rest of that
+room it then destroys, every 0.25 s, any room view below that floor whose `rails/run/marker`
+duplicates one of its own. `PhotonNetwork.Destroy` also clears the cached instantiation. The
+acknowledged path is unchanged. The stalled-host fixture now requires each pre-pause marker
+exactly once, not the original view ID and token, because unsent spawns are replaced.
+
+Two-client validation, Unity 6000.3.24f1, real Photon US: faults 0, 1 and 2 PASS with zero
+`PhotonView ID duplicate` errors, identical peer inventories and every marker once. Faults 1 and 2
+kept 50 and 48 of 106 pre-pause identities; the rest were the successor's copies. Two-client
+departures, three acknowledged handoffs and a non-master reconnect still pass.
+[Evidence](validation/playtest-queue/2026-11-21-queue/departure-settle.md)
