@@ -226,6 +226,10 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
     Vector3[] fallbackHitOffsets;
     float fallbackHitRadius;
     Enemy _thrownIgnore;
+    // Player hits need a held or recently released (in-flight) item. A dropped item resting on the
+    // moving train sweeps through world space at train speed and would otherwise "hit" anyone on it.
+    float _lastActiveTime = float.NegativeInfinity;
+    const float PlayerHitFlightWindow = 1.5f;
     const float SwingMotionGate = 0.25f;
     const float SwingTeleportDistance = 3f;
     const float ThrowGlanceTangent = 0.3f;
@@ -340,6 +344,7 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
     public void NotifyPlayerThrown()
     {
         if (photonView == null || !photonView.IsMine) return;
+        _lastActiveTime = Time.time;
         hasBeenPickedUp = true;
         dropDeadline = PhotonNetwork.Time + Mathf.Max(0f, droppedLifetimeSeconds);
         SetTransformSync(true);
@@ -622,6 +627,8 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
             return;
         }
 
+        if (IsHeld) _lastActiveTime = Time.time;
+
         Collider primary = SwingSampleCollider;
         Collider source = primary;
         if (source == null && fallbackHitCollider != null && fallbackHitCollider.enabled)
@@ -730,7 +737,8 @@ public partial class PhotonGrabbable : Grabbable, IPunObservable, IInRoomCallbac
         if (firstHit.enemy != null || firstSoundOnly.enemy != null)
             ApplyThrownHit(firstHit, firstSoundOnly, dt);
 
-        TickPlayerSwings(count, dt, radius);
+        if (IsHeld || Time.time - _lastActiveTime <= PlayerHitFlightWindow)
+            TickPlayerSwings(count, dt, radius);
         StoreSamples(count);
     }
 

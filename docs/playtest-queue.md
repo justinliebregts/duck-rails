@@ -30,6 +30,13 @@
   Confirm all five Test controls are available to the admin only. Check coal
   and train speed with the admin as both host and peer.
 
+## Resting items no longer "hit" players riding the train — 2026-11-19
+
+- Bug: a gold bar set down on the moving train, with another player standing on it, spammed blood PFX and hit SFX every frame (the swing sweep measured the item's world-space motion at train speed).
+- Changed: `PhotonGrabbable.TickSwing` only runs `TickPlayerSwings` while the item is held or within 1.5 s of last being held or thrown (`_lastActiveTime`, `PlayerHitFlightWindow`). `NotifyPlayerThrown` also stamps it. Enemy hits are unchanged. Console checked (no compile errors); no Play Mode.
+- Needs human (2+ clients): set a gold bar on the train, have another duck stand on it, start the train: no blood or hit sounds. Still hits a player when swung while held and when thrown within ~1.5 s. Check that a very slow lob that flies for more than 1.5 s still counts, or raise the window.
+- Not covered: `ItemSounds.OnCollisionEnter` can also play a flesh impact for a remote player on a resting item; check whether that still fires on the moving train.
+
 ## Haptics pass — 2026-11-19
 
 - Changed: `VibrationManager` presets (grab/release tick, rail-joint thump, throttle click, button press, drift warning, both-hand downed/revived). Wired in `PlayerHand` (grab/release), `RailAudio` (rail joint, both hands, scales with speed), `RailControl` (click while held; drift warning toward the 0.36 m breakaway, starting at ~35%), `StoreWallItem` (pull warning), `RailHoldControl` (horn/radio press), `RailExpedition` (local down/revive edges). Compile and Console checked only; no Play Mode.
