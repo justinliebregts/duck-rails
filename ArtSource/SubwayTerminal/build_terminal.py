@@ -568,14 +568,12 @@ def build_info(b):
     for y in (-2.38, 2.38):
         b.beam((-4.78, y, 0), (-4.78, y, 3.55), .14, .14, "timber", up=(0, 1, 0), caps=False)
     canopy(b, -8.85, -6.5, -2.6, 2.6, 3.08, 2.92, 3)
-    # Map board with a warm strip light, bench and pinned notices
-    b.box((-8.8, -1.5, .95), (-8.72, 1.5, 2.75), "timber", skip="x-")
-    b.quad((-8.715, -1.35, 1.1), (0, 2.7, 0), (0, 0, 1.5), "whitepanel", fit=True)
+    # Map board with a warm strip light and pinned notices. November 20 review: the bench was removed and
+    # the board lowered 0.9 m to sit just above the floor (the Tales From The Rails canvas follows it).
+    b.box((-8.8, -1.5, .05), (-8.72, 1.5, 1.85), "timber", skip="x-")
+    b.quad((-8.715, -1.35, .2), (0, 2.7, 0), (0, 0, 1.5), "whitepanel", fit=True)
     b.box((-8.72, -.7, 2.85), (-8.5, .7, 2.93), "darkmetal", fit=True, skip="b")
     b.flat([(-8.72, .7, 2.85), (-8.5, .7, 2.85), (-8.5, -.7, 2.85), (-8.72, -.7, 2.85)], WARM)
-    b.box((-8.3, -1.2, .4), (-7.85, 1.2, .47), "timber")
-    for y in (-1.0, 1.0):
-        b.box((-8.25, y - .05, 0), (-7.9, y + .05, .4), "timber", skip="tb")
     # Notices stay toward the front; the rear of each partition is kept clear for the Discord and rating stations.
     for x, z, t in ((-6.2, 1.15, "yellowworn"), (-5.6, 1.4, "whitepanel")):
         sheet(b, (x, -2.52, z), (0, 1), .5, .62, t, rng.uniform(-5, 5))

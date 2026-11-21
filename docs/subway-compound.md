@@ -348,3 +348,10 @@ Source: `ArtSource/SubwayTerminal/build_quackville_sign.py` and `QuackvilleSign/
 - User saw the Supplies Store roof sheets bake black in the lightmap view. Cause: `canopy()` in `build_terminal.py` assumed `x0 < x1`. Both Supplies canopies run `x0 > x1`, so each two-sided sheet was inside-out: the down-facing quad sat 2 cm above the up-facing one, and its texels hit the other quad's backface. Station Info's canopy was already correct.
 - Fix: whichever quad faces down now always sits 2 cm lower. Quad order, UVs, vertex and triangle counts are unchanged (Supplies_Store: 964 vertices). Rebuilt the `.blend` headless and re-exported the FBX. A Unity import check shows all 7 Supplies sheets the right way round (all 7 were inverted before). Console errors: empty.
 - Rebaked Compound synchronously, with the existing LightingData and 2 lightmaps. In the new lightmap, the undersides of all 7 Supplies sheets measure 0.74–0.77 luminance at their centres, against 0.58–0.85 on their tops. Edit Mode lightmap sampling only; headset appearance not checked.
+
+### Station Info bench removed, board lowered — November 20, 2026
+- User review: the bench under the Tales From The Rails board is removed, and the board moves down 0.9 m to sit just above the floor. In `build_info()` the timber board now spans Blender Z 0.05–1.85 and its white panel 0.20–1.70; the warm strip light above stays at 2.85. Rebuilt the `.blend` headless (Blender 5.3) and re-exported the FBX. Station_Info: 458 → 402 triangles.
+- Compound scene: `TalesFromTheRails` canvas moved from Y 1.845 to 0.945, so it still covers the panel (now Y 0.18–1.71).
+- Audio collision: re-partitioned Station_Info only, with the `RailStationAudioSurfaces` rules and the same three mesh assets (Metal 100, Stone 6, Wood 352 → 296). Edit Mode rays: the floor where the bench stood is clear (Stone at Y 0), and the board face is hit at X -8.72 at 0.15 m.
+- Rebaked Compound with **Bake Sample** (2 lightmaps). Edit Mode capture after the bake:
+  [Station Info board](../output/subway-terminal-model/scene-info-board-lowered.png). No new Console errors. No Play Mode or headset check; queued for playtest.

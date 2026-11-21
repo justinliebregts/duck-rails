@@ -1700,3 +1700,7 @@ with the admin pause page. Historical November 11–13 evidence remains in Resul
 The user requested restoration and revision of the original geometry before another Blender pass. The previous 394-chunk / 228,866-triangle version is retired; use the reduced-source entry above. Historical [integration evidence](validation/skyscraper-atlas/production-integration.md) remains available.
 
 _(empty)_
+
+## Station Info bench removed, board lowered — queued for playtest
+
+On Quest in Compound: the bench is gone, the Tales From The Rails board starts just above the floor, the stats canvas still lines up with the board's white panel, and both leaderboards stay readable from duck height. Walk where the bench was (no invisible collision) and check the rebaked lighting on the board and floor. See `docs/subway-compound.md`.
