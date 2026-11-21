@@ -1442,6 +1442,13 @@ No new block conversion or device run occurred during this documentation task.
 - Needs human: Quest browser launch/return, headset reach and readability at duck height.
 - Priority: normal
 
+### Compound rating panel and low button — queued 2026-11-20, manual-only
+- Changed: Station Info's rating panel has a warm gold and bronze palette, matching gold heading and button, a blank initial status, three Raider Legends walkthrough panels, and a physical button centered 0.38 m above the floor.
+- Cheap checks: Unity Edit Mode validated the saved callback, font references and three texture crops. A ray check in Compound measured the trigger against the stone floor and found a clear 1 m frontal approach. The gold palette and one-line appeal were checked in Compound and inspected in the [0.50 m eye-level capture](../output/rate-game-board-gold-heading.png).
+- Setup: Compound on a Quest headset and on desktop.
+- Check: approach the panel at normal duck height and press RATE GAME with either hand. Confirm the native Quest prompt opens, cancel back into the room, and check recovery after a failed launch. On desktop, open the store listing and compare its Reviews, See all and Write a Review controls to the illustrated steps. Check readability from the aisle. Stop before submitting a rating.
+- Priority: normal
+
 ### Compound rating button and instruction PNG — queued 2026-11-11, manual-only
 - Regression 2026-11-13: Actual button dispatch/debounce/status/room retention PASS again; external store and headset PNG/readability remain human checks. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
 - Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: previous desktop PASS retained; native Meta UI/cancel, replacement PNG review and headset reach remain pending. No rating submitted. Shared Unity/commit metadata and evidence are in the newest Results entry.

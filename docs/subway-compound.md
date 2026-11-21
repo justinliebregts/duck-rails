@@ -169,33 +169,35 @@ Unity MCP in the open editor, validation passed, no Console errors; a scene came
 capture confirmed placement and readability. Browser launch on desktop/Quest and
 headset reach are queued for playtest.
 
-## Rating station — November 11, 2026
+## Rating station — November 20, 2026
 
-The compound has a local **RATE GAME** physical button beside a world-space PNG
-instruction canvas on the inner left wall of the Station Info nook. It reuses
-`PressableButton` for VR touch and desktop aiming/clicking. On Quest it requests
-the initialized Meta SDK's native rating/review UI; desktop opens the configured
-Meta app's store listing. Failure shows a retry message and does not change the
-room. No rewards or submitted-review tracking are attached.
+The north wall of Station Info has a **RATE DUCK RAILS** panel with a dark bronze
+face, copper-toned gold trim and a rich gold button. It uses the same framed
+layout and CutePixel SDF lettering as the Discord station, with the heading
+matching the button's gold. The appeal reads
+“Please rate us! It helps a ton for making new content.” The **RATE GAME** button
+is centered 0.38 m above the floor for players around 0.5 m tall.
 
-Replace `Assets/DuckRails/Compound/Rating/RateGameInstructions.png` with your art,
-keeping its `.meta` file. The canvas updates automatically. Use 1024 × 768 (4:3)
-to retain the current proportions, or assign another texture to the prefab's
-`Instructions PNG - replace texture` RawImage. The editable prefab is
-`Assets/DuckRails/Compound/Rating/RateGameStation.prefab`; its instance is under
-`Compound Geometry` in `Assets/Scenes/Compound.unity`.
+The world-space canvas displays the original Raider Legends walkthrough side by
+side, with captions for scrolling to Reviews, selecting See all and choosing
+Write a Review. The source PNG is Assets/Textures/UI/review_instructions_vert.png
+in the Raider Legends project. In Duck Rails it is stored as
+Assets/DuckRails/Compound/Rating/RateGameInstructions.png. The three RawImages
+crop the same 1024 × 2048 texture into separate steps.
 
-`Duck Rails > Compound > Install Rating Station` installs the saved prefab only
-when absent and preserves subsequent art/placement edits. The placeholder uses
-the CutePixel font source and all live labels use CutePixel SDF.
-Quest store launch, return, physical reach and readability are queued for playtest.
-Validation: Unity 6000.3.24f1 batch Edit Mode compilation and installation passed
-with exit code 0, no C# errors or exceptions. The station's persistent callback,
-PNG reference, world-space canvas and CutePixel labels passed setup checks;
-the scene diff contains only the new station instance. Unity MCP was unavailable;
-the existing project-scoped relay configuration was checked and CLI validation
-targeted `X:/Work/duck-rails`. No Play Mode or review submission was performed.
-The SDK integration follows [Meta's rating/review documentation](https://developers.meta.com/vr/documentation/unity/ps-rate-and-review/).
+Quest requests the Meta SDK's native rating prompt. Desktop opens the Duck Rails
+store listing, where the illustrated steps apply. PressableButton handles VR
+touch and desktop clicks. The status area starts blank and shows feedback
+after pressing the button. Quest store launch, cancel/return, physical reach and
+readability are queued for playtest.
+
+Duck Rails > Compound > Install Rating Station places the saved
+RateGameStation.prefab under Compound Geometry when absent.
+
+Unity Edit Mode verified the button callback, height against the stone floor,
+clear frontal approach and all three instruction crops. The updated gold panel
+and single-line appeal passed the scene check.
+[0.50 m eye-level capture](../output/rate-game-board-gold-heading.png).
 
 ## Material concept — November 4, 2026
 
