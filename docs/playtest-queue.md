@@ -388,6 +388,8 @@
   turns off for the downed player, and either player can pick up and re-wear
   them after revive. Late joiner sees the items on the ground, not on the head.
   Queued for playtest; not verified.
+- **November 21 two-client editor run: PASS (4 rounds, no code change).** The downed role was the non-master twice (off the train, one from each client) and the master twice (aboard via a boarded zombie, and off the train via an enemy-down request). It wore a helmet, NVG and a bag. Both clients saw exactly one loose copy of each item 0.2–0.8 m from the downed duck, nothing on any head and no duplicates. The downed account's head, eyes and bag saves were cleared and NVG turned off. Nothing came back on revive. A rescuer that rejoined by code saw the items on the ground. The peer picked up and re-wore the helmet, and the revived player re-wore its goggles and bag; saves followed. Account keys were restored. [Evidence](validation/playtest-queue/2026-11-21-queue/down-head-gear.md)
+- **Needs human:** real enemy contact downs, downs on a moving train, a third player joining while someone is down, and on Quest: how the drop looks, the NVG view turning off, and grabbing and re-wearing with real hands (an injected grip did not catch the dropped goggles in the editor; a direct grab did).
 
 ## Expedition and economy analytics events — queued 2026-11-18
 
