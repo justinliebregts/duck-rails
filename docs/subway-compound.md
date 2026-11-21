@@ -153,21 +153,26 @@ queued for playtest; it is not verified in Play Mode, multiplayer or headset.
   [side](../output/subway-terminal-model/full-trackedge.png),
   [upper volume](../output/subway-terminal-model/full-upper.png).
 
-## Discord station — November 11, 2026
+## Discord station — November 20, 2026
 
-A local **JOIN DISCORD** physical button with a "Join the Discord!" TextMeshPro
-heading sits on the inner right partition of the Station Info nook, facing the
-rating station across the bench. It reuses `PressableButton`; `RailDiscordLink`
-opens `https://discord.gg/sfyvhahnDW` with `Application.OpenURL` (Quest browser on
-headset), ignoring repeat presses for 3 seconds. No networking or room change.
+The 1.66 × 0.91 m wall panel on the south partition of Station Info uses the
+[Discord Clyde logo](https://discord.com/branding) and CutePixel SDF lettering.
+The larger logo sits above four spaced rows for finding crewmates, getting game
+updates, sharing ideas and feedback, and giveaways. The **JOIN DISCORD** physical
+button is centered 0.38 m above the floor for players around 0.5 m tall.
 
-The editable prefab is `Assets/DuckRails/Compound/Discord/DiscordStation.prefab`
-(change the invite on its `RailDiscordLink.inviteUrl`). `Duck Rails > Compound >
-Install Discord Station` installs it under `Compound Geometry` only when absent and
-validates the callback, URL and CutePixel SDF labels. Validation: installed through
-Unity MCP in the open editor, validation passed, no Console errors; a scene camera
-capture confirmed placement and readability. Browser launch on desktop/Quest and
-headset reach are queued for playtest.
+The editable prefab is `Assets/DuckRails/Compound/Discord/DiscordStation.prefab`.
+`Duck Rails > Compound > Install Discord Station` installs it under
+`Compound Geometry` when absent. Its `PressableButton` calls
+`RailDiscordLink.OpenInvite` to open `https://discord.gg/sfyvhahnDW` in the
+system browser. A three-second guard prevents repeat opens.
+
+Unity Edit Mode confirmed the trigger height against the local floor, clear
+access from the aisle, the invite callback and URL, and the fit of all six
+CutePixel labels. Both Unity renders use a camera 0.50 m above the floor.
+[Panel close-up](../output/compound-discord/panel.png) ·
+[View from the aisle](../output/compound-discord/compound-eye-level.png).
+Quest reach and browser launch are queued for playtest.
 
 ## Rating station — November 20, 2026
 

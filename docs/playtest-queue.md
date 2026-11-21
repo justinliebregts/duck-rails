@@ -1,5 +1,12 @@
 # Playtest queue
 
+## Lowered Compound Discord panel — queued 2026-11-20, manual-only
+
+- Check on Quest from the Station Info aisle. Read the expanded panel and its four benefits
+  at normal duck height, then walk up to the south partition and press **JOIN
+  DISCORD** without climbing or reaching overhead. Confirm that the invite opens
+  in the browser and returning leaves the player in the same room.
+
 ## Tales from the Rails — queued for playtest
 
 - Use two signed-in Quest clients against the updated API. Read both complete leaderboards from the Station Info bench. Check long names and an empty weekly board.
