@@ -38,8 +38,24 @@ public static class RailBundleChecks
             Check(skin.pullCooldown == 0 && bag.pullCooldown == 120 && weapon.pullCooldown == 120, "Cooldown settings");
             Check(new[] { skin, bag, weapon }.All(i => i.bundleSku == "duckrails_" + key + "_bundle"), "Shared SKU");
             Check(catalog.FindBagModel(bag.bagId) == bag.bagModel, "Network bag lookup");
-            // Scrap Duck ships its final 8-slot bag; the others keep the four-slot placeholder.
-            Check(bag.bagModel.GetComponentsInChildren<BagSlot>(true).Length == (key == "scrap_duck" ? 8 : 4), "Bag slot count");
+            // Scrap Duck and Huggy ship final 8-slot bags; Quackbear keeps the four-slot placeholder.
+            Check(bag.bagModel.GetComponentsInChildren<BagSlot>(true).Length == (key == "quackbear" ? 4 : 8), "Bag slot count");
+            if (key == "huggy")
+            {
+                var gun = weapon.prefab.GetComponent<HuggyFlareGun>();
+                Check(gun != null, "Huggy flare gun component");
+                var gs = new SerializedObject(gun);
+                var flare = gs.FindProperty("flarePrefab").objectReferenceValue as DeathFlare;
+                Check(flare != null && AssetDatabase.GetAssetPath(flare) == "Assets/Prefabs/Effects/HuggyFlare.prefab", "Huggy flare prefab");
+                Check(Mathf.Approximately(new SerializedObject(flare).FindProperty("lifetime").floatValue, 15f), "Huggy flare burns 15 s");
+                Check(Mathf.Approximately(gs.FindProperty("cooldownSeconds").floatValue, 10f), "Huggy 10 s cooldown");
+                var muzzle = gs.FindProperty("muzzle").objectReferenceValue as Transform;
+                Check(muzzle != null && muzzle.localPosition.z > 0.55f, "Muzzle at the fingertip");
+                Check(gs.FindProperty("chargeFill").objectReferenceValue != null, "Charge bar");
+                Check(weapon.prefab.GetComponent<PhotonView>().ObservedComponents.Contains(gun), "Charge synced by Photon");
+                Check(weapon.prefab.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Models/WeaponHuggy/WeaponHuggy.fbx"), "Huggy gun mesh");
+                Check(bag.bagModel.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Skins/Bag_Huggy/Bag_Huggy.fbx"), "Huggy bag mesh");
+            }
             if (key == "scrap_duck")
             {
                 // The shovel is a nail-bat variant: same grab, sounds and swing behavior, new mesh.

@@ -1,5 +1,13 @@
 # Playtest queue
 
+## Huggy flare gun and 8-slot bag — queued 2026-11-20
+
+- Pull Huggy's gun and bag in all three stores and check the miniatures grow into the held models. See [character-bundles.md](character-bundles.md#huggy-final-art-and-flare-gun--november-20).
+- Fire with trigger, A and B (X/Y on the left hand). The flare should leave the fingertip along the finger, fly about 25 m, then float down glowing yellow/orange. The green forearm bar should empty, refill over 10 s from cuff to hand and stay full. Pressing early does nothing. Hand the empty gun to another duck: the bar keeps refilling.
+- Shoot a wall, the train roof and the floor at angles. Expect a spark, a deflection and then a fall to rest. Shoot minions, a spider and a bigger enemy: a light push, then enemies backing away from the flare like a death flare for about 15 s. Swing the gun to confirm pan melee still works.
+- With two or three clients: peers see the same shot, sparks and resting point, including enemy deflections; a late joiner sees the correct charge bar. Fire from the moving train and check it looks sensible.
+- Equip the Huggy bag and stow, retrieve and drop eight items. Check ring reach and readability on Quest.
+
 ## Scrap Duck final shovel and 8-slot bag — queued 2026-11-20
 
 - Pull the Scrap Duck shovel and bag in Compound, Departure Shop and the midpoint helicopter. The miniatures should grow smoothly into the held models. See [character-bundles.md](character-bundles.md#scrap-duck-final-art--november-20).
