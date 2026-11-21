@@ -44,7 +44,12 @@ public class PauseMenu : MonoBehaviour
     Quaternion summonLocalRotation;
 
     void Awake() {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         BindTestButtons();
+#else
+        if (testButton != null) testButton.gameObject.SetActive(false);
+        if (testPage != null) testPage.SetActive(false);
+#endif
         BindCameraButton("Open", OpenCameraTablet);
         BindCameraButton("Close", CloseCameraTablet);
         body = GetComponent<Rigidbody>();
@@ -99,10 +104,12 @@ public class PauseMenu : MonoBehaviour
     }
 
     private void Update() {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         RailAdminTools.Refresh();
         if (testButton != null) testButton.gameObject.SetActive(RailAdminTools.Available);
         if (!RailAdminTools.Available && testPage != null && testPage.activeSelf) SetActiveButton(playersButton.GetComponent<PauseMenuButton>());
         RefreshTestLabels();
+#endif
         if (GR.Player.instance == null)
             return;
         if (GR.Player.instance.IsDead) {
@@ -163,6 +170,7 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     void BindTestButtons() {
         if (testPage == null) return;
         BindTestButton("Deposit1", () => RailAdminTools.DepositCoal(1));
@@ -192,6 +200,7 @@ public class PauseMenu : MonoBehaviour
         var label = testPage.transform.Find(name)?.GetComponentInChildren<TMPro.TMP_Text>(true);
         if (label != null) label.text = value;
     }
+#endif
 
     public void OpenCameraTablet() {
         Vector3 position;

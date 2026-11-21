@@ -8,6 +8,9 @@ forward/backward for vertical flight, without solid collision or fall recovery.
 Implemented; runtime/headset/multiplayer acceptance is queued.
 November 18: a fifth button, Train Speed: 1x/5x, sets the shared cruise speed
 (4 or 20 m/s) for the current run; it resets with the next run.
+November 20: the admin Test tab and its gameplay controls are limited to
+the Editor and Development Builds. Player-facing Submit Bug is available
+in production.
 See [testing tools](testing-tools.md#admin-pause-page--november-17-2026).
 
 November 17 ambience refinement: long positional details play randomized excerpts

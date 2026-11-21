@@ -20,6 +20,16 @@
   DISCORD** without climbing or reaching overhead. Confirm that the invite opens
   in the browser and returning leaves the player in the same room.
 
+## Production build gate for admin test tools — 2026-11-20
+
+- In a production Quest build, sign in with an admin account and verify that
+  the pause menu has no Test tab, R3 leaves normal locomotion active, and
+  Settings still shows Submit Bug. In a fresh production-hosted run, verify
+  normal coal deposits and the 4 m/s cruise target.
+- In separate Development Build sessions, repeat with an admin and a non-admin.
+  Confirm all five Test controls are available to the admin only. Check coal
+  and train speed with the admin as both host and peer.
+
 ## Haptics pass — 2026-11-19
 
 - Changed: `VibrationManager` presets (grab/release tick, rail-joint thump, throttle click, button press, drift warning, both-hand downed/revived). Wired in `PlayerHand` (grab/release), `RailAudio` (rail joint, both hands, scales with speed), `RailControl` (click while held; drift warning toward the 0.36 m breakaway, starting at ~35%), `StoreWallItem` (pull warning), `RailHoldControl` (horn/radio press), `RailExpedition` (local down/revive edges). Compile and Console checked only; no Play Mode.
@@ -47,8 +57,9 @@
 - Changed: `PauseMenu.prefab` Test page has a fifth button `TrainSpeed` ("Train Speed: 1x/5x");
   the five buttons are respaced (y 0.11 to -0.11). `RailAdminTools.ToggleTrainSpeed` requests
   `admin-train-speed` from the master (`RailExpedition.ApplyRequest`), which applies
-  `RailTestTools.ApplyTrainSpeed` (4 ↔ 20 m/s cruise, rebasing motion and fuel). `FastTrainEnabled`
-  no longer requires a development build or private room, so the admin toggle works everywhere.
+  `RailTestTools.ApplyTrainSpeed` (4 ↔ 20 m/s cruise, rebasing motion and fuel).
+  As of November 20, the toggle works in public and private rooms in the
+  Editor and Development Builds.
 - Passed: Unity compile; `RailAdminToolsChecks` (five buttons, 5x/1x targets, stopped train stays
   stopped).
 - Check in a running expedition, as master and as a non-master admin: press Train Speed while
@@ -605,10 +616,10 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Evidence: Unity Editor and Android release-reference C# compilation,
   28 focused EditMode assertions, prefab render
   inspection. No Play Mode run. See [current behavior](testing-tools.md#admin-pause-page--november-17-2026).
-- Setup: two authenticated clients, one admin and one non-admin; repeat with
-  admin as host and peer, in public and private expeditions. Include release
-  headset builds and an Editor account without admin privileges.
-- Check: non-admin has no Test tab; admin gets only four controls. L3 does
+- Setup: two authenticated clients in Development Builds, one admin and one
+  non-admin. Repeat with the admin as host and peer in public and private
+  expeditions. Include an Editor account without admin privileges.
+- Check: non-admin has no Test tab; admin gets five controls. L3 does
   nothing. Start/P, ordinary pages, grab/follow/dismiss and re-open still work.
   Pokes fire once until withdrawal. Labels immediately reflect each toggle.
 - Check: focused Editor Game view F adds 100 fuel once per key press, capped

@@ -582,6 +582,7 @@ public partial class NewPlayer : MonoBehaviour
         const float deadGravityScale = 0.8f;
 
         void Update() {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
           RailAdminTools.Refresh();
           // R3 toggles noclip for admins only.
           if (RailAdminTools.Available && controllerInput != null && controllerInput.rightThumbstickButton.wasPressed)
@@ -592,6 +593,7 @@ public partial class NewPlayer : MonoBehaviour
               if (rotateMode == 0) Rotate();
               return;
           }
+#endif
           Rotate();
           if (hookHandsActive && (_bodyDriver == null || _bodyDriver.Body == null))
               ResolveHookHands();

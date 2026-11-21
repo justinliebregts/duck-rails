@@ -16,12 +16,16 @@ public static class RailTestTools
 {
     public static Func<string, RailRouteState> OrderedRoute;
     public static Func<bool> EnemyInvincibilityRequested;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     // The editor's player preference applies to every test expedition, including
     // public quick-start/stability rooms. Other test mutations stay private-only.
     public static bool EnemyInvincible => RailAdminTools.Invincible || (!RailAdminTools.InvincibilityOverridden && Application.isPlaying && RailDiagnostics.Development && PhotonSession.IsRailsRoom &&
         PhotonSession.Instance != null && PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest &&
         PhotonSession.Phase == RailPhase.Running &&
         EnemyInvincibilityRequested?.Invoke() == true);
+#else
+    public static bool EnemyInvincible => false;
+#endif
     static RailTestPreset preset = new RailTestPreset();
     static int[] previousNetwork;
     static bool configured;
@@ -30,6 +34,7 @@ public static class RailTestTools
         PhotonSession.Instance != null && PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest;
     public static bool Authority => Allowed && PhotonNetwork.IsMasterClient;
     public static bool CanMutate => Authority && PhotonSession.Phase == RailPhase.Running;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     const string FastTrainRunKey = "rails.test.fastTrainRun";
     // Written only by the private-run test tool or the master on an admin's request, and scoped to one run.
     public static bool FastTrainEnabled => PhotonSession.IsRailsRoom && PhotonSession.Phase == RailPhase.Running &&
@@ -55,6 +60,9 @@ public static class RailTestTools
         changes[RailSessionRules.Motion] = new object[] { now, distance, speed, target };
         changes[RailSessionRules.Fuel] = fuel;
     }
+#else
+    public static float TrainCruiseSpeed => 4f;
+#endif
     public static RailTestPreset CurrentPreset()
     {
         var peer = PhotonNetwork.NetworkingClient.LoadBalancingPeer;

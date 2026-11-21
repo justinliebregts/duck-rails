@@ -138,8 +138,11 @@ does not rearrange the original row. Serialized transforms match the original pr
 but the offscreen preview did not return. Headset reach remains queued for playtest.
 
 Current entry point: normal pause menu (Start/P) > **Test**, visible only when
-the signed-in account's PlayerSession.IsAdmin is true, including in the Editor
-and release builds. Exactly five CutePixel buttons:
+the signed-in account's PlayerSession.IsAdmin is true in the Editor or a
+Development Build. Release players hide the tab and page at initialization
+and omit the host handlers for admin coal and train speed. They also disable
+local flight, invincibility, private-run fixtures, and automatic test reports.
+Exactly five CutePixel buttons:
 Deposit 1 coal; Deposit 50 coal; No Clip: On/Off; Invincibility: On/Off;
 Train Speed: 1x/5x (added November 18; buttons respaced to 0.055).
 
@@ -181,6 +184,18 @@ The L3 binding, wrist panel, desktop panel and top-right Game-view toggle are
 removed. The small RailDiagnosticPanel class only retains compatibility APIs
 for old fixtures; it creates no UI. Older panel workflows below are historical.
 Use Test Center for the remaining editor fixtures.
+
+`DUCKZ_DIAGNOSTICS` independently enables routine `DuckzLog.Log` traces for
+targeted troubleshooting. With the symbol absent, calls and argument
+evaluation are compiled out. Rate-limited warnings and errors, along with
+the player-facing **Submit Bug** button, are available in release builds.
+
+November 20 validation: Unity admin pause and runtime logging checks passed.
+Android release and development C# compilation passed against the player
+references. The release assembly excluded the admin request names, Test
+button bindings, and flight implementation. Both assemblies included manual
+bug reporting. Quest checks are queued under
+[Production build gate for admin test tools](playtest-queue.md#production-build-gate-for-admin-test-tools--2026-11-20).
 
 Validation: Unity 6000.3.24f1 Editor and Android release-reference C# compilation
 pass (release output: ignored Temp/admin-pause-compile/release.log).

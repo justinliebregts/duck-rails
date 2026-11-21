@@ -429,6 +429,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             return;
         }
 #endif
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (action == "admin-coal")
         {
             var sender = PhotonNetwork.CurrentRoom?.GetPlayer(p.actor);
@@ -443,6 +444,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 (target == 1 || target == 5)) RailTestTools.ApplyTrainSpeed(changes, target == 5, now);
             return;
         }
+#endif
         if (action == "gather")
         {
             if (coalSample?.Length == 1 && coalSample[0] is string markerKey && markerKey.Length <= 64)
