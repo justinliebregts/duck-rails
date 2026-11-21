@@ -1,0 +1,27 @@
+2026-11-21T05:18:07.5936691Z Started two-client Huggy flare gun check
+2026-11-21T05:18:15.4865822Z Stage=0 room=11111 players=2
+2026-11-21T05:18:15.4875862Z ACK 0 actor=2 master=False
+2026-11-21T05:18:15.5507017Z ACK 0 actor=2 master=False
+2026-11-21T05:18:15.6567755Z ACK 0 actor=2 master=False
+2026-11-21T05:18:15.8450155Z Stage=1 room=11111 players=2
+2026-11-21T05:18:19.1737338Z PASS peer received shot key=00100001 charge=0.02 pos=(1.41, 2.15, 73.38)
+2026-11-21T05:18:23.9406018Z Sample at charge 0.50: pos=(0.80, 1.10, 72.46) phase=Rest
+2026-11-21T05:18:24.1727218Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:18:24.2280327Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:18:24.2874991Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:18:26.2956920Z Stage=2 room=11111 players=2
+2026-11-21T05:18:27.8151917Z PASS handover kept charge 0.89
+2026-11-21T05:18:28.9548793Z PASS recharged to full after 10 s and stays full
+2026-11-21T05:18:28.9548793Z ACK 2 actor=2 master=False
+2026-11-21T05:18:29.0192418Z ACK 2 actor=2 master=False
+2026-11-21T05:18:29.0752789Z ACK 2 actor=2 master=False
+2026-11-21T05:18:29.3571558Z Stage=3 room=11111 players=2
+2026-11-21T05:18:31.8955441Z Spot 0 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:18:33.1124574Z Spot 1 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:18:34.3326383Z Spot 2 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:18:35.5613041Z Aimed from spot 3: muzzle=(0.21, 2.58, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.58, 71.38)
+2026-11-21T05:18:35.6210409Z Aimed from spot 3: muzzle=(0.21, 2.46, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.46, 71.38)
+2026-11-21T05:18:35.6745083Z Aimed from spot 3: muzzle=(0.21, 2.33, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.33, 71.38)
+2026-11-21T05:18:35.9593481Z Firing at enemy: along=2.50 sideways=0.00 muzzleAboveRoot=0.45 enemy=(0.21, 2.03, 71.38) muzzle=(0.21, 2.48, 68.88)
+2026-11-21T05:18:39.9205731Z Shot sample: phase=Rest bounces=3 travel=2.13 pos=(0.21, 3.03, 74.33) fromAimFlat=2.95 pastAim=2.95 fromEnemyNow=2.14 enemyNow=(0.21, 0.97, 73.74)
+2026-11-21T05:18:39.9216167Z FAIL Flare stopped at the enemy instead of flying on, 2.95 m past the aim point

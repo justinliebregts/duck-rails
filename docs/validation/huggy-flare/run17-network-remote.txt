@@ -1,0 +1,45 @@
+2026-11-21T05:57:48.9551106Z Started two-client Huggy flare gun check
+2026-11-21T05:57:56.7782514Z Stage=0 room=11111 players=2
+2026-11-21T05:57:56.7797588Z ACK 0 actor=2 master=False
+2026-11-21T05:57:56.8407308Z ACK 0 actor=2 master=False
+2026-11-21T05:57:56.9363349Z ACK 0 actor=2 master=False
+2026-11-21T05:57:57.1712760Z Stage=1 room=11111 players=2
+2026-11-21T05:58:00.3775570Z PASS peer received shot key=00100001 charge=0.02 pos=(1.41, 2.50, 74.16)
+2026-11-21T05:58:05.2524746Z Sample at charge 0.50: pos=(1.16, 1.10, 71.58) phase=Rest
+2026-11-21T05:58:05.4765592Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:58:05.5378107Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:58:05.5951314Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:58:07.4667863Z Stage=2 room=11111 players=2
+2026-11-21T05:58:09.0477526Z PASS handover kept charge 0.88
+2026-11-21T05:58:10.2354072Z PASS recharged to full after 10 s and stays full
+2026-11-21T05:58:10.2354072Z ACK 2 actor=2 master=False
+2026-11-21T05:58:10.2960564Z ACK 2 actor=2 master=False
+2026-11-21T05:58:10.3615123Z ACK 2 actor=2 master=False
+2026-11-21T05:58:10.5939607Z Stage=3 room=11111 players=2
+2026-11-21T05:58:13.1091098Z Spot 0 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:58:14.3188600Z Spot 1 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:58:15.5710929Z Spot 2 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:58:16.8274334Z Aimed from spot 3: muzzle=(0.21, 2.44, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.44, 71.38)
+2026-11-21T05:58:16.8814223Z Aimed from spot 3: muzzle=(0.21, 2.29, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.29, 71.38)
+2026-11-21T05:58:16.9356417Z Aimed from spot 3: muzzle=(0.21, 2.74, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.74, 71.38)
+2026-11-21T05:58:16.9993578Z Aimed from spot 3: muzzle=(0.21, 2.73, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.73, 71.38)
+2026-11-21T05:58:17.2373442Z Firing at enemy: along=2.50 sideways=0.00 muzzleAboveRoot=0.37 enemy=(0.21, 1.94, 71.38) muzzle=(0.21, 2.31, 68.88)
+2026-11-21T05:58:17.5804067Z Authority released the enemy; pressing the trigger
+2026-11-21T05:58:21.1898896Z Shot sample: phase=Rest bounces=3 travel=1.87 pos=(0.21, 1.10, 67.10) fromAimFlat=4.28 pastAim=-4.28 fromEnemyNow=6.64 enemyNow=(0.21, 0.97, 73.74)
+2026-11-21T05:58:21.7981978Z ACK 3 actor=2 master=False deflected shot within 0.00 m on both; flare-fear=False
+2026-11-21T05:58:21.8644664Z ACK 3 actor=2 master=False deflected shot within 0.00 m on both; flare-fear=False
+2026-11-21T05:58:21.9173204Z ACK 3 actor=2 master=False deflected shot within 0.00 m on both; flare-fear=False
+2026-11-21T05:58:21.9685761Z ACK 3 actor=2 master=False deflected shot within 0.00 m on both; flare-fear=False
+2026-11-21T05:58:22.1936053Z Stage=4 room=11111 players=2
+2026-11-21T05:58:22.1989531Z Leaving for re-entry with live shot flares
+2026-11-21T05:58:32.8048140Z Rejoined: shots replayed=0 charge=1.00
+2026-11-21T05:58:32.8053460Z ACK 4 actor=3 master=False charge matches master 1.00
+2026-11-21T05:58:32.8694938Z Rejoined: shots replayed=0 charge=1.00
+2026-11-21T05:58:32.8710131Z ACK 4 actor=3 master=False charge matches master 1.00
+2026-11-21T05:58:32.9206748Z Rejoined: shots replayed=0 charge=1.00
+2026-11-21T05:58:32.9218646Z ACK 4 actor=3 master=False charge matches master 1.00
+2026-11-21T05:58:32.9715311Z Rejoined: shots replayed=0 charge=1.00
+2026-11-21T05:58:33.0449444Z Rejoined: shots replayed=0 charge=1.00
+2026-11-21T05:58:33.0990491Z Rejoined: shots replayed=0 charge=1.00
+2026-11-21T05:58:33.1653243Z Stage=5 room=11111 players=2
+2026-11-21T05:58:33.1668324Z PASS two-client Huggy flare gun: trigger fire, shared flight, cooldown, handover charge, enemy deflection, rejoin charge without replay

@@ -1,0 +1,23 @@
+2026-11-21T04:09:35.5242881Z Started two-client Huggy flare gun check
+2026-11-21T04:09:46.9983748Z Stage=0 room=11111 players=1
+2026-11-21T04:09:46.9993790Z ACK 0 actor=1 master=True
+2026-11-21T04:09:47.0526801Z ACK 0 actor=1 master=True
+2026-11-21T04:09:47.1177362Z ACK 0 actor=1 master=True
+2026-11-21T04:10:00.6477494Z Spawned Weapon_Huggy(Clone) view=1002
+2026-11-21T04:10:00.8437584Z Stage=1 room=11111 players=2
+2026-11-21T04:10:00.8581098Z Grabbed gun; charged=True
+2026-11-21T04:10:03.8779510Z Trigger press 1
+2026-11-21T04:10:04.0087271Z PASS fired via trigger key=00100001 charge=0.01 muzzle=(1.41, 2.32, 72.88) dir=(0.00, 0.00, 1.00)
+2026-11-21T04:10:08.9810996Z Sample at charge 0.50: pos=(1.41, 1.10, 73.92) phase=Rest
+2026-11-21T04:10:09.8456126Z Trigger press 2 during cooldown, charge=0.59
+2026-11-21T04:10:10.8498008Z PASS cooldown blocked the early press
+2026-11-21T04:10:10.8508045Z ACK 1 actor=1 master=True same shot within 0.00 m
+2026-11-21T04:10:10.9116392Z ACK 1 actor=1 master=True same shot within 0.00 m
+2026-11-21T04:10:10.9749737Z ACK 1 actor=1 master=True same shot within 0.00 m
+2026-11-21T04:10:11.2322015Z Stage=2 room=11111 players=2
+2026-11-21T04:10:14.0040546Z Peer sees charge full
+2026-11-21T04:10:14.0040546Z ACK 2 actor=1 master=True
+2026-11-21T04:10:14.0610795Z ACK 2 actor=1 master=True
+2026-11-21T04:10:14.1194617Z ACK 2 actor=1 master=True
+2026-11-21T04:10:14.1834729Z ACK 2 actor=1 master=True
+2026-11-21T04:10:14.4251776Z Stage=3 room=11111 players=2
