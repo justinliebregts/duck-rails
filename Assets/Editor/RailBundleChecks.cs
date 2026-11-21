@@ -38,8 +38,20 @@ public static class RailBundleChecks
             Check(skin.pullCooldown == 0 && bag.pullCooldown == 120 && weapon.pullCooldown == 120, "Cooldown settings");
             Check(new[] { skin, bag, weapon }.All(i => i.bundleSku == "duckrails_" + key + "_bundle"), "Shared SKU");
             Check(catalog.FindBagModel(bag.bagId) == bag.bagModel, "Network bag lookup");
-            // Scrap Duck and Huggy ship final 8-slot bags; Quackbear keeps the four-slot placeholder.
-            Check(bag.bagModel.GetComponentsInChildren<BagSlot>(true).Length == (key == "quackbear" ? 4 : 8), "Bag slot count");
+            // All three bundles ship final 8-slot bags.
+            Check(bag.bagModel.GetComponentsInChildren<BagSlot>(true).Length == 8, "Bag slot count");
+            if (key == "quackbear")
+            {
+                // The cupcake light is a flashlight variant with a point light instead of a spotlight.
+                var source = PrefabUtility.GetCorrespondingObjectFromSource(weapon.prefab);
+                Check(source != null && AssetDatabase.GetAssetPath(source) == "Assets/DuckRails/Economy/RailShopItemFlashlight.prefab", "Cupcake based on flashlight");
+                var lamp = weapon.prefab.GetComponent<HandFlashlight>();
+                Check(lamp != null && weapon.prefab.GetComponent<PhotonView>().ObservedComponents.Contains(lamp), "Cupcake light synced by Photon");
+                var cupLight = new SerializedObject(lamp).FindProperty("spotLight").objectReferenceValue as Light;
+                Check(cupLight != null && cupLight.type == LightType.Point && cupLight.shadows == LightShadows.None, "Cupcake point light");
+                Check(weapon.prefab.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Models/WeaponQuackbear/WeaponQuackbear.fbx"), "Cupcake mesh");
+                Check(bag.bagModel.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Skins/Bag_Quackbear/Bag_Quackbear.fbx"), "Quackbear bag mesh");
+            }
             if (key == "huggy")
             {
                 var gun = weapon.prefab.GetComponent<HuggyFlareGun>();

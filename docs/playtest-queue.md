@@ -1,5 +1,12 @@
 # Playtest queue
 
+## Quackbear cupcake light and 8-slot bag — queued 2026-11-21
+
+- Pull the Quackbear cupcake and bag in Compound, Departure Shop and the midpoint helicopter. The miniatures should grow smoothly into the held models. See [character-bundles.md](character-bundles.md#quackbear-final-art--november-21).
+- Toggle the cupcake with any use button on the holding hand (same as the flashlight). It should light the area around the duck with a warm glow (point light, no shadows) and the cupcake emission should switch with it. Judge brightness on Quest in a dark block.
+- With a peer and a late joiner: both see the light on/off state. Drop it while lit: it stays on, then turns off after 60 s. Stash it lit: it turns off.
+- Equip the bag. Stow eight different items, take them back out, and check every ring is reachable and readable from duck height on Quest. Confirm a peer sees all eight items.
+
 ## Huggy flare gun and 8-slot bag — queued 2026-11-20
 
 - Pull Huggy's gun and bag in all three stores and check the miniatures grow into the held models. See [character-bundles.md](character-bundles.md#huggy-final-art-and-flare-gun--november-20).
