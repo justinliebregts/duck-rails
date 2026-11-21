@@ -1,12 +1,5 @@
 # Playtest queue
 
-## Lowered Compound Discord panel — queued 2026-11-20, manual-only
-
-- Check on Quest from the Station Info aisle. Read the expanded panel and its four benefits
-  at normal duck height, then walk up to the south partition and press **JOIN
-  DISCORD** without climbing or reaching overhead. Confirm that the invite opens
-  in the browser and returning leaves the player in the same room.
-
 ## Tales from the Rails — queued for playtest
 
 - Use two signed-in Quest clients against the updated API. Read both complete leaderboards from the Station Info bench. Check long names and an empty weekly board.
@@ -20,6 +13,13 @@
 - Board a public departure with two players and leave a third in the compound. Confirm each boarding player hears the horn as their transfer starts, with no repeat on arrival. The player staying in the compound should hear the regular countdown without the horn.
 - Launch and replay a private expedition. Confirm host and peer each hear the cue once as they leave staging, with no repeat on arrival. Join by code after the run starts and confirm the horn stays silent. Check the cue's level against voice and the existing cockpit horn.
 
+## Lowered Compound Discord panel — queued 2026-11-20, manual-only
+
+- Check on Quest from the Station Info aisle. Read the expanded panel and its four benefits
+  at normal duck height, then walk up to the south partition and press **JOIN
+  DISCORD** without climbing or reaching overhead. Confirm that the invite opens
+  in the browser and returning leaves the player in the same room.
+
 ## Haptics pass — 2026-11-19
 
 - Changed: `VibrationManager` presets (grab/release tick, rail-joint thump, throttle click, button press, drift warning, both-hand downed/revived). Wired in `PlayerHand` (grab/release), `RailAudio` (rail joint, both hands, scales with speed), `RailControl` (click while held; drift warning toward the 0.36 m breakaway, starting at ~35%), `StoreWallItem` (pull warning), `RailHoldControl` (horn/radio press), `RailExpedition` (local down/revive edges). Compile and Console checked only; no Play Mode.
@@ -28,6 +28,7 @@
 
 ## Idle finale enemies seek the lowering bridge — 2026-11-18
 
+- November 20 RC desktop PASS with three authenticated Photon clients. Base zombies acquired the cabinet goal while lowering, chased a visible operator, and stopped acquiring that goal on release. After the second host transfer, one finished its existing 34-node path and then wandered away. Encounter pressure on headset remains open. [Case ledger and traces](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
 - Request: on the bridge finale, idle enemies seek the control area while the bridge is lowering.
 - Changed: `RailBridgeEncounter.TryGetObjective` now also returns the cabinet goal for
   non-defender enemies of the current run that are wandering inside the finale enemy bounds,
@@ -123,6 +124,7 @@
 - Still needs real clients: a second player sees one copy of your gear after each transition
   and nothing left in the old room; a wearer dropping out of a shared expedition takes the bag
   and head gear with them (no room copy for the crew); headset feel.
+- **November 20 desktop RC — PAUSED during setup, no gameplay verdict.** Three authenticated simulated-rig clients used Unity 6000.3.24f1 on main `c89d1f95e40176e12c029df8df8dcaa41a0b69b6` with local edits. Two reached private staging. Play stopped before the expedition or equipment setup, and the user paused the retry. Same-run recovery, indexed bag contents, helmet and goggles, peer cleanup and headset behavior remain pending. [Staging and shutdown evidence](validation/playtest-queue/2026-11-20-rc/worn-rejoin-paused.txt)
 
 ## Brighter store lighting (Compound + starting station) — queued 2026-11-18
 
@@ -283,7 +285,8 @@
      - Mid bridge hold: joiner sees the same defenders, hold countdown and bridge state; nothing
        already finished (e.g. the collapse) replays.
      - Ending/return: new joins are refused cleanly; nobody lands in a finished run.
-- Queued for playtest; not verified.
+- **November 20 desktop RC — PASS after fix `bb87c3ddf`.** Three authenticated clients on real Photon passed fresh joins and off-train peer, former-host and full-process reconnects in public and private runs. The cold private baseline failed on the account’s reserved actor. The fixed public and private clients recovered their original actor aboard moving trains in 75.10 and 75.39 seconds. Shop and mid-bridge arrivals, crash-effect recovery and fresh Ending/Returning refusals also passed. [Per-case results, setup and evidence](validation/playtest-queue/2026-11-20-rc/late-join.md)
+- **Needs human — queued for playtest.** Repeat physical dismount, shelf reach, coal handling, spawn comfort and cross-machine jitter on headsets. The tested public former host returned after fuel exhaustion. Repeat that combination while the train continues moving through arrival.
 
 ## Downing drops head equipment — queued 2026-11-18
 
@@ -631,6 +634,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 
 ### Bridge fortress refresh and midpoint defender — queued 2026-11-17
+- November 20 RC desktop PASS for the two defenders, pause at 29.197 s, exactly one reinforcement, late arrival, two mid-hold master changes, completion at 60.000 s and fresh-run reset. Wider combat coverage and target-headset acceptance remain queued. [Case ledger and traces](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
 - Scoped live result November 17: **PASS** in one authenticated editor client for
   both initial defenders naturally reaching controls, one reinforcement near
   the 30-second threshold and bridge completion at exactly 60 seconds accumulated
@@ -1477,6 +1481,7 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal
 
 ### Stranded return: three clients and the original repro (d9ab4c4fc) — queued 2026-11-11, manual-only
+- November 20 RC desktop PASS after a real public bridge win. The non-master rejoined the retained Returning expedition after its token, issued its leave in 0.060 s and reached the crew’s ready Compound in 2.742 s. The third client then returned there too. The original three-headset win remains open. [Case ledger and traces](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
 - Regression 2026-11-13: Evening stranded-token case excluded; fresh normal public return and cut return-control connection PASS with three clients. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
 - Queue run 2026-11-12 evening: **BLOCKED only on original headset repro (3 clients)**: targeted desktop return/rejoin portion PASS. A disconnected non-master rejoined the retained Returning expedition after its return token, immediately entered Leaving, and recovered to Compound in 2.70 s from that sample. Public-return state was seeded in an isolated private room and third client's session updates held to retain it; not a natural public win. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): d9ab4c4fc (2-client cases PASSED 2026-11-11, see Results)
@@ -1524,6 +1529,14 @@ No new block conversion or device run occurred during this documentation task.
 
 
 ## Results
+
+### Bridge, idle enemies and public crew return — November 20 RC
+
+Unity 6000.3.24f1, three authenticated desktop clients, main `bb87c3ddf3df2e718aab9dbbc6b69b8d1a5b3a6b` plus existing local edits. **PASS** for physical 60-second lowering across two master changes, exactly one midpoint reinforcement, idle-enemy attraction/release/chase, two natural public wins, replay reset and post-token recovery to the crew’s Compound. **FAIL** for an intermittent coal view-ID collision during simultaneous public departure. A separate restored-helmet readiness stall passed the `c89d1f95e40176e12c029df8df8dcaa41a0b69b6` ownership fix rerun on all three clients, including a new simultaneous departure with zero sampled duplicate views. **BLOCKED** for original headset victory, grip, traversal and encounter balance. [Case ledger, tested assemblies and per-client traces](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
+
+### Public and private expedition arrivals — desktop PASS after fix, 2026-11-20
+
+Three real Photon clients on Unity 6000.3.24f1 reproduced the reserved-slot cold-start failure on `1579de836c1b6ceefcd037fcf5dcbc206ab311a3` plus local changes. Fix `bb87c3ddf3df2e718aab9dbbc6b69b8d1a5b3a6b` passed both full process reruns. The client reclaimed actor 2 and avatar 2001 aboard moving trains in both room types. At eleven checkpoints the clients agreed on route, motion command, fuel within 0.008, cargo and enemy identities, downed actors, bag contents and flashlight allocation. The next headset checks remain in the original queue entry. [Case ledger and traces](validation/playtest-queue/2026-11-20-rc/late-join.md)
 
 ### Bridge defender approaches and 60-second hold — PASS (scoped), 2026-11-17
 

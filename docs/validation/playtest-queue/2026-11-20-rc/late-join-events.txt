@@ -1,0 +1,129 @@
+UTC | source | observation
+2026-11-20T18:56:21.5619428Z | actions | C requested five-digit public code at host distance 243.94 speed 4.00 down 1=False,2=False
+2026-11-20T18:56:39.6755250Z | actions-Player2 | off-train placement room=73618 position=(8.00, 0.15, 384.86) formerMaster=False
+2026-11-20T18:56:41.6834727Z | actions-Player2 | transport loss ON, independently off-train=True actor=2
+2026-11-20T18:56:48.8572976Z | actions-Player2 | observed offline, transport loss OFF after 9.18s
+2026-11-20T18:56:52.8778000Z | actions-Player2 | ready after 13.20s, room=73618 aboard=True local=(0.35, 1.68, -2.06)
+2026-11-20T18:57:10.5209543Z | actions-main | off-train placement room=73618 position=(8.00, 0.15, 508.66) formerMaster=True
+2026-11-20T18:57:12.5254841Z | actions-main | transport loss ON, independently off-train=True actor=1
+2026-11-20T18:57:18.4800483Z | actions-main | observed offline, transport loss OFF after 7.96s
+2026-11-20T18:57:23.0341989Z | actions-main | ready after 12.51s, room=73618 aboard=True local=(-0.35, 1.60, -2.06)
+2026-11-20T19:17:49.1776217Z | actions | C requested five-digit private code at host distance 39.83 speed 4.00 down 1=True,2=False
+2026-11-20T19:18:14.1498471Z | coal-Player3 | 62584 simulated palm candidate selected and picked up actual room coal 71
+2026-11-20T19:18:14.4571352Z | coal-Player3 | 62584 released held coal through furnace mouth
+2026-11-20T19:18:14.9351572Z | coal-Player3 | 62584 master acknowledged consuming 71; actor coal 0 -> 1
+2026-11-20T19:18:15.0129587Z | actions-Player2 | off-train placement room=62584 position=(4.43, 0.15, 213.23) formerMaster=False
+2026-11-20T19:18:17.0212594Z | actions-Player2 | transport loss ON, independently off-train=True actor=2
+2026-11-20T19:18:24.2020050Z | actions-Player2 | observed offline, transport loss OFF after 9.19s
+2026-11-20T19:18:28.2032238Z | actions-Player2 | ready after 13.19s, room=62584 aboard=True local=(0.35, 1.68, -2.06)
+2026-11-20T19:18:46.4689784Z | actions-Player3 | off-train placement room=62584 position=(8.00, 0.15, 338.45) formerMaster=True
+2026-11-20T19:18:48.4776244Z | actions-Player3 | transport loss ON, independently off-train=True actor=3
+2026-11-20T19:18:54.4042029Z | actions-Player3 | observed offline, transport loss OFF after 7.94s
+2026-11-20T19:18:58.4260447Z | actions-Player3 | ready after 11.96s, room=62584 aboard=True local=(1.05, 1.68, -2.06)
+2026-11-20T19:20:56.4550563Z | cold | cold process normal compound login ready, requesting code 62584 marker=absent
+2026-11-20T19:22:03.8891382Z | join-ops | left
+2026-11-20T19:22:05.1816540Z | join-ops | joined 62584
+2026-11-20T19:22:11.8677968Z | cold | cold ready room=62584 actor=4 onboard=True trainDistance=428.7732 trainSpeed=0 avatars=1:1001,3:3001,4:4001
+2026-11-20T19:22:57.5276453Z | process | Player2 stopped state=NotLaunched room=62584
+2026-11-20T19:23:01.1408397Z | process | Player2 relaunch=True state=Launching
+2026-11-20T19:23:57.0772549Z | join-ops | joined 72733
+2026-11-20T19:23:58.3372639Z | cold | cold process normal compound login ready, requesting code 62584 marker=absent
+2026-11-20T19:23:59.0093920Z | join-ops | left
+2026-11-20T19:24:00.7953813Z | join-ops | join failed code=32749
+2026-11-20T19:24:01.9229861Z | join-ops | join failed code=32758
+2026-11-20T19:24:02.9215171Z | join-ops | joined 65292
+2026-11-20T19:24:20.6271863Z | join-ops | left
+2026-11-20T19:27:38.7069276Z | post-actions | A creates isolated public compound
+2026-11-20T19:27:40.9141922Z | post-actions | A ready in new compound
+2026-11-20T19:27:40.9351878Z | post-actions | B follows A to fresh public compound
+2026-11-20T19:27:42.4643098Z | post-actions | B boards public platform
+2026-11-20T19:27:42.6947095Z | post-actions | A boards public platform
+2026-11-20T19:28:13.8721921Z | post-actions | A requests running train and refills approach
+2026-11-20T19:28:30.7744317Z | post-actions | Public host requested down away from train
+2026-11-20T19:29:15.6399726Z | post-actions | A beyond first block with moving train
+2026-11-20T19:29:15.7253633Z | post-actions | C joins moving public run
+2026-11-20T19:29:24.7525852Z | post-actions | C attempts real coal pickup and deposit in public run
+2026-11-20T19:29:24.7943046Z | coal-Player3 | 10255 simulated palm candidate selected and picked up actual room coal 83
+2026-11-20T19:29:25.2625162Z | coal-Player3 | 10255 released held coal through furnace mouth
+2026-11-20T19:29:26.1405046Z | coal-Player3 | 10255 master acknowledged consuming 83; actor coal 0 -> 1
+2026-11-20T19:29:40.5333217Z | process | Player2 stopped state=NotLaunched room=10255
+2026-11-20T19:29:44.6294450Z | process | Player2 relaunch=True state=Launching
+2026-11-20T19:30:43.2436834Z | join-ops | joined 37884
+2026-11-20T19:30:44.5820438Z | cold | cold process normal compound login ready, requesting code 10255 marker=absent
+2026-11-20T19:30:45.2464938Z | join-ops | left
+2026-11-20T19:30:47.2059291Z | join-ops | join failed code=32749
+2026-11-20T19:30:48.0281510Z | join-ops | joined 10255
+2026-11-20T19:30:55.6362780Z | cold | cold ready room=10255 actor=2 onboard=True trainDistance=641.0432 trainSpeed=4 avatars=1:1001,2:2001,3:3001
+2026-11-20T19:31:07.3214557Z | worn | public after cold actor=2 wornBag=True slots=RailCoal/RailGoldBar/RailShopItemFlashlight/ wornHead=1
+2026-11-20T19:32:09.1192433Z | ending-result | join refused 32764 This expedition is ending. Join after the crew returns.
+2026-11-20T19:32:10.2407811Z | ending-result | join refused 32758 This expedition is ending. Join after the crew returns.
+2026-11-20T19:32:11.1725818Z | ending-result | joined 43385 phase Compound
+2026-11-20T19:32:44.4624844Z | join-ops | left
+2026-11-20T19:32:45.8043559Z | join-ops | joined 43385
+2026-11-20T19:32:48.8074250Z | post-actions | A creates post-fix private staging
+2026-11-20T19:32:52.2911542Z | post-actions | Private staging ready
+2026-11-20T19:32:52.3980624Z | post-actions | B joins private staging by code
+2026-11-20T19:32:52.5415941Z | join-ops | left
+2026-11-20T19:32:53.8689353Z | join-ops | joined 63892
+2026-11-20T19:32:54.0658874Z | post-actions | A launches two-person post-fix private run
+2026-11-20T19:33:02.9449223Z | post-actions | A drives post-fix private expedition
+2026-11-20T19:33:08.7291744Z | post-actions | Private moving late join ready
+2026-11-20T19:33:08.9465487Z | post-actions | C joins moving private expedition
+2026-11-20T19:33:09.5109399Z | post-actions | B obtains test kit for private restart
+2026-11-20T19:33:10.3770679Z | ending-result | joined 63892 phase Running
+2026-11-20T19:33:32.3128269Z | process | Player2 stopped state=NotLaunched room=63892
+2026-11-20T19:33:35.9295802Z | process | Player2 relaunch=True state=Launching
+2026-11-20T19:34:35.7079524Z | join-ops | joined 40800
+2026-11-20T19:34:37.3110485Z | cold | cold process normal compound login ready, requesting code 63892 marker=absent
+2026-11-20T19:34:38.0126227Z | join-ops | left
+2026-11-20T19:34:39.8419268Z | join-ops | join failed code=32749
+2026-11-20T19:34:40.6636935Z | join-ops | joined 63892
+2026-11-20T19:34:47.6983242Z | cold | cold ready room=63892 actor=2 onboard=True trainDistance=413.3739 trainSpeed=4 avatars=1:1001,2:2001,3:3001
+2026-11-20T19:35:02.2936981Z | worn | private after cold actor=2 wornBag=True slots=RailCoal/RailGoldBar/RailShopItemFlashlight/ wornHead=1
+2026-11-20T19:35:04.5996168Z | ending-result | joined 64389 phase Compound
+2026-11-20T19:35:25.7057494Z | ending-result | joined 63892 phase Running
+2026-11-20T19:35:49.9107986Z | post-actions | stopped shop: arrivedAboard=True speed=0 item=item_flashlight selected=True grabbedAndReleased=True shelfWorld=(-24.48, 1.50, 493.61) offTrain=True
+2026-11-20T19:36:03.2864777Z | ending-result | joined 10551 phase Compound
+2026-11-20T19:36:43.3630950Z | post-actions | C requests code mid bridge hold
+2026-11-20T19:36:44.9849090Z | ending-result | joined 63892 phase Running
+2026-11-20T19:37:37.6345994Z | actions-Player3 | off-train placement room=63892 position=(8.00, 0.75, 895.00) formerMaster=False
+2026-11-20T19:37:37.6691464Z | collapse-probe | Joined|63892|Running|ready=True|offlinePreviously=False|collapse=False|burst=False|reason=
+2026-11-20T19:37:39.6446978Z | actions-Player3 | transport loss ON, independently off-train=True actor=5
+2026-11-20T19:37:47.0020714Z | collapse-probe | Disconnected|-|Compound|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=
+2026-11-20T19:37:47.0025943Z | actions-Player3 | observed offline, transport loss OFF after 9.37s
+2026-11-20T19:37:48.9956645Z | collapse-probe | ConnectingToNameServer|-|Compound|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=
+2026-11-20T19:37:49.3127673Z | collapse-probe | Authenticating|-|Compound|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=
+2026-11-20T19:37:49.6040034Z | collapse-probe | ConnectingToMasterServer|-|Compound|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=
+2026-11-20T19:37:49.9014246Z | collapse-probe | Authenticating|-|Compound|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=
+2026-11-20T19:37:50.0745969Z | collapse-probe | Joining|-|Compound|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=
+2026-11-20T19:37:50.1929176Z | collapse-probe | ConnectingToGameServer|-|Compound|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=
+2026-11-20T19:37:50.6237178Z | collapse-probe | Authenticating|-|Compound|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=
+2026-11-20T19:37:50.7645291Z | collapse-probe | Joining|-|Compound|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=
+2026-11-20T19:37:50.8907675Z | ending-result | joined 63892 phase Ending
+2026-11-20T19:37:51.0164763Z | collapse-probe | Joined|63892|Ending|ready=False|offlinePreviously=True|collapse=True|burst=False|reason=Bridge collision
+2026-11-20T19:37:51.0618271Z | collapse-probe | Joined|63892|Ending|ready=True|offlinePreviously=True|collapse=True|burst=False|reason=Bridge collision
+2026-11-20T19:37:51.0628328Z | actions-Player3 | ready after 13.43s, room=63892 aboard=True local=(-0.35, 1.68, -2.06)
+2026-11-20T19:37:55.8032715Z | join-ops | left
+2026-11-20T19:37:57.2642681Z | join-ops | joined 58084
+2026-11-20T19:38:17.9314483Z | collapse-probe | Joined|63892|Returning|ready=True|offlinePreviously=True|collapse=True|burst=False|reason=Bridge collision
+2026-11-20T19:38:18.1029109Z | join-ops | left
+2026-11-20T19:38:18.7559607Z | join-ops | join failed code=32764
+2026-11-20T19:38:18.7569591Z | return-result | join refused 32764 This expedition is ending. Join after the crew returns.
+2026-11-20T19:38:19.8615793Z | join-ops | join failed code=32758
+2026-11-20T19:38:19.8615793Z | return-result | join refused 32758 This expedition is ending. Join after the crew returns.
+2026-11-20T19:38:19.9583960Z | collapse-probe | Joined|63892|Staging|ready=False|offlinePreviously=True|collapse=True|burst=False|reason=Bridge collision
+2026-11-20T19:38:20.8346090Z | join-ops | joined 00194
+2026-11-20T19:38:20.8361277Z | return-result | joined 00194 phase Compound
+2026-11-20T19:38:21.0603229Z | collapse-probe | Joined|63892|Staging|ready=False|offlinePreviously=True|collapse=False|burst=False|reason=-
+2026-11-20T19:38:23.6043810Z | collapse-probe | Joined|63892|Staging|ready=True|offlinePreviously=True|collapse=False|burst=False|reason=-
+2026-11-20T19:38:33.0628672Z | cleanup | Player2 verified Player2 scoped+legacy loadout prefs 18/18
+2026-11-20T19:38:33.5294393Z | cleanup | Player3 verified Player3 scoped+legacy loadout prefs 18/18
+2026-11-20T19:38:33.5964978Z | cleanup | main verified main scoped+legacy loadout prefs 18/18
+2026-11-20T19:38:33.5986033Z | cleanup | main verified Player2 scoped+legacy loadout prefs 18/18
+2026-11-20T19:38:33.5991071Z | cleanup | main verified Player3 scoped+legacy loadout prefs 18/18
+2026-11-20T19:38:42.6814782Z | join-ops | left
+2026-11-20T19:41:26.5533340Z | cleanup | main verified main scoped+legacy loadout prefs 18/18
+2026-11-20T19:41:26.5538436Z | cleanup | main verified Player2 scoped+legacy loadout prefs 18/18
+2026-11-20T19:41:26.5548473Z | cleanup | main verified Player3 scoped+legacy loadout prefs 18/18
+2026-11-20T19:41:26.6663441Z | cleanup | Unity=6000.3.24f1 play=False scenario=NotRunning scenarioNull=False quick=False desktop=True compileFailed=False scene=Assets/DuckRails/Lighting/Blocks/convenience-store-v1/convenience-store-v1-bake.unity dirty=True memoryMatch=True diskMatch=True
+2026-11-20T19:41:41.1859237Z | cleanup | scenario selection=Default asset path='' (baseline asset path blank); play=False state=NotRunning

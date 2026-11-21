@@ -2,6 +2,8 @@
 
 ## Fortress encounter refresh — November 17, 2026
 
+On November 20, three authenticated desktop clients agreed on the 29.197-second pause, one midpoint reinforcement and completion at 60 seconds through two mid-hold master changes. Two public wins crossed the lowered bridge. An idle base zombie kept its assigned route after release, reached the cabinet approach within 0.18 m, and then wandered away. Fortress traversal, headset lighting and encounter pressure remain queued. [Multiplayer bridge evidence](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
+
 **Scoped live follow-up:** one authenticated Unity editor run passed November 17:
 both tower enemies naturally reached the control approach at 11.415 seconds of
 holding, the third appeared at the 30-second threshold (observed at 30.209 s) and
