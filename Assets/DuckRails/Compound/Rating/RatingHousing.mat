@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Editor::UnityEditor.Rendering.Universal.AssetVersion
   version: 10
 --- !u!21 &2100000
@@ -34,7 +34,7 @@ Material:
     RenderType: Opaque
   disabledShaderPasses:
   - MOTIONVECTORS
-  m_LockedProperties:
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -65,7 +65,7 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.396078431372549, g: 0.20784313725490197, b: 0.12549019607843137, a: 1}
-    - _Color: {r: 0.396078431372549, g: 0.20784313725490197, b: 0.12549019607843137, a: 1}
+    - _BaseColor: {r: 0.39607844, g: 0.20784314, b: 0.1254902, a: 1}
+    - _Color: {r: 0.3960784, g: 0.2078431, b: 0.12549016, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
