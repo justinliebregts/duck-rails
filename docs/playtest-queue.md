@@ -37,6 +37,12 @@
 - Needs human (2+ clients): set a gold bar on the train, have another duck stand on it, start the train: no blood or hit sounds. Still hits a player when swung while held and when thrown within ~1.5 s. Check that a very slow lob that flies for more than 1.5 s still counts, or raise the window.
 - Not covered: `ItemSounds.OnCollisionEnter` can also play a flesh impact for a remote player on a resting item; check whether that still fires on the moving train.
 
+## Defeat sting on a lost run — 2026-11-19
+
+- Request: play the 14 s "Horror Buildup" one-shot when the players lose (crash or everyone down).
+- Changed: clip imported as `Assets/Audio/Train/Train_Defeat.wav`, assigned to the new `RailAudioBank.defeatSting` (+ `defeatVolume`). `RailAudioDirector.UpdateDefeat` plays it once per run on every client in the rails room when `State.finished && !State.success` during Ending/Returning (both loss causes go through `RailRunState.Finish`); fades out over 1.5 s when the crew is sent back. Compile and asset wiring checked only; no Play Mode.
+- Needs human: lose by crash and by everyone down; the sting plays once, 2D, on all clients including downed/off-train ducks; no sting on a successful escape (bridge music only); it fades when returning to the compound; a late joiner during Ending hears it from the start. Check the sting sits well against the bridge-crash sound.
+
 ## Haptics pass — 2026-11-19
 
 - Changed: `VibrationManager` presets (grab/release tick, rail-joint thump, throttle click, button press, drift warning, both-hand downed/revived). Wired in `PlayerHand` (grab/release), `RailAudio` (rail joint, both hands, scales with speed), `RailControl` (click while held; drift warning toward the 0.36 m breakaway, starting at ~35%), `StoreWallItem` (pull warning), `RailHoldControl` (horn/radio press), `RailExpedition` (local down/revive edges). Compile and Console checked only; no Play Mode.

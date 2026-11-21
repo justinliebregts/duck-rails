@@ -37,7 +37,8 @@ public sealed class RailAudioDirector : MonoBehaviour
 
     static RailAudioDirector instance;
     readonly List<Cue> cues = new List<Cue>();
-    AudioSource rumble, music, departureHorn;
+    AudioSource rumble, music, defeat, departureHorn;
+    string defeatRun;
     float rumbleVolume, rumblePitch = 1f, pitchVelocity, aboardBlend, musicVolume;
     string musicRun;
     float prevDistance, prevFuel = -1f, nextWarning;
@@ -82,6 +83,7 @@ public sealed class RailAudioDirector : MonoBehaviour
         RunCues();
         UpdateRumble(bank, train);
         UpdateMusic(bank, onTrain);
+        UpdateDefeat(bank);
         if (train == null)
         {
             haveDistance = false; wasMoving = false; prevFuel = -1f;
@@ -231,6 +233,31 @@ public sealed class RailAudioDirector : MonoBehaviour
         rumble.outputAudioMixerGroup = EffectsGroup();
         rumble.volume = rumbleVolume; rumble.pitch = rumblePitch;
         if (!rumble.isPlaying) rumble.Play();
+    }
+
+    // One-shot sting for a lost run (crash or everyone down): every client in the rails room hears it
+    // once per run, wherever they are, and it fades out once the crew is sent back to the compound.
+    void UpdateDefeat(RailAudioBank bank)
+    {
+        var expedition = RailExpedition.Instance;
+        string run = PhotonSession.RunId;
+        bool lost = bank.defeatSting != null && PhotonSession.IsRailsRoom && expedition != null &&
+            expedition.State.finished && !expedition.State.success && expedition.State.run == run &&
+            (PhotonSession.Phase == RailPhase.Ending || PhotonSession.Phase == RailPhase.Returning);
+        if (lost && defeatRun != run)
+        {
+            defeatRun = run;
+            if (defeat == null) defeat = MakeSource("Defeat sting", false);
+            defeat.clip = bank.defeatSting; defeat.loop = false;
+            defeat.outputAudioMixerGroup = EffectsGroup();
+            defeat.volume = bank.defeatVolume; defeat.Play();
+        }
+        if (defeat == null || !defeat.isPlaying) return;
+        if (!lost || PhotonSession.Phase == RailPhase.Returning)
+        {
+            defeat.volume = Mathf.MoveTowards(defeat.volume, 0f, Time.unscaledDeltaTime / 1.5f);
+            if (defeat.volume <= 0f) defeat.Stop();
+        }
     }
 
     // Starts with a successful ending and fades out as the crew is sent back to the compound.

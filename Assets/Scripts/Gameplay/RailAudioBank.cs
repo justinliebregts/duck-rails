@@ -25,6 +25,8 @@ public sealed class RailAudioBank : ScriptableObject
     public AudioClip departureHorn;
     [Tooltip("Plays 2D for the whole successful ending, fading out as the crew returns to the compound.")]
     public AudioClip bridgeMusic;
+    [Tooltip("One-shot 2D sting played once when the run is lost (crash or everyone down). Fades out when the crew is sent back.")]
+    public AudioClip defeatSting;
 
     [Header("Throttle")]
     public SoundEvent throttleGrab;
@@ -39,6 +41,7 @@ public sealed class RailAudioBank : ScriptableObject
     [Min(0)] public float lowFuelThreshold = 20f;
     [Min(.1f)] public float lowFuelSlowInterval = 2.2f, lowFuelFastInterval = .6f;
     [Range(0f, 1f)] public float musicVolume = .8f;
+    [Range(0f, 1f)] public float defeatVolume = 1f;
     [Min(.1f)] public float musicFadeOutSeconds = 3f;
     [Tooltip("The ending ride is longer than the track, so repeat it. Turn off if the loop seam is audible.")]
     public bool loopMusic = true;
