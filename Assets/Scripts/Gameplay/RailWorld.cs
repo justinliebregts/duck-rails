@@ -27,7 +27,6 @@ public sealed class RailWorld : MonoBehaviour
     {
         Instance = this;
         RailBoardReports.Install();
-        if (compound != null && gameObject.scene.name == "Compound") RailCommunityBoard.Install(compound);
         PhotonPreparePool.Register(batPrefab); PhotonPreparePool.Register(bagPrefab);
     }
     void OnDestroy() { if (Instance == this) Instance = null; DesktopPlayer.SuppressCursorCapture = false; }
