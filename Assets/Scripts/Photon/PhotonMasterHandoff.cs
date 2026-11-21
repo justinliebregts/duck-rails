@@ -45,7 +45,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     readonly List<XRDisplaySubsystem> displays = new List<XRDisplaySubsystem>(1);
     XRDisplaySubsystem display;
     bool xrFocused = true;
-    bool focused, paused, lastReady;
+    bool focused, paused, lastReady, observationClockPending;
     int observationStartedAt;
     double nextHeartbeat, retryAt, observeUntil, nextHeldCheck;
     Room room;
@@ -98,12 +98,13 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     }
 
     public override void OnJoinedRoom() => ResetRoom();
-    public override void OnLeftRoom() { room = null; heartbeats.Clear(); holders.Clear(); ResetArrivals(); }
+    public override void OnLeftRoom() { room = null; heartbeats.Clear(); holders.Clear(); ResetArrivals(); ResetSettle(); }
     public override void OnDisconnected(DisconnectCause cause) { PhotonHeldItems.DropLocalHands(); OnLeftRoom(); hasClockDrift = false; }
 
     void ResetRoom()
     {
         room = PhotonNetwork.CurrentRoom;
+        ResetSettle();
         hasClockDrift = false;
         ResetObservation();
         RoomObjectRecovery.JoinedRoom();
@@ -119,6 +120,9 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         holders.Clear();
         ResetArrivals();
         observationStartedAt = PhotonNetwork.ServerTimestamp;
+        // Before Photon's first time sync ServerTimestamp is 0. Every peer stamp then
+        // looks stale or pre-observation, so a live host would be judged silent.
+        observationClockPending = ServerClockPending;
         observeUntil = Time.realtimeSinceStartupAsDouble + TimeoutMilliseconds / 1000d;
         nextHeartbeat = retryAt = nextHeldCheck = 0;
     }
@@ -167,7 +171,17 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         if (!ReferenceEquals(room, PhotonNetwork.CurrentRoom)) ResetRoom();
         CheckLocalClock();
         double now = Time.realtimeSinceStartupAsDouble;
+        TickSettle(now);
         if (Ready != lastReady || now >= nextHeartbeat) Publish(Ready != lastReady);
+        // Heartbeat freshness compares server stamps. Without a synchronised local
+        // clock no peer can be judged silent or unavailable: observe, never elect.
+        if (ServerClockPending) { FetchServerClock("server time not yet synchronised"); return; }
+        if (observationClockPending)
+        {
+            observationClockPending = false;
+            observationStartedAt = PhotonNetwork.ServerTimestamp;
+            observeUntil = System.Math.Max(observeUntil, now + TimeoutMilliseconds / 1000d);
+        }
         if (Ready && PhotonNetwork.IsMasterClient && now >= nextHeldCheck)
         {
             nextHeldCheck = now + HeartbeatInterval;
@@ -185,7 +199,8 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         int master = PhotonNetwork.MasterClient.ActorNumber;
         bool known = heartbeats.TryGetValue(master, out Heartbeat heartbeat) && heartbeat.Received;
         // Explicit unavailability can be acted on immediately. Missing heartbeats get five seconds.
-        if (known ? heartbeat.Ready && Fresh(heartbeat.SentAt, PhotonNetwork.ServerTimestamp) : now < observeUntil) return;
+        if (known ? heartbeat.Ready && Fresh(heartbeat.SentAt, PhotonNetwork.ServerTimestamp)
+            : now < observeUntil || HeardRecently(master)) return;
         Player candidate = SelectCandidate();
         if (candidate != null && candidate.IsLocal) RequestMaster(candidate);
     }
@@ -217,6 +232,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     public void OnEvent(EventData data)
     {
         if (data.Code == StartupBarrierCode) { ReceiveStartupBarrier(data); return; }
+        if (data.Code == SettleQueryCode || data.Code == SettleReplyCode) { ReceiveSettle(data); return; }
         if (data.Code == HolderQuery || data.Code == HolderReply) { ReceiveHolderCheck(data); return; }
         if (data.Code == PickupReportCode || data.Code == PickupRefreshCode || data.Code == PickupAuthorityCode)
         { ReceivePickupEvent(data); return; }
@@ -257,9 +273,13 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
 
     bool StartupHostSilent()
     {
-        if (PhotonNetwork.MasterClient == null || Time.realtimeSinceStartupAsDouble < observeUntil) return false;
-        return !heartbeats.TryGetValue(PhotonNetwork.MasterClient.ActorNumber, out var beat) ||
-            !Fresh(beat.SentAt, PhotonNetwork.ServerTimestamp);
+        if (PhotonNetwork.MasterClient == null || Time.realtimeSinceStartupAsDouble < observeUntil ||
+            ServerClockPending || observationClockPending) return false;
+        int master = PhotonNetwork.MasterClient.ActorNumber;
+        // Silence means no heartbeat arrived, not merely that its stamp disagrees with
+        // our clock: a loading host that is still sending must not be replaced.
+        if (HeardRecently(master)) return false;
+        return !heartbeats.TryGetValue(master, out var beat) || !Fresh(beat.SentAt, PhotonNetwork.ServerTimestamp);
     }
 
     void RecoverStartup()
@@ -340,6 +360,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     }
     public override void OnMasterClientSwitched(Player newMasterClient)
     {
+        MasterSwitched(newMasterClient);
         holders.Clear();
         ClearPickupReports();
         pickupHandoffAfter = Time.realtimeSinceStartupAsDouble + PickupHandoffCooldown;

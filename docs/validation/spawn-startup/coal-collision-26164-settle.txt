@@ -1,0 +1,28 @@
+# Room 26164 coal collision fix — disposable batch copy (tmp/duckz-port-validation), Unity 6000.3.24f1, 2026-11-20
+# Copy synced with current main + local scripts; 42 stale copy-only scripts (Companion, QueueRunBatch etc.) moved aside to tmp/.
+
+## MasterHandoffChecks.RunStartupSettle (fixed code)
+PASS: observation begun before server-time sync is marked pending
+PASS: unsynchronised peer never requests authority after the observation window
+PASS: unsynchronised peer cannot judge the startup host silent
+PASS: first synchronised frame restarts host observation
+PASS: positive control: no heartbeat arrival after observation is silence
+PASS: host whose heartbeats keep arriving is not silent despite disagreeing stamps
+PASS: new master defers room spawns until the previous master acknowledges the switch
+PASS: stale nonce or another actor cannot settle the handoff
+PASS: previous master's ordered reply releases room spawns
+PASS: a remote successor never settles locally
+PASS: settle targets the actual previous master
+PASS: settle waits within its timeout
+PASS: silent previous master releases spawns after the timeout
+MasterHandoffChecks.RunStartupSettle: ALL PASSED (13 assertions)
+
+## HeldItemRecoveryChecks.Run (fixed code; also drives OnMasterClientSwitched(local))
+HeldItemRecoveryChecks: ALL PASSED (166 assertions)
+
+## MasterHandoffChecks.Run — pre-existing fixture failure, identical on HEAD handoff code (baseline) and fixed code
+PASS: fallback boundary is exactly five seconds
+PASS: heartbeat timeout survives timestamp wrap
+PASS: future heartbeat cannot keep a stalled master alive
+PASS: responsive master is never replaced
+Exception: lowest ready actor is the sole fallback candidate

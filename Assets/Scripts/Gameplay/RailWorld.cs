@@ -83,7 +83,9 @@ public sealed class RailWorld : MonoBehaviour
             else
             {
                 ClearCompoundPurchases();
-                if (PhotonNetwork.IsMasterClient) MaintainCargo();
+                // A new master first receives the previous master's in-flight spawns,
+                // so seeding cannot reallocate their room view IDs (room 26164).
+                if (PhotonMasterHandoff.CanSpawnRoomObjects) MaintainCargo();
             }
         }
         var local = GR.Player.instance;

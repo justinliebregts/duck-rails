@@ -232,7 +232,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         ConsumeCommittedCoal();
         ShowFuelPopups();
         RailGoldReceiver.PresentRewards(this);
-        if (PhotonNetwork.IsMasterClient) SpawnCarrierDrops();
+        if (PhotonMasterHandoff.CanSpawnRoomObjects) SpawnCarrierDrops();
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.Time >= nextTick)
         { nextTick = PhotonNetwork.Time + .1; TickAuthority(); }
     }
@@ -240,7 +240,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     {
         bool ending = PhotonSession.Phase == RailPhase.Ending && State.finished;
         if (PhotonSession.Phase != RailPhase.Running && !ending) return;
-        if (!ending) SpawnEnemies();
+        if (!ending && PhotonMasterHandoff.CanSpawnRoomObjects) SpawnEnemies();
         if (pendingRequestJson != null && PhotonNetwork.Time - pendingRequestAt < 1.2) return;
         pendingRequestJson = null;
         var next = JsonUtility.FromJson<RailRunState>(JsonUtility.ToJson(State));

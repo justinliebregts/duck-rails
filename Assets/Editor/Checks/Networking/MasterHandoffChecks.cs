@@ -31,7 +31,11 @@ public static class MasterHandoffChecks
     static object Call(object o, string name, params object[] args) => o.GetType().GetMethod(name, Private).Invoke(o, args);
     static void Check(bool ok, string message) { checks++; if (!ok) throw new Exception(message); Debug.Log("PASS: " + message); }
 
-    public static void Run()
+    public static void Run() => RunSuites(false);
+    /// <summary>Only the November 20 server-clock and post-switch spawn-settle section.</summary>
+    public static void RunStartupSettle() => RunSuites(true);
+
+    static void RunSuites(bool startupSettleOnly)
     {
         if (!Application.isBatchMode) throw new InvalidOperationException("Disposable batch project only");
         var client = PhotonNetwork.NetworkingClient;
@@ -65,8 +69,16 @@ public static class MasterHandoffChecks
             Call(handoff, "ResetObservation");
             Set(handoff, "lastReady", true); Set(handoff, "nextHeartbeat", double.PositiveInfinity);
             Set(handoff, "observeUntil", Time.realtimeSinceStartupAsDouble + 5);
+            if (startupSettleOnly)
+            {
+                ClockAndSettle(handoff, master, local, backup, room);
+                PhotonPlayer.Active.Remove(human);
+                Debug.Log("MasterHandoffChecks.RunStartupSettle: ALL PASSED (" + checks + " assertions)");
+                return;
+            }
             Heartbeats(handoff, master, local, backup, room);
             AllHeadsetsStandby(handoff, master, local, backup, room);
+            ClockAndSettle(handoff, master, local, backup, room);
             GoldSchedules(room, local, backup);
             AuthorityRecovery(local, master);
             HelicopterRecovery(local, master);
@@ -164,6 +176,76 @@ public static class MasterHandoffChecks
         Check(allocated == 0, "steady heartbeat monitoring allocates zero bytes over 10,000 frames (got " + allocated + ")");
         h.OnLeftRoom();
         Check(beats.Count == 0 && Get<Room>(h, "room") == null, "room departure clears all election state");
+    }
+
+    // November 20 room 26164: a joining peer with an unsynchronised server clock replaced
+    // a live, still-seeding host, and both then spawned coal-55..63 as views 151-159.
+    static void ClockAndSettle(PhotonMasterHandoff h, Player master, Player local, Player backup, Room room)
+    {
+        double Now() => Time.realtimeSinceStartupAsDouble;
+        var instanceField = typeof(PhotonMasterHandoff).GetField("instance", BindingFlags.Static | BindingFlags.NonPublic);
+        object previousInstance = instanceField.GetValue(null);
+        void Reply(byte code, Player sender, object nonce)
+        {
+            var data = new EventData { Code = code };
+            data.Parameters[ParameterCode.ActorNr] = sender.ActorNumber;
+            data.Parameters[ParameterCode.Data] = nonce;
+            h.OnEvent(data);
+        }
+        try
+        {
+            Set(h, "room", room); Set(room, "masterClientId", master.ActorNumber);
+            Set(h, "paused", false); Set(h, "focused", true); Set(h, "xrFocused", true); Set(h, "retryAt", 0d);
+            PhotonMasterHandoff.ServerClockPendingOverride = true;
+            Call(h, "ResetObservation");
+            Set(h, "nextHeartbeat", double.PositiveInfinity);
+            Check(Get<bool>(h, "observationClockPending"), "observation begun before server-time sync is marked pending");
+            Set(h, "observeUntil", Now() - 0.001);
+            Call(h, "Update");
+            Check(Get<double>(h, "retryAt") == 0 && room.MasterClientId == master.ActorNumber,
+                "unsynchronised peer never requests authority after the observation window");
+            Check(!(bool)Call(h, "StartupHostSilent"), "unsynchronised peer cannot judge the startup host silent");
+            PhotonMasterHandoff.ServerClockPendingOverride = false;
+            Call(h, "Update");
+            Check(!Get<bool>(h, "observationClockPending") && Get<double>(h, "observeUntil") > Now(),
+                "first synchronised frame restarts host observation");
+            Set(h, "observeUntil", Now() - 0.001);
+            Check((bool)Call(h, "StartupHostSilent"), "positive control: no heartbeat arrival after observation is silence");
+            Beat(h, master, false, 100000);
+            Check(!(bool)Call(h, "StartupHostSilent"), "host whose heartbeats keep arriving is not silent despite disagreeing stamps");
+
+            // Edit-mode AddComponent does not run Awake; publish this coordinator for the static gates.
+            instanceField.SetValue(null, h);
+            Call(h, "ResetSettle");
+            Set(room, "masterClientId", local.ActorNumber);
+            h.OnMasterClientSwitched(local);
+            Check(PhotonNetwork.IsMasterClient && !PhotonMasterHandoff.RoomSpawnsSettled && !PhotonMasterHandoff.CanSpawnRoomObjects,
+                "new master defers room spawns until the previous master acknowledges the switch");
+            int nonce = Get<int>(h, "settleNonce");
+            Reply(119, master, nonce + 1);
+            Reply(119, backup, nonce);
+            Check(!PhotonMasterHandoff.RoomSpawnsSettled, "stale nonce or another actor cannot settle the handoff");
+            Reply(119, master, nonce);
+            Check(PhotonMasterHandoff.RoomSpawnsSettled && PhotonMasterHandoff.CanSpawnRoomObjects,
+                "previous master's ordered reply releases room spawns");
+
+            Set(room, "masterClientId", backup.ActorNumber); h.OnMasterClientSwitched(backup);
+            Check(PhotonMasterHandoff.RoomSpawnsSettled && !PhotonMasterHandoff.CanSpawnRoomObjects, "a remote successor never settles locally");
+            Set(room, "masterClientId", local.ActorNumber); h.OnMasterClientSwitched(local);
+            Check(Get<int>(h, "settlingFrom") == backup.ActorNumber, "settle targets the actual previous master");
+            Call(h, "TickSettle", Now());
+            Check(!PhotonMasterHandoff.RoomSpawnsSettled, "settle waits within its timeout");
+            Set(h, "settleUntil", Now() - 0.001);
+            Call(h, "TickSettle", Now());
+            Check(PhotonMasterHandoff.RoomSpawnsSettled, "silent previous master releases spawns after the timeout");
+        }
+        finally
+        {
+            PhotonMasterHandoff.ServerClockPendingOverride = null;
+            instanceField.SetValue(null, previousInstance);
+            Set(h, "settlingFrom", 0);
+            Set(room, "masterClientId", master.ActorNumber);
+        }
     }
 
     static void AllHeadsetsStandby(PhotonMasterHandoff h, Player previous, Player local, Player backup, Room room)

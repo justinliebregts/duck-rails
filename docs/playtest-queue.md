@@ -1,5 +1,12 @@
 # Playtest queue
 
+## Duplicate coal views at public expedition startup (room 26164) — queued 2026-11-20
+
+- Fix: a peer whose Photon clock is unsynchronised no longer replaces a live host. A new master now waits for the previous master's in-flight spawns (events 118/119) before seeding or spawning. See [spawn-startup.md](spawn-startup.md#november-20-room-26164--coal-views-151159-fix-implemented-queued). Compile and synthetic batch checks passed. No live run yet. RC tests 3–5 stay paused.
+- Three authenticated desktop clients on Photon US: depart one public Compound together, repeatedly. Record each master change with its cause (clock pending, recovery, Ready handoff) and the `master settle:` diagnostics events. Pass: every client lists the same coal/gold markers with identical view IDs and spawn tokens, reports no `PhotonView ID duplicate` errors and reaches WorldReady with zero pending cargo.
+- Force a startup handoff: stall or hold the initial master during seeding (`RailStartupRecoveryChecks` faults 0–2), then ask the Ready successor to take over. Confirm the settle ends by acknowledgement for a live old master and by timeout for a stalled one. Check that no marker is spawned twice.
+- After the handoff, transport-reconnect the affected non-master peer. It must reclaim its actor, replay one instantiation per view, and reach WorldReady with the same markers and IDs as the other two clients.
+
 ## Tales from the Rails — queued for playtest
 
 - Use two signed-in Quest clients against the updated API. Read both complete leaderboards from the Station Info bench. Check long names and an empty weekly board.
