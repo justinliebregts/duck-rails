@@ -273,6 +273,16 @@
   behind in the old room, and nothing is cleared within 5 s. Also a held gold bar (it carries,
   like gold in a worn bag) and a flashlight into Compound (prefab resolves on both clients).
   Release grip during the veil. Queued for playtest; not verified.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS on 16 of 17 rounds;
+  1 skipped. Headset feel still needs a human.** Each round used one item, two items (one per hand)
+  or a loaded bag in hand, each grabbed with an injected grip press through the real
+  `PlayerHand`/`BagInventory` grip path. Rounds covered public departures (alone and together),
+  failure and success crew returns, Back to Compound (public and private mid-run), private create
+  and join, private departures and returns, and a downed carrier. The carrier was master and
+  non-master in different rounds. Each client saw exactly one copy, dropped 0.29–0.38 m from the
+  carrier's feet, with bag contents intact, for 5 s. A client left behind saw nothing in the old
+  world. The downed carrier carried nothing. Skipped: Compound → Compound by code, because Back to
+  Compound landed in the peer's Compound. [Evidence](validation/playtest-queue/2026-11-21-queue/held-carry.md)
 
 ## Phantom coal in worn backpack diagnostics — queued 2026-11-18
 

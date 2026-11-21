@@ -1,0 +1,375 @@
+2026-11-21T21:03:15.6302782Z START held-carry two-client playtest; Unity 6000.3.24f1 role=player2 privateCode=87072
+2026-11-21T21:03:15.6313071Z STATE PeerCreated room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:03:15.6318271Z step=0
+2026-11-21T21:03:15.6323529Z HANDS no player | room= kind= phase=Compound master=False actor=-1 step=0 ready=False transition=False down=False
+2026-11-21T21:03:19.9488400Z STATE ConnectingToNameServer room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:03:20.2170530Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:03:20.4296254Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:03:20.9819704Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:03:21.1293733Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:03:21.2601804Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:03:22.0262631Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:03:22.1418300Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:03:22.3681801Z STATE Joined room=32156 kind=compound phase=Compound master=False actor=2 step=0 ready=False players=2/2 down=False
+2026-11-21T21:03:23.4603295Z STATE Joined room=32156 kind=compound phase=Compound master=False actor=2 step=0 ready=True players=2/2 down=False
+2026-11-21T21:03:23.4608462Z HANDS L=- R=- bags=0 | room=32156 kind=compound phase=Compound master=False actor=2 step=0 ready=True transition=False down=False
+2026-11-21T21:03:24.1447720Z STATE Joined room=32156 kind=compound phase=Compound master=True actor=2 step=0 ready=True players=1/1 down=False
+2026-11-21T21:03:26.5643268Z BACKUP 0 of 9 saved loadout keys present for this account
+2026-11-21T21:03:26.5653276Z CLEARED own loadout room=32156 kind=compound phase=Compound master=True actor=2 step=0
+2026-11-21T21:03:26.6680784Z ACK step=0 account loadout backed up and cleared
+2026-11-21T21:03:28.3765249Z STATE Joined room=32156 kind=compound phase=Compound master=True actor=2 step=1 ready=True players=1/1 down=False
+2026-11-21T21:03:28.3765249Z step=1
+2026-11-21T21:03:30.5869225Z STATE Leaving room=32156 kind=compound phase=Compound master=True actor=2 step=1 ready=False players=0 down=False
+2026-11-21T21:03:30.6870438Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=1 ready=False players=0 down=False
+2026-11-21T21:03:31.0144464Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=1 ready=False players=0 down=False
+2026-11-21T21:03:31.1287159Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=1 ready=False players=0 down=False
+2026-11-21T21:03:31.3400746Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=1 ready=False players=0 down=False
+2026-11-21T21:03:31.7576556Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=1 ready=False players=0 down=False
+2026-11-21T21:03:31.8585157Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=1 ready=False players=0 down=False
+2026-11-21T21:03:32.0673690Z STATE Joined room=95508 kind=compound phase=Compound master=False actor=2 step=1 ready=True players=2/2 down=False
+2026-11-21T21:03:35.1350625Z ACK step=1 gathered in 95508
+2026-11-21T21:03:35.2430664Z STATE Joined room=95508 kind=compound phase=Compound master=False actor=2 step=2 ready=True players=2/2 down=False
+2026-11-21T21:03:35.2443007Z step=2 round 1 LOAD: public Compound -> public Expedition, carrier departs alone (non-master in Compound); stayer checks the old Compound
+2026-11-21T21:03:38.3206024Z SPAWN test RailShopItemFlashlight view 2002
+2026-11-21T21:03:38.7296539Z GRIP press attempt 1 for one
+2026-11-21T21:03:38.8373310Z HANDS L=- R=RailShopItemFlashlight bags=0 | room=95508 kind=compound phase=Compound master=False actor=2 step=2 ready=True transition=False down=False
+2026-11-21T21:03:40.4153444Z HOLD confirmed one: right=RailShopItemFlashlight#2002(held-carry-test)  [via injected grip press] room=95508 kind=compound phase=Compound master=False actor=2 step=2
+2026-11-21T21:03:40.4173488Z ACK step=2 own one held right=RailShopItemFlashlight#2002(held-carry-test) 
+2026-11-21T21:03:40.5198158Z STATE Joined room=95508 kind=compound phase=Compound master=False actor=2 step=3 ready=True players=2/2 down=False
+2026-11-21T21:03:40.5208198Z step=3 round 1 GO: public Compound -> public Expedition, carrier departs alone (non-master in Compound); stayer checks the old Compound
+2026-11-21T21:03:40.5223668Z LOADS own #2 in 95508 views [2002]; peer #1 in 95508 views []
+2026-11-21T21:04:01.1126681Z STATE Leaving room=95508 kind=compound phase=Compound master=False actor=2 step=3 ready=False players=0 down=False
+2026-11-21T21:04:01.1126681Z HANDS L=- R=- bags=0 | room=95508 kind=compound phase=Compound master=False actor=2 step=3 ready=False transition=True down=False
+2026-11-21T21:04:01.1136734Z RELEASE grip: transition under way room=95508 kind=compound phase=Compound master=False actor=2 step=3 ready=False down=False
+2026-11-21T21:04:01.2156131Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=3 ready=False players=0 down=False
+2026-11-21T21:04:01.5466900Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=3 ready=False players=0 down=False
+2026-11-21T21:04:01.7568810Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=3 ready=False players=0 down=False
+2026-11-21T21:04:01.8653339Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=3 ready=False players=0 down=False
+2026-11-21T21:04:02.4969983Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=3 ready=False players=0 down=False
+2026-11-21T21:04:02.7063837Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=3 ready=False players=0 down=False
+2026-11-21T21:04:02.8126655Z STATE Joined room=95204 kind=expedition phase=Departing master=True actor=1 step=3 ready=False players=1/1 down=False
+2026-11-21T21:04:09.1695333Z STATE Joined room=95204 kind=expedition phase=Departing master=True actor=1 step=3 ready=True players=1/1 down=False
+2026-11-21T21:04:09.6125442Z STATE Joined room=95204 kind=expedition phase=Running master=True actor=1 step=3 ready=True players=1/1 down=False
+2026-11-21T21:04:17.6996948Z ACK step=3 alone in 95204 master=True: self player2 #1 [RailShopItemFlashlight#1002(rails-carry-v1) 0.35m dy=-0.20]
+2026-11-21T21:04:17.8128436Z STATE Joined room=95204 kind=expedition phase=Running master=True actor=1 step=4 ready=True players=1/1 down=False
+2026-11-21T21:04:17.8128436Z step=4 round 2 LOAD: public Expedition -> Compound via Back to Compound (carrier alone, master)
+2026-11-21T21:04:20.8696484Z SPAWN test RailCoal view 1003
+2026-11-21T21:04:20.8711569Z SPAWN test RailGoldBar view 1004
+2026-11-21T21:04:20.8711569Z CLEAN destroy own RailShopItemFlashlight#1002(rails-carry-v1)
+2026-11-21T21:04:21.2825428Z GRIP press attempt 1 for two
+2026-11-21T21:04:21.3884328Z HANDS L=RailCoal R=RailGoldBar bags=0 | room=95204 kind=expedition phase=Running master=True actor=1 step=4 ready=True transition=False down=False
+2026-11-21T21:04:22.9057054Z HOLD confirmed two: left=RailCoal#1003(held-carry-test) right=RailGoldBar#1004(held-carry-test)  [via injected grip press] room=95204 kind=expedition phase=Running master=True actor=1 step=4
+2026-11-21T21:04:22.9067132Z ACK step=4 own two held left=RailCoal#1003(held-carry-test) right=RailGoldBar#1004(held-carry-test) 
+2026-11-21T21:04:23.0066329Z STATE Joined room=95204 kind=expedition phase=Running master=True actor=1 step=5 ready=True players=1/1 down=False
+2026-11-21T21:04:23.0076332Z step=5 round 2 GO: public Expedition -> Compound via Back to Compound (carrier alone, master)
+2026-11-21T21:04:23.0076332Z LOADS own #1 in 95204 views [1003,1004]; peer #1 in 95508 views []
+2026-11-21T21:04:26.0773005Z LEAVE Back to Compound
+2026-11-21T21:04:26.1779498Z STATE Leaving room=95204 kind=expedition phase=Running master=True actor=1 step=5 ready=False players=0 down=False
+2026-11-21T21:04:26.1784622Z HANDS L=- R=- bags=0 | room=95204 kind=expedition phase=Running master=True actor=1 step=5 ready=False transition=True down=False
+2026-11-21T21:04:26.1784622Z RELEASE grip: transition under way room=95204 kind=expedition phase=Running master=True actor=1 step=5 ready=False down=False
+2026-11-21T21:04:26.2788033Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=5 ready=False players=0 down=False
+2026-11-21T21:04:26.6110669Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=5 ready=False players=0 down=False
+2026-11-21T21:04:26.7230896Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=5 ready=False players=0 down=False
+2026-11-21T21:04:26.8230889Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=5 ready=False players=0 down=False
+2026-11-21T21:04:27.2535532Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=5 ready=False players=0 down=False
+2026-11-21T21:04:27.4701529Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=5 ready=False players=0 down=False
+2026-11-21T21:04:27.6621799Z STATE Joined room=95508 kind=compound phase=Compound master=False actor=3 step=5 ready=False players=2/2 down=False
+2026-11-21T21:04:28.4882716Z STATE Joined room=95508 kind=compound phase=Compound master=False actor=3 step=5 ready=True players=2/2 down=False
+2026-11-21T21:04:36.5960547Z ACK step=5 alone in 95508 master=False: self player2 #3 [RailGoldBar#3002(rails-carry-v1) 0.38m dy=-0.25; RailCoal#3003(rails-carry-v1) 0.38m dy=-0.10]
+2026-11-21T21:04:44.8299074Z STATE Joined room=95508 kind=compound phase=Compound master=False actor=3 step=6 ready=True players=2/2 down=False
+2026-11-21T21:04:44.8299074Z step=6 round 3 LOAD: Compound -> other public Compound by code (carrier joins the peer)
+2026-11-21T21:04:47.9332360Z ACK step=6 SKIP already in the peer's Compound 95508
+2026-11-21T21:04:48.0433544Z STATE Joined room=95508 kind=compound phase=Compound master=False actor=3 step=8 ready=True players=2/2 down=False
+2026-11-21T21:04:48.0433544Z step=8 round 4 LOAD: public Compound -> public Expedition, both board carrying
+2026-11-21T21:04:51.5776097Z GRIP press attempt 1 for two
+2026-11-21T21:04:51.6820069Z HANDS L=RailCoal R=RailGoldBar bags=0 | room=95508 kind=compound phase=Compound master=False actor=3 step=8 ready=True transition=False down=False
+2026-11-21T21:04:53.2776209Z HOLD confirmed two: left=RailCoal#3003(rails-carry-v1) right=RailGoldBar#3002(rails-carry-v1)  [via injected grip press] room=95508 kind=compound phase=Compound master=False actor=3 step=8
+2026-11-21T21:04:53.2806749Z ACK step=8 own two held left=RailCoal#3003(rails-carry-v1) right=RailGoldBar#3002(rails-carry-v1) ; peer #1 seen holding [ bag#1]
+2026-11-21T21:04:53.3809854Z STATE Joined room=95508 kind=compound phase=Compound master=False actor=3 step=9 ready=True players=2/2 down=False
+2026-11-21T21:04:53.3809854Z step=9 round 4 GO: public Compound -> public Expedition, both board carrying
+2026-11-21T21:04:53.3809854Z LOADS own #3 in 95508 views [3003,3002]; peer #1 in 95508 views [1]
+2026-11-21T21:05:13.7879206Z STATE Leaving room=95508 kind=compound phase=Compound master=False actor=3 step=9 ready=False players=0 down=False
+2026-11-21T21:05:13.7884276Z HANDS L=- R=- bags=0 | room=95508 kind=compound phase=Compound master=False actor=3 step=9 ready=False transition=True down=False
+2026-11-21T21:05:13.7889355Z RELEASE grip: transition under way room=95508 kind=compound phase=Compound master=False actor=3 step=9 ready=False down=False
+2026-11-21T21:05:13.9058335Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=9 ready=False players=0 down=False
+2026-11-21T21:05:14.2297976Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=9 ready=False players=0 down=False
+2026-11-21T21:05:14.3384697Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=9 ready=False players=0 down=False
+2026-11-21T21:05:14.4438993Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=9 ready=False players=0 down=False
+2026-11-21T21:05:14.8639796Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=9 ready=False players=0 down=False
+2026-11-21T21:05:14.9737276Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=9 ready=False players=0 down=False
+2026-11-21T21:05:15.1885143Z STATE Joined room=32869 kind=expedition phase=Departing master=True actor=1 step=9 ready=False players=1/1 down=False
+2026-11-21T21:05:20.1924854Z STATE Joined room=32869 kind=expedition phase=Departing master=True actor=1 step=9 ready=False players=2/2 down=False
+2026-11-21T21:05:22.5983480Z STATE Joined room=32869 kind=expedition phase=Departing master=True actor=1 step=9 ready=True players=2/2 down=False
+2026-11-21T21:05:22.9208928Z STATE Joined room=32869 kind=expedition phase=Departing master=False actor=1 step=9 ready=True players=2/2 down=False
+2026-11-21T21:05:23.2467659Z STATE Joined room=32869 kind=expedition phase=Running master=False actor=1 step=9 ready=True players=2/2 down=False
+2026-11-21T21:05:31.3574633Z ACK step=9 together in 32869 master=False: self player2 #1 [RailCoal#1003(rails-carry-v1) 0.38m dy=-0.10; RailGoldBar#1002(rails-carry-v1) 0.38m dy=-0.25] | peer main #2 [bag#135[2|RailCoal|RailGoldBar|RailShopItemFlashlight|] Dropped 0.29m]
+2026-11-21T21:05:31.4790020Z STATE Joined room=32869 kind=expedition phase=Running master=False actor=1 step=10 ready=True players=2/2 down=False
+2026-11-21T21:05:31.4790020Z step=10 round 5 LOAD: public Expedition -> Compound, failure crew return, both carrying
+2026-11-21T21:05:34.5608042Z CLEAN destroy own RailCoal#1003(rails-carry-v1)
+2026-11-21T21:05:34.5623314Z CLEAN destroy own RailGoldBar#1002(rails-carry-v1)
+2026-11-21T21:05:34.5643597Z SPAWN test bag 2|RailGoldBar||RailCoal|RailShopItemFlashlight
+2026-11-21T21:05:35.2311154Z GRIP press attempt 1 for bag
+2026-11-21T21:05:35.3367439Z HANDS L=- R=- bags=1 | room=32869 kind=expedition phase=Running master=False actor=1 step=10 ready=True transition=False down=False
+2026-11-21T21:05:36.8976215Z HOLD confirmed bag: right=bag#136[2|RailGoldBar||RailCoal|RailShopItemFlashlight]  [via injected grip press] room=32869 kind=expedition phase=Running master=False actor=1 step=10
+2026-11-21T21:05:36.9011281Z ACK step=10 own bag held right=bag#136[2|RailGoldBar||RailCoal|RailShopItemFlashlight] ; peer #2 seen holding [RailShopItemFlashlight#2002(held-carry-test)]
+2026-11-21T21:05:36.9993745Z STATE Joined room=32869 kind=expedition phase=Running master=False actor=1 step=11 ready=True players=2/2 down=False
+2026-11-21T21:05:36.9998874Z step=11 round 5 GO: public Expedition -> Compound, failure crew return, both carrying
+2026-11-21T21:05:36.9998874Z LOADS own #1 in 32869 views [136]; peer #2 in 32869 views [2002]
+2026-11-21T21:05:37.2191284Z STATE Joined room=32869 kind=expedition phase=Ending master=False actor=1 step=11 ready=True players=2/2 down=False
+2026-11-21T21:05:42.3352373Z STATE Joined room=32869 kind=expedition phase=Returning master=False actor=1 step=11 ready=True players=2/2 down=False
+2026-11-21T21:05:46.0294832Z STATE Leaving room=32869 kind=expedition phase=Returning master=False actor=1 step=11 ready=False players=0 down=False
+2026-11-21T21:05:46.0294832Z HANDS L=- R=- bags=0 | room=32869 kind=expedition phase=Returning master=False actor=1 step=11 ready=False transition=True down=False
+2026-11-21T21:05:46.0304831Z RELEASE grip: transition under way room=32869 kind=expedition phase=Returning master=False actor=1 step=11 ready=False down=False
+2026-11-21T21:05:46.1497359Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=11 ready=False players=0 down=False
+2026-11-21T21:05:46.4715664Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=11 ready=False players=0 down=False
+2026-11-21T21:05:46.6791423Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=11 ready=False players=0 down=False
+2026-11-21T21:05:46.7905534Z STATE ConnectedToMasterServer room= kind= phase=Compound master=False actor=-1 step=11 ready=False players=0 down=False
+2026-11-21T21:05:46.8942868Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=11 ready=False players=0 down=False
+2026-11-21T21:05:46.9988512Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=11 ready=False players=0 down=False
+2026-11-21T21:05:47.4344257Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=11 ready=False players=0 down=False
+2026-11-21T21:05:47.6502004Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=11 ready=False players=0 down=False
+2026-11-21T21:05:47.8967946Z STATE Joined room=25398 kind=compound phase=Compound master=True actor=1 step=11 ready=False players=1/1 down=False
+2026-11-21T21:05:48.7519036Z STATE Joined room=25398 kind=compound phase=Compound master=True actor=1 step=11 ready=True players=2/2 down=False
+2026-11-21T21:05:56.9275666Z ACK step=11 together in 25398 master=True: self player2 #1 [bag#1[2|RailGoldBar||RailCoal|RailShopItemFlashlight] Dropped 0.35m] | peer main #2 [RailShopItemFlashlight#2002(rails-carry-v1) 0.29m dy=-0.50]
+2026-11-21T21:05:57.6683106Z STATE Joined room=25398 kind=compound phase=Compound master=True actor=1 step=12 ready=True players=2/2 down=False
+2026-11-21T21:05:57.6698307Z step=12 round 6 LOAD: public Compound -> public Expedition, both board carrying (2nd)
+2026-11-21T21:06:00.7287459Z SPAWN test RailShopItemFlashlight view 1002
+2026-11-21T21:06:00.7287459Z CLEAN destroy own bag view 1 state Dropped
+2026-11-21T21:06:01.1447267Z GRIP press attempt 1 for one
+2026-11-21T21:06:01.2452212Z HANDS L=- R=RailShopItemFlashlight bags=0 | room=25398 kind=compound phase=Compound master=True actor=1 step=12 ready=True transition=False down=False
+2026-11-21T21:06:02.8202588Z HOLD confirmed one: right=RailShopItemFlashlight#1002(held-carry-test)  [via injected grip press] room=25398 kind=compound phase=Compound master=True actor=1 step=12
+2026-11-21T21:06:02.8207886Z ACK step=12 own one held right=RailShopItemFlashlight#1002(held-carry-test) ; peer #2 seen holding [RailCoal#2003(held-carry-test),RailGoldBar#2004(held-carry-test)]
+2026-11-21T21:06:02.9224998Z STATE Joined room=25398 kind=compound phase=Compound master=True actor=1 step=13 ready=True players=2/2 down=False
+2026-11-21T21:06:02.9230240Z step=13 round 6 GO: public Compound -> public Expedition, both board carrying (2nd)
+2026-11-21T21:06:02.9230240Z LOADS own #1 in 25398 views [1002]; peer #2 in 25398 views [2003,2004]
+2026-11-21T21:06:23.4153607Z STATE Leaving room=25398 kind=compound phase=Compound master=True actor=1 step=13 ready=False players=0 down=False
+2026-11-21T21:06:23.4153607Z HANDS L=- R=- bags=0 | room=25398 kind=compound phase=Compound master=True actor=1 step=13 ready=False transition=True down=False
+2026-11-21T21:06:23.4153607Z RELEASE grip: transition under way room=25398 kind=compound phase=Compound master=True actor=1 step=13 ready=False down=False
+2026-11-21T21:06:23.5317814Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=13 ready=False players=0 down=False
+2026-11-21T21:06:23.9459942Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=13 ready=False players=0 down=False
+2026-11-21T21:06:24.0508156Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=13 ready=False players=0 down=False
+2026-11-21T21:06:24.6874275Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=13 ready=False players=0 down=False
+2026-11-21T21:06:25.2091005Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=13 ready=False players=0 down=False
+2026-11-21T21:06:25.3161956Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=13 ready=False players=0 down=False
+2026-11-21T21:06:25.4194601Z STATE Joined room=22965 kind=expedition phase=Departing master=False actor=2 step=13 ready=False players=2/2 down=False
+2026-11-21T21:06:31.3433467Z STATE Joined room=22965 kind=expedition phase=Departing master=False actor=2 step=13 ready=True players=2/2 down=False
+2026-11-21T21:06:31.6691487Z STATE Joined room=22965 kind=expedition phase=Running master=False actor=2 step=13 ready=True players=2/2 down=False
+2026-11-21T21:06:39.8395474Z ACK step=13 together in 22965 master=False: self player2 #2 [RailShopItemFlashlight#2002(rails-carry-v1) 0.35m dy=-0.20] | peer main #1 [RailCoal#1003(rails-carry-v1) 0.33m dy=-0.39; RailGoldBar#1002(rails-carry-v1) 0.33m dy=-0.54]
+2026-11-21T21:06:40.0482083Z STATE Joined room=22965 kind=expedition phase=Running master=False actor=2 step=14 ready=True players=2/2 down=False
+2026-11-21T21:06:40.0492120Z step=14 round 7 LOAD: public Expedition -> Compound, success crew return, both carrying
+2026-11-21T21:06:43.1408213Z SPAWN test RailCoal view 2003
+2026-11-21T21:06:43.1418262Z SPAWN test RailGoldBar view 2004
+2026-11-21T21:06:43.1418262Z CLEAN destroy own RailShopItemFlashlight#2002(rails-carry-v1)
+2026-11-21T21:06:43.5801509Z GRIP press attempt 1 for two
+2026-11-21T21:06:43.6937307Z HANDS L=RailCoal R=RailGoldBar bags=0 | room=22965 kind=expedition phase=Running master=False actor=2 step=14 ready=True transition=False down=False
+2026-11-21T21:06:45.2319835Z HOLD confirmed two: left=RailCoal#2003(held-carry-test) right=RailGoldBar#2004(held-carry-test)  [via injected grip press] room=22965 kind=expedition phase=Running master=False actor=2 step=14
+2026-11-21T21:06:45.2355034Z ACK step=14 own two held left=RailCoal#2003(held-carry-test) right=RailGoldBar#2004(held-carry-test) ; peer #1 seen holding [ bag#135]
+2026-11-21T21:06:45.3406631Z STATE Joined room=22965 kind=expedition phase=Running master=False actor=2 step=15 ready=True players=2/2 down=False
+2026-11-21T21:06:45.3416649Z step=15 round 7 GO: public Expedition -> Compound, success crew return, both carrying
+2026-11-21T21:06:45.3416649Z LOADS own #2 in 22965 views [2003,2004]; peer #1 in 22965 views [135]
+2026-11-21T21:07:05.9756782Z STATE Joined room=22965 kind=expedition phase=Ending master=False actor=2 step=15 ready=True players=2/2 down=False
+2026-11-21T21:07:10.8824008Z STATE Joined room=22965 kind=expedition phase=Returning master=False actor=2 step=15 ready=True players=2/2 down=False
+2026-11-21T21:07:14.8083855Z STATE Joined room=22965 kind=expedition phase=Returning master=True actor=2 step=15 ready=True players=1/1 down=False
+2026-11-21T21:07:15.4888333Z STATE Leaving room=22965 kind=expedition phase=Returning master=True actor=2 step=15 ready=False players=0 down=False
+2026-11-21T21:07:15.4888333Z HANDS L=- R=- bags=0 | room=22965 kind=expedition phase=Returning master=True actor=2 step=15 ready=False transition=True down=False
+2026-11-21T21:07:15.4903505Z RELEASE grip: transition under way room=22965 kind=expedition phase=Returning master=True actor=2 step=15 ready=False down=False
+2026-11-21T21:07:15.5977147Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=15 ready=False players=0 down=False
+2026-11-21T21:07:15.9263316Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=15 ready=False players=0 down=False
+2026-11-21T21:07:16.0277131Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=15 ready=False players=0 down=False
+2026-11-21T21:07:16.3465629Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=15 ready=False players=0 down=False
+2026-11-21T21:07:16.7790897Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=15 ready=False players=0 down=False
+2026-11-21T21:07:16.8875084Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=15 ready=False players=0 down=False
+2026-11-21T21:07:16.9935531Z STATE Joined room=22171 kind=compound phase=Compound master=False actor=2 step=15 ready=False players=2/2 down=False
+2026-11-21T21:07:17.9677316Z STATE Joined room=22171 kind=compound phase=Compound master=False actor=2 step=15 ready=True players=2/2 down=False
+2026-11-21T21:07:26.0560768Z ACK step=15 together in 22171 master=False: self player2 #2 [RailCoal#2003(rails-carry-v1) 0.38m dy=-0.10; RailGoldBar#2002(rails-carry-v1) 0.38m dy=-0.25] | peer main #1 [bag#1[2|RailCoal|RailGoldBar|RailShopItemFlashlight|] Dropped 0.29m]
+2026-11-21T21:07:26.1630134Z STATE Joined room=22171 kind=compound phase=Compound master=False actor=2 step=16 ready=True players=2/2 down=False
+2026-11-21T21:07:26.1645185Z step=16 round 8 LOAD: public Compound -> private staging (create), carrier leaves; stayer checks the old Compound
+2026-11-21T21:07:29.2318290Z CLEAN destroy own RailCoal#2003(rails-carry-v1)
+2026-11-21T21:07:29.2328374Z CLEAN destroy own RailGoldBar#2002(rails-carry-v1)
+2026-11-21T21:07:29.2328374Z LOAD none (clean slate) room=22171 kind=compound phase=Compound master=False actor=2 step=16
+2026-11-21T21:07:30.0641973Z ACK step=16 own none; peer #1 seen holding [ bag#1]
+2026-11-21T21:07:31.5271005Z STATE Joined room=22171 kind=compound phase=Compound master=False actor=2 step=17 ready=True players=2/2 down=False
+2026-11-21T21:07:31.5281027Z step=17 round 8 GO: public Compound -> private staging (create), carrier leaves; stayer checks the old Compound
+2026-11-21T21:07:31.5281027Z LOADS own #2 in 22171 views []; peer #1 in 22171 views [1]
+2026-11-21T21:07:31.8398742Z STATE Joined room=22171 kind=compound phase=Compound master=True actor=2 step=17 ready=True players=1/1 down=False
+2026-11-21T21:07:39.6534470Z ACK step=17 stayer in 22171 master=True: self player2 #2 (no load) nothing [] | old world 22171: 0 of main's items/bag (departed actor #1, originals [1] gone)
+2026-11-21T21:07:41.2395678Z STATE Joined room=22171 kind=compound phase=Compound master=True actor=2 step=18 ready=True players=1/1 down=False
+2026-11-21T21:07:41.2405716Z step=18 round 9 LOAD: public Compound -> private staging (join by code), non-master carrier
+2026-11-21T21:07:44.2881235Z SPAWN test RailCoal view 2004
+2026-11-21T21:07:44.2896304Z SPAWN test RailGoldBar view 2005
+2026-11-21T21:07:44.7021434Z GRIP press attempt 1 for two
+2026-11-21T21:07:44.8027258Z HANDS L=RailCoal R=RailGoldBar bags=0 | room=22171 kind=compound phase=Compound master=True actor=2 step=18 ready=True transition=False down=False
+2026-11-21T21:07:46.3840697Z HOLD confirmed two: left=RailCoal#2004(held-carry-test) right=RailGoldBar#2005(held-carry-test)  [via injected grip press] room=22171 kind=compound phase=Compound master=True actor=2 step=18
+2026-11-21T21:07:46.3855752Z ACK step=18 own two held left=RailCoal#2004(held-carry-test) right=RailGoldBar#2005(held-carry-test) 
+2026-11-21T21:07:46.6906258Z STATE Joined room=22171 kind=compound phase=Compound master=True actor=2 step=19 ready=True players=1/1 down=False
+2026-11-21T21:07:46.6921562Z step=19 round 9 GO: public Compound -> private staging (join by code), non-master carrier
+2026-11-21T21:07:46.6921562Z LOADS own #2 in 22171 views [2004,2005]; peer #1 in 87072 views []
+2026-11-21T21:07:46.7965177Z STATE Leaving room=22171 kind=compound phase=Compound master=True actor=2 step=19 ready=False players=0 down=False
+2026-11-21T21:07:46.7970310Z HANDS L=- R=- bags=0 | room=22171 kind=compound phase=Compound master=True actor=2 step=19 ready=False transition=True down=False
+2026-11-21T21:07:46.7970310Z RELEASE grip: transition under way room=22171 kind=compound phase=Compound master=True actor=2 step=19 ready=False down=False
+2026-11-21T21:07:46.9043022Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=19 ready=False players=0 down=False
+2026-11-21T21:07:47.2219539Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=19 ready=False players=0 down=False
+2026-11-21T21:07:47.3264224Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=19 ready=False players=0 down=False
+2026-11-21T21:07:47.4356311Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=19 ready=False players=0 down=False
+2026-11-21T21:07:47.9522639Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=19 ready=False players=0 down=False
+2026-11-21T21:07:48.0578723Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=19 ready=False players=0 down=False
+2026-11-21T21:07:48.2641666Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=19 ready=True players=2/2 down=False
+2026-11-21T21:07:56.4036352Z ACK step=19 together in 87072 master=False: self player2 #2 [RailGoldBar#2002(rails-carry-v1) 0.38m dy=-0.25; RailCoal#2003(rails-carry-v1) 0.38m dy=-0.10] | peer main #1 (no load) nothing []
+2026-11-21T21:07:56.5051074Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=20 ready=True players=2/2 down=False
+2026-11-21T21:07:56.5051074Z step=20 round 10 LOAD: private departure (staging -> Expedition, same room)
+2026-11-21T21:07:59.5623361Z CLEAN destroy own RailGoldBar#2002(rails-carry-v1)
+2026-11-21T21:07:59.5633449Z CLEAN destroy own RailCoal#2003(rails-carry-v1)
+2026-11-21T21:07:59.5638492Z SPAWN test bag 2|RailGoldBar||RailCoal|RailShopItemFlashlight
+2026-11-21T21:08:00.1833454Z GRIP press attempt 1 for bag
+2026-11-21T21:08:00.2910809Z HANDS L=- R=- bags=1 | room=87072 kind=private phase=Staging master=False actor=2 step=20 ready=True transition=False down=False
+2026-11-21T21:08:01.8802926Z HOLD confirmed bag: right=bag#2[2|RailGoldBar||RailCoal|RailShopItemFlashlight]  [via injected grip press] room=87072 kind=private phase=Staging master=False actor=2 step=20
+2026-11-21T21:08:01.8808001Z ACK step=20 own bag held right=bag#2[2|RailGoldBar||RailCoal|RailShopItemFlashlight] ; peer #1 seen holding [RailShopItemFlashlight#1002(held-carry-test)]
+2026-11-21T21:08:01.9823332Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=21 ready=True players=2/2 down=False
+2026-11-21T21:08:01.9828484Z step=21 round 10 GO: private departure (staging -> Expedition, same room)
+2026-11-21T21:08:01.9833649Z LOADS own #2 in 87072 views [2]; peer #1 in 87072 views [1002]
+2026-11-21T21:08:05.2672482Z STATE Joined room=87072 kind=private phase=Departing master=False actor=2 step=21 ready=False players=2/2 down=False
+2026-11-21T21:08:05.2672482Z HANDS L=- R=- bags=0 | room=87072 kind=private phase=Departing master=False actor=2 step=21 ready=False transition=True down=False
+2026-11-21T21:08:05.2677622Z RELEASE grip: transition under way room=87072 kind=private phase=Departing master=False actor=2 step=21 ready=False down=False
+2026-11-21T21:08:10.6815720Z STATE Joined room=87072 kind=private phase=Departing master=False actor=2 step=21 ready=True players=2/2 down=False
+2026-11-21T21:08:11.1265292Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=21 ready=True players=2/2 down=False
+2026-11-21T21:08:19.2043728Z ACK step=21 together in 87072 master=False: self player2 #2 [bag#127[2|RailGoldBar||RailCoal|RailShopItemFlashlight] Dropped 0.35m] | peer main #1 [RailShopItemFlashlight#1003(rails-carry-v1) 0.29m dy=-0.49]
+2026-11-21T21:08:19.3045724Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=22 ready=True players=2/2 down=False
+2026-11-21T21:08:19.3050785Z step=22 round 11 LOAD: private failure return (Expedition -> staging, same room)
+2026-11-21T21:08:22.3868698Z SPAWN test RailShopItemFlashlight view 2004
+2026-11-21T21:08:22.3868698Z CLEAN destroy own bag view 127 state Dropped
+2026-11-21T21:08:22.8198509Z GRIP press attempt 1 for one
+2026-11-21T21:08:22.9352780Z HANDS L=- R=RailShopItemFlashlight bags=0 | room=87072 kind=private phase=Running master=False actor=2 step=22 ready=True transition=False down=False
+2026-11-21T21:08:24.5491460Z HOLD confirmed one: right=RailShopItemFlashlight#2004(held-carry-test)  [via injected grip press] room=87072 kind=private phase=Running master=False actor=2 step=22
+2026-11-21T21:08:24.5516614Z ACK step=22 own one held right=RailShopItemFlashlight#2004(held-carry-test) ; peer #1 seen holding [RailCoal#1004(held-carry-test),RailGoldBar#1005(held-carry-test)]
+2026-11-21T21:08:24.6552820Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=23 ready=True players=2/2 down=False
+2026-11-21T21:08:24.6552820Z step=23 round 11 GO: private failure return (Expedition -> staging, same room)
+2026-11-21T21:08:24.6557969Z LOADS own #2 in 87072 views [2004]; peer #1 in 87072 views [1004,1005]
+2026-11-21T21:08:28.0501113Z STATE Joined room=87072 kind=private phase=Ending master=False actor=2 step=23 ready=True players=2/2 down=False
+2026-11-21T21:08:33.0342766Z STATE Joined room=87072 kind=private phase=Returning master=False actor=2 step=23 ready=True players=2/2 down=False
+2026-11-21T21:08:35.2100980Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=23 ready=False players=2/2 down=False
+2026-11-21T21:08:35.2116110Z HANDS L=- R=- bags=0 | room=87072 kind=private phase=Staging master=False actor=2 step=23 ready=False transition=True down=False
+2026-11-21T21:08:35.2116110Z RELEASE grip: transition under way room=87072 kind=private phase=Staging master=False actor=2 step=23 ready=False down=False
+2026-11-21T21:08:37.7041096Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=23 ready=True players=2/2 down=False
+2026-11-21T21:08:45.7576087Z ACK step=23 together in 87072 master=False: self player2 #2 [RailShopItemFlashlight#2005(rails-carry-v1) 0.35m dy=-0.21] | peer main #1 [RailCoal#1007(rails-carry-v1) 0.33m dy=-0.39; RailGoldBar#1006(rails-carry-v1) 0.33m dy=-0.54]
+2026-11-21T21:08:45.8594975Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=24 ready=True players=2/2 down=False
+2026-11-21T21:08:45.8604978Z step=24 round 12 LOAD: private departure (2nd)
+2026-11-21T21:08:48.9079376Z SPAWN test RailCoal view 2006
+2026-11-21T21:08:48.9094539Z SPAWN test RailGoldBar view 2007
+2026-11-21T21:08:48.9094539Z CLEAN destroy own RailShopItemFlashlight#2005(rails-carry-v1)
+2026-11-21T21:08:49.3276419Z GRIP press attempt 1 for two
+2026-11-21T21:08:49.4374005Z HANDS L=RailCoal R=RailGoldBar bags=0 | room=87072 kind=private phase=Staging master=False actor=2 step=24 ready=True transition=False down=False
+2026-11-21T21:08:51.0055162Z HOLD confirmed two: left=RailCoal#2006(held-carry-test) right=RailGoldBar#2007(held-carry-test)  [via injected grip press] room=87072 kind=private phase=Staging master=False actor=2 step=24
+2026-11-21T21:08:51.0055162Z ACK step=24 own two held left=RailCoal#2006(held-carry-test) right=RailGoldBar#2007(held-carry-test) ; peer #1 seen holding [ bag#128]
+2026-11-21T21:08:51.1084044Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=25 ready=True players=2/2 down=False
+2026-11-21T21:08:51.1084044Z step=25 round 12 GO: private departure (2nd)
+2026-11-21T21:08:51.1094054Z LOADS own #2 in 87072 views [2006,2007]; peer #1 in 87072 views [128]
+2026-11-21T21:08:54.4713809Z STATE Joined room=87072 kind=private phase=Departing master=False actor=2 step=25 ready=False players=2/2 down=False
+2026-11-21T21:08:54.4713809Z HANDS L=- R=- bags=0 | room=87072 kind=private phase=Departing master=False actor=2 step=25 ready=False transition=True down=False
+2026-11-21T21:08:54.4718852Z RELEASE grip: transition under way room=87072 kind=private phase=Departing master=False actor=2 step=25 ready=False down=False
+2026-11-21T21:08:59.8437965Z STATE Joined room=87072 kind=private phase=Departing master=False actor=2 step=25 ready=True players=2/2 down=False
+2026-11-21T21:09:00.1724429Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=25 ready=True players=2/2 down=False
+2026-11-21T21:09:08.3637659Z ACK step=25 together in 87072 master=False: self player2 #2 [RailGoldBar#2008(rails-carry-v1) 0.38m dy=-0.25; RailCoal#2009(rails-carry-v1) 0.38m dy=-0.10] | peer main #1 [bag#253[2|RailCoal|RailGoldBar|RailShopItemFlashlight|] Dropped 0.29m]
+2026-11-21T21:09:08.4619200Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=26 ready=True players=2/2 down=False
+2026-11-21T21:09:08.4629250Z step=26 round 13 LOAD: private success return (Expedition -> staging, same room)
+2026-11-21T21:09:11.5088127Z CLEAN destroy own RailGoldBar#2008(rails-carry-v1)
+2026-11-21T21:09:11.5093460Z CLEAN destroy own RailCoal#2009(rails-carry-v1)
+2026-11-21T21:09:11.5093460Z SPAWN test bag 2|RailGoldBar||RailCoal|RailShopItemFlashlight
+2026-11-21T21:09:12.1594785Z GRIP press attempt 1 for bag
+2026-11-21T21:09:12.2702919Z HANDS L=- R=- bags=1 | room=87072 kind=private phase=Running master=False actor=2 step=26 ready=True transition=False down=False
+2026-11-21T21:09:13.8081887Z HOLD confirmed bag: right=bag#254[2|RailGoldBar||RailCoal|RailShopItemFlashlight]  [via injected grip press] room=87072 kind=private phase=Running master=False actor=2 step=26
+2026-11-21T21:09:13.8102046Z ACK step=26 own bag held right=bag#254[2|RailGoldBar||RailCoal|RailShopItemFlashlight] ; peer #1 seen holding [RailShopItemFlashlight#1008(held-carry-test)]
+2026-11-21T21:09:13.9143011Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=27 ready=True players=2/2 down=False
+2026-11-21T21:09:13.9143011Z step=27 round 13 GO: private success return (Expedition -> staging, same room)
+2026-11-21T21:09:13.9158084Z LOADS own #2 in 87072 views [254]; peer #1 in 87072 views [1008]
+2026-11-21T21:09:41.5691839Z STATE Joined room=87072 kind=private phase=Ending master=False actor=2 step=27 ready=True players=2/2 down=False
+2026-11-21T21:09:41.5701912Z HANDS L=- R=- bags=0 | room=87072 kind=private phase=Ending master=False actor=2 step=27 ready=True transition=False down=False
+2026-11-21T21:09:41.6822896Z HANDS L=- R=- bags=1 | room=87072 kind=private phase=Ending master=False actor=2 step=27 ready=True transition=False down=False
+2026-11-21T21:09:47.3915876Z STATE Joined room=87072 kind=private phase=Returning master=False actor=2 step=27 ready=True players=2/2 down=False
+2026-11-21T21:09:49.5760042Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=27 ready=False players=2/2 down=False
+2026-11-21T21:09:49.5765271Z HANDS L=- R=- bags=0 | room=87072 kind=private phase=Staging master=False actor=2 step=27 ready=False transition=True down=False
+2026-11-21T21:09:49.5765271Z RELEASE grip: transition under way room=87072 kind=private phase=Staging master=False actor=2 step=27 ready=False down=False
+2026-11-21T21:09:51.9547552Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=27 ready=True players=2/2 down=False
+2026-11-21T21:10:00.0512159Z ACK step=27 together in 87072 master=False: self player2 #2 [bag#255[2|RailGoldBar||RailCoal|RailShopItemFlashlight] Dropped 0.35m] | peer main #1 [RailShopItemFlashlight#1009(rails-carry-v1) 0.29m dy=-0.50]
+2026-11-21T21:10:00.1514849Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=28 ready=True players=2/2 down=False
+2026-11-21T21:10:00.1514849Z step=28 round 14 LOAD: private departure (3rd)
+2026-11-21T21:10:03.2198781Z SPAWN test RailShopItemFlashlight view 2010
+2026-11-21T21:10:03.2198781Z CLEAN destroy own bag view 255 state Dropped
+2026-11-21T21:10:03.6509242Z GRIP press attempt 1 for one
+2026-11-21T21:10:03.7614376Z HANDS L=- R=RailShopItemFlashlight bags=0 | room=87072 kind=private phase=Staging master=False actor=2 step=28 ready=True transition=False down=False
+2026-11-21T21:10:05.3165207Z HOLD confirmed one: right=RailShopItemFlashlight#2010(held-carry-test)  [via injected grip press] room=87072 kind=private phase=Staging master=False actor=2 step=28
+2026-11-21T21:10:05.3165207Z ACK step=28 own one held right=RailShopItemFlashlight#2010(held-carry-test) ; peer #1 seen holding [RailGoldBar#1011(held-carry-test),RailCoal#1010(held-carry-test)]
+2026-11-21T21:10:05.5271529Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=29 ready=True players=2/2 down=False
+2026-11-21T21:10:05.5271529Z step=29 round 14 GO: private departure (3rd)
+2026-11-21T21:10:05.5286567Z LOADS own #2 in 87072 views [2010]; peer #1 in 87072 views [1010,1011]
+2026-11-21T21:10:08.7805210Z STATE Joined room=87072 kind=private phase=Departing master=False actor=2 step=29 ready=False players=2/2 down=False
+2026-11-21T21:10:08.7805210Z HANDS L=- R=- bags=0 | room=87072 kind=private phase=Departing master=False actor=2 step=29 ready=False transition=True down=False
+2026-11-21T21:10:08.7805210Z RELEASE grip: transition under way room=87072 kind=private phase=Departing master=False actor=2 step=29 ready=False down=False
+2026-11-21T21:10:14.1599710Z STATE Joined room=87072 kind=private phase=Departing master=False actor=2 step=29 ready=True players=2/2 down=False
+2026-11-21T21:10:14.5883495Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=29 ready=True players=2/2 down=False
+2026-11-21T21:10:22.7679877Z ACK step=29 together in 87072 master=False: self player2 #2 [RailShopItemFlashlight#2011(rails-carry-v1) 0.35m dy=-0.20] | peer main #1 [RailGoldBar#1012(rails-carry-v1) 0.33m dy=-0.54; RailCoal#1013(rails-carry-v1) 0.33m dy=-0.39]
+2026-11-21T21:10:22.8643846Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=30 ready=True players=2/2 down=False
+2026-11-21T21:10:22.8653838Z step=30 round 15 LOAD: private return with the non-master carrier downed (downed carries nothing)
+2026-11-21T21:10:25.9123148Z SPAWN test RailCoal view 2012
+2026-11-21T21:10:25.9128401Z SPAWN test RailGoldBar view 2013
+2026-11-21T21:10:25.9128401Z CLEAN destroy own RailShopItemFlashlight#2011(rails-carry-v1)
+2026-11-21T21:10:26.3443600Z GRIP press attempt 1 for two
+2026-11-21T21:10:26.4610602Z HANDS L=RailCoal R=RailGoldBar bags=0 | room=87072 kind=private phase=Running master=False actor=2 step=30 ready=True transition=False down=False
+2026-11-21T21:10:27.9874262Z HOLD confirmed two: left=RailCoal#2012(held-carry-test) right=RailGoldBar#2013(held-carry-test)  [via injected grip press] room=87072 kind=private phase=Running master=False actor=2 step=30
+2026-11-21T21:10:27.9894388Z ACK step=30 own two held left=RailCoal#2012(held-carry-test) right=RailGoldBar#2013(held-carry-test) ; peer #1 seen holding [RailShopItemFlashlight#1014(held-carry-test)]
+2026-11-21T21:10:28.1928906Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=31 ready=True players=2/2 down=False
+2026-11-21T21:10:28.1934016Z step=31 round 15 GO: private return with the non-master carrier downed (downed carries nothing)
+2026-11-21T21:10:28.1934016Z LOADS own #2 in 87072 views [2012,2013]; peer #1 in 87072 views [1014]
+2026-11-21T21:10:28.1944063Z WARP off train holding two
+2026-11-21T21:10:29.6954761Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=31 ready=True players=2/2 down=True
+2026-11-21T21:10:29.6964811Z HANDS L=- R=- bags=0 | room=87072 kind=private phase=Running master=False actor=2 step=31 ready=True transition=False down=True
+2026-11-21T21:10:29.6969884Z RELEASE grip: transition under way room=87072 kind=private phase=Running master=False actor=2 step=31 ready=True down=True
+2026-11-21T21:10:29.6975035Z DOWN confirmed room=87072 kind=private phase=Running master=False actor=2 step=31
+2026-11-21T21:10:31.5177613Z STATE Joined room=87072 kind=private phase=Ending master=False actor=2 step=31 ready=True players=2/2 down=True
+2026-11-21T21:10:36.5415846Z STATE Joined room=87072 kind=private phase=Returning master=False actor=2 step=31 ready=True players=2/2 down=True
+2026-11-21T21:10:38.6311293Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=31 ready=False players=2/2 down=False
+2026-11-21T21:10:41.1311518Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=31 ready=True players=2/2 down=False
+2026-11-21T21:10:49.1608920Z ACK step=31 together in 87072 master=False: self player2 #2 downed: 0 carried copies, 0 bags; originals still in room: [] other own items: [] | peer main #1 [RailShopItemFlashlight#1015(rails-carry-v1) 0.29m dy=-0.50]
+2026-11-21T21:10:49.2651866Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=32 ready=True players=2/2 down=False
+2026-11-21T21:10:49.2651866Z step=32 round 16 LOAD: private departure (4th)
+2026-11-21T21:10:52.3409331Z SPAWN test RailShopItemFlashlight view 2014
+2026-11-21T21:10:52.7599732Z GRIP press attempt 1 for one
+2026-11-21T21:10:52.8620386Z HANDS L=- R=RailShopItemFlashlight bags=0 | room=87072 kind=private phase=Staging master=False actor=2 step=32 ready=True transition=False down=False
+2026-11-21T21:10:54.4234791Z HOLD confirmed one: right=RailShopItemFlashlight#2014(held-carry-test)  [via injected grip press] room=87072 kind=private phase=Staging master=False actor=2 step=32
+2026-11-21T21:10:54.4234791Z ACK step=32 own one held right=RailShopItemFlashlight#2014(held-carry-test) ; peer #1 seen holding [ bag#380]
+2026-11-21T21:10:54.5288658Z STATE Joined room=87072 kind=private phase=Staging master=False actor=2 step=33 ready=True players=2/2 down=False
+2026-11-21T21:10:54.5298744Z step=33 round 16 GO: private departure (4th)
+2026-11-21T21:10:54.5303791Z LOADS own #2 in 87072 views [2014]; peer #1 in 87072 views [380]
+2026-11-21T21:10:57.7881012Z STATE Joined room=87072 kind=private phase=Departing master=False actor=2 step=33 ready=False players=2/2 down=False
+2026-11-21T21:10:57.7886225Z HANDS L=- R=- bags=0 | room=87072 kind=private phase=Departing master=False actor=2 step=33 ready=False transition=True down=False
+2026-11-21T21:10:57.7886225Z RELEASE grip: transition under way room=87072 kind=private phase=Departing master=False actor=2 step=33 ready=False down=False
+2026-11-21T21:11:03.1906530Z STATE Joined room=87072 kind=private phase=Departing master=False actor=2 step=33 ready=True players=2/2 down=False
+2026-11-21T21:11:03.5281612Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=33 ready=True players=2/2 down=False
+2026-11-21T21:11:11.6359675Z ACK step=33 together in 87072 master=False: self player2 #2 [RailShopItemFlashlight#2015(rails-carry-v1) 0.35m dy=-0.20] | peer main #1 [bag#505[2|RailCoal|RailGoldBar|RailShopItemFlashlight|] Dropped 0.29m]
+2026-11-21T21:11:11.7389986Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=34 ready=True players=2/2 down=False
+2026-11-21T21:11:11.7389986Z step=34 round 17 LOAD: private Expedition -> public Compound via Back to Compound mid-run; stayer (master) checks the old Expedition
+2026-11-21T21:11:14.7900054Z CLEAN destroy own RailShopItemFlashlight#2015(rails-carry-v1)
+2026-11-21T21:11:14.7900054Z SPAWN test bag 2|RailGoldBar||RailCoal|RailShopItemFlashlight
+2026-11-21T21:11:15.4431422Z GRIP press attempt 1 for bag
+2026-11-21T21:11:15.5483334Z HANDS L=- R=- bags=1 | room=87072 kind=private phase=Running master=False actor=2 step=34 ready=True transition=False down=False
+2026-11-21T21:11:17.0765314Z HOLD confirmed bag: right=bag#506[2|RailGoldBar||RailCoal|RailShopItemFlashlight]  [via injected grip press] room=87072 kind=private phase=Running master=False actor=2 step=34
+2026-11-21T21:11:17.0770500Z ACK step=34 own bag held right=bag#506[2|RailGoldBar||RailCoal|RailShopItemFlashlight] 
+2026-11-21T21:11:17.1770104Z STATE Joined room=87072 kind=private phase=Running master=False actor=2 step=35 ready=True players=2/2 down=False
+2026-11-21T21:11:17.1780113Z step=35 round 17 GO: private Expedition -> public Compound via Back to Compound mid-run; stayer (master) checks the old Expedition
+2026-11-21T21:11:17.1785159Z LOADS own #2 in 87072 views [506]; peer #1 in 87072 views []
+2026-11-21T21:11:20.2138927Z LEAVE Back to Compound mid-run
+2026-11-21T21:11:20.3169604Z STATE Leaving room=87072 kind=private phase=Running master=False actor=2 step=35 ready=False players=0 down=False
+2026-11-21T21:11:20.3179657Z HANDS L=- R=- bags=0 | room=87072 kind=private phase=Running master=False actor=2 step=35 ready=False transition=True down=False
+2026-11-21T21:11:20.3179657Z RELEASE grip: transition under way room=87072 kind=private phase=Running master=False actor=2 step=35 ready=False down=False
+2026-11-21T21:11:20.4226501Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=35 ready=False players=0 down=False
+2026-11-21T21:11:21.1562058Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=35 ready=False players=0 down=False
+2026-11-21T21:11:21.2754587Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=35 ready=False players=0 down=False
+2026-11-21T21:11:21.5936172Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=35 ready=False players=0 down=False
+2026-11-21T21:11:21.9107416Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=35 ready=False players=0 down=False
+2026-11-21T21:11:22.0222800Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=35 ready=False players=0 down=False
+2026-11-21T21:11:22.3122982Z STATE Joined room=87145 kind=compound phase=Compound master=True actor=1 step=35 ready=False players=1/1 down=False
+2026-11-21T21:11:23.1424083Z STATE Joined room=87145 kind=compound phase=Compound master=True actor=1 step=35 ready=True players=1/1 down=False
+2026-11-21T21:11:31.2569210Z ACK step=35 alone in 87145 master=True: self player2 #1 [bag#1[2|RailGoldBar||RailCoal|RailShopItemFlashlight] Dropped 0.35m]
+2026-11-21T21:11:31.3572159Z STATE Joined room=87145 kind=compound phase=Compound master=True actor=1 step=36 ready=True players=1/1 down=False
+2026-11-21T21:11:31.3572159Z step=36
+2026-11-21T21:11:31.3588304Z COMPLETE all held-carry rounds passed (role player2)
+2026-11-21T21:11:33.3878229Z RESTORED account loadout saves (run finished)
