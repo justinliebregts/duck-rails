@@ -1,0 +1,147 @@
+2026-11-21T20:44:13.6229516Z START loadout two-client playtest; Unity 6000.3.24f1 role=main privateCode=64833
+2026-11-21T20:44:13.6239563Z STATE PeerCreated room= kind= phase=Compound request=False step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:13.6244627Z step=0
+2026-11-21T20:44:18.8044391Z STATE ConnectingToNameServer room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:19.0554289Z STATE Authenticating room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:19.2840348Z STATE ConnectingToMasterServer room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:19.6397987Z STATE Authenticating room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:19.7591271Z STATE Joining room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:20.0006628Z STATE ConnectingToGameServer room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:20.4299794Z STATE Authenticating room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:20.6460505Z STATE Joining room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:20.7544097Z STATE Joined room=45388 kind=compound phase=Compound request=True step=0 ready=False players=1/1 actor=1
+2026-11-21T20:44:21.8451745Z STATE Joined room=45388 kind=compound phase=Compound request=False step=0 ready=True players=1/1 actor=1
+2026-11-21T20:44:23.6561996Z STATE Joined room=45388 kind=compound phase=Compound request=False step=0 ready=True players=2/2 actor=1
+2026-11-21T20:44:24.9357805Z BACKUP 6 of 9 saved loadout keys present for this account
+2026-11-21T20:44:24.9372857Z CLEARED own loadout room=45388 kind=compound phase=Compound request=False step=0
+2026-11-21T20:44:25.1510444Z STATE Leaving room=45388 kind=compound phase=Compound request=True step=0 ready=False players=0 actor=1
+2026-11-21T20:44:25.2527553Z STATE ConnectingToMasterServer room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:25.6759487Z STATE Authenticating room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:25.7806415Z STATE Joining room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:25.9960194Z STATE ConnectingToGameServer room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:26.4177182Z STATE Authenticating room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:26.5227913Z STATE Joining room= kind= phase=Compound request=True step=0 ready=False players=0 actor=-1
+2026-11-21T20:44:26.7327703Z STATE Joined room=15057 kind=compound phase=Compound request=False step=0 ready=True players=1/1 actor=1
+2026-11-21T20:44:34.9246051Z ACK step=0 account loadout backed up and cleared
+2026-11-21T20:44:35.0312705Z STATE Joined room=15057 kind=compound phase=Compound request=False step=1 ready=True players=1/1 actor=1
+2026-11-21T20:44:35.0312705Z step=1
+2026-11-21T20:44:38.6378656Z STATE Joined room=15057 kind=compound phase=Compound request=False step=1 ready=True players=2/2 actor=1
+2026-11-21T20:44:38.7431789Z ACK step=1 gathered in 15057
+2026-11-21T20:44:41.9291707Z STATE Joined room=15057 kind=compound phase=Compound request=False step=2 ready=True players=2/2 actor=1
+2026-11-21T20:44:41.9291707Z step=2
+2026-11-21T20:44:52.2793610Z ACK step=2 bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 2002 on #2 (0.000 m); goggles view 2003 on #2 (0.000 m)
+2026-11-21T20:44:52.2852906Z CHECK baseline: public Compound, mover wears test loadout PASS | observer(main): bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 2002 on #2 (0.000 m); goggles view 2003 on #2 (0.000 m) | mover(player2): wearing bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 2002; RailGoggles view 2003 (actor #2, room 15057)
+2026-11-21T20:44:52.3804257Z STATE Joined room=15057 kind=compound phase=Compound request=False step=3 ready=True players=2/2 actor=1
+2026-11-21T20:44:52.3804257Z step=3
+2026-11-21T20:45:13.3268623Z STATE Joined room=15057 kind=compound phase=Compound request=False step=3 ready=True players=1/1 actor=1
+2026-11-21T20:45:29.4390846Z ACK step=3 stayed in 15057: no test bag, helmet or goggles copy in room 15057; mover absent
+2026-11-21T20:45:29.4441190Z CHECK Compound -> public Expedition (mover departs alone; observer checks the old Compound) PASS | observer(main): stayed in 15057: no test bag, helmet or goggles copy in room 15057; mover absent | mover(player2): aboard public expedition 48419: wearing bag view 82 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 83; RailGoggles view 84 (actor #1, room 48419)
+2026-11-21T20:45:29.5441309Z STATE Joined room=15057 kind=compound phase=Compound request=False step=4 ready=True players=1/1 actor=1
+2026-11-21T20:45:29.5446656Z step=4
+2026-11-21T20:45:43.6939727Z STATE Joined room=15057 kind=compound phase=Compound request=False step=4 ready=True players=2/2 actor=1
+2026-11-21T20:45:52.7992044Z ACK step=4 bag view 2 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #3 (0.41 m from head); helmet view 3 on #3 (0.000 m); goggles view 4 on #3 (0.000 m)
+2026-11-21T20:45:52.8037391Z CHECK Expedition -> Compound via crew return (mover), observed in the Compound PASS | observer(main): bag view 2 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #3 (0.41 m from head); helmet view 3 on #3 (0.000 m); goggles view 4 on #3 (0.000 m) | mover(player2): in observer's Compound 15057 (crew return landed here): wearing bag view 2 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 3; RailGoggles view 4 (actor #3, room 15057)
+2026-11-21T20:45:52.9064438Z STATE Joined room=15057 kind=compound phase=Compound request=False step=5 ready=True players=2/2 actor=1
+2026-11-21T20:45:52.9064438Z step=5
+2026-11-21T20:46:13.3560891Z STATE Leaving room=15057 kind=compound phase=Compound request=True step=5 ready=False players=0 actor=1
+2026-11-21T20:46:13.4666524Z STATE ConnectingToMasterServer room= kind= phase=Compound request=True step=5 ready=False players=0 actor=-1
+2026-11-21T20:46:13.7728547Z STATE Authenticating room= kind= phase=Compound request=True step=5 ready=False players=0 actor=-1
+2026-11-21T20:46:13.8821445Z STATE Joining room= kind= phase=Compound request=True step=5 ready=False players=0 actor=-1
+2026-11-21T20:46:13.9938850Z STATE ConnectingToGameServer room= kind= phase=Compound request=True step=5 ready=False players=0 actor=-1
+2026-11-21T20:46:14.4173899Z STATE Authenticating room= kind= phase=Compound request=True step=5 ready=False players=0 actor=-1
+2026-11-21T20:46:14.6287655Z STATE Joining room= kind= phase=Compound request=True step=5 ready=False players=0 actor=-1
+2026-11-21T20:46:14.7358771Z STATE Joined room=38849 kind=expedition phase=Departing request=True step=5 ready=False players=1/1 actor=1
+2026-11-21T20:46:17.9883932Z STATE Joined room=38849 kind=expedition phase=Departing request=False step=5 ready=False players=2/2 actor=1
+2026-11-21T20:46:20.4035066Z STATE Joined room=38849 kind=expedition phase=Departing request=False step=5 ready=True players=2/2 actor=1
+2026-11-21T20:46:21.3208733Z STATE Joined room=38849 kind=expedition phase=Running request=False step=5 ready=True players=2/2 actor=1
+2026-11-21T20:46:29.4531574Z ACK step=5 bag view 119 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 120 on #2 (0.000 m); goggles view 121 on #2 (0.000 m)
+2026-11-21T20:46:29.4592133Z CHECK Compound -> public Expedition (crew boards together) PASS | observer(main): bag view 119 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 120 on #2 (0.000 m); goggles view 121 on #2 (0.000 m) | mover(player2): wearing bag view 119 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 120; RailGoggles view 121 (actor #2, room 38849)
+2026-11-21T20:46:29.5517062Z STATE Joined room=38849 kind=expedition phase=Running request=False step=6 ready=True players=2/2 actor=1
+2026-11-21T20:46:29.5522223Z step=6
+2026-11-21T20:46:29.7668120Z STATE Joined room=38849 kind=expedition phase=Ending request=False step=6 ready=True players=2/2 actor=1
+2026-11-21T20:46:34.7582814Z STATE Joined room=38849 kind=expedition phase=Returning request=False step=6 ready=True players=2/2 actor=1
+2026-11-21T20:46:38.3299269Z STATE Leaving room=38849 kind=expedition phase=Returning request=True step=6 ready=False players=0 actor=1
+2026-11-21T20:46:38.4763533Z STATE ConnectingToMasterServer room= kind= phase=Compound request=True step=6 ready=False players=0 actor=-1
+2026-11-21T20:46:38.9069324Z STATE Authenticating room= kind= phase=Compound request=True step=6 ready=False players=0 actor=-1
+2026-11-21T20:46:39.0218645Z STATE Joining room= kind= phase=Compound request=True step=6 ready=False players=0 actor=-1
+2026-11-21T20:46:39.1366718Z STATE ConnectedToMasterServer room= kind= phase=Compound request=False step=6 ready=False players=0 actor=-1
+2026-11-21T20:46:39.2444929Z STATE Joining room= kind= phase=Compound request=True step=6 ready=False players=0 actor=-1
+2026-11-21T20:46:39.3555942Z STATE ConnectingToGameServer room= kind= phase=Compound request=True step=6 ready=False players=0 actor=-1
+2026-11-21T20:46:39.6696616Z STATE Authenticating room= kind= phase=Compound request=True step=6 ready=False players=0 actor=-1
+2026-11-21T20:46:39.7771362Z STATE Joining room= kind= phase=Compound request=True step=6 ready=False players=0 actor=-1
+2026-11-21T20:46:40.0805505Z STATE Joined room=07835 kind=compound phase=Compound request=True step=6 ready=False players=1/1 actor=1
+2026-11-21T20:46:40.9707413Z STATE Joined room=07835 kind=compound phase=Compound request=False step=6 ready=True players=2/2 actor=1
+2026-11-21T20:46:49.7667038Z ACK step=6 bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 2 on #2 (0.000 m); goggles view 3 on #2 (0.000 m)
+2026-11-21T20:46:49.7712590Z CHECK Expedition -> Compound via crew return (together) PASS | observer(main): bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 2 on #2 (0.000 m); goggles view 3 on #2 (0.000 m) | mover(player2): wearing bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 2; RailGoggles view 3 (actor #2, room 07835)
+2026-11-21T20:46:49.8798092Z STATE Joined room=07835 kind=compound phase=Compound request=False step=7 ready=True players=2/2 actor=1
+2026-11-21T20:46:49.8798092Z step=7
+2026-11-21T20:46:49.9847119Z STATE Leaving room=07835 kind=compound phase=Compound request=True step=7 ready=False players=0 actor=1
+2026-11-21T20:46:50.0965157Z STATE ConnectingToMasterServer room= kind= phase=Compound request=True step=7 ready=False players=0 actor=-1
+2026-11-21T20:46:50.4244111Z STATE Authenticating room= kind= phase=Compound request=True step=7 ready=False players=0 actor=-1
+2026-11-21T20:46:50.5299575Z STATE Joining room= kind= phase=Compound request=True step=7 ready=False players=0 actor=-1
+2026-11-21T20:46:50.6347355Z STATE ConnectingToGameServer room= kind= phase=Compound request=True step=7 ready=False players=0 actor=-1
+2026-11-21T20:46:51.0604143Z STATE Authenticating room= kind= phase=Compound request=True step=7 ready=False players=0 actor=-1
+2026-11-21T20:46:51.2655279Z STATE Joining room= kind= phase=Compound request=True step=7 ready=False players=0 actor=-1
+2026-11-21T20:46:51.3757764Z STATE Joined room=64833 kind=private phase=Staging request=False step=7 ready=True players=1/1 actor=1
+2026-11-21T20:46:54.4394389Z ACK step=7 created private 64833
+2026-11-21T20:46:55.0610250Z STATE Joined room=64833 kind=private phase=Staging request=False step=8 ready=True players=1/1 actor=1
+2026-11-21T20:46:55.0610250Z step=8
+2026-11-21T20:46:56.4478968Z STATE Joined room=64833 kind=private phase=Staging request=False step=8 ready=True players=2/2 actor=1
+2026-11-21T20:47:04.6061534Z ACK step=8 bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 2 on #2 (0.000 m); goggles view 3 on #2 (0.000 m)
+2026-11-21T20:47:04.6116783Z CHECK public Compound -> private staging (mover joins by code) PASS | observer(main): bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 2 on #2 (0.000 m); goggles view 3 on #2 (0.000 m) | mover(player2): wearing bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 2; RailGoggles view 3 (actor #2, room 64833)
+2026-11-21T20:47:04.7077093Z STATE Joined room=64833 kind=private phase=Staging request=False step=9 ready=True players=2/2 actor=1
+2026-11-21T20:47:04.7077093Z step=9
+2026-11-21T20:47:07.9627972Z STATE Joined room=64833 kind=private phase=Departing request=True step=9 ready=False players=2/2 actor=1
+2026-11-21T20:47:11.0886595Z STATE Joined room=64833 kind=private phase=Departing request=False step=9 ready=False players=2/2 actor=1
+2026-11-21T20:47:13.4405762Z STATE Joined room=64833 kind=private phase=Departing request=False step=9 ready=True players=2/2 actor=1
+2026-11-21T20:47:14.2075885Z STATE Joined room=64833 kind=private phase=Running request=False step=9 ready=True players=2/2 actor=1
+2026-11-21T20:47:22.4230739Z ACK step=9 bag view 112 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 113 on #2 (0.000 m); goggles view 114 on #2 (0.000 m)
+2026-11-21T20:47:22.4287395Z CHECK private departure (staging -> Expedition, same room) PASS | observer(main): bag view 112 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 113 on #2 (0.000 m); goggles view 114 on #2 (0.000 m) | mover(player2): wearing bag view 112 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 113; RailGoggles view 114 (actor #2, room 64833)
+2026-11-21T20:47:22.5197402Z STATE Joined room=64833 kind=private phase=Running request=False step=10 ready=True players=2/2 actor=1
+2026-11-21T20:47:22.5207453Z step=10
+2026-11-21T20:47:38.0255145Z STATE Joined room=64833 kind=private phase=Ending request=False step=10 ready=True players=2/2 actor=1
+2026-11-21T20:47:43.0259868Z STATE Joined room=64833 kind=private phase=Returning request=False step=10 ready=True players=2/2 actor=1
+2026-11-21T20:47:45.1161620Z STATE Joined room=64833 kind=private phase=Staging request=True step=10 ready=False players=2/2 actor=1
+2026-11-21T20:47:46.2319173Z STATE Joined room=64833 kind=private phase=Staging request=False step=10 ready=False players=2/2 actor=1
+2026-11-21T20:47:46.5270947Z STATE Joined room=64833 kind=private phase=Staging request=False step=10 ready=True players=2/2 actor=1
+2026-11-21T20:47:55.7638292Z ACK step=10 bag view 131 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 132 on #2 (0.000 m); goggles view 133 on #2 (0.000 m)
+2026-11-21T20:47:55.7683839Z CHECK private return (Expedition -> staging, same room) PASS | observer(main): bag view 131 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 132 on #2 (0.000 m); goggles view 133 on #2 (0.000 m) | mover(player2): wearing bag view 131 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 132; RailGoggles view 133 (actor #2, room 64833)
+2026-11-21T20:47:55.8724888Z STATE Joined room=64833 kind=private phase=Staging request=False step=11 ready=True players=2/2 actor=1
+2026-11-21T20:47:55.8724888Z step=11
+2026-11-21T20:47:59.1474845Z STATE Joined room=64833 kind=private phase=Departing request=True step=11 ready=False players=2/2 actor=1
+2026-11-21T20:48:02.3065616Z STATE Joined room=64833 kind=private phase=Departing request=False step=11 ready=False players=2/2 actor=1
+2026-11-21T20:48:04.1798420Z STATE Joined room=64833 kind=private phase=Departing request=False step=11 ready=True players=2/2 actor=1
+2026-11-21T20:48:04.8476973Z STATE Joined room=64833 kind=private phase=Running request=False step=11 ready=True players=2/2 actor=1
+2026-11-21T20:48:13.0167128Z ACK step=11 bag view 242 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 243 on #2 (0.000 m); goggles view 244 on #2 (0.000 m)
+2026-11-21T20:48:13.0210135Z CHECK second private departure (before drop-outs) PASS | observer(main): bag view 242 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 243 on #2 (0.000 m); goggles view 244 on #2 (0.000 m) | mover(player2): wearing bag view 242 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 243; RailGoggles view 244 (actor #2, room 64833)
+2026-11-21T20:48:13.1120973Z STATE Joined room=64833 kind=private phase=Running request=False step=12 ready=True players=2/2 actor=1
+2026-11-21T20:48:13.1130991Z step=12
+2026-11-21T20:48:19.6045155Z STATE Joined room=64833 kind=private phase=Running request=False step=12 ready=True players=1/2 actor=1
+2026-11-21T20:48:19.6045155Z AWAY mover #2 inactive (transport loss)
+2026-11-21T20:48:24.6438415Z AWAY CHECK PASS after 5.0s away: no test bag, helmet or goggles copy in room 64833; mover #2 inactive
+2026-11-21T20:48:29.9449373Z STATE Joined room=64833 kind=private phase=Running request=False step=12 ready=True players=2/2 actor=1
+2026-11-21T20:48:49.5352011Z ACK step=12 mover back as #2 after 29.9s: bag view 261 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 262 on #2 (0.000 m); goggles view 263 on #2 (0.000 m)
+2026-11-21T20:48:49.5408296Z CHECK transport loss (inactive) -> rejoin, worn bag and head gear go with the mover PASS | observer(main): mover back as #2 after 29.9s: bag view 261 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #2 (0.41 m from head); helmet view 262 on #2 (0.000 m); goggles view 263 on #2 (0.000 m) | mover(player2): rejoined same run after 36.1s: wearing bag view 261 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 262; RailGoggles view 263 (actor #2, room 64833)
+2026-11-21T20:48:49.6300161Z STATE Joined room=64833 kind=private phase=Running request=False step=13 ready=True players=2/2 actor=1
+2026-11-21T20:48:49.6300161Z step=13
+2026-11-21T20:48:52.8357174Z STATE Joined room=64833 kind=private phase=Running request=False step=13 ready=True players=1/1 actor=1
+2026-11-21T20:49:03.2717137Z ACK step=13 crew room 64833 phase Running: no test bag, helmet or goggles copy in room 64833; mover absent
+2026-11-21T20:49:03.2762963Z CHECK clean leave mid-run (Back to Compound): no room copy for the crew PASS | observer(main): crew room 64833 phase Running: no test bag, helmet or goggles copy in room 64833; mover absent | mover(player2): left to public 79294: wearing bag view 1 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 2; RailGoggles view 3 (actor #1, room 79294)
+2026-11-21T20:49:03.3702579Z STATE Joined room=64833 kind=private phase=Running request=False step=14 ready=True players=1/1 actor=1
+2026-11-21T20:49:03.3719201Z step=14
+2026-11-21T20:49:04.7982040Z STATE Joined room=64833 kind=private phase=Running request=False step=14 ready=True players=2/2 actor=1
+2026-11-21T20:49:18.7008000Z ACK step=14 bag view 264 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #3 (0.41 m from head); helmet view 265 on #3 (0.000 m); goggles view 266 on #3 (0.000 m)
+2026-11-21T20:49:18.7059743Z CHECK rejoin the running expedition by code after leaving: one copy, worn by the mover PASS | observer(main): bag view 264 2|RailCoal|RailGoldBar|RailShopItemFlashlight| stowed on #3 (0.41 m from head); helmet view 265 on #3 (0.000 m); goggles view 266 on #3 (0.000 m) | mover(player2): wearing bag view 264 2|RailCoal|RailGoldBar|RailShopItemFlashlight|; RailShopItemHelmet view 265; RailGoggles view 266 (actor #3, room 64833)
+2026-11-21T20:49:18.8119814Z STATE Joined room=64833 kind=private phase=Running request=False step=15 ready=True players=2/2 actor=1
+2026-11-21T20:49:18.8124836Z step=15
+2026-11-21T20:49:22.1305057Z OBSERVED test bag held in the mover's hand (view 264)
+2026-11-21T20:49:27.1233318Z STATE Joined room=64833 kind=private phase=Running request=False step=15 ready=True players=1/2 actor=1
+2026-11-21T20:49:27.1233318Z AWAY mover #3 inactive (client disconnect with the bag in hand)
+2026-11-21T20:49:32.1403821Z AWAY CHECK PASS after 5.0s away: 1 bag dropped in room (view 264, 2|RailCoal|RailGoldBar|RailShopItemFlashlight|); no helmet or goggles copy; mover #3 inactive
+2026-11-21T20:49:44.2154897Z STATE Joined room=64833 kind=private phase=Running request=False step=15 ready=True players=2/2 actor=1
+2026-11-21T20:49:52.6929741Z ACK step=15 mover back as #3 after 25.6s: 1 bag dropped in room (view 264, 2|RailCoal|RailGoldBar|RailShopItemFlashlight|); helmet view 267 on #3 (0.000 m); goggles view 268 on #3 (0.000 m)
+2026-11-21T20:49:52.6980192Z CHECK hand-held bag drops for the room; worn head gear goes with the mover (client disconnect -> rejoin) PASS | observer(main): mover back as #3 after 25.6s: 1 bag dropped in room (view 264, 2|RailCoal|RailGoldBar|RailShopItemFlashlight|); helmet view 267 on #3 (0.000 m); goggles view 268 on #3 (0.000 m) | mover(player2): rejoined after 25.6s: no worn bag, bag.back save empty; RailShopItemHelmet view 267; RailGoggles view 268 (actor #3, room 64833); 1 test bag dropped in the room (view 264)
+2026-11-21T20:49:52.8028764Z STATE Joined room=64833 kind=private phase=Running request=False step=16 ready=True players=2/2 actor=1
+2026-11-21T20:49:52.8038759Z step=16
+2026-11-21T20:49:52.8084116Z COMPLETE all loadout two-client checks passed (role main)
+2026-11-21T20:49:54.8213720Z RESTORED account loadout saves (run finished)

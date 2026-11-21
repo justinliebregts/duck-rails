@@ -195,6 +195,11 @@
   and nothing left in the old room; a wearer dropping out of a shared expedition takes the bag
   and head gear with them (no room copy for the crew); headset feel.
 - **November 20 desktop RC — PAUSED during setup, no gameplay verdict.** Three authenticated simulated-rig clients used Unity 6000.3.24f1 on main `c89d1f95e40176e12c029df8df8dcaa41a0b69b6` with local edits. Two reached private staging. Play stopped before the expedition or equipment setup, and the user paused the retry. Same-run recovery, indexed bag contents, helmet and goggles, peer cleanup and headset behavior remain pending. [Staging and shutdown evidence](validation/playtest-queue/2026-11-20-rc/worn-rejoin-paused.txt)
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): every multi-client check PASSES. Headset feel still needs a human.** Player2 wore a bag with contents, a helmet and goggles; main observed. Each check held for 5 s.
+  - Transitions: public departure alone (the old Compound kept no copy), crew return, both boarding together, crew return together, joining private staging by code, and private departure/return/replay. After each one the observer saw exactly one copy of the bag (same contents), helmet and goggles, worn by the mover's avatar.
+  - Drop-outs: transport loss (inactive), then a rejoin that reclaimed the same actor. Clean Back to Compound, then a rejoin by code. In both, the crew's room kept no copy while the mover was away, and after the return there was exactly one restored copy, worn by the mover.
+  - Bag held in a hand, then a client disconnect: the bag stayed dropped in the room with its contents. The worn head gear went with the mover and was restored once on rejoin.
+  - Not run: three clients (they crash Unity). Saved loadouts were backed up and restored. [Evidence](validation/playtest-queue/2026-11-21-queue/loadout.md)
 
 ## Brighter store lighting (Compound + starting station) — queued 2026-11-18
 
