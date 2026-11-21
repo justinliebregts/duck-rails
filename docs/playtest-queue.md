@@ -125,6 +125,11 @@
   moving and while stopped; label flips on all clients; train speeds up/slows smoothly with no
   jump; after stopping and pressing GO it resumes at the selected speed; fuel burn looks right;
   the next run starts at 1x. All five buttons are reachable and readable in the headset.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS. Headset readability and fuel feel still
+  need a human.** Master toggled while moving (1x to 5x) and while stopped; the non-master admin toggled through the
+  pause-menu button `Press()` while moving and while stopped. The label flipped on both clients each time, the
+  speed ramped with a worst distance discontinuity of 0.1 m, a stopped train stayed at 0 m/s after a toggle, GO resumed
+  at the selected speed, and the next run started at 1x. [Evidence](validation/playtest-queue/2026-11-21-queue/batch-2026-11-21.md)
 
 
 ## Starting station z-fighting: rib joints and supplies header — 2026-11-18
@@ -487,6 +492,10 @@
   the edit was not confirmed.
 - Check: revive a downed duck; everyone in range hears the complete sound at the duck,
   once, and it respects the volume slider.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS for "once on each client". Volume slider and
+  audibility still need a human.** A downed non-master was revived by the master; each client's AudioManager pool started
+  exactly one `ReviveSFX` voice (Effects mixer group, spatial), none more in the next 5 s.
+  [Evidence](validation/playtest-queue/2026-11-21-queue/batch-2026-11-21.md)
 
 ## Settings Submit Bug button — queued 2026-11-18
 
@@ -542,6 +551,10 @@
   tops match the visible deck (no floating or sinking), the railings block, the
   footsteps sound like metal, and a late joiner gets the same solid spans.
   Status: queued for playtest; no Play Mode run.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS for solidity. Walking, railings, footsteps and
+  late joiners still need a human.** After a bridge crash all 5 spans had their 3 walk boxes enabled on both clients, and a
+  rig dropped onto each span stood on a walk box at the same offset as on the train floor, with no fall-through.
+  [Evidence](validation/playtest-queue/2026-11-21-queue/batch-2026-11-21.md)
 
 ## End-of-run results table — queued 2026-11-17
 
@@ -555,6 +568,11 @@
 - Check: finish a run with 2+ clients; the table is readable in headset at the
   ending position, columns line up, highlights match the highest values, and
   late joiners see the same table. Status: queued for playtest; no Play Mode run.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS for the data. Headset readability, column
+  alignment as seen and late joiners still need a human.** After a failed run (both clients down), a bridge crash and a
+  success preview, both clients showed byte-identical tables whose values equal the committed state, with the right
+  green/red names and yellow only on the top non-zero value per column. Coal was exercised for the master only.
+  [Evidence](validation/playtest-queue/2026-11-21-queue/batch-2026-11-21.md)
 
 ## Farm northeast pond water footsteps — queued 2026-11-17
 

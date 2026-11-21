@@ -1,0 +1,153 @@
+2026-11-21T22:52:05.1488151Z START queue batch; Unity 6000.3.24f1 role=player2 privateCode=27942
+2026-11-21T22:52:05.1493327Z STATE PeerCreated room= kind= phase=Compound run=- step=0 ready=False players=0 master=False
+2026-11-21T22:52:05.1493327Z step=0
+2026-11-21T22:52:05.1508484Z ACK step=0 ok=True waiting data=[]
+2026-11-21T22:52:08.4527359Z STATE ConnectingToNameServer room= kind= phase=Compound run=- step=0 ready=False players=0 master=False
+2026-11-21T22:52:08.6686647Z STATE Authenticating room= kind= phase=Compound run=- step=0 ready=False players=0 master=False
+2026-11-21T22:52:08.8901233Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- step=0 ready=False players=0 master=False
+2026-11-21T22:52:09.2307701Z STATE Authenticating room= kind= phase=Compound run=- step=0 ready=False players=0 master=False
+2026-11-21T22:52:09.3683592Z STATE Joining room= kind= phase=Compound run=- step=0 ready=False players=0 master=False
+2026-11-21T22:52:09.4702764Z STATE ConnectingToGameServer room= kind= phase=Compound run=- step=0 ready=False players=0 master=False
+2026-11-21T22:52:09.9529125Z STATE Authenticating room= kind= phase=Compound run=- step=0 ready=False players=0 master=False
+2026-11-21T22:52:10.0757887Z STATE Joining room= kind= phase=Compound run=- step=0 ready=False players=0 master=False
+2026-11-21T22:52:10.1949264Z ADMIN account IsAdmin before forcing = False
+2026-11-21T22:52:10.1989898Z STATE Joined room=38309 kind=compound phase=Compound run=- step=0 ready=False players=2 master=False
+2026-11-21T22:52:11.3082828Z STATE Joined room=38309 kind=compound phase=Compound run=- step=0 ready=True players=1 master=True
+2026-11-21T22:52:15.2142301Z STATE Joined room=38309 kind=compound phase=Compound run=- step=1 ready=True players=1 master=True
+2026-11-21T22:52:15.2152304Z step=1
+2026-11-21T22:52:15.3232800Z STATE Leaving room=38309 kind=compound phase=Compound run=- step=1 ready=False players=0 master=True
+2026-11-21T22:52:15.4307795Z STATE ConnectingToMasterServer room= kind= phase=Compound run=- step=1 ready=False players=0 master=False
+2026-11-21T22:52:15.7442395Z STATE Authenticating room= kind= phase=Compound run=- step=1 ready=False players=0 master=False
+2026-11-21T22:52:15.8527613Z STATE Joining room= kind= phase=Compound run=- step=1 ready=False players=0 master=False
+2026-11-21T22:52:15.9620087Z STATE ConnectingToGameServer room= kind= phase=Compound run=- step=1 ready=False players=0 master=False
+2026-11-21T22:52:16.4010304Z STATE Authenticating room= kind= phase=Compound run=- step=1 ready=False players=0 master=False
+2026-11-21T22:52:16.6118215Z STATE Joining room= kind= phase=Compound run=- step=1 ready=False players=0 master=False
+2026-11-21T22:52:16.7359719Z STATE Joined room=27942 kind=private phase=Staging run=- step=1 ready=True players=2 master=False
+2026-11-21T22:52:19.8084222Z ACK step=1 ok=True in private staging 27942 data=[master=False]
+2026-11-21T22:52:19.9114995Z STATE Joined room=27942 kind=private phase=Staging run=- step=2 ready=True players=2 master=False
+2026-11-21T22:52:19.9114995Z step=2
+2026-11-21T22:52:23.2006260Z STATE Joined room=27942 kind=private phase=Departing run=c971b2 step=2 ready=False players=2 master=False
+2026-11-21T22:52:29.1126339Z STATE Joined room=27942 kind=private phase=Departing run=c971b2 step=2 ready=True players=2 master=False
+2026-11-21T22:52:29.4533962Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=2 ready=True players=2 master=False
+2026-11-21T22:52:32.4705551Z ARRIVED room=27942 kind=private phase=Running run=c971b2 step=2
+2026-11-21T22:52:36.5097854Z BOARDED; test page shown
+2026-11-21T22:52:38.4120321Z TRAIN baseline gap=-1.08 on Body(Expedition World)
+2026-11-21T22:52:38.4165698Z ACK step=2 ok=True run c971b2eb1c7a4d6495a4fdef2bc68b50 starts at 1x: yes data=[speed=0.00,fast=False,label=Train Speed: 1x,maxJump=0.000,maxAccel=0.00,maxSpeed=0.00,fuel=50.0]
+2026-11-21T22:52:38.5165772Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=3 ready=True players=2 master=False
+2026-11-21T22:52:38.5180838Z step=3
+2026-11-21T22:53:23.5459085Z ACK step=3 ok=True coal NOT credited within 45 s data=[coal=0,exercised=False]
+2026-11-21T22:53:23.6440171Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=4 ready=True players=2 master=False
+2026-11-21T22:53:23.6445246Z step=4
+2026-11-21T22:53:29.4788798Z ACK step=4 ok=True moving at 1x data=[speed=4.00,fast=False,label=Train Speed: 1x,maxJump=0.014,maxAccel=2.55,maxSpeed=4.00,fuel=63.0]
+2026-11-21T22:53:29.5706177Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=5 ready=True players=2 master=False
+2026-11-21T22:53:29.5716170Z step=5
+2026-11-21T22:53:32.7804422Z ACK step=5 ok=True master toggle while moving -> 5x data=[speed=19.71,fast=True,label=Train Speed: 5x,maxJump=0.038,maxAccel=9.63,maxSpeed=19.71,fuel=54.0]
+2026-11-21T22:53:32.8795287Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=6 ready=True players=2 master=False
+2026-11-21T22:53:32.8800416Z step=6
+2026-11-21T22:53:33.9663499Z NON-MASTER pause-menu TrainSpeed Press() -> True
+2026-11-21T22:53:36.2599130Z ACK step=6 ok=True non-master toggle while moving -> 1x data=[speed=4.00,fast=False,label=Train Speed: 1x,maxJump=0.039,maxAccel=9.68,maxSpeed=20.00,fuel=37.5,viaButton=True,fallback=False]
+2026-11-21T22:53:36.5658474Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=7 ready=True players=2 master=False
+2026-11-21T22:53:36.5663537Z step=7
+2026-11-21T22:53:41.5912398Z NON-MASTER toggle while stopped viaButton=True
+2026-11-21T22:53:45.0059722Z ACK step=7 ok=True stopped train toggled to 5x and stayed stopped data=[speed=0.00,fast=True,label=Train Speed: 5x,maxJump=0.014,maxAccel=2.54,maxSpeed=4.00,fuel=35.1,spdWhileFast=0.000]
+2026-11-21T22:53:45.0923531Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=8 ready=True players=2 master=False
+2026-11-21T22:53:45.0933604Z step=8
+2026-11-21T22:53:47.8404656Z ACK step=8 ok=True resumed at 5x after STOP/GO data=[speed=20.00,fast=True,label=Train Speed: 5x,maxJump=0.122,maxAccel=13.59,maxSpeed=20.00,fuel=28.7]
+2026-11-21T22:53:47.9350598Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=9 ready=True players=2 master=False
+2026-11-21T22:53:47.9350598Z step=9
+2026-11-21T22:53:57.0033351Z ACK step=9 ok=True master toggled stopped train to 1x; stays stopped data=[speed=0.00,fast=False,label=Train Speed: 1x,maxJump=0.098,maxAccel=13.08,maxSpeed=20.00,fuel=17.2]
+2026-11-21T22:53:57.1038013Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=10 ready=True players=2 master=False
+2026-11-21T22:53:57.1038013Z step=10
+2026-11-21T22:53:59.8984064Z ACK step=10 ok=True resumed at 1x data=[speed=3.99,fast=False,label=Train Speed: 1x,maxJump=0.016,maxAccel=2.57,maxSpeed=3.99,fuel=16.0]
+2026-11-21T22:53:59.9933099Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=11 ready=True players=2 master=False
+2026-11-21T22:53:59.9933099Z step=11
+2026-11-21T22:54:03.2619005Z ACK step=11 ok=True left at 5x data=[speed=19.62,fast=True,label=Train Speed: 5x,maxJump=0.079,maxAccel=10.50,maxSpeed=19.62,fuel=7.0]
+2026-11-21T22:54:03.3670415Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=12 ready=True players=2 master=False
+2026-11-21T22:54:03.3675448Z step=12
+2026-11-21T22:54:12.5533195Z PEER warped off the train
+2026-11-21T22:54:19.8542447Z REVIVE SFX voice start #1 voice#3 gen=59 clip=ReviveSFX mixer=Effects spatial=1 vol=1.00 playing=True room=27942 kind=private phase=Running run=c971b2 step=12
+2026-11-21T22:54:24.9805999Z ACK step=12 ok=True revive complete; SFX voices started=1 data=[sfx=1,revives=1,revived=1,info=voice#3 gen=59 clip=ReviveSFX mixer=Effects spatial=1 vol=1.00 playing=True]
+2026-11-21T22:54:25.0964072Z STATE Joined room=27942 kind=private phase=Running run=c971b2 step=13 ready=True players=2 master=False
+2026-11-21T22:54:25.0974094Z step=13
+2026-11-21T22:54:29.1960675Z WARP off train x=8
+2026-11-21T22:54:37.8192789Z RESULTS captured reason=Crew down success=False localDown=True aboard=True overflow=False stats=1:lebo:2,0,1,1,0;2:David:0,0,0,2,0 problems=[]
+<color=#FF8866>FAIL</color>
+Crew down
+
+<align=left><size=55%><color=#9A9A9A><pos=20%>Duck<pos=40%>Coal<pos=46%>Gold<pos=52%>Revives<pos=59%>Downs<pos=66%>Title</color></size>
+<size=75%><pos=20%><color=#FF8866>lebo</color><pos=40%><color=#FFD84A>2</color><pos=46%>0<pos=52%><color=#FFD84A>1</color><pos=59%>1</size><size=55%><pos=66%>Missed the Train</size>
+<size=75%><pos=20%><color=#FF8866>David</color><pos=40%>0<pos=46%>0<pos=52%>0<pos=59%><color=#FFD84A>2</color></size><size=55%><pos=66%>Certified Chicken</size></align>
+2026-11-21T22:54:37.8700227Z STATE Joined room=27942 kind=private phase=Ending run=c971b2 step=13 ready=True players=2 master=False
+2026-11-21T22:54:41.8961733Z ACK step=13 ok=True results captured (loss) reason=Crew down data=[localDown=True,aboard=True]
+2026-11-21T22:54:42.0001705Z STATE Joined room=27942 kind=private phase=Ending run=c971b2 step=14 ready=True players=2 master=False
+2026-11-21T22:54:42.0006962Z step=14
+2026-11-21T22:55:09.8482572Z STATE Joined room=27942 kind=private phase=Returning run=c971b2 step=14 ready=True players=2 master=False
+2026-11-21T22:55:11.9292919Z STATE Joined room=27942 kind=private phase=Staging run=- step=14 ready=False players=2 master=False
+2026-11-21T22:55:14.4633123Z STATE Joined room=27942 kind=private phase=Staging run=- step=14 ready=True players=2 master=False
+2026-11-21T22:55:17.5379162Z ACK step=14 ok=True back in staging data=[]
+2026-11-21T22:55:17.6394694Z STATE Joined room=27942 kind=private phase=Staging run=- step=15 ready=True players=2 master=False
+2026-11-21T22:55:17.6404745Z step=15
+2026-11-21T22:55:20.9010931Z STATE Joined room=27942 kind=private phase=Departing run=ef7685 step=15 ready=False players=2 master=False
+2026-11-21T22:55:26.3489685Z STATE Joined room=27942 kind=private phase=Departing run=ef7685 step=15 ready=True players=2 master=False
+2026-11-21T22:55:26.6744352Z STATE Joined room=27942 kind=private phase=Running run=ef7685 step=15 ready=True players=2 master=False
+2026-11-21T22:55:29.7516473Z ARRIVED room=27942 kind=private phase=Running run=ef7685 step=15
+2026-11-21T22:55:33.8049321Z BOARDED; test page shown
+2026-11-21T22:55:35.3301990Z TRAIN baseline gap=-1.08 on Body(Expedition World)
+2026-11-21T22:55:35.3352471Z ACK step=15 ok=True run ef76853b87bf4cfd9e4bbbf00a381bea starts at 1x: yes data=[speed=0.00,fast=False,label=Train Speed: 1x,maxJump=0.000,maxAccel=0.00,maxSpeed=0.00,fuel=50.0]
+2026-11-21T22:55:35.4269454Z STATE Joined room=27942 kind=private phase=Running run=ef7685 step=16 ready=True players=2 master=False
+2026-11-21T22:55:35.4284593Z step=16
+2026-11-21T22:55:49.8191301Z AT bridge approach distance=825.2
+2026-11-21T22:55:59.4404028Z STATE Joined room=27942 kind=private phase=Ending run=ef7685 step=16 ready=True players=2 master=False
+2026-11-21T22:56:02.5006066Z RESULTS captured reason=Bridge collision success=False localDown=False aboard=True overflow=False stats=1:lebo:0,0,0,0,0;2:David:0,0,0,0,0 problems=[]
+<color=#FF8866>FAIL</color>
+Bridge collision
+
+<align=left><size=55%><color=#9A9A9A><pos=20%>Duck<pos=40%>Coal<pos=46%>Gold<pos=52%>Revives<pos=59%>Downs<pos=66%>Title</color></size>
+<size=75%><pos=20%><color=#FF8866>lebo</color><pos=40%>0<pos=46%>0<pos=52%>0<pos=59%>0</size><size=55%><pos=66%>Window Seat</size>
+<size=75%><pos=20%><color=#FF8866>David</color><pos=40%>0<pos=46%>0<pos=52%>0<pos=59%>0</size><size=55%><pos=66%>Missed the Train</size></align>
+2026-11-21T22:56:03.0173439Z SPAN 0 walkEnabled=3 firstHitFromAbove=Walk colliders(Duck Rails Session World) y=-8.41 aabbTop=-7.27
+2026-11-21T22:56:05.7043763Z SPAN 0 settled rigY-surface=-0.99 minY-surface=-0.99 standingOn=Walk colliders(Duck Rails Session World) gap=-1.07 trainBaselineGap=-1.08 FAIL
+2026-11-21T22:56:05.7048887Z SPAN 1 walkEnabled=3 firstHitFromAbove=Walk colliders(Duck Rails Session World) y=-8.45 aabbTop=-7.34
+2026-11-21T22:56:08.5033075Z SPAN 1 settled rigY-surface=-1.11 minY-surface=-1.11 standingOn=Walk colliders(Duck Rails Session World) gap=-1.04 trainBaselineGap=-1.08 FAIL
+2026-11-21T22:56:08.5033075Z SPAN 2 walkEnabled=3 firstHitFromAbove=Walk colliders(Duck Rails Session World) y=-8.41 aabbTop=-7.27
+2026-11-21T22:56:11.2073865Z SPAN 2 settled rigY-surface=-0.99 minY-surface=-0.99 standingOn=Walk colliders(Duck Rails Session World) gap=-1.07 trainBaselineGap=-1.08 FAIL
+2026-11-21T22:56:11.2073865Z SPAN 3 walkEnabled=3 firstHitFromAbove=Walk colliders(Duck Rails Session World) y=-8.45 aabbTop=-7.34
+2026-11-21T22:56:13.8622254Z SPAN 3 settled rigY-surface=-1.09 minY-surface=-1.09 standingOn=Walk colliders(Duck Rails Session World) gap=-1.04 trainBaselineGap=-1.08 FAIL
+2026-11-21T22:56:13.8628502Z SPAN 4 walkEnabled=3 firstHitFromAbove=Walk colliders(Duck Rails Session World) y=-8.41 aabbTop=-7.27
+2026-11-21T22:56:16.5300049Z SPAN 4 settled rigY-surface=-1.01 minY-surface=-1.01 standingOn=Walk colliders(Duck Rails Session World) gap=-1.07 trainBaselineGap=-1.08 FAIL
+2026-11-21T22:56:16.5300049Z SPANS done span0:walkEnabled=3 surfaceY=-8.41;span0:on=Walk colliders(Duck Rails Session World) gap=-1.07 base=-1.08 FAIL;span1:walkEnabled=3 surfaceY=-8.45;span1:on=Walk colliders(Duck Rails Session World) gap=-1.04 base=-1.08 FAIL;span2:walkEnabled=3 surfaceY=-8.41;span2:on=Walk colliders(Duck Rails Session World) gap=-1.07 base=-1.08 FAIL;span3:walkEnabled=3 surfaceY=-8.45;span3:on=Walk colliders(Duck Rails Session World) gap=-1.04 base=-1.08 FAIL;span4:walkEnabled=3 surfaceY=-8.41;span4:on=Walk colliders(Duck Rails Session World) gap=-1.07 base=-1.08 FAIL;
+2026-11-21T22:56:20.5946203Z ACK step=16 ok=False bridge walk + results captured (crash) data=[spans=span0:walkEnabled=3 surfaceY=-8.41;span0:on=Walk colliders(Duck Rails Session World) gap=-1.07 base=-1.08 FAIL;span1:walkEnabled=3 surfaceY=-8.45;span1:on=Walk colliders(Duck Rails Session World) gap=-1.04 base=-1.08 FAIL;span2:walkEnabled=3 surfaceY=-8.41;span2:on=Walk colliders(Duck Rails Session World) gap=-1.07 base=-1.08 FAIL;span3:walkEnabled=3 surfaceY=-8.45;span3:on=Walk colliders(Duck Rails Session World) gap=-1.04 base=-1.08 FAIL;span4:walkEnabled=3 surfaceY=-8.41;span4:on=Walk colliders(Duck Rails Session World) gap=-1.07 base=-1.08 FAIL;,localDown=False]
+2026-11-21T22:56:20.6990145Z STATE Joined room=27942 kind=private phase=Ending run=ef7685 step=17 ready=True players=2 master=False
+2026-11-21T22:56:20.6990145Z step=17
+2026-11-21T22:56:31.5560507Z STATE Joined room=27942 kind=private phase=Returning run=ef7685 step=17 ready=True players=2 master=False
+2026-11-21T22:56:33.5150684Z STATE Joined room=27942 kind=private phase=Staging run=- step=17 ready=False players=2 master=False
+2026-11-21T22:56:36.1425861Z STATE Joined room=27942 kind=private phase=Staging run=- step=17 ready=True players=2 master=False
+2026-11-21T22:56:39.2164123Z ACK step=17 ok=True back in staging data=[]
+2026-11-21T22:56:39.3197402Z STATE Joined room=27942 kind=private phase=Staging run=- step=18 ready=True players=2 master=False
+2026-11-21T22:56:39.3197402Z step=18
+2026-11-21T22:56:42.6497755Z STATE Joined room=27942 kind=private phase=Departing run=eecf4f step=18 ready=False players=2 master=False
+2026-11-21T22:56:48.0238832Z STATE Joined room=27942 kind=private phase=Departing run=eecf4f step=18 ready=True players=2 master=False
+2026-11-21T22:56:48.3496828Z STATE Joined room=27942 kind=private phase=Running run=eecf4f step=18 ready=True players=2 master=False
+2026-11-21T22:56:51.4275657Z ARRIVED room=27942 kind=private phase=Running run=eecf4f step=18
+2026-11-21T22:56:55.4646714Z BOARDED; test page shown
+2026-11-21T22:56:57.0297642Z ACK step=18 ok=True run eecf4fbc6d5c4e46a11f14afb2372da0 starts at 1x: yes data=[speed=0.00,fast=False,label=Train Speed: 1x,maxJump=0.000,maxAccel=0.00,maxSpeed=0.00,fuel=50.0]
+2026-11-21T22:56:57.1302281Z STATE Joined room=27942 kind=private phase=Running run=eecf4f step=19 ready=True players=2 master=False
+2026-11-21T22:56:57.1307313Z step=19
+2026-11-21T22:57:10.5820613Z RESULTS captured reason=Test success preview success=True localDown=False aboard=True overflow=False stats=1:lebo:0,0,0,0,1;2:David:0,0,0,0,1 problems=[]
+<color=#8AFFBA>SUCCESS</color>
+Test success preview
+
+<align=left><size=55%><color=#9A9A9A><pos=20%>Duck<pos=40%>Coal<pos=46%>Gold<pos=52%>Revives<pos=59%>Downs<pos=66%>Title</color></size>
+<size=75%><pos=20%><color=#8AFFBA>lebo</color><pos=40%>0<pos=46%>0<pos=52%>0<pos=59%>0</size><size=55%><pos=66%>Window Seat</size>
+<size=75%><pos=20%><color=#8AFFBA>David</color><pos=40%>0<pos=46%>0<pos=52%>0<pos=59%>0</size><size=55%><pos=66%>Pacifist</size></align>
+2026-11-21T22:57:10.5825739Z STATE Joined room=27942 kind=private phase=Ending run=eecf4f step=19 ready=True players=2 master=False
+2026-11-21T22:57:14.6342952Z ACK step=19 ok=True results captured (success) data=[localDown=False,aboard=True]
+2026-11-21T22:57:14.7348865Z STATE Joined room=27942 kind=private phase=Ending run=eecf4f step=20 ready=True players=2 master=False
+2026-11-21T22:57:14.7348865Z step=20
+2026-11-21T22:57:42.5184611Z STATE Joined room=27942 kind=private phase=Returning run=eecf4f step=20 ready=True players=2 master=False
+2026-11-21T22:57:44.5982059Z STATE Joined room=27942 kind=private phase=Staging run=- step=20 ready=False players=2 master=False
+2026-11-21T22:57:46.9737591Z STATE Joined room=27942 kind=private phase=Staging run=- step=20 ready=True players=2 master=False
+2026-11-21T22:57:50.0145502Z ACK step=20 ok=True back in staging data=[]
+2026-11-21T22:57:50.1198356Z STATE Joined room=27942 kind=private phase=Staging run=- step=21 ready=True players=2 master=False
+2026-11-21T22:57:50.1208400Z step=21
+2026-11-21T22:57:50.1208400Z COMPLETE
