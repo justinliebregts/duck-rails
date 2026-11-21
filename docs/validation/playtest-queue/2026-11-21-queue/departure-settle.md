@@ -31,7 +31,7 @@ Re-run faults 1 and 2 after the fix. All three faults must pass.
 
 ## Fix and re-run — November 21, evening (Justin approved the proposal)
 
-Implemented the proposed fix, uncommitted: `Assets/Scripts/Photon/PhotonMasterHandoff.Settle.cs` and `Assets/Photon/PhotonUnityNetworking/Code/PhotonNetworkPart.cs` (`SkipRoomViewIds`). The new master skips the room view ID cursor 300 past every registered view after a timed-out settle. It then destroys any later view below that floor that duplicates one of its own run markers. The stalled-host fixture (`RailStartupRecoveryChecks`) now requires each pre-pause marker exactly once, instead of the original view ID and token.
+Implemented the proposed fix in commit `ae7fdf3f9`: `Assets/Scripts/Photon/PhotonMasterHandoff.Settle.cs` and `Assets/Photon/PhotonUnityNetworking/Code/PhotonNetworkPart.cs` (`SkipRoomViewIds`). The new master skips the room view ID cursor 300 past every registered view after a timed-out settle. It then destroys any later view below that floor that duplicates one of its own run markers. The stalled-host fixture (`RailStartupRecoveryChecks`) now requires each pre-pause marker exactly once, instead of the original view ID and token.
 
 - **PASS — fault 1.** Zero duplicate errors, 106/106 markers once, identical peer inventories. 50 of 106 pre-pause identities were kept; the successor replaced the others.
 - **PASS — fault 2.** Zero duplicates, 106/106 markers once, identical inventories. 48 of 106 identities kept.

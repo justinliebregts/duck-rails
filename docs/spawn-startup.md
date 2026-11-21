@@ -261,7 +261,7 @@ break predating this change and still open.
 
 **Not yet verified:** the three-client acceptance described in the playtest queue.
 
-### November 21 — spawns stuck behind a stalled host's send window (fix implemented, uncommitted)
+### November 21 — spawns stuck behind a stalled host's send window (fix `ae7fdf3f9`)
 
 The two-client stalled-host faults 1 and 2 failed with 56–57 duplicate loot views. Photon 4.1.8.17
 keeps at most `SequenceDeltaLimitSends` = 50 unacknowledged reliable commands in flight. The
