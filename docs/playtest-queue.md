@@ -1,5 +1,10 @@
 # Playtest queue
 
+## Quackbear cupcake collider covers the candle — queued 2026-11-22
+
+- Fix: `Weapon_Quackbear.prefab` box collider is now centre (0, 0.0386, 0.0021), size (0.1379, 0.2332, 0.1489). It encloses all 592 mesh vertices with 3 mm to spare, and its top is 10 mm past the candle light (light stays at y 0.1452). Replaces the earlier uncommitted values, with Justin's OK. Edit-mode vertex check passed, no Play Mode run.
+- Check: put the lit cupcake upside down on a floor, a train roof and against a wall in Compound and an expedition. The candle tip should rest on the surface with the glow above it, never poking into the geometry. Confirm it still grabs, drops, throws and sits on shelves normally and that the store wall pull is unaffected.
+
 ## Quackbear lips on the equipped avatar — queued 2026-11-22
 
 - Fix: `Skin_Quackbear.prefab` still carried a 90 degree X rotation on `Lips_Quackbear` from before the lips FBX was re-authored (Nov 18), so the lips copied onto the player's head bone sat tilted into the body. They now use Huggy's head-relative pose; `Lip_T` lands at the same spot as Huggy's. Edit-mode numbers only, no Play Mode or headset run. Commit `4d74ad0c8`.
