@@ -123,7 +123,7 @@ public sealed class RailWorld : MonoBehaviour
             departureBoard.text = PhotonSession.IsPrivate ? "PRIVATE CREW\nCode " + room
                 : "PUBLIC DEPARTURE\n" + roster.Length + " / 8 aboard\n" +
                     (deadline > 0 ? Math.Max(0, Math.Ceiling(deadline - PhotonNetwork.Time)) + " seconds" : "Step onto the platform") +
-                    (onPlatform && roster.Length == 8 && !roster.Contains(PhotonNetwork.LocalPlayer.ActorNumber) ? "\nFULL — wait for the next departure" : "");
+                    (onPlatform && roster.Length == 8 && !roster.Contains(PhotonNetwork.LocalPlayer.ActorNumber) ? "\nFULL - wait for the next departure" : "");
         }
     }
 

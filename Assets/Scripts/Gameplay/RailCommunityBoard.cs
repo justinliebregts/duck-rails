@@ -46,14 +46,14 @@ public sealed class RailCommunityBoard : MonoBehaviour
         foreach(var v in new[]{s.attempts,s.escapes,s.coal,s.gold}) Put(v.ToString("N0"));
         Put((s.meters/1000d).ToString("N1")+" km");
         void Award(Row row,string unit,string extra=""){
-            Put(row==null || row.amount==0?"—":Friendly(row.label));
+            Put(row==null || row.amount==0?"-":Friendly(row.label));
             Put(row==null || row.amount==0?"":row.amount.ToString("N0")+" "+unit+extra);
         }
         Award(s.Stop,"coal gathered"); Award(s.Deadliest,"ducks downed");
         Award(s.Bonked,"hits",s.Item?.amount>0?"  /  Top item: "+Friendly(s.Item.label):"");
         foreach(var rows in new[]{s.Weekly,s.Lifetime}) for(int i=0;i<10;i++){
             var row=rows!=null && i<rows.Length?rows[i]:null;
-            Put(row?.label??"—"); Put(row?.amount.ToString("N0")??"");
+            Put(row?.label??"-"); Put(row?.amount.ToString("N0")??"");
         }
     }
 }
