@@ -127,7 +127,7 @@ public sealed class PhotonLIVCamera : MonoBehaviourPunCallbacks, IOnEventCallbac
     CameraState Capture()
     {
         var tablet = TabletGrab.Local;
-        if (tablet == null || !tablet.isActiveAndEnabled) return default;
+        if (tablet == null || !tablet.isActiveAndEnabled || !tablet.IsVisible) return default;
         Transform root = tablet.transform;
         var state = new CameraState { mode = 1, position = root.position, rotation = root.rotation,
             scale = root.lossyScale, handRotation = Quaternion.identity };

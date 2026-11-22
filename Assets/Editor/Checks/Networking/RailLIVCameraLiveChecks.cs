@@ -17,7 +17,9 @@ using UnityEngine;
 /// at 10 Hz, and the main editor evaluates every check from both files. Scenarios:
 ///  - Compound, owner main then owner Player2: open (one active proxy at the owner's pose, no own proxy), move + settle
 ///    (follows, settles exactly, zero event-120 traffic and no publishes for 2 s while stationary), held in the right hand
-///    (mode 3, follows the owner's remote hand when the owner's rig warps), close (proxy inactive), reopen at a new pose.
+///    (mode 3, follows the owner's remote hand when the owner's rig warps), close while held (released; the real tablet stays
+///    active but hidden: IsVisible false, renderers forceRenderingOff, not grabbable; proxy inactive), reopen (visible, grabbable,
+///    recalled in front of the head) at a new pose, then three close/open cycles with the proxy following each one.
 ///  - Owner leaves the room with the tablet open: no orphan proxy on the stayer.
 ///  - Late join: Player2 opens the tablet alone in a private room; main joins by code and must show the proxy.
 ///  - Private expedition, both aboard, train moving: a tablet riding in the cabin is mode 4 and stays at the same
@@ -42,6 +44,11 @@ public static class RailLIVCameraLiveChecks
         public float speed;
         public Vector3 tabletPos, tabletLocal, proxyPos, proxyLocal;
         public Quaternion tabletRot, tabletLocalRot, proxyRot, proxyLocalRot;
+        // Real tablet visibility (hide-not-deactivate semantics). Ints: -1 unknown, 0 false, 1 true.
+        public bool rootActive, visible, grabEnabled, hasXr, xrEnabled, bodyCollide, handHeld;
+        public int renderers, renderersOn, canvasesOn, heldAtClose = -1, grabWhenClosed = -1, grabWhenOpen = -1;
+        public Vector3 rootPos, openRel;
+        public float openFacing;
     }
 
     const string Key = "Rails.LIVCameraLive";
@@ -54,10 +61,12 @@ public static class RailLIVCameraLiveChecks
     static string LivePath(string role) => Folder + "/" + role + "-live.json";
 
     const float PosTolerance = .05f, AngleTolerance = 3f;
-    // Steps. Each compound pass is six steps: open, move, held, close, reopen, close.
-    const int Init = 0, GatherStep = 1, PassMain = 2, PassP2 = 8, LeaveOpen = 14, Leave = 15, LoneOpen = 16, LateJoin = 17,
-        Depart = 18, TrainP2 = 19, TrainMain = 20, Placed = 21, OffTrain = 22, Done = 23;
-    static readonly string[] PassNames = { "open", "move+settle", "held", "close", "reopen", "close (cleanup)" };
+    // Steps. Each compound pass is seven steps: open, move, held, close while held, reopen, 3x close/open cycles, close.
+    // Closing hides the tablet (TabletGrab.IsVisible false) and keeps its GameObject active for LIV recording continuity.
+    const int PassLen = 7, Init = 0, GatherStep = 1, PassMain = 2, PassP2 = PassMain + PassLen, LeaveOpen = PassP2 + PassLen, Leave = LeaveOpen + 1,
+        LoneOpen = Leave + 1, LateJoin = LoneOpen + 1, Depart = LateJoin + 1, TrainP2 = Depart + 1, TrainMain = TrainP2 + 1, Placed = TrainMain + 1,
+        OffTrain = Placed + 1, Done = OffTrain + 1, Cycles = 3;
+    static readonly string[] PassNames = { "open", "move+settle", "held", "close while held", "reopen", "close/open x3", "close (cleanup)" };
 
     static Control control;
     static string token, networkState, last = "", lastError = "";
@@ -223,8 +232,12 @@ public static class RailLIVCameraLiveChecks
 
     static PauseMenu Menu => UnityEngine.Object.FindObjectsByType<PauseMenu>(FindObjectsInactive.Include, FindObjectsSortMode.None).FirstOrDefault(m => m != null && m.cameraTablet != null);
     static Transform TabletRoot => Menu?.cameraTablet?.transform;
-    static bool TabletOpen => TabletGrab.Local != null && TabletGrab.Local.isActiveAndEnabled;
+    // A closed tablet stays active but hidden (IsVisible false).
+    static bool TabletOpen => TabletGrab.Local != null && TabletGrab.Local.isActiveAndEnabled && TabletGrab.Local.IsVisible;
     static RigidbodyInterpolation? savedInterpolation;
+    static int heldAtClose = -1, grabWhenClosed = -1, grabWhenOpen = -1;
+    static Vector3 openRel;
+    static float openFacing;
 
     static void FrontPose(float side, float yaw, out Vector3 position, out Quaternion rotation)
     {
@@ -249,6 +262,16 @@ public static class RailLIVCameraLiveChecks
         if (TabletOpen) CloseTablet();
         menu.OpenCameraTablet();
         if (!TabletOpen) { last = "OpenCameraTablet did not open the tablet"; return false; }
+        {
+            // Pose chosen by OpenCameraTablet, relative to the flat head frame (x right, y up, z forward).
+            var head = Camera.main.transform;
+            var f = Vector3.ProjectOnPlane(head.forward, Vector3.up).normalized;
+            var right = Vector3.Cross(Vector3.up, f);
+            var d = TabletRoot.position - head.position;
+            openRel = new Vector3(Vector3.Dot(d, right), d.y, Vector3.Dot(d, f));
+            openFacing = Vector3.Angle(TabletRoot.forward, -f);
+            Log("RECALL pose head-relative " + openRel.ToString("F2") + " facing error " + openFacing.ToString("F1") + " deg");
+        }
         FrontPose(side, yaw, out var p, out var r);
         Place(p, r);
         Log("OPEN tablet at " + p.ToString("F2") + " yaw " + r.eulerAngles.y.ToString("F0") + " " + Where());
@@ -292,6 +315,25 @@ public static class RailLIVCameraLiveChecks
         l.speed = RailTrain.Instance != null ? RailTrain.Instance.Speed : 0;
         l.aboard = RailTrain.TryPassengerFrame(out _);
         l.open = TabletOpen;
+        var root = TabletRoot;
+        if (root != null)
+        {
+            l.rootActive = root.gameObject.activeInHierarchy;
+            l.rootPos = root.position;
+            var tg = root.GetComponent<TabletGrab>();
+            l.visible = tg != null && tg.IsVisible;
+            var rs = root.GetComponentsInChildren<Renderer>(true);
+            l.renderers = rs.Length; l.renderersOn = rs.Count(x => !x.forceRenderingOff);
+            l.canvasesOn = root.GetComponentsInChildren<Canvas>(true).Count(x => x.enabled);
+            var g = root.GetComponent<Grabbable>();
+            l.grabEnabled = g != null && g.enabled && g.CanBeGrabbed;
+            var xr = root.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
+            l.hasXr = xr != null; l.xrEnabled = xr != null && xr.enabled;
+            var rb = root.GetComponent<Rigidbody>();
+            l.bodyCollide = rb != null && rb.detectCollisions;
+        }
+        l.handHeld = GR.Player.instance != null && GR.Player.instance.rightPlayerHand != null && GR.Player.instance.rightPlayerHand.Held != null;
+        l.heldAtClose = heldAtClose; l.grabWhenClosed = grabWhenClosed; l.grabWhenOpen = grabWhenOpen; l.openRel = openRel; l.openFacing = openFacing;
         if (l.open)
         {
             var t = TabletGrab.Local.transform;
@@ -363,6 +405,7 @@ public static class RailLIVCameraLiveChecks
             {
                 revision = control.revision; entered = Now; seenSub = 0;
                 action = action2 = false; readySince = Ready ? readySince : 0; okSince = -1; last = ""; stage = 0; stageAt = Now; acted = 0;
+                heldAtClose = grabWhenClosed = grabWhenOpen = -1;
                 samples = phase = baseEv = baseSeq = baseRecvSeq = modeSwitches = 0; maxErr = sumErr = maxAng = pathLen = maxWorld = 0; phaseAt = 0; hasLastProxy = false; modesSeen = "";
                 Log("step=" + control.step + " " + StepName(control.step) + " owner=" + OwnerOf(control.step));
             }
@@ -383,7 +426,7 @@ public static class RailLIVCameraLiveChecks
         step >= PassMain && step < PassP2 ? "main" : step >= PassP2 && step < Depart ? "player2"
         : step == TrainP2 || step == Placed ? "player2" : step == TrainMain || step == OffTrain ? "main" : "";
     static string StepName(int step) =>
-        step >= PassMain && step < LeaveOpen ? "compound " + PassNames[(step - PassMain) % 6] :
+        step >= PassMain && step < LeaveOpen ? "compound " + PassNames[(step - PassMain) % PassLen] :
         step == LeaveOpen ? "leave: owner opens" : step == Leave ? "owner leaves the room" : step == LoneOpen ? "late join: owner opens alone" :
         step == LateJoin ? "late join: newcomer" : step == Depart ? "private departure and boarding" : step == TrainP2 ? "train-local (owner player2)" :
         step == TrainMain ? "train-local (owner main)" : step == Placed ? "placed in the cabin and left on the moving train" :
@@ -411,7 +454,7 @@ public static class RailLIVCameraLiveChecks
         }
         if (step >= PassMain && step < LeaveOpen)
         {
-            int s = (step - PassMain) % 6;
+            int s = (step - PassMain) % PassLen;
             if (s == 0 && stage == 0 && Ready) { StandAway(); SetStage(1); return; }
             if (!IsOwner || !Ready) return;
             var hand = GR.Player.instance.rightPlayerHand;
@@ -448,9 +491,42 @@ public static class RailLIVCameraLiveChecks
                         SetStage(2); Log("WARP rig 1.5 m forward while holding the tablet");
                     }
                     break;
-                case 3: if (stage == 0) { if (hand.Held != null) hand.Release(); CloseTablet(); SetStage(1); } break;
-                case 4: if (stage == 0 && OpenAt(.5f, 30)) SetStage(1); break;
-                case 5: if (stage == 0) { CloseTablet(); SetStage(1); } break;
+                case 3:
+                    // Close while still holding: CloseCameraTablet must release it, then a grab of the hidden tablet must fail.
+                    if (stage == 0)
+                    {
+                        var g = TabletGrab.Local?.GrabSource;
+                        heldAtClose = g != null && g.Holder == hand ? 1 : 0;
+                        CloseTablet();
+                        bool grabbed = g != null && hand.ForceGrab(g);
+                        grabWhenClosed = grabbed ? 1 : 0;
+                        if (grabbed) hand.Release();
+                        Log("CLOSE while held=" + heldAtClose + "; hand holds after close=" + (hand.Held != null) + "; ForceGrab of hidden tablet=" + grabbed
+                            + "; root active=" + TabletRoot.gameObject.activeSelf + " visible=" + TabletRoot.GetComponent<TabletGrab>().IsVisible);
+                        SetStage(1);
+                    }
+                    break;
+                case 4:
+                    if (stage == 0 && OpenAt(.5f, 30))
+                    {
+                        var g = TabletGrab.Local.GrabSource;
+                        bool grabbed = hand.ForceGrab(g) && g.Holder == hand;
+                        grabWhenOpen = grabbed ? 1 : 0;
+                        if (hand.Held != null) hand.Release();
+                        FrontPose(.5f, 30, out var p, out var r); Place(p, r);
+                        Log("REOPEN ForceGrab=" + grabbed + " then released and placed at " + p.ToString("F2"));
+                        SetStage(1);
+                    }
+                    break;
+                case 5:
+                    {
+                        int want = control.sub;
+                        if (want >= Cycles * 2 || stage != want) break;
+                        if (want % 2 == 0) { CloseTablet(); SetStage(want + 1); }
+                        else if (OpenAt(want == 1 ? -.4f : want == 3 ? .4f : 0, want * 15)) SetStage(want + 1);
+                    }
+                    break;
+                case 6: if (stage == 0) { CloseTablet(); SetStage(1); } break;
             }
             return;
         }
@@ -567,6 +643,22 @@ public static class RailLIVCameraLiveChecks
         if (e > PosTolerance || a > AngleTolerance) return "pose error " + F(e) + " / " + a.ToString("F2") + " deg";
         return null;
     }
+    static string Vis(Live o) => "active=" + o.rootActive + " visible=" + o.visible + " renderers on " + o.renderersOn + "/" + o.renderers + " canvases on " + o.canvasesOn
+        + " grabbable=" + o.grabEnabled + " xr=" + o.xrEnabled + " collide=" + o.bodyCollide + " handHeld=" + o.handHeld;
+    // Owner's real tablet visible and usable.
+    static string Shown(Live o) =>
+        !o.rootActive ? "owner tablet inactive" : !o.visible ? "owner tablet not visible" : o.renderers == 0 || o.renderersOn != o.renderers ? "owner renderers forced off: " + Vis(o)
+        : !o.grabEnabled || o.hasXr && !o.xrEnabled || !o.bodyCollide ? "owner tablet not grabbable: " + Vis(o) : null;
+    // Owner's real tablet hidden but alive, observer proxy hidden.
+    static string Closed(Live o, Live x) =>
+        o.open ? "owner still open" : !o.rootActive ? "owner tablet GameObject deactivated (expected active+hidden)" : o.visible ? "owner IsVisible still true"
+        : o.renderers == 0 || o.renderersOn != 0 ? "owner renderers not all forceRenderingOff: " + Vis(o) : o.grabEnabled || o.xrEnabled ? "owner hidden tablet still grabbable: " + Vis(o)
+        : o.bodyCollide ? "owner hidden tablet still collides: " + Vis(o) : o.handHeld ? "owner hand still holding" : o.held ? "owner tablet held"
+        : o.sentMode != 0 ? "owner sentMode " + o.sentMode : x.activeProxyCount != 0 ? "observer active proxies: " + x.proxies : x.recvMode != 0 ? "observer recvMode " + x.recvMode : null;
+    // OpenCameraTablet recall pose: in front of the head (flat frame), facing the player.
+    static string Recall(Live o) =>
+        o.openRel.z < .3f || o.openRel.z > 2f || Mathf.Abs(o.openRel.x) > .6f || o.openRel.y < -1.2f || o.openRel.y > .6f || o.openFacing > 10f
+            ? "recall pose not in front of the head: rel " + o.openRel.ToString("F2") + " facing " + o.openFacing.ToString("F1") + " deg" : null;
     static string Pose(Live o, Live x) => "err " + F(Err(o, x)) + " / " + Ang(o, x).ToString("F3") + " deg, owner sentMode " + o.sentMode + " seq " + o.seq + ", observer recvMode " + x.recvMode + " seq " + x.recvSeq;
 
     static void Evaluate(double age)
@@ -601,17 +693,23 @@ public static class RailLIVCameraLiveChecks
         }
         if (step >= PassMain && step < LeaveOpen)
         {
-            int s = (step - PassMain) % 6;
+            int s = (step - PassMain) % PassLen;
             if (o.revision != revision) return;
             switch (s)
             {
                 case 0:
                 case 4:
                     if (o.stage < (s == 0 ? 2 : 1)) return;
-                    if (!Stable(() => ShowsProxy(o, x), 2)) return;
+                    if (!Stable(() => ShowsProxy(o, x) ?? Shown(o), 2)) return;
                     float moved = Vector3.Distance(x.proxyPos, openPos);
                     if (s == 4 && moved < .3f) { last = "reopened proxy only " + F(moved) + " from the first pose"; return; }
-                    Check(true, name, "one active '" + x.proxies + "' on observer, none on owner; " + Pose(o, x) + (s == 4 ? "; new pose " + F(moved) + " from the first open" : ""));
+                    if (s == 4)
+                    {
+                        string bad = o.grabWhenOpen != 1 ? "ForceGrab after reopen=" + o.grabWhenOpen : Recall(o);
+                        if (bad != null) { Check(false, name, bad + " | " + Pose(o, x)); return; }
+                    }
+                    Check(true, name, "one active '" + x.proxies + "' on observer, none on owner; " + Pose(o, x) + "; owner " + Vis(o)
+                        + (s == 4 ? "; ForceGrab ok; recall head-relative " + o.openRel.ToString("F2") + " facing " + o.openFacing.ToString("F1") + " deg; new pose " + F(moved) + " from the first open" : ""));
                     // Keep the first-open pose to compare the reopen against.
                     openPos = x.proxyPos;
                     return;
@@ -670,12 +768,40 @@ public static class RailLIVCameraLiveChecks
                         + "; event-120 during hand motion " + (x.ev120 - baseEv));
                     return;
                 case 3:
-                case 5:
+                case 6:
                     if (o.stage < 1) return;
-                    if (!Stable(() => o.open ? "owner still open" : o.sentMode != 0 ? "owner sentMode " + o.sentMode : x.activeProxyCount != 0 ? "observer active proxies: " + x.proxies
-                        : x.recvMode != 0 ? "observer recvMode " + x.recvMode : null, 2)) return;
-                    Check(true, name, "observer proxy " + (x.proxyExists ? "present but inactive" : "absent") + " (" + x.proxies + "), recvMode 0");
+                    if (phase == 0) { phase = 1; refPos = o.rootPos; }
+                    if (!Stable(() => Closed(o, x) ?? (s == 3 && o.heldAtClose != 1 ? "owner was not holding at close (" + o.heldAtClose + ")"
+                        : s == 3 && o.grabWhenClosed != 0 ? "ForceGrab of hidden tablet returned " + o.grabWhenClosed : null), 2)) return;
+                    Check(true, name, (s == 3 ? "closed while held -> released (hand empty), ForceGrab of hidden tablet refused; " : "") + "owner " + Vis(o)
+                        + ", hidden root drift " + F(Vector3.Distance(refPos, o.rootPos)) + "; observer proxy " + (x.proxyExists ? "present but inactive" : "absent") + " (" + x.proxies + "), recvMode 0");
                     return;
+                case 5:
+                    {
+                        int k = control.sub;
+                        if (k >= Cycles * 2)
+                        {
+                            Check(true, name, Cycles + " close/open cycles in sync: " + modesSeen);
+                            return;
+                        }
+                        if (phase == 0) { phase = 1; phaseAt = Now; }
+                        if (o.stage != k + 1) return;
+                        bool open = k % 2 == 1;
+                        if (!Stable(() =>
+                        {
+                            if (!open) return Closed(o, x);
+                            string f = ShowsProxy(o, x) ?? Shown(o);
+                            if (f != null) return f;
+                            float d = Vector3.Distance(x.proxyPos, openPos);
+                            return d < .2f ? "cycle proxy only " + F(d) + " from the previous open pose" : null;
+                        }, 1)) return;
+                        string summary = (open ? "open" : "close") + (k / 2 + 1) + " " + (Now - phaseAt - 1).ToString("F1") + "s";
+                        modesSeen += (modesSeen.Length > 0 ? ", " : "") + summary + (open ? " err " + F(Err(o, x)) : "");
+                        Log("  cycle " + summary + ": owner " + Vis(o) + "; observer active " + x.activeProxyCount + " recvMode " + x.recvMode + (open ? "; " + Pose(o, x) : ""));
+                        if (open) openPos = x.proxyPos;
+                        okSince = -1; phaseAt = Now; SetSub(k + 1);
+                        return;
+                    }
             }
             return;
         }

@@ -1,5 +1,25 @@
 # Duckz port history
 
+## 547194e09ee375fa9a334a28c1ac30dee54ddc6d — LIV recording continuity on tablet close/recall
+
+- Status: implemented; editor checks and a two-client real-Photon MPPM run passed November 22, 2026.
+  Actual recording continuity and headset acceptance queued for playtest.
+- Behavior: closing the camera tablet hides it (renderers, canvases, grab, collisions, LIV preview) instead of
+  deactivating it, so an active LIV recording keeps running; recall places it relative to the current head pose;
+  a hidden tablet syncs as closed to other players; LIV buttons no longer fail on focus callbacks before Start.
+- Destination: `Items/TabletGrab.cs` (`IsVisible`, `SetVisible`), `UI/PauseMenu.cs` (Start/Open/Close, `TryGetTabletPose`),
+  `Photon/PhotonLIVCamera.cs` (hidden = closed), `Packages/tv.liv.lck/.../LckButton.cs`, `LIVCameraChecks` (visibility
+  section), `RailLIVCameraLiveChecks` (close/reopen/hold-close/cycle checks).
+- Adaptations: dropped `Grabbable.NotifyCargoGeometryChanged` (Duckz helicopter cargo, absent in Rails). Rails `SnapTabletBody`
+  already had the kinematic guard. `PauseMenu` summon-frame train carry is untouched. Not ported: `LIVTabletPlayChecks`
+  and `Tools/LIVCameraValidation/*` (native-recording/Quest harness that needs a disposable copy project and a headset).
+- Validation: `LIVCameraChecks` 90/90. Two MPPM clients, both owner roles, 20/20 live checks: close while held releases
+  it, object stays active, 0/23 renderers draw, grab refused; reopen 0.48 m in front of the head, grabbable; observer proxy
+  tracked three close/open cycles within 0.6 s at 0.00 cm; earlier proxy scenarios still pass. No new Console errors.
+- Remaining: a real LIV recording across close/recall (LCK needs DX11/Vulkan; the editor runs DX12), Quest headsets, and the
+  scene-start path where the tablet begins active. See [playtest queue](playtest-queue.md#liv-recording-continuity-on-tablet-closerecall--queued-2026-11-22).
+- Destination commit: the commit introducing this entry (see Git history).
+
 ## 35ea28d9250f82a70e18dcd34e7ffd5a2ad5aed4 — Network-visible low-poly LIV camera proxy
 
 - Status: implemented; editor checks and a two-client real-Photon MPPM run passed November 22, 2026.

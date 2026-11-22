@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using ExitGames.Client.Photon;
+using Game.Animation;
 using Photon.Pun;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -156,12 +157,105 @@ public static class LIVCameraChecks
             Call(sync, "Accept", state.Pack(9), 41);
             Check(Get<PhotonLIVCamera.CameraState>(sync, "received").TrainLocal
                 && Get<Vector3>(sync, "shownPosition") == state.position, "boarding snapshot snaps to train-local pose");
+            CheckTabletVisibility(scene, sync, player, prop);
             Call(sync, "OnDisable");
             Check(!Get<bool>(sync, "hasReceived"), "avatar teardown clears remote state");
             PassedChecks = checks;
             Debug.Log("LIV_CAMERA_CHECKS_PASS " + checks);
         }
         finally { EditorSceneManager.ClosePreviewScene(scene); }
+    }
+
+    static void CheckTabletVisibility(UnityEngine.SceneManagement.Scene scene, PhotonLIVCamera sync, PhotonPlayer player, RemoteLIVCamera proxy)
+    {
+        var previousLocal = TabletGrab.Local;
+        var root = (GameObject)PrefabUtility.InstantiatePrefab(
+            AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Interface/CameraTablet.prefab"), scene);
+        var tablet = root.GetComponent<TabletGrab>();
+        foreach (var button in root.GetComponentsInChildren<Liv.Lck.UI.LckButton>(true))
+        {
+            typeof(Liv.Lck.UI.LckButton).GetField("_propertyBlock", Hidden).SetValue(button, null);
+            typeof(Liv.Lck.UI.LckButton).GetField("_colorId", Hidden).SetValue(button, 0);
+            Call(button, "OnApplicationFocus", true);
+            Check(Get<MaterialPropertyBlock>(button, "_propertyBlock") != null
+                && Get<int>(button, "_colorId") == Shader.PropertyToID("_Color"),
+                "LIV button handles initial focus before Start: " + button.name);
+        }
+        var grab = root.GetComponent<Grabbable>();
+        var body = root.GetComponent<Rigidbody>();
+        var renderers = root.GetComponentsInChildren<Renderer>(true);
+        var canvases = root.GetComponentsInChildren<Canvas>(true);
+        var hidden = renderers.Select(r => r.forceRenderingOff).ToArray();
+        var canvasEnabled = canvases.Select(c => c.enabled).ToArray();
+        bool collisionEnabled = body.detectCollisions;
+        Call(grab, "Awake"); Call(tablet, "Awake"); Call(tablet, "OnEnable");
+        var captureCameras = root.GetComponentsInChildren<Liv.Lck.LckCamera>(true);
+        typeof(PhotonLIVCamera).GetField("visual", Hidden).SetValue(sync, proxy);
+        try
+        {
+            root.transform.position = new Vector3(30, 2, 20);
+            var opened = (PhotonLIVCamera.CameraState)Call(sync, "Capture");
+            Check(opened.Valid && opened.mode == 1 && opened.position == root.transform.position,
+                "visible owner tablet publishes its world pose");
+            tablet.SetVisible(false); tablet.SetVisible(false);
+            Check(root.activeInHierarchy && tablet.isActiveAndEnabled && captureCameras.All(c => c.isActiveAndEnabled),
+                "closing preserves all capture objects and their lifecycle");
+            Check(renderers.All(r => r.forceRenderingOff) && canvases.All(c => !c.enabled), "closed tablet has no visuals");
+            Check(!grab.CanBeGrabbed && !body.detectCollisions, "closed tablet cannot be grabbed or touch buttons");
+            var closed = (PhotonLIVCamera.CameraState)Call(sync, "Capture");
+            Check(closed.Valid && !closed.Open, "active but hidden capture rig publishes closed proxy state");
+            Call(sync, "Accept", closed.Pack(20), 41);
+            Check(!proxy.gameObject.activeSelf, "close snapshot hides the actual shared proxy model");
+            Call(sync, "Accept", opened.Pack(19), 41);
+            Check(!Get<PhotonLIVCamera.CameraState>(sync, "received").Open, "delayed open cannot undo visibility close");
+            Call(sync, "Accept", closed.Pack(21), 41);
+            Check(!Get<PhotonLIVCamera.CameraState>(sync, "received").Open, "late join snapshot stays closed while capture rig runs");
+
+            root.transform.position = new Vector3(-6, 2, 8);
+            tablet.SetVisible(true); tablet.SetVisible(true);
+            Check(renderers.Select(r => r.forceRenderingOff).SequenceEqual(hidden)
+                && canvases.Select(c => c.enabled).SequenceEqual(canvasEnabled)
+                && body.detectCollisions == collisionEnabled && grab.CanBeGrabbed, "reopen restores presentation and interaction states");
+            opened = (PhotonLIVCamera.CameraState)Call(sync, "Capture");
+            Call(sync, "Accept", opened.Pack(22), 41);
+            Check(Get<PhotonLIVCamera.CameraState>(sync, "received").position == root.transform.position
+                && Get<PhotonLIVCamera.CameraState>(sync, "received").Open
+                && Get<Vector3>(sync, "shownPosition") == root.transform.position, "recalled proxy receives and snaps to its new position");
+            Call(sync, "Accept", closed.Pack(21), 41);
+            Check(Get<PhotonLIVCamera.CameraState>(sync, "received").Open, "old close cannot hide a reopened proxy");
+
+            typeof(PhotonPlayer).GetField("_hasPose", Hidden).SetValue(player, true);
+            typeof(PhotonPlayer).GetField("_lastPose", Hidden).SetValue(player, new BodyPose {
+                lHandPos = root.transform.position + Vector3.left * .2f, lHandRot = Quaternion.Euler(0, 30, 0),
+                rHandPos = root.transform.position + Vector3.right * .2f, rHandRot = Quaternion.Euler(0, -30, 0)
+            });
+            foreach (bool left in new[] { true, false })
+            {
+                var handGO = new GameObject(left ? "Left camera check hand" : "Right camera check hand");
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(handGO, scene);
+                handGO.transform.position = root.transform.position;
+                var hand = handGO.AddComponent<PlayerHand>();
+                hand.controller = left ? OVRInput.Controller.LTouch : OVRInput.Controller.RTouch;
+                Call(hand, "Awake");
+                Check(hand.ForceGrab(grab), "grab visible tablet with " + hand.name);
+                var held = (PhotonLIVCamera.CameraState)Call(sync, "Capture");
+                Check(held.Valid && held.mode == (left ? 2 : 3), "held proxy retains correct hand mode");
+                player.TryGetHandPose(left, out var handPosition, out var handRotation);
+                Check(Vector3.Distance(handPosition + handRotation * held.handPosition, root.transform.position) < .0001f,
+                    "held proxy offset reconstructs owner position");
+                tablet.SetVisible(false);
+                Check(hand.Held == null && !grab.IsHeld && root.transform.parent == null, "closing releases held tablet");
+                Check(!((PhotonLIVCamera.CameraState)Call(sync, "Capture")).Open, "closing held tablet hides its proxy");
+                tablet.SetVisible(true);
+                Check(((PhotonLIVCamera.CameraState)Call(sync, "Capture")).mode == 1, "reopened tablet has world mode, not stale hand attachment");
+            }
+        }
+        finally
+        {
+            typeof(PhotonLIVCamera).GetField("visual", Hidden).SetValue(sync, null);
+            Call(tablet, "OnDisable");
+            if (previousLocal != null) Call(previousLocal, "OnEnable");
+        }
     }
 
     static Bounds GripBounds(Vector3[] vertices, int side)

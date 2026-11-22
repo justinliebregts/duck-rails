@@ -1,5 +1,13 @@
 # Playtest queue
 
+## LIV recording continuity on tablet close/recall — queued 2026-11-22
+
+- Changed: Duckz `547194e0` port. Closing the camera tablet now hides it instead of switching it off, and recall
+  places it in front of your head.
+- Editor evidence: two MPPM clients passed close/reopen/held-close/cycle checks; details in `duckz-ports.md`.
+- Check on Quest: start a LIV recording, close the tablet from the pause menu, walk around, recall it, stop recording;
+  the saved clip should be one continuous recording with good audio. Also confirm the tablet comes back in front of you.
+
 ## Cross-block enemy pursuit — queued for playtest, 2026-11-22
 
 - Unity Edit Mode found complete ground paths in both directions at x = -24, 0 and 24 m across 17 catalogue joins (102 searches). In offline Play Mode a minion chased across Motel/Farm and back 24 m from the centerline ([play log](validation/track-crossing/block-seam.txt)). Check actual movement on two clients across a seam, reverse repeatedly, break sight and watch the enemy walk home. Repeat with a master handoff and confirm boarding eligibility stays minion/spider only.
