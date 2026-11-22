@@ -27,19 +27,31 @@ public sealed class RailRateGame : MonoBehaviour
             RateAndReview.RateAndReviewLauncher().OnComplete(message =>
             {
                 if (this == null) return;
-                SetStatus(message.IsError ? "Could not open the store. Please try again." : "Thanks for sharing your feedback!");
-                if (!message.IsError) return;
+                if (!message.IsError)
+                {
+                    SetStatus("Thanks for sharing your feedback!");
+                    return;
+                }
+                // Meta refuses the native flow for some users (error 1002, "Not allowed to launch
+                // rate and review flow for this user"); fall back to the store listing page.
                 if (DuckzLog.AllowWarning(out var notice, "rate-launcher"))
                     notice.Write("[Rate Game] " + message.GetError().Message);
+                OpenStoreListing();
             });
         }
         catch (Exception exception)
         {
-            SetStatus("Could not open the store. Please try again.");
             if (DuckzLog.AllowWarning(out var notice, "rate-exception"))
                 notice.Write("[Rate Game] " + exception.Message);
+            OpenStoreListing();
         }
 #else
+        OpenStoreListing();
+#endif
+    }
+
+    void OpenStoreListing()
+    {
         string appId = PlatformSettings.MobileAppID;
         if (string.IsNullOrEmpty(appId))
         {
@@ -48,7 +60,6 @@ public sealed class RailRateGame : MonoBehaviour
         }
         Application.OpenURL("https://www.meta.com/experiences/" + appId + "/");
         SetStatus("Store opened. Find Ratings and Reviews.");
-#endif
     }
 
     void SetStatus(string message)
