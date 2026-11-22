@@ -6,6 +6,7 @@ public class SettingsMenu : MonoBehaviour
 {
     public TextMeshPro rotateModeText;
     public TextMeshPro snapAngleText;
+    public TextMeshPro hapticsText;
 
     const string RotateModeKey = "RotateMode";
     const string SnapRotateAmountKey = "SnapRotateAmount";
@@ -44,6 +45,7 @@ public class SettingsMenu : MonoBehaviour
     PauseMenuButton[] pageButtons = System.Array.Empty<PauseMenuButton>();
     PauseMenuButton[] rotateButtons = System.Array.Empty<PauseMenuButton>();
     PauseMenuButton[] snapButtons = System.Array.Empty<PauseMenuButton>();
+    PauseMenuButton[] hapticsButtons = System.Array.Empty<PauseMenuButton>();
     GameObject audioPage;
     GameObject controlsPage;
 
@@ -51,12 +53,14 @@ public class SettingsMenu : MonoBehaviour
     int snapRotateAmount = DefaultSnapRotateAmount;
     int smoothRotateAmount = DefaultSmoothRotateAmount;
     int rotateDeadzoneAmount = DefaultRotateDeadzoneAmount;
+    bool hapticsEnabled = VibrationManager.DefaultHapticsEnabled;
 
     void Awake() {
         // Parent Awake runs before each button Awake, so the row is a radio group.
         pageButtons = BindRow("Buttons", OnPagePressed);
         rotateButtons = BindRow("ControlsPage/Rotate", OnRotatePressed);
         snapButtons = BindRow("ControlsPage/SnapAngle", OnSnapAnglePressed);
+        hapticsButtons = BindRow("ControlsPage/Haptics", OnHapticsPressed);
 
         Transform audio = transform.Find("AudioPage");
         Transform controls = transform.Find("ControlsPage");
@@ -165,11 +169,13 @@ public class SettingsMenu : MonoBehaviour
         snapRotateAmount = UserPlayerPrefs.GetInt(SnapRotateAmountKey, DefaultSnapRotateAmount);
         smoothRotateAmount = UserPlayerPrefs.GetInt(SmoothRotateAmountKey, DefaultSmoothRotateAmount);
         rotateDeadzoneAmount = UserPlayerPrefs.GetInt(RotateDeadzoneAmountKey, DefaultRotateDeadzoneAmount);
+        hapticsEnabled = UserPlayerPrefs.GetInt(VibrationManager.HapticsPrefsKey, VibrationManager.DefaultHapticsEnabled ? 1 : 0) != 0;
     }
 
     void ShowSavedButtons() {
         ShowNamed(rotateButtons, NameForMode(rotateMode));
         ShowNamed(snapButtons, snapRotateAmount.ToString());
+        ShowNamed(hapticsButtons, hapticsEnabled ? "On" : "Off");
         RefreshLabels();
     }
 
@@ -178,6 +184,8 @@ public class SettingsMenu : MonoBehaviour
             rotateModeText.text = "Rotate: " + NameForMode(rotateMode);
         if (snapAngleText != null)
             snapAngleText.text = "Snap Angle: " + snapRotateAmount;
+        if (hapticsText != null)
+            hapticsText.text = "Haptics: " + (hapticsEnabled ? "On" : "Off");
     }
 
     static void ShowNamed(PauseMenuButton[] row, string selectedName) {
@@ -221,6 +229,15 @@ public class SettingsMenu : MonoBehaviour
         UserPlayerPrefs.SetInt(SnapRotateAmountKey, degrees);
         UserPlayerPrefs.Save();
         ApplyToPlayer();
+        ShowSavedButtons();
+    }
+
+    void OnHapticsPressed(PauseMenuButton button) {
+        if (button.name != "On" && button.name != "Off")
+            return;
+
+        hapticsEnabled = button.name == "On";
+        VibrationManager.SetHapticsEnabled(hapticsEnabled);
         ShowSavedButtons();
     }
 

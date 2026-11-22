@@ -102,6 +102,8 @@ public class VibrationManager : MonoBehaviour {
     }
 
     void Update() {
+        if (!CanHaptic) pending.Clear();
+
         // Preserve request order when multiple vibrations become due together.
         for (int i = 0; i < pending.Count;) {
             var request = pending[i];
@@ -140,10 +142,53 @@ public class VibrationManager : MonoBehaviour {
         clips.Clear();
     }
 
-	// bool isOnStandby = false;
+	// ---- Player setting (Settings > Controls > Haptics). Every vibration goes through CanHaptic. ----
+	public const string HapticsPrefsKey = "HapticsEnabled";
+	public const bool DefaultHapticsEnabled = true;
+	static bool hapticsEnabled = DefaultHapticsEnabled;
 
-	// Start is called before the first frame update
-	public bool CanHaptic => true;//GameManager.instance.controllerVibration && !GameManager.instance.OnStandby();
+	public static bool HapticsEnabled => hapticsEnabled;
+
+	// Restore the saved choice as soon as account prefs exist, before any menu opens.
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+	static void BootHapticsSetting() {
+		hapticsEnabled = DefaultHapticsEnabled;
+		UserPlayerPrefs.UserReady -= LoadSavedHapticsSetting;
+		UserPlayerPrefs.UserReady += LoadSavedHapticsSetting;
+		if (UserPlayerPrefs.IsReady)
+			LoadSavedHapticsSetting();
+	}
+
+	public static void LoadSavedHapticsSetting() {
+		ApplyHapticsEnabled(UserPlayerPrefs.GetInt(HapticsPrefsKey, DefaultHapticsEnabled ? 1 : 0) != 0);
+	}
+
+	/// <summary>Saves the player's choice. Turning haptics off also stops anything running now.</summary>
+	public static void SetHapticsEnabled(bool enabled) {
+		UserPlayerPrefs.SetInt(HapticsPrefsKey, enabled ? 1 : 0);
+		UserPlayerPrefs.Save();
+		ApplyHapticsEnabled(enabled);
+	}
+
+	static void ApplyHapticsEnabled(bool enabled) {
+		hapticsEnabled = enabled;
+		if (!enabled && instance != null)
+			instance.StopAllVibration();
+	}
+
+	/// <summary>Drops queued requests and silences both controllers.</summary>
+	public void StopAllVibration() {
+		pending.Clear();
+		for (int i = 0; i < pulseEndTimes.Length; i++)
+			pulseEndTimes[i] = -1f;
+		if (!Application.isPlaying)
+			return;
+		OVRInput.SetControllerVibration(0f, 0f, OVRInput.Controller.LTouch);
+		OVRInput.SetControllerVibration(0f, 0f, OVRInput.Controller.RTouch);
+		ClearAllVibration();
+	}
+
+	public bool CanHaptic => hapticsEnabled;
 
 	void Start() {
 		if (instance && instance != this) {
@@ -219,6 +264,7 @@ public class VibrationManager : MonoBehaviour {
 	}
 	
 	public void TriggerVibration(float frequency, float amplitude, PlayerHand pHand, float delay = 0f) {
+		if (!CanHaptic) return;
 
 		if (delay == 0f) {
 			DoTriggerVibration(frequency, amplitude, pHand);

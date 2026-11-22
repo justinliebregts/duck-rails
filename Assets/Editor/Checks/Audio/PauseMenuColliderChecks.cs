@@ -65,7 +65,7 @@ public static class PauseMenuColliderChecks
             Require(EditorApplication.timeSinceStartup - started < 120, "Physics checks timed out.");
             if (checks.MoveNext()) return;
             Require(physicsWarnings.Count == 0, "Negative collider warning: " + string.Join("\n", physicsWarnings));
-            Debug.Log("PauseMenuColliderChecks PASS: 38 control hitboxes, positive effective scale, original bounds, tab switching, 34 physical button enter/exit and desktop targets, four slider contacts/mapping, cloned mute row, zero negative-scale warnings.");
+            Debug.Log("PauseMenuColliderChecks PASS: 48 control hitboxes, positive effective scale, original bounds, tab switching, 44 physical button enter/exit and desktop targets, four slider contacts/mapping, cloned mute row, zero negative-scale warnings.");
             Finish(0);
         }
         catch (Exception error) { Debug.LogException(error); Finish(1); }
@@ -82,8 +82,8 @@ public static class PauseMenuColliderChecks
     static void CheckGeometry(GameObject root)
     {
         var boxes = root.GetComponentsInChildren<BoxCollider>(true);
-        Require(boxes.Length == 39, "38 controls plus original grab collider.");
-        Require(root.GetComponentsInChildren<PauseMenuButton>(true).Length == 34, "34 buttons including mute template.");
+        Require(boxes.Length == 49, "48 controls plus original grab collider.");
+        Require(root.GetComponentsInChildren<PauseMenuButton>(true).Length == 44, "44 buttons including mute template.");
         Require(root.GetComponentsInChildren<PauseMenuSlider>(true).Length == 4, "Four sliders.");
         foreach (var box in boxes)
         {
