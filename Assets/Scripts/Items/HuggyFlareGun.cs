@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.AI;
+using Game.Audio;
 using Photon.Pun;
 using UnityEngine;
 
@@ -21,11 +22,16 @@ public sealed class HuggyFlareGun : MonoBehaviour, IPunObservable
     [Tooltip("Hit speed given to an enemy a flare strikes, above that enemy's minimum hit speed.")]
     [SerializeField, Min(0f)] float enemyHitExtraSpeed = 2.5f;
 
+    [Tooltip("Played at the muzzle on every peer when a flare is fired, in addition to the flare's own launch sound.")]
+    [SerializeField] SoundEvent fireSound;
+    [Tooltip("Played at the gun on every peer when the recharge completes.")]
+    [SerializeField] SoundEvent reloadReadySound;
+
     PhotonGrabbable grabbable;
     PhotonView view;
     Renderer fillRenderer;
     int lastShotAt;
-    bool hasShot;
+    bool hasShot, wasCharged = true;
     int nextShotNumber;
     readonly Dictionary<int, DeathFlare> shots = new Dictionary<int, DeathFlare>();
     readonly List<int> stale = new List<int>();
@@ -48,6 +54,16 @@ public sealed class HuggyFlareGun : MonoBehaviour, IPunObservable
         PlayerHand hand = grabbable.Holder;
         if (hand != null && !grabbable.IsStashed && hand.WasUsePressed && IsCharged) Fire(hand);
         if (shots.Count > 0) PruneShots();
+        TrackReload();
+    }
+
+    // Every peer knows the shot time, so each one hears the ready cue when the charge completes.
+    void TrackReload()
+    {
+        bool charged = IsCharged;
+        if (charged && !wasCharged && reloadReadySound != null && AudioManager.instance != null)
+            AudioManager.instance.PlayAttached(reloadReadySound, transform, this);
+        wasCharged = charged;
     }
 
     void LateUpdate()
@@ -82,6 +98,9 @@ public sealed class HuggyFlareGun : MonoBehaviour, IPunObservable
         if (flare == null) return;
         flare.ShotKey = key;
         shots[key] = flare;
+        // Fresh shots only; a late copy of an old shot stays silent.
+        if (age < 0.5f && fireSound != null && AudioManager.instance != null)
+            AudioManager.instance.Play(fireSound, origin);
     }
 
     void OnShooterEnemyHit(DeathFlare flare, Enemy enemy, Vector3 position, Vector3 deflected, float age)
