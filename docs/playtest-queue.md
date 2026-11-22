@@ -1,5 +1,10 @@
 # Playtest queue
 
+## Quackbear lips on the equipped avatar — queued 2026-11-22
+
+- Fix: `Skin_Quackbear.prefab` still carried a 90 degree X rotation on `Lips_Quackbear` from before the lips FBX was re-authored (Nov 18), so the lips copied onto the player's head bone sat tilted into the body. They now use Huggy's head-relative pose; `Lip_T` lands at the same spot as Huggy's. Edit-mode numbers only, no Play Mode or headset run. Commit `4d74ad0c8`.
+- Check: equip the Quackbear skin from the store and look down and into a mirror/peer view: the lips sit on the beak at the face, not low on the body, and open and close with voice. A peer and a late joiner see the same. The store wall display (its own baked copy) is unchanged and should still look right.
+
 ## Snap turn may not register until the pause menu has been opened once — queued 2026-11-22, retest only
 
 - Reported by Justin as a possible bug, not reproduced and not investigated. No code change, so this is a retest to confirm or rule it out before anyone looks for a cause.
