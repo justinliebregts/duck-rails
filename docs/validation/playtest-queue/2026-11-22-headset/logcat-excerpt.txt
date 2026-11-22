@@ -1,0 +1,76 @@
+# Duck Rails 0.4.0 (400) production APK - Quest 3 launch logcat excerpt
+# adb logcat -v time, PID 12047, ~125 s after 'am start' at PC 18:21:16 MST (headset clock reads 17:21).
+# Trimmed to relevant lines. Removed: Meta platform 'Message data:' lines (user IDs, nonce, attestation token), stack-frame lines, XR extension dumps.
+# Headset not worn: proximity simulated with vrpowermanager.prox_close, restored to prox_far afterwards.
+
+## Startup / build identity
+11-21 17:21:17.889 I/Unity   (12047): ApplicationInfo 'com.gunraiders.duckrails', Version '0.4.0', Min API Level '32', Target API Level '32'
+11-21 17:21:17.889 I/Unity   (12047): Built from '6000.3/staging' branch, Version '6000.3.24f1 (4e7b9b5b6244)', Build type 'Release', Scripting Backend 'il2cpp', CPU 'arm64-v8a', Stripping 'Enabled'
+11-21 17:21:17.889 I/Unity   (12047): Device Model 'Oculus Quest 3', OS 'Android OS 14 (API 34)'
+11-21 17:21:18.339 I/Unity   (12047): Product Name: Duck Rails
+11-21 17:21:20.360 I/Unity   (12047): [MetaXRFeature] OnSessionBegin: 81
+11-21 17:21:20.360 I/Unity   (12047): Meta.XR.MetaXRFeature:OnSessionBegin(UInt64)
+11-21 17:21:20.361 I/OVRPlugin(12047): ovrp_UnityOpenXR_OnSessionBegin(81)
+11-21 17:21:28.297 I/Unity   (12047): Unity v6000.3.24f1, Oculus Utilities v1.205.0, OVRPlugin v1.205.0, SDK v1.1.59.
+11-21 17:21:28.299 I/Unity   (12047): SystemHeadset Meta_Quest_3, API OpenXR
+11-21 17:21:28.304 I/Unity   (12047): Current display frequency 90, available frequencies [72, 80, 90, 120]
+11-21 17:21:28.638 I/Unity   (12047): [OVRManager] HMDMounted event
+11-21 17:21:28.742 I/Unity   (12047): [MetaXRFeature] OnSessionBegin: 81
+11-21 17:21:28.742 I/Unity   (12047): Meta.XR.MetaXRFeature:OnSessionBegin(UInt64)
+11-21 17:21:28.742 I/OVRPlugin(12047): ovrp_UnityOpenXR_OnSessionBegin(81)
+11-21 17:21:28.799 I/Unity   (12047): Horizon Platform Initialization Complete
+11-21 17:21:28.882 I/Unity   (12047): [OVRManager] TrackingAcquired event
+11-21 17:21:28.931 I/Unity   (12047): [OVRManager] InputFocusAcquired event
+11-21 17:21:34.954 I/Unity   (12047): Unity v6000.3.24f1, Oculus Utilities v1.205.0, OVRPlugin v1.205.0, SDK v1.1.59.
+11-21 17:21:34.955 I/Unity   (12047): SystemHeadset Meta_Quest_3, API OpenXR
+11-21 17:21:34.957 I/Unity   (12047): Current display frequency 72, available frequencies [72, 80, 90, 120]
+
+## Unity warnings/errors from game code (all occurrences, deduplicated with counts)
+     20 x CutePixel SDF lacks U+2014 (em dash), replaced by space in text object [Escapes]
+     20 x CutePixel SDF lacks U+2014 (em dash), replaced by space in text object [Duck]
+     5 x CutePixel SDF lacks U+2014 (em dash), replaced by space in text object [Total]
+     3 x CutePixel SDF lacks U+2014 (em dash), replaced by space in text object [Winner]
+     3 x CutePixel SDF lacks U+2014 (em dash), replaced by space in text object [Details]
+      2 W/Unity   (12047): Local Dimming feature is not supported
+      1 W/Unity   (12047): [XR] XR_META_performance_metrics: Attempted to stop before session ready
+      1 W/Unity   (12047): Your project uses a scriptable render pipeline. You can use Camera.stereoTargetEye only with the built-in renderer.
+      1 W/Unity   (12047): UnityEngine.XR.Management.XRManagerSettings:InitializeLoaderSync
+      1 W/Unity   (12047): Orientation Listener cannot detect orientation.
+      1 W/Unity   (12047): FoveatedRenderingInfo struct size mismatch.
+      1 W/Unity   (12047): ErrorFunctionUnsupported: xrGetInstanceProcAddr failed to get function pointer for 'xrShareSpacesMETA'.
+      1 W/Unity   (12047): ErrorFunctionUnsupported: xrGetInstanceProcAddr failed to get function pointer for 'xrShareSpacesFB'.
+      1 W/Unity   (12047): ErrorFunctionUnsupported: xrGetInstanceProcAddr failed to get function pointer for 'xrHapticParametricGetPropertiesEXTX1'.
+      1 W/Unity   (12047): ErrorFunctionUnsupported: xrGetInstanceProcAddr failed to get function pointer for 'xrGetSpaceTriangleMeshMETA'.
+      1 W/Unity   (12047): ErrorFunctionUnsupported: xrGetInstanceProcAddr failed to get function pointer for 'xrGetSpaceRoomMeshMETA'.
+      1 W/Unity   (12047): ErrorFunctionUnsupported: xrGetInstanceProcAddr failed to get function pointer for 'xrGetSpaceRoomMeshFaceIndicesMETA'.
+      1 W/Unity   (12047): ErrorFunctionUnsupported: xrGetInstanceProcAddr failed to get function pointer for 'xrAgenticRegisterExternalToolMETAX1'.
+      1 W/Unity   (12047): Backend response could not be read: JSON parse error: Invalid value.
+
+## Native E/ lines from the app process (deduplicated)
+      2 E/OVRPlugin(12047): [GetBoundaryVisibility] m_XR_META_boundary_visibility extension is not supported.
+      2 E/OVRPlugin(12047):  (arvr\projects\integrations\OVRPlugin\Src\Util\CompositorOpenXR.cpp:18155)
+      1 E/libosutils(12047): Failed to get real path of file '/sys/devices/soc0/platform_version', err: Permission denied
+      1 E/libosutils(12047): Failed to get real path of file '/sys/devices/soc0/platform_subtype_id', err: Permission denied
+      1 E/libosutils(12047): Failed to get real path of file '/sys/devices/soc0/oem_variant', err: Permission denied
+      1 E/OVRPlugin(12047): xrGetInstanceProcAddr is nullptr
+      1 E/OVRPlugin(12047): ovrp_Media_Initialize failed. OVRMrcLib not loaded
+      1 E/OVRPlugin(12047): ovrp_Media_GetInitialized failed. OVRMrcLib not loaded
+      1 E/OVRPlugin(12047):  (arvr\projects\integrations\OVRPlugin\Src\Util\CompositorOpenXR_Entries.cpp:132)
+      1 E/OVRPlugin(12047):  (arvr\projects\integrations\OVRPlugin\Src\OVR_Plugin_Media.cpp:234)
+      1 E/OVRPlugin(12047):  (arvr\projects\integrations\OVRPlugin\Src\OVR_Plugin_Media.cpp:128)
+      1 E/OVRMrcLib(12047): Unable to load OVRMrcLib
+
+## Java warnings of note
+11-21 17:21:29.901 W/GameAnalytics(12047): Warning/GameAnalytics: java.lang.NoClassDefFoundError: Failed resolution of: Lcom/google/android/gms/appset/AppSet;
+11-21 17:21:29.901 W/System.err(12047): java.lang.NoClassDefFoundError: Failed resolution of: Lcom/google/android/gms/appset/AppSet;
+11-21 17:21:29.902 W/System.err(12047): 	at com.gameanalytics.sdk.GameAnalytics$15.execute(GameAnalytics.java:473)
+
+## Crash / ANR / fatal check (whole device log)
+FATAL EXCEPTION: 0; ANR in com.gunraiders: 0; 'Fatal signal'/tombstone backtrace lines: 0; E/AndroidRuntime: 0. (82 'SIGSEGV' substrings are system MessageExecutionMonitor 'risk of ... SIGSEGV' notices from other PIDs, not crashes.)
+Process 12047 still alive at end of capture (pidof returned 12047); stopped afterwards with am force-stop.
+
+## Frame-rate samples (VrApi, first and last)
+11-21 17:21:30.000 I/VrApi   (12047): FPS=20/72,Prd=35ms,Tear=2,Early=6,Stale=20,Stale2/5/10/max=1/0/1/15,VSnc=1,Lat=-4,Fov=0,CPU4/GPU=3/2,2361/456MHz,OC=3F,TA=0/38/38,SP
+11-21 17:21:31.000 I/VrApi   (12047): FPS=63/72,Prd=46ms,Tear=0,Early=61,Stale=0,Stale2/5/10/max=1/0/0/2,VSnc=1,Lat=-4,Fov=0,CPU4/GPU=2/2,2361/456MHz,OC=3F,TA=0/38/38,SP=
+11-21 17:23:25.000 I/VrApi   (12047): FPS=72/72,Prd=38ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-4,Fov=0,CPU4/GPU=2/2,1382/456MHz,OC=3F,TA=0/38/38,SP=N
+11-21 17:23:26.000 I/VrApi   (12047): FPS=72/72,Prd=38ms,Tear=0,Early=0,Stale=0,Stale2/5/10/max=0/0/0/0,VSnc=1,Lat=-4,Fov=0,CPU4/GPU=2/2,1382/456MHz,OC=3F,TA=0/38/38,SP=N

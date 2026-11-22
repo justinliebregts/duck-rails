@@ -67,6 +67,8 @@
 - In separate Development Build sessions, repeat with an admin and a non-admin.
   Confirm all five Test controls are available to the admin only. Check coal
   and train speed with the admin as both host and peer.
+- **November 21–22, automated: production APK built and launched on Quest; static gate PASS. Headset checks still open.** The 0.4.0 (400) release APK was built through the DuckzBuild steps, with the runtime logging policy passing and no settings changed. Gradle packaging failed transiently once, then the rebuild succeeded. The release IL/IL2CPP/metadata contain no admin request literals, Test button bindings, R3 no-clip toggle or flight code. `RailAdminTools.Available` compiles to `false`, and Submit Bug is present. On Quest 3 (simulated proximity, nobody wearing it), the app reported `Build type 'Release'` and reached the Compound at 72 FPS, with no crash, ANR or missing-asset error over 2 minutes. Minor findings: one unparseable backend response at startup, and CutePixel lacks the em dash in the Compound leaderboard texts. The build is left installed. [Build, scan and logcat evidence](validation/playtest-queue/2026-11-22-headset/build-summary.md)
+  - **Still needs Justin on Quest (this production build):** as an admin and as a non-admin, check that the pause menu has no Test tab, R3 does nothing beyond normal locomotion, and Settings shows Submit Bug. Then host a fresh production run and confirm that coal deposits fuel normally and the train cruises at 4 m/s. The Development Build half of this entry is unchanged.
 
 ## Resting items no longer "hit" players riding the train — 2026-11-19
 
