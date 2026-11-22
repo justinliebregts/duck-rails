@@ -1,5 +1,13 @@
 # Playtest queue
 
+## Snap turn may not register until the pause menu has been opened once — queued 2026-11-22, retest only
+
+- Reported by Justin as a possible bug, not reproduced and not investigated. No code change, so this is a retest to confirm or rule it out before anyone looks for a cause.
+- Setup: Quest headset with snap turn selected in Settings (also once with a fresh install or cleared settings). Join Compound, do not open the pause menu, then push the right stick left and right.
+- Check: snap turn should step the view on the first stick press of the session. Repeat after a fresh app launch, after a scene change into an expedition, and after rejoining a room. If it does not turn until the pause menu has been opened once (even if closed straight away), record which of these were true: turn mode shown in Settings, scene, whether any other stick input worked, and how the pause menu was opened. Then report the repro rather than guessing at a fix.
+- Needs human: headset input.
+- Priority: normal. Mode: report-only.
+
 ## Haptics on/off setting — queued 2026-11-22
 
 - New: Settings > Controls > **Haptics** On/Off row (bottom of the Controls page, default On). Saved per user with the other Settings prefs. Every vibration goes through `VibrationManager.CanHaptic`; turning it off also stops any vibration already running. Commit `ac7f01782`. Edit Mode `HapticsSettingChecks` passed (prefab row and CutePixel SDF text, no row overlap, save/reload, manager ignores everything while off and resumes when on). No Play Mode or headset run.
