@@ -1,5 +1,14 @@
 # Playtest queue
 
+## Networked LIV camera proxy — queued 2026-11-22
+
+- Changed: Duckz `35ea28d9` port. Other players see a low-poly proxy of your open LIV camera tablet; on the
+  moving train an unheld tablet in the cabin is synced train-relative.
+- Editor evidence: two MPPM clients on real Photon passed open, move/settle, held (ForceGrab), close/reopen,
+  late join, owner leave and moving-train checks (`RailLIVCameraLiveChecks.Start()`); details in `duckz-ports.md`.
+- Check on Quest with two players: grab the tablet with real grip and wave it; turn follow mode on and ride the
+  moving train; confirm the other player sees it in the right place and it vanishes on close and when you leave.
+
 ## Further reduced Minion/Hook kill triggers — queued 2026-11-22
 
 - Changed: port only Duckz `984e4a8c678ee282fa8bef90e7f91c1b32ef4b50` collider

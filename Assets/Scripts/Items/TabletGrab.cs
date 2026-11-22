@@ -11,9 +11,16 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class TabletGrab : MonoBehaviour
 {
+    // Only the owner's real tablet registers here. Remote cameras are visual-only.
+    public static TabletGrab Local { get; private set; }
+
+    void OnEnable() => Local = this;
+    void OnDisable() { if (Local == this) Local = null; }
+
     [SerializeField] BoxCollider grabCollider;
 
     Grabbable grabbable;
+    public Grabbable GrabSource => grabbable;
     LckTabletFollow follow;
 
     void Awake()

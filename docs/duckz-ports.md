@@ -1,5 +1,30 @@
 # Duckz port history
 
+## 35ea28d9250f82a70e18dcd34e7ffd5a2ad5aed4 — Network-visible low-poly LIV camera proxy
+
+- Status: implemented; editor checks and a two-client real-Photon MPPM run passed November 22, 2026.
+  Headset/real-grip acceptance queued for playtest.
+- Behavior: other players see a visual-only 80-triangle proxy of each player's open LIV camera tablet
+  (placed, following or held), hidden on close, removed when the owner leaves, culled per view at 108 m.
+- Destination: new `Scripts/Photon/PhotonLIVCamera.cs`, `Scripts/Gameplay/RemoteLIVCamera.cs`,
+  `Resources/RemoteLIVCamera.prefab`, `Models/LIVCamera/*`, `Editor/LIVCameraAssetTools.cs`,
+  `Editor/Checks/Networking/LIVCameraChecks.cs`, new live harness `Editor/Checks/Networking/RailLIVCameraLiveChecks.cs`,
+  `Tools/LIVCamera/*` (Blender source, generator, Rails README); edits to `Items/TabletGrab.cs` (`Local`, `GrabSource`),
+  `Photon/PhotonPlayer.cs` (attach component), `PhotonServerSettings.asset` (two RPC names appended). Source GUIDs kept; no collisions.
+- Adaptations: motion event code 120 (source 112 is Rails' `PickupRefreshCode`; a check now asserts uniqueness);
+  no companion check (Rails has no companion); AppVersion not edited (bumped per build). Rails-only mode 4:
+  an unheld tablet inside the train while its owner rides is sent train-local and rebuilt in each peer's synced
+  train frame, so it does not trail the moving train; outside the train it stays a world pose.
+- Validation: `LIVCameraChecks` 63/63 (incl. grip bounds vs Rails `CameraTablet`, train-local mode, event-code uniqueness);
+  compile clean. Two MPPM clients on real Photon, owner role swapped: open 0.00 cm; move/settle exact with zero
+  stationary traffic; held via `ForceGrab` follows remote hand (<0.6 cm); close/reopen; late join via snapshot;
+  owner leave leaves no orphan; moving Expedition train ~4 m/s, cabin tablet mode 4 with 0.00 cm train-relative
+  error over 8 s, off-train tablet mode 1 stays put.
+- Remaining: Quest headsets, real grip input, follow mode on the moving train, network loss. Existing Rails behavior
+  (not this port): a tablet released in a moving cabin is left behind by the train. Source's known LIV SDK quit-time
+  NullReferenceException not investigated here. See [playtest queue](playtest-queue.md#networked-liv-camera-proxy--queued-2026-11-22).
+- Destination commit: the commit introducing this entry (see Git history).
+
 ## 984e4a8c678ee282fa8bef90e7f91c1b32ef4b50 — Further reduced enemy kill triggers
 
 - Status: implemented; Unity EditMode asset validation passed November 22, 2026;

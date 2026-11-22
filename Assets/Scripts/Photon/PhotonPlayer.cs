@@ -180,6 +180,11 @@ public class PhotonPlayer : MonoBehaviourPun, IPunObservable
     {
         BloodDecalSpawner.Prewarm(deathBloodPrefab);
         DeathFlare.Prewarm(deathFlarePrefab);
+        if (!TryGetComponent<PhotonLIVCamera>(out _))
+        {
+            gameObject.AddComponent<PhotonLIVCamera>();
+            photonView.RefreshRpcMonoBehaviourCache();
+        }
         _voiceSource = PhotonVoiceChat.Attach(gameObject, body != null ? body.Head : null);
         if (body != null)
             DuckSkinVisuals.Attach(body.gameObject, DuckSkinSource.Networked);
