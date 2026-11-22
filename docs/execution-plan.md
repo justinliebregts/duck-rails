@@ -130,6 +130,7 @@
 - [ ] Departure bundle natural pulls, checkout, shared cooldowns and headset/multiplayer acceptance: queued for playtest.
 
 - [x] November 12: install Quackbear, Huggy and Scrap Duck bundle assets/displays, separate replaceable bags/weapons and reused two-minute pull cooldowns. Unity compile, 103 EditMode checks and backend economy tests pass; see [character bundles](character-bundles.md).
+- [x] November 20: final Scrap Duck (shovel, 8-slot bag) and Huggy (flare gun, 8-slot bag) art hooked up; EditMode bundle, pickup-pose, shared-store and Huggy flare simulation checks pass. Combat, flare sync and headset acceptance are queued for playtest.
 - [ ] Configure Meta bundle products/prices, deploy backend catalog and validate checkout/restoration, pulls/cooldowns, real peers and headset reach. Queued for playtest; implementation does not complete commerce acceptance.
 
 - [x] November 12: install 25 broad box reverb zones across six selected prefabs; saved reference/settings checks and Console query pass. See [block reverb](block-reverb.md).
