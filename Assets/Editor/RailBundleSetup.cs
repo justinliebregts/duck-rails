@@ -13,7 +13,6 @@ public static class RailBundleSetup
 {
     public const string Folder = "Assets/DuckRails/Economy/Bundles/";
     public const string WeaponFolder = "Assets/Prefabs/Weapons/";
-    const string Module = "Assets/DuckRails/Compound/SubwayV2/Modules/05 Walk-through supplies store.prefab";
     public static readonly string[] Names = { "Quackbear", "Huggy", "ScrapDuck" };
     public static readonly string[] Keys = { "quackbear", "huggy", "scrap_duck" };
     static T Load<T>(string path) where T : Object => AssetDatabase.LoadAssetAtPath<T>(path);
@@ -161,20 +160,6 @@ public static class RailBundleSetup
             finally { Object.DestroyImmediate(root); }
             MatchDuckzLayout();
         }
-        var module = PrefabUtility.LoadPrefabContents(Module);
-        try
-        {
-            if (module.transform.Find("RailBundleWall") == null)
-            {
-                var wall = (GameObject)PrefabUtility.InstantiatePrefab(Load<GameObject>(wallPath), module.transform);
-                wall.transform.localPosition = new Vector3(.7f,0,.95f);
-                // Hide only rear shelf filler; retain existing shelving and side stock.
-                var rear = module.transform.Find("Salvaged shelving");
-                foreach (Transform child in rear) if (child.name.StartsWith("Placeholder stock")) child.gameObject.SetActive(false);
-                PrefabUtility.SaveAsPrefabAsset(module, Module);
-            }
-        }
-        finally { PrefabUtility.UnloadPrefabContents(module); }
         AssetDatabase.SaveAssets(); Debug.Log("Rail bundles installed; gameplay and platform checkout queued for playtest.");
     }
 

@@ -117,8 +117,7 @@ public static class RailSharedStoreSetup
         AssetDatabase.SaveAssets(); AssetDatabase.ImportAsset(scene);
         Validate();
     }
-    // The retired SubwayV2 instance remains inactive and untouched. Install into
-    // the current terminal asset so its existing scene instance inherits the store.
+    // Install into the current terminal asset so its existing scene instance inherits the store.
     // This entry point avoids rewriting the other two stores or either scene.
     [MenuItem("Duck Rails/Store/Install shared store in current Compound")]
     public static void InstallCompoundStore()

@@ -38,10 +38,11 @@ queued for playtest; it is not verified in Play Mode, multiplayer or headset.
   [Station Info](../output/subway-terminal-model/scene-info.png),
   [Supplies](../output/subway-terminal-model/scene-supplies.png),
   [reverse](../output/subway-terminal-model/scene-reverse.png).
-- Known consequences: `Validate Subway Blockout`, `Render Subway Views`, the Compound
-  material pass and `Apply Sample Setup` still target SubwayV2 and were not updated or
-  run. A whole-scene rebuild through `RailSceneBuilder` reinstalls SubwayV2 and drops
-  this swap. Supplies stock is still visual only. Sections below describe SubwayV2.
+- Update November 22: the SubwayV2 editor tooling was removed (builder, blockout checks, Compound
+  material pass and baked-lighting sample pass). `RailSceneBuilder` now installs SubwayTerminal through
+  `RailCompoundInstaller`, so a rebuild no longer brings SubwayV2 back. The disabled SubwayV2 instance and its
+  prefab folders are being deleted by hand. Supplies stock is still visual only. Sections below describe the
+  retired SubwayV2 and are kept as history.
 
 ### Gate faces and wire mesh — November 15, 2026
 
