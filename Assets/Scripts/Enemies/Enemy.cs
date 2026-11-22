@@ -133,6 +133,7 @@ namespace Game.AI
         public Transform Root => root;
         public IGaitDriver Gait => _gait;
         public IEnemyLocomotion Locomotion => _loco;
+        RailEnemyBounds railBounds;
         public RailEnemyBoarding Boarding { get; private set; }
         public bool HitMovementActive => _flying || _shoveActive || _dropActive || _retreatActive || _stunned;
         public bool CanTargetPosition(Vector3 point) => Boarding != null || RailTrain.Instance == null || !RailTrain.Instance.Contains(point);
@@ -271,6 +272,7 @@ namespace Game.AI
             _vocal = GetComponent<IEnemyHitVocal>();
             _loco = GetComponent<IEnemyLocomotion>();
             Boarding = GetComponent<RailEnemyBoarding>();
+            railBounds = GetComponent<RailEnemyBounds>();
             _climb = _loco as ClimbLocomotion;
             _ground = _loco as GroundLocomotion;
             _jump = GetComponent<ZombieSmasherJump>();
@@ -642,7 +644,7 @@ namespace Game.AI
             switch (CurrentState)
             {
                 case State.Wander:
-                    if (RailBridgeEncounter.TryGetObjective(this, out var bridgeGoal))
+                    if (RailBridgeEncounter.TryGetObjective(this, out var bridgeGoal) || (railBounds != null && railBounds.TryGetReturnGoal(out bridgeGoal)))
                     {
                         if ((root.position - bridgeGoal).sqrMagnitude <= 1f) { _loco.ClearPath(); break; }
                         _repathTimer -= dt;

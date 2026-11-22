@@ -321,7 +321,7 @@ editor checks passed; full bag/network and headset acceptance remain pending. Se
 
 November 8 retreat tuning: port Duckz `a1be1207774efb66bbe6e7df0c0003c2793a926f`, changing zombie retreat duration from 4–10 to 1–8 seconds. Existing retreat triggers and Rails boarding restrictions remain. Editor checks passed; real-client/headset balance review remains pending. See [port evidence](duckz-ports.md#a1be1207774efb66bbe6e7df0c0003c2793a926f--zombie-retreat-duration).
 
-November 10 ZombieHook: a fifth enemy type joins the scavenging mix (port of Duckz `73b78c46`, `7ed6d880`, `2719d1a1`). It keeps block boundaries and does not board; only minions and spiders board. Per-crew counts are unchanged. See [port evidence](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e).
+November 10 ZombieHook: a fifth enemy type joins the scavenging mix (port of Duckz `73b78c46`, `7ed6d880`, `2719d1a1`). It can pursue across ground seams. Only minions and spiders board. Per-crew counts are unchanged. See [port evidence](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e).
 
 November 8 confirmed smasher port: retain 12 m jump height, 16 m horizontal reach and rooftop exploration, including Skyscraper Works. Smashers remain excluded from train boarding and confined to their home block. See [port evidence and acceptance limits](duckz-fix-ports.md#smasher-rooftop-exploration--november-8-2026).
 
@@ -647,7 +647,7 @@ October 31 authoring update: coal placements use reusable, editor-visible CoalSp
 - Runtime placement must correctly transform graph data if block transforms vary.
 - Retain every selected block until the expedition ends; clear network objects at staging before another departure.
 
-Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets per location, six coal chunks and 4–6 randomized enemies per selected stop. Encounter bounds occupy local Z 45–115, leaving 90 metres between adjacent encounters (22.5 seconds at 4 m/s). Four templates have gentle internal curves. Stable versioned IDs, placements and variation indices are retained in room properties. Navigation is baked in the editor and translated/reindexed at load without generating geometry, rebaking or connecting blocks. See [week3-session.md](week3-session.md) for setup and actual validation limits.
+Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets per location, six coal chunks and 4–6 randomized enemies per selected stop. Encounter bounds occupy local Z 45–115, leaving 90 metres between adjacent encounters (22.5 seconds at 4 m/s). Four templates have gentle internal curves. Stable versioned IDs, placements and variation indices are retained in room properties. Navigation is baked in the editor and translated/reindexed at load without generating geometry or rebaking. On-foot pursuit and search can cross adjoining blocks wherever walkable baked seam endpoints coincide. Idle patrol remains home-bound, and a pursuer outside its home block seeks a return path when it resumes wandering. See [week3-session.md](week3-session.md) for setup and actual validation limits.
 
 ## Compound, public departure, and private rooms
 

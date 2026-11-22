@@ -170,7 +170,7 @@ public sealed class RailRoute : MonoBehaviour
         expedition.enemyTypes = enemyTypes.ToArray();
         expedition.coalPoints = coal.ToArray(); expedition.enemyPoints = enemies.ToArray();
         expedition.bridgeZ = z + 80;
-        var graph = RailGraphAssembly.Combine(graphs, offsets);
+        var graph = RailGraphAssembly.Combine(graphs, offsets, Blocks.Select(b => b.length).Concat(new[] { midpointBlock.length, finale.length }).ToArray());
         graph.RestrictToBounds(TravelBlocks.Select(b => new Bounds(b.transform.position + b.enemyBounds.center, b.enemyBounds.size))
             .Concat(new[] { new Bounds(finaleRoot.position + finale.enemyBounds.center, finale.enemyBounds.size) }).ToArray());
         manager.SetGraph(graph);

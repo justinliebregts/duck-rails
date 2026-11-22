@@ -12,7 +12,8 @@ using Object = UnityEngine.Object;
 public static class RailTrackCrossingLiveChecks
 {
     const string Armed = "Rails.Crossing.Offline";
-    const string LogPath = "docs/validation/track-crossing/play.txt";
+    static bool SeamTest => SessionState.GetBool(Armed + ".seam", false);
+    static string LogPath => SeamTest ? "docs/validation/track-crossing/block-seam.txt" : "docs/validation/track-crossing/play.txt";
     [Serializable] class Setup { public SceneSetup[] scenes; }
     static Enemy enemy;
     static RailTrain train;
@@ -24,12 +25,16 @@ public static class RailTrackCrossingLiveChecks
     static RailTrackCrossingLiveChecks()
     { EditorApplication.playModeStateChanged += Changed; EditorApplication.update += Tick; }
     [MenuItem("Duck Rails/Tests/Track Crossings/Motel Play Loop")]
-    public static void Run()
+    public static void Run() => StartTest(false);
+    [MenuItem("Duck Rails/Tests/Track Crossings/Block Seam Play Loop")]
+    public static void RunSeam() => StartTest(true);
+    static void StartTest(bool seam)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) throw new Exception("Exit Play Mode first");
         foreach (var scene in EditorSceneManager.GetSceneManagerSetup())
             if (scene.isLoaded && UnityEngine.SceneManagement.SceneManager.GetSceneByPath(scene.path).isDirty)
                 throw new Exception("Save scene edits first");
+        SessionState.SetBool(Armed + ".seam", seam);
         Directory.CreateDirectory(Path.GetDirectoryName(LogPath)); File.WriteAllText(LogPath, "");
         SessionState.SetString(Armed + ".setup", JsonUtility.ToJson(new Setup { scenes = EditorSceneManager.GetSceneManagerSetup() }));
         SessionState.SetBool(Armed, true);
@@ -72,6 +77,22 @@ public static class RailTrackCrossingLiveChecks
         }
         managerRoot.SetActive(true);
         enemy = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Rails/RailZombie.prefab")).GetComponent<Enemy>();
+        if (SeamTest)
+        {
+            var neighbor = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/farm-silos-v1.prefab")).GetComponent<RailBlock>();
+            neighbor.transform.position = Vector3.forward * block.length;
+            var graph = RailGraphAssembly.Combine(new[] { CrawlGraph.Load(block.graph), CrawlGraph.Load(neighbor.graph) },
+                new[] { Vector3.zero, neighbor.transform.position }, new[] { block.length, neighbor.length });
+            graph.RestrictToBounds(new[] { block.enemyBounds, new Bounds(neighbor.transform.position + neighbor.enemyBounds.center, neighbor.enemyBounds.size) });
+            manager.SetGraph(graph);
+            target.position = new Vector3(24, 1, block.length + 4);
+            var start = new Vector3(24, .02f, block.length - 4);
+            enemy.Teleport(start, Quaternion.LookRotation(Vector3.forward));
+            Physics.SyncTransforms();
+            entered = EditorApplication.timeSinceStartup; stage = 0; started = true;
+            Log("Actual motel/farm geometry and minion, off-track seam pursuit");
+            return;
+        }
         Restart(-6);
         stage = 0; started = true;
         Log("Actual motel/minion; natural perception across empty track");
@@ -91,6 +112,14 @@ public static class RailTrackCrossingLiveChecks
         {
             double age = EditorApplication.timeSinceStartup - entered;
             if (age > 40) throw new Exception("Timeout stage=" + stage + " pos=" + enemy.Root.position + " state=" + enemy.CurrentState);
+            if (SeamTest)
+            {
+                if (Vector3.Distance(enemy.Root.position, target.position - Vector3.up) > 1.25f) return;
+                Log("PASS minion reached target at " + enemy.Root.position);
+                if (stage == 1) { Finish("PASS crossed back into motel"); return; }
+                target.position -= Vector3.forward * 8; stage++; entered = EditorApplication.timeSinceStartup;
+                return;
+            }
             if (stage > 0 && RailTrainObstacle.Contains(enemy.Root.position))
                 throw new Exception("Minion entered train occupancy at " + enemy.Root.position);
             if (stage == 2)

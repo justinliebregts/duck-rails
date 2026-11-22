@@ -1,5 +1,9 @@
 # Playtest queue
 
+## Cross-block enemy pursuit — queued for playtest, 2026-11-22
+
+- Unity Edit Mode found complete ground paths in both directions at x = -24, 0 and 24 m across 17 catalogue joins (102 searches). In offline Play Mode a minion chased across Motel/Farm and back 24 m from the centerline ([play log](validation/track-crossing/block-seam.txt)). Check actual movement on two clients across a seam, reverse repeatedly, break sight and watch the enemy walk home. Repeat with a master handoff and confirm boarding eligibility stays minion/spider only.
+
 ## Networked LIV camera proxy — queued 2026-11-22
 
 - Changed: Duckz `35ea28d9` port. Other players see a low-poly proxy of your open LIV camera tablet; on the

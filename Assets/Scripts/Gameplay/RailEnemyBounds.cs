@@ -8,11 +8,23 @@ public sealed class RailEnemyBounds : MonoBehaviour
     Game.AI.Enemy enemy;
     Bounds home; bool assigned;
     bool relocated;
+    bool pursuingOutside;
+    Vector3 returnPoint;
+
+    public bool TryGetReturnGoal(out Vector3 goal)
+    {
+        goal = returnPoint;
+        return pursuingOutside && (enemy.Boarding == null || !enemy.Boarding.OwnsBoundary);
+    }
+
+    bool Pursuing => enemy != null && (enemy.CurrentState == Game.AI.Enemy.State.Chase ||
+        enemy.CurrentState == Game.AI.Enemy.State.Search);
+
     bool wasAuthority;
     public void AdoptPosition(Vector3 position)
     {
         if (RailRoute.Instance == null || !RailRoute.Instance.Ready) return;
-        home = RailRoute.Instance.EnemyBounds(position); assigned = relocated = true;
+        pursuingOutside = false; returnPoint = position; home = RailRoute.Instance.EnemyBounds(position); assigned = relocated = true;
     }
     void Awake() => enemy = GetComponent<Game.AI.Enemy>();
     public bool TryRespawn(out Vector3 position, out Quaternion rotation)
@@ -49,7 +61,7 @@ public sealed class RailEnemyBounds : MonoBehaviour
             var root = enemy != null && enemy.Root != null ? enemy.Root : transform;
             home = route.EnemyBounds(root.position); assigned = true;
         }
-        return home.Contains(point);
+        return home.Contains(point) || ((Pursuing || pursuingOutside) && RailRoute.Instance != null && RailRoute.Instance.Ready && RailRoute.Instance.IsEncounter(point));
     }
 
     void LateUpdate()
@@ -62,8 +74,32 @@ public sealed class RailEnemyBounds : MonoBehaviour
         if (enemy.Boarding != null && enemy.Boarding.OwnsBoundary) return;
         var root = enemy.Root != null ? enemy.Root : transform;
         Vector3 p = root.position;
-        if (RailRoute.Instance != null && RailRoute.Instance.Ready && !assigned) { home = RailRoute.Instance.EnemyBounds(p); assigned = true; }
-        var clamped = assigned ? home.ClosestPoint(p) : new Vector3(Mathf.Clamp(p.x, 6.5f, 29), Mathf.Max(0, p.y), Mathf.Clamp(p.z, 140, 545));
+        var clamped = ConstrainPosition(p);
         if ((p - clamped).sqrMagnitude > .001f) { root.position = clamped; enemy.ResetBrain(); }
+    }
+
+    Vector3 ConstrainPosition(Vector3 p)
+    {
+        if (RailRoute.Instance != null && RailRoute.Instance.Ready && !assigned) { home = RailRoute.Instance.EnemyBounds(p); assigned = true; }
+        if (assigned && home.Contains(p))
+        {
+            pursuingOutside = false;
+            if (!Pursuing || !home.Contains(returnPoint)) returnPoint = InteriorReturnPoint(p);
+            return p;
+        }
+        if (assigned && (Pursuing || pursuingOutside) && RailRoute.Instance != null && RailRoute.Instance.Ready && RailRoute.Instance.IsEncounter(p))
+        {
+            pursuingOutside = true;
+            if (!home.Contains(returnPoint)) returnPoint = InteriorReturnPoint(p);
+            return p;
+        }
+        return assigned ? home.ClosestPoint(p) : new Vector3(Mathf.Clamp(p.x, 6.5f, 29), Mathf.Max(0, p.y), Mathf.Clamp(p.z, 140, 545));
+    }
+
+    Vector3 InteriorReturnPoint(Vector3 position)
+    {
+        var point = home.ClosestPoint(position);
+        point.z = Mathf.Clamp(point.z, home.min.z + 2f, home.max.z - 2f);
+        return point;
     }
 }

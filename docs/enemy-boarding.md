@@ -89,4 +89,4 @@ Final minion compatibility rerun passed at 05:13 UTC: both side transfers in bot
 
 ## ZombieHook — November 10, 2026
 
-The ZombieHook enemy does not board: it has no `RailEnemyBoarding` and keeps block boundaries (a check asserts this). Only minions and spiders board.
+The ZombieHook enemy does not board: it has no `RailEnemyBoarding` and uses the shared ground-pursuit rules at block boundaries. Only minions and spiders board.

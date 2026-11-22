@@ -59,6 +59,20 @@ public static class RailWeek3Checks
             for(int e=combined.EdgeStart[n];e<combined.EdgeStart[n+1];e++)if(combined.GetComponent(n)!=combined.GetComponent(combined.EdgeTarget[e]))throw new Exception("Unexpected inter-block edge");
         }
         Check(true,"Every combined cell indexed; block components remain disconnected");
+        var pursuitGraph = RailGraphAssembly.Combine(graphs, positions, chosen.Select(b => b.length).ToArray());
+        pursuitGraph.RestrictToBounds(chosen.Select((b,i) => new Bounds(positions[i] + b.enemyBounds.center, b.enemyBounds.size)).ToArray());
+        var pursuitFinder = new CrawlPathfinder(pursuitGraph);
+        var pursuitPath = new int[4096];
+        for (int i = 1; i < chosen.Length; i++)
+        foreach (int x in new[] { -24, 0, 24 })
+        foreach (int direction in new[] { -1, 1 })
+        {
+            var seam = positions[i] + Vector3.right * x;
+            int from = pursuitGraph.FindNearestGroundNode(seam - Vector3.forward * (direction * 3), 2);
+            int to = pursuitGraph.FindNearestGroundNode(seam + Vector3.forward * (direction * 3), 2);
+            Check(pursuitFinder.FindPath(from, to, pursuitPath, out _, out bool reached, true) && reached,
+                $"Ground chase across {chosen[i-1].id}/{chosen[i].id}, x={x}, direction={direction}");
+        }
         for(int i=0;i<chosen.Length;i++)Check(combined.FindNearestGroundNode(RailSpawnPool.Candidates(chosen[i],RailSpawnKind.Enemy)[0].position+positions[i],2)>=0,chosen[i].id+" translated enemy marker resolves");
         Check(EditorBuildSettings.scenes.Where(s=>s.enabled).Take(3).Select(s=>Path.GetFileNameWithoutExtension(s.path)).SequenceEqual(new[]{"Login","Compound","Expedition"}),"Gameplay scene build order");
         Check(EditorBuildSettings.scenes.Any(s=>s.enabled&&s.path==RailStationLightingAuthoring.PayloadScene),"Starting station lighting included");

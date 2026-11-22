@@ -347,6 +347,7 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 
 ## November 6 — enemy track crossings
 
+- [ ] Verify cross-block pursuit, loss of target, homeward movement and authority handoff on headsets and real clients. See the playtest queue.
 - [x] Remove permanent railway exclusions and rebake all 17 block graphs offline; preserve outer block boundaries.
 - [x] Verify ground connections between both rail sides in every block and motel crossing paths; add train-relative occupied-node filtering and movement/shortcut checks.
 - [x] Actual motel/minion Play Mode: natural empty-track pursuit, parked-train detour, reverse pursuit after departure, and a stale path replanning around newly occupied track. 125 graph/avoidance checks and existing boarding/navigation regressions pass. See [track crossings](track-crossing.md).
