@@ -27,6 +27,9 @@ public sealed class HuggyFlareGun : MonoBehaviour, IPunObservable
     [Tooltip("Played at the gun on every peer when the recharge completes.")]
     [SerializeField] SoundEvent reloadReadySound;
 
+    [Tooltip("Local-only feedback for the shooter when the use button is pressed before the recharge is done.")]
+    [SerializeField] SoundEvent notReadySound;
+
     PhotonGrabbable grabbable;
     PhotonView view;
     Renderer fillRenderer;
@@ -52,7 +55,12 @@ public sealed class HuggyFlareGun : MonoBehaviour, IPunObservable
     void Update()
     {
         PlayerHand hand = grabbable.Holder;
-        if (hand != null && !grabbable.IsStashed && hand.WasUsePressed && IsCharged) Fire(hand);
+        if (hand != null && !grabbable.IsStashed && hand.WasUsePressed)
+        {
+            if (IsCharged) Fire(hand);
+            else if (notReadySound != null && AudioManager.instance != null)
+                AudioManager.instance.PlayAttached(notReadySound, transform, this);
+        }
         if (shots.Count > 0) PruneShots();
         TrackReload();
     }
