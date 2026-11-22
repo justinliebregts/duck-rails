@@ -16,6 +16,8 @@ public static class HuggyFlareChecks
         var prefab = AssetDatabase.LoadAssetAtPath<DeathFlare>("Assets/Prefabs/Effects/HuggyFlare.prefab");
         Require(prefab != null, "HuggyFlare prefab");
         Require(Mathf.Approximately(prefab.BurnSeconds, 15f), "15 s burn");
+        Require(new SerializedObject(prefab).FindProperty("lightActivationDistance").floatValue >= 30f,
+            "Light activation distance covers the whole 25 m flight");
         Vector3 origin = new Vector3(5000f, 500f, 5000f); // Far from any authored geometry.
         var advance = typeof(DeathFlare).GetMethod("AdvanceShot", Any);
         GameObject wall = null, floor = null;
