@@ -1,5 +1,11 @@
 # Playtest queue
 
+## Haptics on/off setting — queued 2026-11-22
+
+- New: Settings > Controls > **Haptics** On/Off row (bottom of the Controls page, default On). Saved per user with the other Settings prefs. Every vibration goes through `VibrationManager.CanHaptic`; turning it off also stops any vibration already running. Commit `ac7f01782`. Edit Mode `HapticsSettingChecks` passed (prefab row and CutePixel SDF text, no row overlap, save/reload, manager ignores everything while off and resumes when on). No Play Mode or headset run.
+- Check on Quest: open Settings > Controls and confirm the five rows read cleanly with no overlap and both buttons are easy to poke. Turn Haptics Off: grab/release items, press the horn or radio, drive the throttle, ride a moving train and get downed. Nothing should vibrate. Turn it Off while holding the throttle at a drift warning: the buzz stops at once. Turn it back On: vibration returns.
+- Set Off, quit the app fully and relaunch: Settings should still show Off and nothing should vibrate. Set On and restart again to confirm it stays On.
+
 ## Quackbear cupcake light and 8-slot bag — queued 2026-11-21
 
 - Pull the Quackbear cupcake and bag in Compound, Departure Shop and the midpoint helicopter. The miniatures should grow smoothly into the held models. See [character-bundles.md](character-bundles.md#quackbear-final-art--november-21).
