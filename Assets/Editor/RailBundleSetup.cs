@@ -160,7 +160,45 @@ public static class RailBundleSetup
             finally { Object.DestroyImmediate(root); }
             MatchDuckzLayout();
         }
+        InstallWallLights();
         AssetDatabase.SaveAssets(); Debug.Log("Rail bundles installed; gameplay and platform checkout queued for playtest.");
+    }
+
+    const string GlowName = "Display glow";
+    // Real, cheap lights on the wall display copies only: a flare glow at the Huggy fingertip and the cupcake's candle light.
+    // Idempotent. Positions come from the held prefab (muzzle / light) mapped through the display mesh's transform.
+    [MenuItem("Duck Rails/Bundles/Install wall display lights")]
+    public static void InstallWallLights()
+    {
+        string wallPath = Folder + "RailBundleWall.prefab";
+        var wall = PrefabUtility.LoadPrefabContents(wallPath);
+        try
+        {
+            var huggyHeld = Load<GameObject>(WeaponFolder + "Weapon_Huggy.prefab");
+            var cupHeld = Load<GameObject>(WeaponFolder + "Weapon_Quackbear.prefab");
+            var flareLight = Load<GameObject>("Assets/Prefabs/Effects/HuggyFlare.prefab").GetComponentInChildren<Light>(true);
+            var cupLight = cupHeld.GetComponentInChildren<Light>(true);
+            AddGlow(wall, "weapon_huggy", "FlareGunModel", huggyHeld.GetComponentInChildren<MeshFilter>(true).transform,
+                huggyHeld.transform.Find("Muzzle").position, flareLight.color, 3f);
+            AddGlow(wall, "weapon_quackbear", "CupcakeModel", cupHeld.GetComponentInChildren<MeshFilter>(true).transform,
+                cupLight.transform.position, cupLight.color, 3f);
+            PrefabUtility.SaveAsPrefabAsset(wall, wallPath);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(wall); }
+    }
+
+    static void AddGlow(GameObject wall, string item, string modelName, Transform heldMesh, Vector3 heldPoint, Color color, float intensity)
+    {
+        var display = wall.GetComponentsInChildren<StoreWallItem>(true).Single(w => w.name == item).transform;
+        var model = display.Find(modelName);
+        var old = display.Find(GlowName); if (old != null) Object.DestroyImmediate(old.gameObject);
+        var go = new GameObject(GlowName); go.transform.SetParent(display, false);
+        // Held point -> mesh space -> display model -> display root.
+        go.transform.position = model.TransformPoint(heldMesh.InverseTransformPoint(heldPoint));
+        var light = go.AddComponent<Light>();
+        light.type = LightType.Point; light.color = color; light.intensity = intensity; light.range = 2.5f;
+        light.shadows = LightShadows.None; light.renderMode = LightRenderMode.Auto;
+        go.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalLightData>();
     }
 
     [MenuItem("Duck Rails/Bundles/Match Duckz horizontal layout")]
