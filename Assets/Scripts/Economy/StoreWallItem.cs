@@ -302,6 +302,8 @@ public class StoreWallItem : Grabbable
         ItemSounds bought = item != null && item.prefab != null ? item.prefab.GetComponent<ItemSounds>() : null;
         if (bought != null)
             RoomRpc.PlaySound(bought.Get(ItemSound.Grab), transform.position);
+        else if (item != null && item.IsWearable && store != null && store.WearableGrabSound != null)
+            RoomRpc.PlaySound(store.WearableGrabSound, transform.position);
         if (pullOffHaptic != null && VibrationManager.instance != null)
             VibrationManager.instance.TriggerVibration(pullOffHaptic, Holder);
     }

@@ -15,6 +15,9 @@ public class StoreUI : MonoBehaviour
     [Tooltip("Played at the buyer's head, for everyone.")]
     [SerializeField] SoundEvent buySucceedSound;
     [SerializeField] SoundEvent buyFailSound;
+    [Tooltip("Played for everyone when a wearable avatar skin is pulled off the wall.")]
+    [SerializeField] SoundEvent wearableGrabSound;
+    public SoundEvent WearableGrabSound => wearableGrabSound;
     [Tooltip("Fired with the item key after a non-durable (consumable) coin purchase succeeds.")]
     public UnityEvent<string> onConsumablePurchased;
 
