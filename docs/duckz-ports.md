@@ -1,5 +1,22 @@
 # Duckz port history
 
+## 984e4a8c678ee282fa8bef90e7f91c1b32ef4b50 — Further reduced enemy kill triggers
+
+- Status: implemented; Unity EditMode asset validation passed November 22, 2026;
+  gameplay acceptance queued for playtest.
+- Behavior/destination: copy only the new KillTrigger BoxCollider depth and center
+  into `Assets/Prefabs/Enemies/ZombieMinion.prefab` and `ZombieHook.prefab` (Rails
+  values matched the source parent exactly). The same commit's ZombieGuard and
+  ZombiePrisoner changes are not ported: those Quackatraz-only enemies do not exist in Rails.
+- Dependencies: none; existing KillTrigger components. No serialized overrides of these
+  colliders on `RailZombie`/`RailHook` variants or scenes.
+- Validation: verified MCP target `X:/Work/duck-rails/Assets` in Edit Mode, synchronously
+  imported both bases and both variants; sizes, centers, enabled and isTrigger pass on all four.
+  No Play Mode launched or diagnostic reports inspected.
+- Remaining: near-miss/contact checks with real clients/headsets; see
+  [playtest queue](playtest-queue.md#further-reduced-minionhook-kill-triggers--queued-2026-11-22).
+- Destination commit: `c03216e86` (prefabs) plus the follow-up docs commit.
+
 ## a3d484e994e53c219f62de3caa99af009d20c812 — Smaller enemy kill triggers
 
 - Status: implemented; Unity EditMode asset validation passed November 18, 2026;

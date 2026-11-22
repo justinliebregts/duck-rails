@@ -1,5 +1,15 @@
 # Playtest queue
 
+## Further reduced Minion/Hook kill triggers — queued 2026-11-22
+
+- Changed: port only Duckz `984e4a8c678ee282fa8bef90e7f91c1b32ef4b50` collider
+  depth/center values to ZombieMinion and ZombieHook (forward depth shrinks a further
+  ~1.5 cm Hook / ~3.5 cm Minion); resource variants inherit them.
+- Editor evidence: verified Duck Rails MCP target; synchronous imports and all four
+  base/variant trigger size, center, enabled/isTrigger checks pass.
+- Check: same as the November 18 Minion/Hook item, with real clients/headsets on ground
+  and aboard the moving train. Queued for playtest; no runtime acceptance claimed.
+
 ## Quackbear cupcake collider covers the candle — queued 2026-11-22
 
 - Fix: `Weapon_Quackbear.prefab` box collider is now centre (0, 0.0386, 0.0021), size (0.1379, 0.2332, 0.1489). It encloses all 592 mesh vertices with 3 mm to spare, and its top is 10 mm past the candle light (light stays at y 0.1452). Replaces the earlier uncommitted values, with Justin's OK. Edit-mode vertex check passed, no Play Mode run.
