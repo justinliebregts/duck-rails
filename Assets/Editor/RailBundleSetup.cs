@@ -12,6 +12,7 @@ using Object = UnityEngine.Object;
 public static class RailBundleSetup
 {
     public const string Folder = "Assets/DuckRails/Economy/Bundles/";
+    public const string WeaponFolder = "Assets/Prefabs/Weapons/";
     const string Module = "Assets/DuckRails/Compound/SubwayV2/Modules/05 Walk-through supplies store.prefab";
     public static readonly string[] Names = { "Quackbear", "Huggy", "ScrapDuck" };
     public static readonly string[] Keys = { "quackbear", "huggy", "scrap_duck" };
@@ -109,7 +110,7 @@ public static class RailBundleSetup
             {
                 string n = Names[i], k = Keys[i], sku = "duckrails_" + k + "_bundle";
                 var bag = Copy("Assets/Prefabs/Bags/BagModel_Basic.prefab", Folder + "BagModel_" + n + ".prefab");
-                var weapon = Copy("Assets/DuckRails/Economy/RailShopWeaponFryPan.prefab", Folder + "Weapon_" + n + ".prefab");
+                var weapon = Copy("Assets/DuckRails/Economy/RailShopWeaponFryPan.prefab", WeaponFolder + "Weapon_" + n + ".prefab");
                 // Distinct root names are Photon spawn IDs, independent of future mesh replacements.
                 var instance = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(weapon));
                 try { instance.name = "RailBundleWeapon" + n; PrefabUtility.SaveAsPrefabAsset(instance, AssetDatabase.GetAssetPath(weapon)); }

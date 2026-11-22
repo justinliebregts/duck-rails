@@ -60,7 +60,7 @@ public static class HuggyFlareChecks
         }
 
         // Charge belongs to the gun: empty right after a shot, full after the cooldown, monotonic.
-        var weapon = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Economy/Bundles/Weapon_Huggy.prefab");
+        var weapon = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Weapons/Weapon_Huggy.prefab");
         var gunGo = UnityEngine.Object.Instantiate(weapon);
         try
         {
