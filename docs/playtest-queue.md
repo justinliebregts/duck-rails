@@ -1801,6 +1801,16 @@ The user requested restoration and revision of the original geometry before anot
 
 _(empty)_
 
+## Tales from the Rails prefab placement — queued for playtest
+
+Check the Station Info wall on Quest after moving or scaling the Compound prefab instance. Confirm there is one board above the bench and both leaderboards populate after sign-in.
+
 ## Station Info bench removed, board lowered — queued for playtest
 
 On Quest in Compound: the bench is gone, the Tales From The Rails board starts just above the floor, the stats canvas still lines up with the board's white panel, and both leaderboards stay readable from duck height. Walk where the bench was (no invisible collision) and check the rebaked lighting on the board and floor. See `docs/subway-compound.md`.
+
+### Rate Game falls back to store page on Meta error 1002 — queued 2026-11-22, headset-only
+- Status: queued for playtest
+- Changed: Diagnostics report c4d768ec (build 0.4.0, Quest) showed `[Rate Game] code 1002 "Not allowed to launch rate and review flow for this user"` from `RateAndReviewLauncher`. `RailRateGame` now falls back to opening the store listing URL on any launcher error or exception. The report is left open until verified.
+- Cheap checks: Unity compiled, Console error query empty. The Android path is not compiled in the editor.
+- Check: on Quest press RATE GAME; if the native flow is refused, confirm the store page opens and the status reads "Store opened. Find Ratings and Reviews."
