@@ -21,7 +21,7 @@
   `RailAtmosphere` instead of placed in a scene.
 - Not ported: Quackville scene placement, sea, `Tools/SkyboxValidation` harness and
   `Tools/DistantMountains` Blender source (FBX reused as-is). Compound unchanged by request.
-  The unreferenced `Quackville_Skybox.png` panorama was left in place.
+  The unreferenced `Quackville_Skybox.png` panorama was removed afterwards (`15c0e0233`).
 - Dependencies: same Unity 6000.3.24f1 / URP 17.3; no networking (local rendering of shared
   route/finish progress, unchanged). New GUIDs checked for collisions: none.
 - Validation: see [storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22)
