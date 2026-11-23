@@ -7,17 +7,32 @@ public sealed class RailAtmosphere
 {
     public const float NightViewDistance = 120f;
     public const float DawnViewDistance = 175f;
+    public const string StormSkyShader = "Duckz/Animated Storm Sky";
+    public const string MountainsResource = "Rails/DistantMountains";
     public static float PlayerViewDistance { get; private set; } = NightViewDistance;
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetViewDistance() => PlayerViewDistance = NightViewDistance;
 
-    Material originalSky, sky;
+    static readonly int ZenithId = Shader.PropertyToID("_ZenithColor");
+    static readonly int HorizonId = Shader.PropertyToID("_HorizonColor");
+    static readonly int LowerId = Shader.PropertyToID("_LowerColor");
+    static readonly int CloudEdgeId = Shader.PropertyToID("_CloudEdgeColor");
+    static readonly int CloudShadowId = Shader.PropertyToID("_CloudShadowColor");
+    static readonly int ExposureId = Shader.PropertyToID("_Exposure");
+    static readonly int GlowColorId = Shader.PropertyToID("_SunGlowColor");
+    static readonly int GlowStrengthId = Shader.PropertyToID("_SunGlowStrength");
+    static readonly int GlowDirectionId = Shader.PropertyToID("_SunGlowDirection");
+    static readonly int NearId = Shader.PropertyToID("_NearColor");
+    static readonly int FarId = Shader.PropertyToID("_FarColor");
+
+    Material originalSky, sky, mountainMaterial;
+    RailDistantMountains mountains;
     Scene scene;
     Light sun;
     Quaternion sunRotation;
     Color sunColor, ambient, fogColor;
     float sunIntensity, density;
-    bool fog;
+    bool fog, active;
     FogMode fogMode;
     AmbientMode ambientMode;
     float lastProgress = float.NaN;
@@ -27,6 +42,13 @@ public sealed class RailAtmosphere
     {
         this.settings = settings;
     }
+
+    /// <summary>The runtime sky copy while applied, otherwise null.</summary>
+    public Material Sky => sky;
+    /// <summary>The runtime distant mountain ring while applied, otherwise null.</summary>
+    public RailDistantMountains Mountains => mountains;
+
+    public static bool IsStormSky(Material material) => material != null && material.shader != null && material.shader.name == StormSkyShader;
 
     // Route distance gives late joiners and a replacement master the same pre-dawn state.
     // Success blends during the automatic bridge/tunnel ride; failures never receive dawn.
@@ -41,11 +63,12 @@ public sealed class RailAtmosphere
         if (settings == null) settings = Resources.Load<RailAtmosphereSettings>(RailAtmosphereSettings.ResourcePath);
         // Use the same success/dawn blend as fog, including late joins and replay.
         PlayerViewDistance = Mathf.Lerp(NightViewDistance, DawnViewDistance, Mathf.Clamp01(progress - 1f));
-        if (sky == null)
+        if (!active)
         {
             originalSky = RenderSettings.skybox;
             // Use the scene's referenced material so the shader/variant is included in builds.
-            if (originalSky == null || originalSky.shader.name != "Skybox/Procedural") return;
+            if (!IsStormSky(originalSky)) return;
+            active = true;
             scene = SceneManager.GetActiveScene();
             sky = new Material(originalSky) { name = "Expedition sky (runtime)", hideFlags = HideFlags.DontSave };
             ambientMode = RenderSettings.ambientMode; ambient = RenderSettings.ambientLight;
@@ -54,16 +77,14 @@ public sealed class RailAtmosphere
             sun = RenderSettings.sun;
             if (sun != null) { sunRotation = sun.transform.rotation; sunColor = sun.color; sunIntensity = sun.intensity; }
             RenderSettings.skybox = sky;
+            CreateMountains();
         }
+        if (mountains != null) mountains.FollowRoute();
         float t = Mathf.Clamp(progress, 0, 2);
         if (t == lastProgress) return;
         lastProgress = t;
         bool dawn = t > 1;
         float blend = dawn ? t - 1 : t;
-        sky.SetFloat("_Exposure", Mathf.Lerp(dawn ? .08f : .012f, dawn ? .3f : .08f, blend));
-        sky.SetFloat("_AtmosphereThickness", 1f);
-        sky.SetColor("_SkyTint", new Color(.5f, .5f, .5f));
-        sky.SetColor("_GroundColor", new Color(.12f, .13f, .16f));
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
         float nightDensity = settings != null ? settings.nightDensity : .06f;
@@ -76,15 +97,58 @@ public sealed class RailAtmosphere
         RenderSettings.fogColor = Color.Lerp(dawn ? preColor : nightColor, dawn ? dawnColor : preColor, blend);
         RenderSettings.ambientMode = AmbientMode.Flat;
         RenderSettings.ambientLight = Color.Lerp(dawn ? PreAmbient : NightAmbient, dawn ? DawnAmbient : PreAmbient, blend);
+        float sunPitch = Mathf.Lerp(dawn ? -5 : -12, dawn ? 3 : -5, blend);
         if (sun != null)
         {
-            sun.transform.rotation = Quaternion.Euler(Mathf.Lerp(dawn ? -5 : -12, dawn ? 3 : -5, blend), 125, 0);
+            sun.transform.rotation = Quaternion.Euler(sunPitch, SunYaw, 0);
             sun.color = Color.Lerp(dawn ? new Color(.5f, .55f, .7f) : new Color(.35f, .42f, .6f),
                 dawn ? new Color(1, .72f, .48f) : new Color(.5f, .55f, .7f), blend);
             sun.intensity = Mathf.Lerp(dawn ? .06f : .025f, dawn ? .22f : .06f, blend);
         }
+        var nightSky = settings != null ? settings.nightSky : RailAtmosphereSettings.SkyPhase.Night;
+        var preSky = settings != null ? settings.preDawnSky : RailAtmosphereSettings.SkyPhase.PreDawn;
+        var dawnSky = settings != null ? settings.dawnSky : RailAtmosphereSettings.SkyPhase.Dawn;
+        ApplySky(RailAtmosphereSettings.SkyPhase.Lerp(dawn ? preSky : nightSky, dawn ? dawnSky : preSky, blend), RenderSettings.fogColor);
     }
 
+    void ApplySky(RailAtmosphereSettings.SkyPhase phase, Color fogColour)
+    {
+        sky.SetColor(ZenithId, phase.zenith);
+        sky.SetColor(HorizonId, phase.horizon);
+        sky.SetColor(CloudEdgeId, phase.cloudEdge);
+        sky.SetColor(CloudShadowId, phase.cloudShadow);
+        sky.SetFloat(ExposureId, phase.exposure);
+        // The shader multiplies by exposure; divide in linear space so the lower sky equals the fog colour.
+        float exposure = Mathf.Max(phase.exposure, .01f);
+        Color lower = fogColour.linear;
+        sky.SetColor(LowerId, new Color(lower.r / exposure, lower.g / exposure, lower.b / exposure, 1).gamma);
+        sky.SetColor(GlowColorId, phase.sunGlow);
+        sky.SetFloat(GlowStrengthId, phase.sunGlowStrength);
+        // The glow sits on the sunrise bearing just above the horizon, even while the sun is below it.
+        Vector3 toSun = -(Quaternion.Euler(0, SunYaw, 0) * Vector3.forward);
+        sky.SetVector(GlowDirectionId, (toSun + Vector3.up * .05f).normalized);
+        if (mountainMaterial != null)
+        {
+            mountainMaterial.SetColor(NearId, phase.mountainNear);
+            mountainMaterial.SetColor(FarId, phase.mountainFar);
+        }
+    }
+
+    void CreateMountains()
+    {
+        var prefab = Resources.Load<RailDistantMountains>(MountainsResource);
+        if (prefab == null) return;
+        mountains = Object.Instantiate(prefab);
+        mountains.name = "Distant mountains (runtime)";
+        mountains.gameObject.hideFlags = HideFlags.DontSave;
+        var renderer = mountains.GetComponent<MeshRenderer>();
+        mountainMaterial = new Material(renderer.sharedMaterial) { name = "Distant mountains (runtime)", hideFlags = HideFlags.DontSave };
+        renderer.sharedMaterial = mountainMaterial;
+        mountains.FollowRoute();
+    }
+
+    // Sunrise bearing shared by the directional light and the sky glow.
+    public const float SunYaw = 125;
     // Night/dawn match horizon samples; pre-dawn is the user's #060603 override.
     public static readonly Color NightFog = new Color(.008f, .008f, .004f);
     public static readonly Color PreFog = new Color32(6, 6, 3, 255);
@@ -96,7 +160,7 @@ public sealed class RailAtmosphere
     public void Restore()
     {
         PlayerViewDistance = NightViewDistance;
-        if (sky == null) return;
+        if (!active) return;
         // A new active scene owns its own environment.
         if (SceneManager.GetActiveScene() == scene)
         {
@@ -106,9 +170,18 @@ public sealed class RailAtmosphere
             RenderSettings.fogColor = fogColor; RenderSettings.fogDensity = density;
         }
         if (sun != null) { sun.transform.rotation = sunRotation; sun.color = sunColor; sun.intensity = sunIntensity; }
-        if (Application.isPlaying) Object.Destroy(sky);
-        else Object.DestroyImmediate(sky);
-        sky = null;
+        Release(sky);
+        Release(mountainMaterial);
+        if (mountains != null) Release(mountains.gameObject);
+        sky = null; mountainMaterial = null; mountains = null;
+        active = false;
         lastProgress = float.NaN;
+    }
+
+    static void Release(Object target)
+    {
+        if (target == null) return;
+        if (Application.isPlaying) Object.Destroy(target);
+        else Object.DestroyImmediate(target);
     }
 }

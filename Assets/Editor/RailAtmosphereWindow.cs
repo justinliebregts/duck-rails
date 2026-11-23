@@ -103,8 +103,8 @@ public sealed class RailAtmosphereWindow : EditorWindow
     {
         if (!preview || EditorApplication.isPlayingOrWillChangePlaymode || view == null || camera != view.camera || controller != null) return;
         sceneSky = RenderSettings.skybox;
-        // Bake/review scenes may have no procedural sky. Use the production sky for preview only.
-        if (sceneSky == null || sceneSky.shader.name != "Skybox/Procedural")
+        // Bake/review scenes may have no storm sky. Use the production sky for preview only.
+        if (!RailAtmosphere.IsStormSky(sceneSky))
             RenderSettings.skybox = AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/ExpeditionSky.mat");
         controller = new RailAtmosphere(settings);
         try { controller.Apply(progress); }
@@ -154,7 +154,7 @@ public sealed class RailAtmosphereWindow : EditorWindow
 
     void OnGUI()
     {
-        EditorGUILayout.HelpBox("Tune saved gameplay fog below. Preview affects the Scene View only, outside Play Mode. Lower density means clearer air. No lighting rebake is needed for fog changes.", MessageType.Info);
+        EditorGUILayout.HelpBox("Tune saved gameplay fog, storm sky and distant mountain colours below. Preview affects the Scene View only, outside Play Mode. Lower density means clearer air. No lighting rebake is needed for fog or sky changes.", MessageType.Info);
         if (settings == null)
         {
             EditorGUILayout.HelpBox("The shared Atmosphere asset is missing.", MessageType.Error);
@@ -192,16 +192,16 @@ public sealed class RailAtmosphereWindow : EditorWindow
             scroll = EditorGUILayout.BeginScrollView(scroll);
             serializedSettings.Update();
             EditorGUI.BeginChangeCheck();
-            foreach (string name in new[] { "nightColor", "nightDensity", "preDawnColor", "preDawnDensity", "dawnColor", "dawnDensity" })
-                EditorGUILayout.PropertyField(serializedSettings.FindProperty(name));
+            foreach (string name in new[] { "nightColor", "nightDensity", "preDawnColor", "preDawnDensity", "dawnColor", "dawnDensity", "nightSky", "preDawnSky", "dawnSky" })
+                EditorGUILayout.PropertyField(serializedSettings.FindProperty(name), true);
             if (EditorGUI.EndChangeCheck())
             {
                 serializedSettings.ApplyModifiedProperties();
                 RepaintViews();
             }
             EditorGUILayout.EndScrollView();
-            if (GUILayout.Button("Save fog settings")) AssetDatabase.SaveAssetIfDirty(settings);
+            if (GUILayout.Button("Save fog and sky settings")) AssetDatabase.SaveAssetIfDirty(settings);
         }
-        EditorGUILayout.HelpBox("Settings edits affect future game runs even when preview is off; use Undo to revert edits. Preview includes the existing sky/ambient/sun transition. Baked lighting and runtime block loading are not simulated. For the ending, open Expedition and navigate to the far side of the finale tunnel.", MessageType.None);
+        EditorGUILayout.HelpBox("Settings edits affect future game runs even when preview is off; use Undo to revert edits. Preview includes the sky, mountain ring, ambient and sun transition. Baked lighting and runtime block loading are not simulated. For the ending, open Expedition and navigate to the far side of the finale tunnel.", MessageType.None);
     }
 }

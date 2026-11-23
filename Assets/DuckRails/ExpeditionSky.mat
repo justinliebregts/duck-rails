@@ -8,11 +8,10 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: ExpeditionSky
-  m_Shader: {fileID: 106, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 428cfab424b94b8aac257fb1edfe5462, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - _SUNDISK_NONE
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -20,19 +19,31 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties:
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs: []
+    m_TexEnvs:
+    - _CloudTex:
+        m_Texture: {fileID: 2800000, guid: c565335f5d414a73836cc90fac9a4997, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AtmosphereThickness: 1
-    - _Exposure: 0.012
-    - _SunDisk: 0
-    - _SunSize: 0.04
-    - _SunSizeConvergence: 5
+    - _CloudCoverage: 0.54
+    - _CloudOpacity: 0.95
+    - _CloudScale: 0.26
+    - _CloudSoftness: 0.32
+    - _Exposure: 0.6
+    - _SunGlowSize: 6
+    - _SunGlowStrength: 0
     m_Colors:
-    - _GroundColor: {r: 0.12, g: 0.13, b: 0.16, a: 1}
-    - _SkyTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _CloudEdgeColor: {r: 0.14, g: 0.155, b: 0.11, a: 1}
+    - _CloudShadowColor: {r: 0.018, g: 0.024, b: 0.017, a: 1}
+    - _CloudWind: {r: 0.0018, g: 0.009, b: 0, a: 0}
+    - _HorizonColor: {r: 0.12, g: 0.135, b: 0.09, a: 1}
+    - _LowerColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SunGlowColor: {r: 1, g: 0.55, b: 0.25, a: 1}
+    - _SunGlowDirection: {r: -0.82, g: 0.05, b: 0.57, a: 0}
+    - _ZenithColor: {r: 0.08, g: 0.095, b: 0.065, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
