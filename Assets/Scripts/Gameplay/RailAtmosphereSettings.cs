@@ -50,7 +50,7 @@ public sealed class RailAtmosphereSettings : ScriptableObject
             zenith = new Color(.08f, .095f, .065f), horizon = new Color(.06f, .068f, .045f),
             cloudEdge = new Color(.14f, .155f, .11f), cloudShadow = new Color(.018f, .024f, .017f),
             cloudCoverage = .54f, cloudOpacity = .95f,
-            exposure = .12f, sunGlow = new Color(1, .55f, .25f), sunGlowStrength = 0, sunElevation = -12,
+            exposure = .2f, sunGlow = new Color(1, .55f, .25f), sunGlowStrength = 0, sunElevation = -12,
             sunlight = new Color(1, .85f, .65f), sunlightIntensity = 0, ambient = new Color(.025f, .03f, .045f),
             mountainNear = new Color(.002f, .002f, .002f), mountainFar = new Color(.008f, .009f, .007f),
         };
@@ -59,7 +59,7 @@ public sealed class RailAtmosphereSettings : ScriptableObject
             zenith = new Color(.08f, .095f, .075f), horizon = new Color(.13f, .14f, .1f),
             cloudEdge = new Color(.15f, .16f, .12f), cloudShadow = new Color(.02f, .026f, .02f),
             cloudCoverage = .54f, cloudOpacity = .95f,
-            exposure = .2f, sunGlow = new Color(1, .45f, .2f), sunGlowStrength = .12f, sunElevation = -5,
+            exposure = .3f, sunGlow = new Color(1, .45f, .2f), sunGlowStrength = .12f, sunElevation = -5,
             sunlight = new Color(1, .7f, .45f), sunlightIntensity = 0, ambient = new Color(.055f, .065f, .09f),
             mountainNear = new Color(.003f, .003f, .003f), mountainFar = new Color(.013f, .015f, .011f),
         };
