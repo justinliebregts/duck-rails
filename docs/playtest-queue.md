@@ -1854,6 +1854,10 @@ On Quest in Compound: the bench is gone, the Tales From The Rails board starts j
 - Cheap checks: Unity compiled, Console error query empty. The Android path is not compiled in the editor.
 - Check: on Quest press RATE GAME; if the native flow is refused, confirm the store page opens and the status reads "Store opened. Find Ratings and Reviews."
 
+### Compound fountain pixel water — queued for playtest
+- In the Compound on Quest, inspect the blue-green ripple arcs near the pedestal and from across the hall. Check both eyes for shimmer, clipping at the chipped rim, and excessive brightness in the station lighting.
+- Edit Mode confirmed the saved surface mesh and supported shader.
+
 ## Paired diagnostic incidents — queued for playtest
 
 Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Verify High with separate master and client histories, delivery after upload retries, and surviving evidence when the witness disconnects. Hold Departing for 90 seconds for Critical. Recover a 30–90 second load for Warning. Repeat in another run, verify recurrence in the web inbox, and check headset notification and normal departures for false positives.
