@@ -47,7 +47,7 @@ public sealed class RailAtmosphereSettings : ScriptableObject
         // Night is a much darker version of the Duckz storm palette (Duckz exposure 0.8; Justin, Nov 23: night too bright).
         public static SkyPhase Night => new SkyPhase
         {
-            zenith = new Color(.08f, .095f, .065f), horizon = new Color(.12f, .135f, .09f),
+            zenith = new Color(.08f, .095f, .065f), horizon = new Color(.06f, .068f, .045f),
             cloudEdge = new Color(.14f, .155f, .11f), cloudShadow = new Color(.018f, .024f, .017f),
             cloudCoverage = .54f, cloudOpacity = .95f,
             exposure = .12f, sunGlow = new Color(1, .55f, .25f), sunGlowStrength = 0, sunElevation = -12,
