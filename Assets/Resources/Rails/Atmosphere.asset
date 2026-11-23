@@ -25,15 +25,15 @@ MonoBehaviour:
     cloudShadow: {r: 0.018, g: 0.024, b: 0.017, a: 1}
     cloudCoverage: 0.54
     cloudOpacity: 0.95
-    exposure: 0.2
+    exposure: 0.5
     sunGlow: {r: 1, g: 0.55, b: 0.25, a: 1}
     sunGlowStrength: 0
     sunElevation: -12
     sunlight: {r: 1, g: 0.85, b: 0.65, a: 1}
     sunlightIntensity: 0
     ambient: {r: 0.025, g: 0.03, b: 0.045, a: 1}
-    mountainNear: {r: 0.002, g: 0.002, b: 0.002, a: 1}
-    mountainFar: {r: 0.008, g: 0.009, b: 0.007, a: 1}
+    mountainNear: {r: 0.006, g: 0.007, b: 0.005, a: 1}
+    mountainFar: {r: 0.025, g: 0.029, b: 0.02, a: 1}
   preDawnSky:
     zenith: {r: 0.08, g: 0.095, b: 0.075, a: 1}
     horizon: {r: 0.13, g: 0.14, b: 0.1, a: 1}
@@ -41,15 +41,15 @@ MonoBehaviour:
     cloudShadow: {r: 0.02, g: 0.026, b: 0.02, a: 1}
     cloudCoverage: 0.54
     cloudOpacity: 0.95
-    exposure: 0.3
+    exposure: 0.6
     sunGlow: {r: 1, g: 0.45, b: 0.2, a: 1}
     sunGlowStrength: 0.12
     sunElevation: -5
     sunlight: {r: 1, g: 0.7, b: 0.45, a: 1}
     sunlightIntensity: 0
     ambient: {r: 0.055, g: 0.065, b: 0.09, a: 1}
-    mountainNear: {r: 0.003, g: 0.003, b: 0.003, a: 1}
-    mountainFar: {r: 0.013, g: 0.015, b: 0.011, a: 1}
+    mountainNear: {r: 0.008, g: 0.01, b: 0.007, a: 1}
+    mountainFar: {r: 0.035, g: 0.04, b: 0.029, a: 1}
   dawnSky:
     zenith: {r: 0.3, g: 0.47, b: 0.72, a: 1}
     horizon: {r: 0.98, g: 0.82, b: 0.6, a: 1}
