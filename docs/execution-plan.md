@@ -1,5 +1,9 @@
 # Duck Rails — execution plan
 
+- [ ] Canyon mine revision is queued for headset traversal, visual seam and bridge review. See [Canyon layout](canyon-layout.md) and the [playtest queue](playtest-queue.md).
+
+- [ ] Public train panel is installed. Verify public-only matchmaking, no-match recovery and headset reach with real clients. See [playtest queue](playtest-queue.md#public-train-join-panel).
+
 ## Expedition departure horn
 
 - [x] Reuse the cockpit horn as a two-second cue when crew leave the compound for a public or private expedition.
@@ -399,6 +403,9 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 - [x] Record hospital V4 direction: south ER, glowing hospital sign, crashed/overturned ambulances in ER parking and surgery-room replacements; retain two-storey/roof arrangement.
 - [x] User approved hospital V4 for 3D; install rough Quackville hospital district, ground/upper/roof routes, surgery rooms, south ER, glowing sign and ambulance wrecks. Bake graph/lighting and register catalogue: 2,479 geometry/navigation/UV checks, 757 catalogue checks and 42 assertions across two offline Play Mode route rounds pass. See [hospital evidence](hospital-district-layout.md#validation-and-limits).
 - [x] Install the approved Hospital full-block exterior, rebuild its crawlgraph and lighting, and verify rail clearance, all spawn candidates, roof/stair access and saved receiver bindings. [Hospital evidence](hospital-district-layout.md#finished-campus-in-unity).
+- [x] Build the [Canyon survey camp and shaft works](canyon-layout.md) and the [Lakeside Campground arrival, cabin terraces and canoe beach](lakeside-campground-layout.md). Inspect the full-block Unity captures, rebuild navigation and lighting, and check routes and saved lightmap bindings in Edit Mode.
+- [x] Install the [Nuclear Power Plant exterior](nuclear-power-plant-layout.md) with the west turbine hall, east cooling towers, shift arrival and northern waterworks. Verify 3,210 geometry/navigation checks, 41 baked fixtures and all 1,353 saved lightmap bindings. Headset and real-client checks for all four exteriors are [queued for playtest](playtest-queue.md).
+
 - [x] Distribute hospital coal, gold and enemies across the furnished layout. Verify 176 saved candidates and seeded selections for crews of one through eight in Edit Mode. [Placement notes](hospital-district-layout.md#spawn-distribution-and-round-trees--november-23).
 - [ ] Validate hospital natural stairs/hand traversal, roof/courtyard recovery, low-eye lighting, enemy pursuit, real-client behavior and Quest performance. Offline checks do not close these acceptance items.
 

@@ -1,9 +1,32 @@
 # Playtest queue
 
+## Canyon rim rocks, timber fences and trap lantern | queued for playtest
+
+Inspect the sandstone silhouettes from both bridges, follow both side fences through the block seams with an item, and drop through the southwest cover to judge landing clearance and the faint ground light on headset.
+
+## Open canyon echo | queued for playtest, November 23, 2026
+
+Listen while descending both switchbacks, crossing the creek, entering a mine and returning to bridge level. Check that the outdoor tail is audible, the tunnels sound stronger and voices stay clear on headset.
+
+## Canyon mine reverb and Survey Camp sign | queued for playtest, November 23, 2026
+
+- Listen on headset while dropping into both shafts, walking the full tunnel and gallery, entering each side room, and returning to the surface. Check the strength of the tail, voice clarity and portal transitions. View both sign posts from the camp approach at close and rail-view distances for flicker. At the north winch shed, inspect both eaves from outside and inside and check the pixel-metal roof at headset viewing distances.
+
+## Canyon mine workings | queued for playtest, November 23, 2026
+
+- Approach the southwest shaft through the cable yard. Check how the ground cover reads at headset eye height, check the scattered rocks, fall through with a carried item and look up for daylight through the foliage. Inspect the five ledges and judge the cold blue light at both ends and the middle of the under-river tunnel. Enter all three side rooms carrying an item and check the dim blue-green lighting in both arms of the gallery junction.
+
+- Drop down both shafts with a carried item. Follow the dark under-river passage into the gallery and walk out of both timbered exits. Check ledge recovery, rockfall hand clearance and the dry east bank.
+- Inspect the north winch from above and indoors, the southwest rocks, cactus elbows and exterior lanterns. Cross both bridges in both directions, use both stair runs and check every landing for flicker at headset eye height.
+
 ## Deep night before the mid shop — queued 2026-11-23
 
 - Changed: from departure until the mid shop (helipad) block the sky, mountains and ambient light use a darker "deep night" (sky exposure 0.22 vs night 0.4); over the first 30 m of the mid shop block it fades to the regular night. Uses `RailRoute.MidpointStart` and the shared train distance. Editor: 68 atmosphere assertions and the tuner checks pass; game and player-define compiles pass. No Play Mode or headset run.
 - Check: in a two-client run, both players see the same darkness before the mid shop and the same smooth fade as the train enters it; a late joiner after the mid shop sees regular night straight away; a new run starts dark again. Judge the deep-night darkness on headset (tune **Deep Night Sky > Exposure / Ambient** in the Atmosphere Tuner).
+
+## Victory music return fade — queued for playtest
+
+- Win a public expedition and listen through the final countdown. Confirm the victory music stays audible until departure, then fades over three seconds. Repeat on a private expedition returning to staging. Check the transition into the Compound music and listen for a loop seam near the end of the countdown.
 
 ## Admin train speed and bridge lowering — queued for playtest
 
@@ -35,6 +58,27 @@ On Quest at night, walk from the train through every interior: the ER (from the 
 ## Hospital finished campus — queued for playtest
 
 On Quest, ride through both ends at night, then walk the staff garden, ER canopy, both hospital stair cores, laundry dock and visitor shelter. Check hand contact, loose-item recovery around the wrecks and benches, lit signs, train-side sightlines and frame time. With a second client, check the same landmarks and lamp/probe lighting after late join and route replacement. See the [Unity captures and Edit Mode evidence](hospital-district-layout.md#finished-campus-in-unity).
+
+## Canyon, Lakeside Campground and Nuclear Power Plant — queued for playtest
+
+- **Canyon.** From the moving train, look for the south survey camp and the north shaft headframe. Carry coal across the trestle and pedestrian bridge, then drop into the shaft and follow the walk-out route. Check hand contact, recovery and frame time while facing across the gorge. [Canyon layout and captures](canyon-layout.md).
+- **Lakeside Campground.** Check whether the camper and fallen-tree camp read on arrival and the canoe beach and overlook read on departure. Carry an item along the cabin terraces, dock and overlook path. Check hand clearance and item recovery around the water, and measure frame time facing the trees from the dock. [Campground layout and captures](lakeside-campground-layout.md).
+- **Nuclear Power Plant.** Ride past the shift bus and pipe yard into the tower precinct. Walk through both tower bases and the turbine gallery, then follow the dry route beside the northern waterworks. Check sign and stair visibility at duck eye height, drum-yard item recovery and frame time looking across the towers. [Plant layout and captures](nuclear-power-plant-layout.md).
+
+For all three, check night visibility on Quest and compare lighting and landmark placement on a second client after late join and block replacement.
+
+## Public train join panel
+
+Crate lantern and lighter corrugated steel face installed. Compound bake completed and the panel receives atlas 0. Edit Mode capture shows warm light across the plate and button. Headset brightness and readability are queued for playtest.
+
+**Two-player desktop playtest passed on real Photon.** The main editor and MPPM Player2 started in public compound 62972. Main boarded alone. Player2 stayed in the compound, aimed at the physical JOIN button via the desktop raycast and pressed it. Both became world-ready in running expedition 67507 with the same run ID, both cabins reported a local passenger, and both trains reported 4 m/s. Player2's head settled at train-local (0.35, 0.44, -2.00).
+
+- Private exclusion passed. The panel hid in private staging. With main running private expedition 81742, Player2's press returned it to a public compound showing “No public train available”. The private train retained one player.
+- Public expedition 56062 was excluded during departure and again while running with one occupied seat and seven Photon expected-user reservations. Clearing the reservations and pressing the same button again put Player2 aboard 56062 with both clients ready. With Player2 back in the compound, an editor-triggered Ending phase and closed room again gave the no-train message.
+- A solo match seeker can return to a different public compound after an unsuccessful search. The control was usable again after recovery.
+- Remaining checks are physical hand reach and sign readability on Quest, plus a train full of eight active players. The two-client test covered full capacity through seat reservations.
+
+Editor evidence includes successful compilation, saved Compound placement, CutePixel heading fit, and launch button prefab reuse.
 
 ## Storm sky and mountain ring — queued 2026-11-22
 
@@ -1926,3 +1970,11 @@ Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Ver
 ## Final bridge driving handoff — queued for playtest (2026-11-23)
 
 Drive partway across a lowered bridge, stop and restart. Confirm both clients retain controls until the front reaches the far bank at finale Z110. Check escape credit for riders, position continuity and a two-second ramp to 4 m/s from slow and fast approaches. Capture headset frame times across takeover and results display. An incomplete bridge should still crash at entry.
+
+## Canyon mine entrance lanterns — queued for playtest
+
+On headset, approach both creek-facing mine openings from the bank and bridges at night. Check that the hanging lanterns identify both entrances and preserve a clear view into the passages.
+
+## Canyon creek and mine contact audio — queued for playtest
+
+On headset, step and push off the creek bed and each of the five underground puddles. Listen for splashes on wet contact and stone in the dry gaps. Check timber, metal, sand and ballast on the route back. With a second player, listen to their wet and dry hand contacts.

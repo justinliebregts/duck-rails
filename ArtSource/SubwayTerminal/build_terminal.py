@@ -591,7 +591,7 @@ def build_info(b):
     lamp(b, (-PX + .5, 3 - .2, 4.3), (1, 0, 0), (-.8, 1.0, 0))
 
 
-def shelf(b, ox, oy, yaw, L, rng):
+def shelf(b, ox, oy, yaw, L, rng, *, closed_stock=False):
     b.push(Matrix.Translation((ox, oy, 0)) @ Matrix.Rotation(math.radians(yaw), 4, "Z"))
     for x in (0.03, L - .03):
         for y in (-.42, -.03):
@@ -604,7 +604,8 @@ def shelf(b, ox, oy, yaw, L, rng):
             w, h = rng.uniform(.24, .42), rng.uniform(.18, .36)
             if rng.random() > .22 and x + w < L - .05:
                 t = rng.choice(stock)
-                b.box((x, -.4, z + .04), (x + w, -.06, z + .04 + h), t, skip="by-", fit=TILES[t][0] == "I")
+                b.box((x, -.4, z + .04), (x + w, -.06, z + .04 + h), t,
+                      skip="" if closed_stock else "by-", fit=TILES[t][0] == "I")
             x += w + rng.uniform(.03, .12)
     b.pop()
 

@@ -260,7 +260,7 @@ public sealed class RailAudioDirector : MonoBehaviour
         }
     }
 
-    // Starts with a successful ending and fades out as the crew is sent back to the compound.
+    // Keep playing through the return countdown, then fade on leaving the expedition.
     void UpdateMusic(RailAudioBank bank, bool onTrain)
     {
         var expedition = RailExpedition.Instance;
@@ -268,25 +268,18 @@ public sealed class RailAudioDirector : MonoBehaviour
         bool active = onTrain && bank.bridgeMusic != null && expedition != null && expedition.State.finished &&
             expedition.State.success && expedition.State.run == run &&
             (PhotonSession.Phase == RailPhase.Ending || PhotonSession.Phase == RailPhase.Returning);
-        float target = 0f;
-        if (active)
+        if (active && musicRun != run)
         {
-            if (musicRun != run)
-            {
-                musicRun = run;
-                if (music == null) music = MakeSource("Bridge music", false);
-                music.clip = bank.bridgeMusic; music.loop = bank.loopMusic;
-                music.outputAudioMixerGroup = EffectsGroup();
-                musicVolume = 0f; music.volume = 0f; music.Play();
-            }
-            double deadline = PhotonSession.Get(RailSessionRules.Deadline, 0d) + RailSessionRules.ReturnDelaySeconds;
-            float remaining = (float)(deadline - PhotonNetwork.Time);
-            float fade = PhotonSession.Phase == RailPhase.Returning ? 0f : Mathf.Clamp01(remaining / bank.musicFadeOutSeconds);
-            target = bank.musicVolume * fade;
+            musicRun = run;
+            if (music == null) music = MakeSource("Bridge music", false);
+            music.clip = bank.bridgeMusic; music.loop = bank.loopMusic;
+            music.outputAudioMixerGroup = EffectsGroup();
+            musicVolume = 0f; music.volume = 0f; music.Play();
         }
         if (music == null) return;
-        float rate = target > musicVolume ? .5f : (active ? .15f : 1f);
-        musicVolume = Mathf.MoveTowards(musicVolume, target, Time.unscaledDeltaTime * bank.musicVolume / rate);
+        float target = active ? bank.musicVolume : 0f;
+        float fadeSeconds = active ? .5f : bank.musicFadeOutSeconds;
+        musicVolume = Mathf.MoveTowards(musicVolume, target, Time.unscaledDeltaTime * bank.musicVolume / fadeSeconds);
         music.volume = musicVolume;
         if (!active && musicVolume <= 0f && music.isPlaying) music.Stop();
     }
