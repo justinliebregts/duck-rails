@@ -12,6 +12,8 @@ public sealed class RailBridgeSiren : MonoBehaviour
 {
     [System.Serializable] public struct Step { public Renderer[] renderers, posts; }
 
+    [Tooltip("Test hook: run the siren and light chase without a live run (used for recordings and preview).")]
+    public bool previewActive;
     [Tooltip("Where the siren is heard from (the bridge control box).")]
     public Transform soundPoint;
     [Tooltip("Warning caps in lighting order, nearest the train first. Renderers in one step flash together.")]
@@ -57,6 +59,7 @@ public sealed class RailBridgeSiren : MonoBehaviour
         bool inRun = PhotonSession.OnTrain && PhotonSession.Instance != null && PhotonSession.Instance.WorldReady &&
                      PhotonSession.Phase == RailPhase.Running && run != null;
         bool active = ShouldRun(inRun, inRun && run.State.BridgeProgress(PhotonNetwork.Time) >= 1, inRun && run.State.finished);
+        active |= previewActive;
         double now = Time.realtimeSinceStartupAsDouble;
 
         if (playing && !handle.IsPlaying) { playing = false; nextAt = NextStart(now, RailAudio.Bank != null ? RailAudio.Bank.bridgeSirenGap : 5f); }
