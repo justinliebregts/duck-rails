@@ -2,6 +2,19 @@
 
 November 4, 2026. The user approved the hospital drawings including the V4 south ER/surgery changes and requested the 3D build. The rough Quackville district is now installed; see implementation and validation below. This is a separate district, superseding the earlier combined construction/hospital study.
 
+## Finished campus in Unity
+
+The existing 96 × 160 m Hospital District now uses the approved [full-block art target](../output/hospital-finished-review/hospital-district-full-block.png). [Whole block in Unity](../output/hospital-campus-unity/whole-block.png) · [south garden and ER](../output/hospital-campus-unity/garden-and-er.png) · [north laundry and transit](../output/hospital-campus-unity/laundry-and-transit.png) · [baked ER entrance](../output/hospital-campus-unity/er-baked.png). The first three views use a temporary inspection light.
+
+The south approach has a planted loop, pergola, slatted benches, medical-center sign, striped ambulance apron, three wrecks, stretchers and an illuminated ER canopy. The center uses facade ribs, alternating open and glazed ward windows, roof tanks and ductwork, clinic clerestories and pharmacy awnings. The north has a stepped laundry loading dock, crates, drying lines, visitor shuttle, covered shelter, timetable and marked parking.
+
+The campus uses the review model adapted around the original playable rooms, two stair cores and open courtyard. The importer reuses production vehicle/pine materials and a shared color/emission atlas for the new geometry. Signs use CutePixel SDF. The bake scene and expedition catalogue resolve the same prefab. The migrated candidate pools retain 18 coal, six gold and 18 enemies.
+
+**Edit Mode evidence.** 2,671 checks passed, including rail clearance, pedestrian routes, stair access, all candidate positions and ground-to-roof graph connectivity. The rebuilt graph has 34,313 nodes and one retained component. All 416 campus mesh renderers have exported bindings. The block has 49 active baked fixtures, 1,439 bound receivers, three lightmaps and 398 probes. The main editor reloaded the published prefab and found zero missing campus maps or broken receiver bindings. [Geometry checks](validation/hospital/finished-campus/geometry-checks.txt) · [bake evidence](validation/hospital/finished-campus/bake.txt)
+
+**Authoring.** Edit the playable shell on the existing prefab. The Blender source for the exterior is [build_campus.py](../ArtSource/HospitalCampus/build_campus.py). Run it in background Blender to regenerate the FBX, atlas textures and label/fixture source. Mesh names identify campus area, spatial cell and collision role. Keep mesh identifiers stable for existing references. The install command creates the finished hierarchy on an unconverted shell. When changing exterior topology, check mesh and collider references before rebaking the graph and lighting. Headset traversal, train-side visibility, late join and Quest performance are queued for playtest.
+
+
 ## Installed rough blockout
 
 - Prefab: `Assets/DuckRails/Blocks/hospital-district-v1.prefab`; catalogue name **Hospital District**, registered in Expedition as the fifteenth scavenging location. Normal runs still select five stops.
