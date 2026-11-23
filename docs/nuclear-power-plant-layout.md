@@ -1,5 +1,21 @@
 # Nuclear power plant — layout and implementation
 
+## Full plant site — November 23
+
+The current 96 × 160 m expedition prefab follows the finished render. The two hollow cooling towers stand east of the tracks. The turbine hall and sealed containment stand west. This supersedes the orientation shown in the November 5 proposal.
+
+- **South approach.** The employee bus, fleet car and striped turnaround face four pipe delivery racks across the railway. The gatehouse, maintenance shed, delivery truck and 130 stacked or spilled drums carry the approach into the plant.
+- **Middle.** The tower manifolds, collared supply pipes, shell bands and portable lamps frame both 22 m cooling towers. The damp and drained interiors retain their crosswalks and undercroft entrances. The hall keeps its 28 × 36 m floor, two stair flights and control gallery. Clerestory windows, roof equipment and CutePixel signs identify its entrances.
+- **North departure.** A reed-lined settling pond and pump hut sit west of the line. Four transformer banks and a stepped discharge flume finish the east side. Faceted pines, verge planting and baked lamps continue toward the seams.
+
+[North-up blueprint](../output/nuclear-full-block/blueprint.png) · [Whole-block Unity render](../output/nuclear-full-block/whole-block.png) · [South approach](../output/nuclear-full-block/south-arrival.png) · [North waterworks](../output/nuclear-full-block/north-waterworks.png). The Unity captures use the baked prefab with fog disabled and a temporary directional review light.
+
+The finished site reuses the original playable structures, colliders and spawn marker identities. The gallery, tower markers and corresponding probes moved with the mirrored structures. The prefab contains 18 coal, 6 gold and 18 enemy candidate markers. The runtime determines the population for each expedition.
+
+**Edit Mode evidence.** The freshly baked crawlgraph has 33,392 nodes and one connected component. All 3,210 geometry, navigation and UV checks passed, including the approach lanes, tower entrances, hall circulation, rails and seams. The production prefab has 41 baked fixtures, 313 probes and 1,353 valid receiver bindings across three atlases. All 56 new site receivers have lightmap bindings. The companion remains enabled in the build. The main Duck Rails editor loaded the delivered prefab, graph, markers and bindings. Headset traversal and multiplayer route appearance are queued for playtest. [Geometry results](validation/nuclear-full-block/geometry-checks.txt) · [Lighting and graph summary](../output/nuclear-full-block/editor-checks.txt)
+
+The prefab is `Assets/DuckRails/Blocks/nuclear-power-plant-v1.prefab`. Its mesh, materials and original Quackville texture blends live in `Assets/DuckRails/NuclearPlant/FullBlock`. [Blender source](../ArtSource/NuclearFullBlock/build_site.py) generates the FBX, surface textures and fixture manifest. [Plan source](../ArtSource/NuclearFullBlock/draw_plan.ps1) draws the measured site diagram. To recapture the installed prefab, open the nuclear bake scene by itself and choose **Duck Rails → Authoring → Nuclear Plant → Capture open full site**.
+
 ## Installed rough blockout — November 5
 
 User approved V2 for 3D and requested closer barrel spacing and stacked drums. Installed `nuclear-power-plant-v1` as a new sixteenth scavenging location, with repeatable authoring in `Assets/Editor/RailNuclearPlant.cs`. Existing prototype rebuilds preserve this additional block. V1/V2 proposal sections below are historical design context; this section records actual implementation.
