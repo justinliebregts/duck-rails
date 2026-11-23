@@ -1905,3 +1905,7 @@ Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Ver
 ## Bridge lowered sound — November 23
 
 - [ ] With two clients on a running expedition, lower the bridge to 100%. Both should hear the lock-down sound (`Bridge_Lowered`, from the bridge hinge, audible from a long way off along the train). Join late after 100% and confirm it does not replay.
+
+## Bridge siren and beacons — November 23
+
+- [ ] With two clients, hold the bridge lever. Both hear the siren from the control box, it finishes, pauses 5 seconds, then repeats. The two top red lights show spinning beams while it runs. Keep lowering past 100% and confirm it keeps repeating until the train crosses, then the current siren finishes without another and the beams stop. Check beam readability and Quest performance on headset.
