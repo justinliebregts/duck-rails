@@ -1853,3 +1853,7 @@ On Quest in Compound: the bench is gone, the Tales From The Rails board starts j
 - Changed: Diagnostics report c4d768ec (build 0.4.0, Quest) showed `[Rate Game] code 1002 "Not allowed to launch rate and review flow for this user"` from `RateAndReviewLauncher`. `RailRateGame` now falls back to opening the store listing URL on any launcher error or exception. The report is left open until verified.
 - Cheap checks: Unity compiled, Console error query empty. The Android path is not compiled in the editor.
 - Check: on Quest press RATE GAME; if the native flow is refused, confirm the store page opens and the status reads "Store opened. Find Ratings and Reviews."
+
+## Paired diagnostic incidents — queued for playtest
+
+Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Verify High with separate master and client histories, delivery after upload retries, and surviving evidence when the witness disconnects. Hold Departing for 90 seconds for Critical. Recover a 30–90 second load for Warning. Repeat in another run, verify recurrence in the web inbox, and check headset notification and normal departures for false positives.

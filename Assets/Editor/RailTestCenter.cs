@@ -25,6 +25,25 @@ public sealed class RailTestCenter : EditorWindow
     [Serializable] class Change { public string status, resolution; }
     [MenuItem("Duck Rails/Test Center")]
     public static void Open() => GetWindow<RailTestCenter>("Duck Rails Tests");
+    static string Incident(string summary, string fallback)
+    {
+        var match = System.Text.RegularExpressions.Regex.Match(summary ?? "", @"^\[(Critical|High|Warning)\|([a-f0-9]{32})\|([a-f0-9]{32})\|((?:master|client) \d+)\] ");
+        return match.Success ? match.Groups[2].Value : fallback;
+    }
+    static void EvidenceLabel(string summary)
+    {
+        var parts = (summary ?? "").Split(new[] { ']' }, 2);
+        if (parts.Length == 2 && Incident(summary, "") != "")
+        {
+            var fields = parts[0].Substring(1).Split('|');
+            var style = new GUIStyle(EditorStyles.boldLabel);
+            style.normal.textColor = fields[0] == "Critical" ? new Color(1f,.34f,.34f) :
+                fields[0] == "High" ? new Color(1f,.55f,.2f) : new Color(.95f,.77f,.2f);
+            GUILayout.Label(fields[0] + " · " + fields[3], style);
+            GUILayout.Label(parts[1].Trim(), EditorStyles.wordWrappedLabel);
+        }
+        else GUILayout.Label("Untriaged · " + summary, EditorStyles.wordWrappedLabel);
+    }
     void OnEnable() { local = RailDiagnostics.ReadReports(); nextInbox = 0; }
     void OnDisable() { request?.Abort(); request?.Dispose(); request = null; }
     void OnInspectorUpdate() { if (RailTestRunner.Running) Repaint(); }
@@ -117,18 +136,21 @@ public sealed class RailTestCenter : EditorWindow
         GUILayout.Label(message, EditorStyles.wordWrappedLabel);
         if (GUILayout.Button("Refresh inbox")) { local = RailDiagnostics.ReadReports(); FetchInbox(); }
         resolution = EditorGUILayout.TextField("Resolution / verification", resolution);
-        foreach (var report in local.Where(r => r.status == "open"))
+        foreach (var group in local.Where(r => r.status == "open").GroupBy(r => Incident(r.summary, r.id)))
+        foreach (var report in group)
         {
-            GUILayout.Label("LOCAL " + report.id.Substring(0, 8) + " · " + report.category + " · " + (report.uploaded ? "uploaded" : "pending upload"));
-            GUILayout.Label(report.summary, EditorStyles.wordWrappedLabel);
+            GUILayout.Label("LOCAL · Incident " + group.Key.Substring(0, 8) + " · " + report.id.Substring(0, 8) + " · " + report.category + " · " + (report.uploaded ? "uploaded" : "pending upload"));
+            EvidenceLabel(report.summary);
             if (GUILayout.Button("Inspect " + report.id.Substring(0, 8))) EditorUtility.RevealInFinder(Path.Combine(RailDiagnostics.Folder, report.id + ".json"));
             using (new EditorGUI.DisabledScope(string.IsNullOrWhiteSpace(resolution)))
                 if (GUILayout.Button("Resolve local " + report.id.Substring(0, 8))) { report.status = "resolved"; report.resolution = resolution; RailDiagnostics.Write(report); }
         }
-        foreach (var report in remote)
+        foreach (var group in remote.GroupBy(r => Incident(r.summary, r.id)))
+        foreach (var report in group)
         {
-            GUILayout.Label("BACKEND " + report.id + " · " + report.category, EditorStyles.boldLabel);
-            GUILayout.Label(report.summary + "\n" + report.build + " · " + report.platform, EditorStyles.wordWrappedLabel);
+            GUILayout.Label("BACKEND · Incident " + group.Key.Substring(0, 8) + " · " + report.id + " · " + report.category, EditorStyles.boldLabel);
+            EvidenceLabel(report.summary);
+            GUILayout.Label(report.build + " · " + report.platform, EditorStyles.wordWrappedLabel);
             if (GUILayout.Button("Download evidence " + report.id)) Send("GET", "reports/" + report.id, null, "detail");
             using (new EditorGUI.DisabledScope(string.IsNullOrWhiteSpace(resolution)))
                 if (GUILayout.Button("Resolve backend " + report.id)) Send("POST", "reports/" + report.id + "/status", new Change { status = "resolved", resolution = resolution }, "resolve");

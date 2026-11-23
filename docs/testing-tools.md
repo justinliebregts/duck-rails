@@ -448,3 +448,9 @@ The pause menu's Settings screen has a **Submit Bug** button (top right of the s
 User ID: the backend already records the authenticated account (`reporter`, the session composed ID) on every upload; the client payload deliberately contains no account IDs. The admin list/download endpoints previously hid that column. `duck-rails-web` `router/diagnostics.go` now returns `reporter` to admins (requires an API redeploy). Until deployed, reports upload fine but show no reporter.
 
 Validation: Unity compile and prefab reload pass; Go diagnostic router tests pass. Button feel, upload from a non-admin account and the redeployed reporter field are unverified (queued).
+
+## Paired incidents
+
+All Rails players can report a world load exceeding 90 seconds (High), a departure phase lasting 90 seconds (Critical), or a 30–90 second load that recovered (Warning). Other reports display as Untriaged. Timing restarts when the room, run, phase or master changes. High and Critical incidents request one snapshot from the master, or from an active peer when the master detects the problem. Each perspective saves and uploads independently.
+
+The summary prefix carries severity, incident ID, hashed room/run key and reporter role through the existing API. Each perspective has its own report ID and resolution. The web inbox groups the current page and counts distinct runs per category and build on that page. Rollout requires updated game and admin builds.

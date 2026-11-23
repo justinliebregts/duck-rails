@@ -1036,3 +1036,5 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] Validate bridge terminal headset feel, audio, two-client hold/release, late join/master handoff and replay; queued for playtest.
 
 - [ ] Tales from the Rails is implemented on client and API. Station Info readability, real-client event attribution, reconnects and deployed end-to-end acceptance are queued in docs/playtest-queue.md.
+
+- [ ] Validate paired incident capture across real non-admin clients and Quest, including unavailable witnesses and upload retries. See [playtest queue](playtest-queue.md).
