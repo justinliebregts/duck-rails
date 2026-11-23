@@ -1,5 +1,13 @@
 # Playtest queue
 
+## Hospital furnished interiors — queued 2026-11-23
+
+On Quest at night, walk from the train through every interior: the ER (from the south doors), reception, the CT suite and ward, north supplies (out of the north door), both stairs, then surgeries 1 to 3, the nurse station, patient rooms 201 to 203 and the recovery ward. Also walk through the clinic and its three exam rooms, the pharmacy and dispensary, and the laundry. Check hand and body contact on beds, counters, shelving, washers and carts. Check that thrown coal and gold recover from under furniture, that curtains don't catch hands, that sign readability and room darkness are right at duck eye height, and that enemies follow you through the exam doorways and the dispensary pass-through. Measure frame time inside the pharmacy (the densest room) and looking down the ER. With a second client, compare room lighting after late join. [Interior notes and baked captures](hospital-district-layout.md#furnished-interiors--november-23).
+
+## Hospital finished campus — queued for playtest
+
+On Quest, ride through both ends at night, then walk the staff garden, ER canopy, both hospital stair cores, laundry dock and visitor shelter. Check hand contact, loose-item recovery around the wrecks and benches, lit signs, train-side sightlines and frame time. With a second client, check the same landmarks and lamp/probe lighting after late join and route replacement. See the [Unity captures and Edit Mode evidence](hospital-district-layout.md#finished-campus-in-unity).
+
 ## Storm sky and mountain ring — queued 2026-11-22
 
 - Changed: Expedition and Login use the Duckz animated storm sky (dark olive night, a bit darker than Duckz); the night to pre-dawn to dawn transition now drives the sky colours, a warm sunrise glow and a distant mountain ring around the route. See [storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).

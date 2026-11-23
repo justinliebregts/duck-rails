@@ -38,9 +38,13 @@ public static class RailHospitalChecks
    }
    for(float z=46;z<=68;z+=.5f)Walk(new(25,0,z),"ER arrival");
    for(float x=6;x<=20;x+=.5f)Walk(new(x,0,80),"Main reception return");
+   for(float x=-13;x>=-26;x-=.5f){Walk(new(x,0,92.5f),"Clinic entry");Walk(new(x,0,66.5f),"Pharmacy entry");}for(float x=-13;x>=-26;x-=.5f)Walk(new(x,0,135.2f),"Laundry entry");
+   foreach(float z in new[]{85.4f,92.5f,99.6f})for(float x=-29.6f;x>=-32.4f;x-=.4f)Walk(new(x,0,z),"Clinic exam doorway");
+   for(float x=-27.6f;x>=-33.6f;x-=.5f)Walk(new(x,0,73.5f),"Dispensary pass-through");
+   for(float z=95.5f;z<=104f;z+=.5f)Walk(new(25.5f,0,z),"North supplies exit");
    foreach(var q in new[]{new Vector3(18,4,73.5f),new(19.5f,4,66),new(29.5f,4,66),new(34,0,69.5f),new(26,0,70)})Walk(q,"Department door");
    Check(Physics.Raycast(new(26,20,80),Vector3.down,out var courtyard,25,1<<6,QueryTriggerInteraction.Ignore)&&Mathf.Abs(courtyard.point.y)<.08f,"Courtyard open to sky");
-   var all=root.GetComponentsInChildren<Transform>();Check(all.Count(t=>t.name=="Operating table")==3,"Three surgery rooms furnished");var campus=root.Find(RailHospitalCampus.RootName);
+   var interiors=root.Find(RailHospitalInteriors.RootName);Check(interiors&&interiors.Find("Rooms")&&interiors.Find("Rooms").childCount==13,"Thirteen furnished interior areas");Check(interiors&&interiors.GetComponentsInChildren<BoxCollider>().Length>=200,"Interior furniture has physical colliders");Check(interiors&&interiors.Find("Rooms/H1_Surgery")&&interiors.Find("Rooms/H0_ER")&&interiors.Find("Rooms/Pharmacy")&&interiors.Find("Rooms/Laundry")&&interiors.Find("Rooms/Clinic"),"Surgery, ER and street building interiors present");if(interiors)foreach(var label in interiors.GetComponentsInChildren<TMPro.TMP_Text>())Check(label.font.name=="CutePixel SDF","CutePixel "+label.text);foreach(var name in RailHospitalInteriors.StreetBuildings)Check(!root.Find(name).GetComponentsInChildren<Transform>().Any(t=>t.name=="Shelves"||t.name=="Counter"),"Blockout props retired in "+name);var campus=root.Find(RailHospitalCampus.RootName);
    Check(campus,"Finished campus installed");
    foreach(string group in new[]{"Staff garden","Garden pergola","Ambulance on side","Ambulance inverted","Ambulance at barrier","Emergency canopy","Roof plant","Laundry yard","Visitor shelter","Visitor shuttle"})
     Check(campus.GetComponentsInChildren<MeshCollider>().Any(c=>c.name.StartsWith(group+"_")),group+" has physical geometry");
