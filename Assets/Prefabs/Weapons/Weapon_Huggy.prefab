@@ -165,6 +165,278 @@ PrefabInstance:
       propertyPath: grabSurface
       value: 
       objectReference: {fileID: 11400000, guid: 70341c19605490f4e94bca0184837871, type: 2}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleRadius
+      value: 0.035
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.size
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[0].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[0].y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[0].z
+      value: -0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[1].x
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[1].y
+      value: 0.14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[1].z
+      value: -0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[2].x
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[2].y
+      value: 0.14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[2].z
+      value: -0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[3].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[3].y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[3].z
+      value: -0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[4].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[4].y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[4].z
+      value: -0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[5].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[5].y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[5].z
+      value: -0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[6].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[6].y
+      value: 0.18
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[6].z
+      value: -0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[7].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[7].y
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[7].z
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[8].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[8].y
+      value: 0.035
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[8].z
+      value: 0.018
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[9].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[9].y
+      value: -0.035
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[9].z
+      value: 0.018
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[10].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[10].y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[10].z
+      value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[11].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[11].y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[11].z
+      value: 0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[12].x
+      value: -0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[12].y
+      value: 0.14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[12].z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[13].x
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[13].y
+      value: 0.14
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[13].z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[14].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[14].y
+      value: 0.095
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[14].z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[15].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[15].y
+      value: 0.17
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[15].z
+      value: 0.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[16].y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[16].z
+      value: 0.32
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[17].x
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[17].y
+      value: 0.21
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[17].z
+      value: 0.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[18].x
+      value: -0.045
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[18].y
+      value: 0.26
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[18].z
+      value: 0.38
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[19].y
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[19].z
+      value: 0.39
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[20].y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[20].z
+      value: 0.405
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[21].y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[21].z
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[22].y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[22].z
+      value: 0.495
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[23].y
+      value: 0.16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1795818489445174633, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
+      propertyPath: locomotionSampleOffsets.Array.data[23].z
+      value: 0.532
+      objectReference: {fileID: 0}
     - target: {fileID: 2647454512975538669, guid: 6b705a4059844216be6d5fbf65c9b0ca, type: 3}
       propertyPath: m_Name
       value: Weapon_Huggy

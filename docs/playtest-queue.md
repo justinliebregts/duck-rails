@@ -1889,3 +1889,10 @@ Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Ver
 - Changed: the public departure board now says the platform leaves as one crew in every state: idle "PUBLIC TRAIN / Stand on the platform to board / Everyone on it leaves together"; countdown "DEPARTS IN N / K ducks boarding together" plus a personal "You're aboard!" or "Step on to join this crew"; after the timer "ALL ABOARD! / Departing together..." for the crew and "TRAIN DEPARTING / Next train boards soon" for others (it no longer falls back to the idle prompt); "FULL (8/8) / Next train after this one" for ducks left out. An amber strip around the pressure plate pulses while the countdown runs.
 - Editor evidence: player-define compile passes; Edit Mode wording checks in `RailSessionChecks` pass; editor captures of the idle and countdown text and the glow inspected. The two-client Play Mode run was not done.
 - Check with two clients: one duck steps on, both boards count down with the right personal line and both see the glow; let it depart and confirm the crew sees "ALL ABOARD!" and the other duck "TRAIN DEPARTING", then idle again. Step off mid-countdown to confirm the glow turns off. On Quest, check the board fits and reads from the plate, and the glow is visible but not blinding.
+
+## Held weapon contacts and compound arrivals — November 23
+
+- [ ] On headset, touch the Huggy grip, stock and muzzle to a wall and floor. Check for contact at the visible gun and absence of contact above it.
+- [ ] Compare the held cupcake with the shop display, then check grip, candle light and dropped collision.
+- [ ] With no eligible running public train, press JOIN. Verify the return position faces the readable error, then retry with an eligible train and verify boarding.
+- [ ] Create a private code from the compound. Verify the creator faces the platform from outside its trigger, and a normal public arrival still uses the regular spawn slots.

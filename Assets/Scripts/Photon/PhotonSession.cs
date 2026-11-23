@@ -60,6 +60,14 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public string RoomRequestMessage => Status;
     public string Status { get; private set; } = "Connecting...";
     public string LastError { get; private set; } = "";
+    public string PublicTrainError { get; private set; } = "";
+    public bool SpawnAtJoinBoard { get; private set; }
+    public bool SpawnAtPrivatePlatform { get; private set; }
+    public void ClearSpawnDestination()
+    {
+        SpawnAtJoinBoard = false;
+        SpawnAtPrivatePlatform = false;
+    }
     public string CrewReturnDiagnostic => crewReturn?.Diagnostic ?? "No crew return";
     public bool AwaitingCrewDestination => crewReturn != null && crewReturn.Active &&
         Kind == RailSessionRules.CompoundKind && !crewReturn.InDestination;
@@ -191,13 +199,23 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         code = PhotonNetwork.CurrentRoom?.Name; isPublic = Kind == RailSessionRules.CompoundKind;
         return PhotonNetwork.InRoom && !leaving;
     }
-    void FailInput(string text) { LastError = text; DuckzAnalytics.SessionJoinFailed(text); RoomRequestFailed?.Invoke(text); }
+    void FailInput(string text)
+    {
+        if (request == Request.PublicTrain)
+        {
+            PublicTrainError = text;
+            SpawnAtJoinBoard = true;
+        }
+        LastError = text; DuckzAnalytics.SessionJoinFailed(text); RoomRequestFailed?.Invoke(text);
+    }
     void Begin(Request next, string room = null)
     {
         if (HasRoomRequest || quitting) return;
         if (!IsCrewRequest(next)) { crewReturn?.Dispose(); crewReturn = null; }
         requestedTrainThrottle = null;
         if (Kind == RailSessionRules.CompoundKind) previousCompound = PhotonNetwork.CurrentRoom.Name;
+        ClearSpawnDestination();
+        PublicTrainError = "";
         LastError = ""; request = next; requestedRoom = room;
         allocationAttempt = 0;
         allocation = next == Request.Transfer || next == Request.CrewFresh ? room : null;
@@ -463,6 +481,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             FailInput("Incompatible room. Use the same Duck Rails build.");
             request = Request.Random; leaving = true; Started(LastError); PhotonNetwork.LeaveRoom(false); return;
         }
+        SpawnAtPrivatePlatform = request == Request.CreatePrivate;
         DuckzAnalytics.SessionJoined(Kind, PhotonNetwork.CurrentRoom.PlayerCount);
         DuckzAnalytics.SessionEvent(request == Request.Rejoin ? "rejoined" : "joined");
         request = Request.None; RecoveringConnection = false; leaving = false;

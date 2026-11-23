@@ -103,14 +103,27 @@ public sealed class RailWorld : MonoBehaviour
             if (!aboard) session.MarkWorldLoading();
             return;
         }
-        if (!positioned)
+        if (!positioned || (!aboard && session.SpawnAtJoinBoard))
         {
             int spawnSlot = (PhotonNetwork.LocalPlayer.ActorNumber - 1) % 12;
             Vector3 position = aboard ? train.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 4 - 1.5f) * .7f, .35f, -2f))
                 : compoundSpawn.position + new Vector3((spawnSlot % 4 - 1.5f) * 1.5f, 0, spawnSlot / 4 * 1.5f);
+            Quaternion facing = Quaternion.identity;
+            if (!aboard && (session.SpawnAtJoinBoard || session.SpawnAtPrivatePlatform))
+            {
+                var board = session.SpawnAtJoinBoard ? compound.GetComponentInChildren<RailPublicTrainButton>(true) : null;
+                var target = board != null ? board.transform : boardingTrigger.transform;
+                Vector3 forward = Vector3.ProjectOnPlane(target.forward, Vector3.up).normalized;
+                float distance = board != null ? 1.5f : boardingTrigger.bounds.extents.z + 1f;
+                position = (board != null ? target.position : boardingTrigger.bounds.center) - forward * distance;
+                position.y = compoundSpawn.position.y;
+                facing = Quaternion.LookRotation(forward);
+            }
             var desktop = local.GetComponent<DesktopPlayer>();
-            if (desktop != null) desktop.Teleport(position, Quaternion.identity, true);
-            else if (NewPlayer.instance != null) NewPlayer.instance.Warp(position, Quaternion.identity);
+            if (desktop != null) desktop.Teleport(position, facing, true);
+            else if (NewPlayer.instance != null) NewPlayer.instance.Warp(position, facing);
+            else return;
+            session.ClearSpawnDestination();
             positioned = true;
         }
         session.MarkWorldReady();

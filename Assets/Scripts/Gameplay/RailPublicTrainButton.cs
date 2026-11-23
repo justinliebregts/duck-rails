@@ -17,8 +17,9 @@ public sealed class RailPublicTrainButton : MonoBehaviour
         bool shown = PhotonSession.IsRailsRoom && PhotonSession.Kind == RailSessionRules.CompoundKind;
         if (panel.activeSelf != shown) panel.SetActive(shown);
         button.interactable = session != null && session.CanJoinPublicTrain;
-        string text = session != null && session.LastError == PhotonSession.NoPublicTrain
-            ? "No public train\navailable" : Title;
+        string error = session != null ? session.PublicTrainError : "";
+        string text = error == PhotonSession.NoPublicTrain ? "No public train\navailable"
+            : string.IsNullOrEmpty(error) ? Title : error;
         if (heading.text != text) heading.text = text;
     }
 
