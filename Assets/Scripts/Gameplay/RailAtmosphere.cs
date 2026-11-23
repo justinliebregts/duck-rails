@@ -52,6 +52,19 @@ public sealed class RailAtmosphere
 
     public static bool IsStormSky(Material material) => material != null && material.shader != null && material.shader.name == StormSkyShader;
 
+    /// <summary>Metres from the start of the mid shop block over which deep night fades to night.</summary>
+    public const float MidpointFadeLength = 30;
+
+    // 0 = deep night, 1 = night. Uses the shared train distance, so every client and late joiner agrees.
+    // Without a live route/train (editor preview, other scenes) it stays at night.
+    public static float MidpointLift()
+    {
+        var route = RailRoute.Instance; var train = RailTrain.Instance;
+        if (route == null || train == null) return 1;
+        if (route.MidpointStart < 0) return 0;
+        return Mathf.SmoothStep(0, 1, Mathf.Clamp01((train.Distance - route.MidpointStart) / MidpointFadeLength));
+    }
+
     // Route distance gives late joiners and a replacement master the same pre-dawn state.
     // Success blends during the automatic bridge/tunnel ride; failures never receive dawn.
     public static float Progress(float distanceIntoFinale, bool success, double elapsed)
@@ -82,11 +95,14 @@ public sealed class RailAtmosphere
             CreateMountains();
         }
         if (mountains != null) mountains.FollowRoute();
-        float t = Mathf.Clamp(progress, 0, 2);
+        // -1 deep night, 0 night, 1 pre-dawn, 2 dawn. Before the finale (progress 0) the shared train
+        // distance lifts deep night to night across the start of the mid shop block.
+        float t = Mathf.Clamp(progress, -1, 2);
+        if (t == 0) t = MidpointLift() - 1;
         if (t == lastProgress) return;
         lastProgress = t;
-        bool dawn = t > 1;
-        float blend = dawn ? t - 1 : t;
+        bool deep = t < 0, dawn = t > 1;
+        float blend = deep ? t + 1 : dawn ? t - 1 : t;
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
         float nightDensity = settings != null ? settings.nightDensity : .06f;
@@ -95,12 +111,16 @@ public sealed class RailAtmosphere
         Color nightColor = settings != null ? settings.nightColor : NightFog;
         Color preColor = settings != null ? settings.preDawnColor : PreFog;
         Color dawnColor = settings != null ? settings.dawnColor : DawnFog;
-        RenderSettings.fogDensity = Mathf.Max(0, Mathf.Lerp(dawn ? preDensity : nightDensity, dawn ? dawnDensity : preDensity, blend));
-        RenderSettings.fogColor = Color.Lerp(dawn ? preColor : nightColor, dawn ? dawnColor : preColor, blend);
+        // Deep night shares the night fog; only its sky, mountains and ambient are darker.
+        RenderSettings.fogDensity = deep ? nightDensity : Mathf.Max(0, Mathf.Lerp(dawn ? preDensity : nightDensity, dawn ? dawnDensity : preDensity, blend));
+        RenderSettings.fogColor = deep ? nightColor : Color.Lerp(dawn ? preColor : nightColor, dawn ? dawnColor : preColor, blend);
+        var deepSky = settings != null ? settings.deepNightSky : RailAtmosphereSettings.SkyPhase.DeepNight;
         var nightSky = settings != null ? settings.nightSky : RailAtmosphereSettings.SkyPhase.Night;
         var preSky = settings != null ? settings.preDawnSky : RailAtmosphereSettings.SkyPhase.PreDawn;
         var dawnSky = settings != null ? settings.dawnSky : RailAtmosphereSettings.SkyPhase.Dawn;
-        var phase = RailAtmosphereSettings.SkyPhase.Lerp(dawn ? preSky : nightSky, dawn ? dawnSky : preSky, blend);
+        var phase = deep ? RailAtmosphereSettings.SkyPhase.Lerp(deepSky, nightSky, blend)
+            : RailAtmosphereSettings.SkyPhase.Lerp(dawn ? preSky : nightSky, dawn ? dawnSky : preSky, blend);
+        if (deep) blend = 0; // the baked moonlight keeps its night values below
         RenderSettings.ambientMode = AmbientMode.Flat;
         RenderSettings.ambientLight = phase.ambient;
         if (sun != null)

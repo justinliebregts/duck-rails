@@ -18,6 +18,22 @@ MonoBehaviour:
   preDawnDensity: 0.05
   dawnColor: {r: 0.9, g: 0.8, b: 0.62, a: 1}
   dawnDensity: 0.005
+  deepNightSky:
+    zenith: {r: 0.08, g: 0.095, b: 0.065, a: 1}
+    horizon: {r: 0.06, g: 0.068, b: 0.045, a: 1}
+    cloudEdge: {r: 0.14, g: 0.155, b: 0.11, a: 1}
+    cloudShadow: {r: 0.018, g: 0.024, b: 0.017, a: 1}
+    cloudCoverage: 0.54
+    cloudOpacity: 0.95
+    exposure: 0.22
+    sunGlow: {r: 1, g: 0.55, b: 0.25, a: 1}
+    sunGlowStrength: 0
+    sunElevation: -12
+    sunlight: {r: 1, g: 0.85, b: 0.65, a: 1}
+    sunlightIntensity: 0
+    ambient: {r: 0.014, g: 0.017, b: 0.025, a: 1}
+    mountainNear: {r: 0.003, g: 0.003, b: 0.002, a: 1}
+    mountainFar: {r: 0.011, g: 0.013, b: 0.009, a: 1}
   nightSky:
     zenith: {r: 0.08, g: 0.095, b: 0.065, a: 1}
     horizon: {r: 0.06, g: 0.068, b: 0.045, a: 1}

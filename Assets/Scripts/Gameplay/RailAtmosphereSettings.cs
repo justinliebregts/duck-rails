@@ -18,6 +18,8 @@ public sealed class RailAtmosphereSettings : ScriptableObject
 
     // Storm sky and distant mountain endpoints. The sky's lower hemisphere follows the fog colour.
     [Header("Storm sky")]
+    [Tooltip("Before the mid shop block. Fades to Night Sky over the start of that block. Uses the night fog.")]
+    public SkyPhase deepNightSky = SkyPhase.DeepNight;
     public SkyPhase nightSky = SkyPhase.Night;
     public SkyPhase preDawnSky = SkyPhase.PreDawn;
     public SkyPhase dawnSky = SkyPhase.Dawn;
@@ -44,6 +46,16 @@ public sealed class RailAtmosphereSettings : ScriptableObject
         public Color mountainNear;
         public Color mountainFar;
 
+        // Justin, Nov 23: darker still until the players reach the mid shop block.
+        public static SkyPhase DeepNight => new SkyPhase
+        {
+            zenith = new Color(.08f, .095f, .065f), horizon = new Color(.06f, .068f, .045f),
+            cloudEdge = new Color(.14f, .155f, .11f), cloudShadow = new Color(.018f, .024f, .017f),
+            cloudCoverage = .54f, cloudOpacity = .95f,
+            exposure = .22f, sunGlow = new Color(1, .55f, .25f), sunGlowStrength = 0, sunElevation = -12,
+            sunlight = new Color(1, .85f, .65f), sunlightIntensity = 0, ambient = new Color(.014f, .017f, .025f),
+            mountainNear = new Color(.003f, .003f, .002f), mountainFar = new Color(.011f, .013f, .009f),
+        };
         // Night is a much darker version of the Duckz storm palette (Duckz exposure 0.8; Justin, Nov 23: night too bright).
         public static SkyPhase Night => new SkyPhase
         {

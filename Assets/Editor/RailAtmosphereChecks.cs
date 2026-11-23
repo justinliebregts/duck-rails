@@ -82,6 +82,17 @@ public static class RailAtmosphereChecks
                     UnityEngine.Object.DestroyImmediate(image);
                 }
             }
+            // Deep night (before the mid shop block) and its fade to night; edit mode has no live route, so 0 means night.
+            Check(RailAtmosphere.MidpointLift() == 1, "No live route keeps night");
+            controller.Apply(-1);
+            Check(Mathf.Approximately(RenderSettings.skybox.GetFloat("_Exposure"), settings.deepNightSky.exposure), "Deep night sky exposure");
+            Check(RenderSettings.ambientLight == settings.deepNightSky.ambient, "Deep night ambient");
+            Check(RenderSettings.fogColor == settings.nightColor && Mathf.Approximately(RenderSettings.fogDensity, settings.nightDensity), "Deep night uses night fog");
+            Check(settings.deepNightSky.exposure < settings.nightSky.exposure, "Deep night darker than night");
+            controller.Apply(-.5f);
+            Check(Mathf.Approximately(RenderSettings.skybox.GetFloat("_Exposure"), (settings.deepNightSky.exposure + settings.nightSky.exposure) / 2), "Deep night fade midpoint");
+            controller.Apply(0);
+            Check(Mathf.Approximately(RenderSettings.skybox.GetFloat("_Exposure"), settings.nightSky.exposure), "Fade ends at night");
             controller.Restore();
             Check(controller.Mountains == null && UnityEngine.Object.FindObjectsByType<RailDistantMountains>(FindObjectsSortMode.None).Length == 0, "Mountain ring removed");
             Check(controller.Sunlight == null && GameObject.Find("Dawn sun (runtime)") == null, "Dawn sunlight removed");

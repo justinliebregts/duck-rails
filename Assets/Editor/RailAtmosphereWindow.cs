@@ -181,9 +181,10 @@ public sealed class RailAtmosphereWindow : EditorWindow
             if (GUILayout.Button(preview ? "Stop preview" : "Preview in Scene View"))
             { if (preview) StopPreview(); else StartPreview(); }
             EditorGUI.BeginChangeCheck();
-            progress = EditorGUILayout.Slider("Night > Pre-dawn > Dawn", progress, 0, 2);
+            progress = EditorGUILayout.Slider("Deep night > Night > Pre-dawn > Dawn", progress, -1, 2);
             using (new EditorGUILayout.HorizontalScope())
             {
+                if (GUILayout.Button("Deep night")) { progress = -1; GUI.changed = true; }
                 if (GUILayout.Button("Night")) { progress = 0; GUI.changed = true; }
                 if (GUILayout.Button("Pre-dawn")) { progress = 1; GUI.changed = true; }
                 if (GUILayout.Button("Dawn")) { progress = 2; GUI.changed = true; }
@@ -192,7 +193,7 @@ public sealed class RailAtmosphereWindow : EditorWindow
             scroll = EditorGUILayout.BeginScrollView(scroll);
             serializedSettings.Update();
             EditorGUI.BeginChangeCheck();
-            foreach (string name in new[] { "nightColor", "nightDensity", "preDawnColor", "preDawnDensity", "dawnColor", "dawnDensity", "nightSky", "preDawnSky", "dawnSky" })
+            foreach (string name in new[] { "nightColor", "nightDensity", "preDawnColor", "preDawnDensity", "dawnColor", "dawnDensity", "deepNightSky", "nightSky", "preDawnSky", "dawnSky" })
                 EditorGUILayout.PropertyField(serializedSettings.FindProperty(name), true);
             if (EditorGUI.EndChangeCheck())
             {

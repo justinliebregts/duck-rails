@@ -1,5 +1,10 @@
 # Playtest queue
 
+## Deep night before the mid shop — queued 2026-11-23
+
+- Changed: from departure until the mid shop (helipad) block the sky, mountains and ambient light use a darker "deep night" (sky exposure 0.22 vs night 0.4); over the first 30 m of the mid shop block it fades to the regular night. Uses `RailRoute.MidpointStart` and the shared train distance. Editor: 68 atmosphere assertions and the tuner checks pass; game and player-define compiles pass. No Play Mode or headset run.
+- Check: in a two-client run, both players see the same darkness before the mid shop and the same smooth fade as the train enters it; a late joiner after the mid shop sees regular night straight away; a new run starts dark again. Judge the deep-night darkness on headset (tune **Deep Night Sky > Exposure / Ambient** in the Atmosphere Tuner).
+
 ## Held shovel scenery impacts — queued for playtest, 2026-11-23
 
 - The held Scrap Duck shovel plays `ScrapShovel_SurfaceImpact` at a new solid contact when the shovel moves into the surface at 2 m/s or faster. The event chooses from the spade, the hammer and the first shield strike (trimmed to 1.70 s to retain its decay). Unity compiled and Edit Mode confirmed all three mono imports, prefab references and network registry registration.

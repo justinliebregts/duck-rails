@@ -1,5 +1,12 @@
 # Duck Rails — V1 game design
 
+November 23 deep night (Justin): until the train reaches the mid shop
+(helipad) block the night is darker (sky, mountains, ambient light); over the
+first 30 m of that block it fades to the regular night. Fog, pre-dawn and the
+sunny dawn win effect are unchanged. Driven by the shared train distance, so all
+clients and late joiners match. See
+[storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).
+
 November 23 shovel audio: a hard swing into scenery while holding the Scrap Duck shovel plays one of three clangs at the contact point (spade, hammer or the first shield strike). The initial impact threshold is 2 m/s into the surface. [Queued for playtest](playtest-queue.md#held-shovel-scenery-impacts--queued-for-playtest-2026-11-23).
 
 November 23 sunny dawn (Justin): the successful-escape dawn should feel really

@@ -29,6 +29,8 @@ public sealed class RailRoute : MonoBehaviour
     public string LoadedRun { get; private set; }
     public RailRouteState Selection { get; private set; }
     public float FinaleStart { get; private set; }
+    /// <summary>Shared route distance where the mid shop (helipad) block begins; -1 before the route is built.</summary>
+    public float MidpointStart { get; private set; } = -1;
     public const float StationLength = 160;
     public const float StationDepartureLength = StationLength / 2;
     public const float StartZ = 150;
@@ -142,11 +144,12 @@ public sealed class RailRoute : MonoBehaviour
         Blocks.Clear(); var coal = new List<Transform>(); var enemies = new List<Transform>(); var gold = new List<Transform>();
         var graphs = new List<Game.AI.CrawlGraph>(); var offsets = new List<Vector3>();
         var enemyTypes = new List<int>();
-        float distance = StationDepartureLength;
+        float distance = StationDepartureLength; MidpointStart = -1;
         for (int i = 0; i < count; i++)
         {
             var block = Instantiate(catalog.Single(b => b.id == state.blocks[i]), state.placements[i], Quaternion.identity, transform);
             Blocks.Add(block); distance += block.TrackLength;
+            if (i == MidpointBlockIndex(count)) MidpointStart = distance;
             coal.AddRange(SelectResources(block, RailSpawnKind.Coal, state));
             RailEnemySpawnBalance.Append(block, state.enemySeed, state.resourceCrew, enemies, enemyTypes);
             gold.AddRange(SelectResources(block, RailSpawnKind.Gold, state));
