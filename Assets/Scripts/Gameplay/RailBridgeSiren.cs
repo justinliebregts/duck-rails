@@ -24,8 +24,10 @@ public sealed class RailBridgeSiren : MonoBehaviour
     public float restPause = .35f;
     [Tooltip("Emission multipliers: dim between pulses and peak at the flash.")]
     public float dimLevel = .12f, peakLevel = 2.2f;
-    [Tooltip("Post glow at the flash, as a multiple of the cap emission colour. Posts are unlit between pulses.")]
+    [Tooltip("Post glow shell brightness at the flash, as a multiple of the cap emission colour. Shells are hidden between pulses.")]
     public float postPeakLevel = 1.4f;
+    [Tooltip("Pulse strength below which a post glow shell is hidden.")]
+    [Range(0f, 1f)] public float postShowThreshold = .06f;
 
     static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
     AudioHandle handle;
@@ -100,6 +102,9 @@ public sealed class RailBridgeSiren : MonoBehaviour
             foreach (var r in steps[i].posts)
             {
                 if (r == null) continue;
+                bool show = pulse > postShowThreshold;
+                if (r.enabled != show) r.enabled = show;
+                if (!show) continue;
                 r.GetPropertyBlock(block);
                 block.SetColor(EmissionColor, glow * (postPeakLevel * pulse));
                 r.SetPropertyBlock(block);
@@ -109,7 +114,7 @@ public sealed class RailBridgeSiren : MonoBehaviour
 
     void Clear()
     {
-        foreach (var s in steps) { foreach (var r in s.renderers) if (r != null) r.SetPropertyBlock(null); foreach (var r in s.posts) if (r != null) r.SetPropertyBlock(null); }
+        foreach (var s in steps) { foreach (var r in s.renderers) if (r != null) r.SetPropertyBlock(null); foreach (var r in s.posts) if (r != null) { r.SetPropertyBlock(null); r.enabled = false; } }
     }
 
     void OnDisable() { if (playing) handle.Stop(); playing = false; nextAt = 0; if (lit) Clear(); lit = false; }

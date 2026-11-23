@@ -8,22 +8,21 @@ public static class RailBridgeSirenAuthoring
     const string Prefab = "Assets/DuckRails/Blocks/bridge-finale-v1.prefab";
     const float ClusterGap = 3f;
 
-    // Looks identical to the plain post material at rest (emission black); the siren drives emission at runtime.
-    static Material GlowMaterial()
+    // The posts are static (batched and baked), so a runtime emission change on them is unreliable. A non-static emissive shell
+    // that is hidden between pulses lights the whole post instead.
+    static Renderer Shell(MeshRenderer post, Material glow)
     {
-        const string path = "Assets/DuckRails/Materials/Warning post glow.mat";
-        var m = AssetDatabase.LoadAssetAtPath<Material>(path);
-        if (m == null)
-        {
-            m = new Material(AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/Materials/Danger.mat"));
-            AssetDatabase.CreateAsset(m, path);
-        }
-        m.EnableKeyword("_EMISSION");
-        m.SetColor("_EmissionColor", Color.black);
-        m.globalIlluminationFlags = MaterialGlobalIlluminationFlags.None;
-        EditorUtility.SetDirty(m);
-        AssetDatabase.SaveAssets();
-        return m;
+        var go = new GameObject("Post glow");
+        go.layer = post.gameObject.layer;
+        go.transform.SetParent(post.transform, false);
+        go.transform.localScale = Vector3.one * 1.08f;
+        go.AddComponent<MeshFilter>().sharedMesh = post.GetComponent<MeshFilter>().sharedMesh;
+        var r = go.AddComponent<MeshRenderer>();
+        r.sharedMaterial = glow;
+        r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        r.receiveShadows = false;
+        r.enabled = false;
+        return r;
     }
 
     public static void Apply()
@@ -41,8 +40,10 @@ public static class RailBridgeSirenAuthoring
             var caps = root.GetComponentsInChildren<Transform>(true)
                 .Where(t => t.name.StartsWith("Emissive red warning cap") && t.GetComponent<MeshRenderer>() != null)
                 .OrderBy(t => t.position.z).ToArray();
-            var glowMat = GlowMaterial();
+            foreach (var old in root.GetComponentsInChildren<Transform>(true).Where(t => t.name == "Post glow").ToArray()) Object.DestroyImmediate(old.gameObject);
             var posts = root.GetComponentsInChildren<MeshRenderer>(true).Where(r => r.name.StartsWith("Warning post")).ToArray();
+            var plain = AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/Materials/Danger.mat");
+            foreach (var p in posts) p.sharedMaterial = plain;
             var steps = new System.Collections.Generic.List<RailBridgeSiren.Step>();
             var current = new System.Collections.Generic.List<Renderer>();
             var currentPosts = new System.Collections.Generic.List<Renderer>();
@@ -54,7 +55,7 @@ public static class RailBridgeSirenAuthoring
                 current.Add(cap.GetComponent<MeshRenderer>());
                 var post = posts.Where(p => Mathf.Abs(p.transform.position.x - cap.position.x) < .6f && Mathf.Abs(p.transform.position.z - cap.position.z) < .6f && p.transform.position.y < cap.position.y)
                     .OrderBy(p => cap.position.y - p.transform.position.y).FirstOrDefault();
-                if (post != null) { post.sharedMaterial = glowMat; currentPosts.Add(post); }
+                if (post != null) currentPosts.Add(Shell(post, cap.GetComponent<MeshRenderer>().sharedMaterial));
                 last = cap.position.z;
             }
             if (current.Count > 0) steps.Add(new RailBridgeSiren.Step { renderers = current.ToArray(), posts = currentPosts.ToArray() });
