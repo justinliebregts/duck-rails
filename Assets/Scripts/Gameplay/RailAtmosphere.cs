@@ -19,6 +19,8 @@ public sealed class RailAtmosphere
     static readonly int CloudEdgeId = Shader.PropertyToID("_CloudEdgeColor");
     static readonly int CloudShadowId = Shader.PropertyToID("_CloudShadowColor");
     static readonly int ExposureId = Shader.PropertyToID("_Exposure");
+    static readonly int CoverageId = Shader.PropertyToID("_CloudCoverage");
+    static readonly int OpacityId = Shader.PropertyToID("_CloudOpacity");
     static readonly int GlowColorId = Shader.PropertyToID("_SunGlowColor");
     static readonly int GlowStrengthId = Shader.PropertyToID("_SunGlowStrength");
     static readonly int GlowDirectionId = Shader.PropertyToID("_SunGlowDirection");
@@ -28,7 +30,7 @@ public sealed class RailAtmosphere
     Material originalSky, sky, mountainMaterial;
     RailDistantMountains mountains;
     Scene scene;
-    Light sun;
+    Light sun, sunlight;
     Quaternion sunRotation;
     Color sunColor, ambient, fogColor;
     float sunIntensity, density;
@@ -95,21 +97,50 @@ public sealed class RailAtmosphere
         Color dawnColor = settings != null ? settings.dawnColor : DawnFog;
         RenderSettings.fogDensity = Mathf.Max(0, Mathf.Lerp(dawn ? preDensity : nightDensity, dawn ? dawnDensity : preDensity, blend));
         RenderSettings.fogColor = Color.Lerp(dawn ? preColor : nightColor, dawn ? dawnColor : preColor, blend);
+        var nightSky = settings != null ? settings.nightSky : RailAtmosphereSettings.SkyPhase.Night;
+        var preSky = settings != null ? settings.preDawnSky : RailAtmosphereSettings.SkyPhase.PreDawn;
+        var dawnSky = settings != null ? settings.dawnSky : RailAtmosphereSettings.SkyPhase.Dawn;
+        var phase = RailAtmosphereSettings.SkyPhase.Lerp(dawn ? preSky : nightSky, dawn ? dawnSky : preSky, blend);
         RenderSettings.ambientMode = AmbientMode.Flat;
-        RenderSettings.ambientLight = Color.Lerp(dawn ? PreAmbient : NightAmbient, dawn ? DawnAmbient : PreAmbient, blend);
-        float sunPitch = Mathf.Lerp(dawn ? -5 : -12, dawn ? 3 : -5, blend);
+        RenderSettings.ambientLight = phase.ambient;
         if (sun != null)
         {
-            sun.transform.rotation = Quaternion.Euler(sunPitch, SunYaw, 0);
+            // The scene's baked moonlight: only its transform and values follow the stage.
+            sun.transform.rotation = Quaternion.Euler(phase.sunElevation, SunYaw, 0);
             sun.color = Color.Lerp(dawn ? new Color(.5f, .55f, .7f) : new Color(.35f, .42f, .6f),
                 dawn ? new Color(1, .72f, .48f) : new Color(.5f, .55f, .7f), blend);
             sun.intensity = Mathf.Lerp(dawn ? .06f : .025f, dawn ? .22f : .06f, blend);
         }
-        var nightSky = settings != null ? settings.nightSky : RailAtmosphereSettings.SkyPhase.Night;
-        var preSky = settings != null ? settings.preDawnSky : RailAtmosphereSettings.SkyPhase.PreDawn;
-        var dawnSky = settings != null ? settings.dawnSky : RailAtmosphereSettings.SkyPhase.Dawn;
-        ApplySky(RailAtmosphereSettings.SkyPhase.Lerp(dawn ? preSky : nightSky, dawn ? dawnSky : preSky, blend), RenderSettings.fogColor);
+        ApplySunlight(phase);
+        ApplySky(phase, RenderSettings.fogColor);
     }
+
+    // Realtime sunlight on top of the baked night lighting (the scene's moonlight is baked-only, so
+    // changing it has no runtime effect). No shadows; the light exists only while it is lit.
+    void ApplySunlight(RailAtmosphereSettings.SkyPhase phase)
+    {
+        if (phase.sunlightIntensity <= .001f)
+        {
+            if (sunlight != null) sunlight.enabled = false;
+            return;
+        }
+        if (sunlight == null)
+        {
+            var go = new GameObject("Dawn sun (runtime)") { hideFlags = HideFlags.DontSave };
+            sunlight = go.AddComponent<Light>();
+            sunlight.type = LightType.Directional;
+            sunlight.shadows = LightShadows.None;
+            sunlight.renderMode = LightRenderMode.ForcePixel;
+            sunlight.lightmapBakeType = LightmapBakeType.Realtime;
+        }
+        sunlight.enabled = true;
+        sunlight.transform.rotation = Quaternion.Euler(phase.sunElevation, SunYaw, 0);
+        sunlight.color = phase.sunlight;
+        sunlight.intensity = phase.sunlightIntensity;
+    }
+
+    /// <summary>The runtime dawn sunlight while it exists, otherwise null.</summary>
+    public Light Sunlight => sunlight;
 
     void ApplySky(RailAtmosphereSettings.SkyPhase phase, Color fogColour)
     {
@@ -117,6 +148,8 @@ public sealed class RailAtmosphere
         sky.SetColor(HorizonId, phase.horizon);
         sky.SetColor(CloudEdgeId, phase.cloudEdge);
         sky.SetColor(CloudShadowId, phase.cloudShadow);
+        sky.SetFloat(CoverageId, phase.cloudCoverage);
+        sky.SetFloat(OpacityId, phase.cloudOpacity);
         sky.SetFloat(ExposureId, phase.exposure);
         // The shader multiplies by exposure; divide in linear space so the lower sky equals the fog colour.
         float exposure = Mathf.Max(phase.exposure, .01f);
@@ -124,9 +157,9 @@ public sealed class RailAtmosphere
         sky.SetColor(LowerId, new Color(lower.r / exposure, lower.g / exposure, lower.b / exposure, 1).gamma);
         sky.SetColor(GlowColorId, phase.sunGlow);
         sky.SetFloat(GlowStrengthId, phase.sunGlowStrength);
-        // The glow sits on the sunrise bearing just above the horizon, even while the sun is below it.
-        Vector3 toSun = -(Quaternion.Euler(0, SunYaw, 0) * Vector3.forward);
-        sky.SetVector(GlowDirectionId, (toSun + Vector3.up * .05f).normalized);
+        // The glow follows the sun, but stays just above the horizon while the sun is below it.
+        Vector3 toSun = -(Quaternion.Euler(Mathf.Max(phase.sunElevation, 3), SunYaw, 0) * Vector3.forward);
+        sky.SetVector(GlowDirectionId, toSun);
         if (mountainMaterial != null)
         {
             mountainMaterial.SetColor(NearId, phase.mountainNear);
@@ -152,10 +185,7 @@ public sealed class RailAtmosphere
     // Night/dawn match horizon samples; pre-dawn is the user's #060603 override.
     public static readonly Color NightFog = new Color(.008f, .008f, .004f);
     public static readonly Color PreFog = new Color32(6, 6, 3, 255);
-    public static readonly Color DawnFog = new Color(.439f, .463f, .392f);
-    static readonly Color NightAmbient = new Color(.025f, .03f, .045f);
-    static readonly Color PreAmbient = new Color(.055f, .065f, .09f);
-    static readonly Color DawnAmbient = new Color(.22f, .20f, .19f);
+    public static readonly Color DawnFog = new Color(.9f, .8f, .62f);
 
     public void Restore()
     {
@@ -173,7 +203,8 @@ public sealed class RailAtmosphere
         Release(sky);
         Release(mountainMaterial);
         if (mountains != null) Release(mountains.gameObject);
-        sky = null; mountainMaterial = null; mountains = null;
+        if (sunlight != null) Release(sunlight.gameObject);
+        sky = null; mountainMaterial = null; mountains = null; sunlight = null;
         active = false;
         lastProgress = float.NaN;
     }

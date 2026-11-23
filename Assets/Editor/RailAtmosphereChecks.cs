@@ -57,7 +57,14 @@ public static class RailAtmosphereChecks
                 Color lower = sky.GetColor("_LowerColor").linear * phases[i].exposure, fogLinear = RenderSettings.fogColor.linear;
                 Check(Mathf.Abs(lower.r - fogLinear.r) < .002f && Mathf.Abs(lower.g - fogLinear.g) < .002f && Mathf.Abs(lower.b - fogLinear.b) < .002f, "Lower sky matches fog");
                 Vector4 glow = sky.GetVector("_SunGlowDirection");
-                Check(glow.y > 0 && glow.y < .1f && Vector3.Dot(glow, -RenderSettings.sun.transform.forward) > .9f, "Glow on sunrise bearing");
+                Check(Mathf.Abs(Mathf.Asin(glow.y) * Mathf.Rad2Deg - Mathf.Max(phases[i].sunElevation, 3)) < .1f && Vector3.Dot(glow, -RenderSettings.sun.transform.forward) > .9f, "Glow on sunrise bearing");
+                Check(Mathf.Approximately(sky.GetFloat("_CloudCoverage"), phases[i].cloudCoverage), "Stage cloud coverage");
+                Check(RenderSettings.ambientLight == phases[i].ambient, "Stage ambient");
+                var sunlight = controller.Sunlight;
+                bool lit = phases[i].sunlightIntensity > .001f;
+                Check(lit ? sunlight != null && sunlight.enabled && sunlight.type == LightType.Directional && sunlight.shadows == LightShadows.None
+                    && Mathf.Approximately(sunlight.intensity, phases[i].sunlightIntensity) && sunlight.gameObject.hideFlags == HideFlags.DontSave
+                    : sunlight == null || !sunlight.enabled, "Stage realtime sunlight");
                 var ring = controller.Mountains;
                 Check(ring != null && ring.gameObject.hideFlags == HideFlags.DontSave, "Mountain ring created, never saved");
                 var ringMaterial = ring.GetComponent<MeshRenderer>().sharedMaterial;
@@ -77,6 +84,7 @@ public static class RailAtmosphereChecks
             }
             controller.Restore();
             Check(controller.Mountains == null && UnityEngine.Object.FindObjectsByType<RailDistantMountains>(FindObjectsSortMode.None).Length == 0, "Mountain ring removed");
+            Check(controller.Sunlight == null && GameObject.Find("Dawn sun (runtime)") == null, "Dawn sunlight removed");
             Check(RenderSettings.skybox == original, "Restore original material");
             Check(RenderSettings.fogColor == fog && RenderSettings.fogDensity == density, "Restore fog");
             Check(RenderSettings.ambientMode == mode && RenderSettings.ambientLight == ambient, "Restore ambient");

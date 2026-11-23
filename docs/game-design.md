@@ -1,5 +1,12 @@
 # Duck Rails — V1 game design
 
+November 23 sunny dawn (Justin): the successful-escape dawn should feel really
+sunny, not foggy or overcast. Supersedes "muted dawn, never daytime" and the
+overcast dawn below: blue sky with broken gold-lit clouds, a low warm sun
+(realtime sunlight, no shadows) and a light golden haze instead of grey fog.
+Night and pre-dawn are unchanged. See
+[storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).
+
 November 22 storm sky (user-confirmed, supersedes the November 7 built-in
 procedural sky): Expedition and Login use the Duckz animated storm-cloud sky.
 Night is dark olive, a bit darker than Duckz; pre-dawn lifts slightly; a
