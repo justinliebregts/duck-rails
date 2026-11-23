@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public sealed class RailBridgeSiren : MonoBehaviour
 {
-    [System.Serializable] public struct Step { public Renderer[] renderers; }
+    [System.Serializable] public struct Step { public Renderer[] renderers, posts; }
 
     [Tooltip("Where the siren is heard from (the bridge control box).")]
     public Transform soundPoint;
@@ -24,6 +24,8 @@ public sealed class RailBridgeSiren : MonoBehaviour
     public float restPause = .35f;
     [Tooltip("Emission multipliers: dim between pulses and peak at the flash.")]
     public float dimLevel = .12f, peakLevel = 2.2f;
+    [Tooltip("Post glow at the flash, as a multiple of the cap emission colour. Posts are unlit between pulses.")]
+    public float postPeakLevel = 1.4f;
 
     static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
     AudioHandle handle;
@@ -84,13 +86,22 @@ public sealed class RailBridgeSiren : MonoBehaviour
         float cycle = steps.Length * stepInterval + restPause;
         for (int i = 0; i < steps.Length; i++)
         {
-            float level = Mathf.Lerp(dimLevel, peakLevel, Pulse(Time.time, i, stepInterval, cycle, fade));
+            float pulse = Pulse(Time.time, i, stepInterval, cycle, fade);
+            float level = Mathf.Lerp(dimLevel, peakLevel, pulse);
+            Color glow = Color.red;
             foreach (var r in steps[i].renderers)
             {
                 if (r == null) continue;
-                var baseColor = r.sharedMaterial != null ? r.sharedMaterial.GetColor(EmissionColor) : Color.red;
+                glow = r.sharedMaterial != null ? r.sharedMaterial.GetColor(EmissionColor) : Color.red;
                 r.GetPropertyBlock(block);
-                block.SetColor(EmissionColor, baseColor * level);
+                block.SetColor(EmissionColor, glow * level);
+                r.SetPropertyBlock(block);
+            }
+            foreach (var r in steps[i].posts)
+            {
+                if (r == null) continue;
+                r.GetPropertyBlock(block);
+                block.SetColor(EmissionColor, glow * (postPeakLevel * pulse));
                 r.SetPropertyBlock(block);
             }
         }
@@ -98,7 +109,7 @@ public sealed class RailBridgeSiren : MonoBehaviour
 
     void Clear()
     {
-        foreach (var s in steps) foreach (var r in s.renderers) if (r != null) r.SetPropertyBlock(null);
+        foreach (var s in steps) { foreach (var r in s.renderers) if (r != null) r.SetPropertyBlock(null); foreach (var r in s.posts) if (r != null) r.SetPropertyBlock(null); }
     }
 
     void OnDisable() { if (playing) handle.Stop(); playing = false; nextAt = 0; if (lit) Clear(); lit = false; }

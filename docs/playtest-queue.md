@@ -1908,4 +1908,8 @@ Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Ver
 
 ## Bridge siren and beacons — November 23
 
-- [ ] With two clients, lower the bridge. No siren or chase lights until 100%; then both hear the siren from the control box, it finishes, pauses 5 seconds, then repeats. The red warning post caps chase in sequence toward the bridge like runway lights (the last four flash together) while it runs. Confirm it keeps repeating until the train crosses, then the current siren finishes without another and the lights return to normal. Check chase readability on headset.
+- [ ] With two clients, lower the bridge. No siren or chase lights until 100%; then both hear the siren from the control box, it finishes, pauses 5 seconds, then repeats. The red warning posts and their caps light up in sequence toward the bridge like runway lights (the last four flash together) while it runs. Confirm it keeps repeating until the train crosses, then the current siren finishes without another and the lights return to normal. Check chase readability on headset.
+
+## 5x train speed burns no fuel — queued 2026-11-23
+
+- [ ] With two clients in a private test run (dev build/editor), note the fuel gauge, toggle Train Speed to 5x from the pause menu, drive for a minute: fuel stays flat on both clients and a late joiner sees the same value. Toggle back to 1x: fuel resumes draining from the same value (no jump), and the train does not restart if it was stopped. Changed in `RailSessionRules.EvaluateTrain` (zero fuel per metre while `RailTestTools.FastTrainBurnsNoFuel`); the flag is the existing room property committed with the motion/fuel rebase, so all clients agree. Not compiled in Unity or run live.
