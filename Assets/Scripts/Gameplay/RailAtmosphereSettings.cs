@@ -50,9 +50,9 @@ public sealed class RailAtmosphereSettings : ScriptableObject
             zenith = new Color(.08f, .095f, .065f), horizon = new Color(.06f, .068f, .045f),
             cloudEdge = new Color(.14f, .155f, .11f), cloudShadow = new Color(.018f, .024f, .017f),
             cloudCoverage = .54f, cloudOpacity = .95f,
-            exposure = .5f, sunGlow = new Color(1, .55f, .25f), sunGlowStrength = 0, sunElevation = -12,
+            exposure = .4f, sunGlow = new Color(1, .55f, .25f), sunGlowStrength = 0, sunElevation = -12,
             sunlight = new Color(1, .85f, .65f), sunlightIntensity = 0, ambient = new Color(.025f, .03f, .045f),
-            mountainNear = new Color(.006f, .007f, .005f), mountainFar = new Color(.025f, .029f, .02f),
+            mountainNear = new Color(.005f, .006f, .004f), mountainFar = new Color(.02f, .023f, .016f),
         };
         public static SkyPhase PreDawn => new SkyPhase
         {
