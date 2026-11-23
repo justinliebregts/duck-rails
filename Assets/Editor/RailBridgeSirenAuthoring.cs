@@ -2,10 +2,11 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-/// <summary>Adds the siren controller and spinning beacon arms to bridge-finale-v1. Idempotent.</summary>
+/// <summary>Adds the siren controller and sequenced warning-cap chase to bridge-finale-v1. Idempotent.</summary>
 public static class RailBridgeSirenAuthoring
 {
     const string Prefab = "Assets/DuckRails/Blocks/bridge-finale-v1.prefab";
+    const float ClusterGap = 3f;
 
     public static void Apply()
     {
@@ -14,40 +15,32 @@ public static class RailBridgeSirenAuthoring
         {
             var all = root.GetComponentsInChildren<Transform>(true);
             var button = all.First(t => t.name == "Lower bridge button");
-            var caps = new[] { "Emissive red warning cap (1)", "Emissive red warning cap (2)" }
-                .Select(n => all.First(t => t.name == n)).ToArray();
-            foreach (var old in all.Where(t => t.name == "Bridge siren").ToArray()) Object.DestroyImmediate(old.gameObject);
+            foreach (var old in all.Where(t => t.name == "Bridge siren" || t.name == "Beacon spinner").ToArray())
+                if (old != null) Object.DestroyImmediate(old.gameObject);
+
+            // Caps along the track plus the pair at the control box, nearest the train first. Caps within ClusterGap
+            // metres of each other along the track flash together (the last four sit at nearly the same spacing).
+            var caps = root.GetComponentsInChildren<Transform>(true)
+                .Where(t => t.name.StartsWith("Emissive red warning cap") && t.GetComponent<MeshRenderer>() != null)
+                .OrderBy(t => t.position.z).ToArray();
+            var steps = new System.Collections.Generic.List<RailBridgeSiren.Step>();
+            var current = new System.Collections.Generic.List<Renderer>();
+            float last = float.NegativeInfinity;
+            foreach (var cap in caps)
+            {
+                if (current.Count > 0 && cap.position.z - last > ClusterGap)
+                { steps.Add(new RailBridgeSiren.Step { renderers = current.ToArray() }); current.Clear(); }
+                current.Add(cap.GetComponent<MeshRenderer>());
+                last = cap.position.z;
+            }
+            if (current.Count > 0) steps.Add(new RailBridgeSiren.Step { renderers = current.ToArray() });
 
             var host = new GameObject("Bridge siren");
             host.transform.SetParent(button, false);
-            host.layer = caps[0].gameObject.layer;
+            host.layer = button.gameObject.layer;
             var siren = host.AddComponent<RailBridgeSiren>();
             siren.soundPoint = button;
-
-            var mesh = caps[0].GetComponent<MeshFilter>().sharedMesh;
-            var material = caps[0].GetComponent<MeshRenderer>().sharedMaterial;
-            siren.spinners = caps.Select(cap =>
-            {
-                var spin = new GameObject("Beacon spinner").transform;
-                spin.SetParent(cap.parent, false);
-                spin.position = cap.position + Vector3.up * .2f;
-                spin.gameObject.layer = cap.gameObject.layer;
-                foreach (float yaw in new[] { 0f, 90f })
-                {
-                    var arm = new GameObject("Beacon beam");
-                    arm.layer = cap.gameObject.layer;
-                    arm.transform.SetParent(spin, false);
-                    arm.transform.localRotation = Quaternion.Euler(0, yaw, 0);
-                    arm.transform.localScale = new Vector3(.08f, .05f, 3.4f);
-                    arm.AddComponent<MeshFilter>().sharedMesh = mesh;
-                    var r = arm.AddComponent<MeshRenderer>();
-                    r.sharedMaterial = material;
-                    r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
-                    r.receiveShadows = false;
-                }
-                spin.gameObject.SetActive(false);
-                return spin;
-            }).ToArray();
+            siren.steps = steps.ToArray();
             PrefabUtility.SaveAsPrefabAsset(root, Prefab);
         }
         finally { PrefabUtility.UnloadPrefabContents(root); }

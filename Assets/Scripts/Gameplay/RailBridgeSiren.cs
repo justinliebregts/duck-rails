@@ -3,27 +3,49 @@ using Photon.Pun;
 using UnityEngine;
 
 /// <summary>
-/// Looping bridge siren and spinning beacons. Runs from the moment the bridge is fully lowered until the run finishes (the train has crossed or
-/// the run was lost). The siren plays to completion, waits <see cref="RailAudioBank.bridgeSirenGap"/> seconds, then repeats.
-/// Every client derives this from synced run state and plays its own 3D copy, so no RPC is needed.
+/// Looping bridge siren and runway-style warning lights. Runs from the moment the bridge is fully lowered until the run finishes.
+/// The siren plays to completion, waits <see cref="RailAudioBank.bridgeSirenGap"/> seconds, then repeats. The warning post caps
+/// pulse in sequence toward the bridge; each step is a group that flashes together. Every client derives this from synced run
+/// state and plays its own copy, so no RPC is needed.
 /// </summary>
 public sealed class RailBridgeSiren : MonoBehaviour
 {
+    [System.Serializable] public struct Step { public Renderer[] renderers; }
+
     [Tooltip("Where the siren is heard from (the bridge control box).")]
     public Transform soundPoint;
-    [Tooltip("Spinner roots under each warning light. Hidden while the siren is inactive.")]
-    public Transform[] spinners = new Transform[0];
-    public float degreesPerSecond = 240f;
+    [Tooltip("Warning caps in lighting order, nearest the train first. Renderers in one step flash together.")]
+    public Step[] steps = new Step[0];
+    [Tooltip("Seconds between one step lighting and the next.")]
+    public float stepInterval = .22f;
+    [Tooltip("Seconds for a lit step to fade back to dim.")]
+    public float fade = .5f;
+    [Tooltip("Pause after the last step before the sequence restarts.")]
+    public float restPause = .35f;
+    [Tooltip("Emission multipliers: dim between pulses and peak at the flash.")]
+    public float dimLevel = .12f, peakLevel = 2.2f;
 
+    static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
     AudioHandle handle;
-    bool playing;
+    bool playing, lit;
     double nextAt;
+    MaterialPropertyBlock block;
 
     /// <summary>Siren runs once the bridge is 100% lowered and stops when the run ends. A playing clip is never cut off.</summary>
     public static bool ShouldRun(bool inRun, bool bridgeStarted, bool finished) => inRun && bridgeStarted && !finished;
 
     /// <summary>Time of the next play after one ends: the configured gap later, never negative.</summary>
     public static double NextStart(double now, float gap) => now + Mathf.Max(0f, gap);
+
+    /// <summary>0..1 flash strength for a step: jumps to 1 when the step fires, then fades; 0 before it fires in the cycle.</summary>
+    public static float Pulse(float time, int step, float interval, float cycle, float fade)
+    {
+        float t = cycle > 0 ? Mathf.Repeat(time, cycle) : 0;
+        float age = t - step * interval;
+        if (age < 0 || fade <= 0) return 0;
+        float k = Mathf.Clamp01(1 - age / fade);
+        return k * k;
+    }
 
     void Update()
     {
@@ -47,13 +69,37 @@ public sealed class RailBridgeSiren : MonoBehaviour
             if (!playing) nextAt = NextStart(now, RailAudio.Bank != null ? RailAudio.Bank.bridgeSirenGap : 5f);
         }
 
-        foreach (var s in spinners)
+        UpdateLights(active);
+    }
+
+    void UpdateLights(bool active)
+    {
+        if (!active)
         {
-            if (s == null) continue;
-            if (s.gameObject.activeSelf != active) s.gameObject.SetActive(active);
-            if (active) s.Rotate(0, degreesPerSecond * Time.deltaTime, 0, Space.Self);
+            if (lit) { Clear(); lit = false; }
+            return;
+        }
+        lit = true;
+        if (block == null) block = new MaterialPropertyBlock();
+        float cycle = steps.Length * stepInterval + restPause;
+        for (int i = 0; i < steps.Length; i++)
+        {
+            float level = Mathf.Lerp(dimLevel, peakLevel, Pulse(Time.time, i, stepInterval, cycle, fade));
+            foreach (var r in steps[i].renderers)
+            {
+                if (r == null) continue;
+                var baseColor = r.sharedMaterial != null ? r.sharedMaterial.GetColor(EmissionColor) : Color.red;
+                r.GetPropertyBlock(block);
+                block.SetColor(EmissionColor, baseColor * level);
+                r.SetPropertyBlock(block);
+            }
         }
     }
 
-    void OnDisable() { if (playing) handle.Stop(); playing = false; nextAt = 0; }
+    void Clear()
+    {
+        foreach (var s in steps) foreach (var r in s.renderers) if (r != null) r.SetPropertyBlock(null);
+    }
+
+    void OnDisable() { if (playing) handle.Stop(); playing = false; nextAt = 0; if (lit) Clear(); lit = false; }
 }
