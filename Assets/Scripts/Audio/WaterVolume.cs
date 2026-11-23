@@ -13,6 +13,8 @@ namespace Game.Audio
     {
         [Tooltip("Local-space box. Its top face is the water surface; everything inside counts as under water.")]
         public Vector3 size = new Vector3(10f, 2f, 10f);
+        [Tooltip("Optional shoreline. Each pair is the near and far local Z edge at evenly spaced X positions across the box.")]
+        public Vector2[] shoreEdges;
         [Tooltip("Surface type used for footsteps and hand hits taken below the surface.")]
         public SurfaceType waterSurface;
         [Header("Head under water")]
@@ -45,8 +47,13 @@ namespace Game.Audio
         {
             Vector3 p = transform.InverseTransformPoint(worldPoint);
             Vector3 half = size * 0.5f;
-            return Mathf.Abs(p.x) <= half.x && Mathf.Abs(p.z) <= half.z
-                && p.y >= -half.y && p.y <= half.y + surfaceMargin;
+            if (Mathf.Abs(p.x) > half.x || Mathf.Abs(p.z) > half.z ||
+                p.y < -half.y || p.y > half.y + surfaceMargin) return false;
+            if (shoreEdges == null || shoreEdges.Length < 2) return true;
+            float section = Mathf.InverseLerp(-half.x, half.x, p.x) * (shoreEdges.Length - 1);
+            int left = Mathf.Min((int)section, shoreEdges.Length - 2);
+            Vector2 banks = Vector2.Lerp(shoreEdges[left], shoreEdges[left + 1], section - left);
+            return p.z >= banks.x && p.z <= banks.y;
         }
 
         public static WaterVolume Find(Vector3 worldPoint, float surfaceMargin = 0f)

@@ -1,4 +1,22 @@
-# Canyon — approved layout and blockout
+# Canyon
+
+## Connected mine workings, November 23, 2026
+
+The southwest shaft has a visual-only cover of leaf litter with scrub around the lip. The leaf cover has a textured underside. Five small rocks sit in two uneven groups beside it. Five staggered sandstone ledges descend below it. The rim boulders, scrub and survey stake were moved west onto solid ground, and the trail through the cable-reel shelter was removed.
+
+The northwest shaft drops past sandstone ledges into a timber-framed mine. Its uphill exit passes through an offset rockfall. A narrow gallery joins the two north workings. The east mouth reaches the dry bank at Z=85. On the south rim a second open shaft near X=-11, Z=41 drops to Y=-18. Follow the winding passage beneath the creek to reach the gallery. Broken mining equipment and scattered rock sit beside this route. Three dim blue ground lanterns mark the under-river passage at Z=51, 78 and 103. Two blue-green lanterns mark opposite arms of the gallery junction. Three small rounded side rooms alternate west, east and west at Z=61, 80 and 98; each extends roughly four metres beyond the corridor wall. A weak cool lantern sits against the southwest shaft wall at the bottom, clear of the drop. Twelve uneven clusters of bedded sandstone break up the long canyon rims. Two 2 m timber fences run the full 160 m at X = +/-47, following the [1 m side-fence standard](side-fences.md). Both shaft drops, the caves and all three side rooms share strong [mine reverb](block-reverb.md). The two Survey Camp sign posts sit 22 cm behind the front face of the board.
+
+The north winch retains its overhead reel. The pit cable and north cross-rim path were removed. The shed has a solid roof, cable spools, a generator and oil drums. Both slopes follow the gable pitch through the overhang and bed into the wall tops. The [roof finish](../output/canyon-survey/winch-roof.jpg) uses a point-filtered corrugated metal tile in the shared Canyon Survey atlas. Thirteen ground lanterns light the exterior. The rail bridge stairs ascend toward opposite ends, the wider platforms replace sections of walkway, and the footbridge planks meet raised end landings. The cactus arms have varied headings and revised joints.
+
+The [Edit Mode geometry checks](validation/canyon-survey/geometry-checks.txt) sample both drops, the connecting routes, bridge floors, clearance and the existing spawn pool. The [review views](../output/canyon-survey/mine-review.jpg) use temporary inspection lighting. Review darkness, rock seams, bridge flicker and hand clearance on headset.
+
+## Earlier survey camp and shaft works, November 23, 2026
+
+The south approach pairs three pitched tents and a signed camp on the east with a cable-reel yard and maintenance shelter on the west. In the central gorge, bedded sandstone follows the playable terraces, an iron truss runs under the rail trestle and the east pedestrian bridge crosses above the creek. On the north rim, the lattice headframe carries a winch and a fixed cable down the shaft. A corrugated winch shed, eastern bridge anchors, worklights, desert scrub and sandstone outcrops complete the departure. The shaft drop, cave exit and six exploration landings retain their collision geometry. The detailed model and shared atlas are editable in [Canyon Survey.blend](../ArtSource/CanyonSurvey/Canyon%20Survey.blend).
+
+The [Unity whole-block capture](../output/canyon-survey/whole-block.png), [south camp](../output/canyon-survey/survey-camp.png) and [north shaft](../output/canyon-survey/shaft-and-anchors.png) use an orthographic review camera and a temporary directional light. The block itself uses seventeen baked fixtures. The model follows the [finished layout render](../output/full-block-finished-reviews/canyon.png), with rock piles, spools and worklights shifted away from the bridge landings, deck, traversable shaft and flat seams.
+
+The saved block uses a single candidate pool with 18 coal, 18 enemy and six gold candidates. Its [geometry and navigation checks](validation/canyon-survey/geometry-checks.txt) cover physical routes, collision and headroom, candidate support, connectivity, visual-only rails, artwork and lightmap UVs. The [offline export](../output/canyon-survey/export.txt) records the graph, lightmaps, probe count and lighting companion. Headset review is queued for camp and shaft readability from the train, carrying items over the bridges, dropping into the shaft and walking out, and frame timing in the gorge.
 
 ## Approved 3D work — November 4, 2026
 
@@ -80,3 +98,9 @@ The intended sequence is fall into cave, regain footing, then walk out into the 
 - Complete natural hand locomotion, falls/rescue and loose-item recovery, creek traversal and low-eye route readability on headsets and real clients. The editor checks do not close those acceptance items.
 - If ropes are adopted, verify natural grab/release, two-hand behavior, multiple users, late joining, authority changes and moving-train separation across real clients and target headsets. Editor-only evidence is insufficient.
 - Profile geometry, lighting and any rope simulation on target hardware. No feature acceptance is claimed by the concept sheet.
+
+A caged amber lantern hangs from the center of each creek-facing mine roof lip. The west opening is at X=-27, Z=92 and the east opening at X=14, Z=91. Their warm light is baked into the approaches.
+
+Canyon contact audio uses Sand on the rim, Stone in the caves and cliffs, Dirt on ballast, and Wood, Metal or Foliage on their respective surfaces. Mixed survey props use collider triangles grouped by atlas material. Tent canvas uses the soft Dirt contact. The creek audio follows its visible banks over the full 80 m. Five shallow pools at passage Z52, 63, 77, 89 and 99 use the creek material and matching water footprints, with dry stone between pools.
+
+Edit Mode checked all 659 solid environment colliders, exact triangle coverage on 32 mixed survey meshes, 405 creek shoreline samples, floor contacts in all six water volumes and four dry gaps. Both player sound sets resolve water to HandHit_Water. The Canyon physical layout and graph checks passed.
