@@ -153,6 +153,9 @@ train changes target to 20 or 4 m/s, a stopped train stays stopped and later
 GO uses the selected cruise. Works in public and private runs; the label reads
 the shared key, so every client sees the current speed. The key is ignored
 once the run changes. The private-room Test Center toggle shares this path.
+Bridge lowering follows the selected speed. A continuous hold takes 12 seconds
+at 5x or 60 seconds at 1x, and switching speed preserves progress. The
+reinforcement wave still triggers halfway through lowering.
 
 Coal requests go to the current Photon master in a ready running public or
 private expedition, including requests from a non-master admin. Each applies

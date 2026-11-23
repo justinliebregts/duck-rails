@@ -11,6 +11,7 @@ public sealed class RailRunState
     public string run;
     public double bridgeAt, allDownAt, finishedAt, startAt, sampleAt;
     public double bridgeElapsed, bridgeHeldAt, bridgeHoldUntil;
+    public bool bridgeFast;
     public float lastTrainDistance;
     public bool bridgeReinforcementsTriggered;
     public int bridgeReinforcementCount;
@@ -32,17 +33,18 @@ public sealed class RailRunState
     }
     public RailParticipant Player(string id) => players.Find(p => p.id == id);
     public double BridgeElapsed(double now) => Math.Min(BridgeSeconds, bridgeElapsed +
-        (bridgeHeldAt > 0 ? Math.Max(0, Math.Min(now, bridgeHoldUntil) - bridgeHeldAt) : 0));
+        (bridgeHeldAt > 0 ? Math.Max(0, Math.Min(now, bridgeHoldUntil) - bridgeHeldAt) * (bridgeFast ? 5 : 1) : 0));
     public float BridgeProgress(double now) => Mathf.Clamp01((float)(BridgeElapsed(now) / BridgeSeconds));
     public bool BridgeMoving(double now) => !finished && bridgeHeldAt > 0 && bridgeHoldUntil > now && BridgeProgress(now) < 1;
     // Retain both completed work and a bounded live segment. A missing operator or
     // master cannot turn a stale hold into an unattended lowering timer.
-    public void UpdateBridgeHold(double now, double until)
+    public void UpdateBridgeHold(double now, double until, bool fast = false)
     {
         if (finished) return;
         if (double.IsNaN(until) || double.IsInfinity(until) || until <= now || until > now + 2) until = 0;
-        if (until == bridgeHoldUntil && until > now && BridgeProgress(now) < 1) return;
+        if (fast == bridgeFast && until == bridgeHoldUntil && until > now && BridgeProgress(now) < 1) return;
         bridgeElapsed = BridgeElapsed(now);
+        bridgeFast = fast;
         bridgeHeldAt = bridgeElapsed < BridgeSeconds && until > now ? now : 0;
         bridgeHoldUntil = bridgeHeldAt > 0 ? until : 0;
         if (bridgeHeldAt > 0 && bridgeAt <= 0) bridgeAt = now;
@@ -58,7 +60,7 @@ public sealed class RailRunState
     public void Finish(double now, string cause, IEnumerable<string> aboard)
     {
         if (finished) return;
-        UpdateBridgeHold(now, 0);
+        UpdateBridgeHold(now, 0, bridgeFast);
         var winners = new HashSet<string>(aboard);
         foreach (var p in players) { p.escaped = winners.Contains(p.id); p.reviveAt = 0; p.rescuer = ""; }
         finished = true; finishedAt = now; reason = cause; success = players.Any(p => p.escaped);

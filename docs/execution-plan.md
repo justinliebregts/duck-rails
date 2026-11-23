@@ -17,7 +17,7 @@
   [Queued for playtest](playtest-queue.md#admin-pause-page--queued-2026-11-17).
 - [x] November 18: fifth Test button, Train Speed: 1x/5x, host-routed; Unity compile and
   admin pause EditMode checks pass.
-- [ ] Validate the train speed toggle from master and non-master admins in a headset run.
+- [ ] Validate the train speed toggle from master and non-master admins in a headset run, including bridge lowering at both speeds and a switch during a hold.
   [Queued for playtest](playtest-queue.md#admin-train-speed-toggle--2026-11-18).
 
 - [x] November 17: implement random bounded ambience excerpts and bake overlaps

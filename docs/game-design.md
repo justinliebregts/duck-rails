@@ -742,6 +742,8 @@ November 1 confirmed change: the external bridge button requires a continuous ph
 4. The train entering the bridge crosses the finish line. At this instant, record each participant's finish status and switch the train to automatic forward travel. Players can no longer control its motion.
 5. Anyone not aboard is teleported onto the train for the shared ending, but receives no completion credit and is marked did not finish. Downed players already aboard finish normally. Teleporting does not itself revive anyone.
 6. The train continues across the bridge into a tunnel on the far side. Change lighting to dawn while the sky is hidden, then emerge into the victory ride.
+November 23: the admin Train Speed setting also controls bridge lowering. At 5x, a continuous hold takes 12 seconds and the reinforcement wave arrives at 50% progress. Switching speeds preserves accumulated progress.
+
 7. Present individual accomplishments, finish status, and humorous superlatives on a world-space board. A failed run also shows this board before group return. Return everyone together using the established public/private compound return policy.
 
 ### Run outcome and results — confirmed

@@ -305,7 +305,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             if (rescued != lastJson) PhotonSession.Instance.Commit(new Hashtable { [StateKey] = rescued });
             return;
         }
-        next.UpdateBridgeHold(now, BridgeHoldUntil(next, now));
+        next.UpdateBridgeHold(now, BridgeHoldUntil(next, now), RailTestTools.FastTrainForTick(changes));
         next.UpdateBridgeReinforcements(now, Mathf.Max(0, enemyPoints.Length - baseEnemyCount));
         SampleStats(next, now);
         bool allDown = next.players.Any(p => IsConnected(p.actor)) && next.players.Where(p => IsConnected(p.actor)).All(p => p.down);
