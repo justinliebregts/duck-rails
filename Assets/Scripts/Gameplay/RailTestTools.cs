@@ -39,7 +39,10 @@ public static class RailTestTools
     // Written only by the private-run test tool or the master on an admin's request, and scoped to one run.
     public static bool FastTrainEnabled => PhotonSession.IsRailsRoom && PhotonSession.Phase == RailPhase.Running &&
         !string.IsNullOrEmpty(PhotonSession.RunId) && PhotonSession.Get(FastTrainRunKey, "") == PhotonSession.RunId;
+    public static bool FastTrainBurnsNoFuel => FastTrainEnabled;
     public static float TrainCruiseSpeed => FastTrainEnabled ? 20f : 4f;
+    public static bool FastTrainForTick(Hashtable changes) =>
+        changes[FastTrainRunKey] is string run ? run.Length > 0 : FastTrainEnabled;
     public static void ToggleTrainSpeed()
     {
         if (!CanMutate) { Status = "Train speed requires the master of a ready private run"; return; }
@@ -62,6 +65,8 @@ public static class RailTestTools
     }
 #else
     public static float TrainCruiseSpeed => 4f;
+    public static bool FastTrainBurnsNoFuel => false;
+    public static bool FastTrainForTick(Hashtable changes) => false;
 #endif
     public static RailTestPreset CurrentPreset()
     {
