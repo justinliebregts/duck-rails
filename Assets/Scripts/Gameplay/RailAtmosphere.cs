@@ -131,7 +131,7 @@ public sealed class RailAtmosphere
             sunlight.type = LightType.Directional;
             sunlight.shadows = LightShadows.None;
             sunlight.renderMode = LightRenderMode.ForcePixel;
-            sunlight.lightmapBakeType = LightmapBakeType.Realtime;
+            // A light created at runtime is realtime by default (lightmapBakeType is editor-only).
         }
         sunlight.enabled = true;
         sunlight.transform.rotation = Quaternion.Euler(phase.sunElevation, SunYaw, 0);
