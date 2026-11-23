@@ -1861,3 +1861,9 @@ On Quest in Compound: the bench is gone, the Tales From The Rails board starts j
 ## Paired diagnostic incidents — queued for playtest
 
 Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Verify High with separate master and client histories, delivery after upload retries, and surviving evidence when the witness disconnects. Hold Departing for 90 seconds for Critical. Recover a 30–90 second load for Warning. Repeat in another run, verify recurrence in the web inbox, and check headset notification and normal departures for false positives.
+
+## Public departure board and platform glow — queued 2026-11-23
+
+- Changed: the public departure board now says the platform leaves as one crew in every state: idle "PUBLIC TRAIN / Stand on the platform to board / Everyone on it leaves together"; countdown "DEPARTS IN N / K ducks boarding together" plus a personal "You're aboard!" or "Step on to join this crew"; after the timer "ALL ABOARD! / Departing together..." for the crew and "TRAIN DEPARTING / Next train boards soon" for others (it no longer falls back to the idle prompt); "FULL (8/8) / Next train after this one" for ducks left out. An amber strip around the pressure plate pulses while the countdown runs.
+- Editor evidence: player-define compile passes; Edit Mode wording checks in `RailSessionChecks` pass; editor captures of the idle and countdown text and the glow inspected. The two-client Play Mode run was not done.
+- Check with two clients: one duck steps on, both boards count down with the right personal line and both see the glow; let it depart and confirm the crew sees "ALL ABOARD!" and the other duck "TRAIN DEPARTING", then idle again. Step off mid-countdown to confirm the glow turns off. On Quest, check the board fits and reads from the plate, and the glow is visible but not blinding.

@@ -12,7 +12,14 @@ public sealed class RailPressurePlate : MonoBehaviour
     [Tooltip("How far the slab sinks from its authored resting position, in metres.")]
     public float travel = .05f;
     public float speed = .2f;
+    [Tooltip("Edge strip that glows while the departure countdown runs, so the boarding area reads in VR.")]
+    public Renderer countdownGlow;
+    public Color glowColor = new Color(1f, .62f, .18f);
+    [Tooltip("Pulses per second while the countdown runs.")]
+    public float glowPulse = 1f;
 
+    static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+    MaterialPropertyBlock glowBlock;
     Vector3 rest;
     bool initialized;
     public bool Pressed { get; private set; }
@@ -40,11 +47,24 @@ public sealed class RailPressurePlate : MonoBehaviour
         }
         var target = rest + Vector3.down * (Pressed ? travel : 0);
         plate.localPosition = Vector3.MoveTowards(plate.localPosition, target, speed * deltaTime);
+        UpdateGlow();
+    }
+
+    void UpdateGlow()
+    {
+        if (countdownGlow == null) return;
+        if (countdownGlow.enabled != Pressed) countdownGlow.enabled = Pressed;
+        if (!Pressed) return;
+        glowBlock ??= new MaterialPropertyBlock();
+        float pulse = .65f + .35f * Mathf.Sin(Time.time * glowPulse * Mathf.PI * 2f);
+        glowBlock.SetColor(BaseColor, glowColor * pulse);
+        countdownGlow.SetPropertyBlock(glowBlock);
     }
 
     void OnDisable()
     {
         if (initialized && plate != null) plate.localPosition = rest;
         Pressed = false;
+        if (countdownGlow != null) countdownGlow.enabled = false;
     }
 }

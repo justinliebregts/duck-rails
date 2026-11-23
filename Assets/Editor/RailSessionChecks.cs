@@ -32,6 +32,15 @@ public static class RailSessionChecks
         int[] admitted = RailSessionRules.Admit(Array.Empty<int>(), Enumerable.Range(1, 9));
         Check(admitted.SequenceEqual(Enumerable.Range(1, 8)), "Ninth occupant waits outside the eight-player roster");
         Check(RailSessionRules.Admit(admitted, new[] { 2, 3, 4, 5, 6, 7, 8, 9 }).SequenceEqual(new[] { 2, 3, 4, 5, 6, 7, 8, 9 }), "Vacated slots refill without evicting admitted players");
+        Check(RailWorld.PublicDepartureText(0, -1, false, false).Contains("leaves together"), "Idle board says the platform leaves together");
+        Check(RailWorld.PublicDepartureText(3, 14, false, true).StartsWith("DEPARTS IN 14\n3 ducks boarding together") &&
+            RailWorld.PublicDepartureText(3, 14, false, true).EndsWith("You're aboard!") &&
+            RailWorld.PublicDepartureText(1, 14, false, false).Contains("1 duck boarding") &&
+            RailWorld.PublicDepartureText(1, 14, false, false).EndsWith("Step on to join this crew"), "Countdown board shows group size and the viewer's own status");
+        Check(RailWorld.PublicDepartureText(8, 9, false, false).StartsWith("FULL (8/8)") &&
+            !RailWorld.PublicDepartureText(8, 9, false, true).StartsWith("FULL"), "Full board shows only to ducks left out of the crew");
+        Check(RailWorld.PublicDepartureText(3, -1, true, true).StartsWith("ALL ABOARD!") &&
+            RailWorld.PublicDepartureText(3, -1, true, false).StartsWith("TRAIN DEPARTING"), "Departing board never falls back to the idle prompt");
         var publicRoom = RailSessionRules.Options(RailSessionRules.CompoundKind);
         var privateRoom = RailSessionRules.Options(RailSessionRules.PrivateKind);
         Check(publicRoom.MaxPlayers == 12 && publicRoom.IsVisible && publicRoom.PlayerTtl == 0, "Public compounds: twelve players, discoverable, no inactive shoppers");
