@@ -4769,6 +4769,9 @@ MonoBehaviour:
   releaseSound: {fileID: 11400000, guid: f4b78969ff2364f47ae7a50207e22af5, type: 2}
   travel: 0.05
   speed: 0.2
+  countdownGlow: {fileID: 0}
+  glowColor: {r: 1, g: 0.62, b: 0.18, a: 1}
+  glowPulse: 1
 --- !u!1 &7534531577214211791 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 492660243433063993, guid: 9bf69f4564dfb314b8a33a8ee3e3cb46, type: 3}
