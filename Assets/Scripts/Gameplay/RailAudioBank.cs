@@ -17,6 +17,8 @@ public sealed class RailAudioBank : ScriptableObject
     [Header("Train")]
     public SoundEvent railJoint;
     public SoundEvent trainStop, outOfFuel, lowFuelWarning, bridgeCrash;
+    [Tooltip("Spatialized one-shot at the bridge hinge when the bridge finishes lowering. Played locally by every client from synced state.")]
+    public SoundEvent bridgeLowered;
     [Tooltip("Seamless loop. Volume fades in with speed and pitch follows speed.")]
     public AudioClip rumbleLoop;
     [Tooltip("One-shots played while the horn button is held. Never loops; fades quickly on release.")]

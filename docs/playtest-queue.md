@@ -1901,3 +1901,7 @@ Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Ver
 - [ ] Compare the held cupcake with the shop display, then check grip, candle light and dropped collision.
 - [ ] With no eligible running public train, press JOIN. Verify the return position faces the readable error, then retry with an eligible train and verify boarding.
 - [ ] Create a private code from the compound. Verify the creator faces the platform from outside its trigger, and a normal public arrival still uses the regular spawn slots.
+
+## Bridge lowered sound — November 23
+
+- [ ] With two clients on a running expedition, lower the bridge to 100%. Both should hear the lock-down sound (`Bridge_Lowered`, from the bridge hinge, audible from a long way off along the train). Join late after 100% and confirm it does not replay.

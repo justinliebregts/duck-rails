@@ -44,6 +44,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     readonly Dictionary<string, TMP_Text> downLabels = new Dictionary<string, TMP_Text>();
     RailBridgeCollapse collapse;
     GameObject collapsePrefab;
+    float lastBridgeProgress = -1f, lastBridgeSampleAt;
     readonly HashSet<string> carrierHits = new HashSet<string>();
     readonly HashSet<string> issuedDrops = new HashSet<string>();
     public void CarrierHit(string marker) { if (PhotonSession.Phase == RailPhase.Running && State.carriers.Any(c => c.marker == marker && c.carrying)) carrierHits.Add(marker); }
@@ -221,6 +222,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             localRun = PhotonSession.RunId; caughtRun = null; shownFlares.Clear(); tracedDown.Clear(); wasDown = false; requests.Clear(); pendingRequestJson = null;
             RestoreNightAtmosphere();
             ResetCollapse();
+            lastBridgeProgress = -1f;
         }
         float intoFinale = RailRoute.Instance != null && RailTrain.Instance != null
             ? RailTrain.Instance.Distance - RailRoute.Instance.FinaleStart : -1;
@@ -583,6 +585,11 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             (gauge.GetComponentInParent<RailTrainAssembly>() == null ? "\nRelease coal into furnace (+2.5)" : "");
         float progress = State.BridgeProgress(now);
         bridgeDeck.localRotation = Quaternion.Euler(-80 * (1 - progress), 0, 0);
+        // Bridge state is synced time, so each client sees the 100% crossing itself; play it locally for a 3D sound everyone hears.
+        // A fresh sample (<1s old) guards late joiners and returning players from hearing a stale completion.
+        if (lastBridgeProgress >= 0 && lastBridgeProgress < 1 && progress >= 1 && !State.finished && Time.unscaledTime - lastBridgeSampleAt < 1f && RailAudio.Bank != null)
+            RailAudio.Play(RailAudio.Bank.bridgeLowered, bridgeDeck.position);
+        lastBridgeProgress = progress; lastBridgeSampleAt = Time.unscaledTime;
         bridgeLabel.text = progress >= 1 ? "BRIDGE READY\nBOARD THE TRAIN" :
             (State.BridgeMoving(now) ? "LOWERING BRIDGE" : State.bridgeAt > 0 ? "PAUSED - HOLD LEVER FORWARD" : "HOLD LEVER FORWARD TO LOWER");
         foreach (var p in State.players)
