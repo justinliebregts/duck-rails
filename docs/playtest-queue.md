@@ -1,5 +1,12 @@
 # Playtest queue
 
+## Storm sky and mountain ring — queued 2026-11-22
+
+- Changed: Expedition and Login use the Duckz animated storm sky (dark olive night, a bit darker than Duckz); the night to pre-dawn to dawn transition now drives the sky colours, a warm sunrise glow and a distant mountain ring around the route. See [storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).
+- Editor evidence: 51 Expedition atmosphere assertions and the Atmosphere Tuner checks pass; editor captures inspected. No Play Mode or headset run.
+- Visual check (headset): Login sky looks right and clouds drift slowly. In an expedition, night reads as dark olive storm sky with black silhouettes, not too bright; the mountain ring shows above the horizon on both sides and shifts slowly as the train moves, with no flicker, gaps or ridges drawing in front of nearby scenery. Entering the finale gives a slight lift with a faint warm glow ahead-left; a successful escape brightens and warms the sky and mountains through the tunnel with no sudden jumps. Check the sky past the sides of blocks at dawn (no black band below the horizon), a failed run (never reaches dawn), and a late joiner and replay (same stage as everyone else). Compound stays unchanged.
+- Quest performance: run the Quest 3 solo survey (`Tools/quest-performance.ps1`, [quest-performance.md](quest-performance.md)) on a build before and after this change with the same seed and route. Compare GPU frame time, especially Skyscraper Works (already near budget at 14.0 ms p95) and the finale dawn views. The sky moves from per-vertex to per-pixel work (two texture reads) and adds one 2,304-triangle draw; no on-device numbers exist yet, including in Duckz.
+
 ## LIV recording continuity on tablet close/recall — queued 2026-11-22
 
 - Changed: Duckz `547194e0` port. Closing the camera tablet now hides it instead of switching it off, and recall

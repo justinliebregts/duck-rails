@@ -164,7 +164,20 @@ No Quest GPU/frame-time/memory budget, eight-player acceptance, adverse-network 
 
 The diagnostic inbox query failed with DNS resolution unavailable; six pre-existing open local reports were inspected and left open. No diagnostic report was resolved by this work.
 
+## Storm sky night to dawn — November 22
+
+User-confirmed (Justin, November 22): replace the procedural sky with the Duckz animated storm sky in Expedition and Login; night dark olive, a bit darker than Duckz; dawn just brighter and warmer (still overcast) with a warm sunrise glow; add a distant mountain ring along the route. Compound is unchanged (plain dark background, no skybox). Port details: [duckz-ports.md](duckz-ports.md#storm-sky-group--06f5f5b0-8628bc4c-01f8e3e4-ac6d5319-6a6f5a2f).
+
+- Sky: `Assets/Shaders/AnimatedStormSky.shader` (`Duckz/Animated Storm Sky`, one pass, two samples of the 256² `StormCloudNoise.png`). Rails adds an optional sunrise glow (`_SunGlowColor/Strength/Size/Direction`); at strength 0 the output equals the Duckz shader. `ExpeditionSky.mat` (Expedition) and `Quackville_Skybox.mat` (Login) keep their GUIDs, so no scene was resaved. Both start at the night palette (exposure 0.6 versus Duckz 0.8).
+- Transition: `RailAtmosphere` now requires the storm sky (it previously gated on `Skybox/Procedural`; swapping the material alone would have silently disabled the whole fog/ambient/sun transition). It clones the sky once per run and lerps zenith, horizon, cloud edge/shadow, exposure and glow between three endpoints in `Assets/Resources/Rails/Atmosphere.asset` (`nightSky`, `preDawnSky`, `dawnSky`, editable in the Atmosphere Tuner). The sky below the horizon is always set to the current fog colour (divided by exposure in linear space), so the sky seen past the 96 m-wide block edges matches fogged ground at dawn. Glow sits on the existing 125° sunrise bearing, 0.05 above the horizon. Fog, ambient, sun and timing curves are unchanged.
+- Mountains: Duckz `DistantMountains.fbx` (three ridge rings 2.6–3.7 km, 2,304 triangles, one unlit draw, depth pinned just inside the far plane, no depth writes) in `Assets/Resources/Rails/DistantMountains.prefab`. `RailAtmosphere` instantiates it (DontSave) and recolours a runtime material copy per stage; `RailDistantMountains` centres it at X 0 between the starting station and the finale end and overrides bounds so it is never culled. It works with the 120/175 m player far plane because opaque geometry always writes nearer depth.
+- Not done: the old `Quackville_Skybox.png` panorama is now unreferenced (not in builds) but was left in place; the Expedition lighting data's baked default reflection cubemap still comes from the old procedural sky until the next rebake. Duckz's isolated sky validation harness was not ported.
+
+Validation (November 22, editor only): runtime and editor assemblies compile; both shaders import with 0 messages. **Check Expedition Atmosphere** passed 51 assertions (stage fog, sky exposure/colours/glow, lower sky equals fog, glow bearing, mountain ring creation/colours/route centring, restore, replay, shared material untouched) and wrote nine captures, `output/atmosphere/stage-{0,1,2}-{forward,sunrise,side}.png`. **Check Atmosphere Tuner** passed. Login captures: `output/storm-sky/login-*.png`. Expedition and Login scenes stayed clean. Still pending: Play Mode run, headset look and Quest 3 GPU cost (queued in [playtest queue](playtest-queue.md#storm-sky-and-mountain-ring--queued-2026-11-22)).
+
 ## Procedural night to dawn — November 7
+
+Sky superseded November 22 by the storm sky above; the stage timing, fog and ambient/sun notes below still apply.
 
 User-approved direction: almost-black night, slightly brighter but still-dark pre-dawn upon entering the final bridge block, and muted dawn after successful escape. No daytime, plugins, volumetric effects or visible sun disk. This supersedes the November 4 atmosphere ownership notes above and below.
 

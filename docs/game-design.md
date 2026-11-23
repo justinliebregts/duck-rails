@@ -1,5 +1,15 @@
 # Duck Rails — V1 game design
 
+November 22 storm sky (user-confirmed, supersedes the November 7 built-in
+procedural sky): Expedition and Login use the Duckz animated storm-cloud sky.
+Night is dark olive, a bit darker than Duckz; pre-dawn lifts slightly; a
+successful escape turns the sky brighter and warmer, still overcast, with a warm
+sunrise glow on the horizon. A distant mountain ring surrounds the route and
+blends to dawn. Compound keeps its plain dark background. The rest of the
+November 7 direction (almost-dark night, muted dawn never daytime, existing
+fog/timing, failures never reach dawn) is unchanged. See
+[storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).
+
 November 17 admin tools: the signed-in admin's pause menu has a Test tab with
 Deposit 1 coal, Deposit 50 coal, No Clip: On/Off and Invincibility: On/Off.
 The standalone L3/wrist/desktop test panel and Game-view toggle are retired.
@@ -333,7 +343,7 @@ November 7 follow-up: user selects **#060603** for pre-dawn fog, doubles keyboar
 
 November 7 test convenience: user requested an in-game test-panel 5x train-speed toggle for reaching lighting transitions quickly. This is a private development-run tool; normal gameplay speed and the successful dawn ride remain unchanged. See [test speed toggle](testing-tools.md#train-speed-toggle--november-7).
 
-November 7 confirmed atmosphere: use Unity's built-in procedural sky without plugins or a visible sun disk. Expedition starts almost pitch black; entering the final bridge block introduces a subtle pre-dawn lift while remaining dark. Successful escape transitions to muted dawn, never daytime. Match fog to the sky horizon and reduce density toward the ending. This supersedes November 4 scene-only atmosphere ownership and the abrupt ambient-only ending. See [atmosphere implementation](block-lighting.md#procedural-night-to-dawn--november-7).
+November 7 confirmed atmosphere: use Unity's built-in procedural sky without plugins or a visible sun disk. Expedition starts almost pitch black; entering the final bridge block introduces a subtle pre-dawn lift while remaining dark. Successful escape transitions to muted dawn, never daytime. Match fog to the sky horizon and reduce density toward the ending. This supersedes November 4 scene-only atmosphere ownership and the abrupt ambient-only ending. See [atmosphere implementation](block-lighting.md#procedural-night-to-dawn--november-7). November 22: the procedural sky itself is superseded by the storm sky (top of this document).
 
 November 6 underground station revision: user approved the low-ceiling horror metro and lower-floor crashed-train layout for 3D. V2 rough Quackville geometry is installed: 2.13 m pedestrian ceilings, curved offset railway, enclosed stairs/stopped escalator, lower wreck platform and maintenance loops. See [implementation and validation](underground-station-layout.md#v2-installed-rough-metro). Headset/multiplayer acceptance remains pending.
 

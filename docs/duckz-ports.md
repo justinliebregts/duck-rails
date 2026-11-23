@@ -1,5 +1,36 @@
 # Duckz port history
 
+## Storm sky group — 06f5f5b0, 8628bc4c, 01f8e3e4, ac6d5319, 6a6f5a2f
+
+- Source SHAs: `06f5f5b0a656a2ff4e28c000564c99f8bff5fd12` (animated storm sky),
+  `8628bc4c4fb0cc7467ba6ae9a1966972b0b6f361` (cloud scale/movement),
+  `01f8e3e4fa80ae1a7e6b8c38fa7d18cfe311229c` (distant mountain ring),
+  `ac6d53196565ae35787a5b7d69ff4ef5d773dca3` (black below the horizon),
+  `6a6f5a2f0227326242674b280305b9b580b88b57` (material tuning).
+- Status: implemented; editor validation passed November 22, 2026; visual/headset and
+  Quest performance queued for playtest. User-confirmed design change (game-design.md, November 22).
+- Behavior/destination: final shader and noise texture copied with source GUIDs
+  (`Assets/Shaders/AnimatedStormSky.shader`, `Assets/Materials/Skybox/StormCloudNoise.png`);
+  Rails adds an optional sunrise glow (zero = source output). Login's `Quackville_Skybox.mat`
+  and Expedition's `ExpeditionSky.mat` keep their GUIDs and use the source's final tuning at
+  exposure 0.6 (Justin: a bit darker than Duckz). `RailAtmosphere` drives sky/glow/mountain
+  colours per stage from `Atmosphere.asset` and sets the lower sky to the fog colour; editor
+  tuner and checks updated. Mountain ring: source FBX, material and shader copied with GUIDs;
+  Rails `RailDistantMountains` (adapted from source `DistantMountains.cs`) and runtime prefab
+  `Assets/Resources/Rails/DistantMountains.prefab`, centred on the route and spawned by
+  `RailAtmosphere` instead of placed in a scene.
+- Not ported: Quackville scene placement, sea, `Tools/SkyboxValidation` harness and
+  `Tools/DistantMountains` Blender source (FBX reused as-is). Compound unchanged by request.
+  The unreferenced `Quackville_Skybox.png` panorama was left in place.
+- Dependencies: same Unity 6000.3.24f1 / URP 17.3; no networking (local rendering of shared
+  route/finish progress, unchanged). New GUIDs checked for collisions: none.
+- Validation: see [storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22)
+  (compile, shader import, 51 atmosphere assertions, tuner checks, Expedition/Login captures).
+- Remaining: [playtest queue](playtest-queue.md#storm-sky-and-mountain-ring--queued-2026-11-22)
+  (headset look, late join/replay, Quest 3 GPU before/after). Noise texture origin per Duckz:
+  adapted from DTA's ndc_clouds.png; Justin confirmed use in Rails.
+- Destination commits: see Git history (storm sky, mountain ring, docs).
+
 ## 547194e09ee375fa9a334a28c1ac30dee54ddc6d — LIV recording continuity on tablet close/recall
 
 - Status: implemented; editor checks and a two-client real-Photon MPPM run passed November 22, 2026.
