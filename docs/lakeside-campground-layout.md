@@ -1,4 +1,18 @@
-# Lakeside Campground — layout study
+# Lakeside Campground
+
+## Pine Lake exterior
+
+The finished Unity block follows the approved full-block render. On the south approach, the entrance sign leads to reception, the southwest tent clearing and a camper with a striped awning. In the middle, a timber dock projects into the irregular lake opposite a loop of terraced cabins. At the north end, the trail crosses the gully footbridge and branches toward the woodland pitches, the canoe beach and the rocky overlook. All seven buildings have standing-seam roofs, chimneys and warm windows. Five porches and three ember beds supply the additional baked light. [Approved render](../output/full-block-finished-reviews/lakeside-campground.png)
+
+[Full-block Unity view](../output/campground-finish/whole-block.png) · [Overhead plan](../output/campground-finish/site-plan.png) · [South arrival](../output/campground-finish/arrival.png) · [Cabin terraces](../output/campground-finish/cabin-terraces.png) · [North canoe beach](../output/campground-finish/canoe-beach.png)
+
+The prefab retains its original sculpted ground, open interiors, track and spawn positions. The finished model adds 116 spatially grouped mesh sections on a shared atlas. Seventy sections supply collision on trunks, campsite objects, roofs, porches and other solid details. The shell has eleven campground-local Quackville materials. The water and small shoreline brush stay traversable. The terrain perimeter stays flat, and the maximum sampled path grade is 0.136 metres of rise per metre of travel.
+
+Unity 6000.3.24f1 exported 917 renderer bindings across two color lightmaps, 19 baked fixtures and 587 probes. The rebuilt crawlgraph contains 23,377 nodes and 214,370 edges. The main component spans the block and serves all 42 spawn candidates. A separate 16-node surface sits on top of the northern canoe rack, 10.17 m from the nearest candidate. The saved main-project prefab resolved all 116 finish meshes and all 42 existing spawn candidates. All 2,067 geometry checks passed. A 0.16 m sphere at each spawn origin cleared all new solid scenery. Nighttime legibility, VR prop clearance, item recovery along the shore and multiplayer traversal are queued for playtest. [Geometry checks](validation/campground-finish/geometry-checks.txt) · [Spawn clearance](validation/campground-finish/spawn-clearance.txt) · [Canoe rack connectivity](validation/campground-finish/graph-components.txt) · [Graph and bake](validation/campground-finish/edit-mode.txt) · [Main-project asset check](validation/campground-finish/main-editor.txt)
+
+The Blender authoring source rebuilds the FBX and textures from the captured terrain and the production court pine. Run Blender in background mode from the project root with `--python ArtSource/CampgroundFinish/build_finish.py`. The Unity Campground authoring menu installs the finish on the original shell, checks geometry and captures the five daylight review views. The review capture uses an isolated Unity prefab preview. The block bake scene supplies the shipping lightmaps and probes. [Blender source](../ArtSource/CampgroundFinish/build_finish.py) · [Unity installer](../Assets/Editor/RailCampgroundFinish.cs)
+
+## Layout history
 
 November 4, 2026. The user selected the campground next, explicitly requesting a lake, terrain variation and flat block edges. The revised layout is now installed as a Unity greybox with rough Quackville materials. The original drawing proposals are retained below; implementation differences and validation follow.
 

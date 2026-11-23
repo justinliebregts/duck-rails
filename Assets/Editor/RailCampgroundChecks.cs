@@ -20,9 +20,9 @@ public static class RailCampgroundChecks
         void Check(bool value,string name){if(!value)throw new Exception(name);count++;log.Add("PASS "+name);}
         try
         {
-            var b=root.GetComponent<RailBlock>();var authored=root.transform.Find(RailCampgroundGreybox.RootName);
+            var b=root.GetComponent<RailBlock>();var authored=RailBlock.FindEnvironment(root.transform,RailCampgroundGreybox.RootName);
             Check(authored!=null,"authored campground exists");
-            Check(root.transform.Find("Block ground")==null,"old flat ground collider removed");
+            Check(RailBlock.FindEnvironment(root.transform,"Block ground")==null,"old flat ground collider removed");
             var ground=authored.Find("Sculpted ground").GetComponent<MeshCollider>();
             var verts=ground.sharedMesh.vertices;
             Check(verts.Where(v=>Mathf.Abs(v.x)>=42||v.z<=6||v.z>=154).All(v=>Mathf.Abs(v.y)<.0001f),"all vertices across six-metre perimeter exactly level");
@@ -60,7 +60,8 @@ public static class RailCampgroundChecks
                         if(bridge.Raycast(ray,out var deck,12)&&deck.point.y>h.point.y)h=deck;
                         if(j>0)steepest=Mathf.Max(steepest,Mathf.Abs(h.point.y-prev)/(new Vector2(d.x,d.z).magnitude/n));
                         prev=h.point.y;
-                        Check(collisions.All(c=>!Physics.ComputePenetration(sphere,h.point+Vector3.up*.55f,Quaternion.identity,c,c.transform.position,c.transform.rotation,out _,out _)),"path body clearance "+samples+" at "+h.point);
+                        var blocker=collisions.FirstOrDefault(c=>Physics.ComputePenetration(sphere,h.point+Vector3.up*.55f,Quaternion.identity,c,c.transform.position,c.transform.rotation,out _,out _));
+                        Check(!blocker,"path body clearance "+samples+" at "+h.point+(blocker?" intersects "+blocker.name:""));
                         samples++;
                     }
                 }
@@ -70,12 +71,90 @@ public static class RailCampgroundChecks
             finally{Object.DestroyImmediate(probe);}
             Check(b.GetComponent<RailBakedBlockLighting>().bindings.Length>100,"lighting bindings exported");
             Check(root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name=="Timber wall"||r.name=="Sculpted ground").All(r=>AssetDatabase.GetAssetPath(r.sharedMaterial).StartsWith(RailCampgroundGreybox.Folder)&&r.sharedMaterial.mainTexture!=null),"Quackville textured terrain and cabins");
+            var finish=authored.Find(RailCampgroundFinish.RootName);
+            if(finish)
+            {
+                var art=finish.GetComponentsInChildren<MeshRenderer>().Where(r=>!r.GetComponent<TMPro.TMP_Text>()).ToArray();
+                Check(art.Length>0 && art.All(r=>r.sharedMaterial && r.sharedMaterial.name=="Lakeside atlas"),"finished mesh sections share the Pine Lake atlas");
+                Check(art.All(r=>r.GetComponent<MeshFilter>().sharedMesh.uv2.Length>0),"all finish meshes have secondary UVs");
+                var roofs=art.Where(r=>r.name.StartsWith("Gabled roofs")).ToArray();
+                foreach(var pos in new[]{new Vector3(34,5,76),new Vector3(34,6,99),new Vector3(20,5,121),new Vector3(18,4,27),new Vector3(34,4,50),new Vector3(-11,4,57.5f),new Vector3(-11,4,97)})
+                    Check(roofs.Any(r=>r.bounds.Contains(pos)),"gable positioned over original building "+pos);
+                Check(finish.GetComponentsInChildren<TMPro.TMP_Text>().All(t=>t.font && t.font.name=="CutePixel SDF"),"Pine Lake trail signs use CutePixel SDF");
+                Check(root.GetComponentsInChildren<Light>(true).Count(l=>l.lightmapBakeType==LightmapBakeType.Baked)==RailCampgroundFinish.LightCount,"19 baked interior, porch and ember fixtures");
+                var shellMats=authored.GetComponentsInChildren<MeshRenderer>().SelectMany(r=>r.sharedMaterials).Where(m=>m && AssetDatabase.GetAssetPath(m).Contains("/Finish/Surfaces/")).Distinct();
+                Check(shellMats.Count()==11,"11 campground-local Quackville surface variants");
+            }
             log.Add("TOTAL "+count+" checks. Editor geometry only; headset and multiplayer acceptance pending.");
-            Directory.CreateDirectory("docs/validation/campground-greybox/v2");File.WriteAllLines("docs/validation/campground-greybox/v2/geometry-checks.txt",log);Debug.Log("CAMPGROUND: "+count+" checks passed");
+            string folder=authored.Find(RailCampgroundFinish.RootName)?"docs/validation/campground-finish":"docs/validation/campground-greybox/v2";Directory.CreateDirectory(folder);File.WriteAllLines(folder+"/geometry-checks.txt",log);Debug.Log("CAMPGROUND: "+count+" checks passed");
         }
         finally{PrefabUtility.UnloadPrefabContents(root);}
     }
-    [MenuItem("Duck Rails/Authoring/Campground/Capture review views")]
+    [MenuItem("Duck Rails/Authoring/Campground/Capture finished Pine Lake review")]
+    public static void CaptureFinish()
+    {
+        if (EditorApplication.isPlaying || Lightmapping.isRunning)
+            throw new InvalidOperationException("Finish the current play session or bake before capturing.");
+        var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(RailCampgroundGreybox.PrefabPath);
+        if (!RailBlock.FindEnvironment(prefab.transform,RailCampgroundGreybox.RootName+"/"+RailCampgroundFinish.RootName))
+            throw new InvalidOperationException("Install the Pine Lake finish before capturing.");
+        var preview=new PreviewRenderUtility();
+        var oldPipeline=QualitySettings.renderPipeline;
+        var pipeline=Object.Instantiate(AssetDatabase.LoadAssetAtPath<UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset>("Assets/Settings/PC_RPAsset.asset"));
+        const string output="output/campground-finish";
+        try
+        {
+            var model=Object.Instantiate(prefab);
+            preview.AddSingleGO(model);
+            foreach(var fixture in model.GetComponentsInChildren<Light>(true)) fixture.enabled=false;
+            foreach(var sign in model.GetComponentsInChildren<TMPro.TMP_Text>(true)) sign.ForceMeshUpdate(true,true);
+            var settings=new SerializedObject(pipeline);
+            settings.FindProperty("m_ShadowDistance").floatValue=440;
+            settings.FindProperty("m_ShadowCascadeCount").intValue=2;
+            settings.FindProperty("m_MainLightShadowmapResolution").intValue=4096;
+            settings.ApplyModifiedPropertiesWithoutUndo();
+            QualitySettings.renderPipeline=pipeline;
+            var sun=preview.lights[0];
+            sun.type=LightType.Directional;
+            sun.intensity=1.65f;
+            sun.shadows=LightShadows.Soft;
+            preview.lights[1].intensity=.35f;
+            preview.lights[1].transform.rotation=Quaternion.Euler(55,-140,0);
+            sun.transform.rotation=Quaternion.Euler(40,44,0);
+            preview.ambientColor=new Color(.43f,.47f,.52f);
+            var camera=preview.camera;
+            camera.clearFlags=CameraClearFlags.SolidColor;
+            camera.backgroundColor=new Color(.15f,.20f,.24f);
+
+            camera.farClipPlane=550;
+            camera.useOcclusionCulling=false;
+            Directory.CreateDirectory(output);
+            Shot("whole-block",new Vector3(-128,146,-90),new Vector3(0,1,80),true,70);
+            Shot("site-plan",new Vector3(0,160,80),new Vector3(0,0,80),true,86);
+            Shot("arrival",new Vector3(-48,29,0),new Vector3(4,1,32),false,55);
+            Shot("cabin-terraces",new Vector3(-3.5f,8.7f,82),new Vector3(30,2.5f,94),false,55);
+            Shot("canoe-beach",new Vector3(-11,9.2f,105),new Vector3(-31,1.6f,121),false,63);
+            void Shot(string name,Vector3 eye,Vector3 target,bool ortho,float lens)
+            {
+                camera.transform.SetPositionAndRotation(eye,Quaternion.LookRotation(target-eye,name=="site-plan"?Vector3.forward:Vector3.up));
+                camera.orthographic=ortho;
+                if(ortho) camera.orthographicSize=lens;
+                else camera.fieldOfView=lens;
+                preview.BeginStaticPreview(new Rect(0,0,1920,1440));
+                preview.Render(true);
+                var texture=preview.EndStaticPreview();
+                try { File.WriteAllBytes(output+"/"+name+".png",texture.EncodeToPNG()); }
+                finally { Object.DestroyImmediate(texture); }
+            }
+        }
+        finally
+        {
+            QualitySettings.renderPipeline=oldPipeline;
+            Object.DestroyImmediate(pipeline);
+            preview.Cleanup();
+        }
+    }
+    [MenuItem("Duck Rails/Authoring/Campground/Capture rough V2 review views")]
     public static void Capture()
     {
         if(EditorApplication.isPlaying||Lightmapping.isRunning)throw new Exception("Finish Play/bake first");

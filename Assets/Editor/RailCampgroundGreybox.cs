@@ -88,6 +88,12 @@ public static partial class RailCampgroundGreybox
     [MenuItem("Duck Rails/Authoring/Campground/Install greybox and rough Quackville materials")]
     public static void Install()
     {
+        var installed=AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+        if(installed && RailBlock.FindEnvironment(installed.transform,RootName+"/"+RailCampgroundFinish.RootName))
+        {
+            Debug.Log("The finished Pine Lake campground is already installed.");
+            return;
+        }
         if(Application.dataPath!="X:/Work/duck-rails/Assets"||EditorApplication.isPlaying||Lightmapping.isRunning)throw new InvalidOperationException("Use Duck Rails Edit Mode, no bake running");
         for(int i=0;i<SceneManager.sceneCount;i++)if(SceneManager.GetSceneAt(i).isDirty)throw new InvalidOperationException("Save scene work first");
         Directory.CreateDirectory(Folder+"/Meshes");Directory.CreateDirectory(Folder+"/Textures");AssetDatabase.Refresh();
