@@ -392,3 +392,7 @@ User feedback after viewing the block in the editor.
 - **Floors:** walking surfaces (deck and terrace tops, stairs, cap courses) use a new `Fort floor concrete` material in `Assets/DuckRails/FinaleFort/ArtPass`: the same worn-concrete tile tinted about twice as bright as the shared depot material, which is unchanged. Yard asphalt stays dark.
 - **Evidence:** `Check()` 312 passed, 0 failed. Captures: `output/finale-fort-art-pass/r4-*.png`.
 - **Still outstanding:** lighting and crawlgraph rebakes; confirm on headset that the slatted walkway is comfortable to look through and that nothing shimmers. Queued for playtest; not verified.
+
+## DAWN sign removed and tunnel lining z-fighting — November 23, 2026
+
+Justin asked to remove the old `DAWN` placeholder sign (`Env/DAWN` in `bridge-finale-v1.prefab`) and fix z-fighting at the tunnel portals without remodelling. The sign had no references or lighting bindings. The lining boxes now sit 2 cm clear of the portal plaster faces: walls scale X 1.58 at ±6.31 (inner face 5.52 m, outer 7.10 m) and roof scale Y 0.97 at Y 7.505 (underside 7.02 m, top 7.99 m). Tunnel width grows by 4 cm; lightmap bindings are unchanged. `RailFinalePolish` uses the same values. Editor close-ups show no gaps; headset check is part of the storm sky playtest item.

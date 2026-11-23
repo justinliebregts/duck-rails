@@ -115,8 +115,8 @@ public static class RailFinalePolish
         var crown=new MeshBuild();float[] x={-11,-5,3,11};float[] y={14,17,15.5f,14};
         for(int i=0;i<3;i++){crown.Quad(new(x[i],y[i],119.5f),new(x[i],y[i],161),new(x[i+1],y[i+1],161),new(x[i+1],y[i+1],119.5f));crown.Quad(new(x[i],7.8f,119.5f),new(x[i],y[i],119.5f),new(x[i+1],y[i+1],119.5f),new(x[i+1],7.8f,119.5f));crown.Quad(new(x[i+1],7.8f,161),new(x[i+1],y[i+1],161),new(x[i],y[i],161),new(x[i],7.8f,161));}
         MeshGo(additions,"Faceted cliff crown",crown.Build("Cliff crown"),rock);
-        foreach(var t in env.Cast<Transform>().Where(t=>t.name=="Tunnel wall")){t.localPosition=new(Mathf.Sign(t.localPosition.x)*6.3f,3.5f,140);t.localScale=new(1.6f,7.04f,40.2f);}
-        env.Find("Tunnel roof").localScale=new(14.2f,1,40.2f);
+        foreach(var t in env.Cast<Transform>().Where(t=>t.name=="Tunnel wall")){t.localPosition=new(Mathf.Sign(t.localPosition.x)*6.31f,3.5f,140);t.localScale=new(1.58f,7.04f,40.2f);}
+        env.Find("Tunnel roof").localPosition=new(0,7.505f,140);env.Find("Tunnel roof").localScale=new(14.2f,.97f,40.2f); // Nov 23: clear of the portal plaster faces (z-fighting)
         foreach(float z in new[]{119.7f,160.3f}){foreach(float s in new[]{-1f,1f})Box(additions,"Concrete tunnel portal pier",new(s*6.3f,3.5f,z),new(1.6f,7,.9f),concrete);Box(additions,"Concrete tunnel lintel",new(0,7.5f,z),new(14.2f,1,.9f),concrete);}
     }
     static Material Emissive(string name,Color tint,float intensity)
