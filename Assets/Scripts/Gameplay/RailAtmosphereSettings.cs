@@ -44,24 +44,24 @@ public sealed class RailAtmosphereSettings : ScriptableObject
         public Color mountainNear;
         public Color mountainFar;
 
-        // Night is a darker version of the Duckz storm palette (Duckz exposure 0.8).
+        // Night is a much darker version of the Duckz storm palette (Duckz exposure 0.8; Justin, Nov 23: night too bright).
         public static SkyPhase Night => new SkyPhase
         {
             zenith = new Color(.08f, .095f, .065f), horizon = new Color(.12f, .135f, .09f),
             cloudEdge = new Color(.14f, .155f, .11f), cloudShadow = new Color(.018f, .024f, .017f),
             cloudCoverage = .54f, cloudOpacity = .95f,
-            exposure = .6f, sunGlow = new Color(1, .55f, .25f), sunGlowStrength = 0, sunElevation = -12,
+            exposure = .3f, sunGlow = new Color(1, .55f, .25f), sunGlowStrength = 0, sunElevation = -12,
             sunlight = new Color(1, .85f, .65f), sunlightIntensity = 0, ambient = new Color(.025f, .03f, .045f),
-            mountainNear = new Color(.008f, .01f, .007f), mountainFar = new Color(.035f, .041f, .028f),
+            mountainNear = new Color(.004f, .005f, .004f), mountainFar = new Color(.018f, .021f, .015f),
         };
         public static SkyPhase PreDawn => new SkyPhase
         {
             zenith = new Color(.08f, .095f, .075f), horizon = new Color(.13f, .14f, .1f),
             cloudEdge = new Color(.15f, .16f, .12f), cloudShadow = new Color(.02f, .026f, .02f),
             cloudCoverage = .54f, cloudOpacity = .95f,
-            exposure = .7f, sunGlow = new Color(1, .45f, .2f), sunGlowStrength = .12f, sunElevation = -5,
+            exposure = .4f, sunGlow = new Color(1, .45f, .2f), sunGlowStrength = .12f, sunElevation = -5,
             sunlight = new Color(1, .7f, .45f), sunlightIntensity = 0, ambient = new Color(.055f, .065f, .09f),
-            mountainNear = new Color(.01f, .012f, .009f), mountainFar = new Color(.045f, .05f, .036f),
+            mountainNear = new Color(.006f, .007f, .005f), mountainFar = new Color(.026f, .029f, .021f),
         };
         // November 23 (Justin): dawn should feel really sunny. Blue sky, broken clouds lit gold,
         // a low warm sun with realtime sunlight, and a light golden haze instead of grey fog.

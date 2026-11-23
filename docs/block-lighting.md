@@ -253,3 +253,7 @@ Preserve the City_Deck local Y=0.25 override in StartingStation and its V3 sourc
 prefab. RailCityStation.BuildPrefab applies it after FBX instantiation. Do not
 restore the deck to the ceiling plane. User lights, mesh UVs and interior geometry
 are unchanged. [Evidence, images and checks](validation/station-lightmap-fix/README.md).
+
+### Darker night sky — November 23, 2026
+
+Justin: night sky much too bright. Night sky exposure 0.6 → 0.3 and pre-dawn 0.7 → 0.4 (saved in `Atmosphere.asset`, code defaults, and both `ExpeditionSky.mat` and Login's `Quackville_Skybox.mat`); night/pre-dawn mountain colours halved so the ridges stay darker than the sky. Dawn unchanged. **Check Expedition Atmosphere** 61 assertions and **Check Atmosphere Tuner** pass. To tune further: **Duck Rails > Lighting > Atmosphere Tuner** → Preview, pick Night/Pre-dawn/Dawn, edit the `Night Sky` / `Pre Dawn Sky` / `Dawn Sky` fields (Exposure is the overall brightness), then **Save fog and sky settings**. Login's sky is the `Brightness` slider on `Quackville_Skybox.mat`.
