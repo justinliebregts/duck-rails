@@ -1,5 +1,11 @@
 # Playtest queue
 
+## Items disappear when taken out of a bag in Compound — queued for playtest
+
+- Android 0.4.5 report `abe3b34ec6d841539fa7684b6a56082d` shows the Quackbear bag holding Huggy's flare gun, the Quackbear cupcake and the Scrap Duck shovel. After the wall pull and bag swap, the flare slot emptied as world readiness briefly dropped. The cupcake slot later emptied. The player confirmed the shovel also disappeared when withdrawn after uploading the report. Compound was treating fresh bag withdrawals as expedition leftovers. Bag withdrawals now use the same Compound lifetime as wall pulls. Stale-cargo diagnostics use the same retention check as cleanup.
+- Unity compiled. `PickupPoseChecks` passed for all three prefabs in simulated public Compound, private staging and a running expedition, including expiration after a run change. The rest of the pickup suite and all six loadout persistence checks also passed in Edit Mode. The report remains open pending headset verification.
+- On Quest in public Compound and private staging, wear the Quackbear bag, stow all three items, pull the Scrap Duck bag off the wall, then take the Quackbear bag off your back. Free one hand and withdraw each item. Hold each through several cleanup ticks, then release and grab it again from the floor. Check that the slot clears only when an item reaches the hand, the item stays present, and the world remains ready. Repeat with a second client watching, then depart and confirm the usual held and worn loadout carry behavior.
+
 ## Hospital District spawn distribution and tree crowns — queued for playtest
 
 Select Hospital District in Test Block Order. On Quest, check pickup visibility and reach in the garden, pharmacy and laundry, on both hospital floors and on the roof. Watch for loot settling through a support or obstructing a doorway. Compare enemy arrivals across the tracks, streets and hospital floors with a second client. Walk under the round trees in the staff garden and check the leaf undersides at duck eye height in baked lighting. [Placement and mesh checks](hospital-district-layout.md#spawn-distribution-and-round-trees--november-23).

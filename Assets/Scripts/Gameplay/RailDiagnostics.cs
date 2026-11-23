@@ -270,7 +270,8 @@ public sealed class RailDiagnostics : MonoBehaviour, Photon.Realtime.IOnEventCal
             var item = view.GetComponent<PhotonGrabbable>();
             if (item != null && !item.PickupPending && item.HeldActor != 0 && item.HeldActor != view.OwnerActorNr)
                 active.Add("held-owner:" + view.ViewID);
-            if (!PhotonSession.OnTrain && view.GetComponent<RailCargo>() != null) active.Add("stale-cargo:" + view.ViewID);
+            if (!PhotonSession.OnTrain && view.GetComponent<RailCargo>() != null && !RailCargo.KeepCompoundPurchase(view))
+                active.Add("stale-cargo:" + view.ViewID);
         }
         // Compare retained route contents only for the same run and settled phase. Moving poses need time alignment.
         string digest = Hash128.Compute(sample.route).ToString();

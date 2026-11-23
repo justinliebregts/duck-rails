@@ -318,7 +318,7 @@ public class StoreWallItem : Grabbable
 
         ItemPickupPose pose = ItemPickupPose.Capture(prefab, transform, hand.HoldPoint.position);
         if (!pose.ClampGripToSurface(prefab, hand.HoldPoint.position)) return false;
-        Grabbable weapon = pose.Spawn(prefab, hand, storePurchase: true);
+        Grabbable weapon = pose.Spawn(prefab, hand);
         if (weapon == null) return false;
         StartVanish();
         hand.Release();
