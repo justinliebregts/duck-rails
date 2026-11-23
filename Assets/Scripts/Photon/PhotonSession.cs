@@ -37,7 +37,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public static bool OnTrain => RailSessionRules.IsOnTrain(Phase);
     public static T Get<T>(string key, T fallback) => PhotonNetwork.CurrentRoom?.CustomProperties[key] is T value ? value : fallback;
 
-    enum Request { None, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound, CrewSearch, CrewDestination, CrewFresh
+    enum Request { None, PublicTrain, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound, CrewSearch, CrewDestination, CrewFresh
 #if UNITY_EDITOR
         , EditorQuickStart
 #endif
@@ -68,7 +68,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public bool InWorldTransition => HasRoomRequest || (IsRailsRoom && !GameScenes.IsLoaded(RequiredScene));
     /// <summary>Best-known destination of the current transition, for the veil's message.</summary>
     public bool HeadingToExpedition => request == Request.Transfer ? transferKind == RailSessionRules.ExpeditionKind
-        : request == Request.None && IsRailsRoom && OnTrain;
+        : request == Request.PublicTrain || (request == Request.None && IsRailsRoom && OnTrain);
     public event Action RoomMembershipChanged, RoomRequestStarted;
     public event Action<string> RoomRequestFailed;
 
@@ -160,6 +160,14 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (PhotonNetwork.IsConnectedAndReady && !PhotonNetwork.InRoom) { ExecuteRequest(); return; }
         Started(RecoveringConnection ? "Reconnecting..." : "Connecting to Photon...");
         if (!PhotonNetwork.IsConnected && !PhotonNetwork.ConnectUsingSettings(settings, false)) RetryConnection("Could not connect to Photon.");
+    }
+
+    public const string NoPublicTrain = "No public train available";
+    public bool CanJoinPublicTrain => IsRailsRoom && Kind == RailSessionRules.CompoundKind &&
+        WorldReady && !HasRoomRequest && !AwaitingCrewDestination;
+    public void RequestPublicTrain()
+    {
+        if (CanJoinPublicTrain) Begin(Request.PublicTrain);
     }
 
     public void RequestJoinRandom() => Begin(Request.Random);
@@ -285,6 +293,14 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
                 queued = JoinAllocatedRoom(RailSessionRules.ExpeditionKind, Guid.NewGuid().ToString("N"), null);
                 break;
 #endif
+            case Request.PublicTrain:
+                Started("Finding an in-progress public train...");
+                queued = PhotonNetwork.JoinRandomRoom(new Hashtable {
+                    [RailSessionRules.Kind] = RailSessionRules.ExpeditionKind,
+                    [RailSessionRules.Schema] = RailSessionRules.Version,
+                    [RailSessionRules.Phase] = (int)RailPhase.Running
+                }, RailSessionRules.CrewCapacity, MatchmakingMode.FillRoom, AutomaticLobby, null);
+                break;
             case Request.Random:
                 Started("Finding a public compound...");
                 queued = PhotonNetwork.JoinRandomRoom(new Hashtable { [RailSessionRules.Kind] = RailSessionRules.CompoundKind, [RailSessionRules.Schema] = RailSessionRules.Version }, MaxPlayers,
@@ -325,10 +341,10 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         options.CustomRoomProperties[RailSessionRules.Allocation] = allocation;
         options.CustomRoomProperties[RailSessionRules.TransferUntil] = PhotonNetwork.Time + 30d;
         // Server-side matching by allocation prevents joining an unrelated occupied
-        // code, even briefly. Public matchmaking still filters exclusively to compounds.
+        // code, even briefly. Ordinary login still filters exclusively to compounds.
         // Private rooms remain hidden and are never added to this lobby.
         options.IsVisible = true;
-        options.CustomRoomPropertiesForLobby = new[] { RailSessionRules.Kind, RailSessionRules.Schema, RailSessionRules.Allocation };
+        options.CustomRoomPropertiesForLobby = new[] { RailSessionRules.Kind, RailSessionRules.Schema, RailSessionRules.Allocation, RailSessionRules.Phase };
         return PhotonNetwork.JoinRandomOrCreateRoom(
             new Hashtable { [RailSessionRules.Allocation] = allocation, [RailSessionRules.Kind] = kind, [RailSessionRules.Schema] = RailSessionRules.Version },
             (byte)options.MaxPlayers, MatchmakingMode.FillRoom, AutomaticLobby, roomName: requestedRoom,
@@ -357,6 +373,11 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public override void OnJoinRandomFailed(short code, string message)
     {
+        if (request == Request.PublicTrain)
+        {
+            RequestFailed(code == ErrorCode.NoRandomMatchFound ? NoPublicTrain : "Public train search failed. Please retry.");
+            return;
+        }
         if (IsAllocatedRequest) { OnCreateRoomFailed(code, message); return; }
         if (IsCrewRequest(request)) { CrewRequestFailed(); return; }
         operationPending = false; allocation = null; allocationAttempt = 0; request = Request.FreshCompound; ExecuteRequest();
@@ -415,6 +436,16 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
 #if UNITY_EDITOR
         allocatedRequest |= request == Request.EditorQuickStart;
 #endif
+        if (request == Request.PublicTrain && (!IsRailsRoom || Kind != RailSessionRules.ExpeditionKind || Phase != RailPhase.Running))
+        {
+            FailInput(NoPublicTrain);
+            request = Request.ReturnToCompound;
+            requestedRoom = previousCompound;
+            leaving = true;
+            Started("Returning to the compound...");
+            PhotonNetwork.LeaveRoom(false);
+            return;
+        }
         // Validate the crew token before enabling world loading or publishing readiness.
         if (allocatedRequest && (!IsRailsRoom || Get(RailSessionRules.Allocation, "") != allocation))
         {
