@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TMPro;
+using Game.Audio;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -150,6 +151,88 @@ public static class RailHospitalCampus
             light.intensity = data.power * .043f;
             light.color = new Color(data.color[0], data.color[1], data.color[2]);
         }
+        FinishShell(root);
+    }
+
+    // Also used in-place on the hand-edited district, without reinstalling it.
+    public static void FinishShell(Transform root)
+    {
+        var foundations = new[] { new Rect(-5,0,10,160), new Rect(10,55,32,50),
+            new Rect(-40,57,26,19), new Rect(-40,82,26,21), new Rect(-40,126,24,20) };
+        foreach (Transform tile in root.Cast<Transform>().Where(t => t.name == "Flat district ground"))
+        {
+            var p = tile.localPosition;
+            var size = tile.localScale;
+            var rect = new Rect(p.x-size.x/2,p.z-size.z/2,size.x,size.z);
+            if (foundations.Any(r => r.Overlaps(rect))) tile.gameObject.SetActive(false);
+        }
+        foreach (Transform t in root.Find("Laundry utilities"))
+            if ((t.name == "Window pier" || t.name == "Low window sill" || t.name == "Window lintel") &&
+                Mathf.Abs(t.localPosition.z-126) < .01f) t.gameObject.SetActive(false);
+
+        var hospital = root.Find("Hospital");
+        foreach (var t in hospital.GetComponentsInChildren<Transform>().Where(t => t.name == "Stair rail"))
+            t.gameObject.SetActive(false);
+        var steel = AssetDatabase.LoadAssetAtPath<Material>(RailHospital.Folder + "/Scaffold steel.mat");
+        foreach (var t in hospital.GetComponentsInChildren<Transform>().Where(t => t.name == "Light fixture").ToArray())
+        {
+            var p = t.localPosition;
+            var light = t.parent.GetComponentsInChildren<Light>().OrderBy(l => (l.transform.localPosition-p).sqrMagnitude).First();
+            if (t.parent.name == "Accessible roof" && p.y < 10)
+            {
+                // Keep the freestanding roof light clear of the east circulation lane.
+                if (Mathf.Abs(p.x-32) < .01f)
+                {
+                    p += new Vector3(1.25f,0,.75f);
+                    t.localPosition = p;
+                    light.transform.localPosition = p - Vector3.up*.14f;
+                }
+                if (!t.parent.Find("Bollard at " + p.x))
+                {
+                    var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    post.name = "Bollard at " + p.x;
+                    post.transform.SetParent(t.parent,false);
+                    float bottom = 8, top = p.y - t.localScale.y/2;
+                    post.transform.localPosition = new Vector3(p.x,(bottom+top)/2,p.z);
+                    post.transform.localScale = new Vector3(.14f,top-bottom,.14f);
+                    post.layer = 6;
+                    post.GetComponent<MeshRenderer>().sharedMaterial = steel;
+                    GameObjectUtility.SetStaticEditorFlags(post,StaticEditorFlags.ContributeGI);
+                    TagSurface(post.GetComponent<Collider>(),"Metal");
+                }
+            }
+            else if (t.parent.name == "Accessible roof" || Mathf.Abs(p.x-39) < .01f)
+            {
+                if (t.parent.name == "Accessible roof") p.y = 10.90f-t.localScale.y/2;
+                else { p.x = 41.48f; p.y = (t.parent.name == "Ground floor" ? 3.7f : 7.7f)-t.localScale.y/2; }
+                t.localPosition = p;
+                light.transform.localPosition = p - Vector3.up*.14f;
+            }
+        }
+        TagWalkableSurfaces(root);
+    }
+
+    public static void TagWalkableSurfaces(Transform root)
+    {
+        foreach (var collider in root.GetComponentsInChildren<Collider>())
+        {
+            string n = collider.name;
+            string type = null;
+            if (n == "Flat district ground" || n.StartsWith("Cut district turf_")) type = "Grass";
+            else if (n == "Rail ballast" || n == "Courtyard paving" || n.StartsWith("Garden soil_") || n.StartsWith("Planter soil_")) type = "Dirt";
+            else if (n.StartsWith("Stair steelwork_") || n.StartsWith("Laundry sheet roof_") || n == "Roof") type = "Metal";
+            else if (n.StartsWith("Campus asphalt_") || n.StartsWith("Campus sidewalks_") ||
+                n.StartsWith("Garden paths_") || n.StartsWith("Shelter platform_") || n.StartsWith("Planter curb_") || n.StartsWith("Roof membrane_") ||
+                n.StartsWith("Floor slab ") || n == "Floor" || n == "Turn landing" ||
+                n == "Ascending tread" || n == "Returning tread") type = "Stone";
+            if (type != null) TagSurface(collider,type);
+        }
+    }
+
+    static void TagSurface(Collider collider,string name)
+    {
+        var surface = collider.GetComponent<AudioSurface>() ?? collider.gameObject.AddComponent<AudioSurface>();
+        if (!surface.type) surface.type = AssetDatabase.LoadAssetAtPath<SurfaceType>("Assets/Audio/Surfaces/" + name + ".asset");
     }
 }
 #endif

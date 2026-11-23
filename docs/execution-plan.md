@@ -398,6 +398,8 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 - [x] User approved hospital district V2 site layout and specified two storeys plus accessible roof with ventilation, water tanks and HVAC.
 - [x] Record hospital V4 direction: south ER, glowing hospital sign, crashed/overturned ambulances in ER parking and surgery-room replacements; retain two-storey/roof arrangement.
 - [x] User approved hospital V4 for 3D; install rough Quackville hospital district, ground/upper/roof routes, surgery rooms, south ER, glowing sign and ambulance wrecks. Bake graph/lighting and register catalogue: 2,479 geometry/navigation/UV checks, 757 catalogue checks and 42 assertions across two offline Play Mode route rounds pass. See [hospital evidence](hospital-district-layout.md#validation-and-limits).
+- [x] Install the approved Hospital full-block exterior, rebuild its crawlgraph and lighting, and verify rail clearance, all spawn candidates, roof/stair access and saved receiver bindings. [Hospital evidence](hospital-district-layout.md#finished-campus-in-unity).
+- [x] Distribute hospital coal, gold and enemies across the furnished layout. Verify 176 saved candidates and seeded selections for crews of one through eight in Edit Mode. [Placement notes](hospital-district-layout.md#spawn-distribution-and-round-trees--november-23).
 - [ ] Validate hospital natural stairs/hand traversal, roof/courtyard recovery, low-eye lighting, enemy pursuit, real-client behavior and Quest performance. Offline checks do not close these acceptance items.
 
 - [x] Record separate skyscraper and hospital districts, with skyscraper first; deliver the [four-tower top-down layout and height section](skyscraper-layout.md). Drawing delivery only.

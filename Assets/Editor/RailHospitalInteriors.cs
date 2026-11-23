@@ -28,7 +28,7 @@ public static class RailHospitalInteriors
     static readonly (string source, string asset)[] Remap =
     {
         ("Quackville Town atlas", "Subway Town atlas"), ("Quackville Industrial atlas", "Subway Industrial atlas"),
-        ("Subway lamp lens", "Subway lamp lens"), ("Subway night glow", "Subway night glow"), ("Subway tunnel void", "Subway tunnel void"),
+        ("Subway lamp lens", "Hospital lamp lens"), ("Subway night glow", "Hospital night glow"), ("Subway tunnel void", "Hospital dark screen"),
         ("Subway warm bulb", "Subway warm bulb"),
     };
 
@@ -77,7 +77,8 @@ public static class RailHospitalInteriors
         importer.isReadable = false;
         foreach (var (source, asset) in Remap)
         {
-            var material = AssetDatabase.LoadAssetAtPath<Material>(CompoundMaterials + asset + ".mat") ?? throw new InvalidOperationException("Missing material " + asset);
+            var folder = asset.StartsWith("Hospital ",StringComparison.Ordinal) ? Folder + "/" : CompoundMaterials;
+            var material = AssetDatabase.LoadAssetAtPath<Material>(folder + asset + ".mat") ?? throw new InvalidOperationException("Missing material " + asset);
             importer.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), source), material);
         }
         importer.SaveAndReimport();

@@ -12,6 +12,12 @@ public static class RailHospitalChecks
 {
  static readonly List<string> lines=new();
  static void Check(bool ok,string n)=>lines.Add((ok?"PASS ":"FAIL ")+n);
+ static void Contact(Vector3 from, string expected, string location)
+ {
+  bool hit=Physics.Raycast(from,Vector3.down,out var surface,2,1<<6,QueryTriggerInteraction.Ignore);
+  var type=hit?Game.Audio.AudioSurface.TypeOf(surface.collider):null;
+  Check(type && type.name==expected,location+" contact "+(type?type.name:"unassigned")+" (expected "+expected+")");
+ }
  static void Walk(Vector3 p,string n){Check(Physics.Raycast(p+Vector3.up*.12f,Vector3.down,out var hit,.4f,1<<6,QueryTriggerInteraction.Ignore)&&Mathf.Abs(hit.point.y-p.y)<.08f,"Support "+n+" "+p);Check(!Physics.CheckCapsule(p+Vector3.up*.5f,p+Vector3.up*1.65f,.3f,1<<6,QueryTriggerInteraction.Ignore),"Body clearance "+n+" "+p);}
  public static void Run()
  {
@@ -38,7 +44,8 @@ public static class RailHospitalChecks
    }
    for(float z=46;z<=68;z+=.5f)Walk(new(25,0,z),"ER arrival");
    for(float x=6;x<=20;x+=.5f)Walk(new(x,0,80),"Main reception return");
-   for(float x=-13;x>=-26;x-=.5f){Walk(new(x,0,92.5f),"Clinic entry");Walk(new(x,0,66.5f),"Pharmacy entry");}for(float x=-13;x>=-26;x-=.5f)Walk(new(x,0,135.2f),"Laundry entry");
+   for(float x=-13;x>=-26;x-=.5f){Walk(new(x,0,92.5f),"Clinic entry");Walk(new(x,0,66.5f),"Pharmacy entry");}
+   for(float x=-12;x>=-26;x-=.5f)Walk(new(x,.17f*Mathf.InverseLerp(-16,-12,x),135.2f),"Graded laundry entry");
    foreach(float z in new[]{85.4f,92.5f,99.6f})for(float x=-29.6f;x>=-32.4f;x-=.4f)Walk(new(x,0,z),"Clinic exam doorway");
    for(float x=-27.6f;x>=-33.6f;x-=.5f)Walk(new(x,0,73.5f),"Dispensary pass-through");
    for(float z=95.5f;z<=104f;z+=.5f)Walk(new(25.5f,0,z),"North supplies exit");
@@ -50,17 +57,40 @@ public static class RailHospitalChecks
     Check(campus.GetComponentsInChildren<MeshCollider>().Any(c=>c.name.StartsWith(group+"_")),group+" has physical geometry");
    foreach(var label in campus.GetComponentsInChildren<TMPro.TMP_Text>())Check(label.font.name=="CutePixel SDF","CutePixel "+label.text);
    Check(campus.Find("HOSPITAL")&&campus.Find("CENTRAL LAUNDRY")&&campus.Find("VISITOR TRANSIT"),"Built campus signs");
+   Check(campus.Cast<Transform>().Count(t=>t.name=="MEDICAL CENTER")==1 && campus.Find("MEDICAL CENTER").localPosition.x<0,"Only garden medical center sign remains");
+   foreach(float z in new[]{57f,98f})foreach(float y in new[]{4f,8f})
+    Contact(new Vector3(35.88f,y+1.3f,z+3),"Metal","Stairwell edge "+z+" level "+y);
+   Contact(new(-44,1,28),"Grass","District verge");Contact(new(3,1,83),"Dirt","Rail bed");
+   Contact(new(-13,1,90),"Stone","Clinic sidewalk");Contact(new(25,1,32),"Stone","Parking asphalt");
+   Contact(new(-29,1,23),"Stone","Garden path");Contact(new(20,1,80),"Stone","Hospital floor");
+   Contact(new(-14,1,135.2f),"Stone","Laundry ramp");Contact(new(23.8f,1,137.6f),"Stone","Shelter platform");
+   Contact(new(38.5f,2.5f,61.5f),"Stone","Stair landing");Contact(new(12,1,112),"Dirt","Island soil");
+   Contact(new(14.28f,1,112),"Stone","Island curb");Contact(new(-27,6.5f,132),"Metal","Laundry sheet roof");
    Check(b.GetComponentsInChildren<Light>().Count(l=>l.lightmapBakeType==LightmapBakeType.Baked)==RailHospital.LightCount,"Campus baked fixture count");
    foreach(var span in new[]{new Vector2(-29,24.5f),new Vector2(26,45),new Vector2(-20,122),new Vector2(24,138.2f)})
     Check(!Physics.CheckCapsule(new(span.x,.98f,span.y),new(span.x,1.85f,span.y),.30f,1<<6,QueryTriggerInteraction.Ignore),"Campus pedestrian clearance "+span);
    var g=CrawlGraph.Load(b.graph);Check(g!=null&&g.NodeCount>100,"Prebaked graph");
-   var candidates=b.spawnCandidates;
-   Check(b.spawnCandidatesMigrated && candidates.coal.Length==18 && candidates.gold.Length==6 && candidates.enemies.Length==18,"Existing migrated candidate pools");
-   foreach(var p in candidates.coal.Concat(candidates.enemies).Concat(candidates.gold))
+   Check(b.spawnCandidatesMigrated,"Hospital uses the registered candidate pools");
+   foreach(RailSpawnKind kind in Enum.GetValues(typeof(RailSpawnKind)))
    {
-    Check(Physics.Raycast(p.position,Vector3.down,1.1f,1<<6,QueryTriggerInteraction.Ignore),"Spawn support "+p.name);
-    Check(!Physics.CheckSphere(p.position+Vector3.up*.4f,.35f,1<<6,QueryTriggerInteraction.Ignore),"Spawn clearance "+p.name);
-    if(p.position.x>0)Check(g.FindNearestGroundNode(p.position,2)>=0,"Spawn graph "+p.name);
+    var points=RailSpawnPool.Available(b,kind);
+    int maximum=kind==RailSpawnKind.Enemy?4*RailEnemySpawnBalance.PerQuadrant(8):
+        kind==RailSpawnKind.Coal?RailResourceBalance.CoalCount(8):RailResourceBalance.GoldCount(8);
+    Check(points.Length==RailSpawnPool.Points(b.spawnCandidates,kind).Length && points.Length>=maximum,"Distinct active "+kind+" candidates cover eight players");
+    var shape=kind==RailSpawnKind.Enemy?new Bounds(Vector3.up*.4f,Vector3.one*.8f):RailLootPlacementWindow.ItemBounds(kind==RailSpawnKind.Gold);
+    foreach(var point in points)
+    {
+     Vector3 center=point.position+shape.center;
+     bool supported=true;
+     foreach(int x in new[]{-1,1})foreach(int z in new[]{-1,1})
+     {
+      var foot=center+Vector3.Scale(shape.extents,new Vector3(x,-1,z));
+      supported &= Physics.Raycast(foot+Vector3.up*.035f,Vector3.down,out var hit,.26f,1<<6,QueryTriggerInteraction.Ignore) && hit.normal.y>=.8f;
+     }
+     Check(supported,"Spawn footprint support "+point.name);
+     Check(!Physics.CheckBox(center,shape.extents,Quaternion.identity,1<<6,QueryTriggerInteraction.Ignore),"Spawn envelope clearance "+point.name);
+     if(kind==RailSpawnKind.Enemy)Check(RailLootPlacementWindow.EnemyLocation(b,point.position,g),"Enemy bounds and baked ground "+point.name);
+    }
    }
    Check(b.enemySurfaceRailExclusion.size == Vector3.zero,"No permanent railway navigation exclusion");
    var nodes=new[]{new Vector3(20,.2f,80),new(20,4.2f,80),new(20,8.2f,80),new(25,.2f,62),new(19.5f,4.2f,64),new(29.5f,4.2f,64)}.Select(q=>g.FindNearestGroundNode(q,2)).ToArray();Check(nodes.All(n=>n>=0),"All levels and rooms navigable");

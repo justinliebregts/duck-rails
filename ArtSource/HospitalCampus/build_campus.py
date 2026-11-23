@@ -5,6 +5,8 @@ from math import sin, cos, pi
 from collections import defaultdict
 random.seed(173)
 root=Path(__file__).resolve().parents[2]
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from planar_faces import PlanarFaces, subtract
 out=root/"Assets/DuckRails/HospitalDistrict/Campus"
 swatches={}
 labels=[]
@@ -41,14 +43,14 @@ def geo(m,v,f):
     cx,cy,cz=[sum(q[i] for q in points)/len(points) for i in range(3)]
     # Preserve circulation openings in the playable shell. The review model
     # depicted these entrances as closed glazing.
-    if zone in ("Ward facade","Facade masonry","Ward fins") and min(q[2] for q in points)<2.76:
+    if zone in ("Ward facade","Facade masonry","Ward fins") and min(q[2] for q in points)<(3.5 if m==screen else 2.76):
         xs=[q[0] for q in points];ys=[q[1] for q in points]
         for door in [(22.85,27.15,54,55.6),(9,10.6,77.85,82.15),(23.85,27.15,104.4,106),(23.85,28.15,69,70.6)]:
             if min(xs)<door[1] and max(xs)>door[0] and min(ys)<door[3] and max(ys)>door[2]:return
     # Paint and foliage should not catch hands or loose items.
     solid=m not in (stripe,screen,muted,moss,sheet) and m not in leaf
+    if zone in ("Garden soil","Planter soil"):solid=True
     if zone in ("Road markings","Pavement patina","Facade masonry","Roof seams"):solid=False
-    if zone=="Street paving" and cx>0 and 53<cy<107 and min(q[2] for q in points)<.26 and max(q[2] for q in points)<.26:return
     if zone in ("Roof plant","Roof equipment"):points=[(x,y,z-.91) for x,y,z in points]
     key=(zone,int(cx//16),int(cy//16),solid,m)
     p,pol=batches[key];n=len(p);p.extend(points);pol.extend(tuple(n+i for i in face) for face in f)
@@ -62,28 +64,30 @@ def tube(a,b,r,m,n=8,r2=None):
 def slab(x,y,w,d,h,m,z=0):box(x,y,z+h/2,w,d,h,m)
 def patch(x,y,rx,ry,z,m,n=10):
     pts=[(x+rx*cos(i*2*pi/n),y+ry*sin(i*2*pi/n),z) for i in range(n)];geo(m,pts,[tuple(range(n))])
-def shrub(x,y,z,r,h,m=None):
+def shrub(x,y,z,r,h,m=None,*,close_base=False):
     m=m or random.choice(leaf);a=random.random()*2*pi;n=7;rs=[random.uniform(.83,1.08) for _ in range(n)]
     pts=[(x+r*rr*q*cos(a+i*2*pi/n),y+r*rr*q*sin(a+i*2*pi/n),z+hh*h) for q,hh in [(.75,.02),(1,.4),(.63,.85)] for i,rr in enumerate(rs)]+[(x+.13*r,y-.12*r,z+h)]
     fs=[]
     for i in range(n):
         j=(i+1)%n;fs += [(i,j,n+j,n+i),(n+i,n+j,2*n+i),(2*n+i,n+j,2*n+j),(2*n+i,2*n+j,3*n)]
+    if close_base:
+        fs.append(tuple(reversed(range(n))))
     geo(m,pts,fs)
 def tree(x,y,h=6):
-    tube((x,y,.1),(x+.15,y,h*.68),h*.042,wood,7,h*.023)
+    tube((x,y,-.02),(x+.15,y,h*.68),h*.042,wood,7,h*.023)
     for i in range(3):
         a=i*2.1+.6;u=x+cos(a)*h*.19;v=y+sin(a)*h*.19
-        tube((x,y,h*.35),(u,v,h*.69),h*.023,wood,6,h*.012);shrub(u,v,h*.48,h*.23,h*.38)
-    shrub(x+.1,y,h*.63,h*.26,h*.4)
+        tube((x,y,h*.35),(u,v,h*.69),h*.023,wood,6,h*.012);shrub(u,v,h*.48,h*.23,h*.38,close_base=True)
+    shrub(x+.1,y,h*.63,h*.26,h*.4,close_base=True)
 def bench(x,y):
     for i in range(4):box(x,y+i*.13,.60,2.4,.1,.14,wood)
     for z in (.96,1.2):box(x,y+.48,z,2.4,.12,.19,wood)
-    for u in (x-.9,x+.9):box(u,y+.16,.34,.16,.56,.52,metal);box(u,y+.48,.85,.12,.10,.85,metal)
+    for u in (x-.9,x+.9):box(u,y+.16,.27,.16,.60,.58,metal);box(u,y+.48,.68,.12,.12,1.18,metal)
 def light(name,loc,power,color,size=.45):
     fixtures.append(dict(name=name,x=loc[0],y=loc[2],z=loc[1],power=power,color=list(color)))
     d=bpy.data.lights.new(name,"POINT");d.energy=power;d.color=color;d.shadow_soft_size=size;o=bpy.data.objects.new(name,d);s.collection.objects.link(o);o.location=loc
 def lamp(x,y,angle):
-    dx=cos(angle);dy=sin(angle);tube((x,y,.12),(x,y,.8),.30,cream);tube((x,y,.8),(x,y,5.9),.13,metal,8,.095);tube((x,y,5.5),(x+dx*1.35,y+dy*1.35,6.1),.095,metal)
+    dx=cos(angle);dy=sin(angle);tube((x,y,-.025),(x,y,.8),.30,cream);tube((x,y,.8),(x,y,5.9),.13,metal,8,.095);tube((x,y,5.5),(x+dx*1.35,y+dy*1.35,6.1),.095,metal)
     box(x+dx*1.35,y+dy*1.35,6.1,1.05,.74,.23,metal);box(x+dx*1.35,y+dy*1.35,5.96,.88,.60,.08,neon);light("Street pool",(x+dx*1.35,y+dy*1.35,5.72),920,(1,.66,.36))
 font=bpy.data.fonts.load(str(root/"Assets/Fonts/CutePixel.ttf"))
 def sign(txt,x,y,z,size,m,rot=0):
@@ -96,28 +100,71 @@ def line(a,b,w,z,m):
 def path(points,w,z,m):
     for a,b in zip(points,points[1:]):line(a,b,w,z,m)
     for x,y in points[1:-1]:patch(x,y,w/2,w/2,z+.002,m)
-# Ground and civic avenues
-zone="Street paving"
-for x in [-8,8]:slab(x,80,3,150,.023,walk)
+# Cut paving at junctions and building footprints. Keep each walkable finish
+# in its own collider so the Unity prefab can assign its contact sound.
+
+paving=[]
+def pave(x,y,w,d,h,material):
+    paving.append(((x-w/2,y-d/2,x+w/2,y+d/2),h,material))
+for x in [-8,8]:pave(x,80,3,150,.023,walk)
+zone="Road markings"
 for y in [45.5,115]:
-    for x in [-24,24]:slab(x,y,38,6,.025,asphalt)
+    for x in [-24,24]:pave(x,y,38,6,.025,asphalt)
     for x in [-8,8]:
         for i in range(6):box(x-1.25+i*.5,y,.034,.24,3.8,.014,stripe)
 def paved(x,y,w,d):
-    slab(x,y,w+.65,d+.65,.15,walk);slab(x,y,w,d,.17,asphalt)
+    pave(x,y,w+.65,d+.65,.15,walk);pave(x,y,w,d,.17,asphalt)
 paved(27,29,33,31);paved(26.5,129,34,32);paved(-27,129,34,35)
-slab(43,79,3.1,132,.12,asphalt)
-for x in [-26.5,26]:slab(x,80,36,55,.025,walk)
-zone="Staff garden"
+pave(43,79,3.1,132,.12,asphalt)
+pave(-26.5,80,36,55,.025,walk)
+foundations=[(-40,57,-14,76),(-40,82,-14,103),(-40,126,-16,146),(10,55,42,105),(-16,133.75,-12,138.25)]
+# The shell already supplies the rail bed, building floors and courtyard at
+# elevation zero. Replace only grass tiles intersecting those footprints.
+zone="Cut district turf"
+for x in range(-48,48,16):
+    for y in range(0,160,16):
+        tile=(x,y,x+16,y+16)
+        parts=[tile]
+        for cut in foundations[:4]+[(-5,0,5,160)]:
+            parts=[part for piece in parts for part in subtract(piece,cut)]
+        if parts!=[tile]:
+            for a,b,c,d in parts:slab((a+c)/2,(b+d)/2,c-a,d-b,.30,grass,-.30)
+covered=list(foundations)
+for rect,height,material in sorted(paving,key=lambda p:-p[1]):
+    zone="Campus sidewalks" if material==walk else "Campus asphalt"
+    pieces=[rect]
+    for cut in covered:pieces=[part for piece in pieces for part in subtract(piece,cut)]
+    for a,b,c,d in pieces:slab((a+c)/2,(b+d)/2,c-a,d-b,height,material)
+    covered.append(rect)
+zone="Campus asphalt"
+# Feather the east entry into the yard over four metres.
+geo(asphalt,[(-16,133.75,0),(-12,133.75,.17),(-12,138.25,.17),(-16,138.25,0)],[(0,1,2,3)])
+zone="Garden paths"
 # Campus side paths: a curved garden walk, staggered planters and planting.
-path([(-8,12),(-19,14),(-29,20),(-29,30),(-21,37),(-8,39)],2.25,.16,walk)
-path([(-29,25),(-41,25),(-41,44)],2,.14,walk)
+def garden_walk(points,width,height):
+    edges=[]
+    normals=[Vector((-(b[1]-a[1]),b[0]-a[0])).normalized() for a,b in zip(points,points[1:])]
+    for i,p in enumerate(points):
+        normal=normals[min(i,len(normals)-1)]
+        miter=(normal+normals[max(0,i-1)]).normalized()
+        offset=miter*(width*.5/miter.dot(normal))
+        edges.append((Vector(p)+offset,Vector(p)-offset))
+    for (a,b),(c,d) in zip(edges,edges[1:]):
+        corners=[a,b,d,c]
+        geo(walk,[(p.x,p.y,z) for z in (-.02,height) for p in corners],faces)
+garden_walk([(-8,12),(-19,14),(-29,20),(-29,30),(-21,37),(-8,39)],2.25,.06)
+garden_walk([(-30.125,25),(-41,25),(-41,44)],2,.06)
+zone="Staff garden"
 for x,y in [(-22,19),(-35,35),(-16,29),(-40,13)]:
-    patch(x,y,4,2.9,.12,moss)
+    zone="Garden soil"
+    patch(x,y,4,2.9,.008,moss)
+    zone="Staff garden"
     for i in range(10):
-        a=i*2.4;rr=random.uniform(.3,2.5);shrub(x+cos(a)*rr,y+sin(a)*rr*.75,.14,random.uniform(.36,.7),random.uniform(.45,1))
+        a=i*2.4;rr=random.uniform(.3,2.5);shrub(x+cos(a)*rr,y+sin(a)*rr*.75,-.015,random.uniform(.36,.7),random.uniform(.45,1))
     for i in range(10):
-        a=random.random()*6.28;rr=random.uniform(.1,1.9);shrub(x+cos(a)*rr,y+sin(a)*rr*.65,.52,.19,.3,muted)
+        a=random.random()*6.28;rr=random.uniform(.1,1.9)
+        sx,sy=x+cos(a)*rr,y+sin(a)*rr*.65
+        tube((sx,sy,0),(sx,sy,.39),.025,moss,5);shrub(sx,sy,.37,.19,.3,muted)
 for x,y in [(-36,19),(-17,36),(-38,39),(-26,10),(40,9),(8,145),(-12,108),(40,149),(-11,148)]:tree(x,y,random.uniform(4.8,7.8))
 # Architectural elevations. Local u follows frontage, local v goes inward.
 def elev(x,y,angle,length,floors,bays,store=False):
@@ -143,7 +190,11 @@ def elev(x,y,angle,length,floors,bays,store=False):
     box(0,-.2,floors*4.25,length+.48,.62,.33,lime)
     frame=Matrix.Identity(4)
 def rooftop(x,y,w,d,h):
+    global zone
+    previous=zone
+    zone="Roof membrane"
     slab(x,y,w+.4,d+.4,.26,roof,h)
+    zone=previous
     for v in [-1,1]:
         box(x,y+v*d/2,h+.47,w,.32,.68,cream);box(x,y+v*d/2,h+.85,w+.28,.49,.13,silver)
         box(x+v*w/2,y,h+.47,.32,d,.68,cream);box(x+v*w/2,y,h+.85,.49,d+.3,.13,silver)
@@ -166,17 +217,18 @@ for x in (15.7,20.3):
     tube((x,99,10.12),(x,99,13.2),1.83,silver,16);tube((x,99,13.2),(x,99,13.85),1.93,teal,16,.22)
     for z in (10.3,11.75,13.05):tube((x,99,z),(x,99,z+.09),1.87,metal,16)
     tube((x,99,9),(x,99,10.4),.26,metal)
-for y in (73,81,89):hvac(38,y,8.93)
-for y in range(63,96,3):box(13.2,y,9.52,1.12,2.94,.86,silver);box(13.2,y-1.4,9.53,1.2,.1,.92,metal)
+for y in (73,81,89):hvac(38,y,8.88)
+for y in range(63,96,3):
+    box(13.2,y,9.52,1.12,2.94,.86,silver);box(13.2,y-1.4,9.53,1.2,.1,.92,metal)
+    box(13.2,y,9.01,.82,.28,.25,metal)
 for y in [73,86]:tree(26,y,5.1);bench(26,y+2)
 zone="Emergency canopy"
 # Raised south architectural sign and illuminated covered casualty intake
-box(26,54.68,7.2,19.7,.65,2.25,teal);sign("MEDICAL CENTER",26,54.29,7.23,1.52,neon)
 for x in [19.5,32.5]:
     for y in [43,52]:box(x,y,2.25,.42,.42,4.5,cream);box(x,y,.8,.6,.60,1.45,terr)
 slab(26,48.4,14.8,12.4,.36,cream,4.4);box(26,42.12,4.72,14.8,.28,.72,red);sign("EMERGENCY",26,41.94,4.74,1.03,neon)
 for x in [21,26,31]:box(x,45,4.37,1.9,.42,.09,neon);light("ER downlight",(x,45,4.1),500,(1,.75,.55))
-for x in [20.7,29.7]:box(x,54.46,1.52,2,.18,2.8,metal);box(x,54.32,1.72,1.78,.07,2.08,mint)
+for x in [20.7,29.7]:box(x,54.46,1.45,2,.23,2.92,metal);box(x,54.32,1.72,1.78,.07,2.08,mint)
 zone="Emergency pylon"
 # Deep red wayfinding pylon at arrival with inset illuminated face.
 for x in [12.1,13.3]:box(x,17,2.4,.26,.32,4.6,metal)
@@ -184,12 +236,12 @@ box(12.7,17,4.45,3.7,.52,3.7,red);box(12.7,16.67,4.65,2.3,.14,.68,neon);box(12.7
 zone="Clinic and pharmacy"
 # Smaller street buildings with separate architectural identities.
 def small(x,y,w,d,name,base,awning):
-    rooftop(x,y,w,d,3.92)
+    rooftop(x,y,w,d,3.89)
     elev(x,y-d/2,0,w,1,max(3,round(w/4.6)));elev(x-w/2,y,-pi/2,d,1,max(3,round(d/4.6)))
     for i in range(int(w)):
         box(x-w/2+i+.5,y-d/2-1.05,3.37,1,2.2,.18,awning if i%2==0 else cream);box(x-w/2+i+.5,y-d/2-2.07,3.21,1,.16,.38,awning if i%2==0 else cream)
     box(x,y-d/2-.24,4.43,w*.76,.34,1.08,awning);sign(name,x,y-d/2-.43,4.43,1.06,neon)
-    hvac(x+w*.23,y+d*.18,4.88);hvac(x+w*.05,y+d*.18,4.88,2.35,2.1)
+    hvac(x+w*.23,y+d*.18,4.13);hvac(x+w*.05,y+d*.18,4.13,2.35,2.1)
 small(-27,66.5,26,19,"PHARMACY",terr,teal);small(-27,92.5,26,21,"OUTPATIENT CLINIC",cream,metal)
 zone="Facade masonry"
 # Exterior masonry accents and service annex detailing
@@ -198,48 +250,59 @@ for y in [57,82,55]:
     for row in range(4):
         for i in range(24):
             x=x0+.65+i*1.04+(row%2)*.52
-            if random.random()<.65:box(x,y-.045,.3+row*.18,.99,.1,.15,random.choice([terr,brick2]))
+            if random.random()<.65:box(x,y-.14,.04+row*.073,.99,.075,.065,random.choice([terr,brick2]))
 zone="Laundry yard"
 # Laundry loading bays, ridged roof and working yard
 
+box(-28,126,1.8,24,.25,3.6,cream)
+eave,ridge=3.92,5.97
+zone="Laundry sheet roof"
 for q in (-1,1):
-    geo(teal,[(-40.6,136+q*10,4.5),(-15.4,136+q*10,4.5),(-15.4,136,6.55),(-40.6,136,6.55)],[(0,1,2,3)] if q==-1 else [(3,2,1,0)])
+    corners=[(-40.6,136+q*10.25,eave),(-15.4,136+q*10.25,eave),(-15.4,136,ridge),(-40.6,136,ridge)]
+    if q==1:corners.reverse()
+    geo(teal,[(x,y,z-.12) for x,y,z in corners]+corners,faces)
+zone="Laundry yard"
+for x in (-40,-16):
+    gable=[(x-.1,125.95,3.86),(x-.1,146.05,3.86),(x-.1,136,ridge-.10)]
+    geo(cream,gable+[(a+.2,b,c) for a,b,c in gable],[(2,1,0),(3,4,5),(0,1,4,3),(1,2,5,4),(2,0,3,5)])
 for x in range(-40,-14,2):
-    for q in [-1,1]:tube((x,136+q*10,4.57),(x,136,6.59),.065,silver,5)
+    for q in [-1,1]:tube((x,136+q*10.25,eave+.025),(x,136,ridge+.025),.065,silver,5)
 for x in [-34,-25]:
-    box(x,126.41,2.15,6.3,.17,3.5,metal)
-    for i in range(12):box(x,126.28,.59+i*.27,5.85,.09,.23,silver)
-slab(-28,124.8,23,3.2,.78,walk);
-for i in range(4):slab(-28,121.75+i*.4,3.4,.4,.195*(i+1),walk)
-sign("CENTRAL LAUNDRY",-28,126.28,4.02,1,neon)
+    box(x,125.81,1.52,6.3,.16,2.75,metal)
+    for i in range(11):box(x,125.71,.29+i*.24,5.85,.07,.19,silver)
+box(-28,125.80,3.30,11.2,.22,.69,metal)
+sign("CENTRAL LAUNDRY",-28,125.65,3.30,1,neon)
 for x in [-40,-31,-22]:
     for y in [148,151]:box(x,y,1.55,.13,.13,3.1,metal)
 for y in [148,151]:
     tube((-40,y,3),(-22,y,3),.032,metal,5)
     for i in range(7):
         x=-39+i*2.6;geo(sheet,[(x,y,3),(x+2.1,y,3),(x+2.08,y+.18,1.2),(x+.12,y-.14,1.38)],[(0,1,2,3)])
-for x in [-36,-31,-25]:slab(x,120,2.4,1.5,1.35,teal,.2);box(x,120,1.58,2.51,1.62,.18,dark)
+for x in [-36,-31,-25]:slab(x,120,2.4,1.5,1.35,teal,.16);box(x,120,1.54,2.51,1.62,.18,dark)
 zone="Garden pergola"
 # Pergola, gardens, benches and lit routes
 for x in [-32,-26]:
     for y in [20,29]:box(x,y,1.85,.28,.28,3.7,wood);box(x,y,.45,.62,.62,.75,terr)
-    box(x,24.5,3.72,.38,10.3,.35,wood)
+    box(x,24.5,3.72,.38,11.3,.35,wood)
 for y in range(19,31):box(-29,y,4.0,7.4,.30,.25,wood)
 for x,y in [(-29,22),(-29,27),(-19,37),(-38,35),(-32,52),(-22,52),(-19,106)]:bench(x,y)
-zone="Visitor shelter"
+zone="Shelter platform"
 # Visitor lay-by and asymmetric sheltered waiting area
 slab(24,139,14.2,4.9,.16,walk,.12)
+zone="Visitor shelter"
 for x in [17.8,22,26,30.2]:
-    box(x,140.5,1.98,.16,.19,3.2,teal);box(x,137.1,1.98,.16,.19,3.2,teal)
+    box(x,140.5,1.91,.16,.19,3.31,teal);box(x,137.1,1.91,.16,.19,3.31,teal)
 for x in [20,24,28]:
-    box(x,140.5,1.69,3.8,.12,2.28,aqua);box(x,140.39,1.4,3.8,.05,.12,stripe);bench(x,139.15)
+    box(x,140.5,1.69,4.25,.12,2.28,aqua);box(x,140.425,1.4,3.8,.05,.12,stripe);bench(x,139.15)
 box(24,138.8,3.68,14.5,5.15,.31,teal);box(24,136.17,3.65,14.5,.12,.46,silver);sign("VISITOR TRANSIT",24,136.07,3.66,.64,neon)
-for x in [19,29]:light("Shelter",(x,138,3.35),375,(.62,.85,1))
+for x in [19,29]:
+    box(x,138,3.52,1.10,.47,.12,metal);box(x,138,3.44,.91,.38,.06,neon)
+    light("Shelter",(x,138,3.35),375,(.62,.85,1))
 zone="Road markings"
 for y in [18,21.4,24.8,28.2,31.6,35,38.4,117,120.4,123.8,127.2,130.6,134]:
     for x in [15.4,37.6]:box(x,y,.192,6.5,.14,.027,stripe)
 for y in [12,40,116,144]:
-    box(27,y,.20,6,.16,.04,stripe)
+    if y!=12:box(27,y,.182,6,.16,.026,stripe)
 # Actual production meshes with original UVs and material settings.
 src=root/"ArtSource/ConvenienceStoreAtlas";data=json.loads((src/"source.json").read_text());orig={}
 def srcmat(i):
@@ -262,7 +325,9 @@ def asset(key,x,y,yaw=0,size=1):
             mesh.materials.append(srcmat(p['material']));objs.append(mesh)
         templates[key]=objs
     for mesh in templates[key]:
-        o=bpy.data.objects.new(key,mesh);s.collection.objects.link(o);o.location=(x,y,.19);o.rotation_euler[2]=yaw;o.scale=(size,)*3
+        o=bpy.data.objects.new(key,mesh);s.collection.objects.link(o)
+        ground=max((h for (a,b,c,d),h,_ in paving if a<=x<=c and b<=y<=d),default=0)
+        o.location=(x,y,ground-.015);o.rotation_euler[2]=yaw;o.scale=(size,)*3
 for x,y,k,a in [(37,120,0,.2),(37,130.5,2,.1),(16,126,3,-.2),(16,133,1,.1),(-37,111,5,1.7),(-20,110,4,1.6)]:
     asset("Scattered car "+str(k),x,y,a)
 for x in [-45,45]:
@@ -272,7 +337,7 @@ for x,y in [(-40,151),(-33,155),(36,152),(-39,5),(40,5)]:asset("Large court pine
 # Ambulance models: shaped cab, two-tone patient module, inset doors and wheel assemblies
 def ambulance(x,y,yaw,roll):
     global frame
-    lift=.24 if roll==0 else (1.54 if abs(roll)<3 else 2.98)
+    lift=.12 if roll==0 else (1.55 if abs(roll)<3 else 3.20)
     frame=Matrix.Translation((x,y,lift))@Matrix.Rotation(yaw,4,'Z')@Matrix.Rotation(roll,4,'Y')
     box(0,.67,1.79,2.58,4.3,2.30,white);box(0,.67,2.96,2.62,4.34,.14,silver);box(0,0,.58,2.1,5.8,.33,dark)
     box(0,-2.12,1.12,2.43,2.26,1.05,white);box(0,-2.92,1.42,2.46,.93,.42,white)
@@ -293,10 +358,10 @@ ambulance(36,39,-.40,0)
 zone="Triage equipment"
 # Stretcher frames, bollards, oxygen carts and wheel stops
 for x in [22,29]:
-    box(x,47,1.12,1.03,2.35,.19,teal)
+    box(x,47,1.07,1.03,2.35,.19,teal)
     for y in [46.2,47.8]:
-        for dx in [-.38,.38]:tube((x+dx,y,.24),(x-dx,y,1.04),.055,silver,6);tube((x+dx-.065,y,.21),(x+dx+.065,y,.21),.13,dark,8)
-    box(x,47.7,1.3,.85,.50,.18,cream)
+        for dx in [-.38,.38]:tube((x+dx,y,.17),(x-dx,y,1.00),.055,silver,6);tube((x+dx-.065,y,.15),(x+dx+.065,y,.15),.13,dark,8)
+    box(x,47.7,1.24,.85,.50,.18,cream)
 for x in [18.2,20.3,31.7,33.8]:tube((x,42,.17),(x,42,1.2),.14,yellow,8)
 zone="Campus lamps"
 for x,y in [(-9,20),(-9,53),(-9,101),(-10,139),(10,35),(9,75),(10,118),(34,133),(-36,116),(-35,28)]:
@@ -304,18 +369,18 @@ for x,y in [(-9,20),(-9,53),(-9,101),(-10,139),(10,35),(9,75),(10,118),(34,133),
 zone="Perimeter"
 # Interspersed service details and campus boundary fencing
 for x in [-47,47]:
-    for y in range(5,157,4):box(x,y,1.05,.18,.18,2.05,metal)
+    for y in range(5,157,4):box(x,y,1.03,.18,.18,2.09,metal)
     for z in [.36,1.05,1.80]:box(x,80,z,.09,151,.09,metal)
 for x,y in [(-10,51),(-11,104),(11,109),(34,13)]:
     box(x,y,1,.14,.14,2,metal);box(x,y,1.84,1.7,.13,.85,teal);box(x,y-.08,1.85,.96,.035,.09,cream)
 for x,y in [(-42,70),(-42,92),(-40,121),(41,107),(34,146)]:
-    for j in range(3):tube((x+j*.6,y,.16),(x+j*.6,y,1.24),.23,metal,9);tube((x+j*.6,y,1.24),(x+j*.6,y,1.36),.26,silver,9)
+    for j in range(3):tube((x+j*.6,y,-.01),(x+j*.6,y,1.24),.23,metal,9);tube((x+j*.6,y,1.24),(x+j*.6,y,1.36),.26,silver,9)
 zone="Hospital crown"
 # Architectural crown framing the main entrance. Glass stair lantern and ribs
 # break the roof line while retaining the two-storey ward wings.
 for x in [18.8,33.2]:
     box(x,54.72,5.25,1.65,.82,10.35,cream)
-    for j in range(3):box(x-.52+j*.52,54.14,5.55,.19,.19,8.5,lime)
+    for j in range(3):box(x-.52+j*.52,54.24,5.55,.19,.24,8.5,lime)
     box(x,54.72,10.52,2.05,1.08,.39,teal)
 box(26,55.05,9.85,12.8,.52,2.0,terr)
 box(26,54.95,10.05,12.82,.34,1.91,teal)
@@ -332,7 +397,7 @@ for y in [62,95]:
     for k in range(3):box(8.72,y-.94+k*.94,4.65,.22,.36,7.6,teal)
 for x in [15.5,38.4]:
     box(x,54.60,5.8,2.75,.30,3,cream)
-    box(x,54.36,5.85,1.98,.14,.48,red);box(x,54.32,5.85,.52,.14,1.94,red)
+    box(x,54.40,5.85,1.98,.14,.48,red);box(x,54.37,5.85,.52,.18,1.94,red)
 zone="Roof equipment"
 # Mechanical roof organized into service aisles, membrane seams and pipe bridges
 for x in [34.1,34.7]:
@@ -347,49 +412,58 @@ for x,y in [(16,65),(28.5,96)]:
 zone="West campus signs"
 # Distinct west-side silhouettes: clinic clerestory and pharmacy blade sign.
 for y in [87,93,99]:
-    box(-27.5,y,5.22,16,2.45,.85,teal)
+    box(-27.5,y,4.93,16,2.55,1.57,teal)
+    for xx in (-35.45,-19.55):
+        geo(teal,[(xx,y-1.45,5.67),(xx,y+1.45,5.67),(xx,y+1.45,6.32),(xx,y-1.45,5.75)],[(0,1,2,3)] if xx>-27 else [(3,2,1,0)])
+    box(-27.5,y+1.39,5.99,16,.12,.63,teal)
     geo(silver,[(-35.7,y-1.45,5.75),(-19.3,y-1.45,5.75),(-19.3,y+1.45,6.32),(-35.7,y+1.45,6.32)],[(0,1,2,3)])
     for i in range(8):box(-34.55+i*2,y-1.28,5.48,1.8,.12,.49,mint)
 for x in [-38,-16]:
     box(x,57,3.09,1.85,2.2,6.1,terr);box(x,56,5.48,2.4,.5,1.9,teal)
-    box(x,55.68,5.52,1.3,.1,.36,neon);box(x,55.65,5.51,.36,.12,1.3,neon)
+    box(x,55.71,5.52,1.3,.12,.36,neon);box(x,55.68,5.51,.36,.16,1.3,neon)
 zone="Parking islands"
 # East parking islands, bus timetable, bike racks and trash cans
 for x,y in [(12,112),(39,112),(14,144),(38,144),(13,13),(40,38)]:
-    slab(x,y,4.7,1.9,.22,walk,.17);slab(x,y,4.3,1.55,.26,moss,.19)
+    zone="Planter curb"
+    slab(x,y,4.7,1.9,.39,walk,-.005)
+    zone="Planter soil"
+    slab(x,y,4.3,1.55,.26,moss,.19)
+    zone="Parking islands"
     for i in range(5):shrub(x-1.55+i*.78,y,.43,.54,.69)
 for x,y in [(18,135),(30.6,135),(-16,55),(11,51)]:
-    tube((x,y,.18),(x,y,1.13),.34,teal,10);tube((x,y,1.13),(x,y,1.22),.36,metal,10)
-box(31.6,136,1.9,.15,.18,3.45,metal);box(31.6,136,2.29,1.26,.2,1.86,cream);box(31.6,135.86,2.75,.99,.03,.45,teal)
-for i in range(5):box(31.6,135.85,2.36-i*.13,.82,.04,.04,metal)
+    tube((x,y,0),(x,y,1.13),.34,teal,10);tube((x,y,1.13),(x,y,1.22),.36,metal,10)
+box(31.6,136,1.9,.15,.18,3.48,metal);box(31.6,136,2.29,1.26,.2,1.86,cream);box(31.6,135.895,2.75,.99,.03,.45,teal)
+for i in range(5):box(31.6,135.89,2.36-i*.13,.82,.04,.04,metal)
 for x in [-37,-35.8,-34.6,-33.4,-32.2]:
-    for y in [49,50.8]:tube((x,y,.14),(x,y,1.11),.09,teal)
+    for y in [49,50.8]:tube((x,y,-.01),(x,y,1.11),.09,teal)
     tube((x,49,1.11),(x,50.8,1.11),.09,teal)
 zone="Pavement patina"
 # Asphalt archaeology: patched trenches, tar seams, storm grates, crosswalks
 for x,y,w,d in [(24,21,2,10),(33,32,4.4,2),(-22,117,6,2),(33,123,3,6)]:
     box(x,y,.182,w,d,.012,roof)
-for x,y in [(28,28),(42,17),(-32,121),(26,126),(32,138),(-18,48)]:
-    path([(x-3,y+.2),(x-1.2,y+.45),(x,y),(x+.8,y+.21),(x+2.8,y-.45)],.055,.205,metal)
-    box(x+2.3,y,.208,.8,.52,.025,metal)
-    for i in range(5):box(x+2.04+i*.12,y,.23,.05,.42,.03,dark)
+for x,y in [(28,28),(39,17),(-32,121),(26,126),(32,138),(-20,116)]:
+    path([(x-3,y+.2),(x-1.2,y+.45),(x,y),(x+.8,y+.21),(x+2.8,y-.45)],.055,.175,metal)
+    box(x+2.3,y,.171,.8,.52,.020,metal)
+    for i in range(5):box(x+2.04+i*.12,y,.182,.05,.42,.013,dark)
 for y in [16,26,36,120,131]:
-    box(27.2,y,.205,.13,2,.04,stripe)
+    box(27.2,y,.174,.13,2,.013,stripe)
 for x,y in [(23.7,18),(27.8,116)]:
-    box(x,y,.22,.22,1.6,.03,stripe)
-    geo(stripe,[(x-.65,y+.36,.24),(x+.65,y+.36,.24),(x,y+1.45,.24)],[(0,1,2)])
+    box(x,y-.22,.174,.22,1.16,.013,stripe)
+    geo(stripe,[(x-.65,y+.36,.181),(x+.65,y+.36,.181),(x,y+1.45,.181)],[(0,1,2)])
 zone="Garden entrance"
 # Low-rise sign at garden mouth. All lettering uses the project's CutePixel outlines.
 box(-18,10,.83,9.6,1.52,1.65,terr);box(-18,10,1.72,9.9,1.75,.22,cream)
 box(-18,10,2.65,8.8,.69,1.88,teal);sign("MEDICAL CENTER",-18,9.61,2.66,.97,neon)
 for x in [-22,-14]:box(x,10,1.65,.68,.99,3.3,cream)
-for i in range(18):shrub(-23+random.random()*10,7.9+random.random()*.6,.13,.38,.46)
+for i in range(18):shrub(-23+random.random()*10,7.9+random.random()*.6,0,.38,.46)
 for x,y in [(-17,10),(12.7,17),(-26,54),(26,53)]:
+    tube((x,y-1.4,-.02),(x,y-1.4,1.77),.055,metal)
+    box(x,y-1.4,1.79,.32,.25,.19,metal);box(x,y-1.4,1.89,.24,.19,.03,neon)
     light("Sign wash",(x,y-1.4,1.9),235,(1,.57,.32))
 zone="Laundry service"
 # Roof and wall character in the service court
 for x in [-36,-32]:
-    tube((x,139,5.6),(x,139,10.3),.47,terr,10,.34)
+    tube((x,139,5.13),(x,139,10.3),.47,terr,10,.34)
     tube((x,139,10.23),(x,139,10.5),.51,silver,10)
 for x,y in [(-38,115),(-38,118),(-34,116),(-15,137)]:
     for yy in [-.65,.65]:box(x,y+yy,.33,2.35,.16,.32,wood)
@@ -398,7 +472,7 @@ for x,y in [(-38,115),(-38,118),(-34,116),(-15,137)]:
     for dx in [-.77,.77]:box(x+dx,y,1.25,.1,1.5,1.44,metal)
 zone="Visitor shuttle"
 # Hospital shuttle at the north shelter, with a sloped windshield, wheelchair door and roof vent.
-frame=Matrix.Translation((24.3,131.7,.2))@Matrix.Rotation(pi/2,4,'Z')
+frame=Matrix.Translation((24.3,131.7,.13))@Matrix.Rotation(pi/2,4,'Z')
 box(0,0,1.46,2.64,8.5,1.9,cream);box(0,.03,2.7,2.52,8.15,.96,teal);box(0,.1,3.26,2.75,8.35,.19,cream)
 for side in [-1,1]:
     for j in range(6):box(side*1.275,-3.12+j*1.27,2.62,.06,1.10,.79,aqua if j%3 else mint)
@@ -411,8 +485,41 @@ zone="Campus planting"
 # Taller planting groups bookend the ward and vary the two approaches
 for x,y,h in [(-43,34,7.4),(-36,9,6),(-14,40,5.9),(10.8,107.7,5.4),(42.1,109,6.2),(38.5,146,7),(16,147.5,5),(-14,150.5,6.8),(-40,106.8,6.2),(-40.5,51,5.8)]:tree(x,y,h)
 for x,y in [(-43,43),(-39,11),(39,11),(39,147),(-13,145),(-11,65),(-11,96),(-35,53)]:
-    patch(x,y,2.25,1.48,.21,moss)
-    for i in range(6):shrub(x+random.uniform(-1.55,1.55),y+random.uniform(-.8,.8),.23,.63,.85)
+    grade=max((h for (a,b,c,d),h,_ in paving if a<=x<=c and b<=y<=d),default=0)
+    zone="Garden soil"
+    patch(x,y,2.25,1.48,grade+.008,moss)
+    zone="Campus planting"
+    for i in range(6):shrub(x+random.uniform(-1.55,1.55),y+random.uniform(-.8,.8),grade,.63,.85)
+
+# Guard the open edges, leaving both stair mouths and the switchback clear.
+zone="Stair steelwork"
+def guard(a,b,sloped=False):
+    a,b=Vector(a),Vector(b)
+    for height in (.42,.91):
+        up=Vector((0,0,height))
+        tube(a+up,b+up,.040 if height>.5 else .029,metal)
+    steps=max(1,math.ceil((b-a).length/1.2))
+    for j in range(steps+1):
+        p=a.lerp(b,j/steps)
+        tube(p-Vector((0,0,.15 if sloped else .04)),p+Vector((0,0,.91)),.038,silver)
+for start in (57,98):
+    for x in (36.12,40.88):
+        for y in (start+3.78,start+5.85):box(x,y,2.93,.15,.15,5.86,metal)
+    for level in (0,4):
+        for x in (36.12,38.26):
+            guard((x,start+.16,level+.17),(x,start+3.47,level+2),True)
+            tube((x,start-.10,level-.17),(x,start+3.84,level+1.88),.16,metal)
+        for x in (38.75,40.87):
+            guard((x,start+3.45,level+2.18),(x,start+.15,level+4),True)
+            tube((x,start+3.83,level+1.92),(x,start-.10,level+3.92),.16,metal)
+        for x in (36.10,40.90):
+            guard((x,start+3.58,level+2),(x,start+5.90,level+2))
+        guard((36.10,start+5.90,level+2),(40.90,start+5.90,level+2))
+        # Upper slab perimeter, posts planted on the slab side of the opening.
+        for x in (35.88,41.12):
+            guard((x,start+.10,level+4),(x,start+5.98,level+4))
+        guard((35.88,start+6.10,level+4),(41.12,start+6.10,level+4))
+    guard((35.90,start-.10,8),(38.50,start-.10,8))
 
 
 import re
@@ -426,6 +533,28 @@ import numpy as np
 from collections import defaultdict
 def srgb(linear):
     return np.where(linear<=.0031308,linear*12.92,1.055*np.maximum(linear,0)**(1/2.4)-.055)
+# Crop actual Quackville atlas cells. Normalize their luminance to retain the
+# campus palette without washing out the chipped paint, mortar and aggregate.
+town=bpy.data.images.load(str(root/"Assets/Models/Quackville/Quackville_Town_Diffuse.jpg"),check_existing=True)
+industrial=bpy.data.images.load(str(root/"Assets/Models/Quackville/Quackville_Industrial_Diffuse.jpg"),check_existing=True)
+def pixels(image):
+    return np.array(image.pixels[:]).reshape(image.size[1],image.size[0],4)[:,:,:3]
+town,industrial=pixels(town),pixels(industrial)
+def cell(image,x,y,size):
+    a=image[image.shape[0]-y-size:image.shape[0]-y,x:x+size]
+    return a.repeat(64//size,axis=0).repeat(64//size,axis=1)
+plaster=cell(town,0,64,64); aggregate=cell(town,128,0,64); paint=cell(industrial,64,64,32)
+swatch_cells={
+    cream:plaster,lime:cell(town,192,128,64),red:cell(industrial,96,32,32),
+    terr:cell(industrial,64,0,32),brick2:cell(industrial,64,0,32),teal:paint,
+    metal:cell(industrial,0,32,32),silver:cell(industrial,32,64,32),roof:aggregate,
+    dark:cell(town,128,128,64),wood:cell(town,192,64,64),grass:cell(town,0,0,64),
+    moss:cell(town,0,0,64),asphalt:aggregate,ballast:cell(town,64,0,64),
+    walk:cell(town,192,128,64),stripe:plaster,yellow:cell(industrial,32,32,32),
+    white:cell(industrial,128,0,32),sheet:plaster,muted:plaster,
+}
+for m in (aqua,amber,mint,neon,led,screen):swatch_cells[m]=cell(industrial,128,32,32)
+for m in leaf:swatch_cells[m]=cell(town,0,0,64)
 atlas_size=1024
 base_pixels=np.zeros((atlas_size,atlas_size,4),dtype=np.float32)
 glow_pixels=base_pixels.copy()
@@ -435,19 +564,28 @@ slots={}
 for i,m in enumerate(used):
     sw=swatches[m.name];x=(i%8)*128+32;y=(i//8)*128+32;slots[m]=(x,y)
     color=np.array(rgb(sw["color"]))
-    tile=np.broadcast_to(color,(64,64,3)).copy()
-    if sw['texture']:
-        im=bpy.data.images.load(str(root/"Assets/DuckRails/CampgroundGreybox/Textures"/("Quackville "+sw['texture']+".png")),check_existing=True)
-        arr=np.array(im.pixels[:]).reshape(im.size[1],im.size[0],4)
-        row=np.arange(64)*im.size[1]//64;col=np.arange(64)*im.size[0]//64
-        tile*=.46+.54*arr[row[:,None],col[None,:],:3]
-    for pixels,t in [(base_pixels,tile),(glow_pixels,np.broadcast_to(color*sw["emission"]/3.5,tile.shape))]:
+    grain=swatch_cells[m] @ np.array([.2126,.7152,.0722])
+    # Blocky damp patches share the same seamless repeat as the source cell.
+    noise=np.random.default_rng(710+i).random((8,8))
+    for _ in range(2):noise=(2*noise+sum(np.roll(noise,k,axis=a) for a in (0,1) for k in (-1,1)))/6
+    damp=np.clip((noise-np.percentile(noise,22))/max(np.ptp(noise),.01)*3,0,1)
+    damp=.67+.33*damp.repeat(8,0).repeat(8,1)
+    relief=np.clip((grain+.015)/(np.median(grain)+.015),.25,1.75)
+    wear=(damp*relief)[:,:,None]
+    tile=np.minimum(1,color*wear)
+    for pixels,t in [(base_pixels,tile),(glow_pixels,tile*sw["emission"]/3.5)]:
         pixels[y-32:y+96,x-32:x+96,:3]=np.pad(srgb(t),((32,32),(32,32),(0,0)),mode="wrap")
-def save_image(n,arr):
-    im=bpy.data.images.new(n,width=atlas_size,height=atlas_size,alpha=False)
+def save_image(n,arr,folder=out):
+    im=bpy.data.images.new(n,width=arr.shape[1],height=arr.shape[0],alpha=False)
     im.colorspace_settings.name='Non-Color';im.pixels.foreach_set(arr.ravel())
-    im.filepath_raw=str(out/(n+'.png'));im.file_format='PNG';im.save()
+    im.filepath_raw=str(folder/(n+'.png'));im.file_format='PNG';im.save()
 save_image("Campus color",base_pixels);save_image("Campus emission",glow_pixels)
+for m,name in [(cream,"Hospital plaster"),(walk,"Worn concrete"),(grass,"Worn verge"),(metal,"Worn steel"),(ballast,"Worn ballast")]:
+    x,y=slots[m] if m in slots else (None,None)
+    if x is None:
+        tile=np.ones((64,64,4),dtype=np.float32);tile[:,:,:3]=srgb(swatch_cells[m])
+    else:tile=base_pixels[y:y+64,x:x+64]
+    save_image(name,tile,out.parent/"Textures")
 atlas=bpy.data.materials.new("Hospital Campus Atlas")
 def clip(poly,axis,k,side):
     res=[]
@@ -456,13 +594,15 @@ def clip(poly,axis,k,side):
         if da>=0:res.append(a)
         if da*db<0:res.append(a+(b-a)*da/(da-db))
     return res
+planar_faces=PlanarFaces()
+
 chunks=defaultdict(lambda:[[],[],[]])
-for (zone,cx,cy,solid,m),(verts,polys) in batches.items():
+for (zone,cx,cy,solid,m),(verts,polys) in sorted(batches.items(),key=lambda item:not item[0][3]):
     pos,indices,uvs=chunks[(zone,cx,cy,solid)];u0,v0=slots[m]
-    for poly in polys:
-        xyz=np.array([verts[idx] for idx in poly]);n=np.cross(xyz[1]-xyz[0],xyz[2]-xyz[0]);axis=np.argmax(np.abs(n))
+    for xyz in (piece for poly in polys for piece in planar_faces.exposed(np.array([verts[idx] for idx in poly]))):
+        n=np.cross(xyz[1]-xyz[0],xyz[2]-xyz[0]);axis=np.argmax(np.abs(n))
         if np.linalg.norm(n)<.000001:continue
-        tex=xyz[:,[1 if axis==0 else 0,1 if axis==2 else 2]]*.23 if swatches[m.name]["texture"] else np.zeros((len(xyz),2))+.5
+        tex=xyz[:,[1 if axis==0 else 0,1 if axis==2 else 2]]*.25
         corners=list(np.column_stack((xyz,tex)));lo=np.floor(tex.min(axis=0)).astype(int);hi=np.maximum(lo,np.floor(tex.max(axis=0)-.000001).astype(int))
         for u in range(lo[0],hi[0]+1):
             for v in range(lo[1],hi[1]+1):
@@ -486,6 +626,7 @@ for (zone,cx,cy,solid),(verts,polys,uvs) in chunks.items():
     ob=bpy.data.objects.new(key,mesh);s.collection.objects.link(ob)
 
 # Export render meshes only. Unity creates CutePixel SDF labels and baked lights.
+print("Campus coplanar rectangles trimmed:",planar_faces.trimmed)
 for ob in bpy.context.selected_objects:ob.select_set(False)
 for ob in s.objects:
     if ob.type=='MESH':ob.select_set(True)

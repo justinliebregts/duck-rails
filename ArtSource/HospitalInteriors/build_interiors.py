@@ -6,8 +6,13 @@
 # Builder, atlas tiles and the stocked shelf are reused from the Compound model so the interiors match the
 # Compound and Starting Station. Every room is one render mesh; physics uses the box list written to interiors.json.
 import bpy, math, random, json, os, sys
+from functools import partial
+import numpy as np
+from mathutils.geometry import barycentric_transform
 
 ROOT = "X:/Work/duck-rails/"
+sys.path.insert(0, ROOT + "ArtSource/HospitalCampus")
+from planar_faces import PlanarFaces
 OUT_DIR = ROOT + "ArtSource/HospitalInteriors/"
 FBX = ROOT + "Assets/DuckRails/HospitalDistrict/Interiors/Hospital Interiors.fbx"
 RENDER_DIR = ROOT + "output/hospital-interiors-review/"
@@ -15,7 +20,45 @@ RENDER_DIR = ROOT + "output/hospital-interiors-review/"
 _src = open(ROOT + "ArtSource/SubwayTerminal/build_terminal.py").read().split("\ndef main():")[0]
 T = {}
 exec(_src, T)
-Builder, V, Matrix, TILES, shelf = T["Builder"], T["V"], T["Matrix"], T["TILES"], T["shelf"]
+V, Matrix, TILES = T["V"], T["Matrix"], T["TILES"]
+shelf = partial(T["shelf"], closed_stock=True)
+
+
+class Builder(T["Builder"]):
+    def trim_overlaps(self, planar_faces):
+        # The terminal builder gives each face its own vertices. Keep its atlas
+        # UV projection on the exposed strips of shelves, counters and finishes.
+        for face in list(self.bm.faces):
+            points=[v.co.copy() for v in face.verts]
+            xyz=np.array(points)
+            pieces=planar_faces.exposed(xyz)
+            if len(pieces)==1 and pieces[0] is xyz:
+                continue
+            uv=[V((*loop[self.uv].uv,0)) for loop in face.loops]
+            for piece in pieces:
+                new=self.bm.faces.new([self.bm.verts.new(p) for p in piece])
+                new.material_index=face.material_index
+                for loop in new.loops:
+                    projected=barycentric_transform(loop.vert.co,*points[:3],*uv[:3])
+                    loop[self.uv].uv=projected.xy
+            for vert in list(face.verts):
+                self.bm.verts.remove(vert)
+
+    def beam(self, a, b, w, h, tile, up=(0, 0, 1), **kwargs):
+        direction=(V(b)-V(a)).normalized()
+        if direction.cross(V(up)).length < 1e-5:
+            up=(0,1,0) if abs(direction.y)<.9 else (1,0,0)
+        super().beam(a,b,w,h,tile,up=up,**kwargs)
+
+    def flat(self, pts, mat):
+        # Give the hospital's luminous glass and screens usable UVs too.
+        points = [V(p) for p in pts]
+        face = self.bm.faces.new([self.bm.verts.new(self.M @ p) for p in points])
+        face.material_index = mat
+        u = (points[1] - points[0]).normalized()
+        v = u.cross(points[-1] - points[0]).normalized().cross(u)
+        for loop, p in zip(face.loops, points):
+            loop[self.uv].uv = (p.dot(u) / 2, p.dot(v) / 2)
 material = T["material"]
 LENS, GLOW, WARM = T["LENS"], T["GLOW"], T["WARM"]
 # Further cells of the Industrial atlas (32 px).
@@ -149,8 +192,8 @@ def skin_floor(b, x0, x1, y0, y1, z, tile):
 
 def threshold(b, axis, c, a0, a1, z, tile="greypanel"):
     """Floor patch through a door gap in a wall (axis x: wall at X=c running along Y)."""
-    if axis == "x": b.quad((c - .14, a0, z + .012), (.28, 0, 0), (0, a1 - a0, 0), tile)
-    else: b.quad((a0, c - .14, z + .012), (a1 - a0, 0, 0), (0, .28, 0), tile)
+    if axis == "x": b.quad((c - .13, a0, z + .016), (.26, 0, 0), (0, a1 - a0, 0), tile)
+    else: b.quad((a0, c - .13, z + .016), (a1 - a0, 0, 0), (0, .26, 0), tile)
 
 
 def dado(b, axis, c, a0, a1, z, face, doors=(), top=1.12, scheme=None):
@@ -216,7 +259,9 @@ def bed(b, x, y, z, yaw=0, blanket="blue", tilt=0):
     b.box((-.5, -1.05, .38), (.5, -.98, .86), "whitepanel", fit=True)
     for sx in (-.5, .5):
         b.beam((sx, -.6, .82), (sx, .55, .82), .04, .05, "galv", fit=True)
-        for sy in (-.5, .45): b.beam((sx, sy, .64), (sx, sy, .82), .03, .03, "galv", fit=True, caps=False)
+        for sy in (-.5, .45):
+            b.beam((sx*.89, sy, .45), (sx, sy, .48), .035, .035, "galv", fit=True)
+            b.beam((sx, sy, .48), (sx, sy, .82), .03, .03, "galv", fit=True, caps=False)
     collide(b, (-.5, -1.05, 0), (.5, 1.05, .82))
     if tilt: b.pop()
     b.pop()
@@ -230,7 +275,7 @@ def gurney(b, x, y, z, yaw=0, sheet_on=True):
         for sx in (-.3, .3): b.cyl((sx - .03, sy, .07), (sx + .03, sy, .07), .07, 6, "tyre", True, True)
     b.box((-.34, -.98, .78), (.34, .98, .88), "steel", fit=True, skip="")
     b.box((-.32, -.95, .88), (.32, .95, .96), "whitepanel" if sheet_on else "blue", fit=True, skip="b")
-    b.box((-.36, -.6, .92), (-.33, .6, 1.12), "galv", fit=True)
+    b.box((-.35, -.6, .83), (-.32, .6, 1.12), "galv", fit=True)
     collide(b, (-.36, -.98, 0), (.36, .98, .96))
     b.pop()
 
@@ -243,8 +288,9 @@ def iv(b, x, y, z, fallen=False):
     b.cyl((x, y, z + .05), (x, y, z + 2.0), .02, 5, "galv", cap_b=True)
     for a in range(0, 360, 72):
         r = math.radians(a)
-        b.beam((x, y, z + .07), (x + .32 * math.cos(r), y + .32 * math.sin(r), z + .04), .03, .03, "galv", fit=True)
+        b.beam((x, y, z + .07), (x + .32 * math.cos(r), y + .32 * math.sin(r), z + .015), .03, .03, "galv", fit=True)
     b.beam((x - .18, y, z + 1.95), (x + .18, y, z + 1.95), .02, .02, "galv", fit=True)
+    b.cyl((x+.14,y,z+1.85),(x+.14,y,z+1.95),.012,5,"galv")
     b.box((x + .08, y - .05, z + 1.55), (x + .2, y + .05, z + 1.85), "whitepanel", fit=True, skip="")
 
 
@@ -253,7 +299,7 @@ def monitor_cart(b, x, y, z, yaw=0, on=True):
     b.cyl((0, 0, .05), (0, 0, 1.15), .03, 5, "galv")
     for a in range(45, 360, 90):
         r = math.radians(a)
-        b.beam((0, 0, .08), (.28 * math.cos(r), .28 * math.sin(r), .05), .04, .03, "darkmetal", fit=True)
+        b.beam((0, 0, .08), (.28 * math.cos(r), .28 * math.sin(r), .015), .04, .03, "darkmetal", fit=True)
     b.box((-.25, -.08, 1.15), (.25, .12, 1.55), "darkmetal", fit=True, skip="")
     glowquad(b, (-.21, -.085, 1.19), (.42, 0, 0), (0, 0, .32), GLOW if on else T["VOID"])
     b.pop()
@@ -354,7 +400,8 @@ def trolley(b, x, y, z, yaw=0, load=True):
     place(b, x, y, z, yaw)
     for sx in (-.32, .32):
         for sy in (-.22, .22):
-            b.beam((sx, sy, .08), (sx, sy, .92), .025, .025, "galv", fit=True, caps=False)
+            b.beam((sx, sy, .05), (sx, sy, .92), .025, .025, "galv", fit=True, caps=False)
+            b.cyl((sx-.02,sy,.05),(sx+.02,sy,.05),.05,8,"tyre",True,True)
     for zz in (.3, .9):
         b.box((-.36, -.25, zz), (.36, .25, zz + .03), "galv", fit=True, skip="")
     if load:
@@ -404,13 +451,19 @@ def curtain(b, a, c, z0, z1, tile="blue", pleats=.35, rail=True):
         b.quad(V((p.x, p.y, z0)), q - p, V((0, 0, z1 - z0)), tile, fit=True)
         b.quad(V((q.x, q.y, z0)), p - q, V((0, 0, z1 - z0)), tile, fit=True)
     if rail:
-        b.beam((a.x, a.y, z1 + .04), (c.x, c.y, z1 + .04), .04, .04, "galv", fit=True)
+        b.beam((a.x, a.y, z1 + .02), (c.x, c.y, z1 + .02), .04, .05, "galv", fit=True)
+        for anchor in (a, c):
+            ceiling = CEIL[4 if z1 > 4 else 0]
+            b.cyl((anchor.x, anchor.y, z1 + .02), (anchor.x, anchor.y, ceiling), .025, 6, "galv")
 
 
 def bay_rail(b, x0, x1, y0, y1, z):
     """Ceiling-hung U-rail with drop rods."""
     for p, q in (((x0, y0), (x0, y1)), ((x0, y1), (x1, y1)), ((x1, y1), (x1, y0))):
         b.beam((p[0], p[1], z), (q[0], q[1], z), .04, .04, "galv", fit=True)
+    for x in (x0, x1):
+        for y in (y0, y1):
+            b.cyl((x, y, z), (x, y, CEIL[0]), .025, 6, "galv")
 
 
 def wall_tv(b, x, y, z, yaw):
@@ -465,7 +518,7 @@ def op_lamp(b, x, y, ceil, reach=(.6, .4)):
     b.cyl((x, y, ceil - .1), (x, y, ceil - .9), .05, 6, "whitepanel")
     for k, (dx, dy) in enumerate(((reach[0], reach[1]), (-reach[1], reach[0] * .6))):
         hx, hy, hz = x + dx, y + dy, ceil - 1.6 - .12 * k
-        b.beam((x, y, ceil - .9), (hx, hy, hz + .2), .06, .06, "whitepanel", fit=True)
+        b.beam((x, y, ceil - .9), (hx, hy, hz + .14), .06, .06, "whitepanel", fit=True)
         b.cyl((hx, hy, hz), (hx, hy, hz + .16), .32, 12, "whitepanel", cap_b=True)
         disc(b, (hx, hy, hz - .001), .26, 12, LENS)
 
@@ -521,7 +574,7 @@ def folding_table(b, x, y, z, yaw, L=2.4, D=.9):
 
 def laundry_cart(b, x, y, z, yaw=0, full=True, tipped=False):
     place(b, x, y, z, yaw)
-    if tipped: b.push(Matrix.Translation((0, 0, .45)) @ Matrix.Rotation(math.radians(-90), 4, "X"))
+    if tipped: b.push(Matrix.Translation((0, 0, .35)) @ Matrix.Rotation(math.radians(-90), 4, "X"))
     for sx in (-.4, .4):
         for sy in (-.3, .3): b.cyl((sx - .02, sy, .06), (sx + .02, sy, .06), .06, 6, "tyre", True, True)
     b.box((-.45, -.33, .12), (.45, .33, .85), "blue", fit=True, skip="t")
@@ -576,7 +629,7 @@ def gondola(b, x, y, z, yaw, L):
     place(b, x, y, z, yaw)
     for side in (0, 180):
         b.push(Matrix.Rotation(math.radians(side), 4, "Z"))
-        shelf(b, -L / 2, .02, 0, L, rng)
+        shelf(b, -L / 2, -.005, 0, L, rng)
         b.pop()
     for sx in (-L / 2 - .05, L / 2):
         b.box((sx, -.5, 0), (sx + .05, .5, 2.05), "whitepanel", fit=True, skip="b")
@@ -607,6 +660,9 @@ def pipes(b, a, c, z, r=.08, tile="galv", n=2, gap=.25):
         d = V((c[0] - a[0], c[1] - a[1], 0)).normalized()
         s = V((-d.y, d.x, 0)) * o
         b.cyl((a[0] + s.x, a[1] + s.y, z), (c[0] + s.x, c[1] + s.y, z), r, 8, tile)
+        for t in (.06, .5, .94):
+            x, y = a[0] + (c[0]-a[0])*t + s.x, a[1] + (c[1]-a[1])*t + s.y
+            b.cyl((x, y, z), (x, y, SMALL_CEIL), .028, 6, "galv")
 
 
 # ---------------------------------------------------------------- hospital
@@ -845,10 +901,10 @@ def patient_rooms(b):
             bed(b, 40.8, y, z, -90, ("blue", "teal")[k % 2], tilt=rng.uniform(-5, 5))
             cabinet(b, 41.6, y + (1.25 if k == 0 else -1.25), z, -90, .5, .45, .8, "whitepanel", 2)
             b.box((37.9, y - .45, z + .8), (38.6, y + .45, z + .84), "greypanel", fit=True)
-            b.cyl((38.5, y, z + .05), (38.5, y, z + .8), .03, 5, "galv")
+            b.cyl((38.5, y, z), (38.5, y, z + .8), .03, 5, "galv")
             wall_tv(b, 41.85, y, z + 2.2, -90)
         if len(beds) > 1:
-            curtain(b, (38.6, (beds[0] + beds[1]) / 2), (41.85, (beds[0] + beds[1]) / 2), .35, 2.4, "teal")
+            curtain(b, (38.6, (beds[0] + beds[1]) / 2), (41.85, (beds[0] + beds[1]) / 2), z + .35, z + 2.4, "teal")
         chair(b, 36.8, (y0 + y1) / 2 + 1.0, z, -90, "blue", fallen=y0 > 76 and y0 < 78)
         troffer(b, 38, (y0 + y1) / 2, ceil, lit=y0 < 80)
     iv(b, 39.1, 66.0, z); iv(b, 39.1, 85.3, z)
@@ -866,7 +922,7 @@ def recovery(b):
         if i == 4: gurney(b, x + .3, 102.7, z, 12)
         else: bed(b, x, 103.6, z, 0, ("blue", "teal", "blue", None, "", "teal", "blue")[i] or None, tilt=rng.uniform(-6, 6))
         if i < len(xs) - 1:
-            curtain(b, (x + 1.7, 101.5), (x + 1.7, 104.85), .35, 2.4, "blue")
+            curtain(b, (x + 1.7, 101.5), (x + 1.7, 104.85), z + .35, z + 2.4, "blue")
         if i % 2 == 0: monitor_cart(b, x - 1.05, 104.4, z, 0, on=i == 2)
         elif i != 5: iv(b, x + 1.05, 102.0, z)
     trolley(b, 15.0, 96.6, z, 0); laundry_cart(b, 11.8, 96.5, z, 0, full=True)
@@ -1046,12 +1102,15 @@ def main():
             material("Subway warm bulb", emission=(1, .68, .32, 1), strength=6, color=(1, .8, .5, 1))]
     del LIGHTS[:], LABELS[:], BOXES[:], FIXTURES[:]
     total = 0
+    planar_faces = PlanarFaces()
     for name, fn in PARTS:
         b = Builder(name)
         fn(b)
+        b.trim_overlaps(planar_faces)
         total += sum(len(f.verts) - 2 for f in b.bm.faces)
         b.finish(coll, mats)
     print(f"TOTAL triangles: {total}; lights {len(LIGHTS)}, labels {len(LABELS)}, physics boxes {len(BOXES)}")
+    print("Interior coplanar rectangles trimmed:",planar_faces.trimmed)
     with open(OUT_DIR + "interiors.json", "w") as f:
         json.dump({"lights": LIGHTS, "labels": LABELS, "boxes": BOXES, "fixtures": FIXTURES}, f, indent=1)
 

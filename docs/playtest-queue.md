@@ -1,5 +1,13 @@
 # Playtest queue
 
+## Hospital District spawn distribution and tree crowns — queued for playtest
+
+Select Hospital District in Test Block Order. On Quest, check pickup visibility and reach in the garden, pharmacy and laundry, on both hospital floors and on the roof. Watch for loot settling through a support or obstructing a doorway. Compare enemy arrivals across the tracks, streets and hospital floors with a second client. Walk under the round trees in the staff garden and check the leaf undersides at duck eye height in baked lighting. [Placement and mesh checks](hospital-district-layout.md#spawn-distribution-and-round-trees--november-23).
+
+## Hospital District surfaces and repairs — queued for playtest
+
+On Quest, inspect the ER facade from the train and on foot. Look for flicker at grazing angles on paving seams, ceilings, glazing and counter tops. Walk both stair cores from the ground to the roof, test hand and body contact on the open-edge guards, and check clearance at each turn. Inspect the pharmacy cartons from both sides. Walk around the laundry to check its roof, closed south bays and graded east entry. Listen for turf, ballast, soil, concrete and steel at their boundaries and check frame time facing the pharmacy and main facade. Enemy route acceptance on the new geometry awaits the user-authorized navigation bake. [Repair notes and inspection views](hospital-district-layout.md#hospital-district-repairs--november-23).
+
 ## Hospital furnished interiors — queued 2026-11-23
 
 On Quest at night, walk from the train through every interior: the ER (from the south doors), reception, the CT suite and ward, north supplies (out of the north door), both stairs, then surgeries 1 to 3, the nurse station, patient rooms 201 to 203 and the recovery ward. Also walk through the clinic and its three exam rooms, the pharmacy and dispensary, and the laundry. Check hand and body contact on beds, counters, shelving, washers and carts. Check that thrown coal and gold recover from under furniture, that curtains don't catch hands, that sign readability and room darkness are right at duck eye height, and that enemies follow you through the exam doorways and the dispensary pass-through. Measure frame time inside the pharmacy (the densest room) and looking down the ER. With a second client, compare room lighting after late join. [Interior notes and baked captures](hospital-district-layout.md#furnished-interiors--november-23).
