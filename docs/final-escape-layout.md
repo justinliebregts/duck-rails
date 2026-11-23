@@ -396,3 +396,12 @@ User feedback after viewing the block in the editor.
 ## DAWN sign removed and tunnel lining z-fighting — November 23, 2026
 
 Justin asked to remove the old `DAWN` placeholder sign (`Env/DAWN` in `bridge-finale-v1.prefab`) and fix z-fighting at the tunnel portals without remodelling. The sign had no references or lighting bindings. The lining boxes now sit 2 cm clear of the portal plaster faces: walls scale X 1.58 at ±6.31 (inner face 5.52 m, outer 7.10 m) and roof scale Y 0.97 at Y 7.505 (underside 7.02 m, top 7.99 m). Tunnel width grows by 4 cm; lightmap bindings are unchanged. `RailFinalePolish` uses the same values. Editor close-ups show no gaps; headset check is part of the storm sky playtest item.
+
+## Far ridge removed, meadow extended — November 23, 2026
+
+Justin: the far ridge closing Happy Land popped in at the 175 m far plane ("a mountain out of thin air"); remove the back and let the grass go farther. Edited the saved meshes directly (no builder rerun, so lighting bindings and object IDs are unchanged):
+- `Happy Land grass` and `Happy Land collision`: the far-ridge term is removed (vertices beyond Z320 take the side-hill height only, so the valley floor stays flat and the side hills continue), and the valley extends from Z380 to Z580 with the same jittered side-hill bands and a flat floor. Extension faces borrow nearby lightmap texels; a lighting rebake would refine them.
+- The five trees that stood on the ridge (`Happy Land timber`/`leaf`, plus their trunk box colliders) were lowered onto the new meadow (5.8–21.8 m).
+- `Far meadow ground continuation` (Z380–410 slab) sunk 2 cm so it does not z-fight the new floor.
+- Note: rerunning `RailFinaleFortArtPass.Apply()` would rebuild the old ridge; update `FarHill`/`Hills()` first if that builder is ever reused.
+Editor dawn captures show the meadow and side hills running on to the distant mountain ring with no ridge popping in; review video `output/skybox-videos/4-dawn-meadow-no-far-ridge.mp4` (not committed). Headset check is part of the storm sky playtest item.
