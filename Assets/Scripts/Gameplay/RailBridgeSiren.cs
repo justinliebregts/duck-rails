@@ -3,7 +3,7 @@ using Photon.Pun;
 using UnityEngine;
 
 /// <summary>
-/// Looping bridge siren and spinning beacons. Runs from the first lever hold until the run finishes (the train has crossed or
+/// Looping bridge siren and spinning beacons. Runs from the moment the bridge is fully lowered until the run finishes (the train has crossed or
 /// the run was lost). The siren plays to completion, waits <see cref="RailAudioBank.bridgeSirenGap"/> seconds, then repeats.
 /// Every client derives this from synced run state and plays its own 3D copy, so no RPC is needed.
 /// </summary>
@@ -19,7 +19,7 @@ public sealed class RailBridgeSiren : MonoBehaviour
     bool playing;
     double nextAt;
 
-    /// <summary>Siren runs once the lever has been held and stops when the run ends. A playing clip is never cut off.</summary>
+    /// <summary>Siren runs once the bridge is 100% lowered and stops when the run ends. A playing clip is never cut off.</summary>
     public static bool ShouldRun(bool inRun, bool bridgeStarted, bool finished) => inRun && bridgeStarted && !finished;
 
     /// <summary>Time of the next play after one ends: the configured gap later, never negative.</summary>
@@ -30,7 +30,7 @@ public sealed class RailBridgeSiren : MonoBehaviour
         var run = RailExpedition.Instance;
         bool inRun = PhotonSession.OnTrain && PhotonSession.Instance != null && PhotonSession.Instance.WorldReady &&
                      PhotonSession.Phase == RailPhase.Running && run != null;
-        bool active = ShouldRun(inRun, inRun && run.State.bridgeAt > 0, inRun && run.State.finished);
+        bool active = ShouldRun(inRun, inRun && run.State.BridgeProgress(PhotonNetwork.Time) >= 1, inRun && run.State.finished);
         double now = Time.realtimeSinceStartupAsDouble;
 
         if (playing && !handle.IsPlaying) { playing = false; nextAt = NextStart(now, RailAudio.Bank != null ? RailAudio.Bank.bridgeSirenGap : 5f); }
