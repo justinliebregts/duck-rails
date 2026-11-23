@@ -22,6 +22,10 @@ public class ItemSounds : MonoBehaviour
     [Header("Impact sounds")]
     [Tooltip("Minimum relative speed into the surface in metres per second. Rejects gentle contacts and sliding.")]
     [Min(0f)] [SerializeField] float minimumImpactSpeed = 0.5f;
+    [Tooltip("Minimum speed into scenery while held. Zero disables held surface impacts.")]
+    [Min(0f)] [SerializeField] float minimumHeldImpactSpeed;
+    [Tooltip("Sound for held scenery strikes. Defaults to the drop sound if unassigned.")]
+    [SerializeField] SoundEvent heldSurfaceImpact;
     [Tooltip("Minimum time in seconds between impact sounds from this item.")]
     [Min(0f)] [SerializeField] float impactSoundCooldown = 0.1f;
     [Tooltip("Sound for striking zombies or other players, held or thrown. Leave empty to disable.")]
@@ -58,6 +62,24 @@ public class ItemSounds : MonoBehaviour
     float nextImpactTime = float.NegativeInfinity;
     float nextFleshImpactTime = float.NegativeInfinity;
     public bool FleshImpactReady => isActiveAndEnabled && fleshImpact != null && Time.time >= nextFleshImpactTime;
+
+    public bool TryPlayHeldSurfaceImpact(RaycastHit hit, float speed)
+    {
+        if (!isActiveAndEnabled || minimumHeldImpactSpeed <= 0f || speed < minimumHeldImpactSpeed ||
+            Time.time < nextImpactTime || grabbable == null || !grabbable.IsHeld || grabbable.IsStashed ||
+            (PhotonNetwork.InRoom && view != null && !view.IsMine))
+            return false;
+
+        SoundEvent sound = heldSurfaceImpact != null ? heldSurfaceImpact : Get(ItemSound.Drop);
+        if (sound == null || hit.collider == null ||
+            hit.collider.GetComponentInParent<Enemy>() != null ||
+            hit.collider.GetComponentInParent<PhotonPlayer>() != null)
+            return false;
+
+        nextImpactTime = Time.time + impactSoundCooldown;
+        RoomRpc.PlaySound(sound, hit.point);
+        return true;
+    }
 
     /// <summary>Called for a qualifying strike, including worn headbutts, independently of target knockback cooldowns.</summary>
     public void PlayFleshImpact(Vector3 position, Vector3 direction)

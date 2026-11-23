@@ -1,5 +1,10 @@
 # Playtest queue
 
+## Held shovel scenery impacts — queued for playtest, 2026-11-23
+
+- The held Scrap Duck shovel plays `ScrapShovel_SurfaceImpact` at a new solid contact when the shovel moves into the surface at 2 m/s or faster. The event chooses from the spade, the hammer and the first shield strike (trimmed to 1.70 s to retain its decay). Unity compiled and Edit Mode confirmed all three mono imports, prefab references and network registry registration.
+- On Quest, swing into a wall, floor and train prop with each hand. Check for one spatial clang per distinct hard strike, quiet gentle contacts and scrapes, and the usual flesh sound on enemies. Drop and throw the shovel to check loose impacts. With a second client nearby, confirm each clang is audible once at the point of impact.
+
 ## Items disappear when taken out of a bag in Compound — queued for playtest
 
 - Android 0.4.5 report `abe3b34ec6d841539fa7684b6a56082d` shows the Quackbear bag holding Huggy's flare gun, the Quackbear cupcake and the Scrap Duck shovel. After the wall pull and bag swap, the flare slot emptied as world readiness briefly dropped. The cupcake slot later emptied. The player confirmed the shovel also disappeared when withdrawn after uploading the report. Compound was treating fresh bag withdrawals as expedition leftovers. Bag withdrawals now use the same Compound lifetime as wall pulls. Stale-cargo diagnostics use the same retention check as cleanup.

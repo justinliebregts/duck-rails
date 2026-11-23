@@ -1,5 +1,7 @@
 # Duck Rails — V1 game design
 
+November 23 shovel audio: a hard swing into scenery while holding the Scrap Duck shovel plays one of three clangs at the contact point (spade, hammer or the first shield strike). The initial impact threshold is 2 m/s into the surface. [Queued for playtest](playtest-queue.md#held-shovel-scenery-impacts--queued-for-playtest-2026-11-23).
+
 November 23 sunny dawn (Justin): the successful-escape dawn should feel really
 sunny, not foggy or overcast. Supersedes "muted dawn, never daytime" and the
 overcast dawn below: blue sky with broken gold-lit clouds, a low warm sun
