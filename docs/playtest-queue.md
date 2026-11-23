@@ -1918,3 +1918,7 @@ Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Ver
 ## 5x train speed burns no fuel — queued 2026-11-23
 
 - [ ] With two clients in a private test run (dev build/editor), note the fuel gauge, toggle Train Speed to 5x from the pause menu, drive for a minute: fuel stays flat on both clients and a late joiner sees the same value. Toggle back to 1x: fuel resumes draining from the same value (no jump), and the train does not restart if it was stopped. Changed in `RailSessionRules.EvaluateTrain` (zero fuel per metre while `RailTestTools.FastTrainBurnsNoFuel`); the flag is the existing room property committed with the motion/fuel rebase, so all clients agree. Not compiled in Unity or run live.
+
+## Final bridge driving handoff — queued for playtest (2026-11-23)
+
+Drive partway across a lowered bridge, stop and restart. Confirm both clients retain controls until the front reaches the far bank at finale Z110. Check escape credit for riders, position continuity and a two-second ramp to 4 m/s from slow and fast approaches. Capture headset frame times across takeover and results display. An incomplete bridge should still crash at entry.

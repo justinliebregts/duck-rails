@@ -175,7 +175,7 @@ public static class RailTestTools
         // everyone aboard, shows results, runs the tunnel/dawn ride and returns the crew.
         Commit(new Hashtable {
             [RailExpedition.StateKey] = JsonUtility.ToJson(state),
-            [RailSessionRules.Motion] = new object[] { now, RailRoute.Instance.FinaleStart + 75, 4f, 4f },
+            [RailSessionRules.Motion] = new object[] { now, RailRoute.Instance.FinaleStart + 80 + RailExpedition.BridgeSpan - RailExpedition.TrainFrontOffset, RailTrain.Instance.Speed, 4f },
             [RailSessionRules.Fuel] = 100f,
             [RailSessionRules.Phase] = (int)RailPhase.Ending,
             [RailSessionRules.Deadline] = now + 32,

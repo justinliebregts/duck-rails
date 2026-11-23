@@ -933,3 +933,5 @@ November 18 loadout persistence (user request): moving between Compound and Expe
 Station Info displays five lifetime totals (individual attempts, individual escapes, coal gathered, gold gathered, and combined passenger kilometers), three weekly awards (most-looted stop by coal, deadliest zombie by duck downs, most-bonked zombie with hit count and most-used item), and the weekly and lifetime top ten escape artists side by side. First pickup of each original expedition coal or gold spawn earns collection credit. Exchanging the same item does not earn another credit. The server assigns new counter increases to the week it receives them, starting Monday at 00:00 UTC.
 
 Ordinary players capture persistent loading and departure failures. Master and client evidence share an incident ID. See [testing tools](testing-tools.md#paired-incidents).
+
+November 23 bridge finish. Players drive across the full lowered span. When the train front reaches the far bank, the crew aboard escapes and the train eases to 4 m/s over two seconds.

@@ -1040,3 +1040,5 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] Tales from the Rails is implemented on client and API. Station Info readability, real-client event attribution, reconnects and deployed end-to-end acceptance are queued in docs/playtest-queue.md.
 
 - [ ] Validate paired incident capture across real non-admin clients and Quest, including unavailable witnesses and upload retries. See [playtest queue](playtest-queue.md).
+
+- [ ] Verify the far-bank win and smooth two-second train takeover on two clients and a headset. See the final bridge entry in the playtest queue.

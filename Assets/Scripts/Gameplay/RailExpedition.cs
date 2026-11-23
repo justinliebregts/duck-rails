@@ -26,6 +26,9 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     public TMP_Text[] runningLabels;
     public Material explosionMaterial;
     public Game.AI.EnemyManager enemies;
+    public const float BridgeSpan = 30f, TrainFrontOffset = 5f;
+    RailRunState displayedResults;
+    int displayedCountdown;
     public float bridgeZ = 550;
     public int baseEnemyCount = 2;
     public DeathFlare flarePrefab;
@@ -309,20 +312,20 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (!allDown) next.allDownAt = 0;
         else if (next.allDownAt <= 0) next.allDownAt = now;
         var train = RailTrain.Instance;
-        if (train != null && train.transform.position.z + 5 >= bridgeZ)
+        if (train != null && train.transform.position.z + TrainFrontOffset >= bridgeZ)
         {
             if (next.BridgeProgress(now) < 1) next.Finish(now, "Bridge collision", Array.Empty<string>());
-            else next.Finish(now, "Bridge crossed", next.players.Where(p => IsConnected(p.actor) && Position(p.actor, out var point) && train.ContainsPadded(point)).Select(p => p.id));
+            else if (train.transform.position.z + TrainFrontOffset >= bridgeZ + BridgeSpan) next.Finish(now, "Bridge crossed", next.players.Where(p => IsConnected(p.actor) && Position(p.actor, out var point) && train.ContainsPadded(point)).Select(p => p.id));
         }
         if (!next.finished && next.allDownAt > 0 && now - next.allDownAt >= RailRunState.AllDownGrace)
             next.Finish(now, "Crew down", Array.Empty<string>());
         if (next.finished)
         {
             var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
-            float distance = train != null ? train.Distance : 0;
-            changes[RailSessionRules.Motion] = new object[] { now, distance, next.success ? 4f : 0f, next.success ? 4f : 0f };
+            RailSessionRules.EvaluateTrain(motion, PhotonSession.Get(RailSessionRules.Fuel, 100f), now, out float distance, out float speed, out float fuel);
+            changes[RailSessionRules.Motion] = new object[] { now, distance, next.success ? speed : 0f, next.success ? 4f : 0f };
             // Ending has a fuel budget far beyond its fixed 32-second ride.
-            changes[RailSessionRules.Fuel] = next.success ? 100f : PhotonSession.CurrentFuel;
+            changes[RailSessionRules.Fuel] = next.success ? 100f : fuel;
             changes[RailSessionRules.Phase] = (int)RailPhase.Ending;
             changes[RailSessionRules.Deadline] = now + 32;
             changes["rails.success"] = next.success;
@@ -658,9 +661,14 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         {
             int returnSeconds = RailSessionRules.ReturnCountdown(PhotonSession.Phase,
                 PhotonSession.Get(RailSessionRules.Deadline, 0d), now);
-            results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
-                (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
-                RailResultsTable.Build(State.players);
+            if (displayedResults != State || displayedCountdown != returnSeconds)
+            {
+                displayedResults = State;
+                displayedCountdown = returnSeconds;
+                results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
+                    (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
+                    RailResultsTable.Build(State.players);
+            }
             bool localAboard = Position(PhotonNetwork.LocalPlayer.ActorNumber, out var localPoint) && RailTrain.Instance.ContainsPadded(localPoint);
             if (caughtRun != State.run)
             { caughtRun = State.run; if (GR.Player.instance != null && !localAboard && !RailAdminTools.NoClip) TeleportAboard(); }
