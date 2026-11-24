@@ -6,7 +6,7 @@ public sealed class RailPublicTrainButton : MonoBehaviour
     public PressableButton button;
     public TMP_Text heading;
     public GameObject panel;
-    public const string Title = "Join in-progress\ntrain";
+    public const string Title = "Join a crew already on a train";
 
     void Awake() => button.onPressed.AddListener(Join);
     void OnDestroy() => button.onPressed.RemoveListener(Join);
