@@ -7,12 +7,15 @@
 - Changed: when the Final Bridge first reaches 100%, the master spawns one extra enemy per player in the room (`bridge-surge-N`). They head for the train and fall back on normal chase/boarding. See [final escape layout](final-escape-layout.md#bridge-surge-at-100). Edit Mode surge checks (12) and a player-define compile pass.
 - Check: run `RailBridgeSurgeLiveChecks.Start()` (two clients; output in `Temp/rails-bridge-surge/`). Both clients see exactly two surge enemies right after the thud and siren. They close on the stopped train with both ducks aboard. A peer who leaves and rejoins by code sees the same two, and no more spawn. On headset with a full crew, judge the pressure and check that the enemies do not stack at their spawn points.
 
-
 ## Canyon terrain optimization | queued for playtest
 
 Confirm the ground beneath the camp and winch is visible from the train, both bridges and the opposite rim in a headset build.
 
 Walk both switchbacks, cross the broad rim faces with a carried item, and inspect the shaft lips and cave mouths at headset eye height. Follow the coarser mine floor through the gallery and look up along the roof. Check for collision snags, daylight cracks, stretched sandstone bands and baked lighting seams. Compare headset frame timing from the same bridge viewpoint with the previous build.
+
+## Held item names in diagnostics | queued for playtest
+
+Hold the shovel while a peer holds another item. Submit a report and check that the snapshot and recent history identify both held items by prefab name, holder and network view ID.
 
 ## Canyon loot, encounters and ambient audio | queued for playtest
 
@@ -184,6 +187,11 @@ Editor evidence includes successful compilation, saved Compound placement, CuteP
   - **Evening: fix implemented (Justin approved), commit `ae7fdf3f9`.** `PhotonMasterHandoff.Settle.cs` plus `PhotonNetwork.SkipRoomViewIds` in `PhotonNetworkPart.cs`. Two-client re-run: faults 0, 1 and 2 PASS, with zero duplicates, each marker present once and identical inventories. The two-client departure, handoff and reconnect regression still passes. A second simulated transport fault in the same process does not disconnect it; that is a fixture limitation. **Still needs:** a three-client rerun (paused because it crashes Unity) and a headset run. [Details](validation/playtest-queue/2026-11-21-queue/departure-settle.md#fix-and-re-run--november-21-evening-justin-approved-the-proposal)
 
 ## Tales from the Rails — queued for playtest
+
+- Verify that a new public departure, private run and Editor quick-start each assign a 32-character lowercase hexadecimal expedition ID. For a public departure, check that both clients join the same train and their board reports use the same ID.
+
+- November 23: Quest 0.5.2 saved six pending reports, including an 846 m escape. The oldest pending report used a public departure ID (`run-` plus 32 hex digits), which the API rejected before storing any counters. The API fix accepts that form and stores its canonical 32-digit ID. After rollout, keep the same signed-in install online, confirm the saved queue drains, and compare the refreshed distance, escape totals and rankings. Recovery is queued for playtest.
+- November 23, single-headset recovery verified against the existing API: corrected three prefixed IDs in six saved pending reports on Quest 0.5.2. The game's signed uploader drained the queue from six to zero. Compound board rendering and automatic recovery on the updated API remain queued for playtest.
 
 - Use two signed-in Quest clients against the updated API. Read both complete leaderboards from the Station Info bench. Check long names and an empty weekly board.
 - Begin with one rider, join the other duck late, and have one leave the train for part of the trip. Check two attempts, individual distance, and only the ducks credited at the bridge appearing among the escape artists.
@@ -1788,6 +1796,10 @@ No new block conversion or device run occurred during this documentation task.
 
 
 ## Results
+
+### Grouped desktop checks, November 23 — report-only
+
+Two-client Photon coverage exercised crew-size changes, bridge lowering and surge, the stop/restart crossing, fuel continuity, and public departure. Three clients passed the baseline departure, acknowledged handoff, and non-master reconnect fixture. Offline and Edit Mode checks added seam pursuit and pickup coverage, and the live seeded-bag withdrawals survived cleanup. The blocked-landing crash retained all 31 watched views. One surge enemy missed the 25-second approach threshold, the boarding client's captured departure skipped “ALL ABOARD!”, and the session fixture failed its build-scene assertion. No fixes were made. Targeted cases that need more evidence remain queued. [Ten-item report and evidence](validation/playtest-queue/2026-11-23-grouped-report.md).
 
 ### Bridge, idle enemies and public crew return — November 20 RC
 

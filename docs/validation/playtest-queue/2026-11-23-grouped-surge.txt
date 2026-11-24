@@ -1,0 +1,85 @@
+main results
+2026-11-24T02:59:53.3575400Z STATE Joined room=90744 phase=Running run=e86b8d step=2 master=False ready=True players=2
+2026-11-24T03:00:00.5373123Z STATE Joined room=90744 phase=Running run=e86b8d step=3 master=False ready=True players=2
+2026-11-24T03:00:20.3992445Z STATE Joined room=90744 phase=Running run=e86b8d step=3 master=True ready=True players=2
+2026-11-24T03:00:30.8870233Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:32.8599735Z HOLD lever fixture on
+2026-11-24T03:00:32.9591658Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:35.0552469Z SAMPLE progress=0.130 moving=True
+2026-11-24T03:00:37.1161864Z SAMPLE progress=0.302 moving=True
+2026-11-24T03:00:39.2308587Z SAMPLE progress=0.478 moving=True
+2026-11-24T03:00:41.2434233Z SAMPLE progress=0.646 moving=True
+2026-11-24T03:00:43.3018003Z SAMPLE progress=0.817 moving=True
+2026-11-24T03:00:45.4034495Z SAMPLE progress=0.992 moving=True
+2026-11-24T03:00:45.5104842Z BRIDGE 100% observed; surge now=0 triggered=False stateCount=0
+2026-11-24T03:00:45.8394971Z SURGE complete after 0.33s bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False
+2026-11-24T03:00:45.8405015Z ACK step=3 surge=2 stateCount=2 pass=True surge at 100% bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False
+2026-11-24T03:00:45.9573623Z CASE 1 one surge enemy per player at 100%, seen by both clients PASS | main surge=2 state=2 surge at 100% bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False | player2 surge=2 state=2 surge at 100% bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False
+2026-11-24T03:00:46.0716752Z STATE Joined room=90744 phase=Running run=e86b8d step=4 master=True ready=True players=2
+2026-11-24T03:00:47.4241407Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-24.9, 8.0, 442.0) toTrain=38.7 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-30.8, 8.0, 442.5) toTrain=43.2 Wander aboard=False
+2026-11-24T03:00:49.4592276Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-25.5, 5.8, 437.3) toTrain=35.5 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-30.4, 8.0, 442.5) toTrain=42.9 Wander aboard=False
+2026-11-24T03:00:51.5350751Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-27.4, 4.0, 433.0) toTrain=34.0 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-29.7, 8.0, 443.3) toTrain=43.0 Wander aboard=False
+2026-11-24T03:00:53.6029689Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-27.5, 4.0, 427.7) toTrain=31.3 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-25.1, 8.0, 443.9) toTrain=40.4 Wander aboard=False
+2026-11-24T03:00:55.6619968Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-28.5, 3.5, 422.7) toTrain=30.2 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-24.5, 8.0, 442.6) toTrain=39.0 Wander aboard=False
+2026-11-24T03:00:58.0025492Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-28.3, 2.0, 419.7) toTrain=29.1 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-25.5, 7.0, 439.6) toTrain=37.3 Wander aboard=False
+2026-11-24T03:01:00.0285186Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-23.6, 2.0, 417.6) toTrain=24.0 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-26.0, 4.7, 435.1) toTrain=34.3 Wander aboard=False
+2026-11-24T03:01:02.0842548Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-19.9, 2.0, 415.5) toTrain=20.0 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-27.5, 4.0, 430.4) toTrain=32.6 Wander aboard=False
+2026-11-24T03:01:04.1300992Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-14.5, 2.0, 415.5) toTrain=14.8 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-27.9, 4.0, 425.2) toTrain=30.6 Wander aboard=False
+2026-11-24T03:01:06.1769172Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-7.5, 0.0, 414.5) toTrain=7.8 Chase aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-28.5, 2.4, 420.4) toTrain=29.5 Wander aboard=False
+2026-11-24T03:01:08.1991815Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-2.9, 0.9, 415.0) toTrain=3.6 Chase aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-24.4, 2.0, 418.3) toTrain=25.0 Wander aboard=False
+2026-11-24T03:01:10.2092660Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-1.1, 1.0, 414.5) toTrain=1.8 Chase aboard=True;bridge-surge-1 RailZombie owner=0 pos=(-21.1, 2.0, 415.5) toTrain=21.3 Wander aboard=False
+2026-11-24T03:01:11.1512571Z CASE 2 surge enemies close on the train; no duplicates FAIL | main surge=2 state=2 aggro bridge-surge-0 start=38.5 min=1.8;bridge-surge-1 start=46.4 min=18.9 | player2 surge=2 state=2 aggro bridge-surge-0 start=38.6 min=1.8;bridge-surge-1 start=46.5 min=19.4
+2026-11-24T03:01:11.2446991Z STATE Joined room=90744 phase=Running run=e86b8d step=5 master=True ready=True players=2
+2026-11-24T03:01:11.4567061Z STATE Joined room=90744 phase=Running run=e86b8d step=5 master=True ready=True players=1
+2026-11-24T03:01:18.3045527Z STATE Joined room=90744 phase=Running run=e86b8d step=5 master=True ready=True players=2
+2026-11-24T03:01:27.4258922Z CASE 3 late rejoin sees the same surge; no respawn or recount PASS | main surge=2 state=2 peer back bridge-surge-0 RailZombie owner=0 pos=(-1.1, 1.0, 414.5) toTrain=1.8 Chase aboard=True;bridge-surge-1 RailZombie owner=0 pos=(-1.6, 1.0, 415.1) toTrain=2.7 Retreat aboard=False | player2 surge=2 state=2 rejoined bridge-surge-1 RailZombie owner=0 pos=(-1.6, 1.0, 415.1) toTrain=2.7 Retreat aboard=False;bridge-surge-0 RailZombie owner=0 pos=(-1.1, 1.0, 414.5) toTrain=1.8 Chase aboard=True
+2026-11-24T03:01:27.5340069Z STATE Joined room=90744 phase=Running run=e86b8d step=6 master=True ready=True players=2
+2026-11-24T03:01:27.5340069Z FAIL 1 case(s) COMPLETE
+player2 results
+2026-11-24T02:59:53.2845765Z STATE Joined room=90744 phase=Running run=e86b8d step=2 master=True ready=True players=2
+2026-11-24T03:00:00.4694332Z STATE Joined room=90744 phase=Running run=e86b8d step=3 master=True ready=True players=2
+2026-11-24T03:00:00.4711770Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:02.5165410Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:04.5538908Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:06.5632622Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:08.6362875Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:10.7013494Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:12.7423542Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:14.8198926Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:16.8706925Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:18.9279421Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:20.3865819Z STATE Joined room=90744 phase=Running run=e86b8d step=3 master=False ready=True players=2
+2026-11-24T03:00:21.0399854Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:23.0956906Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:25.1704740Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:27.1858197Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:29.2448984Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:31.2789165Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:33.2956079Z SAMPLE progress=0.000 moving=False
+2026-11-24T03:00:35.3093702Z SAMPLE progress=0.151 moving=True
+2026-11-24T03:00:37.3576555Z SAMPLE progress=0.322 moving=True
+2026-11-24T03:00:39.3876397Z SAMPLE progress=0.491 moving=True
+2026-11-24T03:00:41.4516066Z SAMPLE progress=0.663 moving=True
+2026-11-24T03:00:43.5374698Z SAMPLE progress=0.837 moving=True
+2026-11-24T03:00:45.5814776Z BRIDGE 100% observed; surge now=0 triggered=False stateCount=0
+2026-11-24T03:00:45.9204723Z SURGE complete after 0.34s bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False
+2026-11-24T03:00:45.9204723Z ACK step=3 surge=2 stateCount=2 pass=True surge at 100% bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False
+2026-11-24T03:00:46.0318356Z STATE Joined room=90744 phase=Running run=e86b8d step=4 master=False ready=True players=2
+2026-11-24T03:00:46.0338831Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False
+2026-11-24T03:00:48.0823467Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-25.1, 7.6, 441.0) toTrain=38.1 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-30.4, 8.0, 442.5) toTrain=42.9 Wander aboard=False
+2026-11-24T03:00:50.1536671Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-25.5, 5.3, 436.2) toTrain=34.7 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-30.5, 8.0, 442.5) toTrain=42.9 Wander aboard=False
+2026-11-24T03:00:52.2202858Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-27.4, 4.0, 431.8) toTrain=33.4 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-28.7, 8.0, 442.7) toTrain=41.8 Wander aboard=False
+2026-11-24T03:00:54.2779785Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-27.5, 4.0, 426.5) toTrain=30.7 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-24.2, 8.0, 444.8) toTrain=40.5 Wander aboard=False
+2026-11-24T03:00:56.3374397Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-28.5, 3.0, 421.6) toTrain=29.8 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-25.3, 8.0, 441.7) toTrain=38.8 Wander aboard=False
+2026-11-24T03:00:58.4250099Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-27.8, 2.0, 419.6) toTrain=28.5 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-25.5, 6.7, 439.1) toTrain=36.9 Wander aboard=False
+2026-11-24T03:01:00.4930855Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-23.1, 2.0, 417.1) toTrain=23.5 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-26.4, 4.5, 434.6) toTrain=34.3 Wander aboard=False
+2026-11-24T03:01:02.5303497Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-19.3, 2.0, 415.5) toTrain=19.5 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-27.5, 4.0, 429.8) toTrain=32.3 Wander aboard=False
+2026-11-24T03:01:04.6016833Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-13.9, 2.0, 415.5) toTrain=14.1 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-28.3, 4.0, 424.7) toTrain=30.7 Wander aboard=False
+2026-11-24T03:01:06.6334044Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-6.4, 0.0, 414.5) toTrain=6.8 Chase aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-28.5, 2.1, 419.9) toTrain=29.3 Wander aboard=False
+2026-11-24T03:01:08.7312078Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-2.4, 1.0, 415.0) toTrain=3.2 Chase aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-23.8, 2.0, 417.8) toTrain=24.3 Wander aboard=False
+2026-11-24T03:01:10.8135982Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-1.1, 1.0, 414.5) toTrain=1.8 Chase aboard=True;bridge-surge-1 RailZombie owner=0 pos=(-20.1, 2.0, 415.5) toTrain=20.3 Wander aboard=False
+2026-11-24T03:01:11.2441599Z STATE Joined room=90744 phase=Running run=e86b8d step=5 master=False ready=True players=2
+2026-11-24T03:01:18.2717384Z STATE Joined room=90744 phase=Running run=e86b8d step=5 master=False ready=False players=2
+2026-11-24T03:01:23.8276761Z STATE Joined room=90744 phase=Running run=e86b8d step=5 master=False ready=True players=2
+2026-11-24T03:01:27.4383752Z STATE Joined room=90744 phase=Running run=e86b8d step=6 master=False ready=True players=2
+2026-11-24T03:01:27.4393818Z DONE COMPLETE
