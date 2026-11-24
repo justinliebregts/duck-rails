@@ -13,7 +13,7 @@ public static class RailResourceBalanceChecks
         var blocks = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/DuckRails/Blocks" })
             .Select(id => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(id)).GetComponent<RailBlock>())
             .Where(b => b != null && b.allowedInNormalRuns).ToArray();
-        Check(blocks.Length == 4, "Four normal blocks");
+        Check(blocks.Length == 5, "Five normal blocks (Container Yard, Convenience Store, Farm Silos, Roadside Motel, Skyscraper Works)");
         for (int crew = 1; crew <= 8; crew++)
         {
             int coal = RailResourceBalance.CoalCount(crew), gold = RailResourceBalance.GoldCount(crew);
