@@ -1,6 +1,7 @@
 # Duck Rails — execution plan
 
 - [ ] Canyon mine revision is queued for headset traversal, visual seam and bridge review. See [Canyon layout](canyon-layout.md) and the [playtest queue](playtest-queue.md).
+- [x] Reduce the Canyon terrain to 4,654 triangles per render and collision representation. Comparing 74,551 surface samples with the previous mesh found a maximum height change of 1.8 cm.
 
 - [ ] Public train panel is installed. Verify public-only matchmaking, no-match recovery and headset reach with real clients. See [playtest queue](playtest-queue.md#public-train-join-panel).
 
@@ -471,6 +472,7 @@ November 3 art-test utility: implemented Page Down block skip using the existing
 - [x] Revise mine drawing to [V4 staggered pits and crane](quarry-layout.md#v4--staggered-pits-and-crane), retaining three branching underground connections and lit office. User endorsed V3's concept; V4 exact offsets/crane placement remain drawing proposals.
 
 - [x] Review and build the approved [Canyon rough block](canyon-layout.md) with bridges, wall paths, worker routes, caves and creek. Catalogue, navigation and lighting checks passed. Raider Legends rope reuse, real-client/headset traversal and performance remain pending.
+- [x] Author Canyon's tunnel-weighted loot, underground enemies, local ambient sounds and southwest shaft rustle. The full crawlgraph was rebaked and the saved pools passed 800 crew/seed selections in Edit Mode. Headset audio and encounter traversal are queued for playtest.
 
 - [x] User approved Farm Silos V3 for 3D with apple trees. Install rough Quackville farm, four-level farmhouse and nine apple trees; preserve rail/loot/enemy contracts and bake offline navigation/lighting. See [implementation and validation](farm-silos-layout.md#installed-rough-blockout).
 - [ ] Review farm stairs, basement recovery, attic headroom, hay-to-roof climbing/descent, corn visibility and apple-tree scale on headset; complete real-client and Quest performance acceptance.

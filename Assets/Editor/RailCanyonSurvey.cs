@@ -60,7 +60,7 @@ public static class RailCanyonSurvey
             if (renderer.name.EndsWith("_solid", StringComparison.Ordinal))
                 renderer.gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;
             renderer.receiveGI = ReceiveGI.Lightmaps;
-            renderer.scaleInLightmap = .38f;
+            renderer.scaleInLightmap = SurveyLightmapScale(renderer.name);
             GameObjectUtility.SetStaticEditorFlags(renderer.gameObject, StaticEditorFlags.ContributeGI | StaticEditorFlags.BatchingStatic);
         }
         ApplyGeology(shell);
@@ -78,6 +78,18 @@ public static class RailCanyonSurvey
         RailCanyon.InstallMineReverb(shell);
         RailCanyon.InstallGorgeReverb(shell);
         RailCanyonContactAudio.Apply(shell);
+    }
+
+    public static float SurveyLightmapScale(string meshName)
+    {
+        string group=meshName.Split('_')[0];
+        return group switch
+        {
+            "Sandstone talus" or "Rim sandstone shelves" or "Descent sandstone" or
+            "Winch mine boulders" or "South rim scatter" or "Weathered rim outcrops" or "Creek stones" or
+            "Shaft ledges and fallen rock" => 1.4f,
+            _ => .38f
+        };
     }
 
     public static void AddRimFenceCollisionAndTrapLight(Transform works)
@@ -174,7 +186,7 @@ public static class RailCanyonSurvey
         {
             var renderer = f.GetComponent<MeshRenderer>();
             if (f.name.StartsWith("Rim ", StringComparison.Ordinal)) { renderer.sharedMaterial = rim; continue; }
-            var src = f.sharedMesh;
+            var src = f.GetComponent<MeshCollider>().sharedMesh;
             if (!saved.TryGetValue(src.name, out var bedded))
             {
                 // Original render triangles and UV2 charts stay intact. X/Z drift gives the beds
@@ -186,13 +198,18 @@ public static class RailCanyonSurvey
                 else AssetDatabase.AddObjectToAsset(bedded, path);
                 saved.Add(src.name, bedded);
             }
-            EditorUtility.CopySerialized(src,bedded);
-            bedded.uv = src.vertices.Select(p => new Vector2(p.x * .17f + p.z * .13f,
-                p.y * .43f + .075f * Mathf.Sin(p.x * .63f + p.z * .39f))).ToArray();
-            EditorUtility.SetDirty(bedded);
+            CopyBeddedSurface(src,bedded);
             f.sharedMesh = bedded;
             renderer.sharedMaterial = rock;
         }
+    }
+
+    public static void CopyBeddedSurface(Mesh source, Mesh bedded)
+    {
+        RailCanyon.CopySurfaceMesh(source,bedded);
+        bedded.uv = source.vertices.Select(p => new Vector2(p.x * .17f + p.z * .13f,
+            p.y * .43f + .075f * Mathf.Sin(p.x * .63f + p.z * .39f))).ToArray();
+        EditorUtility.SetDirty(bedded);
     }
 
     static void ApplyBallast(Transform shell)

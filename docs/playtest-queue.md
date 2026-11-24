@@ -6,9 +6,21 @@
 - Check: run `RailBridgeSurgeLiveChecks.Start()` (two clients; output in `Temp/rails-bridge-surge/`). Both clients see exactly two surge enemies right after the thud and siren. They close on the stopped train with both ducks aboard. A peer who leaves and rejoins by code sees the same two, and no more spawn. On headset with a full crew, judge the pressure and check that the enemies do not stack at their spawn points.
 
 
+## Canyon terrain optimization | queued for playtest
+
+Confirm the ground beneath the camp and winch is visible from the train, both bridges and the opposite rim in a headset build.
+
+Walk both switchbacks, cross the broad rim faces with a carried item, and inspect the shaft lips and cave mouths at headset eye height. Follow the coarser mine floor through the gallery and look up along the roof. Check for collision snags, daylight cracks, stretched sandstone bands and baked lighting seams. Compare headset frame timing from the same bridge viewpoint with the previous build.
+
+## Canyon loot, encounters and ambient audio | queued for playtest
+
+Check the six added outdoor coal pickups for visibility and hand reach, especially the raised cable-yard pickup. Check encounters at both ends of the footbridge and on the survey approach after removal of the prototype markers.
+
+Run Canyon with a small crew and a full crew. Check pickup reach and enemy movement in the under-river passage, side pockets, gallery and both mine entrances. Listen for camp insects, creek water, trestle and winch creaks, and underground drips. Walk into the southwest leaf cover from either side and drop through it. Listen for one corn rustle on entry, silence during the rest of the fall, and a new rustle on the next entry. Check the mix and localization on headset.
+
 ## Canyon rim rocks, timber fences and trap lantern | queued for playtest
 
-Inspect the sandstone silhouettes from both bridges, follow both side fences through the block seams with an item, and drop through the southwest cover to judge landing clearance and the faint ground light on headset.
+Check the camp and winch talus for bright or black lighting patches, look up at the capped rim rocks from the descent, carry items past the new shoulder boulders, inspect the new angular boulder silhouettes at eye level and from both bridges, follow both side fences through the block seams with an item, and drop through the southwest cover to judge landing clearance and the faint ground light on headset.
 
 ## Open canyon echo | queued for playtest, November 23, 2026
 
@@ -22,7 +34,7 @@ Listen while descending both switchbacks, crossing the creek, entering a mine an
 
 - Approach the southwest shaft through the cable yard. Check how the ground cover reads at headset eye height, check the scattered rocks, fall through with a carried item and look up for daylight through the foliage. Inspect the five ledges and judge the cold blue light at both ends and the middle of the under-river tunnel. Enter all three side rooms carrying an item and check the dim blue-green lighting in both arms of the gallery junction.
 
-- Drop down both shafts with a carried item. Follow the dark under-river passage into the gallery and walk out of both timbered exits. Check ledge recovery, rockfall hand clearance and the dry east bank.
+- Drop down both shafts with a carried item. In the northwest chamber, inspect compressor saddle and skid contact at low eye height and check clearance around the ore cart, compressor and rock piles while carrying an item to the gallery. Follow the dark under-river passage into the gallery and walk out of both timbered exits. Check ledge recovery, rockfall hand clearance and the dry east bank.
 - Inspect the north winch from above and indoors, the southwest rocks, cactus elbows and exterior lanterns. Cross both bridges in both directions, use both stair runs and check every landing for flicker at headset eye height.
 
 ## Deep night before the mid shop — queued 2026-11-23

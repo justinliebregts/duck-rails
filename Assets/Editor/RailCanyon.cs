@@ -166,8 +166,24 @@ public static class RailCanyon
     static Mesh Save(string name,Mesh m)
     {
         m.name=name;string path=Folder+"/Meshes/"+name+".asset";var old=AssetDatabase.LoadAssetAtPath<Mesh>(path);
-        if(old){old.Clear();old.indexFormat=m.indexFormat;old.vertices=m.vertices;old.normals=m.normals;old.uv=m.uv;old.uv2=m.uv2;old.subMeshCount=m.subMeshCount;for(int i=0;i<m.subMeshCount;i++)old.SetTriangles(m.GetTriangles(i),i);old.bounds=m.bounds;old.UploadMeshData(false);Object.DestroyImmediate(m);EditorUtility.SetDirty(old);return old;}
+        if(old){CopySurfaceMesh(m,old);Object.DestroyImmediate(m);return old;}
         AssetDatabase.CreateAsset(m,path);return m;
+    }
+    // Replacing serialized mesh fields alone can leave the renderer using stale GPU indices.
+    // Write through the Mesh API so live prefab and scene instances see the same surface.
+    public static void CopySurfaceMesh(Mesh source,Mesh destination)
+    {
+        destination.Clear();
+        destination.indexFormat=source.vertexCount>ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16;
+        destination.vertices=source.vertices;
+        destination.normals=source.normals;
+        destination.uv=source.uv;
+        destination.uv2=source.uv2;
+        destination.subMeshCount=source.subMeshCount;
+        for(int i=0;i<source.subMeshCount;i++) destination.SetTriangles(source.GetTriangles(i),i);
+        destination.bounds=source.bounds;
+        destination.UploadMeshData(false);
+        EditorUtility.SetDirty(destination);
     }
     static GameObject MeshGo(Transform p,string n,Mesh mesh,Material mat,bool collision=true)
     {var g=Group(p,n).gameObject;g.layer=6;g.AddComponent<MeshFilter>().sharedMesh=mesh;var r=g.AddComponent<MeshRenderer>();r.sharedMaterial=mat;r.receiveGI=ReceiveGI.Lightmaps;r.scaleInLightmap=.3f;GameObjectUtility.SetStaticEditorFlags(g,StaticEditorFlags.ContributeGI);if(collision)g.AddComponent<MeshCollider>().sharedMesh=mesh;return g;}
@@ -183,14 +199,98 @@ public static class RailCanyon
         readonly List<Vector3> v=new();readonly List<Vector2> uv=new();readonly List<int> tr=new();
         public void Quad(Vector3 a,Vector3 b,Vector3 c,Vector3 d)
         {int k=v.Count;v.AddRange(new[]{a,b,c,d});var n=Vector3.Cross(b-a,c-a).normalized;foreach(var q in new[]{a,b,c,d})uv.Add((Mathf.Abs(n.y)>.5f?new Vector2(q.x,q.z):Mathf.Abs(n.x)>.5f?new Vector2(q.z,q.y):new Vector2(q.x,q.y))/3);tr.AddRange(new[]{k,k+1,k+2,k,k+2,k+3});}
-        public void Build(Transform p,string n,Material mat,bool collision=true){if(v.Count==0)return;var m=new Mesh{indexFormat=IndexFormat.UInt32};m.SetVertices(v);m.SetUVs(0,uv);m.SetTriangles(tr,0);m.RecalculateNormals();Unwrapping.GenerateSecondaryUVSet(m);MeshGo(p,n,Save(n,m),mat,collision);}
+        public Mesh CreateMesh(string name)
+        {
+            if (v.Count == 0) return null;
+            var mesh = new Mesh { name = name, indexFormat = v.Count>ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16 };
+            mesh.SetVertices(v);
+            mesh.SetUVs(0,uv);
+            mesh.SetTriangles(tr,0);
+            mesh.RecalculateNormals();
+            if (!Unwrapping.GenerateSecondaryUVSet(mesh)) throw new InvalidOperationException("Lightmap unwrap failed for "+name);
+            return mesh;
+        }
     }
-    static void Terrain(Transform root)
+
+    // A layer has one material and one height at each covered grid position. Holes
+    // remain empty. Floors and ceilings are separate layers even where they overlap.
+    sealed class TerrainLayer
     {
-        var p=Group(root,"Terraced canyon and hollow caves");
+        const int Chunk = 16;
+        readonly bool[,] cells = new bool[Chunk,Chunk];
+        readonly float[,] heights = new float[Chunk+1,Chunk+1];
+        readonly int originX, originZ;
+
+        public TerrainLayer(int originX, int originZ, Func<float,float,float> height)
+        {
+            this.originX = originX;
+            this.originZ = originZ;
+            for (int z=0; z<=Chunk; z++)
+            for (int x=0; x<=Chunk; x++)
+                heights[x,z] = height(originX+x,originZ+z);
+        }
+
+        public void Add(int x,int z) => cells[x-originX,z-originZ] = true;
+
+        bool Fits(int x,int z,int width,int depth,float tolerance)
+        {
+            float a = heights[x,z], b = heights[x,z+depth];
+            float c = heights[x+width,z+depth], d = heights[x+width,z];
+            // Changing the diagonal of a twisted strip can move its middle even
+            // when every original vertex lies on the new perimeter.
+            if ((width>1 || depth>1) && Mathf.Abs(a+c-b-d)>tolerance) return false;
+            for (int dz=0; dz<=depth; dz++)
+            for (int dx=0; dx<=width; dx++)
+            {
+                float u = (float)dx/width, v = (float)dz/depth;
+                float y = v >= u ? a + v*(b-a) + u*(c-b) : a + u*(d-a) + v*(c-d);
+                // A large edge may adjoin several short ones, another chunk or a mine wall.
+                bool edge = dx==0 || dz==0 || dx==width || dz==depth;
+                if (Mathf.Abs(y-heights[x+dx,z+dz]) > (edge ? .00001f : tolerance)) return false;
+            }
+            return true;
+        }
+
+        public void AppendTo(Surface surface,int maxSpan,float tolerance,bool ceiling=false)
+        {
+            Vector3 Point(int x,int z) => new Vector3(originX+x,heights[x,z],originZ+z);
+            for (int z=0; z<Chunk; z++)
+            for (int x=0; x<Chunk; x++)
+            {
+                if (!cells[x,z]) continue;
+                int bestWidth=1, bestDepth=1, availableWidth=Math.Min(maxSpan,Chunk-x);
+                for (int depth=1; depth<=maxSpan && z+depth<=Chunk; depth++)
+                {
+                    int run=0;
+                    while (run<availableWidth && cells[x+run,z+depth-1]) run++;
+                    availableWidth=run;
+                    if (run==0) break;
+                    for (int width=run; width*depth>bestWidth*bestDepth; width--)
+                    {
+                        if (!Fits(x,z,width,depth,tolerance)) continue;
+                        bestWidth=width;
+                        bestDepth=depth;
+                        break;
+                    }
+                }
+                var a=Point(x,z); var b=Point(x,z+bestDepth);
+                var c=Point(x+bestWidth,z+bestDepth); var d=Point(x+bestWidth,z);
+                if (ceiling) surface.Quad(a,d,c,b);
+                else surface.Quad(a,b,c,d);
+                for (int dz=0; dz<bestDepth; dz++)
+                for (int dx=0; dx<bestWidth; dx++)
+                    cells[x+dx,z+dz]=false;
+            }
+        }
+    }
+
+    public static IEnumerable<Mesh> BuildTerrainMeshes()
+    {
         for(int zz=0;zz<160;zz+=16)for(int xx=-48;xx<48;xx+=16)
         {
-            var rim=new Surface();var cliff=new Surface();var underground=new Surface();
+            var rim=new TerrainLayer(xx,zz,Height); var cliff=new TerrainLayer(xx,zz,Height);
+            var floor=new TerrainLayer(xx,zz,CaveFloor); var roofLayer=new TerrainLayer(xx,zz,(x,z)=>CaveFloor(x,z)+2.7f);
+            var underground=new Surface();
             for(int z=zz;z<zz+16;z++)for(int x=xx;x<xx+16;x++)
             {
                 var a=new Vector3(x,Height(x,z),z);var b=new Vector3(x,Height(x,z+1),z+1);var c=new Vector3(x+1,Height(x+1,z+1),z+1);var d=new Vector3(x+1,Height(x+1,z),z);
@@ -198,11 +298,11 @@ public static class RailCanyon
                 Vector3 Floor(Vector3 v) => new(v.x,CaveFloor(v.x,v.z),v.z);
                 Vector3 cap=Vector3.up*2.7f;
                 bool roof=cave && Covered(x,z);
-                if(!shaft&&(!cave||roof))(low<-.01f?cliff:rim).Quad(a,b,c,d);
+                if(!shaft&&(!cave||roof))(low<-.01f?cliff:rim).Add(x,z);
                 if(cave)
                 {
-                    underground.Quad(Floor(a),Floor(b),Floor(c),Floor(d));
-                    if(roof&&!shaft)underground.Quad(Floor(a)+cap,Floor(d)+cap,Floor(c)+cap,Floor(b)+cap);
+                    floor.Add(x,z);
+                    if(roof&&!shaft)roofLayer.Add(x,z);
                     Edge(x-1,z,a,b);Edge(x,z+1,b,c);Edge(x+1,z,c,d);Edge(x,z-1,d,a);
                     void Edge(int nx,int nz,Vector3 u,Vector3 v)
                     {
@@ -214,9 +314,27 @@ public static class RailCanyon
                     }
                 }
             }
-            rim.Build(p,"Rim "+xx+" "+zz,sand);cliff.Build(p,"Cliff "+xx+" "+zz,rock);underground.Build(p,"Cave "+xx+" "+zz,rock);
+            var rimSurface=new Surface();
+            var cliffSurface=new Surface();
+            rim.AppendTo(rimSurface,16,.08f);
+            cliff.AppendTo(cliffSurface,8,.08f);
+            floor.AppendTo(underground,8,.04f);
+            roofLayer.AppendTo(underground,8,.04f,true);
+            string suffix=" "+xx+" "+zz;
+            foreach(var mesh in new[]{rimSurface.CreateMesh("Rim"+suffix),cliffSurface.CreateMesh("Cliff"+suffix),underground.CreateMesh("Cave"+suffix)})
+                if(mesh) yield return mesh;
         }
-        var creek=new Surface();for(int x=-40;x<40;x++){float a=Creek(x),b=Creek(x+1);creek.Quad(new(x,-12.06f,a-1.8f),new(x,-12.06f,a+1.8f),new(x+1,-12.06f,b+1.8f),new(x+1,-12.06f,b-1.8f));}creek.Build(root,"Shallow creek surface",water,false);
+    }
+
+    static void Terrain(Transform root)
+    {
+        var p=Group(root,"Terraced canyon and hollow caves");
+        foreach(var mesh in BuildTerrainMeshes())
+        {
+            string name=mesh.name;
+            MeshGo(p,name,Save(name,mesh),name.StartsWith("Rim ") ? sand : rock);
+        }
+        var creek=new Surface();for(int x=-40;x<40;x++){float a=Creek(x),b=Creek(x+1);creek.Quad(new(x,-12.06f,a-1.8f),new(x,-12.06f,a+1.8f),new(x+1,-12.06f,b+1.8f),new(x+1,-12.06f,b-1.8f));}const string creekName="Shallow creek surface";MeshGo(root,creekName,Save(creekName,creek.CreateMesh(creekName)),water,false);
         var terraces=Group(root,"Exploration landings");for(int i=0;i<Landings.Length;i++)Group(terraces,"Plateau "+(i+1)).localPosition=Landings[i];
     }
     static void Railway(Transform root)

@@ -32,6 +32,7 @@ public static class RailCanyonChecks
         try
         {
             var b=Object.FindFirstObjectByType<RailBlock>();var root=RailBlock.FindEnvironment(b.transform,RailCanyon.RootName);
+            CheckRimRendering(root);
             Check(b.id==RailCanyon.Id&&b.length==160&&b.entry.localPosition==Vector3.zero&&b.exit.localPosition==new Vector3(0,0,160),"Canyon identity and seams");
             Check(b.track.Length==81&&b.track.Select((p,i)=>p==new Vector3(0,0,i*2)).All(v=>v),"Straight level track");
             for(int z=0;z<160;z+=2)foreach(float x in new[]{-2f,0f,2f})Walk(new(x,0,z+.1f),"Rail deck "+x+"/"+z);
@@ -89,7 +90,31 @@ public static class RailCanyonChecks
             Check(b.GetComponentsInChildren<Light>().Length==RailCanyon.LightCount&&b.GetComponentsInChildren<Light>().All(l=>l.lightmapBakeType==LightmapBakeType.Baked),"Canyon baked fixtures");
             var g=CrawlGraph.Load(b.graph);Check(g!=null&&g.NodeCount>100,"Offline graph exists");
             foreach(var v in b.spawnCandidatesMigrated?new[]{b.spawnCandidates}:b.variations)
-            {Check(b.spawnCandidatesMigrated ? v.coal.Length==18 && v.enemies.Length==18 && v.gold.Length==6 : v.coal.Length==6 && v.enemies.Length==6 && v.gold.Length==2,"Saved candidate counts");foreach(var t in v.coal.Concat(v.enemies).Concat(v.gold)){Check(Physics.Raycast(t.position,Vector3.down,1.5f,1<<6,QueryTriggerInteraction.Ignore),"Spawn support "+t.name+" "+t.position);Check(!Physics.CheckSphere(t.position+Vector3.up*.5f,.35f,1<<6,QueryTriggerInteraction.Ignore),"Spawn clearance "+t.name+" "+t.position);}foreach(var t in v.enemies)Check(b.enemyBounds.Contains(t.position)&&g.FindNearestGroundNode(t.position,2)>=0,"Enemy landing navigable "+t.position);}
+            {
+                if (b.spawnCandidatesMigrated)
+                {
+                    bool InMine(Transform t)
+                    {
+                        var p = b.transform.InverseTransformPoint(t.position);
+                        return RailCanyon.Cave(p.x,p.z) && Mathf.Abs(p.y-RailCanyon.CaveFloor(p.x,p.z)) < 1;
+                    }
+                    Check(v.coal.Length >= RailResourceBalance.CoalCount(8) && v.gold.Length >= RailResourceBalance.GoldCount(8), "Full crew loot capacity");
+                    Check(v.coal.Count(InMine)*2 > v.coal.Length && v.gold.Count(InMine)*2 > v.gold.Length, "Majority of coal and gold candidates in mines");
+                    Check(v.enemies.Any(InMine) && v.enemies.Any(t => !InMine(t)), "Mine and exterior enemy candidates");
+                }
+                foreach (var t in v.coal.Concat(v.enemies).Concat(v.gold))
+                {
+                    Check(Physics.Raycast(t.position,Vector3.down,1.5f,1<<6,QueryTriggerInteraction.Ignore),"Spawn support "+t.name+" "+t.position);
+                    Check(!Physics.CheckSphere(t.position+Vector3.up*.5f,.35f,1<<6,QueryTriggerInteraction.Ignore),"Spawn clearance "+t.name+" "+t.position);
+                }
+                foreach (var t in v.enemies)
+                    Check(b.enemyBounds.Contains(t.position) && g.FindNearestGroundNode(t.position,.8f)>=0,"Enemy landing navigable "+t.position);
+            }
+            var canopy = b.GetComponentsInChildren<Game.Audio.FoliageVolume>().Single(v => v.rustleOnEntry);
+            Check(canopy.rustle == AssetDatabase.LoadAssetAtPath<Game.Audio.SoundEvent>("Assets/Audio/Events/Impact/Foliage_CornRustle.asset")
+                && canopy.Contains(new Vector3(-11,1.6f,41)) && canopy.Contains(new Vector3(-11,-1,41))
+                && !canopy.Contains(new Vector3(-15,1,41)) && !canopy.Contains(new Vector3(-11,-4,41)),
+                "South shaft entry plays the corn rustle across the leaf cover");
             var nodes=RailCanyon.Landings.Select(p=>g.FindNearestGroundNode(p+Vector3.up*.2f,2)).ToArray();
             Check(nodes.All(n=>n>=0),"Every plateau has a ground graph node");
             if(nodes.All(n=>n>=0))
@@ -107,6 +132,57 @@ public static class RailCanyonChecks
             Debug.Log("CANYON CHECKS: "+lines.Count+" passed");
         }
         finally{File.WriteAllLines(Evidence+"/geometry-checks.txt",lines);}
+    }
+    // CPU mesh data and floor raycasts can both pass when a live mesh draws no triangles.
+    static void CheckRimRendering(Transform root)
+    {
+        var rims=root.Find("Terraced canyon and hollow caves").GetComponentsInChildren<MeshFilter>(true)
+            .Where(f=>f.name.StartsWith("Rim ",StringComparison.Ordinal)).ToArray();
+        var layers=rims.Select(f=>f.gameObject.layer).ToArray();
+        var cameraObject=new GameObject("Canyon ground visibility check") { hideFlags=HideFlags.HideAndDontSave };
+        var camera=cameraObject.AddComponent<Camera>();
+        var target=RenderTexture.GetTemporary(640,1024,24);
+        var pixels=new Texture2D(target.width,target.height,TextureFormat.RGB24,false);
+        var previous=RenderTexture.active;
+        try
+        {
+            foreach(var f in rims) f.gameObject.layer=31;
+            camera.cullingMask=1<<31;
+            camera.transform.SetPositionAndRotation(new Vector3(0,10,80),Quaternion.Euler(90,0,0));
+            camera.orthographic=true;
+            camera.orthographicSize=84;
+            camera.clearFlags=CameraClearFlags.SolidColor;
+            camera.backgroundColor=Color.magenta;
+            camera.targetTexture=target;
+            camera.Render();
+            RenderTexture.active=target;
+            pixels.ReadPixels(new Rect(0,0,target.width,target.height),0,0);
+            var background=pixels.GetPixel(0,0);
+            Check(rims.Length>0 && background.r>.8f && background.b>.8f && background.g<.2f,"Ground render background control");
+            foreach(var f in rims)
+            {
+                var vertices=f.sharedMesh.vertices;
+                var indices=f.sharedMesh.triangles;
+                bool visible=indices.Length>0;
+                for(int i=0;i<indices.Length && visible;i+=3)
+                {
+                    var center=(vertices[indices[i]]+vertices[indices[i+1]]+vertices[indices[i+2]])/3;
+                    var p=camera.WorldToViewportPoint(f.transform.TransformPoint(center));
+                    var color=pixels.GetPixel((int)(p.x*target.width),(int)(p.y*target.height));
+                    visible=Mathf.Max(Mathf.Abs(color.r-background.r),Mathf.Abs(color.g-background.g),Mathf.Abs(color.b-background.b))>.1f;
+                }
+                Check(visible,"Visible ground triangles "+f.name);
+            }
+        }
+        finally
+        {
+            for(int i=0;i<rims.Length;i++) rims[i].gameObject.layer=layers[i];
+            RenderTexture.active=previous;
+            camera.targetTexture=null;
+            RenderTexture.ReleaseTemporary(target);
+            Object.DestroyImmediate(pixels);
+            Object.DestroyImmediate(cameraObject);
+        }
     }
     public static void Capture()
     {
