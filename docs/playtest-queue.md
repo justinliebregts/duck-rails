@@ -1,5 +1,9 @@
 # Playtest queue
 
+## Hospital ambient SFX and reverb | queued for playtest, November 24, 2026
+
+Load Hospital District through Test Block Order. Listen near the reception and upper north strip lights, middle rooftop HVAC unit and laundry washer bank. Check that each loop localizes to its fixture and fades on departure. Walk from reception to the upper surgery scrub sink and listen for the drip (14–32 seconds). Step through the courtyard and onto the roof to hear the indoor tail drop away. Listen near the rooftop duct for a rare metal creak (55–105 seconds). Visit the clinic exam sink and laundry pipes for their intermittent accents (30–65 seconds). Compare the pharmacy and laundry tails with footsteps or a shovel tap. Check that the quiet stretches feel eerie and crew voice and enemy cues stay clear.
+
 ## PC spectator | queued for playtest, November 24, 2026
 
 - Changed: Windows `DuckRailsSpectator.exe` joins live rooms as an invisible camera with no duck ([pc-spectator.md](pc-spectator.md)). Every build leaves it out of the crew through `RailSpectators`. Compile, spectator Edit Mode checks and existing session checks passed in batch mode; see the [ports entry](duckz-ports.md#pc-spectator--491b6f2-fcdff53-a6e6a40).

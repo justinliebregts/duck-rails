@@ -2,6 +2,12 @@
 
 November 4, 2026. The user approved the hospital drawings including the V4 south ER/surgery changes and requested the 3D build. The rough Quackville district is now installed; see implementation and validation below. This is a separate district, superseding the earlier combined construction/hospital study.
 
+## Hospital sound — November 24
+
+Four localized loops mark the reception and upper north strip lights, middle rooftop HVAC unit and laundry washer bank. Water drips at the upper surgery scrub sink and the clinic exam sink. The roof duct seam and laundry pipes occasionally creak. The drips and creaks are positional and intermittent. The scrub sink has the shortest interval (14–32 seconds) and the rooftop duct has the longest (55–105 seconds), leaving quiet stretches as players explore the abandoned campus.
+
+Four reverb boxes follow the two-storey hospital around the open courtyard. Clinic, pharmacy and laundry each have their own response. Pharmacy has the shortest decay (0.55 seconds) and laundry the longest (1.35 seconds). Saved-prefab checks resolved all eight emitter references through to their audio clips. Reverb sampling found 11 indoor positions inside the fades and 580 courtyard, railway and roof positions outside them. Listening is queued for playtest.
+
 ## Spawn distribution and round trees — November 23
 
 The hospital prefab has 64 coal candidates, 80 gold candidates and 32 enemy starts. Loot covers the staff garden, ambulance approaches, pharmacy, clinic, laundry yard, visitor transit, ground-floor departments, upper wards and roof equipment. Each quadrant has eight enemy candidates, including three existing railway starts across the block. Review the placements using Test Block Order. The hospital remains outside normal random rotation.
