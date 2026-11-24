@@ -1,5 +1,9 @@
 # Assisted block spawn placement
 
+## Eight-player capacity rule — every pass
+
+Justin, November 24, 2026: every spawn placement pass must leave the block with enough candidates for a full 8-player lobby. Today that is at least **93 coal** and **52 gold** usable (`RailSpawnPool.Available`) markers, the crew-8 values of `RailResourceBalance.CoalCount/GoldCount`, plus enemy pools that pass the 4/8/12 quadrant acceptance below. If tuning changes, recompute from those functions instead of trusting this number. Before declaring a block ready, run `RailRoute.SelectResources` for crews 1–8 and 100 seeds and require the exact count with unique markers. Replacing or removing markers must not take a block below the ceiling.
+
 ## Scope and reference
 
 Established November 8, 2026. The user approved the assisted placement approach demonstrated on Container Yard, Farm and Skyscraper Works. Stop after requested blocks; this is not authorization to populate the remaining catalogue. Resume when the user names the next block and desired counts.

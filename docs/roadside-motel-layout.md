@@ -186,6 +186,10 @@ Pre-commit crawl-graph rebake (November 12, explicitly requested): 27,836 nodes;
 
 November 12 evening queue run: the current prefab had six null baked-renderer bindings and prevented expedition readiness. Fix `3c64b55a4` re-exports the existing Motel lighting scene through the standard exporter, leaving **1,964 valid bindings**; the bake scene and lighting companion are unchanged. The same five-block route then reaches Running/WorldReady, including a third authenticated late joiner, with matching peer geometry/cargo/enemy inventories. This supersedes the 1,970-binding count above; it does not establish natural traversal, enemy pursuit or headset acceptance. See [queue evidence](validation/playtest-queue/2026-11-12-evening/run-notes.txt).
 
+## Eight-player coal capacity — November 24, 2026
+
+Tripled coal tuning needs 93 coal candidates for an eight-player crew; the motel had 48. Appended Coal 49–96 (existing markers, gold and enemies unchanged): two per guest room, five in motel services, three on change-room benches, one at the food vendor, four at the pool (both basins and loungers), eight across the golf greens, one in the golf shack, four at the rink/rental and ten in the arrival lot (five bus roofs as climb rewards). Pool is now 96 coal / 64 gold / 32 enemies; crews 1–8 select full counts. [Checks](validation/motel-leisure/coal-capacity-checks.txt). Hand reach, bus-roof climbing and headset performance are queued for playtest.
+
 ## Motel render consolidation pilot — November 13, 2026
 
 The user authorized a Motel-only optimization pilot with the current layout retained.

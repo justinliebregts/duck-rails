@@ -50,9 +50,10 @@ crew increase (accepted). Host handoff does not change N.
 - Spawn ceiling: floor(18 * E) chunks per scavenging block, at most 75 fuel total
   (solo 18, duo 28, three 39, four 50, eight 93).
 - Eight players: 93 chunks spawned, about 62 needed, about 0.80 fuel/chunk.
-- Capacity: Container Yard (168), Convenience Store (126), Farm (105) and Skyscraper (202)
-  hold the eight-player 93. Roadside Motel (48) runs short from four players (50) and
-  spawns what it has with a warning; it needs a placement pass for larger crews.
+- Capacity: every normal-run block holds the eight-player 93: Container Yard (168),
+  Convenience Store (126), Farm (105), Roadside Motel (96 after the November 24 pass,
+  [checks](validation/motel-leisure/coal-capacity-checks.txt)) and Skyscraper (202).
+  Every future placement pass must keep this ([rule](spawn-placement-workflow.md#eight-player-capacity-rule--every-pass)).
 - Physical coal stockpiling aboard/in bags is explicitly allowed. Surplus can earn
   skipped stops; no mandatory-stop rule. Excess fuel beyond the tank cap is discarded
   on insertion, retaining the existing consumption behavior.
@@ -108,9 +109,9 @@ Enemy counts and selection now follow the separately approved quadrant model.
 Undersized enabled resource pools emit a warning
 and use available distinct locations, without increasing item values.
 
-All four normal blocks have capacity for the eight-player maxima (31 coal/52 gold):
-Container Yard 168/142, Convenience Store 124/101, Farm 100/100 and Skyscraper 150/150
-usable coal/gold candidates. The finale has zero available coal/gold candidates.
+November 24: all five normal blocks have capacity for the eight-player maxima (93 coal/52 gold):
+Container Yard 168/142, Convenience Store 126/109, Farm 105/117, Roadside Motel 96/64 and
+Skyscraper 202/192 usable coal/gold candidates. The finale has zero available coal/gold candidates.
 Other catalogue blocks may need expanded pools before enabling normal runs at
 these budgets. No placement pass was performed in this change.
 
