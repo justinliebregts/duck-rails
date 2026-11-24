@@ -993,9 +993,40 @@ namespace Photon.Pun
 
         public static bool LocalCleanPhotonView(PhotonView view)
         {
-            RememberRemovedView(view.ViewID);
             view.removedFromLocalViewList = true;
+            // Never evict a different live view that now holds the same (reused or duplicated) ID.
+            if (!photonViewList.TryGetValue(view.ViewID, out PhotonView listed) || listed != view) return false;
+            RememberRemovedView(view.ViewID);
             return photonViewList.Remove(view.ViewID);
+        }
+
+        private static bool IsDuplicateRoomSpawn(PhotonView a, PhotonView b) =>
+            a.isRuntimeInstantiated && b.isRuntimeInstantiated && a.IsRoomView && b.IsRoomView &&
+            !string.IsNullOrEmpty(a.SpawnToken) && !string.IsNullOrEmpty(b.SpawnToken) && a.SpawnToken != b.SpawnToken;
+
+        private static bool IsNewerSpawn(PhotonView a, PhotonView b)
+        {
+            int age = unchecked(a.SpawnTimestamp - b.SpawnTimestamp); // server timestamps wrap
+            return age != 0 ? age > 0 : string.CompareOrdinal(a.SpawnToken, b.SpawnToken) > 0;
+        }
+
+        private static void RemoveCachedSpawn(PhotonView view)
+        {
+            removeFilter[keyByteSeven] = view.InstantiationId;
+            removeFilter[(byte)10] = view.SpawnToken;
+            ServerCleanOptions.CachingOption = EventCaching.RemoveFromRoomCache;
+            PhotonNetwork.RaiseEventInternal(PunEvent.Instantiation, removeFilter, ServerCleanOptions, SendOptions.SendReliable);
+        }
+
+        private static void DiscardLostDuplicateSpawn(GameObject go, PhotonView[] views)
+        {
+            for (int i = 0; i < views.Length; i++)
+            {
+                views[i].lostDuplicateSpawn = false;
+                views[i].ViewID = 0; // only unlists views registered by this spawn, never the winner
+            }
+            go.SetActive(false);
+            prefabPool.Destroy(go);
         }
 
         // Late reliable transfers/destroys are normal after a contested pickup is
@@ -1071,13 +1102,29 @@ namespace Photon.Pun
             if (isViewListed)
             {
                 // if some other view is in the list already, we got a problem. it might be indestructible. print out error
-                if (netView != listedView)
+                if (netView == listedView)
                 {
-                    Debug.LogError(string.Format("PhotonView ID duplicate found: {0}. New: {1} old: {2}. Maybe one wasn't destroyed on scene load?! Check for 'DontDestroyOnLoad'. Destroying old entry, adding new.", netView.ViewID, netView, listedView));
+                    return;
+                }
+
+                if (IsDuplicateRoomSpawn(netView, listedView))
+                {
+                    // Two clients briefly allocated room IDs during a master change. Every client (and every
+                    // late joiner replaying the cache) keeps the newer spawn, so they all agree on one object.
+                    bool newerWins = IsNewerSpawn(netView, listedView);
+                    PhotonView loser = newerWins ? listedView : netView;
+                    Debug.LogWarning(string.Format("Room PhotonView ID {0} was allocated twice. Keeping {1}, discarding {2}.", netView.ViewID, newerWins ? netView : listedView, loser));
+                    // The loser was never network-destroyed, so its instantiate would stay cached forever.
+                    if (PhotonNetwork.IsMasterClient) RemoveCachedSpawn(loser);
+                    if (!newerWins)
+                    {
+                        netView.lostDuplicateSpawn = true; // NetworkInstantiate returns it to the pool.
+                        return;
+                    }
                 }
                 else
                 {
-                    return;
+                    Debug.LogError(string.Format("PhotonView ID duplicate found: {0}. New: {1} old: {2}. Maybe one wasn't destroyed on scene load?! Check for 'DontDestroyOnLoad'. Destroying old entry, adding new.", netView.ViewID, netView, listedView));
                 }
 
                 RemoveInstantiatedGO(listedView.gameObject, true);

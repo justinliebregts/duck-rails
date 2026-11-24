@@ -3,7 +3,7 @@
 ## Duplicate room ViewID resolution | queued for playtest, November 24, 2026
 
 - Changed: when two clients allocate the same room ViewID during a master handoff, every client (and late joiners replaying the room cache) now keeps the newer spawn (server timestamp, then spawn token) and the master removes the loser's cached spawn event. A stale view can no longer unregister a live view with its ID ([duckz-ports.md](duckz-ports.md)).
-- Fast check: Duck Rails > Tests > Networking > Run Duplicate ViewID Checks (synthetic room, no Photon connection). Not yet run: the editor stayed in "compiling" and the check was only compiled with the command-line compiler.
+- Fast check: Duck Rails > Tests > Networking > Run Duplicate ViewID Checks (synthetic room, no Photon connection). Passed 49 assertions on November 24, 2026.
 - Two clients: hand off master (leave/stall the master) while enemies and items spawn; confirm both clients show the same object per ID, no "allocated twice" warning storms, and a client joining afterwards sees the same objects. Not verified.
 
 

@@ -1,5 +1,16 @@
 # Duckz port history
 
+## Duplicate room ViewIDs — 7973e241
+
+- Source SHA: `7973e241f7c46d5345118ccc4d689c944d5be393` (resolve duplicate room ViewIDs the same way on every client).
+- Status: implemented November 24, 2026. `DuplicateViewIdChecks` passed all 49 assertions in the Duck Rails editor (synthetic room). Not tested across two clients or on Quest: [queued for playtest](playtest-queue.md).
+- Engine/network: PUN 2 over Photon Realtime; the change is in the vendored PUN layer.
+- Destination: `PhotonView.cs` (`SpawnTimestamp`, `lostDuplicateSpawn`), `PhotonNetwork.cs` (stores the spawn timestamp, sends `parameters.timestamp` in the instantiate event, drops a spawn that lost the collision) and `PhotonNetworkPart.cs` (newer spawn wins by server timestamp then token, the master removes the loser's cached spawn, `LocalCleanPhotonView` only unregisters its own view). Check: `Assets/Editor/Checks/Networking/DuplicateViewIdChecks.cs` (menu item, no batch-only guard).
+- Not ported: the `EnemyManager` 1.5 s settle hold after gaining master (Rails has `PhotonMasterHandoff.Settle`; the spawn-hold half needs a separate decision), the matching `EnemyPopulationPlayChecks` edit and the Quest 2 device harness (`Tools/DuplicateViewIdValidation`). The check's spawn-hold cases were left out.
+- Remaining: two-client handoff with a late joiner, Quest build. Photon AppVersion is auto-bumped.
+- Destination commit: none yet.
+
+
 ## PC spectator — 491b6f2, fcdff53, a6e6a40
 
 - Source SHAs: `491b6f2a036d62c501e563727273c59286b063a8` (PC-only spectator build, fly camera, room list),

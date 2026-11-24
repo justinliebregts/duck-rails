@@ -2646,6 +2646,8 @@ namespace Photon.Pun
                 view.sceneViewId = 0;
                 view.isRuntimeInstantiated = true;
                 view.SpawnToken = parameters.spawnToken;
+                view.SpawnTimestamp = parameters.timestamp;
+                view.lostDuplicateSpawn = false;
                 view.lastOnSerializeDataSent = null;
                 view.lastOnSerializeDataReceived = null;
                 view.Prefix = parameters.objLevelPrefix;
@@ -2655,6 +2657,14 @@ namespace Photon.Pun
                 view.ViewID = parameters.viewIDs[i];    // with didAwake true and viewID == 0, this will also register the view
 
                 view.Group = parameters.group;
+            }
+
+            // An older spawn that collided with a newer one on the same room ViewID never goes live.
+            for (int i = 0; i < photonViews.Length; i++)
+            {
+                if (!photonViews[i].lostDuplicateSpawn) continue;
+                DiscardLostDuplicateSpawn(go, photonViews);
+                return null;
             }
 
             if (localInstantiate)
@@ -2730,7 +2740,8 @@ namespace Photon.Pun
                 SendInstantiateEvHashtable[keyByteEight] = currentLevelPrefix;    // photonview's / object's level prefix
             }
 
-            SendInstantiateEvHashtable[keyByteSix] = PhotonNetwork.ServerTimestamp;
+            // Must equal the local views' SpawnTimestamp so every client resolves duplicate IDs the same way.
+            SendInstantiateEvHashtable[keyByteSix] = parameters.timestamp;
             SendInstantiateEvHashtable[keyByteSeven] = instantiateId;
             SendInstantiateEvHashtable[(byte)10] = parameters.spawnToken;
             if (preserveOnCreatorLeave) SendInstantiateEvHashtable[(byte)9] = true;
