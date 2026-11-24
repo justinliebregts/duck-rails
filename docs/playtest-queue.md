@@ -1,5 +1,12 @@
 # Playtest queue
 
+## Duplicate room ViewID resolution | queued for playtest, November 24, 2026
+
+- Changed: when two clients allocate the same room ViewID during a master handoff, every client (and late joiners replaying the room cache) now keeps the newer spawn (server timestamp, then spawn token) and the master removes the loser's cached spawn event. A stale view can no longer unregister a live view with its ID ([duckz-ports.md](duckz-ports.md)).
+- Fast check: Duck Rails > Tests > Networking > Run Duplicate ViewID Checks (synthetic room, no Photon connection). Not yet run: the editor stayed in "compiling" and the check was only compiled with the command-line compiler.
+- Two clients: hand off master (leave/stall the master) while enemies and items spawn; confirm both clients show the same object per ID, no "allocated twice" warning storms, and a client joining afterwards sees the same objects. Not verified.
+
+
 ## Hospital ambient SFX and reverb | queued for playtest, November 24, 2026
 
 Load Hospital District through Test Block Order. Listen near the reception and upper north strip lights, middle rooftop HVAC unit and laundry washer bank. Check that each loop localizes to its fixture and fades on departure. Walk from reception to the upper surgery scrub sink and listen for the drip (14–32 seconds). Step through the courtyard and onto the roof to hear the indoor tail drop away. Listen near the rooftop duct for a rare metal creak (55–105 seconds). Visit the clinic exam sink and laundry pipes for their intermittent accents (30–65 seconds). Compare the pharmacy and laundry tails with footsteps or a shovel tap. Check that the quiet stretches feel eerie and crew voice and enemy cues stay clear.
@@ -2049,3 +2056,4 @@ In Compound, look for the Huggy flare's yellow glow and falling embers at the mu
 - Confirm the authenticated list and checkout charge 500 for the nail bat, 350 for night vision and 75 for the helmet with the companion config in a test environment.
 - Inspect all three capped supplies lights and the golden countdown. Check both Quack Mart window openings and surrounding solid surfaces. Check Container Yard edges from both banks, on board, and above stacked or angled containers.
 - Toggle the held cupcake repeatedly and observe it from a second headset. Verify the warm 14 m light and emission clear when switched off or stashed.
+- Held Quackbear cupcake flame, 2026-11-24. Edit Mode render of `Weapon_Quackbear` showed the candle emission lit after the material now uses `WeaponQuackbear_Emissive`. Toggle it in a headset and from a second client: the flame texture must show when on and be black when off or stashed. Two-client check not yet run.
