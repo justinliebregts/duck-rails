@@ -202,8 +202,10 @@ public sealed class RailDiagnostics : MonoBehaviour, Photon.Realtime.IOnEventCal
             if (view == null) continue;
             var item = view.GetComponent<PhotonGrabbable>(); var bag = view.GetComponent<BagObject>();
             if (item == null && bag == null && view.GetComponent<PhotonPlayer>() == null) continue;
+            int holder = item != null ? item.HeldActor : 0;
             objects.Add("view=" + view.ViewID + " owner=" + view.OwnerActorNr + " controller=" + view.ControllerActorNr +
-                " active=" + view.gameObject.activeInHierarchy + " held=" + (item != null ? item.HeldActor : 0) +
+                " active=" + view.gameObject.activeInHierarchy + " held=" + holder +
+                (holder != 0 ? " item=" + item.name.Replace("(Clone)", "").Trim() : "") +
                 " stashed=" + (item != null && item.IsStashed) + " bag=" + (bag != null ? bag.State.ToString() : "-") +
                 " contents=" + (bag != null ? string.Join(",", bag.Keys()) : "-") +
                 " position=" + view.transform.position.ToString("F2"));
