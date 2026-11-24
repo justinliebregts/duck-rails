@@ -71,6 +71,8 @@ public sealed class DuckzAnalytics : MonoBehaviour
         if (initializationAttempted)
             return;
         initializationAttempted = true;
+        // Spectator sessions are not player sessions: never initialised, so every event is dropped.
+        if (SpectatorMode.Active) return;
         // Editor calls are local previews, never uploads. Avoid the SDK's noisy stubs.
         if (Application.isEditor) { initialized = true; return; }
         var settings = GameAnalytics.SettingsGA;

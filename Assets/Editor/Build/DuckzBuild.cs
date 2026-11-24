@@ -48,14 +48,117 @@ public class DuckzBuildVersioning : IPreprocessBuildWithReport
     }
 }
 
+/// <summary>
+/// The PC spectator: a Windows player with DUCKZ_SPECTATOR defined (an invisible free camera that joins
+/// live rooms; see Assets/Scripts/Spectator). Release by default; Development adds the on-screen console.
+/// Build it from the same commit as the live Quest build: it only sees rooms with the same Photon version.
+/// </summary>
+public static class DuckzSpectatorBuild
+{
+    public const string Define = "DUCKZ_SPECTATOR";
+    public const string ExeName = "DuckRailsSpectator.exe";
+
+    /// <summary>
+    /// True while the spectator player builds. The block atlas guards (Rail*AtlasProduction) compare
+    /// fingerprints that include per-platform asset dependency hashes recorded for Android, so they
+    /// cannot pass on Windows; they skip for this build only and still guard every Quest build.
+    /// </summary>
+    public static bool InProgress { get; private set; }
+
+    public static string FolderName(bool development)
+    {
+        DuckzVersion.TryParse(PlayerSettings.bundleVersion, out int major, out int minor, out int patch);
+        return $"duckrails_spectator_{PlayerSettings.bundleVersion}_{DuckzVersion.BundleCode(major, minor, patch)}{(development ? "_dev" : "")}";
+    }
+
+    /// <summary>Builds to outputFolder/duckrails_spectator_[version]_[code][_dev]/DuckRailsSpectator.exe. The active platform must be Windows.</summary>
+    public static BuildReport Build(string[] scenes, string outputFolder, bool development = false)
+    {
+        if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64)
+            throw new BuildFailedException("Switch the platform to Windows before building the spectator.");
+        if (!DuckzVersion.TryParse(PlayerSettings.bundleVersion, out _, out _, out _))
+            throw new BuildFailedException($"Version '{PlayerSettings.bundleVersion}' must be major.minor.patch.");
+
+        // A Windows player needs its own folder for the _Data folder and DLLs beside the exe.
+        string folder = Path.Combine(outputFolder, FolderName(development));
+        if (Directory.Exists(folder)) Directory.Delete(folder, true);
+        Directory.CreateDirectory(folder);
+
+        BuildReport report;
+        InProgress = true;
+        try
+        {
+            report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
+            {
+                scenes = scenes,
+                locationPathName = Path.Combine(folder, ExeName),
+                target = BuildTarget.StandaloneWindows64,
+                options = development ? BuildOptions.Development : BuildOptions.None,
+                extraScriptingDefines = new[] { Define },
+            });
+        }
+        finally { InProgress = false; }
+
+        if (report.summary.result == BuildResult.Succeeded)
+            Debug.Log($"DuckZ Build: spectator {folder} ({report.summary.totalSize / (1024 * 1024)} MB) in {report.summary.totalTime:mm\\:ss}.");
+        else
+            Debug.LogError($"DuckZ Build: spectator {report.summary.result} with {report.summary.totalErrors} error(s).");
+        return report;
+    }
+
+    public static string[] EnabledScenes() => EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
+
+    [MenuItem("Tools/DuckZ/Build/Build PC Spectator (Windows)")]
+    static void BuildFromMenu()
+    {
+        string output = EditorPrefs.GetString(DuckzBuildWindow.OutputFolderPref, @"X:\Work\builds\duckz");
+        if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64)
+        {
+            EditorUtility.DisplayDialog("PC Spectator", "Switch the platform to Windows (File > Build Profiles) before building the spectator.", "OK");
+            return;
+        }
+        BuildReport report = Build(EnabledScenes(), output, EditorPrefs.GetBool(DuckzBuildWindow.DevelopmentPref, false));
+        if (report.summary.result == BuildResult.Succeeded) EditorUtility.RevealInFinder(report.summary.outputPath);
+    }
+
+    /// <summary>
+    /// Batch entry: Unity -batchmode -projectPath . -buildTarget Win64 -executeMethod DuckzSpectatorBuild.BuildFromCommandLine
+    /// -spectatorOutput "path" [-spectatorDevelopment] -quit -logFile build.log
+    /// </summary>
+    public static void BuildFromCommandLine()
+    {
+        string[] args = Environment.GetCommandLineArgs();
+        int at = Array.IndexOf(args, "-spectatorOutput");
+        string output = at >= 0 && at + 1 < args.Length ? args[at + 1] : Path.Combine(Path.GetDirectoryName(Application.dataPath), "Builds");
+        bool development = args.Contains("-spectatorDevelopment");
+        if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64 &&
+            !EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64))
+        {
+            Debug.LogError("DuckZ Build: could not switch to Windows for the spectator.");
+            EditorApplication.Exit(1);
+            return;
+        }
+        if (MetaSdkCameraRigTrackingBypass.EnsurePatched())
+        {
+            Debug.LogError("DuckZ Build: Meta SDK PackageCache patch re-applied; run the spectator build again after it recompiles.");
+            EditorApplication.Exit(2);
+            return;
+        }
+        BuildReport report = Build(EnabledScenes(), output, development);
+        EditorApplication.Exit(report.summary.result == BuildResult.Succeeded ? 0 : 1);
+    }
+}
+
 public class DuckzBuildWindow : EditorWindow
 {
-    const string OutputFolderPref = "DuckzBuild.OutputFolder";
-    const string DevelopmentPref = "DuckzBuild.Development";
+    public const string OutputFolderPref = "DuckzBuild.OutputFolder";
+    public const string DevelopmentPref = "DuckzBuild.Development";
+    const string SpectatorPref = "DuckzBuild.Spectator";
 
     string version;
     string outputFolder;
     bool development;
+    bool spectator;
 
     [MenuItem("Tools/DuckZ/Build/Open Build Window")]
     static void Open() => GetWindow<DuckzBuildWindow>("DuckZ Build");
@@ -65,10 +168,12 @@ public class DuckzBuildWindow : EditorWindow
         version = PlayerSettings.bundleVersion;
         outputFolder = EditorPrefs.GetString(OutputFolderPref, @"X:\Work\builds\duckz");
         development = EditorPrefs.GetBool(DevelopmentPref, false);
+        spectator = EditorPrefs.GetBool(SpectatorPref, false);
         DuckzSigningPasswords.RestoreEmptySessionPasswords();
     }
 
     static bool IsAndroid => EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android;
+    static bool IsWindows => EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows64;
 
     void OnGUI()
     {
@@ -94,10 +199,16 @@ public class DuckzBuildWindow : EditorWindow
             }
         }
         development = EditorGUILayout.Toggle("Development Build", development);
+        if (IsWindows)
+            spectator = EditorGUILayout.Toggle(new GUIContent("Spectator (PC)",
+                "Builds the PC spectator (free camera, no duck). Build it from the same commit as the live Quest build."), spectator);
+        else
+            EditorGUILayout.HelpBox("Switch the platform to Windows to build the PC spectator.", MessageType.None);
         if (EditorGUI.EndChangeCheck())
         {
             EditorPrefs.SetString(OutputFolderPref, outputFolder);
             EditorPrefs.SetBool(DevelopmentPref, development);
+            EditorPrefs.SetBool(SpectatorPref, spectator);
         }
 
         if (IsAndroid)
@@ -177,6 +288,13 @@ public class DuckzBuildWindow : EditorWindow
         }
 
         BuildTarget target = EditorUserBuildSettings.activeBuildTarget;
+        if (spectator && target == BuildTarget.StandaloneWindows64)
+        {
+            BuildReport spectatorReport = DuckzSpectatorBuild.Build(scenes, outputFolder, development);
+            if (spectatorReport.summary.result == BuildResult.Succeeded) EditorUtility.RevealInFinder(spectatorReport.summary.outputPath);
+            return;
+        }
+
         string extension = target == BuildTarget.Android ? ".apk" : target == BuildTarget.StandaloneWindows64 ? ".exe" : "";
         string fileName = $"duckrails_{PlayerSettings.bundleVersion}_{DuckzVersion.BundleCode(major, minor, patch)}{(development ? "_dev" : "")}{extension}";
         Directory.CreateDirectory(outputFolder);

@@ -51,7 +51,7 @@ public class PlayersMenu : MonoBehaviour, IInRoomCallbacks
             return;
         }
 
-        Player[] players = PhotonNetwork.PlayerList;
+        Player[] players = RailSpectators.Crew(PhotonNetwork.PlayerList);
         bool removed = RemoveMissingRows(players);
         bool added = false;
         for (int i = 0; i < players.Length; i++) {

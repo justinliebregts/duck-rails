@@ -80,10 +80,12 @@ public class PhotonVoiceChat : MonoBehaviour
         _client.Client.AddCallbackTarget(_authLog);
         _client.Client.StateChanged += OnVoiceState;
 
+        // The PC spectator only listens: no microphone, nothing transmitted.
+        bool listenOnly = SpectatorMode.Active;
         _recorder = gameObject.AddComponent<Recorder>();
-        _recorder.TransmitEnabled = true;
+        _recorder.TransmitEnabled = !listenOnly;
         _recorder.VoiceDetection = true;
-        _recorder.RecordWhenJoined = true;
+        _recorder.RecordWhenJoined = !listenOnly;
         _recorder.RecordingEnabled = false;
         _client.PrimaryRecorder = _recorder;
 
@@ -93,7 +95,8 @@ public class PhotonVoiceChat : MonoBehaviour
             UserPlayerPrefs.UserReady += OnUserPrefsReady;
 
         // Asks immediately on Quest when the mic isn't already allowed, then starts the open mic.
-        gameObject.AddComponent<MicrophonePermission>();
+        if (!listenOnly)
+            gameObject.AddComponent<MicrophonePermission>();
         gameObject.AddComponent<WalkieRadio>();
     }
 
@@ -187,7 +190,7 @@ public class PhotonVoiceChat : MonoBehaviour
         if (chat == null || chat._recorder == null)
             return;
 
-        chat._recorder.TransmitEnabled = !muted;
+        chat._recorder.TransmitEnabled = !muted && !SpectatorMode.Active;
     }
 
     public static AudioSource Attach(GameObject player, Transform head)

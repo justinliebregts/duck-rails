@@ -952,3 +952,7 @@ Station Info displays five lifetime totals (individual attempts, individual esca
 Ordinary players capture persistent loading and departure failures. Master and client evidence share an incident ID. See [testing tools](testing-tools.md#paired-incidents).
 
 November 23 bridge finish. Players drive across the full lowered span. When the train front reaches the far bank, the crew aboard escapes and the train eases to 4 m/s over two seconds.
+
+## PC spectator — November 24, 2026
+
+Confirmed (user, project chat): a private Windows spectator build, ported from Duckz, can watch compounds, public trains (including running ones) and private rooms by code. It has no duck, never counts as crew and never runs the room. Train rooms stay at eight players, so a spectator uses one of the eight slots. Tool behavior and limits: [pc-spectator.md](pc-spectator.md).

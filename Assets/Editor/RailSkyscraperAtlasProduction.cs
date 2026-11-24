@@ -153,6 +153,10 @@ public static class RailSkyscraperAtlasProduction
 public sealed class RailSkyscraperAtlasBuildGuard : IPreprocessBuildWithReport
 {
     public int callbackOrder => 0;
-    public void OnPreprocessBuild(BuildReport report) => RailSkyscraperAtlasProduction.ValidateSaved();
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        // Fingerprints hold Android dependency hashes; a Windows PC spectator build cannot match them.
+        if (!DuckzSpectatorBuild.InProgress) RailSkyscraperAtlasProduction.ValidateSaved();
+    }
 }
 #endif

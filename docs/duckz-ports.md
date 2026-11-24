@@ -1,5 +1,36 @@
 # Duckz port history
 
+## PC spectator — 491b6f2, fcdff53, a6e6a40
+
+- Source SHAs: `491b6f2a036d62c501e563727273c59286b063a8` (PC-only spectator build, fly camera, room list),
+  `fcdff531cad65f9282359f98b8098ccf684cdc39` (F orbit follow, leave when stuck as master, fog-only L, release build),
+  `a6e6a402029885f60ce1b0fd134f9faba71c2cb0` (follow focus in the helicopter's space; ignore its colliders).
+- Status: implemented November 24, 2026; compile and Edit Mode checks pass, Windows spectator built.
+  Not validated against live rooms: [queued for playtest](playtest-queue.md#pc-spectator--queued-for-playtest-november-24-2026).
+  User decisions: spectate train rooms as well as compounds; train capacity stays eight ([pc-spectator.md](pc-spectator.md)).
+- Engine/network: both projects Unity 6000.3.24f1 and PUN 2 over Photon Realtime (`PhotonNetwork`, Realtime callbacks); no Fusion.
+- Destination: `Assets/Scripts/Spectator/SpectatorMode.cs` (source copy), `Spectator.cs` (adapted: Rails
+  Input System via `RailDesktopInput`; deactivates the authored shared rig instead of freezing Duckz's
+  desktop stand-in; own MainCamera copying the rig camera's URP settings; follow targets by actor via
+  `PhotonPlayer.ForActor`; the helicopter-space follow now uses the train cabin (`RailTrain.cabin`, a
+  `Helicopter`) and `ContainsPadded`; new R "ride train" free-fly; room list split into public trains and
+  compounds from the `rails-auto-v2` lobby; joins by code; follows public departures by allocation code;
+  leaves when the crew has gone; CutePixel source font for the IMGUI panel when available).
+  Rails-only: `Photon/RailSpectators.cs` and crew filters in `RailExpedition`, `PhotonSession`,
+  `PhotonMasterHandoff(.Settle)`, `RailBridgeSurge`, `RailHoldControl`, `RailRoute`, `RailTestTools`,
+  `DuckPlayerColors`, `PlayersMenu`; `PhotonSession` spectate/leave requests (never creates or falls back to a
+  room), Photon version suffix `-spectator-v1`. Source hooks mapped to `AccountSignIn`, `PhotonAvatarSpawner`,
+  `PhotonVoiceChat`, `DuckzAnalytics`, `RailWorld` (Tab menu), `DesktopPlayMenu` (Spectator button) and
+  `Editor/Build/DuckzBuild.cs` (`DuckzSpectatorBuild`, window toggle, menu item, batch entry). Checks:
+  `Assets/Editor/RailSpectatorChecks.cs`.
+- Not ported: Duckz `PhotonSession` observe-lobby path and `DesktopPlay` stand-in (Rails has neither);
+  helicopter collider scan (replaced by the train's padded box).
+- Dependencies: Quest builds must come from the same commit (they carry the crew filters and the matching
+  Photon version). The spectator has no backend token; it relies on the Photon app accepting a client
+  without custom authentication. See [pc-spectator.md](pc-spectator.md#compatibility).
+- Validation: see [pc-spectator.md](pc-spectator.md#validation).
+- Destination commit: see Git history ("Port Duckz PC spectator").
+
 ## Storm sky group — 06f5f5b0, 8628bc4c, 01f8e3e4, ac6d5319, 6a6f5a2f
 
 - Source SHAs: `06f5f5b0a656a2ff4e28c000564c99f8bff5fd12` (animated storm sky),

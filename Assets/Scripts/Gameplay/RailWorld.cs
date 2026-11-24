@@ -58,7 +58,8 @@ public sealed class RailWorld : MonoBehaviour
         var session = PhotonSession.Instance;
         if (session == null) return;
         if (PhotonSession.IsRailsRoom && gameObject.scene.name != PhotonSession.RequiredScene) { session.MarkWorldLoading(); return; }
-        if (RailDesktopInput.GetKeyDown(KeyCode.Tab))
+        // The spectator uses Tab to switch players; its own panel replaces the session menu.
+        if (!SpectatorMode.Active && RailDesktopInput.GetKeyDown(KeyCode.Tab))
         {
             menu = !menu;
             Cursor.lockState = menu ? CursorLockMode.None : CursorLockMode.Locked;

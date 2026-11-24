@@ -136,6 +136,10 @@ public static class RailConvenienceStoreAtlasProduction
 public sealed class RailConvenienceStoreAtlasBuildGuard : IPreprocessBuildWithReport
 {
     public int callbackOrder => 0;
-    public void OnPreprocessBuild(BuildReport report) => RailConvenienceStoreAtlasProduction.ValidateSaved();
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        // Fingerprints hold Android dependency hashes; a Windows PC spectator build cannot match them.
+        if (!DuckzSpectatorBuild.InProgress) RailConvenienceStoreAtlasProduction.ValidateSaved();
+    }
 }
 #endif
