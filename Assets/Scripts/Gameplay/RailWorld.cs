@@ -141,7 +141,7 @@ public sealed class RailWorld : MonoBehaviour
             double deadline = PhotonSession.Get(RailSessionRules.Deadline, 0d);
             bool departing = PhotonSession.Get(RailSessionRules.Destination, "").Length > 0;
             int secondsLeft = deadline > 0 ? (int)Math.Max(0, Math.Ceiling(deadline - PhotonNetwork.Time)) : -1;
-            departureBoard.text = PhotonSession.IsPrivate ? "PRIVATE CREW\nCode " + room
+            departureBoard.text = PhotonSession.IsPrivate ? $"PRIVATE CREW\n<size=50%>Code {room}</size>"
                 : PublicDepartureText(roster.Length, secondsLeft, departing, roster.Contains(PhotonNetwork.LocalPlayer.ActorNumber));
         }
     }
@@ -166,13 +166,16 @@ public sealed class RailWorld : MonoBehaviour
     /// <param name="secondsLeft">Countdown seconds, or -1 when no countdown is running.</param>
     public static string PublicDepartureText(int aboard, int secondsLeft, bool departing, bool localAboard)
     {
-        if (departing) return localAboard ? "ALL ABOARD!\nDeparting together..." : "TRAIN DEPARTING\nNext train boards soon";
+        if (departing)
+            return localAboard ? "ALL ABOARD!\n<size=50%>Departing together...</size>"
+                : "TRAIN DEPARTING\n<size=50%>Next train boards soon</size>";
         if (aboard >= RailSessionRules.CrewCapacity && !localAboard)
-            return "FULL (" + aboard + "/" + RailSessionRules.CrewCapacity + ")\nNext train after this one";
+            return $"FULL ({aboard}/{RailSessionRules.CrewCapacity})\n<size=50%>Next train after this one</size>";
         if (secondsLeft >= 0)
-            return "DEPARTS IN <color=#FFD34F>" + secondsLeft + "</color>\n" + aboard + (aboard == 1 ? " duck" : " ducks") + " boarding together\n" +
-                (localAboard ? "You're aboard!" : "Step on to join this crew");
-        return "PUBLIC TRAIN\nStand on the platform to board\n<size=80%>Everyone on it leaves together</size>";
+            return $"DEPARTS IN <color=#FFD34F>{secondsLeft}</color>\n" +
+                $"<size=50%>{aboard} {(aboard == 1 ? "duck" : "ducks")} boarding together\n" +
+                (localAboard ? "You're aboard!" : "Step on to join this crew") + "</size>";
+        return "PUBLIC TRAIN\n<size=50%>Stand on the platform to board\nEveryone on it leaves together</size>";
     }
 
     // The Photon registry includes inactive/stowed objects and excludes local
