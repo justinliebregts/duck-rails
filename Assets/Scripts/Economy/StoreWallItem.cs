@@ -21,6 +21,7 @@ public class StoreWallItem : Grabbable
     [Tooltip("Resistance beyond the purchase distance while waiting for confirmation. 0 follows the hand fully; 1 stops at the purchase distance.")]
     [SerializeField, Range(0f, 1f)] float pendingPullResistance = 0.02f;
     [SerializeField] LineRenderer line;
+    [SerializeField] Transform displayEffect;
     [Tooltip("Optional close-fitting surface collider for the tether. Use a primitive or convex MeshCollider that stays inside the visible mesh.")]
     [SerializeField] Collider pullSurface;
     [SerializeField] Gradient pullColor = DefaultPullColor();
@@ -427,6 +428,7 @@ public class StoreWallItem : Grabbable
         bool hasBounds = false;
         foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
         {
+            if (displayEffect != null && renderer.transform.IsChildOf(displayEffect)) continue;
             if (!(renderer is MeshRenderer) && !(renderer is SkinnedMeshRenderer)) continue;
             Bounds bounds = renderer.localBounds;
             for (int i = 0; i < 8; i++)

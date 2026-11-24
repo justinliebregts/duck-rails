@@ -49,7 +49,7 @@ public sealed partial class PhotonMasterHandoff
     // Photon reports ServerTimestamp as 0 on a connected peer until its first server-time
     // fetch is acknowledged. November 20 room 26164: a joining peer stayed unsynchronised
     // for ~5 s, rejected every live-host heartbeat and replaced that host mid-seed.
-    static bool ServerClockPending => ServerClockPendingOverride ??
+    internal static bool ServerClockPending => ServerClockPendingOverride ??
         (PhotonNetwork.NetworkingClient?.LoadBalancingPeer?.PeerState == PeerStateValue.Connected &&
             PhotonNetwork.ServerTimestamp == 0);
 

@@ -19,10 +19,10 @@ MonoBehaviour:
   pitchRange: {x: 1, y: 1}
   volumeRange: {x: 0.9, y: 0.9}
   spatialBlend: 1
-  minDistance: 12
-  maxDistance: 180
+  minDistance: 1
+  maxDistance: 10
   rolloff: 1
-  cullDistance: 200
+  cullDistance: 10
   mixerOverride: {fileID: 0}
   priority: 48
   maxInstances: 8

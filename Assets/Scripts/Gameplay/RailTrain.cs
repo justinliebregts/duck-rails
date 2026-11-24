@@ -26,15 +26,27 @@ public sealed class RailTrain : MonoBehaviour
         foreach (var wheel in wheels) if (wheel) wheel.localRotation = rotation;
     }
     bool initialized;
+    string positionedRun;
+    Photon.Realtime.Room positionedRoom;
+    object[] positionedCommand;
+    public bool HasRunPose => initialized && positionedRun == PhotonSession.RunId &&
+        ReferenceEquals(positionedRoom, PhotonNetwork.CurrentRoom) &&
+        ReferenceEquals(positionedCommand, PhotonSession.Get<object[]>(RailSessionRules.Motion, null)) &&
+        !PhotonMasterHandoff.ServerClockPending;
     void OnEnable() { Instance = this; initialized = false; }
     void OnDisable() { if (Instance == this) Instance = null; }
     void Update()
     {
-        if (!PhotonSession.IsRailsRoom || !PhotonSession.OnTrain) return;
-        var command = PhotonSession.Get(RailSessionRules.Motion, new object[] { PhotonNetwork.Time, 0f, 0f, 0f });
+        if (!PhotonSession.IsRailsRoom || !PhotonSession.OnTrain || PhotonMasterHandoff.ServerClockPending) return;
+        var command = PhotonSession.Get<object[]>(RailSessionRules.Motion, null);
+        if (!(command is { Length: 4 } && command[0] is double && command[1] is float &&
+            command[2] is float && command[3] is float)) return;
+        string run = PhotonSession.RunId;
+        var room = PhotonNetwork.CurrentRoom;
+        if (positionedRun != run || !ReferenceEquals(positionedRoom, room)) initialized = false;
         RailSessionRules.EvaluateTrain(command, PhotonSession.Get(RailSessionRules.Fuel, 100f),
             PhotonNetwork.Time, out float distance, out float speed, out _);
-        if (RailRoute.Instance != null && !RailRoute.Instance.Ready) return;
+        if (RailRoute.Instance != null && (!RailRoute.Instance.Ready || RailRoute.Instance.LoadedRun != run)) return;
         Speed = speed; Distance = distance;
         UpdateWheelRotation(distance);
         Vector3 next = origin + Vector3.forward * distance;
@@ -43,6 +55,9 @@ public sealed class RailTrain : MonoBehaviour
         Delta = initialized ? next - transform.position : Vector3.zero;
         if (initialized) foreach (var cargo in RailCargo.Active) cargo.Carry(transform.position, transform.rotation, next, rotation);
         cabin.MoveCabin(next, rotation, initialized);
+        positionedRun = run;
+        positionedRoom = room;
+        positionedCommand = command;
         initialized = true;
     }
     // Local-space half extents / vertical range for the two aboard tests.

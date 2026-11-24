@@ -33,7 +33,7 @@ public static class RailSessionChecks
         Check(admitted.SequenceEqual(Enumerable.Range(1, 8)), "Ninth occupant waits outside the eight-player roster");
         Check(RailSessionRules.Admit(admitted, new[] { 2, 3, 4, 5, 6, 7, 8, 9 }).SequenceEqual(new[] { 2, 3, 4, 5, 6, 7, 8, 9 }), "Vacated slots refill without evicting admitted players");
         Check(RailWorld.PublicDepartureText(0, -1, false, false).Contains("leaves together"), "Idle board says the platform leaves together");
-        Check(RailWorld.PublicDepartureText(3, 14, false, true).StartsWith("DEPARTS IN 14\n3 ducks boarding together") &&
+        Check(RailWorld.PublicDepartureText(3, 14, false, true).StartsWith("DEPARTS IN <color=#FFD34F>14</color>\n3 ducks boarding together") &&
             RailWorld.PublicDepartureText(3, 14, false, true).EndsWith("You're aboard!") &&
             RailWorld.PublicDepartureText(1, 14, false, false).Contains("1 duck boarding") &&
             RailWorld.PublicDepartureText(1, 14, false, false).EndsWith("Step on to join this crew"), "Countdown board shows group size and the viewer's own status");

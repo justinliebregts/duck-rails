@@ -1995,3 +1995,21 @@ On headset, step and push off the creek bed and each of the five underground pud
 - On the master select a live blocker and choose Launch three Smashers at selected blocker. Repeat for minion, bomber, Smasher, spider and hook. Check both views for actual contention, supported landings and one impact per completed landing. Exercise moving blockers, bomber removal and repeated flares during descent.
 - On the surviving editor choose Observe mixed crowd master crash. Terminate the disposable master client during a blocked landing, then repeat during a corrective hop. Record the process-exit timestamp, view IDs, post-handoff movement, landed state and recovery on each remaining client. Repeat with desktop and Quest as master. The observer checks IDs, authority and movement. Visual contact, impact counts, crash timing and device performance require separate observation.
 - Open the owner's LIV selfie view with a second voice client listening. Compare quiet room noise below the detector threshold, muted speech, transmitting speech and release to silence. Confirm the local beak follows the audible transmission in each case.
+
+## Persistent bundle display previews
+
+In Compound, look for the Huggy flare's yellow glow and falling embers at the muzzle, and the Quackbear cupcake's lit candle and pink point light. Check from the aisle at duck eye height, with and without bundle ownership, and after pulling and releasing each display. Repeat at the departure and midpoint displays that use the shared prefab.
+
+- The Huggy display emitters are 28% larger and sit 9 cm farther along the muzzle axis. Previewed the saved tuning in the open Windows Play Mode session. See `output/compound-shop-huggy-flare-tuned.png`. Pull and release remains queued.
+
+- Windows Unity Edit Mode, 2026-11-23. Simulated the three authored Huggy flare emitters and captured the revised shop with the candle's original emission mask and the pink light. See `output/compound-shop-authored-effects.png`. The earlier oval effects passed a desktop pull and snap-back check. Repeat it with the revised effects in Play Mode.
+
+## Compound and moving-train fixes
+
+- Windows integration checks, 2026-11-23. Unity compiled and `RailSessionChecks.Run` passed. The Go `./router` and `./router/duckz` tests passed. The scenarios below remain queued for playtest.
+
+- Start public and private runs normally. Separately move an active train past the station and onto a curve, then join using the Compound JOIN button or a private room code. Confirm the player first appears on the current deck and is carried on the next frame. Delay motion or the clock until route and cargo are ready, and verify that placement and readiness wait.
+- Deposit a real bar at the Compound and at each expedition receiver with two clients. Check one consumption and one depositor credit, including repeated intake contact and a capped wallet. Listen near and beyond 15 m for deposit audio and 10 m for the recharge cue while moving the gun.
+- Confirm the authenticated list and checkout charge 500 for the nail bat, 350 for night vision and 75 for the helmet with the companion config in a test environment.
+- Inspect all three capped supplies lights and the golden countdown. Check both Quack Mart window openings and surrounding solid surfaces. Check Container Yard edges from both banks, on board, and above stacked or angled containers.
+- Toggle the held cupcake repeatedly and observe it from a second headset. Verify the warm 14 m light and emission clear when switched off or stashed.

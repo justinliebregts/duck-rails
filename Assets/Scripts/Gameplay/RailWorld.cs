@@ -107,10 +107,12 @@ public sealed class RailWorld : MonoBehaviour
         }
         if (!positioned || (!aboard && session.SpawnAtJoinBoard))
         {
+            // Wait for the retained train pose after the route has loaded.
+            if (aboard && (train == null || !train.HasRunPose)) return;
             int spawnSlot = (PhotonNetwork.LocalPlayer.ActorNumber - 1) % 12;
-            Vector3 position = aboard ? train.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 4 - 1.5f) * .7f, .35f, -2f))
+            Vector3 position = aboard ? train.cabin.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 4 - 1.5f) * .7f, .35f, -2f))
                 : compoundSpawn.position + new Vector3((spawnSlot % 4 - 1.5f) * 1.5f, 0, spawnSlot / 4 * 1.5f);
-            Quaternion facing = Quaternion.identity;
+            Quaternion facing = aboard ? Quaternion.Euler(0f, train.cabin.transform.eulerAngles.y, 0f) : Quaternion.identity;
             if (!aboard && (session.SpawnAtJoinBoard || session.SpawnAtPrivatePlatform))
             {
                 var board = session.SpawnAtJoinBoard ? compound.GetComponentInChildren<RailPublicTrainButton>(true) : null;
@@ -121,6 +123,8 @@ public sealed class RailWorld : MonoBehaviour
                 position.y = compoundSpawn.position.y;
                 facing = Quaternion.LookRotation(forward);
             }
+            // WarpFloorLift raycasts immediately, before the next physics update.
+            if (aboard) Physics.SyncTransforms();
             var desktop = local.GetComponent<DesktopPlayer>();
             if (desktop != null) desktop.Teleport(position, facing, true);
             else if (NewPlayer.instance != null) NewPlayer.instance.Warp(position, facing);
@@ -166,7 +170,7 @@ public sealed class RailWorld : MonoBehaviour
         if (aboard >= RailSessionRules.CrewCapacity && !localAboard)
             return "FULL (" + aboard + "/" + RailSessionRules.CrewCapacity + ")\nNext train after this one";
         if (secondsLeft >= 0)
-            return "DEPARTS IN " + secondsLeft + "\n" + aboard + (aboard == 1 ? " duck" : " ducks") + " boarding together\n" +
+            return "DEPARTS IN <color=#FFD34F>" + secondsLeft + "</color>\n" + aboard + (aboard == 1 ? " duck" : " ducks") + " boarding together\n" +
                 (localAboard ? "You're aboard!" : "Step on to join this crew");
         return "PUBLIC TRAIN\nStand on the platform to board\n<size=80%>Everyone on it leaves together</size>";
     }
