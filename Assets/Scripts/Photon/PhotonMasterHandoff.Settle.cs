@@ -35,8 +35,9 @@ public sealed partial class PhotonMasterHandoff
     /// <summary>False while a newly confirmed local master waits for the previous master's in-flight spawns.</summary>
     public static bool RoomSpawnsSettled => instance == null || instance.settlingFrom == 0 || !PhotonNetwork.IsMasterClient;
 
-    /// <summary>The local client may create room-owned network objects now.</summary>
-    public static bool CanSpawnRoomObjects => PhotonNetwork.IsMasterClient && PhotonNetwork.IsMessageQueueRunning && RoomSpawnsSettled;
+    /// <summary>The local client may create room-owned network objects now. Never a PC spectator.</summary>
+    public static bool CanSpawnRoomObjects => PhotonNetwork.IsMasterClient && !SpectatorMode.Active &&
+        PhotonNetwork.IsMessageQueueRunning && RoomSpawnsSettled;
 
     void ResetSettle()
     {

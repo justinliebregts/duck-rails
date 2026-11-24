@@ -154,6 +154,10 @@ public static class RailMotelAtlasProduction
 public sealed class RailMotelAtlasBuildGuard : IPreprocessBuildWithReport
 {
     public int callbackOrder => 0;
-    public void OnPreprocessBuild(BuildReport report) => RailMotelAtlasProduction.ValidateSaved();
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        // Fingerprints hold Android dependency hashes; a Windows PC spectator build cannot match them.
+        if (!DuckzSpectatorBuild.InProgress) RailMotelAtlasProduction.ValidateSaved();
+    }
 }
 #endif

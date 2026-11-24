@@ -25,13 +25,8 @@ public static class RailBridgeSurge
     /// <summary>One extra enemy per player, bounded by the room size.</summary>
     public static int CountFor(int players) => Mathf.Clamp(players, 0, MaxCount);
 
-    /// <summary>Live (not inactive) players in the room.</summary>
-    public static int LivePlayers()
-    {
-        int count = 0;
-        foreach (var player in PhotonNetwork.PlayerList) if (player != null && !player.IsInactive) count++;
-        return count;
-    }
+    /// <summary>Live (not inactive) players in the room. PC spectators are not players.</summary>
+    public static int LivePlayers() => RailSpectators.LiveCrewCount();
 
     /// <summary>Authored finale reinforcement points first, then the finale's enemy candidates, in a stable order
     /// so every master (and respawn) maps a marker to the same place. Spreads a full crew's surge out.</summary>

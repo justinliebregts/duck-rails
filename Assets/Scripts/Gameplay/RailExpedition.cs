@@ -246,7 +246,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         ShowFuelPopups();
         RailGoldReceiver.PresentRewards(this);
         if (PhotonMasterHandoff.CanSpawnRoomObjects) SpawnCarrierDrops();
-        if (PhotonNetwork.IsMasterClient && PhotonNetwork.Time >= nextTick)
+        // A PC spectator can hold master for a moment before handing it on; it never runs the run.
+        if (PhotonNetwork.IsMasterClient && !SpectatorMode.Active && PhotonNetwork.Time >= nextTick)
         { nextTick = PhotonNetwork.Time + .1; TickAuthority(); }
     }
     void TickAuthority()
@@ -261,6 +262,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         double now = PhotonNetwork.Time;
         foreach (var player in PhotonNetwork.PlayerList)
         {
+            if (RailSpectators.Is(player)) continue;
             var p = next.Player(player.UserId);
             if (p == null) { p = new RailParticipant { id = player.UserId, name = player.NickName }; next.players.Add(p); }
             p.actor = player.ActorNumber; p.name = player.NickName;
@@ -412,7 +414,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         {
             var participant = state.players.Find(p => p.actor == player.ActorNumber);
             var value = player.CustomProperties[RailHoldControl.BridgeKey];
-            if (player.IsInactive || participant == null || participant.down ||
+            if (!RailSpectators.IsLiveCrew(player) || participant == null || participant.down ||
                 !RailHoldControl.IsLive(value, state.run, now) ||
                 !Position(player.ActorNumber, out var position) || Vector3.Distance(position, bridgeButton.position) >= 3 ||
                 (RailTrain.Instance != null && RailTrain.Instance.Contains(position)) ||
@@ -733,14 +735,14 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     static bool CrewNear(Vector3 point)
     {
         foreach (var player in PhotonNetwork.PlayerList)
-            if (!player.IsInactive && Position(player.ActorNumber, out var head) && Vector3.Distance(head, point) < CrewClearance) return true;
+            if (RailSpectators.IsLiveCrew(player) && Position(player.ActorNumber, out var head) && Vector3.Distance(head, point) < CrewClearance) return true;
         return false;
     }
     /// <summary>Master-only. Commits the live player count as the crew after it has held steady,
     /// so brief reconnects do not churn loot. Coal already aboard simply changes value.</summary>
     void UpdateCrew(Hashtable changes, double now)
     {
-        int live = Mathf.Clamp(PhotonNetwork.PlayerList.Count(p => !p.IsInactive), 1, RailResourceBalance.MaxCrew);
+        int live = Mathf.Clamp(RailSpectators.LiveCrewCount(), 1, RailResourceBalance.MaxCrew);
         int crew = Crew;
         if (live == crew) { pendingCrew = 0; return; }
         if (pendingCrew != live) { pendingCrew = live; pendingCrewSince = now; return; }
@@ -875,7 +877,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
       {
           foreach (var player in PhotonNetwork.PlayerList)
           {
-              if (player.IsInactive) continue;
+              if (!RailSpectators.IsLiveCrew(player)) continue;
               var avatar = PhotonPlayer.ForActor(player.ActorNumber);
               if (avatar == null || !avatar.TryGetGaze(out var eye, out var forward)) return false;
               Vector3 delta = position + Vector3.up - eye;

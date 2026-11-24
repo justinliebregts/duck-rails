@@ -15,6 +15,22 @@ public static class AccountSignIn
         if (config == null)
             config = GameConfig.Current;
 
+#if UNITY_EDITOR || DUCKZ_SPECTATOR
+        // The PC spectator has no Meta sign-in, wallet or cosmetics. It joins Photon with a local id only.
+        if (SpectatorMode.Active)
+        {
+            if (PlayerSession.Instance == null)
+            {
+                string spectatorId = "spectator-" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                UserPlayerPrefs.SetCurrentUser(spectatorId);
+                PlayerSession.CreateLocal(spectatorId, "Spectator");
+                DuckzLog.Log("[SignIn] Signed in as spectator " + spectatorId + ".");
+            }
+            completed(new Outcome { SignedIn = true });
+            yield break;
+        }
+#endif
+
         if (config == null || string.IsNullOrEmpty(config.backendBaseUrl))
         {
             ReportFailure(status, "Game config is missing a backend URL.", "Unable to start sign-in.", "configuration", true);

@@ -88,7 +88,7 @@ public sealed class RailRoute : MonoBehaviour
             {
                 var chosen = RailTestTools.TryRoute(run, out var repeat) ? repeat : ChooseNormal(run, catalog, UnityEngine.Random.Range(0, int.MaxValue));
                 chosen.resourceCrew = Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey,
-                    PhotonNetwork.PlayerList.Count(p => !p.IsInactive)), 1, 8);
+                    RailSpectators.LiveCrewCount()), 1, 8);
                 PhotonSession.Instance.Commit(new Hashtable { [StateKey] = JsonUtility.ToJson(chosen) });
             }
             return false;

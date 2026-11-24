@@ -1,5 +1,10 @@
 # Playtest queue
 
+## PC spectator | queued for playtest, November 24, 2026
+
+- Changed: Windows `DuckRailsSpectator.exe` joins live rooms as an invisible camera with no duck ([pc-spectator.md](pc-spectator.md)). Every build leaves it out of the crew through `RailSpectators`. Compile, spectator Edit Mode checks and existing session checks passed in batch mode; see the [ports entry](duckz-ports.md#pc-spectator--491b6f2-fcdff53-a6e6a40).
+- Needs a Quest (or desktop) build from the same commit plus the spectator exe. Check that the spectator connects and lists rooms (if Photon rejects it, it needs anonymous clients allowed). Join a public compound: no duck appears, the players menu and colours ignore it, and boarding/departure work normally. Leave **Follow departing crews aboard** on, depart with a crew, and confirm the spectator lands on that train. On a running public train and a private room (by code): fly, F/Tab follow, R ride, wall pull-in, fog toggle, voice audible near ducks and nothing transmitted. With the spectator present, confirm resupply still triggers, crew scaling and bridge surge count only ducks, and a full wipe still ends the run. Have the host quit: the spectator must hand master to a duck (no stalled train, no duplicate loot). Confirm it returns to the room list when the crew leaves, and that a seven-duck train plus spectator refuses an eighth duck (accepted limit).
+
 ## Bridge surge at 100% | queued for playtest, November 23, 2026
 
 - November 23 desktop rerun passed all three short-route cases. Both clients measured minima of 1.9 m and 2.7 m within 25 seconds, and Player2 observed views 70 and 71 again after rejoining. Player2 handed master back before the main editor operated the bridge. Headset audio timing and full-crew balance remain queued for playtest. [Fixture and objective trace](validation/playtest-queue/2026-11-23-fixes-surge.txt).

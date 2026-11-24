@@ -160,7 +160,7 @@ public static class RailTestTools
         var state = JsonUtility.FromJson<RailRunState>(PhotonSession.Get(RailExpedition.StateKey, ""));
         if (state == null || state.run != PhotonSession.RunId || state.finished)
         { Status = "Wait for a running expedition before previewing success"; return; }
-        foreach (var player in PhotonNetwork.PlayerList.Where(p => !p.IsInactive))
+        foreach (var player in PhotonNetwork.PlayerList.Where(RailSpectators.IsLiveCrew))
         {
             var participant = state.Player(player.UserId);
             if (participant == null)
@@ -169,7 +169,7 @@ public static class RailTestTools
         }
         double now = PhotonNetwork.Time;
         state.bridgeElapsed = RailRunState.BridgeSeconds; state.bridgeHeldAt = state.bridgeHoldUntil = 0;
-        state.Finish(now, "Test success preview", PhotonNetwork.PlayerList.Where(p => !p.IsInactive).Select(p => p.UserId));
+        state.Finish(now, "Test success preview", PhotonNetwork.PlayerList.Where(RailSpectators.IsLiveCrew).Select(p => p.UserId));
         if (!state.success) { Status = "No connected participants to preview success"; return; }
         // Use the same ending state as a bridge crossing. Normal presentation catches
         // everyone aboard, shows results, runs the tunnel/dawn ride and returns the crew.

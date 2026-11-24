@@ -139,7 +139,11 @@ public static class RailContainerYardAtlasProduction
 public sealed class RailContainerYardAtlasBuildGuard : IPreprocessBuildWithReport
 {
     public int callbackOrder => 0;
-    public void OnPreprocessBuild(BuildReport report) => RailContainerYardAtlasProduction.ValidateSaved();
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        // Fingerprints hold Android dependency hashes; a Windows PC spectator build cannot match them.
+        if (!DuckzSpectatorBuild.InProgress) RailContainerYardAtlasProduction.ValidateSaved();
+    }
 }
 #endif
 

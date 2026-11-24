@@ -58,7 +58,7 @@ public sealed class DuckPlayerColors : MonoBehaviourPunCallbacks
             var saved = PhotonNetwork.CurrentRoom.CustomProperties[Property] as int[];
             allocated = saved != null && saved.Length == Count ? (int[])saved.Clone() : new int[Count];
         }
-        var players = PhotonNetwork.PlayerList;
+        var players = RailSpectators.Crew(PhotonNetwork.PlayerList);
         int[] actors = Array.ConvertAll(players, p => p.ActorNumber);
         int[] next = Allocate(allocated, actors);
         bool changed = !System.Linq.Enumerable.SequenceEqual(allocated, next);

@@ -53,7 +53,8 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
     string startupScope;
     double startupProbeAt;
 
-    bool Ready => InputAvailable && PhotonNetwork.IsMessageQueueRunning
+    // A PC spectator is never a host candidate: as master it hands off at once (TryHandoff).
+    bool Ready => !SpectatorMode.Active && InputAvailable && PhotonNetwork.IsMessageQueueRunning
         && GameScenes.IsLoaded(PhotonSession.RequiredScene) && PhotonPlayer.Local != null
         // An avatar can exist while cached room spawns/lighting are still arriving.
         // Electing that client lets it seed missing loot using IDs the old master
@@ -315,7 +316,7 @@ public sealed partial class PhotonMasterHandoff : MonoBehaviourPunCallbacks, IOn
         int now = PhotonNetwork.ServerTimestamp;
         foreach (Player player in PhotonNetwork.CurrentRoom.Players.Values)
         {
-            if (player.IsInactive || player.IsMasterClient) continue;
+            if (player.IsInactive || player.IsMasterClient || RailSpectators.Is(player)) continue;
             // Heartbeats stay fresh for five seconds. A ready heartbeat from
             // staging (or a previous run) must not nominate a client whose new
             // scene/snapshot is still loading. This retained token is cleared

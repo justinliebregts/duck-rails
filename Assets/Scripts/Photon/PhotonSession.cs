@@ -19,6 +19,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public static object[] DriveGripState => Get(DriveGripProperty, new object[] { "", 0, "", 0f });
     public static int DriveGripActor => Phase == RailPhase.Running && DriveGripState[0] is string run && run == RunId ? (int)DriveGripState[1] : 0;
     static readonly TypedLobby AutomaticLobby = new TypedLobby("rails-auto-v2", LobbyType.Default);
+    /// <summary>Public compounds and public trains are listed here; private rooms never are.</summary>
+    public static TypedLobby RoomListLobby => AutomaticLobby;
     float? requestedTrainThrottle;
     string requestedTrainRun;
     RailCrewReturn crewReturn;
@@ -38,7 +40,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public static bool OnTrain => RailSessionRules.IsOnTrain(Phase);
     public static T Get<T>(string key, T fallback) => PhotonNetwork.CurrentRoom?.CustomProperties[key] is T value ? value : fallback;
 
-    enum Request { None, PublicTrain, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound, CrewSearch, CrewDestination, CrewFresh
+    enum Request { None, Spectate, PublicTrain, Random, FreshCompound, CreatePrivate, JoinPrivate, Transfer, Rejoin, ReturnToCompound, CrewSearch, CrewDestination, CrewFresh
 #if UNITY_EDITOR
         , EditorQuickStart
 #endif
@@ -100,9 +102,10 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         loginStatus = status;
         if (!initialized)
         {
-            initialized = true; request = Request.Random;
+            // The PC spectator only connects; it picks a room from the list and never creates one.
+            initialized = true; request = SpectatorMode.Active ? Request.None : Request.Random;
 #if UNITY_EDITOR
-            if (RailEditorQuickStart.TryGetRoom(out string editorRoom))
+            if (!SpectatorMode.Active && RailEditorQuickStart.TryGetRoom(out string editorRoom))
             {
                 request = Request.EditorQuickStart;
                 allocation = "editor-quick-start-" + editorRoom;
@@ -121,7 +124,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         var source = PhotonNetwork.PhotonServerSettings.AppSettings;
         settings = source.CopyTo(new AppSettings());
         // Spawn-aware ownership bootstrap and corroborated pickup repair require matching peers.
-        settings.AppVersion = source.AppVersion + "-rails-pickup-v3-spawn-pools-v1-resources-v1-enemy-quadrants-v1-helipad-v1-no-train-safe-v1-special-loot-v1-tower-finale-v2";
+        settings.AppVersion = source.AppVersion + "-rails-pickup-v3-spawn-pools-v1-resources-v1-enemy-quadrants-v1-helipad-v1-no-train-safe-v1-special-loot-v1-tower-finale-v2-spectator-v1";
         settings.FixedRegion = Region;
         PhotonNetwork.AutomaticallySyncScene = false;
         PhotonNetwork.SendRate = PhotonNetwork.SerializationRate = StreamRate;
@@ -132,6 +135,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         var account = PlayerSession.Instance;
         if (account == null) return;
         PhotonNetwork.NickName = account.DisplayName;
+        // Sent with every join, so peers can leave the spectator out of the crew from its first frame.
+        if (SpectatorMode.Active) PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [RailSpectators.Key] = true });
         string id = string.IsNullOrEmpty(account.GrId) ? account.PlayerId : account.GrId;
         if (PhotonNetwork.AuthValues == null) PhotonNetwork.AuthValues = new AuthenticationValues(id);
         else PhotonNetwork.AuthValues.UserId = id;
@@ -199,6 +204,21 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         code = PhotonNetwork.CurrentRoom?.Name; isPublic = Kind == RailSessionRules.CompoundKind;
         return PhotonNetwork.InRoom && !leaving;
+    }
+    /// <summary>PC spectator: join an existing room by name. Never creates a room.</summary>
+    public void RequestSpectate(string room)
+    {
+        if (SpectatorMode.Active && RailSessionRules.IsCode(room)) Begin(Request.Spectate, room);
+    }
+    /// <summary>PC spectator: leave the room and stay connected, back on the room list.</summary>
+    public void LeaveAsSpectator(string reason = null)
+    {
+        if (!SpectatorMode.Active || HasRoomRequest || !PhotonNetwork.InRoom) return;
+        crewReturn?.Dispose(); crewReturn = null;
+        if (!string.IsNullOrEmpty(reason)) LastError = reason;
+        request = Request.None; leaving = true; WorldReady = false;
+        Started("Leaving room...");
+        if (!PhotonNetwork.LeaveRoom(false)) { operationPending = false; leaving = false; }
     }
     void FailInput(string text)
     {
@@ -312,6 +332,10 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
                 queued = JoinAllocatedRoom(RailSessionRules.ExpeditionKind, NewRunId(), null);
                 break;
 #endif
+            case Request.Spectate:
+                Started("Joining " + requestedRoom + " as a spectator...");
+                queued = PhotonNetwork.JoinRoom(requestedRoom);
+                break;
             case Request.PublicTrain:
                 Started("Finding an in-progress public train...");
                 queued = PhotonNetwork.JoinRandomRoom(new Hashtable {
@@ -392,6 +416,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public override void OnJoinRandomFailed(short code, string message)
     {
+        if (SpectatorMode.Active) { RequestFailed("Could not join the room."); return; }
         if (request == Request.PublicTrain)
         {
             RequestFailed(code == ErrorCode.NoRandomMatchFound ? NoPublicTrain : "Public train search failed. Please retry.");
@@ -431,6 +456,14 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     void RequestFailed(string error)
     {
+        if (SpectatorMode.Active)
+        {
+            // Back to the room list: a spectator never falls back to joining or creating a compound.
+            operationPending = false; RecoveringConnection = false; resumeRoom = null; request = Request.None; leaving = false;
+            FailInput(error); SetStatus(error);
+            if (PhotonNetwork.InRoom) { WorldReady = true; ClearConnectPending(); }
+            return;
+        }
         if (IsCrewRequest(request)) { CrewRequestFailed(); return; }
         operationPending = false; FailInput(error); RecoveringConnection = false; resumeRoom = null;
         if (PhotonNetwork.InRoom)
@@ -480,7 +513,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             if (crewRequest) { CrewRequestFailed(); return; }
             FailInput("Incompatible room. Use the same Duck Rails build.");
-            request = Request.Random; leaving = true; Started(LastError); PhotonNetwork.LeaveRoom(false); return;
+            request = SpectatorMode.Active ? Request.None : Request.Random; leaving = true; Started(LastError); PhotonNetwork.LeaveRoom(false); return;
         }
         SpawnAtPrivatePlatform = request == Request.CreatePrivate;
         DuckzAnalytics.SessionJoined(Kind, PhotonNetwork.CurrentRoom.PlayerCount);
@@ -538,7 +571,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     public void SetBoarding(bool value)
     {
-        if (!IsRailsRoom || !WorldReady || Kind != RailSessionRules.CompoundKind) return;
+        if (SpectatorMode.Active || !IsRailsRoom || !WorldReady || Kind != RailSessionRules.CompoundKind) return;
         if (PhotonNetwork.LocalPlayer.CustomProperties[RailSessionRules.Boarding] is bool old && old == value) return;
         PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { [RailSessionRules.Boarding] = value });
     }
@@ -556,7 +589,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         if (!IsPrivate || Phase != RailPhase.Staging || !WorldReady || !PhotonNetwork.IsMasterClient || RailWorld.HasLiveCargo) return;
         Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Departing, [RailSessionRules.Run] = NewRunId(),
-            [RailResourceBalance.CrewKey] = Mathf.Clamp(PhotonNetwork.PlayerList.Count(p => !p.IsInactive), 1, 8),
+            [RailResourceBalance.CrewKey] = Mathf.Clamp(RailSpectators.LiveCrewCount(), 1, 8),
             [RailSessionRules.Deadline] = PhotonNetwork.Time + RailSessionRules.WorldLoadSeconds, [RailSessionRules.Fuel] = RailResourceBalance.StartingFuel, [RailExpedition.StateKey] = "",
             [RailSessionRules.Cargo] = Array.Empty<int>(), [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 0f, 0f, 0f } });
     }
@@ -730,6 +763,8 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     // destination, then the compound we came from, then any public compound.
     void LeaveIfStrandedAfterReturn(double now)
     {
+        // The spectator is never in the crew; SpectatorOverlay leaves once the crew has gone.
+        if (SpectatorMode.Active) return;
         if (Kind != RailSessionRules.ExpeditionKind || Phase != RailPhase.Returning || now < strandedRetryAt) return;
         string destination = Get(RailSessionRules.Destination, "");
         if (!destination.StartsWith("return-", StringComparison.Ordinal)) return;
@@ -755,6 +790,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     }
     void TickAuthority()
     {
+        if (SpectatorMode.Active) return; // Hands master on (PhotonMasterHandoff); never runs the room.
         if (!PhotonNetwork.IsMasterClient || !IsRailsRoom || HasRoomRequest) return;
         double now = PhotonNetwork.Time;
         var room = PhotonNetwork.CurrentRoom;
@@ -773,7 +809,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
                 if (now < Get(RailSessionRules.TransferUntil, 0d) && room.Players.Values.Any(p => !p.IsInactive && users.Contains(p.UserId))) return;
                 Commit(new Hashtable { [RailSessionRules.Destination] = "", [RailSessionRules.Roster] = Array.Empty<int>(), [RailSessionRules.Deadline] = 0d }); return;
             }
-            var occupants = room.Players.Values.Where(p => !p.IsInactive && p.CustomProperties[RailSessionRules.Boarding] is bool b && b
+            var occupants = room.Players.Values.Where(p => RailSpectators.IsLiveCrew(p) && p.CustomProperties[RailSessionRules.Boarding] is bool b && b
                 && RailWorld.IsActorOnPlatform(p.ActorNumber)).Select(p => p.ActorNumber);
             int[] old = Get(RailSessionRules.Roster, Array.Empty<int>()), roster = RailSessionRules.Admit(old, occupants);
             double deadline = RailSessionRules.Countdown(Get(RailSessionRules.Deadline, 0d), roster.Length, now);
@@ -792,7 +828,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         {
             double deadline = Get(RailSessionRules.Deadline, 0d);
             if (deadline == 0d) { Commit(new Hashtable { [RailSessionRules.Deadline] = now + RailSessionRules.WorldLoadSeconds }); return; }
-            bool ready = WorldReady && room.Players.Values.Where(p => !p.IsInactive).All(p =>
+            bool ready = WorldReady && room.Players.Values.Where(RailSpectators.IsLiveCrew).All(p =>
                 p.CustomProperties[RailSessionRules.Ready] is string r && r == RunId + ":" + RailPhase.Departing);
             if (ready || now >= deadline)
                 Commit(new Hashtable { [RailSessionRules.Phase] = (int)(WorldReady ? RailPhase.Running : RailPhase.Returning), [RailSessionRules.Deadline] = now + 2d });
@@ -807,7 +843,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             }
             else if (Get(RailSessionRules.Destination, "").Length == 0)
                 Commit(new Hashtable { [RailSessionRules.Destination] = "return-" + Guid.NewGuid().ToString("N"),
-                    [RailSessionRules.TransferUsers] = room.Players.Values.Where(p => !p.IsInactive).Select(p => p.UserId).ToArray(), [RailSessionRules.TransferUntil] = now + 90d });
+                    [RailSessionRules.TransferUsers] = room.Players.Values.Where(RailSpectators.IsLiveCrew).Select(p => p.UserId).ToArray(), [RailSessionRules.TransferUntil] = now + 90d });
         }
     }
     void TickReservations(Room room, double now)
@@ -837,6 +873,15 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (quitting) return;
         operationPending = false; WorldReady = false;
         DuckzAnalytics.SessionDisconnected(cause.ToString());
+        if (SpectatorMode.Active)
+        {
+            // Reconnect and rejoin the watched room; if that fails, back to the room list.
+            crewReturn?.Dispose(); crewReturn = null;
+            if (!string.IsNullOrEmpty(joinedRoom) && !leaving) { request = Request.Spectate; requestedRoom = joinedRoom; }
+            else request = Request.None;
+            joinedRoom = null; leaving = false; RecoveringConnection = true;
+            RetryConnection("Connection lost."); RoomMembershipChanged?.Invoke(); return;
+        }
         if (crewReturn != null && !crewReturn.Finished)
         {
             joinedRoom = null; request = Request.None; leaving = false;
@@ -868,13 +913,17 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         double now = Time.realtimeSinceStartupAsDouble;
         if (operationPending && now > operationUntil && !loadingScene)
         { operationPending = false; PhotonNetwork.Disconnect(); RetryConnection("Connection timed out."); }
-        if (!operationPending && request != Request.None && !PhotonNetwork.InRoom && now >= retryAt && !loadingScene) Connect();
+        if (!operationPending && (request != Request.None || (SpectatorMode.Active && !PhotonNetwork.IsConnected)) &&
+            !PhotonNetwork.InRoom && now >= retryAt && !loadingScene) Connect();
         if (!IsRailsRoom || HasRoomRequest) return;
         FollowTransfer();
         LeaveIfStrandedAfterReturn(now);
         if (!IsRailsRoom || HasRoomRequest) return;
         if (!WorldReady && now - loadingSince > RailSessionRules.WorldLoadSeconds && Phase == RailPhase.Running)
-        { Begin(Request.Random); FailInput("World loading timed out. Returning to a compound."); return; }
+        {
+            if (SpectatorMode.Active) { LeaveAsSpectator("World loading timed out."); return; }
+            Begin(Request.Random); FailInput("World loading timed out. Returning to a compound."); return;
+        }
         if (now < nextAuthorityTick) return;
         nextAuthorityTick = now + .1; TickAuthority();
     }

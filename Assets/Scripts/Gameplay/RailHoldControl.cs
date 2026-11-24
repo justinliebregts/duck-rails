@@ -89,7 +89,7 @@ public sealed class RailHoldControl : MonoBehaviour
             foreach (var player in PhotonNetwork.PlayerList)
             {
                 bool active = player.IsLocal ? held : IsLive(player.CustomProperties[Key], PhotonSession.RunId, PhotonNetwork.Time);
-                if (active && !player.IsInactive && RailExpedition.Position(player.ActorNumber, out var position) &&
+                if (active && RailSpectators.IsLiveCrew(player) && RailExpedition.Position(player.ActorNumber, out var position) &&
                     Vector3.Distance(position, transform.position) < 4) current.Add(player.ActorNumber);
             }
         if (radio)
