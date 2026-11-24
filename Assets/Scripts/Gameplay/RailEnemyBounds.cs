@@ -42,6 +42,11 @@ public sealed class RailEnemyBounds : MonoBehaviour
             position = wavePoint.position; rotation = wavePoint.rotation;
             home = route.EnemyBounds(position); assigned = true; return true;
         }
+        if (RailBridgeSurge.TryIndex(marker, out int surge))
+        {
+            if (!RailBridgeSurge.TryPoint(surge, out position, out rotation)) return false;
+            home = route.EnemyBounds(position); assigned = true; return true;
+        }
         if (marker == null || !marker.StartsWith("enemy-") || !int.TryParse(marker.Substring(6), out int index)
             || index < 0 || index >= run.enemyPoints.Length) return false;
         if (!relocated) home = route.EnemyBounds(run.enemyPoints[index].position);

@@ -1,5 +1,11 @@
 # Playtest queue
 
+## Bridge surge at 100% | queued for playtest, November 23, 2026
+
+- Changed: when the Final Bridge first reaches 100%, the master spawns one extra enemy per player in the room (`bridge-surge-N`). They head for the train and fall back on normal chase/boarding. See [final escape layout](final-escape-layout.md#bridge-surge-at-100). Edit Mode surge checks (12) and a player-define compile pass.
+- Check: run `RailBridgeSurgeLiveChecks.Start()` (two clients; output in `Temp/rails-bridge-surge/`). Both clients see exactly two surge enemies right after the thud and siren. They close on the stopped train with both ducks aboard. A peer who leaves and rejoins by code sees the same two, and no more spawn. On headset with a full crew, judge the pressure and check that the enemies do not stack at their spawn points.
+
+
 ## Canyon rim rocks, timber fences and trap lantern | queued for playtest
 
 Inspect the sandstone silhouettes from both bridges, follow both side fences through the block seams with an item, and drop through the southwest cover to judge landing clearance and the faint ground light on headset.

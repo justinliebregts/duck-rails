@@ -15,6 +15,8 @@ public sealed class RailRunState
     public float lastTrainDistance;
     public bool bridgeReinforcementsTriggered;
     public int bridgeReinforcementCount;
+    public bool bridgeSurgeTriggered;
+    public int bridgeSurgeCount;
     public bool finished, success;
     public string reason;
     public List<RailGoldDeposit> gold = new List<RailGoldDeposit>();
@@ -56,6 +58,13 @@ public sealed class RailRunState
         if (finished || bridgeReinforcementsTriggered || BridgeElapsed(now) < 30) return;
         bridgeReinforcementsTriggered = true;
         bridgeReinforcementCount = Mathf.CeilToInt(Mathf.Max(0, bridgeDefenders) * .3f);
+    }
+    // Final Bridge surge: latched the first time the bridge reads 100%, sized by the players in the room then.
+    public void UpdateBridgeSurge(double now, int players)
+    {
+        if (finished || bridgeSurgeTriggered || BridgeProgress(now) < 1) return;
+        bridgeSurgeTriggered = true;
+        bridgeSurgeCount = RailBridgeSurge.CountFor(players);
     }
     public void Finish(double now, string cause, IEnumerable<string> aboard)
     {

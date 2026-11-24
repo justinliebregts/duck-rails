@@ -405,3 +405,12 @@ Justin: the far ridge closing Happy Land popped in at the 175 m far plane ("a mo
 - `Far meadow ground continuation` (Z380–410 slab) sunk 2 cm so it does not z-fight the new floor.
 - Note: rerunning `RailFinaleFortArtPass.Apply()` would rebuild the old ridge; update `FarHill`/`Hills()` first if that builder is ever reused.
 Editor dawn captures show the meadow and side hills running on to the distant mountain ring with no ridge popping in; review video `output/skybox-videos/4-dawn-meadow-no-far-ridge.mp4` (not committed). Headset check is part of the storm sky playtest item.
+
+## Bridge surge at 100%
+
+November 23, 2026. Justin requested one extra enemy per player in the room when the Final Bridge first reaches 100%, at the same moment as the bridge thud and siren, with the new enemies heading for the train.
+
+- `RailRunState.UpdateBridgeSurge` latches `bridgeSurgeTriggered` and `bridgeSurgeCount` (live players then, capped at 8) on the master tick that first sees `BridgeProgress == 1`. The count is part of the retained run snapshot, so master changes, rejoins and late joiners cannot recount or retrigger it. Replays reset it.
+- `RailBridgeSurge.Spawn` (called with `SpawnEnemies` on the spawning master) creates RailZombie room objects with markers `bridge-surge-N` and skips markers that already exist. It honours `RailEnemySpawns.ForcedEnemyType`. Spawn points use the finale's `bridgeReinforcements` first, then its enemy candidates, in a stable order. Laps beyond those points step out on a ring onto supported ground, so a full crew does not stack. `RailEnemyBounds.TryRespawn` uses the same mapping.
+- Aggro: `RailBridgeEncounter.TryGetObjective` gives surge enemies the train deck as their wander objective. Minions resolve this to a boarding opening while the train is slow; normal perception, chase and boarding take over once they see a duck. Surge enemies are not lever defenders.
+- Checks: `RailBridgeSurgeLiveChecks.RunUnitChecks()` (12 Edit Mode checks) and `RailBridgeSurgeLiveChecks.Start()` (two clients: one surge enemy per player on both clients, enemies close on the stopped train, rejoin sees the same surge). Output: `Temp/rails-bridge-surge/`.
