@@ -18,6 +18,7 @@ namespace Game.AI
         Enemy _enemy;
         EnemyPosePacket _write;
         EnemyPosePacket _sent;
+        float neighborBlockedTime;
         Vector3 _netPos;
         Quaternion _netRot = Quaternion.identity;
         bool _hasSample;
@@ -57,11 +58,13 @@ namespace Game.AI
         void OnDisable()
         {
             photonView.RemoveCallback<IOnPhotonViewControllerChange>(this);
+            neighborBlockedTime = 0;
             ClearPrediction();
         }
 
         public void OnControllerChange(Photon.Realtime.Player newController, Photon.Realtime.Player previousController)
         {
+            neighborBlockedTime = 0;
             // A sleeping former master may regain control without ever ticking as a remote.
             if (_enemy != null) _enemy.OnAuthorityChanged();
             if (_enemy != null && _enemy.Gait is Game.Animation.SpiderGait spider) spider.ResetRaise();
@@ -80,6 +83,7 @@ namespace Game.AI
         {
             _trainSample = _netHasAim = false;
             _enemy?.Boarding?.ResetFrame();
+            neighborBlockedTime = 0;
             _netPos = position;
             _netRot = rotation;
             _hasSample = false;
@@ -311,7 +315,8 @@ namespace Game.AI
             bool protectedHit = ProtectsLocalHitter;
             if (!protectedHit && (root.position - targetPosition).sqrMagnitude > snapDistance * snapDistance)
             {
-                _enemy.SetRootPose(targetPosition, targetRotation);
+                neighborBlockedTime = 0;
+                _enemy.SetSpacedPose(targetPosition, targetRotation, true);
                 return;
             }
 
@@ -325,9 +330,25 @@ namespace Game.AI
                 pos = Vector3.MoveTowards(root.position, pos, ReconcileSpeed * Mathf.Max(0f, dt));
             Quaternion rot = Quaternion.Slerp(root.rotation, targetRotation, rotationT);
             _enemy.SetRootPose(pos, rot);
+            if (_pendingHit == 0 && _pushRemaining <= 0f && (root.position - pos).sqrMagnitude > 1e-8f)
+                _enemy.SlideRemoteLanding(pos, rot);
+            // Interpolation for separate views may round opposite sides of a doorway.
+            // If blocked persistently, reconcile to the latest unoccupied authority pose.
+            // A confirmed hit may need the same correction to finish reconciling.
+            // Keep its contact protection until the actual pose has caught up.
+            if (_pendingHit == 0 && _pushRemaining <= 0f && (root.position - pos).sqrMagnitude > .0001f)
+            {
+                neighborBlockedTime += dt;
+                if (neighborBlockedTime > .5f)
+                {
+                    _enemy.SetSpacedPose(targetPosition, targetRotation, true);
+                    neighborBlockedTime = 0;
+                }
+            }
+            else neighborBlockedTime = 0;
             // Allow normal interpolation lag for a moving target; a large
             // accumulated prediction error must settle before contact is lethal.
-            if (_reconciling && (pos - targetPosition).sqrMagnitude <= 0.25f)
+            if (_reconciling && (root.position - targetPosition).sqrMagnitude <= 0.25f)
             {
                 _reconciling = false;
                 _protectUntil = Time.time + HandoffGrace;

@@ -213,20 +213,22 @@ namespace Game.AI
                 return;
             }
 
-            if (NavigationWorkBudget.TryBegin(pathBudgetMilliseconds, NavigationWorkBudget.PendingDuckPlans > 0,
-                out long started, out long deadline))
-            {
-                _pathDeadline = deadline;
-                try { ServicePathRequest(enemies); }
-                finally { NavigationWorkBudget.End(started); _pathDeadline = 0; }
-            }
-
             using (TickMarker.Auto())
             for (int i = 0; i < enemies.Count; i++)
             {
                 Enemy e = enemies[i];
                 if (e.HasAuthority) e.TickAuthority(this, dt, e.ShouldPerceive(this, _frame, i, Mathf.Max(1, perceptionInterval)));
                 else e.ApplyRemote(dt);
+            }
+
+            // Give the single bounded flare search first use of the enemy lane.
+            // Continuous ordinary path requests must not starve an escape.
+            if (NavigationWorkBudget.TryBegin(pathBudgetMilliseconds, NavigationWorkBudget.PendingDuckPlans > 0,
+                out long started, out long deadline))
+            {
+                _pathDeadline = deadline;
+                try { ServicePathRequest(enemies); }
+                finally { NavigationWorkBudget.End(started); _pathDeadline = 0; }
             }
         }
 

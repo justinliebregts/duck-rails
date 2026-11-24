@@ -19,6 +19,7 @@ namespace GR {
         ControllerInput controllerInput;
 
         bool isDead;
+        uint life;
         // PhotonStream takes objects. Box once per death, not on every dead-state packet.
         public object DeathImpactState { get; private set; } = Vector3.zero;
         public object DeathRotationState { get; private set; } = Vector3.zero;
@@ -30,6 +31,7 @@ namespace GR {
                 using var sample = DeathProfile.Equipment.Auto();
                 if (isDead == value) return;
                 isDead = value;
+                if (!value) ++life;
                 if (value) {
                     BagInventory.InvalidateLife();
                     foreach (var menu in FindObjectsByType<PauseMenu>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -160,8 +162,9 @@ namespace GR {
         }
 
         IEnumerator Respawn() {
+            uint dyingLife = life;
             yield return new WaitForSeconds(5);
-            if (!IsDead) yield break;
+            if (!IsDead || life != dyingLife) yield break;
             GameManager.instance.RespawnPlayer();
             ragdoll.transform.parent = transform;
         }

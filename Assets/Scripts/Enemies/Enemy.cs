@@ -320,6 +320,8 @@ namespace Game.AI
             if (_gait is SpiderGait spider) spider.ResetRaise();
             _flareRetreat = _searchingFlareLocation = false;
             _flareThreat = null;
+            followingEscape = false;
+            avoidEscapeNode = -1;
             _killRetreatPending = _searchKillLocation = _searchingKillLocation = false;
             _localMeleeGraceUntil = 0f;
             _nextFarPerception = _farPerceptionInterval = 0f;
@@ -348,7 +350,37 @@ namespace Game.AI
         }
 
         /// <summary>Writes the gait root through its rigidbody so physics does not snap the transform back. The transform is updated in the same call so later reads in this frame see the new pose.</summary>
-        public void SetRootPose(Vector3 position, Quaternion rotation)
+        public void SetRootPose(Vector3 position, Quaternion rotation) => SetSpacedPose(position, rotation, false);
+
+        internal void SetSpacedPose(Vector3 position, Quaternion rotation, bool snapshot)
+        {
+            if (root) position = LimitNeighbors(root.position, position, out _, snapshot);
+            WriteRootPose(position, rotation);
+        }
+
+        internal void SpacingBody(out Vector3 lower, out float axis, out float radius)
+        {
+            axis = 0;
+            if (_flying && _capsule != null)
+            {
+                // Tumble rotates the physics capsule. Enclose its swept orientations.
+                var scale = root.lossyScale;
+                radius = Mathf.Max(_capsule.height * .5f, _capsule.radius) * Mathf.Max(Mathf.Abs(scale.x),Mathf.Max(Mathf.Abs(scale.y),Mathf.Abs(scale.z)));
+                lower = root.TransformVector(_capsule.center);
+            }
+            else if (_climb != null)
+                _climb.SpacingSphere(out lower,out radius);
+            else
+            {
+                float height;
+                if (_ground != null) _ground.GetCapsuleSize(out radius,out height);
+                else { radius = bodyRadius; height = Mathf.Max(2 * radius,bodyHeight); }
+                lower = Vector3.up * radius;
+                axis = height - radius * 2;
+            }
+        }
+
+        void WriteRootPose(Vector3 position, Quaternion rotation)
         {
             if (_body != null)
             {
@@ -363,7 +395,7 @@ namespace Game.AI
         {
             Boarding?.ResetFrame();
             if (_flying) AbortFlight();
-            SetRootPose(position, rotation);
+            WriteRootPose(position, rotation);
             // Teleports must be visible to AI/gait and network serialization immediately,
             // even before physics synchronizes the rigidbody pose back to the Transform.
             root.SetPositionAndRotation(position, rotation);
@@ -529,7 +561,10 @@ namespace Game.AI
             else if (_climb != null)
                 supported = _climb.HasSurfaceSupport(position, manager.SurfaceMask);
             else if (_ground != null)
-                supported = _ground.HasGroundSupport(position, manager.SurfaceMask);
+                // A crowded Smasher descent can rest against another live body
+                // while trying bounded local recovery. It is not falling through the world.
+                supported = (_jump != null && _jump.WaitingForLandingSpace)
+                    || _ground.HasGroundSupport(position, manager.SurfaceMask);
             else
                 supported = Physics.Raycast(position + Vector3.up * 0.1f, Vector3.down,
                     out RaycastHit floorHit, 0.25f, manager.SurfaceMask, QueryTriggerInteraction.Ignore)
@@ -565,7 +600,7 @@ namespace Game.AI
 
         public void CarryNavigationFrame(Matrix4x4 motion, Quaternion rotation)
         {
-            SetRootPose(motion.MultiplyPoint3x4(root.position), rotation * root.rotation);
+            WriteRootPose(motion.MultiplyPoint3x4(root.position), rotation * root.rotation);
             _ground?.CarryFrame(motion, rotation);
             _climb?.CarryFrame(motion, rotation);
             if (_gait is SpiderGait spider) spider.CarryFrame(motion, rotation);
@@ -1000,13 +1035,14 @@ namespace Game.AI
             && DeathFlare.TryFindNear(position, flareFearRadius, out _);
 
         public bool AllowsFlareMovement(Vector3 from, Vector3 to) => flareFearRadius <= 0f
-            || DeathFlare.AllowsMovement(from, to, flareFearRadius);
+            || DeathFlare.AllowsMovement(from, to, flareFearRadius, _flareRetreat && followingEscape);
 
         bool TickFlareFear(EnemyManager manager, float dt)
         {
             if (!HasAuthority || flareFearRadius <= 0f || root == null || _loco == null) return false;
             DeathFlare nearby = DeathFlare.FindNear(root.position, flareFearRadius);
-            if (nearby != null && (!_flareRetreat || _flareThreat != nearby))
+            var graph = manager.Graph;
+            if (nearby != null && (!_flareRetreat || !_flareThreat || !_flareThreat.IsBurning))
             {
                 _flareThreat = nearby;
                 Vector3 up = SupportUp();
@@ -1021,15 +1057,8 @@ namespace Game.AI
                 // Pick on the enemy's support plane, at the chosen 3D distance.
                 _flareDestination = nearby.transform.position + up * height
                     + away * Mathf.Sqrt(Mathf.Max(0f, distance * distance - height * height));
-                int destinationNode = _ground != null ? manager.ResolveGroundNode(_flareDestination)
-                    : manager.ResolveNode(_flareDestination);
-                if (destinationNode >= 0)
-                {
-                    Vector3 snapped = manager.Graph.GetPosition(destinationNode);
-                    float fromFlare = Vector3.Distance(snapped, nearby.transform.position);
-                    if (fromFlare >= 10f && fromFlare <= 14f && !IsFlareProtected(snapped))
-                        _flareDestination = snapped;
-                }
+                followingEscape = false;
+                avoidEscapeNode = -1;
                 _flareRepath = 0f;
                 _retreatProgressPosition = root.position;
                 _retreatStalledTime = 0f;
@@ -1047,6 +1076,7 @@ namespace Game.AI
                 if (_flareRetreat)
                 {
                     _flareRetreat = false;
+                    followingEscape = false;
                     _flareThreat = null;
                     _loco.Interrupt();
                     if (_retreatActive) return false; // Preserve an interrupted hit/kill retreat.
@@ -1066,6 +1096,31 @@ namespace Game.AI
                 return true;
             }
             _flareRepath -= dt;
+            if (graph != null)
+            {
+                bool stalled = EscapeStalled(graph, dt);
+                bool needRoute = !followingEscape || _loco.PathDone || stalled ||
+                    (nearby != null && nearby != _flareThreat && IsFlareProtected(_flareDestination));
+                if (needRoute && _flareRepath <= 0 && lastEscapeFrame != Time.frameCount &&
+                    NavigationWorkBudget.TryBegin(manager.PathBudgetMilliseconds, NavigationWorkBudget.PendingDuckPlans > 0,
+                        out long escapeStarted, out _))
+                {
+                    try
+                    {
+                        if (stalled)
+                        {
+                            avoidEscapeNode = _ground ? _ground.EscapeWaypoint : _climb.EscapeWaypoint;
+                            if (_ground) _ground.BlockEscapeWaypoint();
+                        }
+                        if (nearby) _flareThreat = nearby;
+                        lastEscapeFrame = Time.frameCount;
+                        PlanEscape(graph);
+                    }
+                    finally { NavigationWorkBudget.End(escapeStarted); }
+                }
+                if (followingEscape && !_loco.PathDone) _loco.TickMove(this, manager, dt);
+                return true;
+            }
             if (_flareRepath <= 0f)
             {
                 _loco.ForcePathToWorld(manager, _flareDestination);
@@ -1650,14 +1705,27 @@ namespace Game.AI
             _body.interpolation = RigidbodyInterpolation.Interpolate;
             _body.linearVelocity = launch;
             _body.angularVelocity = Tumble(launch);
+            previousFlightPosition = _body.position;
             _flying = true;
             _grounded = false;
             _landNormal = Vector3.up;
             _flightStartTime = Time.time;
         }
 
+        Vector3 previousFlightPosition;
+
         void TickKnock()
         {
+            Vector3 current = _body.position;
+            Vector3 safe = LimitNeighbors(previousFlightPosition, current, out _);
+            if ((current - safe).sqrMagnitude > 1e-9f)
+            {
+                _body.position = safe;
+                _body.linearVelocity = Vector3.zero;
+                Recover(Vector3.up);
+                return;
+            }
+            previousFlightPosition = current;
             bool grounded = _grounded;
             Vector3 normal = _landNormal;
             _grounded = false;

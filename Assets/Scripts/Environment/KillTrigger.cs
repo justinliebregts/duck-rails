@@ -64,7 +64,8 @@ public class KillTrigger : MonoBehaviour
         if (enemy != null && enemy.IsDormant) return false;
         if (other.attachedRigidbody != null && other.attachedRigidbody.CompareTag("Player") && GR.Player.instance != null && !GR.Player.instance.IsDead) {
             if (enemy != null && RailTestTools.EnemyInvincible) return false;
-            if (enemy != null && enemy.ProtectsLocalPlayer)
+            if (enemy != null && (enemy.ProtectsLocalPlayer || enemy.IsFlareProtected(
+                GR.Player.instance.HeadCenteredGameplayPosition(other.attachedRigidbody.position))))
             {
                 deferredMeleeContacts.Add(other);
                 return false;

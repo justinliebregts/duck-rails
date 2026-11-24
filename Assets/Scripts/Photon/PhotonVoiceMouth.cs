@@ -170,7 +170,11 @@ public class PhotonVoiceMouth : MonoBehaviour
                 _localRecorder = primary;
         }
 
-        Photon.Voice.AudioUtil.ILevelMeter meter = _localRecorder != null ? _localRecorder.LevelMeter : null;
+        // Match what others hear: silence, mute and voice detection keep the beak shut.
+        if (_localRecorder == null || !_localRecorder.IsCurrentlyTransmitting)
+            return 0f;
+
+        Photon.Voice.AudioUtil.ILevelMeter meter = _localRecorder.LevelMeter;
         if (meter == null)
             return 0f;
 

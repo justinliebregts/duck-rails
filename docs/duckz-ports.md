@@ -559,3 +559,13 @@ The item and Hook batch suites were repeated after the regression's store cleanu
   constrained hands and dropped items, release mid-pull in the cargo volume versus outside it, and curves. Pull versus downed state and the desktop pull path were not changed.
   No diagnostic reports inspected; source Duckz untouched.
 - Destination commit: the commit introducing this entry (see Git history).
+
+## November 23, 2026 — Mixed crowds, contested landings and LIV selfie voice
+
+- `a3d484e994e53c219f62de3caa99af009d20c812` was previously ported. Both minion and hook now use the later `984e4a8c` collider reduction documented above.
+- `a529d5224d1b8c91f62f533190475e209a16c736` adds swept enemy spacing, ground/climb passing, PUN replica reconciliation, flare-safe contact and bounded escape routing on the active Rails graph. Changes are in Enemy.Spacing, Enemy.FlareEscape, Enemy, EnemyManager, EnemyNetSync, both locomotion components, ZombieSmasherJump, KillTrigger, DeathFlare and Player. Platform carry and explicit teleportation preserve their Rails positioning semantics. Local respawn rejects a coroutine from an older life. Rails resolves spawn locations through its own session flow.
+- `a19882e7a60d2dd0c43c82c67859e611aa6f9e63` updates ZombieSmasherJump so a denied navigation-budget request retries without charging the normal recovery cooldown. Collision checks retain Rails train and block restrictions.
+- `aeab63f5323f6e3b15b0a98603b74216fa4ba796` is test coverage. RailMixedCrowdCrashChecks uses Rails encounter points and all five room-owned enemy types. Its editor commands spawn a 22-enemy workload, initiate three concurrent landings and observe the surviving peer. Crash injection, flare timing and headset measurements are manual adaptations of the Duckz external device runner.
+- `d8c9155f4286fc7843ff1a05352ab0781e22aeec` gates PhotonVoiceMouth local selfie loudness on Photon Voice Recorder.IsCurrentlyTransmitting. Existing remote speaker metering is preserved.
+- Both projects use Unity 6000.3.24f1 and PUN over Photon Realtime. ZombieCrowdFlareChecks passed in the Duck Rails editor, including seven landing scenarios and zero managed allocations for 100 warmed recovery-hop searches. The fixture emitted a ground-pose rollback warning. Real-client crash, shared landing, Quest and live voice acceptance are queued in [the playtest queue](playtest-queue.md). The destination commit is the one introducing this entry.
+- LIVCameraChecks passed all 91 editor assertions. The public selfie sampling API returned zero with an idle mic.

@@ -40,24 +40,34 @@ public sealed class DeathFlare : MonoBehaviour
         return nearest;
     }
 
-    public static bool AllowsMovement(Vector3 from, Vector3 to, float radius)
+    internal static void CollectThreats(System.Collections.Generic.List<Vector3> positions, Vector3 origin, float range)
+    {
+        positions.Clear();
+        foreach (var flare in active)
+        {
+            if (!flare || !flare.IsBurning) continue;
+            Vector3 position = flare.transform.position;
+            if ((position - origin).sqrMagnitude <= range * range) positions.Add(position);
+        }
+    }
+
+    public static bool AllowsMovement(Vector3 from, Vector3 to, float radius, bool escaping = false)
     {
         float radiusSq = radius * radius;
         foreach (var flare in active)
         {
             if (flare == null || !flare.IsBurning) continue;
-            Vector3 offset = from - flare.transform.position;
-            Vector3 step = to - from;
-            if (offset.sqrMagnitude < radiusSq)
-            {
-                // Allow escape from an existing overlap, but never move closer.
-                if (Vector3.Dot(offset, step) < -0.00001f) return false;
-                continue;
-            }
-            float t = step.sqrMagnitude > 0f ? Mathf.Clamp01(-Vector3.Dot(offset, step) / step.sqrMagnitude) : 0f;
-            if ((offset + step * t).sqrMagnitude < radiusSq) return false;
+            if (!AllowsStep(from, to, flare.transform.position, radiusSq, escaping)) return false;
         }
         return true;
+    }
+    internal static bool AllowsStep(Vector3 from, Vector3 to, Vector3 flare, float radiusSq, bool escaping)
+    {
+        Vector3 offset = from - flare, step = to - from;
+        if (offset.sqrMagnitude < radiusSq)
+            return escaping || Vector3.Dot(offset, step) >= -.00001f;
+        float t = step.sqrMagnitude > 0 ? Mathf.Clamp01(-Vector3.Dot(offset, step) / step.sqrMagnitude) : 0;
+        return (offset + step * t).sqrMagnitude >= radiusSq;
     }
     public const float Lifetime = 40f;
     public const float DeathLaunchDelay = 0f;

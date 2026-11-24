@@ -234,6 +234,12 @@ namespace Game.AI
             return true;
         }
 
+        internal void SpacingSphere(out Vector3 offset, out float radius)
+        {
+            radius = WorldRadius();
+            offset = BodyCenter(Vector3.zero,radius);
+        }
+
         Vector3 BodyCenter(Vector3 position, float radius)
         {
             Vector3 up = _surfaceUp.sqrMagnitude > 1e-6f ? _surfaceUp : Vector3.up;
@@ -290,12 +296,24 @@ namespace Game.AI
             _wantsPath = false;
         }
 
+        internal int EscapeWaypoint => _pathIndex < _pathCount ? _path[_pathIndex] : -1;
+
+        internal void FollowEscape(int[] route, int count)
+        {
+            System.Array.Copy(route, _path, count);
+            _pathIndex = 0;
+            _pathCount = count;
+            _pathComplete = true;
+        }
+
         public void Interrupt()
         {
             ClearPath();
             _pauseTimer = 0f;
             Enemy enemy = GetComponent<Enemy>();
-            SyncUpFromRoot(enemy != null ? enemy.Root : transform);
+            // Changing the route does not change the supporting face. The visible
+            // root is still rotating at corners and cannot supply its contact normal.
+            ResetMotion(enemy != null ? enemy.Root : transform);
         }
 
         /// <summary>Slide along the current face without turning or following a path.</summary>
@@ -529,6 +547,24 @@ namespace Game.AI
             Vector3 delta = target - pos;
             float dist = delta.magnitude;
             if (dist < 1e-5f) return;
+            enemy.LimitNeighbors(pos, pos + delta.normalized * Mathf.Min(.7f, dist + .25f), out Enemy neighbor);
+            if (neighbor)
+            {
+                Vector3 side = Vector3.Cross(_surfaceUp, pos - neighbor.Root.position).normalized;
+                if (Vector3.Dot(side, delta) < -.05f) side = -side;
+                if (!CanPassOnSurface(enemy, g, pos, side, mask))
+                {
+                    side = -side;
+                    if (!CanPassOnSurface(enemy, g, pos, side, mask))
+                    {
+                        _stuckPos = pos;
+                        _stuckTimer = _nodeProgressTimer = 0;
+                        return;
+                    }
+                }
+                target = pos + side * .65f;
+                targetUp = _surfaceUp;
+            }
             Vector3 previousSurfaceUp = _surfaceUp;
             _webDeparture = false;
             _webContact = true;
@@ -551,10 +587,15 @@ namespace Game.AI
 
         public void SyncUpFromRoot(Transform root)
         {
+            if (root != null) _up = _surfaceUp = root.up;
+            ResetMotion(root);
+        }
+
+        void ResetMotion(Transform root)
+        {
             if (_web != null) _web.Cancel();
             _edgeDirection = Vector3.zero;
             _progressNode = -1;
-            if (root != null) _up = _surfaceUp = root.up;
             _stuckPos = root != null ? root.position : _stuckPos;
             _stuckTimer = 0f;
             _escapeTimer = 0f;
@@ -563,9 +604,36 @@ namespace Game.AI
             _headingTimer = 0f;
         }
 
+        bool CanPassOnSurface(Enemy enemy, CrawlGraph graph, Vector3 pos, Vector3 side, LayerMask mask)
+        {
+            Vector3 step = side * Mathf.Max(.65f, WorldRadius() * 2 + .12f);
+            if (step.sqrMagnitude < .001f || !graph.ContainsCrawlSegment(pos, pos + step) ||
+                TrainBlocks(pos, pos + step) || SweepSurface(pos, step, mask, out _) || !HasSurfaceSupport(pos + step, mask)) return false;
+            enemy.LimitNeighbors(pos, pos + step, out Enemy blocker);
+            return !blocker;
+        }
+
         void ApplyMovementPose(Enemy enemy, Vector3 next, Vector3 previousNormal, float dt, float turnLimit)
         {
             Transform root = enemy.Root;
+            Vector3 previousPosition = root.position, previousUp = _up;
+            Quaternion previousRotation = root.rotation;
+            float clearance = WorldRadius() + CollisionSkin;
+            if (Vector3.Dot(previousNormal, _surfaceUp) < .999f)
+            {
+                // The surface root shifts around the sphere at a corner. Sweep
+                // from the previous physical center, using the new normal's
+                // root coordinates, so a normal change cannot invent an overlap
+                // that the spacing solver would incorrectly allow to separate.
+                Vector3 contactFrom = previousPosition + (previousNormal - _surfaceUp) * clearance;
+                enemy.LimitNeighbors(contactFrom, next, out Enemy neighbor);
+                if (neighbor || TrainBlocks(contactFrom, next))
+                {
+                    _surfaceUp = previousNormal;
+                    _up = previousUp;
+                    return;
+                }
+            }
             if (TrainBlocks(root.position, next) || !enemy.AllowsFlareMovement(root.position, next))
             {
                 _surfaceUp = previousNormal;
@@ -576,7 +644,6 @@ namespace Game.AI
             _up = Vector3.Slerp(_up, _surfaceUp, 1f - Mathf.Exp(-upSmooth * dt)).normalized;
             // Contact changes move the surface root around the collision sphere.
             // That offset is not walking velocity and must not flip the heading.
-            float clearance = WorldRadius() + CollisionSkin;
             Vector3 travel = next + _surfaceUp * clearance - (root.position + previousNormal * clearance);
             Vector3 heading = Vector3.ProjectOnPlane(_travelHeading, _up).normalized;
             if (heading.sqrMagnitude < 0.01f) heading = Vector3.ProjectOnPlane(root.forward, _up).normalized;
@@ -605,7 +672,17 @@ namespace Game.AI
                 ? Quaternion.RotateTowards(root.rotation, Quaternion.LookRotation(heading, _up), turnLimit * dt)
                 : root.rotation;
             enemy.SetRootPose(next, rotation);
-            if (_web != null) _web.ObserveMove(_webDeparture, _webContact, _webOrigin, next);
+            if ((root.position - next).sqrMagnitude > 1e-8f && Vector3.Dot(previousNormal, _surfaceUp) < .999f)
+            {
+                // A face change reconstructs the root around the body sphere. A
+                // crowd-limited fraction can sit inside the corner or off both faces.
+                // Keep the last supported contact until the whole transition is free.
+                _surfaceUp = previousNormal;
+                _up = previousUp;
+                enemy.SetRootPose(previousPosition, previousRotation);
+                return;
+            }
+            if (_web != null) _web.ObserveMove(_webDeparture, _webContact, _webOrigin, root.position);
         }
 
         void RequestPath(int goal)
