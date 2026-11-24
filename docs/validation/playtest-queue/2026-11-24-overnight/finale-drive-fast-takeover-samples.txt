@@ -1,0 +1,49 @@
+2026-11-24T10:27:40.8176513Z GO 5x (master path) room=16611 phase=Running run=2416d4 step=12 master=True
+2026-11-24T10:27:40.8890829Z SAMPLE t=1665697.191 d=345.00 v=0.00 local=50.00 phase=Running cmd0=1665678.236 grip=0 progress=1.000
+2026-11-24T10:27:41.1513092Z SAMPLE t=1665697.447 d=345.47 v=3.05 local=50.47 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:41.4197825Z SAMPLE t=1665697.723 d=346.69 v=5.81 local=51.69 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:41.6737952Z SAMPLE t=1665697.978 d=348.49 v=8.36 local=53.49 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:41.9303950Z SAMPLE t=1665698.233 d=350.95 v=10.91 local=55.95 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:42.1857187Z SAMPLE t=1665698.489 d=354.07 v=13.47 local=59.07 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:42.4387153Z SAMPLE t=1665698.742 d=357.80 v=16.00 local=62.80 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:42.7073979Z SAMPLE t=1665699.010 d=362.45 v=18.68 local=67.45 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:42.9651847Z SAMPLE t=1665699.268 d=367.52 v=20.00 local=72.52 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:43.2187782Z SAMPLE t=1665699.521 d=372.58 v=20.00 local=77.58 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:43.4754704Z SAMPLE t=1665699.778 d=377.72 v=20.00 local=82.72 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:43.7308798Z SAMPLE t=1665700.034 d=382.84 v=20.00 local=87.84 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:43.9923093Z SAMPLE t=1665700.297 d=388.10 v=20.00 local=93.10 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:44.2467132Z SAMPLE t=1665700.550 d=393.16 v=20.00 local=98.16 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:44.5226605Z SAMPLE t=1665700.821 d=398.58 v=20.00 local=103.58 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:44.7856356Z SAMPLE t=1665701.090 d=403.96 v=20.00 local=108.96 phase=Running cmd0=1665697.142 grip=0 progress=1.000
+2026-11-24T10:27:45.0595720Z FINISH run=2416d4 reason=Bridge crossed success=True local=114.27 v=18.96 escaped=2/2 progress=1.000 room=16611 phase=Ending run=2416d4 step=12 master=True
+2026-11-24T10:27:45.0595720Z SAMPLE t=1665701.359 d=409.27 v=18.96 local=114.27 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:45.0595720Z MUSIC start #1 run=2416d4 room=16611 phase=Ending run=2416d4 step=12 master=True
+2026-11-24T10:27:45.1246024Z STATE Joined room=16611 phase=Ending run=2416d4 step=12 master=True ready=True players=2 master=True
+2026-11-24T10:27:45.1267736Z ACK step=12 pass=False takeover observed c2_approach=20;c2_escaped=2;c2_maxAfter=18.959999084472656;c2_maxExcess=0.083155938851907862;c2_minApproach=20;c2_monotone=1;c2_players=2;c2_rampS=NaN;c2_takeLocal=114.27239990234375
+2026-11-24T10:27:45.1328798Z VERDICT CASE 2 fast approach at 5x, no stop FAIL | approach 20 m/s, ramp to 4 m/s in 1.6-2.4 s, both escaped | main[c2_approach=20;c2_escaped=2;c2_maxAfter=18.959999084472656;c2_maxExcess=0.083155938851907862;c2_minApproach=20;c2_monotone=1;c2_players=2;c2_rampS=NaN;c2_takeLocal=114.27239990234375] player2[c2_missing=1]
+2026-11-24T10:27:45.2268845Z STATE Joined room=16611 phase=Ending run=2416d4 step=13 master=True ready=True players=2 master=True
+2026-11-24T10:27:45.2268845Z step=13
+2026-11-24T10:27:45.3275065Z SAMPLE t=1665701.630 d=414.12 v=16.79 local=119.12 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:45.5973212Z SAMPLE t=1665701.884 d=418.12 v=14.76 local=123.12 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:45.8635499Z SAMPLE t=1665702.167 d=421.98 v=12.50 local=126.98 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:46.1188226Z SAMPLE t=1665702.422 d=424.91 v=10.46 local=129.91 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:46.3877281Z SAMPLE t=1665702.691 d=427.43 v=8.30 local=132.43 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:46.6505253Z SAMPLE t=1665702.954 d=429.34 v=6.20 local=134.34 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:46.9221786Z SAMPLE t=1665703.224 d=430.72 v=4.04 local=135.72 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:47.1727519Z SAMPLE t=1665703.476 d=431.73 v=4.00 local=136.73 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:47.4381552Z SAMPLE t=1665703.740 d=432.78 v=4.00 local=137.78 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:47.6988800Z SAMPLE t=1665704.000 d=433.82 v=4.00 local=138.82 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:47.9568515Z SAMPLE t=1665704.257 d=434.85 v=4.00 local=139.85 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:48.2186495Z SAMPLE t=1665704.522 d=435.91 v=4.00 local=140.91 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:48.4810424Z SAMPLE t=1665704.785 d=436.96 v=4.00 local=141.96 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:48.7395225Z SAMPLE t=1665705.042 d=437.99 v=4.00 local=142.99 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:48.9998141Z SAMPLE t=1665705.304 d=439.04 v=4.00 local=144.04 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:49.2609162Z SAMPLE t=1665705.563 d=440.08 v=4.00 local=145.08 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:49.5240897Z SAMPLE t=1665705.826 d=441.13 v=4.00 local=146.13 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:49.7752508Z SAMPLE t=1665706.077 d=442.13 v=4.00 local=147.13 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:50.0445143Z SAMPLE t=1665706.348 d=443.22 v=4.00 local=148.22 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:50.3011314Z SAMPLE t=1665706.603 d=444.24 v=4.00 local=149.24 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:50.5602639Z SAMPLE t=1665706.865 d=445.28 v=4.00 local=150.28 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:50.8153982Z SAMPLE t=1665707.111 d=446.27 v=4.00 local=151.27 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:51.0848703Z SAMPLE t=1665707.389 d=447.38 v=4.00 local=152.38 phase=Ending cmd0=1665701.229 grip=0 progress=1.000
+2026-11-24T10:27:51.3533214Z SAMPLE t=1665707.658 d=448.46 v=4.00 local=153.46 phase=Ending cmd0=1665701.229 grip=0 progress=1.000

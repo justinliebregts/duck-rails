@@ -1,0 +1,88 @@
+2026-11-24T10:36:24.6268043Z START crew batch two-client test; Unity 6000.3.24f1 role=main
+2026-11-24T10:36:24.6273101Z STATE PeerCreated room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:24.6283170Z step=0
+2026-11-24T10:36:27.9006672Z STATE ConnectingToNameServer room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:28.2543266Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:28.5353305Z STATE ConnectingToMasterServer room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:29.0388420Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:29.1511627Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:29.5026193Z STATE ConnectingToGameServer room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:30.1813190Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:30.4066842Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:30.5280031Z STATE Joined room=96613 phase=Compound run=- step=0 master=True ready=False players=1
+2026-11-24T10:36:31.7201227Z STATE Joined room=96613 phase=Compound run=- step=0 master=True ready=True players=1
+2026-11-24T10:36:33.9841124Z STATE Joined room=96613 phase=Compound run=- step=0 master=True ready=True players=2
+2026-11-24T10:36:34.8377962Z STATE Leaving room=96613 phase=Compound run=- step=0 master=True ready=False players=0
+2026-11-24T10:36:34.9415153Z STATE ConnectingToMasterServer room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:35.3776777Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:35.4832460Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:35.5912148Z STATE ConnectingToGameServer room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:36.0084375Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:36.1205490Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:36.2254868Z STATE Joined room=96629 phase=Staging run=- step=0 master=True ready=True players=1
+2026-11-24T10:36:39.2723028Z ACK step=0 pass=True created private 96629 
+2026-11-24T10:36:39.3729361Z STATE Joined room=96629 phase=Staging run=- step=1 master=True ready=True players=1
+2026-11-24T10:36:39.3734508Z step=1
+2026-11-24T10:36:42.4327632Z LAUNCH solo room=96629 phase=Staging run=- step=1 master=True
+2026-11-24T10:36:42.6348367Z STATE Joined room=96629 phase=Departing run=894ef2 step=1 master=True ready=False players=1
+2026-11-24T10:36:48.5589418Z STATE Joined room=96629 phase=Departing run=894ef2 step=1 master=True ready=True players=1
+2026-11-24T10:36:48.8810291Z STATE Joined room=96629 phase=Running run=894ef2 step=1 master=True ready=True players=1
+2026-11-24T10:36:48.8810291Z ARRIVED room=96629 phase=Running run=894ef2 step=1 master=True
+2026-11-24T10:36:52.9350498Z SOLO c=18/18;g=10/10;e=4/4;dup=0
+2026-11-24T10:37:15.1924341Z STOP after block 0 reached room=96629 phase=Running run=894ef2 step=1 master=True
+2026-11-24T10:37:17.2894355Z ACK step=1 pass=True solo b0 coal=18/18 gold=10/10 enemy=4/4; b1 coal=18/18 gold=10/10 enemy=4/4 crew=1 value=4.167 c=18/18;g=10/10;e=4/4;dup=0;crew=1;ids=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73
+2026-11-24T10:37:17.2957755Z VERDICT CASE 1 solo crew 1 counts: coal 18/gold 10 per block, value 4.17 PASS | main[solo b0 coal=18/18 gold=10/10 enemy=4/4; b1 coal=18/18 gold=10/10 enemy=4/4 crew=1 value=4.167] player2 in compound[held in public compound during solo run]
+2026-11-24T10:37:17.4034600Z STATE Joined room=96629 phase=Running run=894ef2 step=2 master=True ready=True players=1
+2026-11-24T10:37:17.4039682Z step=2
+2026-11-24T10:37:18.9137283Z STATE Joined room=96629 phase=Running run=894ef2 step=2 master=True ready=True players=2
+2026-11-24T10:37:18.9147330Z PEER joined room=96629 phase=Running run=894ef2 step=2 master=True
+2026-11-24T10:37:28.9794478Z ACK step=2 pass=True tOk=5.513 oldBad=0.000 enemyBad=0.000 joinDup=0.000 newLoot=16.000 dLocal=226.994 dRemote=227.116 value=2.604 crew=2 dLocal=226.99374389648438;dRemote=227.1163330078125;enemyBad=0;joinDup=0;newLoot=16;oldBad=0;tOk=5.5130358999999771;value=2.6041667461395264;c=18/28;g=10/16;e=4/4;dup=0;crew=2;ids=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97
+2026-11-24T10:37:38.2935007Z VERDICT CASE 2 late join: unreached blocks reach crew 2 within 8 s; reached blocks and enemies unchanged; no loot within 35 m PASS | main[tOk=5.513 oldBad=0.000 enemyBad=0.000 joinDup=0.000 newLoot=16.000 dLocal=226.994 dRemote=227.116 value=2.604 crew=2] player2[tOk=0.000 oldBad=0.000 enemyBad=0.000 joinDup=0.000 newLoot=0.000 dLocal=- dRemote=- value=2.604 crew=2]
+2026-11-24T10:37:38.4045767Z STATE Joined room=96629 phase=Running run=894ef2 step=3 master=True ready=True players=2
+2026-11-24T10:37:38.4045767Z step=3
+2026-11-24T10:37:38.4061142Z MOVE crew-2 extra coal-112 id=83 block=1 nearestPlayer=365.682
+2026-11-24T10:37:39.9478138Z ACK step=3 pass=True moved coal-112 id=83 block=1 dist=3.001 m c=18/28;g=10/16;e=4/4;dup=0;crew=2;ids=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97
+2026-11-24T10:37:40.0496901Z STATE Joined room=96629 phase=Running run=894ef2 step=4 master=True ready=True players=2
+2026-11-24T10:37:40.0496901Z step=4
+2026-11-24T10:37:40.1664334Z STATE Joined room=96629 phase=Running run=894ef2 step=4 master=True ready=True players=1
+2026-11-24T10:37:40.1669563Z PEER gone room=96629 phase=Running run=894ef2 step=4 master=True
+2026-11-24T10:38:05.2504252Z ACK step=4 pass=True leave b0r coal=18/18 gold=10/10 b1u coal=19/19 gold=10/10 moved=True movedDist=3.001 since=25.083 c=18/19;g=10/10;e=4/4;dup=0;crew=1;ids=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,83
+2026-11-24T10:38:05.3576569Z STATE Joined room=96629 phase=Running run=894ef2 step=5 master=True ready=True players=1
+2026-11-24T10:38:05.3581603Z step=5
+2026-11-24T10:38:06.9782114Z STATE Joined room=96629 phase=Running run=894ef2 step=5 master=True ready=True players=2
+2026-11-24T10:38:12.5454781Z ACK step=5 pass=True rejoin b0r coal=18/18 gold=10/10 b1u coal=28/28 gold=16/16 moved=True crew=2 dup=0 c=18/28;g=10/16;e=4/4;dup=0;crew=2;ids=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,83,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112
+2026-11-24T10:38:35.8512090Z VERDICT CASE 3 held/moved crew-2 extra survives the leave; extras gone by 25 s; rejoin restores crew 2 with the same loot IDs FAIL | leave[b0r coal=18/18 gold=10/10 b1u coal=19/19 gold=10/10 moved=True movedDist=3.001 since=25.083] rejoin main[rejoin b0r coal=18/18 gold=10/10 b1u coal=28/28 gold=16/16 moved=True crew=2 dup=0] player2[rejoined b0r coal=18/18 gold=10/10 b1u coal=28/28 gold=16/16 moved=False crew=2 dup=0] sameIds=True idCount=88
+2026-11-24T10:38:35.9527952Z STATE Joined room=96629 phase=Running run=894ef2 step=6 master=True ready=True players=2
+2026-11-24T10:38:35.9527952Z step=6
+2026-11-24T10:38:38.9816552Z HANDOFF to peer room=96629 phase=Running run=894ef2 step=6 master=True
+2026-11-24T10:38:39.1979344Z STATE Joined room=96629 phase=Running run=894ef2 step=6 master=False ready=True players=2
+2026-11-24T10:38:44.2013638Z ACK step=6 pass=True host after handoff c=18/28;g=10/16;e=4/4;dup=0 crew=2 c=18/28;g=10/16;e=4/4;dup=0;crew=2;ids=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,83,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112
+2026-11-24T10:38:44.3095039Z CASE4 counts identical=True
+2026-11-24T10:38:44.4223286Z STATE Joined room=96629 phase=Running run=894ef2 step=7 master=False ready=True players=2
+2026-11-24T10:38:44.4223286Z step=7
+2026-11-24T10:38:44.5287817Z STATE Joined room=96629 phase=Running run=894ef2 step=7 master=True ready=True players=2
+2026-11-24T10:38:47.6276178Z ACK step=7 pass=True master again room=96629 phase=Running run=894ef2 step=7 master=True 
+2026-11-24T10:38:47.6328755Z VERDICT CASE 4 master handoff keeps per-block counts identical on both clients; master returns PASS | counts[True] main[master again room=96629 phase=Running run=894ef2 step=7 master=True] player2[handed back to host]
+2026-11-24T10:38:47.7305072Z STATE Joined room=96629 phase=Running run=894ef2 step=8 master=True ready=True players=2
+2026-11-24T10:38:47.7310234Z step=8
+2026-11-24T10:38:47.7315643Z ACK step=8 pass=True run 894ef2c8abbf40d18c84f85f543ca1a3 valid=True runId=894ef2c8abbf40d18c84f85f543ca1a3
+2026-11-24T10:38:47.8352982Z VERDICT CASE 5 run ID is 32 lowercase hex and identical on both clients PASS | main=894ef2c8abbf40d18c84f85f543ca1a3 player2=894ef2c8abbf40d18c84f85f543ca1a3
+2026-11-24T10:38:47.9365604Z STATE Joined room=96629 phase=Running run=894ef2 step=9 master=True ready=True players=2
+2026-11-24T10:38:47.9365604Z step=9
+2026-11-24T10:38:47.9380733Z FAST 5x for the seam approach
+2026-11-24T10:38:48.2716357Z GO seam approach
+2026-11-24T10:38:59.2301793Z STOP near seam dist=13.577
+2026-11-24T10:39:01.3304662Z SPAWN minion 10 m on the Motel side
+2026-11-24T10:39:01.4438993Z WARP main 6 m across the seam room=96629 phase=Running run=894ef2 step=9 master=True
+2026-11-24T10:39:16.2101652Z CROSSED seam along=0.130 room=96629 phase=Running run=894ef2 step=9 master=True
+2026-11-24T10:39:19.2733875Z ACK step=9 pass=True crossed peakAlong=5.231 crossedAt=28.273 
+2026-11-24T10:39:19.4820712Z VERDICT CASE 6a minion crosses the Motel/Farm seam; both clients agree within 2 m at matching times PASS | main[crossed peakAlong=5.231 crossedAt=28.273] player2[crossed peakAlong=5.231 crossedAt=28.581] matchedRows=33 maxDiff=0.714 m rowsMain=33 rowsPlayer2=34
+2026-11-24T10:39:19.5967996Z STATE Joined room=96629 phase=Running run=894ef2 step=10 master=True ready=True players=2
+2026-11-24T10:39:19.5973540Z step=10
+2026-11-24T10:39:19.5973540Z WARP main 60 m away on the Farm side room=96629 phase=Running run=894ef2 step=10 master=True
+2026-11-24T10:39:49.6096491Z ACK step=10 pass=True end along=0.000 peakAlong=5.231 lastChaseAge=1.451 quiet=True back=True 
+2026-11-24T10:39:49.7287334Z VERDICT CASE 6b after the player leaves, minion stops chasing and heads back toward the Motel within 30 s PASS | main[end along=0.000 peakAlong=5.231 lastChaseAge=1.451 quiet=True back=True] player2[end along=0.000 peakAlong=5.231 lastChaseAge=1.756 quiet=True back=True]
+2026-11-24T10:39:49.8449597Z STATE Joined room=96629 phase=Running run=894ef2 step=11 master=True ready=True players=2
+2026-11-24T10:39:49.8449597Z step=11
+2026-11-24T10:39:49.8464641Z VERDICT FAIL 1 case(s) COMPLETE
+2026-11-24T10:39:49.8464641Z FAIL 1 case(s) COMPLETE

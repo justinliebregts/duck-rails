@@ -1,0 +1,55 @@
+2026-11-24T10:57:46.6942680Z START compound batch two-client playtest; Unity 6000.3.24f1 role=main privateCode=94662
+2026-11-24T10:57:46.6958140Z STATE PeerCreated room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:46.6963444Z step=0 tag=step0
+2026-11-24T10:57:49.8956188Z STATE ConnectingToNameServer room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:50.1582071Z STATE Authenticating room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:50.3814868Z STATE ConnectingToMasterServer room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:50.7212042Z STATE Authenticating room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:50.8407914Z STATE Joining room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:51.0857334Z STATE ConnectingToGameServer room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:51.5724524Z STATE Authenticating room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:51.6970367Z STATE Joining room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:51.8111783Z STATE Joined room=36322 kind=compound phase=Compound actor=1 step=0 ready=False players=1/1
+2026-11-24T10:57:52.8884243Z STATE Joined room=36322 kind=compound phase=Compound actor=1 step=0 ready=True players=1/1
+2026-11-24T10:57:54.8765441Z STATE Joined room=36322 kind=compound phase=Compound actor=1 step=0 ready=True players=2/2
+2026-11-24T10:57:55.9140176Z BACKUP 6 of 9 saved loadout keys present for this account
+2026-11-24T10:57:55.9160523Z CLEARED own loadout room=36322 kind=compound phase=Compound actor=1 step=0
+2026-11-24T10:57:56.1231774Z STATE Leaving room=36322 kind=compound phase=Compound actor=1 step=0 ready=False players=0
+2026-11-24T10:57:56.2243535Z STATE ConnectingToMasterServer room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:56.5436306Z STATE Authenticating room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:56.6460686Z STATE Joining room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:56.7534170Z STATE ConnectingToGameServer room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:57.2670950Z STATE Authenticating room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:57.3735038Z STATE Joining room= kind= phase=Compound actor=-1 step=0 ready=False players=0
+2026-11-24T10:57:57.4885613Z STATE Joined room=32316 kind=compound phase=Compound actor=1 step=0 ready=True players=1/1
+2026-11-24T10:58:04.6385376Z STATE Joined room=32316 kind=compound phase=Compound actor=1 step=0 ready=True players=2/2
+2026-11-24T10:58:04.8542159Z ACK step=0 gathered in 32316 
+2026-11-24T10:58:07.8823034Z STATE Joined room=32316 kind=compound phase=Compound actor=1 step=11 ready=True players=2/2
+2026-11-24T10:58:07.8823034Z step=11 tag=c5
+2026-11-24T10:58:07.8838070Z ACK step=11 observer 
+2026-11-24T10:58:08.0960743Z STATE Joined room=32316 kind=compound phase=Compound actor=1 step=11 ready=False players=2/2
+2026-11-24T10:58:08.3090634Z STATE Joined room=32316 kind=compound phase=Compound actor=1 step=11 ready=True players=2/2
+2026-11-24T10:58:23.2352480Z STATE Joined room=32316 kind=compound phase=Compound actor=1 step=12 ready=True players=2/2
+2026-11-24T10:58:23.2357735Z step=12 tag=step12
+2026-11-24T10:58:23.3350467Z STATE Leaving room=32316 kind=compound phase=Compound actor=1 step=12 ready=False players=0
+2026-11-24T10:58:23.4389124Z STATE ConnectingToMasterServer room= kind= phase=Compound actor=-1 step=12 ready=False players=0
+2026-11-24T10:58:23.7475670Z STATE Authenticating room= kind= phase=Compound actor=-1 step=12 ready=False players=0
+2026-11-24T10:58:23.8516908Z STATE Joining room= kind= phase=Compound actor=-1 step=12 ready=False players=0
+2026-11-24T10:58:23.9580967Z STATE ConnectingToGameServer room= kind= phase=Compound actor=-1 step=12 ready=False players=0
+2026-11-24T10:58:24.3669312Z STATE Authenticating room= kind= phase=Compound actor=-1 step=12 ready=False players=0
+2026-11-24T10:58:24.5784511Z STATE Joining room= kind= phase=Compound actor=-1 step=12 ready=False players=0
+2026-11-24T10:58:24.6789922Z STATE Joined room=94662 kind=private phase=Staging actor=1 step=12 ready=True players=1/1
+2026-11-24T10:58:25.4055583Z STATE Joined room=94662 kind=private phase=Staging actor=1 step=12 ready=True players=2/2
+2026-11-24T10:58:27.6935404Z ACK step=12 created private 94662 
+2026-11-24T10:58:28.5284855Z STATE Joined room=94662 kind=private phase=Staging actor=1 step=30 ready=True players=2/2
+2026-11-24T10:58:28.5294864Z step=30 tag=c4a
+2026-11-24T10:58:38.2826240Z ACK step=30 three toggles: on1=1,on2=0,on3=1 c4a.main.on1=1;c4a.main.on2=0;c4a.main.on3=1;c4a.main.ready=1;c4a.main.t1=68211.463;c4a.main.t2=68213.644;c4a.main.t3=68215.803
+2026-11-24T10:58:38.3839439Z VERDICT CASE C4a cupcake light toggles PASS | toggle 1 peer lag 0.23 s ok; toggle 2 peer lag 0.25 s ok; toggle 3 peer lag 0.23 s ok; peer light changes 3 (want 3)
+2026-11-24T10:58:38.4874044Z STATE Joined room=94662 kind=private phase=Staging actor=1 step=31 ready=True players=2/2
+2026-11-24T10:58:38.4884078Z step=31 tag=c4b
+2026-11-24T10:59:42.4297478Z ACK step=31 dropped lit, regrabbed, relit False c4b.main.dropPT=68218.19;c4b.main.offPT=68279.64;c4b.main.on30=1;c4b.main.ready=1;c4b.main.relit=0;c4b.main.t4=68280.267
+2026-11-24T10:59:42.5322513Z VERDICT CASE C4b cupcake drop timer FAIL | main off 61.4 s after drop (want 55-65), on at 30 s: True; peer off 61.5 s after drop, peer changes 1 (want 2: off, then relit)
+2026-11-24T10:59:42.6374870Z STATE Joined room=94662 kind=private phase=Staging actor=1 step=32 ready=True players=2/2
+2026-11-24T10:59:42.6390000Z step=32 tag=c4c
+2026-11-24T10:59:45.7608828Z STATE Joined room=94662 kind=private phase=Staging actor=1 step=32 ready=True players=1/1
+2026-11-24T10:59:50.1550642Z STATE Joined room=94662 kind=private phase=Staging actor=1 step=32 ready=True players=2/2

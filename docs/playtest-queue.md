@@ -45,10 +45,7 @@ Listen while descending both switchbacks, crossing the creek, entering a mine an
 ## Victory music return fade — queued for playtest
 
 - Win a public expedition and listen through the final countdown. Confirm the victory music stays audible until departure, then fades over three seconds. Repeat on a private expedition returning to staging. Check the transition into the Compound music and listen for a loop seam near the end of the countdown.
-
-## Admin train speed and bridge lowering — queued for playtest
-
-- With two clients, use the admin Train Speed control at the finale. Verify that a continuous hold lowers the bridge in about 12 seconds at 5x and 60 seconds at 1x, with reinforcements halfway through. Switch speeds during a hold and verify that both clients see continuous progress. Release and resume the hold, then check progress on a late join.
+- November 24 desktop run (private, two clients): one music source, audible through Ending and Returning, then a 2.9 to 3.0 s fade on leaving to staging. The public win, the Compound music transition and the loop seam still need listening.
 
 ## Held shovel scenery impacts — queued for playtest, 2026-11-23
 
@@ -109,6 +106,7 @@ Editor evidence includes successful compilation, saved Compound placement, CuteP
 ## Cross-block enemy pursuit — queued for playtest, 2026-11-22
 
 - Unity Edit Mode found complete ground paths in both directions at x = -24, 0 and 24 m across 17 catalogue joins (102 searches). In offline Play Mode a minion chased across Motel/Farm and back 24 m from the centerline ([play log](validation/track-crossing/block-seam.txt)). Check actual movement on two clients across a seam, reverse repeatedly, break sight and watch the enemy walk home. Repeat with a master handoff and confirm boarding eligibility stays minion/spider only.
+- November 24 two-client desktop run: a minion crossed the Motel/Farm seam with both clients within 0.71 m, then walked back after the player left (see Results). Master handoff during pursuit, repeated reversals and boarding eligibility remain open.
 
 ## Networked LIV camera proxy — queued 2026-11-22
 
@@ -158,6 +156,7 @@ Editor evidence includes successful compilation, saved Compound placement, CuteP
 - Pull the Quackbear cupcake and bag in Compound, Departure Shop and the midpoint helicopter. The miniatures should grow smoothly into the held models. See [character-bundles.md](character-bundles.md#quackbear-final-art--november-21).
 - Toggle the cupcake with any use button on the holding hand (same as the flashlight). It should light the area around the duck with a warm glow (point light, no shadows) and the cupcake emission should switch with it. Judge brightness on Quest in a dark block.
 - With a peer and a late joiner: both see the light on/off state. Drop it while lit: it stays on, then turns off after 60 s. Stash it lit: it turns off.
+- November 24 two-client desktop run: the peer saw three toggles within 0.25 s, and a dropped lit cupcake went dark after 61.4 s on both clients. Late join, stash-while-lit and the Quest brightness check remain.
 - Equip the bag. Stow eight different items, take them back out, and check every ring is reachable and readable from duck height on Quest. Confirm a peer sees all eight items.
 
 ## Huggy flare gun and 8-slot bag — queued 2026-11-20
@@ -189,6 +188,7 @@ Editor evidence includes successful compilation, saved Compound placement, CuteP
 ## Tales from the Rails — queued for playtest
 
 - Verify that a new public departure, private run and Editor quick-start each assign a 32-character lowercase hexadecimal expedition ID. For a public departure, check that both clients join the same train and their board reports use the same ID.
+- November 24: a private run used one 32-character lowercase hex ID on both clients. Public departure and Editor quick-start remain unchecked.
 
 - November 23: Quest 0.5.2 saved six pending reports, including an 846 m escape. The oldest pending report used a public departure ID (`run-` plus 32 hex digits), which the API rejected before storing any counters. The API fix accepts that form and stores its canonical 32-digit ID. After rollout, keep the same signed-in install online, confirm the saved queue drains, and compare the refreshed distance, escape totals and rankings. Recovery is queued for playtest.
 - November 23, single-headset recovery verified against the existing API: corrected three prefixed IDs in six saved pending reports on Quest 0.5.2. The game's signed uploader drained the queue from six to zero. Compound board rendering and automatic recovery on the updated API remain queued for playtest.
@@ -1797,6 +1797,22 @@ No new block conversion or device run occurred during this documentation task.
 
 ## Results
 
+### Overnight desktop batches, November 24
+
+Unity 6000.3.24f1 on `main` at `56b909c28`, two MPPM desktop clients on real Photon, no headset. Four new editor harnesses in `Assets/Editor/Checks/Networking/` (`RailFinaleBatchLiveChecks`, `RailFinaleDriveLiveChecks`, `RailCrewBatchLiveChecks`, `RailCompoundBatchLiveChecks`). Harness bugs were fixed between runs; no game code changed. [Verdicts and traces](validation/playtest-queue/2026-11-24-overnight/).
+
+- **PASS, 5x burns no fuel.** Fuel stayed at 40.67 on both clients over about 700 m at 20 m/s (60 samples). A peer that left and rejoined during 5x read the same value. Back at 1x, draining resumed with no jump, and toggles while stopped kept the train at 0 m/s. The one failed verdict was a harness sample taken while the peer was leaving the room.
+- **PASS, bridge lowering timing.** A continuous 5x hold reached 100% in 12.8 s with one midpoint reinforcement on both clients. A 1x hold with one 4 s release took 61.9 s of active holding, with one reinforcement. Progress stayed frozen during the release, and a peer that rejoined mid-hold matched the host within 0.3%.
+- **PASS, final bridge driving handoff.** After stopping midspan and a peer GO, the train ramped back in 2.2 s. Control passed at finale-local Z 110.6, and both riders escaped. A 5x approach without stopping slowed from 20 to 4 m/s in 2.0 s at takeover with no distance jump on either client (the harness verdict fired before the ramp ended; see `finale-drive-fast-takeover-samples.txt`). An incomplete bridge crashed at entry with no escape credit.
+- **PASS, victory music fade (private runs).** Both clients played one music source, audible through the Ending and Returning countdown, then faded over 2.9 to 3.0 s on leaving to staging.
+- **PASS, live crew size.** Solo run: 18 coal and 10 gold per block at value 4.17. After a late join, the unreached block reached 28 coal and 16 gold within 5.5 s, the reached block and enemies were unchanged, the nearest new loot was 227 m from a player, and the value was 2.60. After the peer left, extras were gone by 25 s, but a moved coal stayed. The rejoin restored crew-2 counts with no duplicates and identical loot view IDs (88). A master handoff kept counts. The moved coal was moved by the host's transform, so a real grab and bag stash still need a check.
+- **PASS, run ID.** The private run used one 32-hex ID on both clients. Public departure and Editor quick-start were not checked.
+- **PASS, two-client seam pursuit.** A minion crossed the Motel/Farm seam, and the client positions matched within 0.71 m over 33 samples. It stopped chasing and walked back once the player left. Pursuit across a master handoff was not covered.
+- **PASS, cupcake light sync and drop timer.** The peer saw three toggles within 0.23 to 0.25 s. A dropped lit cupcake went dark after 61.4 s on both clients. The rejoin-while-lit and stash checks did not run.
+- **PASS, Roadside Motel capacity (Edit Mode).** 96 coal and 64 gold candidates. Crews 1 to 8 select their exact counts (crew 8: 93/52) on all five normal blocks. `RailResourceBalanceChecks` had been failing on a stale four-block count; fixed in `56b909c28`. `RailSessionChecks.Run()` passed.
+- **BLOCKED, Compound gold bar credit.** A bar spawned by the harness was consumed once, but no wallet credit arrived within 15 s. Compound deposits queue a backend reward keyed by the bar's spawn token, and a harness-spawned bar is probably not one the backend recognises. Repeat with a bar carried back from an expedition before calling this a bug.
+- **BLOCKED, scripted bag withdrawals and departure carry.** The simulated rig's take-out did not complete reliably, so the withdrawal cases were skipped. The November 23 one-client result stands, and the headset check is unchanged.
+
 ### Grouped desktop checks, November 23 — report-only
 
 Two-client Photon coverage exercised crew-size changes, bridge lowering and surge, the stop/restart crossing, fuel continuity, and public departure. Three clients passed the baseline departure, acknowledged handoff, and non-master reconnect fixture. Offline and Edit Mode checks added seam pursuit and pickup coverage, and the live seeded-bag withdrawals survived cleanup. The blocked-landing crash retained all 31 watched views. One surge enemy missed the 25-second approach threshold, the boarding client's captured departure skipped “ALL ABOARD!”, and the session fixture failed its build-scene assertion. No fixes were made. Targeted cases that need more evidence remain queued. [Ten-item report and evidence](validation/playtest-queue/2026-11-23-grouped-report.md).
@@ -1978,13 +1994,11 @@ Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Ver
 - [ ] With no eligible running public train, press JOIN. Verify the return position faces the readable error, then retry with an eligible train and verify boarding.
 - [ ] Create a private code from the compound. Verify the creator faces the platform from outside its trigger, and a normal public arrival still uses the regular spawn slots.
 
-## 5x train speed burns no fuel — queued 2026-11-23
-
-- [ ] With two clients in a private test run (dev build/editor), note the fuel gauge, toggle Train Speed to 5x from the pause menu, drive for a minute: fuel stays flat on both clients and a late joiner sees the same value. Toggle back to 1x: fuel resumes draining from the same value (no jump), and the train does not restart if it was stopped. Changed in `RailSessionRules.EvaluateTrain` (zero fuel per metre while `RailTestTools.FastTrainBurnsNoFuel`); the flag is the existing room property committed with the motion/fuel rebase, so all clients agree. Not compiled in Unity or run live.
-
 ## Final bridge driving handoff — queued for playtest (2026-11-23)
 
 Drive partway across a lowered bridge, stop and restart. Confirm both clients retain controls until the front reaches the far bank at finale Z110. Check escape credit for riders, position continuity and a two-second ramp to 4 m/s from slow and fast approaches. Capture headset frame times across takeover and results display. An incomplete bridge should still crash at entry.
+
+- November 24 desktop run passed the stop and restart, Z110 takeover, escape credit, slow and fast ramps and the incomplete-bridge crash (see Results). Headset frame times across the takeover and results display remain queued for playtest.
 
 ## Canyon mine entrance lanterns — queued for playtest
 
@@ -1998,6 +2012,7 @@ On headset, step and push off the creek bed and each of the five underground pud
 
 - [ ] Two clients, private run: start as solo (second client stays in compound/menu), then have the second client join after departure. Within about 5 s of joining, blocks ahead of the train gain coal/gold (solo 18 coal → duo 28 coal per block) and enemies only once the crew reaches 3; blocks already reached keep their counts. Nothing appears within 35 m of either player. Coal value in the furnace popup drops from about 4.2 to 2.6.
 - [ ] Have the second client leave. After about 20 s, untouched extra loot in unreached blocks disappears on both clients; held, stashed or moved items stay. Re-join and confirm the loot comes back without duplicates. Master handoff mid-run keeps counts unchanged. A 3-player join (enemy 4 → 8 per block) needs a headset or three-client session.
+- November 24 desktop run passed the first two items with two clients (see Results). A real grab or bag stash of an extra before the peer leaves is still unchecked; the run moved the coal by transform.
 - [ ] Tripled coal (November 24): on headset with a duo, check a block has noticeably more coal (28 per block), the fuel gauge rises about 2.6 per chunk, and frame time stays steady near coal piles and during departure seeding.
 - [ ] Full coal on headset (queued November 24): with an eight-player crew, every block ahead seeds 93 coal (plus 52 gold and 12 enemies). On a Quest client, capture frame times at departure seeding, while the train passes a fully stocked block, standing in the densest coal area (Skyscraper towers, Container Yard, Motel arrival lot) and after several crew changes. Compare against a solo run on the same route. If eight players are not available, record the largest crew tested and leave this item open. Also check the new Roadside Motel coal (bus roofs, guest rooms, pool basins) for hand reach.
 

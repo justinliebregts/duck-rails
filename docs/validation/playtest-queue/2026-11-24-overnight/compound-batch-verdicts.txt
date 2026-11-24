@@ -1,0 +1,3 @@
+2026-11-24T10:58:23.2292103Z CASE C5 Compound gold bar deposit FAIL | bars consumed 1 (want 1); depositor credits 0 (want 1) amount NaN; wallet coins 141 -> 141; repeated intake contact after consume adds no credit; capped-wallet variant skipped no credit within 15 s with the backend ready
+2026-11-24T10:58:38.3839439Z CASE C4a cupcake light toggles PASS | toggle 1 peer lag 0.23 s ok; toggle 2 peer lag 0.25 s ok; toggle 3 peer lag 0.23 s ok; peer light changes 3 (want 3)
+2026-11-24T10:59:42.5322513Z CASE C4b cupcake drop timer FAIL | main off 61.4 s after drop (want 55-65), on at 30 s: True; peer off 61.5 s after drop, peer changes 1 (want 2: off, then relit)
