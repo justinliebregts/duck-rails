@@ -68,3 +68,7 @@ child-position `sourceKeys` and broke the build guard. `bakedFixtures` 40 → 59
 Layout 1,191/1,191 identical, 2 lightmaps and 982 probes; texture/LightingData
 GUIDs unchanged. Approved fingerprint bf95ae3b… → 4dc2e6d7…; `ValidateSaved`
 passes. Runtime/headset appearance is queued for playtest.
+
+## Z-fighting vertex nudge (2026-11-24, user-approved)
+
+Justin nudged vertices by about 1-2 cm in 71 of 246 atlas chunks in `ContainerYardAtlasMeshes.asset` (committed in 663e5692a) to stop z-fighting on the containers. UVs, materials and lightmaps are unchanged. Approved fingerprint 4dc2e6d7… → e5c87177…; `ValidateSaved` passes and an Android Player build succeeds. Headset appearance is not yet checked.
