@@ -101,7 +101,7 @@ public static class RailStabilityLiveChecks
     }
     static string[] Roles => control.clients == 4 ? new[] { "main", "player2", "player3", "player4" } : new[] { "main", "player2", "player3" };
     static bool AllAck => Roles.All(r => ReadReceipt(r)?.revision == revision);
-    static int ExpectedCargo => RailExpedition.Instance.coalPoints.Length + RailExpedition.Instance.goldPoints.Length + PhotonSession.Get(RailResourceBalance.CrewKey, 1);
+    static int ExpectedCargo => RailExpedition.Instance.ActivePoints(RailSpawnKind.Coal).Length + RailExpedition.Instance.ActivePoints(RailSpawnKind.Gold).Length + PhotonSession.Get(RailResourceBalance.CrewKey, 1);
     static bool Ready => PhotonSession.Instance != null && PhotonSession.IsRailsRoom && PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest;
     static bool AllPoses => PhotonNetwork.PlayerList.All(p => !p.IsInactive && PhotonPlayer.ForActor(p.ActorNumber) != null);
     static bool Settled

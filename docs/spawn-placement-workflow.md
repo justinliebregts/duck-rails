@@ -22,7 +22,7 @@ The manually authored Convenience Store is the style reference. Inspect its curr
 - Preserve existing candidates and append additions unless replacement is explicitly requested. Never automatically scatter markers onto arbitrary floors or rebake navigation to satisfy a quota.
 - **Acceptance before declaring a pool ready:** run `RailEnemySpawnBalance.Select(block, seed, crew)` for crew sizes 1–8 and at least 100 seeds. Require the full 4/8/12 target, the correct per-quadrant quota, unique selected markers and at least 15 m horizontal separation for every selected pair. Verify saved asset reload and nested EnemySpawnMarker prefab references. `RailEnemySpawnBalanceChecks.Run()` covers currently enabled normal blocks.
 - If capacity fails, add validated candidates in the affected quadrants and rerun; do not weaken spacing, overfill another quadrant, or report a raw candidate count as acceptance. Runtime intentionally spawns fewer rather than force a cluster and logs the shortfall.
-- For loot, also validate capacity against the eight-player maxima of 31 coal/52 gold (current tuning). Keep candidate counts separate from per-run counts in handoffs.
+- For loot, also validate capacity against the eight-player maxima of 93 coal/52 gold (current tuning since November 24; was 31 coal). Keep candidate counts separate from per-run counts in handoffs.
 
 ## How the passes were made
 

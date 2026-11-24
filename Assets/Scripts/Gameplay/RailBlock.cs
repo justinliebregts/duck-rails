@@ -78,7 +78,7 @@ public sealed class RailRouteState
 {
     public int layoutVersion;
     public string run;
-    public int resourceCrew = 1; // Frozen with the route; never revalue loot on roster changes.
+    public int resourceCrew = 1; // Departure crew. The master later rescales unreached blocks via rails.resourceCrew (RailExpedition.Crew).
     public int enemySeed;
     public string[] blocks;
     public int[] variations;

@@ -31,6 +31,14 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     int displayedCountdown;
     public float bridgeZ = 550;
     public int baseEnemyCount = 2;
+    // Crew scaling, set by RailRoute: per point, the smallest crew that uses it and the track
+    // distance where its block starts (-1 for the fixed midpoint/finale points).
+    [NonSerialized] public int[] coalCrew = Array.Empty<int>(), goldCrew = Array.Empty<int>(), enemyCrew = Array.Empty<int>();
+    [NonSerialized] public float[] coalStart = Array.Empty<float>(), goldStart = Array.Empty<float>(), enemyStart = Array.Empty<float>();
+    /// <summary>Run id once the master has changed the crew mid-run; later spawns then avoid reached blocks and nearby players.</summary>
+    public const string CrewRunKey = "rails.crewRun";
+    const float CrewClearance = 35f, CrewRaiseDelay = 5f, CrewLowerDelay = 20f;
+    int pendingCrew; double pendingCrewSince; string reconciledRun; int reconciledCrew; double reconcileRetryAt;
     public DeathFlare flarePrefab;
     public RailRunState State { get; private set; } = new RailRunState();
     readonly Queue<(int actor, string action, int target, object[] coal)> requests = new Queue<(int, string, int, object[])>();
@@ -245,6 +253,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     {
         bool ending = PhotonSession.Phase == RailPhase.Ending && State.finished;
         if (PhotonSession.Phase != RailPhase.Running && !ending) return;
+        if (!ending && PhotonMasterHandoff.CanSpawnRoomObjects) ReconcileCrew(PhotonNetwork.Time);
         if (!ending && PhotonMasterHandoff.CanSpawnRoomObjects) { SpawnEnemies(); RailBridgeSurge.Spawn(PhotonSession.RunId, State.run == PhotonSession.RunId ? State.bridgeSurgeCount : 0); }
         if (pendingRequestJson != null && PhotonNetwork.Time - pendingRequestAt < 1.2) return;
         pendingRequestJson = null;
@@ -308,6 +317,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         next.UpdateBridgeHold(now, BridgeHoldUntil(next, now), RailTestTools.FastTrainForTick(changes));
         next.UpdateBridgeReinforcements(now, Mathf.Max(0, enemyPoints.Length - baseEnemyCount));
         next.UpdateBridgeSurge(now, RailBridgeSurge.LivePlayers());
+        UpdateCrew(changes, now);
         SampleStats(next, now);
         bool allDown = next.players.Any(p => IsConnected(p.actor)) && next.players.Where(p => IsConnected(p.actor)).All(p => p.down);
         if (!allDown) next.allDownAt = 0;
@@ -559,7 +569,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         RailSessionRules.EvaluateTrain(motion, PhotonSession.Get(RailSessionRules.Fuel, RailResourceBalance.StartingFuel), now, out var z, out var speed, out var fuel);
         changes[RailSessionRules.Motion] = new object[] { now, z, speed, (float)motion[3] };
         changes[RailSessionRules.Fuel] = Mathf.Min(RailResourceBalance.Capacity,
-            fuel + count * RailResourceBalance.CoalValue(RailRoute.Instance?.Selection?.resourceCrew ?? 1));
+            fuel + count * RailResourceBalance.CoalValue(Crew));
     }
     readonly HashSet<string> shownFuel = new HashSet<string>();
     string fuelPopupRun;
@@ -571,7 +581,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         var module = furnace != null ? furnace.GetComponentInParent<RailFurnaceModule>() : null;
         for (int i = 0; i < State.consumed.Count && i < State.consumedSpawns.Count; i++)
             if (shownFuel.Add(State.consumed[i] + "|" + State.consumedSpawns[i]) && !seed && module != null)
-                module.ShowFuelGain(RailResourceBalance.CoalValue(RailRoute.Instance?.Selection?.resourceCrew ?? 1));
+                module.ShowFuelGain(RailResourceBalance.CoalValue(Crew));
     }
     void ConsumeCommittedCoal()
     {
@@ -691,19 +701,115 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         string run = PhotonSession.RunId;
         bool Has(string marker) => HasMarker(run, marker);
         // Other equipment is bought at shops. RailWorld grants one train flashlight per player.
+        // Points beyond the current crew stay empty; ReconcileCrew fills them if the crew grows.
+        int crew = Crew;
         for (int i = 0; i < goldPoints.Length; i++)
-            if (!Has("gold-" + i) && !State.consumedMarkers.Contains("gold-" + i))
+            if (Need(goldCrew, i) <= crew && !Has("gold-" + i) && !State.consumedMarkers.Contains("gold-" + i))
                 PhotonNetwork.InstantiateRoomObject(goldPrefab.name, goldPoints[i].position, Quaternion.identity, 0, new object[] { "rails", run, "gold-" + i });
         for (int i = 0; i < coalPoints.Length; i++)
-            if (!Has("coal-" + i)) PhotonNetwork.InstantiateRoomObject(coalPrefab.name, coalPoints[i].position, Quaternion.identity, 0, new object[] { "rails", run, "coal-" + i });
+            if (Need(coalCrew, i) <= crew && !Has("coal-" + i)) PhotonNetwork.InstantiateRoomObject(coalPrefab.name, coalPoints[i].position, Quaternion.identity, 0, new object[] { "rails", run, "coal-" + i });
+    }
+    /// <summary>Crew size used for loot, enemies and coal value. Departure count until the master rescales it.</summary>
+    public static int Crew => Instance != null ? Instance.CurrentCrew : Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey,
+        RailRoute.Instance?.Selection?.resourceCrew ?? 1), 1, RailResourceBalance.MaxCrew);
+    /// <summary>Departure crew of the built route (set by RailRoute); the fallback outside a room.</summary>
+    [NonSerialized] public int routeCrew = 1;
+    public int CurrentCrew => Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey, routeCrew), 1, RailResourceBalance.MaxCrew);
+    /// <summary>Points the current crew uses, ignoring blocks frozen by a mid-run change. For checks and diagnostics.</summary>
+    public Transform[] ActivePoints(RailSpawnKind kind)
+    {
+        var (points, needs) = kind == RailSpawnKind.Coal ? (coalPoints, coalCrew) : kind == RailSpawnKind.Gold ? (goldPoints, goldCrew) : (enemyPoints, enemyCrew);
+        int crew = CurrentCrew;
+        return (points ?? Array.Empty<Transform>()).Where((p, i) => Need(needs, i) <= crew).ToArray();
+    }
+    public int ActiveBaseEnemyCount
+    {
+        get { int crew = CurrentCrew, n = 0; for (int i = 0; i < baseEnemyCount; i++) if (Need(enemyCrew, i) <= crew) n++; return n; }
+    }
+    static bool CrewScaled => PhotonSession.Get(CrewRunKey, "") == PhotonSession.RunId;
+    static int Need(int[] needs, int i) => needs != null && i < needs.Length ? needs[i] : 1;
+    static float Start(float[] starts, int i) => starts != null && i < starts.Length ? starts[i] : -1;
+    static bool TrainBefore(float start) => RailTrain.Instance != null && RailTrain.Instance.Distance < start;
+    static bool CrewNear(Vector3 point)
+    {
+        foreach (var player in PhotonNetwork.PlayerList)
+            if (!player.IsInactive && Position(player.ActorNumber, out var head) && Vector3.Distance(head, point) < CrewClearance) return true;
+        return false;
+    }
+    /// <summary>Master-only. Commits the live player count as the crew after it has held steady,
+    /// so brief reconnects do not churn loot. Coal already aboard simply changes value.</summary>
+    void UpdateCrew(Hashtable changes, double now)
+    {
+        int live = Mathf.Clamp(PhotonNetwork.PlayerList.Count(p => !p.IsInactive), 1, RailResourceBalance.MaxCrew);
+        int crew = Crew;
+        if (live == crew) { pendingCrew = 0; return; }
+        if (pendingCrew != live) { pendingCrew = live; pendingCrewSince = now; return; }
+        if (now - pendingCrewSince < (live > crew ? CrewRaiseDelay : CrewLowerDelay)) return;
+        changes[RailResourceBalance.CrewKey] = live;
+        changes[CrewRunKey] = PhotonSession.RunId;
+        DuckzLog.Log("Rail crew " + crew + " -> " + live + "; rescaling blocks the train has not reached", this);
+    }
+    /// <summary>Master-only. After a crew change, adds or removes coal, gold and enemies in blocks the train
+    /// has not reached. Only untouched loot and enemies away from every player are removed; spawns also
+    /// wait until no player is near. Deferred points retry every two seconds while the block is ahead.</summary>
+    void ReconcileCrew(double now)
+    {
+        string run = PhotonSession.RunId;
+        if (!CrewScaled || RailTrain.Instance == null) return;
+        int crew = Crew;
+        if (reconciledRun == run && reconciledCrew == crew && (reconcileRetryAt <= 0 || now < reconcileRetryAt)) return;
+        reconciledRun = run; reconciledCrew = crew; reconcileRetryAt = 0;
+        var views = new Dictionary<string, PhotonView>(StringComparer.Ordinal);
+        foreach (var v in PhotonNetwork.PhotonViewCollection)
+            if (v != null && v.InstantiationData is object[] d && d.Length >= 3 && d[d.Length - 2] as string == run && d[d.Length - 1] is string m)
+                views[m] = v;
+        bool deferred = false;
+        bool Ready(float start, Vector3 point)
+        {
+            if (start < 0 || !TrainBefore(start)) return false;
+            if (CrewNear(point)) { deferred = true; return false; }
+            return true;
+        }
+        void Loot(string prefix, Transform[] points, int[] needs, float[] starts, GameObject prefab)
+        {
+            for (int i = 0; i < points.Length; i++)
+            {
+                string marker = prefix + i;
+                bool active = Need(needs, i) <= crew;
+                views.TryGetValue(marker, out var view);
+                if (active == (view != null) || State.consumedMarkers.Contains(marker) || (State.gatheredMarkers?.Contains(marker) ?? false)) continue;
+                if (active)
+                {
+                    if (Ready(Start(starts, i), points[i].position))
+                        PhotonNetwork.InstantiateRoomObject(prefab.name, points[i].position, Quaternion.identity, 0, new object[] { "rails", run, marker });
+                    continue;
+                }
+                var item = view.GetComponent<PhotonGrabbable>();
+                bool untouched = view.IsMine && (item == null || (!item.IsHeldByAnyPlayer && !item.IsStashed)) &&
+                    Vector3.Distance(view.transform.position, points[i].position) < .75f;
+                if (untouched && Ready(Start(starts, i), view.transform.position)) PhotonNetwork.Destroy(view.gameObject);
+            }
+        }
+        Loot("coal-", coalPoints, coalCrew, coalStart, coalPrefab);
+        Loot("gold-", goldPoints, goldCrew, goldStart, goldPrefab);
+        // Enemies above the crew are removed here; SpawnEnemies adds missing ones within the crew.
+        for (int i = 0; i < baseEnemyCount && i < enemyPoints.Length; i++)
+            if (Need(enemyCrew, i) > crew && views.TryGetValue("enemy-" + i, out var enemy) && enemy.IsMine &&
+                Ready(Start(enemyStart, i), enemy.transform.position))
+                PhotonNetwork.Destroy(enemy.gameObject);
+        if (deferred) reconcileRetryAt = now + 2;
     }
     void SpawnEnemies()
     {
         int count = State.bridgeAt > 0 && State.BridgeProgress(PhotonNetwork.Time) < 1 ? enemyPoints.Length : baseEnemyCount;
+        int crew = Crew; bool scaled = CrewScaled;
         for (int i = 0; i < count; i++)
         {
+            if (Need(enemyCrew, i) > crew) continue;
             string marker = "enemy-" + i;
             bool exists = HasMarker(PhotonSession.RunId, marker);
+            // After a mid-run crew change, new block enemies appear only ahead of the train and out of sight.
+            if (!exists && scaled && Start(enemyStart, i) >= 0 && (!TrainBefore(Start(enemyStart, i)) || CrewNear(enemyPoints[i].position))) continue;
             if (!exists) PhotonNetwork.InstantiateRoomObject(RailEnemySpawns.ForcedEnemyType >= 0 ? RailEnemySpawns.Prefab(RailEnemySpawns.ForcedEnemyType).name : i < enemyTypes.Length ? RailEnemySpawns.Prefab(enemyTypes[i]).name : enemyPrefab.name, enemyPoints[i].position, enemyPoints[i].rotation, 0, new object[] { "rails", PhotonSession.RunId, marker });
         }
         var points = RailRoute.Instance != null ? RailRoute.Instance.finale.bridgeReinforcements : null;

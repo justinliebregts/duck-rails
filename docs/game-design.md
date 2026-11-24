@@ -323,10 +323,13 @@ Skyscraper. See [enemy spawn balance](enemy-spawn-balance.md) for tuning and evi
 
 November 8 resource balance implementation: 0–100 fuel gauge, two-block full-tank
 range, 50 starting fuel (station exit plus half the first block) and 50 fuel per 160 m. Approved effective scavenging crew
-E = 1 + (N - 1) * 0.6 applies to coal and gold. Target 4E coal collected; spawn at
-most floor(6E), each worth 12.5/E fuel. Gold spawns floor(10E) bars per block and
+E = 1 + (N - 1) * 0.6 applies to coal and gold. Target 12E coal collected; spawn at
+most floor(18E), each worth 50/(12E) fuel (November 24: tripled from 4E/6E at a third
+of the value). Gold spawns floor(10E) bars per block and
 pays a total of 100 coins per eligible player when fully collected. Physical coal
-stockpiling is allowed. Departure roster is retained; fractional gold uses integer
+stockpiling is allowed. November 24 (Justin): coal, gold and enemy counts follow the
+live crew for blocks the train has not reached yet, scaling up and down; coal already
+aboard may lose value. Flashlights stay per departing player. Fractional gold uses integer
 carry with server-calculated credits. See [resource tuning](resource-balance.md)
 for tuning locations, validation and deployment limits. Source/editor/API checks
 pass; API rollout and real-client/headset acceptance remain pending. This supersedes

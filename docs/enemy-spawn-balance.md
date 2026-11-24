@@ -13,7 +13,14 @@ alongside resource balancing (not the 0.6 effective-worker value):
 - 3–5 players: two per quadrant, eight total.
 - 6–8 players: three per quadrant, twelve total.
 
-Late join/disconnect/master handoff does not change an existing encounter's count.
+November 24 (Justin): counts follow the live crew mid-run. When the connected
+player count changes and holds (5 s up, 20 s down) the master commits it as
+`rails.resourceCrew` and rescales blocks the train has not reached yet. Blocks
+already reached keep their enemies. Selection is nested: the route holds the
+full 8-player round-robin pick, and a crew uses rounds below its quota, so a
+change only adds or removes later-round enemies. New enemies spawn, and surplus
+ones are removed, only while no player is within 35 m. Master handoff does not
+change counts. See [resource balance](resource-balance.md#crew-scaling).
 The starting station stays enemy-free. The finale retains its existing fixed
 selection and activation timing; this change does not expand its encounter.
 

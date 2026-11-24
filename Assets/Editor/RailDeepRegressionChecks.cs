@@ -77,11 +77,11 @@ public static class RailDeepRegressionChecks
         var run=RailExpedition.Instance;var route=RailRoute.Instance;
         Require(route.Ready && route.Blocks.Count==4,"Four-block route ready");
         Require(route.Selection.resourceCrew==crew,"Retained resource crew");
-        Require(UnityEngine.Object.FindObjectsByType<RailCoal>(FindObjectsSortMode.None).Length==run.coalPoints.Length,"Exact authored coal count");
-        Require(UnityEngine.Object.FindObjectsByType<ItemGoldBar>(FindObjectsSortMode.None).Length==run.goldPoints.Length,"Exact authored gold count");
-        Require(Game.AI.Enemy.Active.Count==run.baseEnemyCount,"Exact base enemy count");
+        Require(UnityEngine.Object.FindObjectsByType<RailCoal>(FindObjectsSortMode.None).Length==run.ActivePoints(RailSpawnKind.Coal).Length,"Exact authored coal count");
+        Require(UnityEngine.Object.FindObjectsByType<ItemGoldBar>(FindObjectsSortMode.None).Length==run.ActivePoints(RailSpawnKind.Gold).Length,"Exact authored gold count");
+        Require(Game.AI.Enemy.Active.Count==run.ActiveBaseEnemyCount,"Exact base enemy count");
         Require(Flashlights()==crew,"One flashlight per departing player");
-        if(RailEnemySpawns.ForcedEnemyType<0)Require(run.baseEnemyCount<RailEnemySpawns.Names.Length||RailEnemySpawns.Names.All(name=>Game.AI.Enemy.Active.Any(e=>e.name.StartsWith(name))),"All five normal enemy types spawned when the crew budget allows");
+        if(RailEnemySpawns.ForcedEnemyType<0)Require(run.ActiveBaseEnemyCount<RailEnemySpawns.Names.Length||RailEnemySpawns.Names.All(name=>Game.AI.Enemy.Active.Any(e=>e.name.StartsWith(name))),"All five normal enemy types spawned when the crew budget allows");
     }
     static int Flashlights() => Views().Count(v=>v.InstantiationData is object[] d && d.Length==3 && d[2] is string s && s.StartsWith("flashlight:"));
     static void Gold(int receiver)
@@ -238,12 +238,12 @@ public static class RailDeepRegressionChecks
                     if(age>3){Board();Ack("Positioned at finale for physical bridge hold");}Advance(19);break;
                 case 19:
                     if(Slot==1)RailBridgeHoldFixture.SetHeld(true);
-                    if(run.State.BridgeProgress(PhotonNetwork.Time)>.1f && Game.AI.Enemy.Active.Count==run.enemyPoints.Length)
+                    if(run.State.BridgeProgress(PhotonNetwork.Time)>.1f && Game.AI.Enemy.Active.Count==run.ActivePoints(RailSpawnKind.Enemy).Length)
                     {
                         Require(run.enemyPoints.Length>run.baseEnemyCount,"Additional bridge defenders configured");
                         var markers=Game.AI.Enemy.Active.Select(e=>e.GetComponent<RailCoalCarrier>()?.Marker).ToArray();
-                        Require(markers.Distinct().Count()==markers.Length && Enumerable.Range(0,run.enemyPoints.Length).All(i=>markers.Contains("enemy-"+i)),"Every base/defender spawn marker exactly once");
-                        Ack("Physical bridge hold; exact enemy count="+markers.Length+" including defenders="+(markers.Length-run.baseEnemyCount)+"; unique markers and shared identities/controllers/poses");
+                        Require(markers.Distinct().Count()==markers.Length && Enumerable.Range(0,run.enemyPoints.Length).Where(i=>run.enemyCrew[i]<=RailExpedition.Crew).All(i=>markers.Contains("enemy-"+i)),"Every base/defender spawn marker exactly once");
+                        Ack("Physical bridge hold; exact enemy count="+markers.Length+" including defenders="+(markers.Length-run.ActiveBaseEnemyCount)+"; unique markers and shared identities/controllers/poses");
                     }
                     Advance(20,true);break;
                 case 20:

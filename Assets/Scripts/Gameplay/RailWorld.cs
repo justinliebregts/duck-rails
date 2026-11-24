@@ -232,7 +232,10 @@ public sealed class RailWorld : MonoBehaviour
                 data[0] as string == "rails" && data[1] as string == run &&
                 data[2] is string marker && marker.StartsWith("flashlight:", StringComparison.Ordinal))
                 granted.Add(marker.Substring("flashlight:".Length));
-        int count = Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey, 1), 1, 8);
+        // rails.resourceCrew follows the live crew mid-run (loot scaling); flashlights stay per departing player.
+        var route = RailRoute.Instance;
+        int count = Mathf.Clamp(route != null && route.Selection != null && route.LoadedRun == run
+            ? route.Selection.resourceCrew : PhotonSession.Get(RailResourceBalance.CrewKey, 1), 1, 8);
         for (int slot = 0; slot < count; slot++)
         {
             string id = slot.ToString(System.Globalization.CultureInfo.InvariantCulture);

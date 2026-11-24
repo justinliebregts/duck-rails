@@ -242,6 +242,7 @@
   (2,739), session (40), economy (53), cockpit and assembled-route (430) checks
   pass; API service/repository/routes pass. See [resource balance](resource-balance.md).
 - [x] November 9: validate matching scaled-gold client/API through actual four-account shop and safe reward transport, per-recipient remainders, late join/reconnect, authority handoff and no failure payout. See [private regression](overnight-regression.md#four-player-private-lifecycle-repeated).
+- [ ] November 24: coal, gold and enemy counts follow the live crew mid-run for unreached blocks (Justin). Implemented; see [resource balance](resource-balance.md#crew-scaling). Two-client and headset acceptance pending.
 - [ ] Validate natural first-coal reachability and resource balance on target headsets.
 - [ ] Playtest resource balance across solo/intermediate/eight-player crews on real
   clients/headsets, including uneven participation and stocked physical coal.

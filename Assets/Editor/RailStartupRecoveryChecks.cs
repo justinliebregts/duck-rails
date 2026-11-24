@@ -155,8 +155,8 @@ public static class RailStartupRecoveryChecks
             var views = Views();
             Require(views.GroupBy(v => v.ViewID).All(g => g.Count() == 1) && views.All(v => PhotonView.Find(v.ViewID) == v), "unique registered views");
             var loot = views.Where(v => v.GetComponent<RailCoal>() != null || v.GetComponent<ItemGoldBar>() != null).ToArray();
-            Require(loot.Count(v => v.GetComponent<RailCoal>() != null) == RailExpedition.Instance.coalPoints.Length, "coal count");
-            Require(loot.Count(v => v.GetComponent<ItemGoldBar>() != null) == RailExpedition.Instance.goldPoints.Length, "gold count");
+            Require(loot.Count(v => v.GetComponent<RailCoal>() != null) == RailExpedition.Instance.ActivePoints(RailSpawnKind.Coal).Length, "coal count");
+            Require(loot.Count(v => v.GetComponent<ItemGoldBar>() != null) == RailExpedition.Instance.ActivePoints(RailSpawnKind.Gold).Length, "gold count");
             Require(loot.Select(v => string.Join("/", v.InstantiationData)).Distinct().Count() == loot.Length, "unique loot markers");
             string inventory = Inventory();
             // November 21: spawns the stalled host issued but could not send (Photon's 50-command

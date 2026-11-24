@@ -46,14 +46,14 @@ public static class RailTestBlockOrderChecks
                 Check(route.finaleRoot.position.z == RailRoute.StartZ + selected.Sum(b => b.length) + RailRoute.MidpointLength, count + " bridge follows last block");
                 Check(route.midpointBlock.transform.position == state.placements[(count - 1) / 2] + Vector3.forward * selected[(count-1)/2].length, count + " midpoint block placement");
                 Check(Mathf.Abs(route.FinaleStart - RailRoute.StationDepartureLength - selected.Sum(b => b.TrackLength) - RailRoute.MidpointLength) < .01f, count + " train route distance");
-                Check(route.expedition.coalPoints.Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Coal, copy).Length) + RailSpawnPool.Select(route.finale, RailSpawnKind.Coal, copy.enemySeed).Length &&
-                    route.expedition.goldPoints.Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Gold, copy).Length) + RailSpawnPool.Select(route.finale, RailSpawnKind.Gold, copy.enemySeed).Length &&
-                    route.expedition.baseEnemyCount == selected.Sum(b => RailEnemySpawnBalance.Select(b, copy.enemySeed, copy.resourceCrew).Length), count + " exact configured supplies and encounters scale with route");
+                Check(route.expedition.ActivePoints(RailSpawnKind.Coal).Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Coal, copy).Length) + RailSpawnPool.Select(route.finale, RailSpawnKind.Coal, copy.enemySeed).Length &&
+                    route.expedition.ActivePoints(RailSpawnKind.Gold).Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Gold, copy).Length) + RailSpawnPool.Select(route.finale, RailSpawnKind.Gold, copy.enemySeed).Length &&
+                    route.expedition.ActiveBaseEnemyCount == selected.Sum(b => RailEnemySpawnBalance.Select(b, copy.enemySeed, copy.resourceCrew).Length), count + " exact configured supplies and encounters scale with route");
                 foreach (var block in route.Blocks)
                 {
                     foreach (var kind in new[] { RailSpawnKind.Coal, RailSpawnKind.Gold, RailSpawnKind.Enemy })
                     {
-                        var actual = kind == RailSpawnKind.Coal ? route.expedition.coalPoints : kind == RailSpawnKind.Gold ? route.expedition.goldPoints : route.expedition.enemyPoints;
+                        var actual = route.expedition.ActivePoints(kind);
                         var chosen = kind == RailSpawnKind.Enemy ? RailEnemySpawnBalance.Select(block, copy.enemySeed, copy.resourceCrew) : RailRoute.SelectResources(block, kind, copy);
                         Check(actual.Where(p => p.IsChildOf(block.transform)).SequenceEqual(chosen), count + " route uses seeded pool " + block.id + "/" + kind);
                     }

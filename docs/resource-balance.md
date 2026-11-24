@@ -20,12 +20,22 @@ Solo counts as 1 worker; four players as 2.8; eight players as 5.2. This is a
 predictable allowance for driving, defense, rescue and uneven participation, not
 individual AFK/productivity detection. Organized crews will find it easier.
 
-Freeze N at departure: private runs use connected players when Start is accepted;
+N starts at departure: private runs use connected players when Start is accepted;
 public room creation uses the transferring roster, including members still loading.
-The route snapshot retains N for reconstruction. Late join, disconnect, reconnect
-and host handoff do not respawn/revalue existing loot. A late joiner helps with the
-original workload and receives only rewards allowed by the existing eligibility rules.
-This intentionally does not dynamically increase difficulty during a run.
+The route snapshot retains this departure N (flashlights stay one per departing player).
+
+November 24 (Justin, supersedes the earlier frozen crew): N follows the live crew
+mid-run, both up and down. The master (`RailExpedition.UpdateCrew`) commits the
+connected player count to `rails.resourceCrew` once it has held for 5 s (increase)
+or 20 s (decrease, so brief reconnects do not churn loot), with `rails.crewRun`
+marking the run as rescaled. `RailExpedition.ReconcileCrew` then adds or removes
+coal and gold in scavenging blocks the train has not reached; blocks already
+reached, the midpoint and the finale keep their counts. Removal touches only
+untouched loot still at its spawn point; spawns and removals wait while any player
+is within 35 m. The route holds full-crew (8) selections; the pool shuffle makes
+each crew's selection a prefix, so markers and positions never move. Coal value
+uses the current N at deposit time, so coal already aboard is worth less after a
+crew increase (accepted). Host handoff does not change N.
 
 ### Fuel
 
@@ -33,10 +43,16 @@ This intentionally does not dynamically increase difficulty during a run.
 - Consumption: 50 fuel per 160 metres (0.3125/metre), no idle consumption.
 - Starting fuel: 50, covering the station's remaining half-block plus half of the
   first scavenging block. This supersedes the earlier 25-fuel start.
-- Coal value: 12.5 / E fuel per chunk.
-- Target collection: 4 * E chunks per block (50 fuel). Fractional targets are averages.
-- Spawn ceiling: floor(6 * E) chunks per scavenging block, at most 75 fuel total.
-- Eight players: 31 chunks spawned, about 21 needed, about 2.404 fuel/chunk.
+- November 24 (Justin): three times the coal at a third of the value, so players find
+  coal more often; total fuel per block is unchanged and gold is unchanged.
+- Coal value: 50 / (12 * E) fuel per chunk (4.17 solo, 2.6 duo).
+- Target collection: 12 * E chunks per block (50 fuel). Fractional targets are averages.
+- Spawn ceiling: floor(18 * E) chunks per scavenging block, at most 75 fuel total
+  (solo 18, duo 28, three 39, four 50, eight 93).
+- Eight players: 93 chunks spawned, about 62 needed, about 0.80 fuel/chunk.
+- Capacity: Container Yard (168), Convenience Store (126), Farm (105) and Skyscraper (202)
+  hold the eight-player 93. Roadside Motel (48) runs short from four players (50) and
+  spawns what it has with a warning; it needs a placement pass for larger crews.
 - Physical coal stockpiling aboard/in bags is explicitly allowed. Surplus can earn
   skipped stops; no mandatory-stop rule. Excess fuel beyond the tank cap is discarded
   on insertion, retaining the existing consumption behavior.

@@ -1984,3 +1984,9 @@ On headset, approach both creek-facing mine openings from the bank and bridges a
 ## Canyon creek and mine contact audio — queued for playtest
 
 On headset, step and push off the creek bed and each of the five underground puddles. Listen for splashes on wet contact and stone in the dry gaps. Check timber, metal, sand and ballast on the route back. With a second player, listen to their wet and dry hand contacts.
+
+## Spawns follow live crew size — queued 2026-11-24
+
+- [ ] Two clients, private run: start as solo (second client stays in compound/menu), then have the second client join after departure. Within about 5 s of joining, blocks ahead of the train gain coal/gold (solo 18 coal → duo 28 coal per block) and enemies only once the crew reaches 3; blocks already reached keep their counts. Nothing appears within 35 m of either player. Coal value in the furnace popup drops from about 4.2 to 2.6.
+- [ ] Have the second client leave. After about 20 s, untouched extra loot in unreached blocks disappears on both clients; held, stashed or moved items stay. Re-join and confirm the loot comes back without duplicates. Master handoff mid-run keeps counts unchanged. A 3-player join (enemy 4 → 8 per block) needs a headset or three-client session.
+- [ ] Tripled coal (November 24): on headset with a duo, check a block has noticeably more coal (28 per block), the fuel gauge rises about 2.6 per chunk, and frame time stays steady near coal piles and during departure seeding.

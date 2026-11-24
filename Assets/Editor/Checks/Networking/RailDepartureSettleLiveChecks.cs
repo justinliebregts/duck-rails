@@ -157,8 +157,8 @@ public static class RailDepartureSettleLiveChecks
         Require(shared.Length == 0, "Duplicate view objects " + string.Join(",", shared));
         Require(views.All(v => PhotonView.Find(v.ViewID) == v), "Unregistered view");
         var loot = views.Where(v => v.GetComponent<RailCoal>() != null || v.GetComponent<ItemGoldBar>() != null).ToArray();
-        Require(loot.Count(v => v.GetComponent<RailCoal>() != null) == RailExpedition.Instance.coalPoints.Length, "Coal count " + loot.Count(v => v.GetComponent<RailCoal>() != null) + " != " + RailExpedition.Instance.coalPoints.Length);
-        Require(loot.Count(v => v.GetComponent<ItemGoldBar>() != null) == RailExpedition.Instance.goldPoints.Length, "Gold count " + loot.Count(v => v.GetComponent<ItemGoldBar>() != null) + " != " + RailExpedition.Instance.goldPoints.Length);
+        Require(loot.Count(v => v.GetComponent<RailCoal>() != null) == RailExpedition.Instance.ActivePoints(RailSpawnKind.Coal).Length, "Coal count " + loot.Count(v => v.GetComponent<RailCoal>() != null) + " != " + RailExpedition.Instance.ActivePoints(RailSpawnKind.Coal).Length);
+        Require(loot.Count(v => v.GetComponent<ItemGoldBar>() != null) == RailExpedition.Instance.ActivePoints(RailSpawnKind.Gold).Length, "Gold count " + loot.Count(v => v.GetComponent<ItemGoldBar>() != null) + " != " + RailExpedition.Instance.ActivePoints(RailSpawnKind.Gold).Length);
         Require(loot.Select(Marker).Distinct().Count() == loot.Length, "Two loot views share a marker");
         int pending = RailCargo.Active.Count(c => !c.StateReady);
         Require(pending == 0, "Pending cargo " + pending);
