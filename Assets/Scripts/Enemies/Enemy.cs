@@ -130,6 +130,8 @@ namespace Game.AI
         float _localRecoveryRetry;
 
         public State CurrentState { get; private set; }
+        bool pursuingTrain;
+        public bool UsesWanderSpeed => CurrentState == State.Wander && !pursuingTrain;
         public Transform Root => root;
         public IGaitDriver Gait => _gait;
         public IEnemyLocomotion Locomotion => _loco;
@@ -679,7 +681,7 @@ namespace Game.AI
             switch (CurrentState)
             {
                 case State.Wander:
-                    if (RailBridgeEncounter.TryGetObjective(this, out var bridgeGoal) || (railBounds != null && railBounds.TryGetReturnGoal(out bridgeGoal)))
+                    if (RailBridgeEncounter.TryGetObjective(this, out var bridgeGoal, out pursuingTrain) || (railBounds != null && railBounds.TryGetReturnGoal(out bridgeGoal)))
                     {
                         if ((root.position - bridgeGoal).sqrMagnitude <= 1f) { _loco.ClearPath(); break; }
                         _repathTimer -= dt;

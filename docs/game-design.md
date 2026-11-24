@@ -749,6 +749,8 @@ November 23: the admin Train Speed setting also controls bridge lowering. At 5x,
 
 November 23 (Justin, via the project chat): the moment the Final Bridge reaches 100% (with the thud and siren), the master adds one extra enemy per player in the room. They head for the train and fall back on normal chase/boarding once they see a duck. This happens once per run. The count is fixed at that moment, so rejoins and master changes neither respawn nor recount it. See [final escape layout](final-escape-layout.md#bridge-surge-at-100). Runtime balance and headset acceptance are pending.
 
+On the short Convenience Store route, both surge minions used pursuit speed on the route to the train before seeing a duck. Both clients observed the pair within 2.7 m of the train goal inside 25 seconds. The returning peer saw the same two Photon views. [Desktop fixture trace](validation/playtest-queue/2026-11-23-fixes-surge.txt).
+
 November 1 confirmed change: the external bridge button requires a continuous physical hold. Releasing pauses lowering and retains all progress; anyone can resume it. This supersedes the one-touch, unattended minute-long timer. The train remains safe from enemies. See [bridge hold](bridge-hold.md) for implementation and validation.
 
 1. Warning signs before the raised bridge give the crew time to brake. Players must stop the train before it hits the raised or incompletely lowered bridge; a collision causes the train to explode and the run to fail for the whole team. Do not automatically stop the train to prevent this failure. A volunteer leaves the stopped train and holds down the external button to lower the bridge.

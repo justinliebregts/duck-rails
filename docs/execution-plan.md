@@ -624,6 +624,8 @@ Do not copy credentials into tracked documentation. Do not claim systems verifie
 
 Deliverable: friends can form a crew, depart, join halfway through, see the same moving platform and objects, and return together.
 
+- [x] November 23 desktop regression with two authenticated clients. Leaving the public platform canceled the countdown. On re-entry only the rostered duck departed, after seeing “ALL ABOARD!”. The other duck saw “TRAIN DEPARTING” and the idle board. [Board and roster capture](validation/playtest-queue/2026-11-23-fixes-boards.txt).
+
 ### Decisions confirmed October 28
 - Standalone Login art and random camera spots; authenticate/connect/join before transitioning to Compound. No Quackville use.
 - Twelve-player public compounds, automatic initial compound placement; eight-player expeditions.
@@ -1004,6 +1006,7 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] Review Skyscraper yard traversal, foundation recovery, upper-floor loot distribution, nighttime readability and real-client/headset performance (queued for playtest).
 
 - [x] November 11: repair eight Skyscraper yard workbenches and install brighter baked construction lighting. See docs/skyscraper-layout.md for validation.
+- [x] November 23: consolidate the raised sign into the main Skyscraper bake. Solo public departure reached Running with 3,439 matching lightmap bindings and the loading veil cleared. [Bake and runtime evidence](skyscraper-layout.md#combined-block-and-sign-lighting--november-23-2026).
 - [ ] Review brighter Skyscraper lighting on headset, including glare, shadows and upper-floor readability; queued with the existing yard playtest.
 
 - [x] November 11: document Farm-derived 1 m side-fence centerline inset; install two 3 m concrete boundary walls on Skyscraper with world-scaled repeating UVs. See docs/side-fences.md and docs/skyscraper-layout.md.

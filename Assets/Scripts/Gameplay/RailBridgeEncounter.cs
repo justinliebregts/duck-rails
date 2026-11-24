@@ -11,16 +11,21 @@ public static class RailBridgeEncounter
         (marker.StartsWith("enemy-") && int.TryParse(marker.Substring(6), out int index) &&
          index >= firstDefender && index < enemyCount));
 
-    public static bool TryGetObjective(Game.AI.Enemy enemy, out Vector3 goal)
+    public static bool TryGetObjective(Game.AI.Enemy enemy, out Vector3 goal, out bool pursuingTrain)
     {
         goal = default;
+        pursuingTrain = false;
         var run = RailExpedition.Instance;
         var route = RailRoute.Instance;
         if (!PhotonSession.IsRailsRoom || run == null || run.State.finished || run.State.bridgeAt <= 0 ||
             run.bridgeButton == null || route == null || !route.Ready) return false;
         var data = enemy.GetComponent<PhotonView>()?.InstantiationData;
         if (data == null || data.Length < 3 || data[data.Length - 2] as string != run.State.run) return false;
-        if (RailBridgeSurge.IsSurge(data[data.Length - 1] as string)) return RailBridgeSurge.TryGetTrainGoal(out goal);
+        if (RailBridgeSurge.IsSurge(data[data.Length - 1] as string))
+        {
+            pursuingTrain = RailBridgeSurge.TryGetTrainGoal(out goal);
+            return pursuingTrain;
+        }
         if (!IsDefender(data[data.Length - 1] as string, run.baseEnemyCount, run.enemyPoints.Length) &&
             !LowerAttracts(enemy, run, route)) return false;
         // Stop just south of the cabinet, on the shared catwalk rather than inside its collider.

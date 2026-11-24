@@ -709,6 +709,9 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (destination.Length == 0 || destination == followedTransfer || Get(RailSessionRules.TransferUntil, 0d) < PhotonNetwork.Time) return;
         string[] users = Get(RailSessionRules.TransferUsers, Array.Empty<string>());
         if (!users.Contains(PhotonNetwork.LocalPlayer.UserId)) return;
+        if (Kind == RailSessionRules.CompoundKind && RailWorld.Instance != null &&
+            RailWorld.Instance.ShowingDepartureAnnouncement(destination) &&
+            Get(RailSessionRules.TransferUntil, 0d) - PhotonNetwork.Time > 2d) return;
         followedTransfer = destination;
         if (destination.StartsWith("return-", StringComparison.Ordinal) && Kind == RailSessionRules.ExpeditionKind)
         {

@@ -2,6 +2,8 @@
 
 ## Bridge surge at 100% | queued for playtest, November 23, 2026
 
+- November 23 desktop rerun passed all three short-route cases. Both clients measured minima of 1.9 m and 2.7 m within 25 seconds, and Player2 observed views 70 and 71 again after rejoining. Player2 handed master back before the main editor operated the bridge. Headset audio timing and full-crew balance remain queued for playtest. [Fixture and objective trace](validation/playtest-queue/2026-11-23-fixes-surge.txt).
+
 - Changed: when the Final Bridge first reaches 100%, the master spawns one extra enemy per player in the room (`bridge-surge-N`). They head for the train and fall back on normal chase/boarding. See [final escape layout](final-escape-layout.md#bridge-surge-at-100). Edit Mode surge checks (12) and a player-define compile pass.
 - Check: run `RailBridgeSurgeLiveChecks.Start()` (two clients; output in `Temp/rails-bridge-surge/`). Both clients see exactly two surge enemies right after the thud and siren. They close on the stopped train with both ducks aboard. A peer who leaves and rejoins by code sees the same two, and no more spawn. On headset with a full crew, judge the pressure and check that the enemies do not stack at their spawn points.
 
@@ -1055,6 +1057,8 @@ Revision 4 (2026-11-17): z-fighting fixes, see-through steel walkway replacing t
 - **Evidence:** [checks and images](validation/station-raised-signs/README.md).
 
 ### Skyscraper raised development sign — queued 2026-11-16
+
+- November 23 combined lighting bake passed a solo desktop public departure. All 3,439 renderer bindings matched in the running expedition. Ride past the sign on Quest to check the warm uplight and letter contrast through gameplay fog. [Bake and runtime evidence](skyscraper-layout.md#combined-block-and-sign-lighting--november-23-2026).
 - Commit(s): uncommitted.
 - Changed: solid CutePixel lettering and a bottom-mounted baked spotlight on the front development sign; isolated fascia lightmap preserves existing tower atlas lighting.
 - Setup: Skyscraper Works in an expedition; inspect the approach sign at duck height.
@@ -1949,8 +1953,10 @@ Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Ver
 
 ## Public departure board and platform glow — queued 2026-11-23
 
+- November 23 desktop rerun passed. Only the committed actor transferred. Both active boards showed their personalized departure copy, and stepping off during the first countdown cleared both glows before re-entry. Quest readability remains queued for playtest. [Two-client board and roster capture](validation/playtest-queue/2026-11-23-fixes-boards.txt).
+
 - Changed: the public departure board now says the platform leaves as one crew in every state: idle "PUBLIC TRAIN / Stand on the platform to board / Everyone on it leaves together"; countdown "DEPARTS IN N / K ducks boarding together" plus a personal "You're aboard!" or "Step on to join this crew"; after the timer "ALL ABOARD! / Departing together..." for the crew and "TRAIN DEPARTING / Next train boards soon" for others (it no longer falls back to the idle prompt); "FULL (8/8) / Next train after this one" for ducks left out. An amber strip around the pressure plate pulses while the countdown runs.
-- Editor evidence: player-define compile passes; Edit Mode wording checks in `RailSessionChecks` pass; editor captures of the idle and countdown text and the glow inspected. The two-client Play Mode run was not done.
+- Editor evidence: the player-define compile and wording checks passed. The November 23 follow-up allowed the sign exporter's exact supplemental lighting scene in the build list and reran `RailSessionChecks.Run()` through both cargo checks. Unity logged 46 passes.
 - Check with two clients: one duck steps on, both boards count down with the right personal line and both see the glow; let it depart and confirm the crew sees "ALL ABOARD!" and the other duck "TRAIN DEPARTING", then idle again. Step off mid-countdown to confirm the glow turns off. On Quest, check the board fits and reads from the plate, and the glow is visible but not blinding.
 
 ## Held weapon contacts and compound arrivals — November 23

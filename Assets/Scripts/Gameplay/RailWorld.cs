@@ -19,6 +19,8 @@ public sealed class RailWorld : MonoBehaviour
     string presentedRoom, presentedRun;
     bool presentedOnTrain, positioned, menu;
     float nextManifest;
+    string announcedDeparture;
+    double announcementUntil;
     string code = "";
     GUIStyle statusStyle;
     public static bool InputBlocked => Instance != null && (Instance.menu || PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady);
@@ -138,6 +140,19 @@ public sealed class RailWorld : MonoBehaviour
             departureBoard.text = PhotonSession.IsPrivate ? "PRIVATE CREW\nCode " + room
                 : PublicDepartureText(roster.Length, secondsLeft, departing, roster.Contains(PhotonNetwork.LocalPlayer.ActorNumber));
         }
+    }
+
+    // FollowTransfer can run inside the room-property callback, before Update can paint the board.
+    public bool ShowingDepartureAnnouncement(string destination)
+    {
+        if (departureBoard == null || !departureBoard.isActiveAndEnabled) return false;
+        if (destination != announcedDeparture)
+        {
+            announcedDeparture = destination;
+            announcementUntil = Time.realtimeSinceStartupAsDouble + 1.5;
+            departureBoard.text = PublicDepartureText(0, -1, true, true);
+        }
+        return Time.realtimeSinceStartupAsDouble < announcementUntil;
     }
 
     /// <summary>

@@ -1,0 +1,41 @@
+Unity 6000.3.24f1, real Photon, short Convenience Store route. Times in UTC.
+Fixture setup - startup authority handback
+2026-11-24T04:30:20.3708333Z step=3 Player2 master=True requested handback=True
+Main editor - fixture results
+2026-11-24T04:30:20.4583691Z TEST Bridge(): Requires master in a ready private run
+2026-11-24T04:30:22.4924954Z TEST Bridge(): Room update pending; try again
+2026-11-24T04:30:24.5473787Z TEST Bridge(): Room update pending; try again
+2026-11-24T04:30:26.4722524Z TEST Bridge(): Room update pending; try again
+2026-11-24T04:30:28.5485761Z TEST Bridge(): Room update pending; try again
+2026-11-24T04:30:30.4684264Z TEST Bridge(): Train moved to bridge approach
+2026-11-24T04:30:51.5092271Z BRIDGE 100% observed; surge now=0 triggered=False stateCount=0
+2026-11-24T04:30:51.8394527Z SURGE complete after 0.33s bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False
+2026-11-24T04:30:51.9393037Z CASE 1 one surge enemy per player at 100%, seen by both clients PASS | main surge=2 state=2 surge at 100% bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False | player2 surge=2 state=2 surge at 100% bridge-surge-0 RailZombie owner=0 pos=(-22.0, 8.1, 444.0) toTrain=38.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-34.0, 8.1, 444.0) toTrain=46.5 Wander aboard=False
+2026-11-24T04:30:53.3749339Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-25.4, 7.1, 439.9) toTrain=37.5 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-30.4, 8.0, 442.5) toTrain=42.9 Wander aboard=False
+2026-11-24T04:30:55.3763647Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-27.4, 4.0, 432.5) toTrain=33.7 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-30.4, 8.0, 442.5) toTrain=42.9 Wander aboard=False
+2026-11-24T04:30:57.5263033Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-27.8, 4.0, 425.4) toTrain=30.6 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-30.6, 8.0, 442.6) toTrain=43.1 Wander aboard=False
+2026-11-24T04:30:59.6212807Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-25.7, 2.0, 418.9) toTrain=26.4 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-26.5, 6.1, 437.8) toTrain=36.6 Wander aboard=False
+2026-11-24T04:31:01.6408133Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-18.9, 2.0, 415.5) toTrain=19.0 Wander aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-30.1, 4.0, 430.9) toTrain=35.1 Wander aboard=False
+2026-11-24T04:31:03.6607702Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-10.4, 1.4, 414.5) toTrain=10.5 Chase aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-28.5, 3.7, 423.1) toTrain=30.3 Wander aboard=False
+2026-11-24T04:31:05.6962329Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-3.6, 0.0, 414.9) toTrain=4.2 Chase aboard=False;bridge-surge-1 RailZombie owner=0 pos=(-23.9, 2.0, 417.8) toTrain=24.4 Wander aboard=False
+2026-11-24T04:31:07.7704442Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-1.1, 1.0, 414.5) toTrain=1.9 Chase aboard=True;bridge-surge-1 RailZombie owner=0 pos=(-16.5, 2.0, 415.5) toTrain=16.7 Wander aboard=False
+2026-11-24T04:31:09.8449567Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-1.1, 1.0, 414.5) toTrain=1.9 Chase aboard=True;bridge-surge-1 RailZombie owner=0 pos=(-8.0, 0.2, 414.5) toTrain=8.3 Chase aboard=False
+2026-11-24T04:31:11.8472048Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-1.1, 1.0, 414.5) toTrain=1.9 Chase aboard=True;bridge-surge-1 RailZombie owner=0 pos=(-2.9, 0.3, 415.0) toTrain=3.7 Chase aboard=False
+2026-11-24T04:31:13.9371783Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-1.1, 1.0, 414.5) toTrain=1.9 Chase aboard=True;bridge-surge-1 RailZombie owner=0 pos=(-1.6, 1.0, 415.1) toTrain=2.7 Chase aboard=False
+2026-11-24T04:31:15.9963379Z SAMPLE bridge-surge-0 RailZombie owner=0 pos=(-1.1, 1.0, 414.5) toTrain=1.9 Chase aboard=True;bridge-surge-1 RailZombie owner=0 pos=(-1.6, 1.0, 415.1) toTrain=2.7 Chase aboard=False
+2026-11-24T04:31:17.1597444Z CASE 2 surge enemies close on the train; no duplicates PASS | main surge=2 state=2 aggro bridge-surge-0 start=38.5 min=1.9;bridge-surge-1 start=46.3 min=2.7 | player2 surge=2 state=2 aggro bridge-surge-0 start=38.6 min=1.9;bridge-surge-1 start=46.5 min=2.7
+2026-11-24T04:31:32.6754296Z CASE 3 late rejoin sees the same surge; no respawn or recount PASS | main surge=2 state=2 peer back bridge-surge-0 RailZombie owner=0 pos=(-0.5, 1.0, 413.7) toTrain=1.0 Chase aboard=True;bridge-surge-1 RailZombie owner=0 pos=(-0.4, 0.0, 422.4) toTrain=9.5 Search aboard=False | player2 surge=2 state=2 rejoined bridge-surge-1 RailZombie owner=0 pos=(-1.5, 0.0, 422.2) toTrain=9.4 Search aboard=False;bridge-surge-0 RailZombie owner=0 pos=(-0.5, 1.0, 413.7) toTrain=1.0 Chase aboard=True
+2026-11-24T04:31:32.7711837Z PASS COMPLETE
+Authority - first objective and transition to visible chase
+2026-11-24T04:30:51.7896462Z bridge-surge-0 view=70 pos=(-22.0, 8.1, 444.0) Wander trainGoal=True wanderSpeed=False goal=(0.0, 1.4, 413.0)
+2026-11-24T04:30:51.7901582Z bridge-surge-1 view=71 pos=(-34.0, 8.1, 444.0) Wander trainGoal=True wanderSpeed=False goal=(0.0, 1.4, 413.0)
+2026-11-24T04:31:03.0288129Z bridge-surge-0 view=70 pos=(-13.0, 2.0, 414.9) Chase trainGoal=True wanderSpeed=False goal=(0.0, 1.4, 413.0)
+2026-11-24T04:31:08.6650490Z bridge-surge-1 view=71 pos=(-12.8, 2.0, 414.8) Chase trainGoal=True wanderSpeed=False goal=(0.0, 1.4, 413.0)
+Player2 - Photon view IDs across leave and rejoin
+2026-11-24T04:30:23.7928104Z Running 33283
+2026-11-24T04:30:52.3507702Z Running 33283 bridge-surge-0=70,bridge-surge-1=71
+2026-11-24T04:31:17.7616533Z Compound
+2026-11-24T04:31:18.8152206Z Compound 31292
+2026-11-24T04:31:23.1480900Z Compound
+2026-11-24T04:31:24.1624218Z Running 33283
+2026-11-24T04:31:28.7829333Z Running 33283 bridge-surge-0=70,bridge-surge-1=71

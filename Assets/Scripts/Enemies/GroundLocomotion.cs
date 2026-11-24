@@ -397,7 +397,7 @@ namespace Game.AI
             Vector3 pos = root.position;
             Vector3 up = Vector3.up;
             float speed = enemy.CurrentState == Enemy.State.Retreat ? enemy.RetreatSpeed
-                : enemy.CurrentState == Enemy.State.Wander ? walkSpeed : chaseSpeed;
+                : enemy.UsesWanderSpeed ? walkSpeed : chaseSpeed;
             LayerMask mask = m.SurfaceMask;
 
             Vector3 toSeen = enemy.LastSeenPos - pos;

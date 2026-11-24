@@ -1,5 +1,13 @@
 # Skyscraper Works — V2 layout
 
+## Combined block and sign lighting — November 23, 2026
+
+The primary Skyscraper lighting companion now supplies all four lightmaps and 439 probes. The block and raised sign baked together. The sign uses a separate lightmap packing tag and 8× renderer scale to retain its original 32 texels per metre in the block's 4 texels per metre bake. The runtime sign-only scene and its build entry were removed. The original isolated bake remains an editor authoring asset.
+
+All 2,788 original renderer scale/offset values matched exactly after the bake. Unity packed the sign into map 0 and moved the original three maps to slots 1–3. The production prefab and both atlas review prefabs now point at the corresponding textures. The 648 production chunks retain their UVs and 37,184 triangles. The production build check verifies that every bound texture belongs to the enabled primary companion. [Combined bake preview](../output/skyscraper-sign/review.png).
+
+An authenticated solo desktop run on Unity 6000.3.24f1 took the public pressure plate in Compound 01941 into expedition 83764 with Skyscraper on the route. The session reached Running, world and block readiness were true, the veil alpha reached zero, and input was enabled. All 3,439 live renderer bindings matched their expected texture and scale/offset. All three sign renderers used runtime lightmap index 8 with the baked spotlight disabled. Headset appearance remains queued for playtest.
+
 ## Raised development sign — November 16, 2026
 
 Replaced the visible front TMP advertisement with solid 9 cm extruded CutePixel

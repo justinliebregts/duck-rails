@@ -49,3 +49,5 @@ because it has its own isolated bake. Layout 2,788/2,788 identical, 3 lightmaps,
 439 probes; texture/LightingData GUIDs unchanged. Mean lightmap luminance rose
 73–131%. Approved fingerprint f17b5243… → 3cf2f85d…; `ValidateSaved` passes.
 Runtime/headset appearance is queued for playtest.
+
+November 23 combined sign bake: keep the raised development sign enabled when rebaking. All 2,788 original placements retained their scale/offset, and the three sign renderers now participate in the primary bake. Production fingerprint `a9d4fdabe7e56e7a2b582445f36a0746`. [Settings, texture remap and preview](../../docs/skyscraper-layout.md#combined-block-and-sign-lighting--november-23-2026).
