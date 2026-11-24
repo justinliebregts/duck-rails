@@ -7,7 +7,8 @@
 - Engine/network: PUN 2 over Photon Realtime; the change is in the vendored PUN layer.
 - Destination: `PhotonView.cs` (`SpawnTimestamp`, `lostDuplicateSpawn`), `PhotonNetwork.cs` (stores the spawn timestamp, sends `parameters.timestamp` in the instantiate event, drops a spawn that lost the collision) and `PhotonNetworkPart.cs` (newer spawn wins by server timestamp then token, the master removes the loser's cached spawn, `LocalCleanPhotonView` only unregisters its own view). Check: `Assets/Editor/Checks/Networking/DuplicateViewIdChecks.cs` (menu item, no batch-only guard).
 - Not ported: the `EnemyManager` 1.5 s settle hold after gaining master (Rails has `PhotonMasterHandoff.Settle`; the spawn-hold half needs a separate decision), the matching `EnemyPopulationPlayChecks` edit and the Quest 2 device harness (`Tools/DuplicateViewIdValidation`). The check's spawn-hold cases were left out.
-- Remaining: two-client handoff with a late joiner, Quest build. Photon AppVersion is auto-bumped.
+- Two-client editor run (November 24, 2026; main plus MPPM Player2, real Photon, no headset): `RailDepartureSettleLiveChecks.Start(2, 2)` passed 2 rounds of public departure, acknowledged master handoff and non-master reconnect with identical loot view IDs and spawn tokens and no duplicate views. The "allocated twice" warning never fired, so no real collision was exercised.
+- Remaining: a forced collision under real network timing, Quest build. Photon AppVersion is auto-bumped.
 - Destination commit: none yet.
 
 
