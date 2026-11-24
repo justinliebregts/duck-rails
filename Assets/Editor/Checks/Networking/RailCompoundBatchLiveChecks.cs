@@ -24,7 +24,7 @@ using UnityEngine;
 [InitializeOnLoad]
 public static class RailCompoundBatchLiveChecks
 {
-    [Serializable] sealed class Control { public string token, expires, privateCode, compound; public int step, revision; }
+    [Serializable] sealed class Control { public string token, expires, privateCode, compound; public int step, revision; public bool goldOnly; }
     [Serializable] sealed class Receipt { public string token, room, note, error, data; public int revision, actor; }
 
     const string Key = "Rails.CompoundBatch", TestTag = "compound-batch-test";
@@ -86,12 +86,16 @@ public static class RailCompoundBatchLiveChecks
     // ---------- Start / Stop / restore ----------
 
     /// <summary>Main editor, Edit Mode: arm and launch the two-client scenario (40 minute expiry).</summary>
-    public static void Start()
+    public static void Start() => Start(false);
+
+    public static void StartGoldOnly() => Start(true);
+
+    static void Start(bool goldOnly)
     {
         if (!CurrentPlayer.IsMainEditor || EditorApplication.isPlayingOrWillChangePlaymode || Status != "NotRunning") throw new Exception("Main editor in Edit Mode with no scenario running");
         if (!MppmStandaloneCredentials.TryGet("Player2", out _)) throw new Exception("Configure Player2 account");
         Directory.CreateDirectory(Folder);
-        foreach (var role in Roles)
+        foreach (var role in goldOnly ? Array.Empty<string>() : Roles)
             if (File.Exists(BackupPath(role)) && File.ReadAllText(BackupPath(role)).Length > 0)
                 throw new Exception("An unrestored loadout backup exists for " + role + "; run RestoreBackupsInEditMode first");
         foreach (var role in Roles) { File.WriteAllText(ReceiptPath(role), ""); File.WriteAllText(Folder + "/" + role + ".txt", ""); }
@@ -107,7 +111,7 @@ public static class RailCompoundBatchLiveChecks
         RailTestBlockOrder.instance.invincibleFromEnemies = true;
         RailTestBlockOrder.instance.Persist(); RailTestBlockOrderPanel.PublishPlayerOptions();
         File.WriteAllText(ControlPath, JsonUtility.ToJson(new Control { token = Guid.NewGuid().ToString("N"), expires = DateTime.UtcNow.AddMinutes(40).ToString("O"),
-            privateCode = UnityEngine.Random.Range(10000, 99999).ToString(), step = 0 }));
+            privateCode = UnityEngine.Random.Range(10000, 99999).ToString(), step = 0, goldOnly = goldOnly }));
         property.SetValue(Manager, AssetDatabase.LoadAssetAtPath<UnityEngine.Object>("Assets/Settings/PlayMode/4 Diagnostic Two Client.asset"));
         Manager.GetType().GetMethod("Start", Type.EmptyTypes).Invoke(Manager, null);
     }
@@ -384,6 +388,7 @@ public static class RailCompoundBatchLiveChecks
     }
     static void RestoreBackup(string why)
     {
+        if (!backedUp) return;
         try
         {
             string path = BackupPath(Role);
@@ -433,7 +438,16 @@ public static class RailCompoundBatchLiveChecks
         done = true;
         ClearInput();
         Unsubscribe();
-        try { if (PhotonNetwork.InRoom) Cleanup(); } catch (Exception e) { Log("cleanup error: " + e.Message); }
+        try
+        {
+            if (PhotonNetwork.InRoom && control?.goldOnly == true)
+            {
+                if (!Host && PhotonView.Find(goldView) is PhotonView view && view.IsMine)
+                    PhotonNetwork.Destroy(view.gameObject);
+            }
+            else if (PhotonNetwork.InRoom) Cleanup();
+        }
+        catch (Exception e) { Log("cleanup error: " + e.Message); }
         restoreAt = EditorApplication.timeSinceStartup + 2;
         Log(message);
     }
@@ -496,7 +510,7 @@ public static class RailCompoundBatchLiveChecks
         {
             case 0: // Both clients back up and clear their loadout; main opens a public Compound and the peer joins by code.
                 if (!Settled || age < 8) break;
-                if (!backedUp) { BackupSaves(); GrantFocus(); ClearLoadout(); backedUp = true; Log("CLEARED own loadout " + Where()); break; }
+                if (!control.goldOnly && !backedUp) { BackupSaves(); GrantFocus(); ClearLoadout(); backedUp = true; Log("CLEARED own loadout " + Where()); break; }
                 if (Host)
                 {
                     if (!action) { session.RequestCreatePublic(); action = true; readySince = 0; break; }
@@ -521,11 +535,17 @@ public static class RailCompoundBatchLiveChecks
             case 11: // Case 5: the peer deposits one real gold bar at the Compound intake.
                 if (Host)
                 {
-                    if (!action) { Cleanup(); action = true; }
+                    if (!control.goldOnly && !action) { Cleanup(); action = true; }
                     Ack("observer");
                 }
                 else GoldDeposit(now);
-                if (AllAck) { Harvest(); VerdictGold("c5"); Next(12); }
+                if (Host && AllAck)
+                {
+                    Harvest();
+                    VerdictGold("c5");
+                    if (control.goldOnly) Finish(failures == 0 ? "PASS COMPLETE" : "FAIL COMPLETE");
+                    else Next(12);
+                }
                 break;
 
             case 12: // Main creates a private room; the peer joins by code.
@@ -808,8 +828,9 @@ public static class RailCompoundBatchLiveChecks
                 var prefab = BagObject.ResolvePrefab(GoldKey);
                 Require(prefab != null, "Cannot resolve " + GoldKey);
                 PhotonPreparePool.Register(prefab);
-                var go = PhotonNetwork.InstantiateWithRoomLifetime(prefab.name, GR.Player.instance.transform.position + Vector3.up * .6f, Quaternion.identity, 0,
-                    new object[] { TestTag, Role });
+                // Use the same Compound lifetime as an item carried back from an expedition.
+                var data = RailCargo.WithCompoundPurchase(new object[] { TestTag, Role }, PhotonNetwork.LocalPlayer.UserId);
+                var go = PhotonNetwork.InstantiateWithRoomLifetime(prefab.name, GR.Player.instance.transform.position + Vector3.up * .6f, Quaternion.identity, 0, data);
                 Require(go != null, "Could not spawn the gold bar");
                 goldView = go.GetComponent<PhotonView>().ViewID;
                 Put("bars", GoldCount());
@@ -823,6 +844,7 @@ public static class RailCompoundBatchLiveChecks
                 goldToken = bar.SpawnToken ?? "";
                 if (goldToken.Length == 0) { Require(now - subAt < 10, "gold bar has no spawn token"); return; }
                 expectedReceipt = RailGoldReceiver.Receipt("compound", goldToken, PhotonNetwork.LocalPlayer.UserId);
+                Log("Compound gold receipt " + expectedReceipt);
                 PlaceAt(bar, Intake(crate));
                 Put("placed", 1);
                 sub = 2; subAt = now; return;
