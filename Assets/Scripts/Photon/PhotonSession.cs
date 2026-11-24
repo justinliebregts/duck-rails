@@ -32,6 +32,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public static bool IsRailsRoom => PhotonNetwork.InRoom && Get(RailSessionRules.Schema, 0) == RailSessionRules.Version;
     public static RailPhase Phase => (RailPhase)Get(RailSessionRules.Phase, (int)RailPhase.Compound);
     public static string Kind => Get(RailSessionRules.Kind, "");
+    static string NewRunId() => Guid.NewGuid().ToString("N");
     public static string RunId => Get(RailSessionRules.Run, "");
     public static bool IsPrivate => Kind == RailSessionRules.PrivateKind;
     public static bool OnTrain => RailSessionRules.IsOnTrain(Phase);
@@ -308,7 +309,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
                 Started("Joining the Two Ducks test expedition...");
                 // Either editor can authenticate first. Photon arbitrates creation;
                 // slower clients use the existing late-join/world-ready path.
-                queued = JoinAllocatedRoom(RailSessionRules.ExpeditionKind, Guid.NewGuid().ToString("N"), null);
+                queued = JoinAllocatedRoom(RailSessionRules.ExpeditionKind, NewRunId(), null);
                 break;
 #endif
             case Request.PublicTrain:
@@ -554,7 +555,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     public void StartPrivateRun()
     {
         if (!IsPrivate || Phase != RailPhase.Staging || !WorldReady || !PhotonNetwork.IsMasterClient || RailWorld.HasLiveCargo) return;
-        Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Departing, [RailSessionRules.Run] = Guid.NewGuid().ToString("N"),
+        Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Departing, [RailSessionRules.Run] = NewRunId(),
             [RailResourceBalance.CrewKey] = Mathf.Clamp(PhotonNetwork.PlayerList.Count(p => !p.IsInactive), 1, 8),
             [RailSessionRules.Deadline] = PhotonNetwork.Time + RailSessionRules.WorldLoadSeconds, [RailSessionRules.Fuel] = RailResourceBalance.StartingFuel, [RailExpedition.StateKey] = "",
             [RailSessionRules.Cargo] = Array.Empty<int>(), [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 0f, 0f, 0f } });
@@ -780,7 +781,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
             {
                 string[] users = roster.Select(id => room.GetPlayer(id)?.UserId).Where(id => !string.IsNullOrEmpty(id)).Distinct().ToArray();
                 if (users.Length != roster.Length) return;
-                Commit(new Hashtable { [RailSessionRules.Roster] = roster, [RailSessionRules.Destination] = "run-" + Guid.NewGuid().ToString("N"),
+                Commit(new Hashtable { [RailSessionRules.Roster] = roster, [RailSessionRules.Destination] = NewRunId(),
                     [RailSessionRules.TransferUsers] = users, [RailSessionRules.TransferUntil] = now + 30d, [RailSessionRules.Deadline] = 0d });
             }
             else if (!old.SequenceEqual(roster) || deadline != Get(RailSessionRules.Deadline, 0d))
