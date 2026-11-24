@@ -7,8 +7,8 @@
   `01f8e3e4fa80ae1a7e6b8c38fa7d18cfe311229c` (distant mountain ring),
   `ac6d53196565ae35787a5b7d69ff4ef5d773dca3` (black below the horizon),
   `6a6f5a2f0227326242674b280305b9b580b88b57` (material tuning).
-- Status: implemented; editor validation passed November 22, 2026; visual/headset and
-  Quest performance queued for playtest. User-confirmed design change (game-design.md, November 22).
+- Status: implemented; editor validation passed November 22, 2026; Justin verified it in Play Mode
+  November 23 (Quest 3 GPU not measured). User-confirmed design change (game-design.md, November 22).
 - Behavior/destination: final shader and noise texture copied with source GUIDs
   (`Assets/Shaders/AnimatedStormSky.shader`, `Assets/Materials/Skybox/StormCloudNoise.png`);
   Rails adds an optional sunrise glow (zero = source output). Login's `Quackville_Skybox.mat`
@@ -26,8 +26,7 @@
   route/finish progress, unchanged). New GUIDs checked for collisions: none.
 - Validation: see [storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22)
   (compile, shader import, 51 atmosphere assertions, tuner checks, Expedition/Login captures).
-- Remaining: [playtest queue](playtest-queue.md#storm-sky-and-mountain-ring--queued-2026-11-22)
-  (headset look, late join/replay, Quest 3 GPU before/after). Noise texture origin per Duckz:
+- Remaining: none queued. November 23: Justin verified the look (including dawn and deep night) in Play Mode and asked to remove the playtest items; Quest 3 GPU before/after was not measured. Noise texture origin per Duckz:
   adapted from DTA's ndc_clouds.png; Justin confirmed use in Rails.
 - Destination commits: see Git history (storm sky, mountain ring, docs).
 

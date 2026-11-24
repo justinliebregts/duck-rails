@@ -37,11 +37,6 @@ Listen while descending both switchbacks, crossing the creek, entering a mine an
 - Drop down both shafts with a carried item. In the northwest chamber, inspect compressor saddle and skid contact at low eye height and check clearance around the ore cart, compressor and rock piles while carrying an item to the gallery. Follow the dark under-river passage into the gallery and walk out of both timbered exits. Check ledge recovery, rockfall hand clearance and the dry east bank.
 - Inspect the north winch from above and indoors, the southwest rocks, cactus elbows and exterior lanterns. Cross both bridges in both directions, use both stair runs and check every landing for flicker at headset eye height.
 
-## Deep night before the mid shop — queued 2026-11-23
-
-- Changed: from departure until the mid shop (helipad) block the sky, mountains and ambient light use a darker "deep night" (sky exposure 0.22 vs night 0.4); over the first 30 m of the mid shop block it fades to the regular night. Uses `RailRoute.MidpointStart` and the shared train distance. Editor: 68 atmosphere assertions and the tuner checks pass; game and player-define compiles pass. No Play Mode or headset run.
-- Check: in a two-client run, both players see the same darkness before the mid shop and the same smooth fade as the train enters it; a late joiner after the mid shop sees regular night straight away; a new run starts dark again. Judge the deep-night darkness on headset (tune **Deep Night Sky > Exposure / Ambient** in the Atmosphere Tuner).
-
 ## Victory music return fade — queued for playtest
 
 - Win a public expedition and listen through the final countdown. Confirm the victory music stays audible until departure, then fades over three seconds. Repeat on a private expedition returning to staging. Check the transition into the Compound music and listen for a loop seam near the end of the countdown.
@@ -97,14 +92,6 @@ Crate lantern and lighter corrugated steel face installed. Compound bake complet
 - Remaining checks are physical hand reach and sign readability on Quest, plus a train full of eight active players. The two-client test covered full capacity through seat reservations.
 
 Editor evidence includes successful compilation, saved Compound placement, CutePixel heading fit, and launch button prefab reuse.
-
-## Storm sky and mountain ring — queued 2026-11-22
-
-- Changed: Expedition and Login use the Duckz animated storm sky (dark olive night, a bit darker than Duckz); the night to pre-dawn to dawn transition now drives the sky colours, a warm sunrise glow and a distant mountain ring around the route. See [storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).
-- Editor evidence: 51 Expedition atmosphere assertions and the Atmosphere Tuner checks pass; editor captures inspected. No Play Mode or headset run.
-- Visual check (headset): Login sky looks right and clouds drift slowly. In an expedition, night reads as dark olive storm sky with black silhouettes, not too bright; the mountain ring shows above the horizon on both sides and shifts slowly as the train moves, with no flicker, gaps or ridges drawing in front of nearby scenery. Entering the finale gives a slight lift with a faint warm glow ahead-left; a successful escape brightens and warms the sky and mountains through the tunnel with no sudden jumps. Check the sky past the sides of blocks at dawn (no black band below the horizon), a failed run (never reaches dawn), and a late joiner and replay (same stage as everyone else). Compound stays unchanged.
-- November 23 sunny dawn: after a success, dawn should feel really sunny (blue sky, gold-lit broken clouds, warm low sun lighting the scenery, light golden haze rather than grey fog). Check on headset that the 175 m far-plane edge is not obvious through the thinner haze, that ducks/items and the train look right under the new realtime sun, and that nothing turns sunny on a failed run.
-- Quest performance: run the Quest 3 solo survey (`Tools/quest-performance.ps1`, [quest-performance.md](quest-performance.md)) on a build before and after this change with the same seed and route. Compare GPU frame time, especially Skyscraper Works (already near budget at 14.0 ms p95) and the finale dawn views. The sky moves from per-vertex to per-pixel work (two texture reads) and adds one 2,304-triangle draw; no on-device numbers exist yet, including in Duckz.
 
 ## LIV recording continuity on tablet close/recall — queued 2026-11-22
 
