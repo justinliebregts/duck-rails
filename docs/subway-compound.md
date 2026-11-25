@@ -359,3 +359,4 @@ Source: `ArtSource/SubwayTerminal/build_quackville_sign.py` and `QuackvilleSign/
 
 ### Fountain collision matched to raised rim — November 24, 2026
 - `Meshes/FountainSolidCollision.asset` regenerated from `Meshes/Fountain raised rim.asset` (the visual mesh used by the Compound scene override) minus the eight water-plane triangles at Y 0.34, so colliders follow the rim pieces raised in d6331e97c. GUID unchanged. Edit-mode check only; manual playtest by user.
+- Follow-up: the enabled fountain colliders are the `Audio collision - Stone/Metal` children (`Assets/DuckRails/StationAudioCollision/Compound-Fountain-*.asset`), not the disabled parent MeshCollider. Re-partitioned them from the raised-rim collision mesh (Stone 392, Metal 332 triangles). Downward physics raycasts over the 4.6 m footprint (8,589 samples) match the visible rim heights with 0 mismatches. Rerun `RailStationAudioSurfaces` partitioning if the fountain mesh changes again.
