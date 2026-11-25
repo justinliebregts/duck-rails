@@ -356,3 +356,6 @@ Source: `ArtSource/SubwayTerminal/build_quackville_sign.py` and `QuackvilleSign/
 - Audio collision: re-partitioned Station_Info only, with the `RailStationAudioSurfaces` rules and the same three mesh assets (Metal 100, Stone 6, Wood 352 → 296). Edit Mode rays: the floor where the bench stood is clear (Stone at Y 0), and the board face is hit at X -8.72 at 0.15 m.
 - Rebaked Compound with **Bake Sample** (2 lightmaps). Edit Mode capture after the bake:
   [Station Info board](../output/subway-terminal-model/scene-info-board-lowered.png). No new Console errors. No Play Mode or headset check; queued for playtest.
+
+### Fountain collision matched to raised rim — November 24, 2026
+- `Meshes/FountainSolidCollision.asset` regenerated from `Meshes/Fountain raised rim.asset` (the visual mesh used by the Compound scene override) minus the eight water-plane triangles at Y 0.34, so colliders follow the rim pieces raised in d6331e97c. GUID unchanged. Edit-mode check only; manual playtest by user.
