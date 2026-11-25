@@ -337,10 +337,10 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
             RailSessionRules.EvaluateTrain(motion, PhotonSession.Get(RailSessionRules.Fuel, 100f), now, out float distance, out float speed, out float fuel);
             changes[RailSessionRules.Motion] = new object[] { now, distance, next.success ? speed : 0f, next.success ? 4f : 0f };
-            // Ending has a fuel budget far beyond its fixed 32-second ride.
+            // Ending has a fuel budget far beyond its fixed 18-second ride (+2s return delay = 20s countdown).
             changes[RailSessionRules.Fuel] = next.success ? 100f : fuel;
             changes[RailSessionRules.Phase] = (int)RailPhase.Ending;
-            changes[RailSessionRules.Deadline] = now + 32;
+            changes[RailSessionRules.Deadline] = now + 18;
             changes["rails.success"] = next.success;
         }
         string json = JsonUtility.ToJson(next);
