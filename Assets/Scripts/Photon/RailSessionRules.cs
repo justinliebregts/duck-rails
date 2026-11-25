@@ -38,6 +38,8 @@ public static class RailSessionRules
     public const string Schema = "rails.schema", Kind = "rails.kind", Phase = "rails.phase", Revision = "rails.revision";
     public const string Run = "rails.run", Deadline = "rails.deadline", Roster = "rails.roster", Destination = "rails.destination";
     public const string TransferUsers = "rails.users", TransferUntil = "rails.transferUntil", Ready = "rails.ready", Boarding = "rails.boarding";
+    // User ids of the crew that departed together; anyone else joined mid-run (analytics).
+    public const string LaunchCrew = "rails.launchCrew";
     public const string Block = "rails.block", Fuel = "rails.fuel", Motion = "rails.motion", Cargo = "rails.cargo";
     public const string CompoundKind = "compound", PrivateKind = "private", ExpeditionKind = "expedition";
 

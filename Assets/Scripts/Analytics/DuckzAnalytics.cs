@@ -104,10 +104,16 @@ public sealed class DuckzAnalytics : MonoBehaviour
 
     static bool Ready => Instance != null && Instance.initialized && (Application.isEditor || GameAnalytics.Initialized);
 
+#if UNITY_EDITOR
+    /// <summary>Every event the editor would have sent, for checks.</summary>
+    public static event Action<string> Previewed;
+#endif
+
     static bool Preview(string message)
     {
         if (!Application.isEditor) return false;
 #if UNITY_EDITOR
+        Previewed?.Invoke(message);
         if (GameAnalytics.SettingsGA.InfoLogEditor) Debug.Log("[Duck Rails Analytics preview] " + message);
 #endif
         return true;

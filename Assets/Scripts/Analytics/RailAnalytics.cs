@@ -6,9 +6,11 @@ using UnityEngine;
 
 /// <summary>
 /// Expedition analytics derived from committed <see cref="RailRunState"/> snapshots.
-/// Run-level events (run:*, block:*, train:*, bridge:*, gold:unbanked) are sent by the master
-/// client only, so each run counts once. Personal events (progression, down:*, revive:*,
-/// player:*, award:*) are sent by each client about its own participant. A master handoff can
+/// run:start, run:launch and the run:end / run:result family are sent by the actor that claimed them
+/// in the committed state (RailRunState.TrackCrew), so each run counts once across handoffs and
+/// restarts. Other run-level events (block:*, train:*, bridge:*) are sent by the current master.
+/// Personal events (run:join, progression, down:*, revive:*, player:*, award:*) are sent by each
+/// client about its own participant. A master handoff can
 /// shorten the current block's time; it never re-sends bridge or fuel events.
 /// </summary>
 public static class RailAnalytics
@@ -47,8 +49,6 @@ public static class RailAnalytics
         {
             sawRunning = true;
             DuckzAnalytics.Progression(GAProgressionStatus.Start, "expedition", RunKind(), 0);
-            if (PhotonNetwork.IsMasterClient)
-                DuckzAnalytics.Event(PhotonNetwork.CurrentRoom?.PlayerCount ?? 0, null, "run", "start", RunKind());
         }
         // A client that only sees the ending (or a returning room) reports nothing for this run.
         if (!sawRunning) { last = s; return; }
@@ -57,12 +57,12 @@ public static class RailAnalytics
         if (master && !wasMaster) AdoptAuthority(s, now);
         wasMaster = master;
         if (master && !s.finished) TrackAuthority(s, now);
-        if (!ReferenceEquals(s, last)) ObserveLocal(s, now);
+        if (!ReferenceEquals(s, last)) { ObserveCrew(s); ObserveLocal(s, now); }
         if (s.finished && !finishSent)
         {
             finishSent = true;
             FinishPersonal(s);
-            if (master) FinishRun(s);
+            if (Mine(s.endReporter) && Once("end")) FinishRun(s);
         }
         last = s;
     }
@@ -74,8 +74,40 @@ public static class RailAnalytics
         bridgeStartSent = bridgeLoweredSent = fuelOut = false;
         trainBlock = null; blockSince = 0; downSince = 0;
         lastFuel = -1f; goldPicked = 0;
-        BlockNames.Clear();
+        BlockNames.Clear(); sent.Clear();
     }
+
+    // Committed claims and join times, so a handoff, rejoin or app restart never repeats an event.
+    static void ObserveCrew(RailRunState s)
+    {
+        if (Mine(s.startReporter) && Once("start"))
+            DuckzAnalytics.Event(s.peakCrew, null, "run", "start", RunKind());
+        if (Mine(s.launchReporter) && Once("launch"))
+            DuckzAnalytics.Event(s.launchCrew, null, "run", "launch", CrewKind(), Size(s.launchCrew));
+        var p = s.Player(PhotonNetwork.LocalPlayer?.UserId);
+        if (p != null && p.joinedAt > 0 && Once("join"))
+            DuckzAnalytics.Event(RunSeconds(s, p.joinedAt), null, "run", "join", CrewKind(), p.launched ? "launch" : "late");
+    }
+
+    static bool Mine(int reporter) => reporter != 0 && reporter == PhotonNetwork.LocalPlayer?.ActorNumber;
+
+    // Survives an app restart into the same run; only the newest run is remembered.
+    const string SentKey = "rails.analytics.sent";
+    static readonly HashSet<string> sent = new HashSet<string>();
+    static bool Once(string tag)
+    {
+        if (!sent.Add(tag)) return false;
+        string saved = UserPlayerPrefs.GetString(SentKey, "");
+        if (!saved.StartsWith(run, System.StringComparison.Ordinal)) saved = run;
+        if (saved.Split('|').Contains(tag)) return false;
+        UserPlayerPrefs.SetString(SentKey, saved + "|" + tag);
+        return true;
+    }
+
+    /// <summary>Crew events keep editor and development-build runs out of the public and private win rates.</summary>
+    static string CrewKind() => Application.isEditor || Debug.isDebugBuild ? "test" : RunKind();
+
+    static string Size(int crew) => "p" + Mathf.Clamp(crew, 1, RailSessionRules.CrewCapacity);
 
     static string RunKind() => PhotonSession.IsPrivate ? "private" : "public";
 
@@ -173,6 +205,8 @@ public static class RailAnalytics
         {
             ["kind"] = RunKind(),
             ["crew"] = s.players.Count,
+            ["launch_crew"] = s.launchCrew, ["end_crew"] = s.endCrew, ["peak_crew"] = s.peakCrew,
+            ["late_joins"] = s.players.Count(p => !p.launched),
             ["escaped"] = s.players.Count(p => p.escaped),
             ["coal"] = s.players.Sum(p => p.coal),
             ["gold"] = s.players.Sum(p => p.gold),
@@ -183,6 +217,11 @@ public static class RailAnalytics
             ["block"] = trainBlock ?? "unknown",
         };
         DuckzAnalytics.Event(RunSeconds(s, s.finishedAt), fields, "run", "end", s.success ? "success" : "fail", s.reason);
+        // Win rate by party size: outcome is the last part, so each size reads as success against fail.
+        string outcome = s.success ? "success" : "fail";
+        float seconds = RunSeconds(s, s.finishedAt);
+        DuckzAnalytics.Event(seconds, null, "run", "result", CrewKind(), Size(s.launchCrew), outcome);
+        DuckzAnalytics.Event(seconds, null, "run", "result_end", CrewKind(), Size(s.endCrew), outcome);
         DuckzAnalytics.Event("run", "last_block", trainBlock ?? "unknown");
         DuckzAnalytics.Event(unbanked, null, "gold", "unbanked");
     }

@@ -1,5 +1,11 @@
 # Playtest queue
 
+## Party size and join analytics | queued for delivery check, November 24, 2026
+
+- Changed: `run:join`, `run:launch`, `run:result` and `run:result_end` report launch versus mid-run joins and win rate by party size at launch and at the end. Run start/launch/end are claimed in the committed run state so they send once ([analytics-setup.md](analytics-setup.md#party-size-and-joins-november-24)).
+- Passed November 24: 16 Edit Mode checks and four two-client editor runs ([events](validation/playtest-queue/2026-11-24-party-analytics/verdicts.txt)).
+- Not verified: delivery. On a release Quest build, depart from the Compound, have someone join mid-run, finish, and confirm one `run:launch:public:*`, one `run:result:public:*` and one `run:join:public:late` in the GameAnalytics live view. A development build reports kind `test` instead. The 30-second slow-loader window and crews of 3 to 8 have only Edit Mode coverage.
+
 ## Duplicate room ViewID resolution | queued for playtest, November 24, 2026
 
 - Changed: when two clients allocate the same room ViewID during a master handoff, every client (and late joiners replaying the room cache) now keeps the newer spawn (server timestamp, then spawn token) and the master removes the loser's cached spawn event. A stale view can no longer unregister a live view with its ID ([duckz-ports.md](duckz-ports.md)).

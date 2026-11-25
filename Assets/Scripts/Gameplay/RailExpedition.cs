@@ -260,11 +260,12 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         pendingRequestJson = null;
         var next = JsonUtility.FromJson<RailRunState>(JsonUtility.ToJson(State));
         double now = PhotonNetwork.Time;
+        string[] launchCrew = PhotonSession.Get(RailSessionRules.LaunchCrew, Array.Empty<string>());
         foreach (var player in PhotonNetwork.PlayerList)
         {
             if (RailSpectators.Is(player)) continue;
             var p = next.Player(player.UserId);
-            if (p == null) { p = new RailParticipant { id = player.UserId, name = player.NickName }; next.players.Add(p); }
+            if (p == null) { p = new RailParticipant { id = player.UserId, name = player.NickName }; next.Join(p, now, launchCrew); next.players.Add(p); }
             p.actor = player.ActorNumber; p.name = player.NickName;
         }
         var changes = new Hashtable();
@@ -332,6 +333,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         }
         if (!next.finished && next.allDownAt > 0 && now - next.allDownAt >= RailRunState.AllDownGrace)
             next.Finish(now, "Crew down", Array.Empty<string>());
+        next.TrackCrew(now, RailSpectators.LiveCrewCount(), PhotonNetwork.LocalPlayer.ActorNumber, launchCrew);
         if (next.finished)
         {
             var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });

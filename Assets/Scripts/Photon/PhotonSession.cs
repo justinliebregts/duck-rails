@@ -380,7 +380,10 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
     {
         var options = RailSessionRules.Options(kind, run);
         if (kind == RailSessionRules.ExpeditionKind)
+        {
             options.CustomRoomProperties[RailResourceBalance.CrewKey] = Mathf.Clamp(users?.Distinct().Count() ?? 1, 1, 8);
+            options.CustomRoomProperties[RailSessionRules.LaunchCrew] = users?.Distinct().ToArray() ?? Array.Empty<string>();
+        }
         options.CustomRoomProperties[RailSessionRules.Allocation] = allocation;
         options.CustomRoomProperties[RailSessionRules.TransferUntil] = PhotonNetwork.Time + 30d;
         // Server-side matching by allocation prevents joining an unrelated occupied
@@ -590,6 +593,7 @@ public class PhotonSession : MonoBehaviourPunCallbacks, IOnEventCallback
         if (!IsPrivate || Phase != RailPhase.Staging || !WorldReady || !PhotonNetwork.IsMasterClient || RailWorld.HasLiveCargo) return;
         Commit(new Hashtable { [RailSessionRules.Phase] = (int)RailPhase.Departing, [RailSessionRules.Run] = NewRunId(),
             [RailResourceBalance.CrewKey] = Mathf.Clamp(RailSpectators.LiveCrewCount(), 1, 8),
+            [RailSessionRules.LaunchCrew] = PhotonNetwork.PlayerList.Where(RailSpectators.IsLiveCrew).Select(p => p.UserId).ToArray(),
             [RailSessionRules.Deadline] = PhotonNetwork.Time + RailSessionRules.WorldLoadSeconds, [RailSessionRules.Fuel] = RailResourceBalance.StartingFuel, [RailExpedition.StateKey] = "",
             [RailSessionRules.Cargo] = Array.Empty<int>(), [RailSessionRules.Motion] = new object[] { PhotonNetwork.Time, 0f, 0f, 0f } });
     }
