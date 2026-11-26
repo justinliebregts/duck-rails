@@ -89,6 +89,13 @@ public static class RailQuarryMineChecks
                     continue;
                 }
                 var fixtures=l.transform.parent.Cast<Transform>().Select(t=>t.GetComponent<Renderer>()).Where(r=>r).ToArray();
+                if(l.name=="Gate lantern"){
+                    var globe=fixtures.Where(r=>r.name=="Warm lantern globe").OrderBy(r=>(r.transform.position-l.transform.position).sqrMagnitude).First();
+                    var shade=fixtures.Where(r=>r.name=="Black enamel lamp shade").OrderBy(r=>(r.transform.position-l.transform.position).sqrMagnitude).First();
+                    Check(Vector3.Distance(globe.transform.position,l.transform.position)<.25f && globe.bounds.Intersects(shade.bounds)
+                        && fixtures.All(r=>r.name!="Gate lantern housing"),"Unobstructed globe and shade on "+l.transform.position);
+                    continue;
+                }
                 var housing=fixtures.Where(r=>r.name==l.name+" housing").OrderBy(r=>(r.bounds.center-l.transform.position).sqrMagnitude).First();
                 var box=housing.bounds;box.Expand(.055f);
                 Check(fixtures.Any(r=>r!=housing && r.name!="Lamp diffuser" && box.Intersects(r.bounds)),"Housing touches fixture support "+l.name);
@@ -104,7 +111,7 @@ public static class RailQuarryMineChecks
             }
             var fixturesInMine=root.Find("Tunnel timber supports").GetComponentsInChildren<Light>();
             Check(fixturesInMine.Length==10 && fixturesInMine.All(l=>l.name=="Gallery lamp" && Mathf.Abs(l.color.r-l.color.b)<.09f && l.intensity<=34 && l.transform.parent.Find("Opal diffuser")),"Ten dim neutral camping lanterns in the mine");
-            Check(root.Find("Underground office/Timber office screen/Office noticeboard") && root.Find("Excavated terrain/Office rock wall returns") && !root.GetComponentsInChildren<Transform>().Any(t=>t.name=="Fixture anchor"),"Office timber screen and solid rock returns with clear cave ceiling");
+            Check(root.Find("Underground office/Timber office screen/End post") && !root.GetComponentsInChildren<Transform>().Any(t=>t.name=="Fixture anchor"),"Office timber frame with clear cave ceiling");
             foreach(var lantern in fixturesInMine){
                 var mantle=lantern.transform.position;
                 Check(!Physics.CheckSphere(mantle,.14f,1<<6),"Lantern mantle clear of rock "+mantle);
@@ -128,18 +135,19 @@ public static class RailQuarryMineChecks
                 float x=11+j*.21f;MineWalk(x,z,"Office opening toward pit "+x+" "+z);
             }
             var screen=root.Find("Underground office/Timber office screen");
-            foreach(float side in new[]{-1f,1f}){
-                var eye=screen.TransformPoint(new Vector3(0,1.4f,side*.8f));
-                Check(Physics.Raycast(eye,Vector3.forward*-side,out var face,1.1f,1<<6)
-                    && face.collider.transform.IsChildOf(screen),"Closed timber screen face "+side);
-            }
-            var rear=root.Find("Excavated terrain/Office rock wall returns");
-            Check(rear && Physics.Raycast(new(10,-4.5f,87),Vector3.back,out var outsideWall,1.2f,1<<6)
-                && outsideWall.collider.transform==rear,"Office rock wall has an outward facing back");
-            foreach(var receiver in root.Find("Excavated terrain").GetComponentsInChildren<MeshRenderer>().Where(r=>r.transform!=rear))
+            Check(screen.Cast<Transform>().Count(t=>t.name=="End post")==2,"Office timber end posts retained");
+            // The retained floor boulder sits beside the rounded end of the wall.
+            foreach(float z in new[]{85.7f,86.5f,87.5f,88f})MineWalk(13.7f,z,"Aisle around office rock pillar "+z);
+            Check(Physics.Raycast(new(13,-4.5f,86.7f),Vector3.left,out var nose,2.4f,1<<6)
+                && nose.collider.name=="Tunnel shell walls" && nose.normal.x>.55f,"Solid end face at office junction");
+            foreach(var receiver in root.Find("Excavated terrain").GetComponentsInChildren<MeshRenderer>())
                 Check(receiver.stitchLightmapSeams && receiver.scaleInLightmap>=.85f,"Continuous terrain lightmap charts "+receiver.name);
             Check(RailQuarryMine.ValidatePlacements(b),"Spawn footprints, graph reach and full-crew pool coverage");
             foreach(var lamp in fixturesInMine){
+                var diffuser=lamp.transform.parent.Find("Opal diffuser").GetComponent<MeshRenderer>().sharedMaterial;
+                var glow=diffuser.GetColor("_EmissionColor");
+                Check(diffuser.IsKeywordEnabled("_EMISSION") && glow.r>=1f && Mathf.Approximately(glow.r,glow.g)
+                    && Mathf.Approximately(glow.g,glow.b),"White emissive lantern center "+lamp.transform.position);
                 var meshes=lamp.transform.parent.GetComponentsInChildren<MeshFilter>();
                 Check(meshes.Length==2 && meshes.Sum(f=>f.sharedMesh.triangles.Length/3)<=120 &&
                     meshes.All(f=>f.GetComponent<Renderer>().sharedMaterial.renderQueue<2501),
@@ -224,6 +232,8 @@ public static class RailQuarryMineChecks
                 Check(!mainTies.Any(a=>a.Intersects(tie.bounds)),"Siding timber clear of main sleepers "+tie.bounds.center);
             var gate=yard.Find("Quarry arrival sign");
             Check(gate.Find("QUACKRRY solid CutePixel letters").GetComponent<MeshFilter>().sharedMesh.bounds.size.z>.28f,"Raised QUACKRRY lettering");
+            var type=gate.Find("QUACKRRY solid CutePixel letters").GetComponent<MeshRenderer>();
+            Check(type.bounds.size.x<10 && type.receiveGI==ReceiveGI.LightProbes && type.probeAnchor,"Compact probe-lit lettering");
             Check(gate && Mathf.Abs(gate.position.x)<.01f && gate.position.z<8 && gate.GetComponentsInChildren<Light>().Length==2,"South entrance spans the railway with twin lanterns");
             Check(gate.GetComponentsInChildren<Renderer>().Where(r=>r.bounds.min.x<3 && r.bounds.max.x> -3).All(r=>r.bounds.min.y>6.3f),"Sign and badge clear the full 6.3 m overhead envelope");
             Check(root.Find("Tunnel boring machine/Cutter head") && yard.Find("Yellow haul road fence"),"Boring machine and fenced haul road installed");

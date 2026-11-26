@@ -1,5 +1,11 @@
 # Quarry / twin mine layout
 
+## South gate, office junction and drill access
+
+The QUACKRRY sign face, raised CutePixel letters and lamp hardware are 70% of their former size. The crossbeam clears the track by 6.42 m. The letters share a light-probe anchor at the beam so the front strokes receive consistent lighting. The rock between the office and the adjacent gallery now ends beside the last timber post, with a rounded face connecting both sides. The drill steps leave the left side of the backup deck. Each orange conveyor lip stops 5 cm short of the steel tray ends. The office gold marker follows the relocated locker. The gate lamps use the amber globes and shades alone. All ten cave lanterns have an opaque white-emissive center. The two northeast fence outcrops retain their boulders with the six intersecting firs removed.
+
+The B Quarry lighting and crawl graph were rebaked. The Edit Mode checks cover the office aisle, the rock end from three directions, drill access, rail clearance and resource selection for crews 1–8. [Inspection results](validation/quarry-mountain/gate-office-borer.txt)
+
 ## November 26 machine rebuild
 
 Requested: better versions of the four Quarry machines at realistic scale and shape, still low poly, in the Quackville palette, with every cab enterable. `RailQuarryMine.Machines.cs` now builds them, and **Duck Rails > Authoring > Quarry Mine > Rebuild machines** swaps only those four groups in the saved prefab, keeps the terrain, spawns and the hoist wall rubble, rebakes the crawl graph and clears the lighting bindings. Run **Bake Open Block And Keep Open** afterwards.

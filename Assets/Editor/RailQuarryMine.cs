@@ -65,6 +65,9 @@ public static partial class RailQuarryMine
             for(int i=1;i<path.Length;i++)d=Mathf.Min(d,Segment(p,path[i-1],path[i],out _)-2.95f);
         d+=.22f*Mathf.Sin(.43f*z+.17f*x)+.12f*Mathf.Cos(.62f*x-.23f*z);
         d=Mathf.Min(d,Mathf.Min(RoundedRoom(x,z,-42,106,4.4f,4.4f),Segment(p,new(-42,106),new(-25,99),out _)-2.55f));
+        // Open the pinched end of the rock pillar at the last timber post.
+        // The same contour drives the two wall faces, the rounded nose, floor and ceiling.
+        d=Mathf.Min(d,RoundedRoom(x,z,14.45f,87.15f,3.05f,2.55f));
         return Mathf.Min(d,Mathf.Min(RoundedRoom(x,z,-13,128,6,10),
             Mathf.Min(RoundedRoom(x,z,13.5f,80.25f,8.4f,5.75f),RoundedRoom(x,z,11,75,2.4f,4))));
     }
@@ -280,7 +283,6 @@ public static partial class RailQuarryMine
                 if(l.h<l.f+.00001f && r.h<r.f+.00001f)continue;
                 var bl=l.At(l.f);var br=r.At(r.f);var tl=l.At(Mathf.Max(l.f,Mathf.Min(l.h,l.r)));var tr=r.At(Mathf.Max(r.f,Mathf.Min(r.h,r.r)));
                 shell.Tri(bl,tl,tr);shell.Tri(bl,tr,br);
-                CollectOfficeWall(bl,br,tl,tr);
             }
         }
     }
@@ -290,7 +292,6 @@ public static partial class RailQuarryMine
     static bool HoistSite(float x,float z,float margin=0)=>Mathf.Abs(x+41.5f)<5.7f+margin && Mathf.Abs(z-106)<6.3f+margin;
     static void Terrain(Transform root){
         var p=Group(root,"Excavated terrain");
-        officeReturns.Clear();
         MergedTriangles=0;MaximumMergeError=0;
         var vertices=new MineVertex[97,161];
         for(int z=0;z<=160;z++)for(int x=-48;x<=48;x++)vertices[x+48,z]=new MineVertex(x,z);
@@ -353,7 +354,6 @@ public static partial class RailQuarryMine
             groundBands[i].Build(p,"Scrub tile band "+i,fines,terrainUV:true);
             gravelBands[i].Build(p,"Ballast tile band "+i,gravel,terrainUV:true);
         }
-        BuildOfficeWallReturns(p);
     }
     static void Lamp(Transform p,string n,Vector3 pos,bool warm=false,float power=45)
     {
@@ -362,8 +362,9 @@ public static partial class RailQuarryMine
             var diffuser=Solid(p,"Lamp diffuser",pos-Vector3.up*.075f,new(.42f,.045f,.23f),lens,false);
             GameObjectUtility.SetStaticEditorFlags(diffuser,0);
             diffuser.GetComponent<MeshRenderer>().receiveGI=ReceiveGI.LightProbes;
+            Box(p,n+" housing",pos,new Vector3(.6f,.12f,.35f),steel,false);
         }
-        Box(p,n+" housing",pos,new Vector3(.6f,.12f,.35f),steel,false);var l=Group(p,n).gameObject.AddComponent<Light>();l.transform.localPosition=pos-Vector3.up*.12f;l.type=LightType.Point;l.lightmapBakeType=LightmapBakeType.Baked;l.range=warm?12:17;l.intensity=power;l.color=warm?new Color(1,.75f,.4f):new Color(.67f,.8f,1);l.shadows=LightShadows.Soft;
+        var l=Group(p,n).gameObject.AddComponent<Light>();l.transform.localPosition=pos-Vector3.up*.12f;l.type=LightType.Point;l.lightmapBakeType=LightmapBakeType.Baked;l.range=warm?12:17;l.intensity=power;l.color=warm?new Color(1,.75f,.4f):new Color(.67f,.8f,1);l.shadows=LightShadows.Soft;
     }
     static void Interior(Transform root)
     {
@@ -594,10 +595,13 @@ public static partial class RailQuarryMine
                 float x=Mathf.Clamp(center.x+Range(-3,3),-43,43),z=center.y+Range(-4,4);
                 if(HoistSite(x,z,2) || z>151 || RoadDistance(Climb,x,z)<4 || RoadDistance(Haul,x,z)<5)continue;
                 float h=Range(3,6.6f),ground=Height(x,z);
+                float yaw=Range(0,360);
+                // These two northeast fence outcrops are bare rock.
+                if(center.x>=44)continue;
                 Solid(grove,"Fir trunk",new(x,ground+h*.24f,z),new(.33f,h*.52f,.33f),wood);
                 var tree=MeshGo(grove,"Fir crown",crown,needles,false);
                 tree.transform.localPosition=new(x,ground+h*.15f,z);tree.transform.localScale=new(h*.28f,h*.87f,h*.28f);
-                tree.transform.localRotation=Quaternion.Euler(0,Range(0,360),0);
+                tree.transform.localRotation=Quaternion.Euler(0,yaw,0);
             }
         }
         FracturedRock(root,crown,needles);
@@ -673,7 +677,7 @@ public static partial class RailQuarryMine
             var shadeGo=MeshGo(sign,"Black enamel lamp shade",shade,dark,false);shadeGo.transform.localPosition=new(x,7.17f,-1.47f);shadeGo.transform.localScale=new(.72f,.52f,.72f);
             Lamp(sign,"Gate lantern",new(x,6.62f,-1.46f),true,95);
         }
-        BoundaryFences(parent,sign);
+
         Solid(sign,"Lintel",new(0,7.28f,0),new(17.65f,.85f,.79f),wood);
         for(int i=-8;i<=8;i++){
             float x=i*.81f;float top=9.12f+.45f*(Mathf.Abs(i)<6?1:0)+1.06f*Mathf.Sqrt(Mathf.Clamp01(1-x*x/7));
@@ -684,18 +688,45 @@ public static partial class RailQuarryMine
             var crest=MeshGo(sign,"Ivory mountain",mountain,ivory,false);crest.transform.localPosition=new(q.x,q.y,-.724f);crest.transform.localScale=Vector3.one*q.z;
         }
         RaisedLetters(sign,ivory);
+        // Scale the furniture around its mounting point, keeping the train envelope clear.
+        const float scale=.70f, headerOffset=6.42f-6.855f*scale;
+        foreach(Transform part in sign){
+            var pos=part.localPosition;
+            var size=part.localScale*scale;
+            if(Mathf.Abs(pos.x)>8){
+                pos.x=Mathf.Sign(pos.x)*GatePostX;
+                pos.z*=scale;
+                if(part.name=="Squared timber post"){
+                    const float bottom=.14f, top=9.1f*.70f+headerOffset;
+                    size.y=top-bottom;pos.y=(top+bottom)*.5f;
+                }else{
+                    pos.y*=scale;
+                    if(pos.y>4)pos.y+=headerOffset;
+                }
+            }else{
+                pos=pos*scale+Vector3.up*headerOffset;
+                if(part.name=="Lintel")size.x=2*GatePostX+.78f;
+            }
+            part.localPosition=pos;part.localScale=size;
+        }
+        BoundaryFences(parent,sign);
     }
 
+    const float GatePostX=7.75f;
+
     static void BoundaryFences(Transform parent,Transform sign){
-        var sides=Group(parent,"Timber boundary fences");
+        var sides=parent.Find("Timber boundary fences");
+        bool buildSides=!sides;
+        if(buildSides)sides=Group(parent,"Timber boundary fences");
         foreach(float side in new[]{-1f,1f}){
-            Vector3 previous=new(side*8.3f,0,0);
+            Vector3 previous=new(side*GatePostX,0,0);
             for(int i=1;i<=7;i++){
-                Vector3 next=new(side*Mathf.Lerp(8.3f,47,i/7f),0,0);
+                Vector3 next=new(side*Mathf.Lerp(GatePostX,47,i/7f),0,0);
                 Box(sign,"Entrance fence post",next+Vector3.up*.82f,new(.24f,1.73f,.24f),wood);
                 foreach(float y in new[]{.51f,1.23f})Beam(sign,"Entrance fence rail",previous+Vector3.up*y,next+Vector3.up*y,.18f,wood);
                 previous=next;
             }
+            if(!buildSides)continue;
             float x=47*side,at=1;
             Vector3 Foot(float z)=>new(x,GroundMeshHeight(x,z),z);
             void Post(Vector3 foot)=>Box(sides,"Boundary post",foot+Vector3.up*.64f,new(.16f,1.44f,.16f),wood);
@@ -753,7 +784,14 @@ public static partial class RailQuarryMine
                 }
                 cursor+=metrics.horizontalAdvance;
             }
-            surf.Build(sign,word+" solid CutePixel letters",ivory,false);
+            string name=word+" solid CutePixel letters";
+            surf.Build(sign,name,ivory,false);
+            // Each pixel row has its own front quad. Sample one probe for all the
+            // lettering so a lightmap chart boundary cannot stripe a flat stroke.
+            var letters=sign.Find(name).GetComponent<MeshRenderer>();
+            GameObjectUtility.SetStaticEditorFlags(letters.gameObject,0);
+            letters.receiveGI=ReceiveGI.LightProbes;
+            letters.probeAnchor=sign.Find("Lintel");
         }finally{RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(image);}
     }
     static void MinePuddles(Transform root){
@@ -1193,7 +1231,6 @@ public static partial class RailQuarryMine
             if(root.Find("Southwest portal frame")){
                 RemoveNamed(root,"Excavated terrain");
                 Terrain(root);
-                OfficeBoard(root.Find("Underground office"));
                 var supports=root.Find("Tunnel timber supports");
                 RemoveNamed(supports,"Caged mine lantern","Camping lantern");
                 CaveLanterns(root,supports);

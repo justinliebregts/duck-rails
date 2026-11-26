@@ -12,7 +12,7 @@ public static partial class RailQuarryMine
     static void TuneGate(Transform root){
         foreach(var light in root.GetComponentsInChildren<Light>().Where(l=>l.name=="Gate lantern")){
             light.intensity=55;light.range=16;light.bounceIntensity=0;light.shadowRadius=.42f;
-            var pos=light.transform.localPosition;pos.y=6.38f;light.transform.localPosition=pos;
+            var pos=light.transform.localPosition;pos.y=6.42f+(6.38f-6.855f)*.70f;light.transform.localPosition=pos;
             foreach(var r in light.transform.parent.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name=="Warm lantern globe")){
                 r.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
                 GameObjectUtility.SetStaticEditorFlags(r.gameObject,0);r.receiveGI=ReceiveGI.LightProbes;
