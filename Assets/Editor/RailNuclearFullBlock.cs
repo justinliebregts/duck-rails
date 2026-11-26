@@ -481,6 +481,18 @@ public static class RailNuclearFullBlock
         }
     }
 
+    // A flat collider flush with the pipe crests: loot rests on the walkway instead of
+    // dropping into the narrow gaps between the three pipes, and footing stays even.
+    public static void BuildWalkwayDeck(Transform site)
+    {
+        var from=new Vector3(-16.40f,35.49f,104.5f);var to=new Vector3(16.40f,35.49f,101.5f);
+        var deck=new GameObject("Tower walkway deck").AddComponent<BoxCollider>();
+        deck.gameObject.layer=6;deck.transform.SetParent(site,false);
+        deck.transform.position=(from+to)/2+Vector3.down*.03f;
+        deck.transform.rotation=Quaternion.LookRotation(to-from);
+        deck.size=new Vector3(.73f,.06f,Vector3.Distance(from,to));
+    }
+
     [MenuItem("Duck Rails/Authoring/Nuclear Plant/Install full site on existing prefab")]
     public static void Install()
     {
@@ -548,6 +560,7 @@ public static class RailNuclearFullBlock
             }
             DimBuildingLamps(root);
             BuildWater(siteRoot);
+            BuildWalkwayDeck(siteRoot);
             RaisePoolDeckMarkers(instance);
             var font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/CutePixel SDF.asset");
             foreach(var data in site.labels) {

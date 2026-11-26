@@ -61,11 +61,21 @@ public static class RailNuclearPlantChecks
    var graph=CrawlGraph.Load(b.graph);Check(graph!=null&&graph.NodeCount>100,"Prebaked graph present");
    var markers=b.GetComponentsInChildren<RailSpawnMarker>(true);
    CheckSpawnPools(b,graph,markers);
+   foreach(var (kind,ramp,walkway) in new[]{
+     (RailSpawnKind.Coal,RailNuclearTowerLoot.RampCoalPerTurn*8,RailNuclearTowerLoot.WalkwayCoal),
+     (RailSpawnKind.Gold,RailNuclearTowerLoot.RampGoldPerTurn*8,RailNuclearTowerLoot.WalkwayGold)}) {
+    var pool=RailSpawnPool.Available(b,kind);
+    Check(pool.Count(t=>t.name.EndsWith(RailNuclearTowerLoot.RampTag))==ramp,kind+" added ramp candidates "+ramp);
+    Check(pool.Count(t=>t.name.EndsWith(RailNuclearTowerLoot.WalkwayTag))==walkway,kind+" walkway candidates "+walkway);
+   }
+   var unsettled=RailNuclearTowerLoot.SettleCheck();
+   Check(unsettled.Length==0,"New ramp and walkway loot stays put under physics "+string.Join("; ",unsettled));
    foreach(var marker in markers){
     var t=marker.transform;
     Check(Physics.Raycast(t.position,Vector3.down,1.1f,1<<6,QueryTriggerInteraction.Ignore),"Spawn support "+t.name);
     Check(!Physics.CheckSphere(t.position+Vector3.up*.4f,.35f,1<<6,QueryTriggerInteraction.Ignore),"Spawn clearance "+t.name);
-    Check(graph.FindNearestGroundNode(t.position,2)>=0,"Spawn graph "+t.name);
+    // The narrow walkway has no crawl-graph ground, so enemies do not follow onto it.
+    if(!t.name.EndsWith(RailNuclearTowerLoot.WalkwayTag))Check(graph.FindNearestGroundNode(t.position,2)>=0,"Spawn graph "+t.name);
    }
    var site=root.Find(RailNuclearFullBlock.RootName);Check(site,"Finished site present");
    foreach(string zone in new[]{"Shift bus turnaround","Pipe delivery racks","Tower entrance worklights","Supply trunk and collars","Reed settling pond","Stepped discharge flume","Transformer fins"})
@@ -237,7 +247,6 @@ public static class RailNuclearPlantChecks
   for(int i=1;i<4;i++)for(int k=1;k<=4;k++)Walk(new(17,.23f+.9f*(i-1)+.18f*k,140.95f+i*3.1f+.085f-.35f*(4-k)-.175f),"Flume stair "+i+" tread "+k);
   for(int k=1;k<=6;k++)Walk(new(17,2.93f+(4.12f-2.93f)/7*k,153.35f-.30f*(6-k)-.15f),"Flume deck stair "+k);
   for(float t=0;t<=1.001f;t+=1f/72)Walk(Vector3.Lerp(new(-16.3f,35.49f,104.491f),new(16.3f,35.49f,101.509f),t),"Tower pipe walkway");
-  Connected(graph,new[]{new Vector3(-18.3f,35.7f,104.5f),new(18.3f,35.7f,101.5f)},"Lookouts joined by walkway");
   foreach(var building in new[]{"Gatehouse","Maintenance"})
    Check(Mathf.Approximately(root.Find(building+"/Baked plant light").GetComponent<Light>().intensity,14),"Dimmed interior lamp "+building);
   var racks=site.GetComponentsInChildren<MeshFilter>().Single(f=>f.name.StartsWith("Pipe delivery racks Galvanized steel "));

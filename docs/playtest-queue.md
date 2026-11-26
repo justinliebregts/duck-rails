@@ -1,5 +1,9 @@
 # Playtest queue
 
+## Quackwatt ramp and walkway loot | queued for playtest, November 26, 2026
+
+On headset, climb both cooling tower ramps and cross the pipe walkway. Check that coal and gold rest where they spawn, can be picked up without falling, do not block footing on the ramps or walkway, and appear identically to a second client. Judge how much loot now sits on the towers and walking the item-filled walkway, and check frame rate near the top. Enemies are not expected to follow onto the walkway.
+
 ## Whole-number coal fuel, 10% higher | queued for playtest, November 26, 2026
 
 Deposit coal solo and with two clients. Each deposit should float a whole number (+5 solo, +3 for two players) that matches on both clients, and the cockpit gauge should show whole numbers only, reading 0 only when the tank is empty. Judge whether the difficulty is now right at the crew sizes played ([values by crew](resource-balance.md#fuel)). Editor checks passed; no Play Mode run.

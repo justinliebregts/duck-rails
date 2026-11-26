@@ -1,5 +1,11 @@
 # Nuclear power plant — layout and implementation
 
+## November 26 — tower and walkway loot
+
+Added 64 coal and 48 gold candidates along the sloped runs of both tower ramps (8 coal and 6 gold per turn per tower, alternating sides) and 24 coal and 20 gold along the pipe walkway. The block now holds 225 coal and 157 gold candidates; per-run counts are unchanged. At crew 8 over 100 seeds about 50% of coal and 56% of gold picks are on the towers or walkway, including about 10 coal and 7 gold on the walkway.
+
+A flat invisible collider flush with the pipe crests keeps loot from dropping through the gaps between pipes. The crawl graph has no ground nodes on the narrow walkway, so enemies cannot follow onto it, and walkway loot is exempt from the near-graph check. Menu: Duck Rails/Authoring/Nuclear Plant/Add tower and walkway loot. Edit Mode checks, including a physics settle test of every new candidate, are in [geometry checks](validation/nuclear-full-block/geometry-checks.txt).
+
 ## November 26 — feedback pass: slime, water, walkway and lighting
 
 - The five waste spills have rounded rims about 12 cm thick that slope into the floor.
