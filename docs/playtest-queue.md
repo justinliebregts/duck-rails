@@ -1,5 +1,9 @@
 # Playtest queue
 
+## Hospital night lighting — queued for playtest, November 26
+
+Select Hospital District through Test Block Order in B. During the train approach, read the three west building names, compare the painted ambulance markings with the fixed neon crosses, and inspect the red light on the walls. Walk under WAITING from reception and the corridor to check readability in motion. Check the dark ward glazing from the train, the raised letters and crosses at an angle, and the moved washer bank under WASH. Walk through the staff-garden shrubs and parking-island bushes, then stop and step back onto clear paving to check that the corn rustle follows movement through foliage. At night on Quest, approach the ER from the train, walk both floors and stair cores, and visit the roof, clinic, pharmacy and laundry. Check whether doors, stair landings and loose items are readable between the remaining pools of light.
+
 ## Lakeside ferns, campfires and raised trails | queued for playtest, November 26, 2026
 
 On headset, walk the southwest fern passage and judge the smaller ferns from duck height, including the rustle sound on entering and leaving them. Visit all three campfires at night. Check the larger flames, whether items or hands clip into them awkwardly, the warm light on tents and ducks, and that the crackle is clearly audible and follows each fire without drowning crew speech. Measure frame time standing close to a fire. Walk the trails across slopes, junctions, the railway crossing, cabin thresholds and the dock approach and look for gaps, flicker or snagging along the new earth banks. [Layout notes](lakeside-campground-layout.md#ferns-campfires-and-raised-trails--november-26-2026)

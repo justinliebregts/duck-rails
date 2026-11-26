@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TMPro;
 using Game.Audio;
 using UnityEditor;
 using UnityEngine;
@@ -18,10 +17,57 @@ public static class RailHospitalCampus
     const string ModelPath = Folder + "/Hospital Campus.fbx";
     const string MaterialPath = Folder + "/Hospital Campus Atlas.mat";
 
-    [Serializable] class Palette { public Swatch[] materials; public Label[] labels; public Fixture[] fixtures; }
+    [Serializable] class Palette { public Swatch[] materials; public Label[] labels; public Fixture[] fixtures; public Shrub[] shrubs; }
     [Serializable] class Swatch { public string name, original; }
     [Serializable] class Label { public string text; public float x, y, z, size, yaw; }
-    [Serializable] class Fixture { public string name; public float x, y, z, power; public float[] color; }
+    [Serializable] class Fixture { public string name; public float x, y, z, power, range; public float[] color; }
+
+    [Serializable] class Shrub { public float x, y, z, radius; }
+
+    internal static void AddMeshSign(GameObject go, string text, bool exterior)
+    {
+        const string signs = RailHospital.Folder + "/Signs/";
+        string meshName = (exterior ? "Campus - " : "Room - ") + text;
+        var mesh = AssetDatabase.LoadAllAssetsAtPath(signs + "Hospital lettering.asset")
+            .OfType<Mesh>().Single(m => m.name == meshName);
+        string finish = exterior ? (text == "EMERGENCY" ? "Emergency coral" : "Exterior ivory") : "Interior ivory";
+        var material = AssetDatabase.LoadAssetAtPath<Material>(signs + finish + ".mat");
+        if (!material) throw new InvalidOperationException("Missing hospital sign material " + finish);
+        go.AddComponent<MeshFilter>().sharedMesh = mesh;
+        var renderer = go.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = material;
+        renderer.receiveGI = ReceiveGI.Lightmaps;
+        GameObjectUtility.SetStaticEditorFlags(go, StaticEditorFlags.ContributeGI);
+    }
+
+    static void AddBushRustle(Transform campus, Shrub[] shrubs)
+    {
+        var sound = AssetDatabase.LoadAssetAtPath<SoundEvent>("Assets/Audio/Events/Impact/Foliage_CornRustle.asset");
+        var surface = AssetDatabase.LoadAssetAtPath<SurfaceType>("Assets/Audio/Surfaces/Foliage.asset");
+        if (!sound || !surface || shrubs == null || shrubs.Length == 0)
+            throw new InvalidOperationException("Missing hospital bushes or their foliage audio");
+        var parent = new GameObject("Bush rustle").transform;
+        parent.SetParent(campus, false);
+        foreach (var group in shrubs.GroupBy(s => new Vector3Int(Mathf.FloorToInt(s.x / 8),
+                     Mathf.RoundToInt(s.radius * 10), Mathf.FloorToInt(s.z / 8))))
+        {
+            var volume = new GameObject("Bushes " + group.Key).AddComponent<FoliageVolume>();
+            volume.transform.SetParent(parent, false);
+            volume.surface = surface;
+            volume.rustle = sound;
+            volume.radius = group.Max(s => s.radius);
+            // FoliageRustle samples the listener's head when its body walks through low plants.
+            volume.stalks = group.Select(s => new Vector4(s.x, s.y, s.z, 2.1f)).ToArray();
+            var bounds = new Bounds((Vector3)volume.stalks[0], Vector3.zero);
+            foreach (var stalk in volume.stalks)
+            {
+                bounds.Encapsulate((Vector3)stalk - Vector3.up * .1f);
+                bounds.Encapsulate((Vector3)stalk + Vector3.up * stalk.w);
+            }
+            bounds.Expand(new Vector3(2 * volume.radius, 0, 2 * volume.radius));
+            volume.bounds = bounds;
+        }
+    }
 
     static Palette ReadPalette() => JsonUtility.FromJson<Palette>(File.ReadAllText("ArtSource/HospitalCampus/campus.json"));
 
@@ -120,23 +166,15 @@ public static class RailHospitalCampus
                 (go.name.StartsWith("Large court pine", StringComparison.Ordinal) && mesh.name.StartsWith("Trunk", StringComparison.Ordinal)))
                 go.AddComponent<MeshCollider>().sharedMesh = mesh;
         }
-        var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/CutePixel SDF.asset");
+        AddBushRustle(campus, palette.shrubs);
         foreach (var data in palette.labels)
         {
             var go = new GameObject(data.text);
             go.transform.SetParent(campus, false);
             go.transform.localPosition = new Vector3(data.x, data.y, data.z);
             go.transform.localRotation = Quaternion.Euler(0, data.yaw, 0);
-            var label = go.AddComponent<TextMeshPro>();
-            label.font = font;
-            label.fontSharedMaterial = font.material;
-            label.text = data.text;
-            label.alignment = TextAlignmentOptions.Center;
-            label.textWrappingMode = TextWrappingModes.NoWrap;
-            label.rectTransform.sizeDelta = new Vector2(26, 3);
-            label.fontSize = data.size * 6;
-            label.color = new Color(1f, .89f, .70f);
-            label.ForceMeshUpdate();
+            if (data.yaw == -90) go.transform.localScale = Vector3.one * 1.35f;
+            AddMeshSign(go, data.text, true);
         }
         foreach (var data in palette.fixtures)
         {
@@ -147,7 +185,7 @@ public static class RailHospitalCampus
             light.type = LightType.Point;
             light.lightmapBakeType = LightmapBakeType.Baked;
             light.shadows = LightShadows.Soft;
-            light.range = data.power > 600 ? 17 : 11;
+            light.range = data.range > 0 ? data.range : (data.power > 600 ? 17 : 11);
             light.intensity = data.power * .043f;
             light.color = new Color(data.color[0], data.color[1], data.color[2]);
         }

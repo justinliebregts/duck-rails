@@ -2,6 +2,26 @@
 
 November 4, 2026. The user approved the hospital drawings including the V4 south ER/surgery changes and requested the 3D build. The rough Quackville district is now installed; see implementation and validation below. This is a separate district, superseding the earlier combined construction/hospital study.
 
+## Neon crosses and track-facing signs — November 26
+
+The six ambulance crosses are painted red. The two hospital facade crosses, the entrance pylon and both pharmacy crosses use red channels with a bright glass outline. Each fixed cross has its own baked red point light, 1.25 m in front of the face, with a 4.8 m range. [Hospital entrance](../output/hospital-night-signs/neon-entrance.png) · [Ambulance apron](../output/hospital-night-signs/ambulance-and-crosses.png)
+
+The three west-side building names sit on the east-facing boards over their track-side doors. The WAITING board hangs 0.33 m lower, with 2.17 m underneath and raised lettering on both sides. [Clinic](../output/hospital-night-signs/outpatient-clinic-from-track.png) · [Pharmacy](../output/hospital-night-signs/pharmacy-from-track.png) · [Laundry](../output/hospital-night-signs/central-laundry-from-track.png) · [WAITING from reception](../output/hospital-night-signs/waiting-from-reception.png) · [WAITING from the corridor](../output/hospital-night-signs/waiting-from-corridor.png)
+
+## Windows, raised signs and laundry — November 26
+
+All four glazing and reflection swatches have zero emission. Amber and cyan panes retain their tint in reflected light. All 35 visible signs use solid CutePixel letter meshes with baked emission. The facade and ambulance crosses use red emissive atlas faces. The entrance monument and pharmacy crosses retain their ivory glow. The hospital bake has 30 active fixtures, 1,387 bound renderers on one lightmap, and 398 probes in the build companion. [Baked entrance](../output/hospital-night-signs/hospital-front.png)
+
+Central Laundry's four boiler-side washers moved 4.35 m north along the west wall, toward WASH. Their collision and the coal pickup moved with them. The DANGER HOT lettering and backing plate are gone. [Baked laundry](../output/hospital-night-signs/laundry.png)
+
+All 176 low bush placements use the corn rustle event while the local listener moves through their footprint. Edit Mode checks covered every bush at head height, silence while stationary, and clear samples on the garden path and railway. Nighttime readability and listening are queued for playtest.
+
+The hospital geometry suite passed 3,187 checks, including support and clearance for the washer pickups. Its one failure is the existing eight-player coal capacity. The block has 64 coal candidates against the current ceiling of 93. [Geometry checks](validation/hospital/finished-campus/geometry-checks.txt)
+
+## Darker hospital lighting — November 26
+
+In the B project, 31 of the 61 active baked lights are off. The other 30 use half their previous intensity, with pools of light at the ER approach, on both hospital floors, on the roof and in the outbuildings. The 512 × 512 lightmap's mean linear luminance fell from 0.252 to 0.088, about 65%. Unity reloaded all 1,352 receiver bindings against the new atlas, and the build companion loaded all 398 probes. Nighttime visibility at duck eye height is queued for playtest.
+
 ## Hospital sound — November 24
 
 Four localized loops mark the reception and upper north strip lights, middle rooftop HVAC unit and laundry washer bank. Water drips at the upper surgery scrub sink and the clinic exam sink. The roof duct seam and laundry pipes occasionally creak. The drips and creaks are positional and intermittent. The scrub sink has the shortest interval (14–32 seconds) and the rooftop duct has the longest (55–105 seconds), leaving quiet stretches as players explore the abandoned campus.

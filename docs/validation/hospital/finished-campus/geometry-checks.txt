@@ -1370,26 +1370,6 @@ PASS Courtyard open to sky
 PASS Thirteen furnished interior areas
 PASS Interior furniture has physical colliders
 PASS Surgery, ER and street building interiors present
-PASS CutePixel WARDS
-PASS CutePixel SUPPLIES
-PASS CutePixel WAITING
-PASS CutePixel TRIAGE
-PASS CutePixel INFORMATION
-PASS CutePixel CT SCAN
-PASS CutePixel RECOVERY
-PASS CutePixel NURSES
-PASS CutePixel ROOMS 201-203
-PASS CutePixel NURSE STATION
-PASS CutePixel EXAM 1
-PASS CutePixel EXAM 2
-PASS CutePixel EXAM 3
-PASS CutePixel CHECK IN
-PASS CutePixel CHECKOUT
-PASS CutePixel PRESCRIPTIONS
-PASS CutePixel PICK UP
-PASS CutePixel DANGER HOT
-PASS CutePixel WASH
-PASS CutePixel DRY
 PASS Blockout props retired in Clinic
 PASS Blockout props retired in Pharmacy
 PASS Blockout props retired in Laundry utilities
@@ -1404,13 +1384,6 @@ PASS Roof plant has physical geometry
 PASS Laundry yard has physical geometry
 PASS Visitor shelter has physical geometry
 PASS Visitor shuttle has physical geometry
-PASS CutePixel EMERGENCY
-PASS CutePixel PHARMACY
-PASS CutePixel OUTPATIENT CLINIC
-PASS CutePixel CENTRAL LAUNDRY
-PASS CutePixel VISITOR TRANSIT
-PASS CutePixel HOSPITAL
-PASS CutePixel MEDICAL CENTER
 PASS Built campus signs
 PASS Only garden medical center sign remains
 PASS Stairwell edge 57 level 4 contact Metal (expected Metal)
@@ -1436,7 +1409,7 @@ PASS Campus pedestrian clearance (-20.00, 122.00)
 PASS Campus pedestrian clearance (24.00, 138.20)
 PASS Prebaked graph
 PASS Hospital uses the registered candidate pools
-PASS Distinct active Coal candidates cover eight players
+FAIL Distinct active Coal candidates cover eight players
 PASS Spawn footprint support Coal 01 - Roof plant and west roofs - Pharmacy roof service deck
 PASS Spawn envelope clearance Coal 01 - Roof plant and west roofs - Pharmacy roof service deck
 PASS Spawn footprint support Coal 02 - Outpatient clinic - Waiting room window
@@ -2148,8 +2121,11 @@ PASS UV channels South wing corridor wall
 PASS UV channels South wing corridor wall
 PASS UV channels South wing corridor wall
 PASS UV channels Backing
+PASS UV channels Lettering
 PASS UV channels Backing
+PASS UV channels Lettering
 PASS UV channels Backing
+PASS UV channels Lettering
 PASS UV channels Ascending tread
 PASS UV channels Returning tread
 PASS UV channels Ascending tread
@@ -2421,8 +2397,11 @@ PASS UV channels South wing corridor wall
 PASS UV channels Surgery west partition
 PASS UV channels Surgery south partition
 PASS UV channels Backing
+PASS UV channels Lettering
 PASS UV channels Backing
+PASS UV channels Lettering
 PASS UV channels Backing
+PASS UV channels Lettering
 PASS UV channels Patient room divider
 PASS UV channels Patient room divider
 PASS UV channels Ascending tread
@@ -2584,6 +2563,7 @@ PASS UV channels Window lintel
 PASS UV channels Window pier
 PASS UV channels Roof
 PASS UV channels Backing
+PASS UV channels Lettering
 PASS UV channels Floor
 PASS UV channels Back
 PASS UV channels Entry wall
@@ -2633,6 +2613,7 @@ PASS UV channels Window lintel
 PASS UV channels Window pier
 PASS UV channels Roof
 PASS UV channels Backing
+PASS UV channels Lettering
 PASS UV channels Floor
 PASS UV channels Back
 PASS UV channels Entry wall
@@ -2658,6 +2639,7 @@ PASS UV channels Window lintel
 PASS UV channels Window pier
 PASS UV channels Roof
 PASS UV channels Backing
+PASS UV channels Lettering
 PASS UV channels Ambulance at barrier_2_2_solid
 PASS UV channels Ambulance inverted_1_1_solid
 PASS UV channels Ambulance inverted_2_1_solid
@@ -3165,6 +3147,14 @@ PASS UV channels Planter soil_2_7_solid
 PASS UV channels Planter soil_2_9_solid
 PASS UV channels Roof membrane_-2_4_solid
 PASS UV channels Roof membrane_-2_5_solid
+PASS UV channels Ward fins_1_3_solid
+PASS UV channels EMERGENCY
+PASS UV channels PHARMACY
+PASS UV channels OUTPATIENT CLINIC
+PASS UV channels CENTRAL LAUNDRY
+PASS UV channels VISITOR TRANSIT
+PASS UV channels HOSPITAL
+PASS UV channels MEDICAL CENTER
 PASS UV channels Clinic
 PASS UV channels H0_Corridors
 PASS UV channels H0_East
@@ -3178,3 +3168,23 @@ PASS UV channels H1_Recovery
 PASS UV channels H1_Surgery
 PASS UV channels Laundry
 PASS UV channels Pharmacy
+PASS UV channels WARDS
+PASS UV channels SUPPLIES
+PASS UV channels WAITING
+PASS UV channels TRIAGE
+PASS UV channels INFORMATION
+PASS UV channels CT SCAN
+PASS UV channels RECOVERY
+PASS UV channels NURSES
+PASS UV channels ROOMS 201-203
+PASS UV channels NURSE STATION
+PASS UV channels EXAM 1
+PASS UV channels EXAM 2
+PASS UV channels EXAM 3
+PASS UV channels CHECK IN
+PASS UV channels CHECKOUT
+PASS UV channels PRESCRIPTIONS
+PASS UV channels PICK UP
+PASS UV channels WASH
+PASS UV channels DRY
+PASS UV channels WAITING

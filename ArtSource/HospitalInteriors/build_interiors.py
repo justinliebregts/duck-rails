@@ -10,7 +10,9 @@ from functools import partial
 import numpy as np
 from mathutils.geometry import barycentric_transform
 
-ROOT = "X:/Work/duck-rails/"
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2].as_posix() + "/"
 sys.path.insert(0, ROOT + "ArtSource/HospitalCampus")
 from planar_faces import PlanarFaces
 OUT_DIR = ROOT + "ArtSource/HospitalInteriors/"
@@ -20,6 +22,7 @@ RENDER_DIR = ROOT + "output/hospital-interiors-review/"
 _src = open(ROOT + "ArtSource/SubwayTerminal/build_terminal.py").read().split("\ndef main():")[0]
 T = {}
 exec(_src, T)
+T["ROOT"] = ROOT
 V, Matrix, TILES = T["V"], T["Matrix"], T["TILES"]
 shelf = partial(T["shelf"], closed_stock=True)
 
@@ -226,7 +229,7 @@ def light(name, p, intensity=16, rng_=10, color=(.72, .86, 1.0)):
     LIGHTS.append({"name": name, "pos": U(p), "intensity": intensity, "range": rng_, "color": list(color)})
 
 
-def plate(b, text, p, yaw, w=2.4, h=.5, tile="teal", hang=None):
+def plate(b, text, p, yaw, w=2.4, h=.5, tile="teal", hang=None, two_sided=False):
     """Room sign: a backing plate here, CutePixel lettering added in Unity. p is the plate face centre.
     The face looks along local -Y: yaw 0 faces -Y (south), 180 faces +Y, 90 faces +X, -90 faces -X.
     hang: ceiling height to suspend the plate from on two rods."""
@@ -238,8 +241,12 @@ def plate(b, text, p, yaw, w=2.4, h=.5, tile="teal", hang=None):
     b.pop()
     f = (math.sin(math.radians(yaw)), -math.cos(math.radians(yaw)))
     face = V((p[0], p[1], p[2])) + V((f[0], f[1], 0)) * .006
-    # TextMeshPro reads from its -Z side, so the Unity yaw is the negated Blender yaw.
-    LABELS.append({"text": text, "pos": U(face), "yaw": round(-yaw, 2), "width": round(w - .2, 3), "height": round(h - .12, 3)})
+    # Raised CutePixel text reads from its -Z side, so the Unity yaw is the negated Blender yaw.
+    label = {"text": text, "pos": U(face), "yaw": round(-yaw, 2), "width": round(w - .2, 3), "height": round(h - .12, 3)}
+    LABELS.append(label)
+    if two_sided:
+        back = face - V((f[0], f[1], 0)) * .062
+        LABELS.append(dict(label, pos=U(back), yaw=180-yaw))
 
 
 # ---------------------------------------------------------------- furniture
@@ -696,7 +703,7 @@ def corridor_level(b, z):
         papers(b, 19.0, 21.2, 70, 88, z, 9)
         plate(b, "WARDS", (34 - WALL_T - .02, 79.5, z + 2.75), 90 + 180, 2.2)
         plate(b, "SUPPLIES", (25.5, 94 - WALL_T - .02, z + 2.75), 0, 2.6)
-        plate(b, "WAITING", (18 + WALL_T + .02, 81.0, z + 2.75), -90 + 180, 2.4)
+        plate(b, "WAITING", (18.025, 81.0, z + 2.42), 90, 2.4, hang=z+2.74, two_sided=True)
     else:
         gurney(b, 33.25, 74.5, z, 0, sheet_on=False)
         trolley(b, 18.65, 70.2, z, 90)
@@ -1044,7 +1051,7 @@ def laundry(b):
     threshold(b, "x", X1, 134, 138, 0, "concrete")
     small_dado(b, X0, X1, Y0, Y1, (134, 138), [(1.3, "lightconc")])
     # Washers on the back wall, dryer stacks on the north window wall.
-    for i, y in enumerate((128.2, 129.6, 131.0, 132.4, 139.8, 141.2, 142.6, 144.0)):
+    for y in (132.55, 133.95, 135.35, 136.75, 139.8, 141.2, 142.6, 144.0):
         washer(b, -39.25, y, 0, 90)
     for x in (-36.5, -35.0, -33.5, -24.5, -23.0, -21.5):
         washer(b, x, 145.3, 0, 0, h=.9, w=1.0, d=.85)
@@ -1058,7 +1065,6 @@ def laundry(b):
     collide(b, (-37.95, 126.85, 0), (-36.45, 128.35, 2.4), check=False)
     b.cyl((-35.3, 127.0, 0), (-35.3, 127.0, 1.6), .32, 10, "whitepanel", cap_b=True)
     BOXES.append({"c": U((-35.3, 127.0, .8)), "s": [.64, 1.6, .64], "yaw": 0, "room": b.name})
-    plate(b, "DANGER HOT", (-37.2, 128.38, 1.6), 180, 1.4, .36, "hazard")
     # Folding tables, carts and linen racks.
     for y in (131.2, 140.8): folding_table(b, -28.5, y, 0, 0, 4.0, 1.1)
     for x in (-33.4, -30.9, -26.0, -23.5): linen_shelf(b, x, 126.15, 0, 180, 2.3)
@@ -1130,4 +1136,5 @@ main()
 _args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 if "--export" in _args: export_fbx()
 if bpy.app.background:
+    bpy.context.preferences.filepaths.save_version = 0
     bpy.ops.wm.save_as_mainfile(filepath=OUT_DIR + "HospitalInteriors.blend")

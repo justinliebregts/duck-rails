@@ -259,7 +259,6 @@ public static class RailHospitalInteriors
             GameObjectUtility.SetStaticEditorFlags(go, StaticEditorFlags.BatchingStatic);
         }
 
-        var font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/CutePixel SDF.asset") ?? throw new InvalidOperationException("Missing CutePixel SDF");
         var signs = new GameObject("Room signs").transform;
         signs.SetParent(group, false);
         foreach (var info in data.labels)
@@ -268,18 +267,7 @@ public static class RailHospitalInteriors
             go.transform.SetParent(signs, false);
             go.transform.localPosition = P(info.pos);
             go.transform.localRotation = Quaternion.Euler(0, info.yaw, 0);
-            var label = go.AddComponent<TextMeshPro>();
-            label.font = font;
-            label.fontSharedMaterial = font.material;
-            label.text = info.text;
-            label.alignment = TextAlignmentOptions.Center;
-            label.textWrappingMode = TextWrappingModes.NoWrap;
-            label.rectTransform.sizeDelta = new Vector2(info.width, info.height);
-            label.enableAutoSizing = true;
-            label.fontSizeMin = .5f;
-            label.fontSizeMax = 4;
-            label.color = new Color(1f, .93f, .80f);
-            label.ForceMeshUpdate();
+            RailHospitalCampus.AddMeshSign(go, info.text, false);
         }
 
         var lights = new GameObject("Room lights").transform;
