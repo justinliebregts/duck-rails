@@ -21,7 +21,7 @@ public static class DeathLifecycleChecks
     {
         if (!Application.isBatchMode) throw new InvalidOperationException("Isolated batch tests only");
         // These Edit Mode checks replace scenes. Keep an inert analytics singleton
-        // in a preview scene so companion interactions never boot the live SDK.
+        // in a preview scene so these checks never boot the live SDK.
         var analyticsScene = EditorSceneManager.NewPreviewScene();
         var analyticsObject = new GameObject("Disabled regression analytics");
         analyticsObject.SetActive(false);
@@ -37,16 +37,6 @@ public static class DeathLifecycleChecks
             DeathFlareLightChecks.Run();
             MeleeGraceChecks.Run();
             EquipmentPersistenceChecks.Run();
-            DuckHomeChecks.Run();
-            var duck = (DuckCompanion)typeof(DuckHomeChecks).GetMethod("Create", BindingFlags.Static | BindingFlags.NonPublic).Invoke(null, new object[] { "Contact victim" });
-            typeof(PhotonView).GetProperty("IsMine").SetValue(duck.photonView, true);
-            var triggerGo = new GameObject("Lethal hazard"); var trigger = triggerGo.AddComponent<KillTrigger>();
-            var contact = duck.gameObject.AddComponent<BoxCollider>();
-            var secondContact = duck.gameObject.AddComponent<SphereCollider>();
-            int accepted = 0; trigger.PlayerKilled += () => accepted++;
-            Check(trigger.TryContact(contact) && !trigger.TryContact(secondContact) && accepted == 1 && duck.IsDead,
-                "Multiple contacts must accept death and listeners exactly once");
-            Debug.Log("KillTrigger multiple-contact death/listener guard PASS");
             Debug.Log("DeathLifecycleChecks: ALL PASSED");
             EditorApplication.Exit(0);
         }
@@ -140,13 +130,6 @@ public static class DeathLifecycleChecks
             Call(avatar, "SetRemoteDeathVisuals", false, default(RagdollLaunch));
             foreach (var rb in reused.GetComponentsInChildren<Rigidbody>()) Check(rb.isKinematic, "Parked ragdoll physics stopped");
         }
-        reused.ApplyCompanionAppearance(source.transform, true);
-        var eye = Array.Find(reused.GetComponentsInChildren<Renderer>(true), r => r.name == "Eye_L");
-        Check(eye != null, "Corpse eye renderer missing");
-        var block = new MaterialPropertyBlock(); eye.GetPropertyBlock(block);
-        Check(block.GetColor("_EmissionColor") == Color.red, "Killer eye appearance");
-        reused.ApplyCompanionAppearance(source.transform, false); eye.GetPropertyBlock(block);
-        Check(block.GetColor("_EmissionColor") != Color.red, "Normal death clears killer eyes");
         // Profile pose/reset separately from appearance and network processing.
         Action original = () => { var r = Object.Instantiate(prefab); r.PoseToPlayer(source.transform, launch); Object.DestroyImmediate(r.gameObject); };
         Action pooled = () => { reused.PoseToPlayer(source.transform, launch); reused.Park(); };

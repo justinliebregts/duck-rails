@@ -64,9 +64,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   observePhotonRoomsInEditor: 0
   respawnPoint: {fileID: 0}
-  companionSpawnPoint: {fileID: 0}
   disableEnemySpawning: 0
-  disableDuckCompanion: 0
   enableVoicePatrol: 0
   usingDesktopPlayer: 0
 --- !u!114 &8859417743406439576
@@ -148,6 +146,13 @@ MonoBehaviour:
   - {fileID: 8432819510711926704, guid: 47ad6d203de0e6e46b6bc2f1f43ee3dd, type: 3}
   - {fileID: 3429181636712684669, guid: a115869cf7f8d2145bf2f3a53c769bb4, type: 3}
   - {fileID: 5458612398300695704, guid: 2dea0ca37a0e6724e9361d9c58295302, type: 3}
+  - {fileID: 5574739811840279064, guid: 9701d10c8ed43fa4980429128389ab6b, type: 3}
+  - {fileID: 8898762320004162214, guid: 1b6da9418928c9740858694d7f3cde9a, type: 3}
+  - {fileID: 3161889561045552413, guid: 13f3531ad7f8efb4eb5a9cfa0162e442, type: 3}
+  - {fileID: 1419901662598828713, guid: f1acd2dd574734049911e7191a7d3373, type: 3}
+  - {fileID: 7098947023043321440, guid: 221f4b97cf2c96541b680d3d4b1743e6, type: 3}
+  - {fileID: 1161887620162444854, guid: 32bb90dd0314deb40881a2d8ab8896f1, type: 3}
+  - {fileID: 2712401646352770141, guid: 814e00b6929bd664694f86ef9cb3d871, type: 3}
 --- !u!114 &5886551941204541368
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,6 +9,8 @@ namespace Game.Audio
         public SurfaceType surface;
         public SoundEvent rustle;
         public Bounds bounds;
+        [Tooltip("A continuous canopy that rustles once when the listener enters its bounds.")]
+        public bool rustleOnEntry;
         [Tooltip("Local stalk base XYZ and height W. No physical colliders are added.")]
         public Vector4[] stalks = System.Array.Empty<Vector4>();
         [Min(0.01f)] public float radius = 0.6f;
@@ -25,6 +27,7 @@ namespace Game.Audio
         {
             point = transform.InverseTransformPoint(point);
             if (!bounds.Contains(point)) return false;
+            if (rustleOnEntry) return true;
             foreach (var stalk in stalks)
             {
                 float dx = point.x - stalk.x, dz = point.z - stalk.z;

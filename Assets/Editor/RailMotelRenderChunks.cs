@@ -80,6 +80,9 @@ public static class RailMotelRenderChunks
             throw new InvalidOperationException("Use Duck Rails Edit Mode without a bake.");
         var stage = PrefabStageUtility.GetCurrentPrefabStage();
         if (stage != null && stage.assetPath == Prefab) throw new InvalidOperationException("Close Motel Prefab Mode before generating from the saved prefab.");
+        var saved = AssetDatabase.LoadAssetAtPath<GameObject>(Prefab);
+        if (saved && saved.transform.Find(RailMotelAtlasProduction.Visual))
+            throw new InvalidOperationException("The Motel ships the approved Blender atlas (RailMotelAtlasProduction); render chunks are retired. See ArtSource/MotelAtlasLowPoly/README.md.");
         Directory.CreateDirectory(Folder); AssetDatabase.Refresh();
         var root = PrefabUtility.LoadPrefabContents(Prefab);
         try

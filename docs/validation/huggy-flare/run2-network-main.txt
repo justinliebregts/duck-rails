@@ -1,0 +1,24 @@
+2026-11-21T03:55:45.5430187Z Started two-client Huggy flare gun check
+2026-11-21T03:55:55.5091775Z Stage=0 room=11111 players=2
+2026-11-21T03:55:55.5096949Z ACK 0 actor=2 master=False
+2026-11-21T03:55:55.6047179Z ACK 0 actor=2 master=False
+2026-11-21T03:55:55.7048704Z ACK 0 actor=2 master=False
+2026-11-21T03:55:55.9344335Z Stage=1 room=11111 players=2
+2026-11-21T03:55:59.1973314Z PASS peer received shot key=00100001 charge=0.02 pos=(1.36, 2.17, 77.33)
+2026-11-21T03:56:04.0717356Z Sample at charge 0.50: pos=(1.36, 0.13, 98.13) phase=Rest
+2026-11-21T03:56:04.2955979Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T03:56:04.3515320Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T03:56:04.4064098Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T03:56:06.3525851Z Stage=2 room=11111 players=2
+2026-11-21T03:56:07.8827501Z PASS handover kept charge 0.88
+2026-11-21T03:56:09.0793432Z PASS recharged to full after 10 s and stays full
+2026-11-21T03:56:09.0803483Z ACK 2 actor=2 master=False
+2026-11-21T03:56:09.1316129Z ACK 2 actor=2 master=False
+2026-11-21T03:56:09.1835138Z ACK 2 actor=2 master=False
+2026-11-21T03:56:09.4661565Z Stage=3 room=11111 players=2
+2026-11-21T03:56:13.0442092Z Aimed: muzzle=(-1.00, 2.16, 72.34) fwd=(-0.39, 0.06, 0.92) trainFwd=(0.00, 0.00, 1.00)
+2026-11-21T03:56:13.0963241Z Aimed: muzzle=(-1.00, 2.54, 72.34) fwd=(-0.39, 0.06, 0.92) trainFwd=(0.00, 0.00, 1.00)
+2026-11-21T03:56:13.1638750Z Aimed: muzzle=(-1.00, 2.52, 72.34) fwd=(-0.39, 0.06, 0.92) trainFwd=(0.00, 0.00, 1.00)
+2026-11-21T03:56:13.4155678Z Firing at enemy: along=2.98 sideways=0.26 enemy=(-2.41, 0.00, 75.13) muzzle=(-1.00, 2.22, 72.34)
+2026-11-21T03:56:16.9693217Z Shot sample: phase=Rest bounces=3 travel=0.27 pos=(-2.81, 0.13, 68.54) fromEnemy=6.60
+2026-11-21T03:56:16.9705182Z FAIL Flare came down near the enemy, 6.60 m

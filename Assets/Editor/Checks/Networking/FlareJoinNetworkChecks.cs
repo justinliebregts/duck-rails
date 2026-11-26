@@ -84,14 +84,13 @@ public static class FlareJoinNetworkChecks
         return count;
     }
 
-    static PhotonPlayer Avatar(int viewId, bool companion = false)
+    static PhotonPlayer Avatar(int viewId)
     {
         // Inert avatars exercise the production RPCs without starting XR, voice, or login.
         var go = new GameObject("Network death fixture");
         go.SetActive(false);
         var view = go.AddComponent<PhotonView>();
         var avatar = go.AddComponent<PhotonPlayer>();
-        if (companion) go.AddComponent<DuckCompanion>();
         typeof(PhotonPlayer).GetField("deathFlarePrefab", Fields).SetValue(avatar, prefab);
         view.ViewID = viewId;
         if (avatar.IsLocalHuman) PhotonPlayer.Active.Add(avatar);
@@ -137,8 +136,9 @@ public static class FlareJoinNetworkChecks
         }
         yield return Until("joined", () => PhotonNetwork.NetworkClientState == ClientState.Joined);
         Avatar(PhotonNetwork.MAX_VIEW_IDS + 1);
-        var duck = Avatar(950, true);
-        duck.transform.position = Vector3.right * 20;
+        // A second room-owned avatar publishes an overlapping death under its own view key.
+        var second = Avatar(950);
+        second.transform.position = Vector3.right * 20;
         PhotonRoomFlares.Ready(prefab);
         SetupSmasher();
         if (host)
@@ -146,8 +146,9 @@ public static class FlareJoinNetworkChecks
             yield return Until("guest connected", () => Marked("guest-ready"));
             PhotonPlayer.SpawnDeathFlare(prefab, Vector3.up);
             yield return Until("human flare burning", () => DeathFlare.FindNear(Vector3.up, 100) != null && Saved() == 1);
-            duck.EmitCompanionDeathBlood();
-            yield return Until("companion checkpoint", () => Saved() == 2);
+            typeof(PhotonPlayer).GetMethod("EmitDeathFlare", Fields).Invoke(second,
+                new object[] { prefab, second.transform.position + Vector3.up * 0.35f });
+            yield return Until("second flare checkpoint", () => Saved() == 2);
             Mark("join");
             yield return Until("guest joined", () => PhotonNetwork.CurrentRoom.PlayerCount == 2);
         }
@@ -189,7 +190,7 @@ public static class FlareJoinNetworkChecks
             yield return Until("joined during burn", () => PhotonNetwork.NetworkClientState == ClientState.Joined);
             PhotonRoomFlares.Ready(prefab);
             Check(PhotonNetwork.LocalPlayer.ActorNumber != 1 && Saved() == 3 && Active == 3,
-                "Original human and companion flares survive their publisher leaving");
+                "Original flares survive their publisher leaving");
             Check(PhotonNetwork.LeaveRoom(), "Leave before expiry");
             yield return Until("left again", () => PhotonNetwork.NetworkClientState == ClientState.ConnectedToMasterServer);
             yield return Until("original deadlines", () => Marked("expired"));

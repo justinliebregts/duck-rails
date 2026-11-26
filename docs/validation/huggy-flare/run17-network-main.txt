@@ -1,0 +1,35 @@
+2026-11-21T05:57:43.8411555Z Started two-client Huggy flare gun check
+2026-11-21T05:57:52.8690182Z Stage=0 room=11111 players=1
+2026-11-21T05:57:52.8700240Z ACK 0 actor=1 master=True
+2026-11-21T05:57:52.9219477Z ACK 0 actor=1 master=True
+2026-11-21T05:57:52.9972597Z ACK 0 actor=1 master=True
+2026-11-21T05:57:56.9687258Z Spawned Weapon_Huggy(Clone) view=1002
+2026-11-21T05:57:57.1293747Z Stage=1 room=11111 players=2
+2026-11-21T05:57:57.1358675Z Grabbed gun; charged=True
+2026-11-21T05:58:00.1442530Z Trigger press 1
+2026-11-21T05:58:00.2672184Z PASS fired via trigger key=00100001 charge=0.01 muzzle=(1.41, 2.42, 72.88) dir=(0.00, 0.00, 1.00)
+2026-11-21T05:58:05.2671793Z Sample at charge 0.51: pos=(1.16, 1.10, 71.58) phase=Rest
+2026-11-21T05:58:06.1399422Z Trigger press 2 during cooldown, charge=0.59
+2026-11-21T05:58:07.1413464Z PASS cooldown blocked the early press
+2026-11-21T05:58:07.1418654Z ACK 1 actor=1 master=True same shot within 0.00 m
+2026-11-21T05:58:07.2000699Z ACK 1 actor=1 master=True same shot within 0.00 m
+2026-11-21T05:58:07.2573508Z ACK 1 actor=1 master=True same shot within 0.00 m
+2026-11-21T05:58:07.4830767Z Stage=2 room=11111 players=2
+2026-11-21T05:58:10.2454856Z Peer sees charge full
+2026-11-21T05:58:10.2454856Z ACK 2 actor=1 master=True
+2026-11-21T05:58:10.3047779Z ACK 2 actor=1 master=True
+2026-11-21T05:58:10.3615123Z ACK 2 actor=1 master=True
+2026-11-21T05:58:10.5802901Z Stage=3 room=11111 players=2
+2026-11-21T05:58:17.0699738Z Placed RailZombie(Clone) view=90 root=(0.21, 1.94, 71.38) aim=(0.21, 2.29, 71.38) (aim 1.32 m above floor)
+2026-11-21T05:58:17.4171271Z Released RailZombie(Clone) for the shot
+2026-11-21T05:58:17.9615234Z PASS authority observed the flare push on RailZombie(Clone): slid 0.57 m
+2026-11-21T05:58:21.1665800Z Shot sample: phase=Rest bounces=3 travel=3.73 pos=(0.21, 1.10, 67.10) fromAimFlat=4.28 pastAim=-4.28 fromEnemyNow=6.64 enemyNow=(0.21, 0.97, 73.74)
+2026-11-21T05:58:21.3826450Z ACK 3 actor=1 master=True deflected shot within 0.00 m on both; flare-fear=True
+2026-11-21T05:58:21.4407515Z ACK 3 actor=1 master=True deflected shot within 0.00 m on both; flare-fear=True
+2026-11-21T05:58:21.4948341Z ACK 3 actor=1 master=True deflected shot within 0.00 m on both; flare-fear=True
+2026-11-21T05:58:22.2222087Z Stage=4 room=11111 players=2
+2026-11-21T05:58:30.2516308Z ACK 4 actor=1 master=True
+2026-11-21T05:58:30.3088279Z ACK 4 actor=1 master=True
+2026-11-21T05:58:30.3663507Z ACK 4 actor=1 master=True
+2026-11-21T05:58:33.1956617Z Stage=5 room=11111 players=2
+2026-11-21T05:58:33.1971805Z PASS two-client Huggy flare gun: trigger fire, shared flight, cooldown, handover charge, enemy deflection, rejoin charge without replay

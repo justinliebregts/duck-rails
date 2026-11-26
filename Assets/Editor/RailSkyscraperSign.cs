@@ -8,12 +8,11 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
 
-// A separately baked fascia preserves every existing derived atlas UV and binding.
+// Original sign mesh authoring and production lighting preview.
 public static class RailSkyscraperSign
 {
     public const string Folder = "Assets/DuckRails/SkyscraperSign";
     const string Scene = Folder + "/Sign-bake.unity";
-    public const string LightingCompanion = Folder + "/SignLighting.unity";
     const string Group = "Raised CutePixel development sign";
     [Serializable] class Data { public float[] vertices; public int[] triangles; }
     static void Idle() { if(Application.dataPath.Replace('\\','/')!="X:/Work/duck-rails/Assets" || Application.isPlaying || Lightmapping.isRunning) throw new Exception("Requires idle Duck Rails editor"); }
@@ -46,51 +45,6 @@ public static class RailSkyscraperSign
         EditorSceneManager.SaveScene(scene,Scene); AssetDatabase.SaveAssets(); Lightmapping.BakeAsync();
     }
     static Material Material(string name,Color color) { var m=new Material(Shader.Find("Universal Render Pipeline/Lit")){name=name}; m.SetColor("_BaseColor",color); m.SetFloat("_Smoothness",.2f); AssetDatabase.CreateAsset(m,Folder+"/"+name+".mat"); return m; }
-    public static void Install()
-    {
-        Idle(); RailSkyscraperAtlasProduction.ValidateSaved();
-        if(UnityEngine.SceneManagement.SceneManager.GetActiveScene().path!=Scene) throw new Exception("Open sign bake first");
-        var source=GameObject.Find(Group); var maps=LightmapSettings.lightmaps;
-        if(!source || source.GetComponentsInChildren<MeshRenderer>().Any(r=>r.lightmapIndex<0||r.lightmapIndex>=maps.Length)) throw new Exception("Sign bake incomplete");
-        EditorSceneManager.SaveScene(source.scene);
-        var root=PrefabUtility.LoadPrefabContents(RailSkyscraper.PrefabPath);
-        try {
-            if(root.transform.Find(Group)) throw new Exception("Already installed");
-            var old=root.GetComponentsInChildren<TMPro.TextMeshPro>(true).Single();
-            old.gameObject.SetActive(false); // Retain original label for recovery, without rendering it.
-            var copy=Object.Instantiate(source,root.transform); copy.name=Group; copy.transform.localPosition=source.transform.position;
-            var owner=root.GetComponent<RailBakedBlockLighting>(); var bindings=owner.bindings.ToList();
-            foreach(var r in source.GetComponentsInChildren<MeshRenderer>()) { var target=copy.transform.Find(r.name).GetComponent<Renderer>(); bindings.Add(new RailBakedBlockLighting.Binding{renderer=target,color=maps[r.lightmapIndex].lightmapColor,scaleOffset=r.lightmapScaleOffset}); }
-            owner.bindings=bindings.ToArray(); owner.supplementalLightingScene=LightingCompanion;
-            owner.CaptureBakedFixtures(); PrefabUtility.SaveAsPrefabAsset(root,RailSkyscraper.PrefabPath);
-        } finally { PrefabUtility.UnloadPrefabContents(root); }
-        ExportLightingCompanion();
-        AssetDatabase.SaveAssets();
-        var saved=AssetDatabase.LoadAssetAtPath<GameObject>(RailSkyscraper.PrefabPath);
-        File.WriteAllText("ArtSource/SkyscraperAtlasLowPoly/production-state.json",JsonUtility.ToJson(new RailSkyscraperAtlasProduction.State{guid=AssetDatabase.AssetPathToGUID(RailSkyscraper.PrefabPath),fingerprint=RailSkyscraperAtlasProduction.Fingerprint(saved)},true));
-        RailSkyscraperAtlasProduction.ValidateSaved();
-    }
-
-    public static void ExportLightingCompanion()
-    {
-        Idle();
-        var source = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
-        if (source.path != Scene || source.isDirty || Lightmapping.lightingDataAsset == null)
-            throw new InvalidOperationException("Open the saved sign bake with its lighting data first.");
-        if (!EditorSceneManager.SaveScene(source, LightingCompanion, true))
-            throw new IOException("Could not copy the sign lighting scene.");
-        var companion = EditorSceneManager.OpenScene(LightingCompanion, OpenSceneMode.Additive);
-        try
-        {
-            foreach (var root in companion.GetRootGameObjects()) Object.DestroyImmediate(root);
-            if (!EditorSceneManager.SaveScene(companion))
-                throw new IOException("Could not save the sign lighting companion.");
-        }
-        finally { EditorSceneManager.CloseScene(companion, true); }
-        var scenes = EditorBuildSettings.scenes.Where(scene => scene.path != LightingCompanion).ToList();
-        scenes.Add(new EditorBuildSettingsScene(LightingCompanion, true));
-        EditorBuildSettings.scenes = scenes.ToArray();
-    }
     public static void Capture()
     {
         Idle();

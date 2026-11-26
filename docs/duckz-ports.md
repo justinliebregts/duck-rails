@@ -1,5 +1,159 @@
 # Duckz port history
 
+## Duplicate room ViewIDs — 7973e241
+
+- Source SHA: `7973e241f7c46d5345118ccc4d689c944d5be393` (resolve duplicate room ViewIDs the same way on every client).
+- Status: implemented November 24, 2026. `DuplicateViewIdChecks` passed all 49 assertions in the Duck Rails editor (synthetic room). Not tested across two clients or on Quest: [queued for playtest](playtest-queue.md).
+- Engine/network: PUN 2 over Photon Realtime; the change is in the vendored PUN layer.
+- Destination: `PhotonView.cs` (`SpawnTimestamp`, `lostDuplicateSpawn`), `PhotonNetwork.cs` (stores the spawn timestamp, sends `parameters.timestamp` in the instantiate event, drops a spawn that lost the collision) and `PhotonNetworkPart.cs` (newer spawn wins by server timestamp then token, the master removes the loser's cached spawn, `LocalCleanPhotonView` only unregisters its own view). Check: `Assets/Editor/Checks/Networking/DuplicateViewIdChecks.cs` (menu item, no batch-only guard).
+- Not ported: the `EnemyManager` 1.5 s settle hold after gaining master (Rails has `PhotonMasterHandoff.Settle`; the spawn-hold half needs a separate decision), the matching `EnemyPopulationPlayChecks` edit and the Quest 2 device harness (`Tools/DuplicateViewIdValidation`). The check's spawn-hold cases were left out.
+- Two-client editor run (November 24, 2026; main plus MPPM Player2, real Photon, no headset): `RailDepartureSettleLiveChecks.Start(2, 2)` passed 2 rounds of public departure, acknowledged master handoff and non-master reconnect with identical loot view IDs and spawn tokens and no duplicate views. The "allocated twice" warning never fired, so no real collision was exercised.
+- Remaining: a forced collision under real network timing, Quest build. Photon AppVersion is auto-bumped.
+- Destination commit: none yet.
+
+
+## PC spectator — 491b6f2, fcdff53, a6e6a40
+
+- Source SHAs: `491b6f2a036d62c501e563727273c59286b063a8` (PC-only spectator build, fly camera, room list),
+  `fcdff531cad65f9282359f98b8098ccf684cdc39` (F orbit follow, leave when stuck as master, fog-only L, release build),
+  `a6e6a402029885f60ce1b0fd134f9faba71c2cb0` (follow focus in the helicopter's space; ignore its colliders).
+- Status: implemented November 24, 2026; compile and Edit Mode checks pass, Windows spectator built.
+  Not validated against live rooms: [queued for playtest](playtest-queue.md#pc-spectator--queued-for-playtest-november-24-2026).
+  User decisions: spectate train rooms as well as compounds; train capacity stays eight ([pc-spectator.md](pc-spectator.md)).
+- Engine/network: both projects Unity 6000.3.24f1 and PUN 2 over Photon Realtime (`PhotonNetwork`, Realtime callbacks); no Fusion.
+- Destination: `Assets/Scripts/Spectator/SpectatorMode.cs` (source copy), `Spectator.cs` (adapted: Rails
+  Input System via `RailDesktopInput`; deactivates the authored shared rig instead of freezing Duckz's
+  desktop stand-in; own MainCamera copying the rig camera's URP settings; follow targets by actor via
+  `PhotonPlayer.ForActor`; the helicopter-space follow now uses the train cabin (`RailTrain.cabin`, a
+  `Helicopter`) and `ContainsPadded`; new R "ride train" free-fly; room list split into public trains and
+  compounds from the `rails-auto-v2` lobby; joins by code; follows public departures by allocation code;
+  leaves when the crew has gone; CutePixel source font for the IMGUI panel when available).
+  Rails-only: `Photon/RailSpectators.cs` and crew filters in `RailExpedition`, `PhotonSession`,
+  `PhotonMasterHandoff(.Settle)`, `RailBridgeSurge`, `RailHoldControl`, `RailRoute`, `RailTestTools`,
+  `DuckPlayerColors`, `PlayersMenu`; `PhotonSession` spectate/leave requests (never creates or falls back to a
+  room), Photon version suffix `-spectator-v1`. Source hooks mapped to `AccountSignIn`, `PhotonAvatarSpawner`,
+  `PhotonVoiceChat`, `DuckzAnalytics`, `RailWorld` (Tab menu), `DesktopPlayMenu` (Spectator button) and
+  `Editor/Build/DuckzBuild.cs` (`DuckzSpectatorBuild`, window toggle, menu item, batch entry). Checks:
+  `Assets/Editor/RailSpectatorChecks.cs`.
+- Not ported: Duckz `PhotonSession` observe-lobby path and `DesktopPlay` stand-in (Rails has neither);
+  helicopter collider scan (replaced by the train's padded box).
+- Dependencies: Quest builds must come from the same commit (they carry the crew filters and the matching
+  Photon version). The spectator has no backend token; it relies on the Photon app accepting a client
+  without custom authentication. See [pc-spectator.md](pc-spectator.md#compatibility).
+- Validation: see [pc-spectator.md](pc-spectator.md#validation).
+- Destination commit: see Git history ("Port Duckz PC spectator").
+
+## Storm sky group — 06f5f5b0, 8628bc4c, 01f8e3e4, ac6d5319, 6a6f5a2f
+
+- Source SHAs: `06f5f5b0a656a2ff4e28c000564c99f8bff5fd12` (animated storm sky),
+  `8628bc4c4fb0cc7467ba6ae9a1966972b0b6f361` (cloud scale/movement),
+  `01f8e3e4fa80ae1a7e6b8c38fa7d18cfe311229c` (distant mountain ring),
+  `ac6d53196565ae35787a5b7d69ff4ef5d773dca3` (black below the horizon),
+  `6a6f5a2f0227326242674b280305b9b580b88b57` (material tuning).
+- Status: implemented; editor validation passed November 22, 2026; Justin verified it in Play Mode
+  November 23 (Quest 3 GPU not measured). User-confirmed design change (game-design.md, November 22).
+- Behavior/destination: final shader and noise texture copied with source GUIDs
+  (`Assets/Shaders/AnimatedStormSky.shader`, `Assets/Materials/Skybox/StormCloudNoise.png`);
+  Rails adds an optional sunrise glow (zero = source output). Login's `Quackville_Skybox.mat`
+  and Expedition's `ExpeditionSky.mat` keep their GUIDs and use the source's final tuning at
+  exposure 0.6 (Justin: a bit darker than Duckz). `RailAtmosphere` drives sky/glow/mountain
+  colours per stage from `Atmosphere.asset` and sets the lower sky to the fog colour; editor
+  tuner and checks updated. Mountain ring: source FBX, material and shader copied with GUIDs;
+  Rails `RailDistantMountains` (adapted from source `DistantMountains.cs`) and runtime prefab
+  `Assets/Resources/Rails/DistantMountains.prefab`, centred on the route and spawned by
+  `RailAtmosphere` instead of placed in a scene.
+- Not ported: Quackville scene placement, sea, `Tools/SkyboxValidation` harness and
+  `Tools/DistantMountains` Blender source (FBX reused as-is). Compound unchanged by request.
+  The unreferenced `Quackville_Skybox.png` panorama was removed afterwards (`15c0e0233`).
+- Dependencies: same Unity 6000.3.24f1 / URP 17.3; no networking (local rendering of shared
+  route/finish progress, unchanged). New GUIDs checked for collisions: none.
+- Validation: see [storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22)
+  (compile, shader import, 51 atmosphere assertions, tuner checks, Expedition/Login captures).
+- Remaining: none queued. November 23: Justin verified the look (including dawn and deep night) in Play Mode and asked to remove the playtest items; Quest 3 GPU before/after was not measured. Noise texture origin per Duckz:
+  adapted from DTA's ndc_clouds.png; Justin confirmed use in Rails.
+- Destination commits: see Git history (storm sky, mountain ring, docs).
+
+## 547194e09ee375fa9a334a28c1ac30dee54ddc6d — LIV recording continuity on tablet close/recall
+
+- Status: implemented; editor checks and a two-client real-Photon MPPM run passed November 22, 2026.
+  Actual recording continuity and headset acceptance queued for playtest.
+- Behavior: closing the camera tablet hides it (renderers, canvases, grab, collisions, LIV preview) instead of
+  deactivating it, so an active LIV recording keeps running; recall places it relative to the current head pose;
+  a hidden tablet syncs as closed to other players; LIV buttons no longer fail on focus callbacks before Start.
+- Destination: `Items/TabletGrab.cs` (`IsVisible`, `SetVisible`), `UI/PauseMenu.cs` (Start/Open/Close, `TryGetTabletPose`),
+  `Photon/PhotonLIVCamera.cs` (hidden = closed), `Packages/tv.liv.lck/.../LckButton.cs`, `LIVCameraChecks` (visibility
+  section), `RailLIVCameraLiveChecks` (close/reopen/hold-close/cycle checks).
+- Adaptations: dropped `Grabbable.NotifyCargoGeometryChanged` (Duckz helicopter cargo, absent in Rails). Rails `SnapTabletBody`
+  already had the kinematic guard. `PauseMenu` summon-frame train carry is untouched. Not ported: `LIVTabletPlayChecks`
+  and `Tools/LIVCameraValidation/*` (native-recording/Quest harness that needs a disposable copy project and a headset).
+- Validation: `LIVCameraChecks` 90/90. Two MPPM clients, both owner roles, 20/20 live checks: close while held releases
+  it, object stays active, 0/23 renderers draw, grab refused; reopen 0.48 m in front of the head, grabbable; observer proxy
+  tracked three close/open cycles within 0.6 s at 0.00 cm; earlier proxy scenarios still pass. No new Console errors.
+- Remaining: a real LIV recording across close/recall (LCK needs DX11/Vulkan; the editor runs DX12), Quest headsets, and the
+  scene-start path where the tablet begins active. See [playtest queue](playtest-queue.md#liv-recording-continuity-on-tablet-closerecall--queued-2026-11-22).
+- Destination commit: the commit introducing this entry (see Git history).
+
+## 35ea28d9250f82a70e18dcd34e7ffd5a2ad5aed4 — Network-visible low-poly LIV camera proxy
+
+- Status: implemented; editor checks and a two-client real-Photon MPPM run passed November 22, 2026.
+  Headset/real-grip acceptance queued for playtest.
+- Behavior: other players see a visual-only 80-triangle proxy of each player's open LIV camera tablet
+  (placed, following or held), hidden on close, removed when the owner leaves, culled per view at 108 m.
+- Destination: new `Scripts/Photon/PhotonLIVCamera.cs`, `Scripts/Gameplay/RemoteLIVCamera.cs`,
+  `Resources/RemoteLIVCamera.prefab`, `Models/LIVCamera/*`, `Editor/LIVCameraAssetTools.cs`,
+  `Editor/Checks/Networking/LIVCameraChecks.cs`, new live harness `Editor/Checks/Networking/RailLIVCameraLiveChecks.cs`,
+  `Tools/LIVCamera/*` (Blender source, generator, Rails README); edits to `Items/TabletGrab.cs` (`Local`, `GrabSource`),
+  `Photon/PhotonPlayer.cs` (attach component), `PhotonServerSettings.asset` (two RPC names appended). Source GUIDs kept; no collisions.
+- Adaptations: motion event code 120 (source 112 is Rails' `PickupRefreshCode`; a check now asserts uniqueness);
+  no companion check (Rails has no companion); AppVersion not edited (bumped per build). Rails-only mode 4:
+  an unheld tablet inside the train while its owner rides is sent train-local and rebuilt in each peer's synced
+  train frame, so it does not trail the moving train; outside the train it stays a world pose.
+- Validation: `LIVCameraChecks` 63/63 (incl. grip bounds vs Rails `CameraTablet`, train-local mode, event-code uniqueness);
+  compile clean. Two MPPM clients on real Photon, owner role swapped: open 0.00 cm; move/settle exact with zero
+  stationary traffic; held via `ForceGrab` follows remote hand (<0.6 cm); close/reopen; late join via snapshot;
+  owner leave leaves no orphan; moving Expedition train ~4 m/s, cabin tablet mode 4 with 0.00 cm train-relative
+  error over 8 s, off-train tablet mode 1 stays put.
+- Remaining: Quest headsets, real grip input, follow mode on the moving train, network loss. Existing Rails behavior
+  (not this port): a tablet released in a moving cabin is left behind by the train. Source's known LIV SDK quit-time
+  NullReferenceException not investigated here. See [playtest queue](playtest-queue.md#networked-liv-camera-proxy--queued-2026-11-22).
+- Destination commit: the commit introducing this entry (see Git history).
+
+## 984e4a8c678ee282fa8bef90e7f91c1b32ef4b50 — Further reduced enemy kill triggers
+
+- Status: implemented; Unity EditMode asset validation passed November 22, 2026;
+  gameplay acceptance queued for playtest.
+- Behavior/destination: copy only the new KillTrigger BoxCollider depth and center
+  into `Assets/Prefabs/Enemies/ZombieMinion.prefab` and `ZombieHook.prefab` (Rails
+  values matched the source parent exactly). The same commit's ZombieGuard and
+  ZombiePrisoner changes are not ported: those Quackatraz-only enemies do not exist in Rails.
+- Dependencies: none; existing KillTrigger components. No serialized overrides of these
+  colliders on `RailZombie`/`RailHook` variants or scenes.
+- Validation: verified MCP target `X:/Work/duck-rails/Assets` in Edit Mode, synchronously
+  imported both bases and both variants; sizes, centers, enabled and isTrigger pass on all four.
+  No Play Mode launched or diagnostic reports inspected.
+- Remaining: near-miss/contact checks with real clients/headsets; see
+  [playtest queue](playtest-queue.md#further-reduced-minionhook-kill-triggers--queued-2026-11-22).
+- Destination commit: `c03216e86` (prefabs) plus the follow-up docs commit.
+
+## a3d484e994e53c219f62de3caa99af009d20c812 — Smaller enemy kill triggers
+
+- Status: implemented; Unity EditMode asset validation passed November 18, 2026;
+  gameplay acceptance queued for playtest.
+- Behavior/destination: copy only the new KillTrigger BoxCollider size and center
+  into `Assets/Prefabs/Enemies/ZombieMinion.prefab` and `ZombieHook.prefab`.
+  Rails' previous depth differed from the source parent; use the requested commit's
+  final dimensions exactly. All other prefab fields and GUIDs are preserved.
+- Dependencies: both projects use Unity 6000.3.24f1; enemy networking uses PUN over
+  Realtime. Existing KillTrigger components suffice; no code or new assets needed.
+- Validation: inspected exact source/parent diff (only these four property lines).
+  Verified MCP target `X:/Work/duck-rails/Assets` in Edit Mode, synchronously imported
+  both prefabs and checked sizes, centers, enabled trigger flags and KillTrigger
+  components on both bases and inherited `RailZombie`/`RailHook` resource variants:
+  all four pass. No Play Mode launched or diagnostic reports inspected.
+- Remaining: natural near-miss/contact checks on ground and moving train with real
+  clients/headsets; see [playtest queue](playtest-queue.md#smaller-minionhook-kill-triggers--queued-2026-11-18).
+- Destination commit: the commit introducing this entry (see Git history).
+
 Shared handoff for Duckz-to-Duck Rails ports. Follow the porting rules in `../AGENTS.md`.
 Source: `X:\Work\duckz` (read-only). Destination: `X:\Work\duck-rails` or its active worktree.
 
@@ -8,6 +162,12 @@ dependencies, validation evidence, remaining work, and destination commit when a
 Use explicit statuses such as pending, in progress, implemented (validation pending),
 validated, or already present (verified). A source diff inspection alone is not port validation.
 This history starts November 8, 2026; it is not an audit of earlier imports.
+
+November 18, 2026: the Duckz duck companion is removed from Rails at the user's request
+(`DuckCompanion*`, speech/TTS `DuckSpeech` plugin and data, dialogue, companion prefab,
+skin and checks, plus every `IsCompanion` branch). Skip companion-only source changes in
+ports; when a shared file changed alongside companion code, port only the human-player part
+and do not restore companion branches.
 
 November 13 current-tree regression freshly reran the older queue evidence, including prior Claude passes: GrabbablePlayChecks, DeathLifecycleChecks, SmasherRetreatJumpChecks, ZombieHookPullChecks (24 pull/six surface cases), and two-process real-Photon FlareJoinNetworkChecks pass. Three real game clients additionally cover ground/moving-train enemy deaths with late flare joins and a natural bare-hand ground Hook pull. These supplement the historical port evidence; they do not change headset/full live gear/train/curve acceptance status. [Scenario ledger, tested commits and raw evidence](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
 
@@ -441,3 +601,13 @@ The item and Hook batch suites were repeated after the regression's store cleanu
   constrained hands and dropped items, release mid-pull in the cargo volume versus outside it, and curves. Pull versus downed state and the desktop pull path were not changed.
   No diagnostic reports inspected; source Duckz untouched.
 - Destination commit: the commit introducing this entry (see Git history).
+
+## November 23, 2026 — Mixed crowds, contested landings and LIV selfie voice
+
+- `a3d484e994e53c219f62de3caa99af009d20c812` was previously ported. Both minion and hook now use the later `984e4a8c` collider reduction documented above.
+- `a529d5224d1b8c91f62f533190475e209a16c736` adds swept enemy spacing, ground/climb passing, PUN replica reconciliation, flare-safe contact and bounded escape routing on the active Rails graph. Changes are in Enemy.Spacing, Enemy.FlareEscape, Enemy, EnemyManager, EnemyNetSync, both locomotion components, ZombieSmasherJump, KillTrigger, DeathFlare and Player. Platform carry and explicit teleportation preserve their Rails positioning semantics. Local respawn rejects a coroutine from an older life. Rails resolves spawn locations through its own session flow.
+- `a19882e7a60d2dd0c43c82c67859e611aa6f9e63` updates ZombieSmasherJump so a denied navigation-budget request retries without charging the normal recovery cooldown. Collision checks retain Rails train and block restrictions.
+- `aeab63f5323f6e3b15b0a98603b74216fa4ba796` is test coverage. RailMixedCrowdCrashChecks uses Rails encounter points and all five room-owned enemy types. Its editor commands spawn a 22-enemy workload, initiate three concurrent landings and observe the surviving peer. Crash injection, flare timing and headset measurements are manual adaptations of the Duckz external device runner.
+- `d8c9155f4286fc7843ff1a05352ab0781e22aeec` gates PhotonVoiceMouth local selfie loudness on Photon Voice Recorder.IsCurrentlyTransmitting. Existing remote speaker metering is preserved.
+- Both projects use Unity 6000.3.24f1 and PUN over Photon Realtime. ZombieCrowdFlareChecks passed in the Duck Rails editor, including seven landing scenarios and zero managed allocations for 100 warmed recovery-hop searches. The fixture emitted a ground-pose rollback warning. Real-client crash, shared landing, Quest and live voice acceptance are queued in [the playtest queue](playtest-queue.md). The destination commit is the one introducing this entry.
+- LIVCameraChecks passed all 91 editor assertions. The public selfie sampling API returned zero with an idle mic.

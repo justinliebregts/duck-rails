@@ -151,6 +151,21 @@ namespace Game.AI
             _supportNormal = rotation * _supportNormal;
         }
 
+        internal int EscapeWaypoint => _pathIndex < _pathCount ? _path[_pathIndex] : -1;
+        internal System.Collections.Generic.HashSet<int> EscapeBlockedNodes
+        {
+            get { ExpireBlockedNodes(); return _blockedNodes; }
+        }
+        internal void BlockEscapeWaypoint() => BlockNode(EscapeWaypoint);
+
+        internal void FollowEscape(int[] route, int count)
+        {
+            System.Array.Copy(route, _path, count);
+            _pathIndex = 0;
+            _pathCount = count;
+            _pathComplete = true;
+        }
+
         public void Interrupt()
         {
             ClearPath();
@@ -382,7 +397,7 @@ namespace Game.AI
             Vector3 pos = root.position;
             Vector3 up = Vector3.up;
             float speed = enemy.CurrentState == Enemy.State.Retreat ? enemy.RetreatSpeed
-                : enemy.CurrentState == Enemy.State.Wander ? walkSpeed : chaseSpeed;
+                : enemy.UsesWanderSpeed ? walkSpeed : chaseSpeed;
             LayerMask mask = m.SurfaceMask;
 
             Vector3 toSeen = enemy.LastSeenPos - pos;
@@ -422,7 +437,7 @@ namespace Game.AI
                     _currentNode = node;
                     _pathIndex++;
                     if (_pathIndex >= _pathCount) { UpdateStuck(enemy, m, dt, pos); return; }
-                    TrySkipAhead(g, pos, mask);
+                    if (!enemy.FollowingFlareEscape) TrySkipAhead(g, pos, mask);
                     node = _path[_pathIndex];
                     target = g.GetPosition(node);
                 }
@@ -443,11 +458,48 @@ namespace Game.AI
             float dist = delta.magnitude;
             if (dist < 1e-5f) { UpdateStuck(enemy, m, dt, pos); return; }
             Vector3 moveDir = delta / dist;
+            enemy.LimitNeighbors(pos, pos + moveDir * Mathf.Min(.75f, dist + .35f), out Enemy neighbor);
+            if (neighbor)
+            {
+                Vector3 radial = Vector3.ProjectOnPlane(pos - neighbor.Root.position, up).normalized;
+                Vector3 tangent = Vector3.Cross(up, radial);
+                if (Vector3.Dot(tangent, moveDir) < -.05f) tangent = -tangent;
+                GetCapsuleSize(out float bodyRadius, out _);
+                if (CanPassNeighbor(enemy, pos, tangent, radial, bodyRadius, mask)) moveDir = tangent;
+                else if (CanPassNeighbor(enemy, pos, -tangent, radial, bodyRadius, mask)) moveDir = -tangent;
+                else
+                {
+                    _stuckPos = _lastProgressPos = pos;
+                    _stuckTimer = _progressTravel = 0;
+                    // Yielding in a narrow queue is intentional. A wall recovery
+                    // started earlier must not expire and respawn this waiting body.
+                    _stalled = false;
+                    _stallTime = _spawnRetry = 0;
+                    return;
+                }
+            }
             pos = MoveWithWalls(pos, moveDir * Mathf.Min(speed * dt, dist), mask);
 
             ApplyMovementPose(enemy, pos, dt, turnSpeed);
 
             UpdateStuck(enemy, m, dt, root.position);
+        }
+
+        bool CanPassNeighbor(Enemy enemy, Vector3 from, Vector3 tangent, Vector3 radial, float radius, LayerMask mask)
+        {
+            // Only leave the line if there is enough width for the body to actually pass.
+            Vector3 side = tangent * Mathf.Max(.5f, radius * 2 + .12f);
+            Vector3 end = from + side;
+            if (CastWall(from, side, mask, out _) || !HasGroundSupport(end, mask)) return false;
+            enemy.LimitNeighbors(from, end, out Enemy blocker);
+            if (blocker || TrainBlocks(from, end)) return false;
+            for (int sideIndex = -1; sideIndex <= 1; sideIndex++)
+            {
+                Vector3 probe = end + radial * (sideIndex * radius) + Vector3.up * .2f;
+                if (!Physics.Raycast(probe, Vector3.down, out var floor, .4f, mask, QueryTriggerInteraction.Ignore)
+                    || !CrawlGraph.IsWalkableGround(floor.normal)) return false;
+            }
+            return true;
         }
 
         // Root poses are written directly to a kinematic rigidbody, so collision
@@ -828,13 +880,15 @@ namespace Game.AI
                 {
                     pos = RootFromCapsuleBottom(repaired);
                     enemy.SetRootPose(pos, enemy.Root.rotation);
-                    enemy.Root.SetPositionAndRotation(pos, enemy.Root.rotation);
+                    pos = enemy.Root.position;
                     ClearPath();
                     _hasSupport = false;
-                    bottom = repaired;
+                    bottom = SupportedCapsuleBottom(enemy.Root.position, mask);
+                    if (CapsuleOverlaps(bottom, mask)) return false;
                 }
                 else if (_hasSafePose && !CapsuleOverlaps(SupportedCapsuleBottom(_safePosition, mask), mask)
-                    && HasGroundSupport(_safePosition, mask))
+                    && HasGroundSupport(_safePosition, mask)
+                    && enemy.LimitNeighbors(pos, _safePosition, out _, true) == _safePosition)
                 {
                     {
                         if (DuckzLog.AllowWarning(out var logNotice1))

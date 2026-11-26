@@ -94,16 +94,6 @@ public class Ragdoll : MonoBehaviour
         visuals.BindColor(colorActor);
     }
 
-    public void ApplyCompanionAppearance(Transform companionRig, bool redEyes = false)
-    {
-        var visuals = DuckSkinVisuals.Attach(gameObject, DuckSkinSource.Manual);
-        if (!visuals.CopyCompanionAppearance(companionRig, redEyes))
-            {
-                if (DuckzLog.AllowWarning(out var logNotice1))
-                    logNotice1.Write("[Ragdoll] Could not copy companion appearance onto the corpse rig.", this);
-            }
-    }
-
     void CacheRestPose()
     {
         if (bones != null) return;

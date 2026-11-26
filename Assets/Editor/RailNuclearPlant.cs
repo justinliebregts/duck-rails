@@ -18,7 +18,7 @@ public static class RailNuclearPlant
 {
  public const string Id="nuclear-power-plant-v1", RootName="Nuclear plant authored v2", Folder="Assets/DuckRails/NuclearPlant";
  public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id, BakeScene=LightingFolder+"/"+Id+"-bake.unity";
- public const int LightCount=29;
+ public const int LightCount=41;
  static Material concrete,steel,wood,yellow,gravel,paint,white,red,glass,grass,water,screen,waste;
  static Mesh cube;
  static readonly Dictionary<string,Mesh> boxes=new();
@@ -208,7 +208,14 @@ public static class RailNuclearPlant
  [MenuItem("Duck Rails/Authoring/Nuclear Plant/Install approved block")]
  public static void Install()
  {
-  Guard();Directory.CreateDirectory(Folder+"/Meshes");Directory.CreateDirectory(LightingFolder);AssetDatabase.Refresh();boxes.Clear();cube=AssetDatabase.LoadAssetAtPath<Mesh>("Assets/DuckRails/Lighting/Blocks/quarry-v1/Cube Block UV.asset");
+  Guard();
+  var saved = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+  if (saved && RailBlock.FindEnvironment(saved.transform, RootName + "/" + RailNuclearFullBlock.RootName))
+  {
+   Debug.Log("Full plant site already installed.");
+   return;
+  }
+  Directory.CreateDirectory(Folder+"/Meshes");Directory.CreateDirectory(LightingFolder);AssetDatabase.Refresh();boxes.Clear();cube=AssetDatabase.LoadAssetAtPath<Mesh>("Assets/DuckRails/Lighting/Blocks/quarry-v1/Cube Block UV.asset");
   concrete=Mat("Plant concrete","concrete",new(.74f,.75f,.69f));steel=Mat("Plant steel","weathered paint",new(.36f,.46f,.48f));wood=Mat("Weathered timber","timber",new(.55f,.43f,.27f));yellow=Mat("Waste drum ochre","weathered paint",new(.82f,.59f,.18f));gravel=Mat("Dark gravel","gravel",new(.33f,.37f,.35f));paint=Mat("Plant teal","weathered paint",new(.40f,.57f,.54f));white=Mat("Insulator ivory","concrete",new(.82f,.82f,.7f));red=Mat("Beacon red","weathered paint",new(.9f,.12f,.08f));glass=Mat("Dark glass","dark roofing",new(.13f,.23f,.27f));grass=Mat("Plant grass","grass",new(.43f,.52f,.34f));water=Mat("Basin water","lake water",new(.24f,.43f,.46f));screen=Mat("Green displays","weathered paint",new(.25f,.9f,.4f));waste=Mat("Small waste spill","lake water",new(.48f,.55f,.18f));
   foreach(var m in new[]{screen,red}){m.EnableKeyword("_EMISSION");m.SetColor("_EmissionColor",m.GetColor("_BaseColor")*2);EditorUtility.SetDirty(m);}
   drumMesh=Lathe("Shared ribbed drum",new[]{0f,.06f,.15f,.20f,.80f,.85f,.96f,1.02f},new[]{.38f,.42f,.42f,.40f,.40f,.42f,.42f,.38f},false);

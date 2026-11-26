@@ -1,0 +1,29 @@
+Worn loadout reconnect, November 20 desktop RC
+Status: PAUSED by user during setup. No gameplay verdict.
+
+Unity 6000.3.24f1, main c89d1f95e40176e12c029df8df8dcaa41a0b69b6 plus local edits.
+Three authenticated desktop simulated rigs on one workstation using real Photon.
+Gameplay assembly MVID on both sampling peers: a72e7021-a487-40bc-b8d3-45f847d690a4.
+
+20:53:42.2947296 UTC Player2: private room 74238, Staging, ready, actor 1, master 1.
+20:53:42.2708418 UTC Player3: private room 74238, Staging, ready, actor 2, master 1.
+Both saw actors 1 and 2 active, avatars 1001 and 2001, zero bags and zero head items.
+Main was ready in public Compound 71000; no private-room observer sample was captured.
+Play stopped during setup. Concurrent external script compilation and an Android build
+occupied the editor during retry preparation. Branch HEAD subsequently advanced to
+fdb1611700c6d075865ec4407d5503061a77e1d6. The retry produced no gameplay samples.
+No test bag, helmet or goggles were equipped. The disconnect and reconnect did not run.
+
+Pause cleanup, UTC:
+21:08:01.2737747 Reached the editor after the first build, Play=False, scenario Running.
+                 Stopped the pending scenario; application reported NotRunning, Play=False.
+                 Default scenario selected, quick-start false, test auto-refresh hold cleared.
+                 PlayerTwo, PlayerThree and PlayerFour all reported NotLaunched.
+                 Restored the original bridge inputs/outputs, left the test stop marker in place.
+21:10:19.4449716 Main account: restored 2 values; 18/18 scoped and legacy values match baseline.
+21:10:19.4459792 Player2 account: 18/18 match.
+21:10:19.4469838 Player3 account: 18/18 match.
+21:10:19.7509626 Original Convenience Store bake open and dirty; fresh serialization and
+                 on-disk scene each match their respective pretest backups. Still in Edit Mode.
+                 In-memory SHA256 C0994D5455DFD5F8696F6D04CACE1A250021660911AB0F406F92A7F7A1E00FC2
+                 On-disk SHA256   93805449C17382DC7A1046C701ABA6E8FB9A2DECEE8BFE0212616FD880F9AAC3

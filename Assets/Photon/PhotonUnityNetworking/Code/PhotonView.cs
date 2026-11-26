@@ -356,6 +356,12 @@ namespace Photon.Pun
         /// <summary>Immutable identity of this network spawn, independent of its reusable ViewID.</summary>
         public string SpawnToken { get; internal set; }
 
+        /// <summary>Sender's server timestamp from the spawn event; identical on every client, including late joiners.</summary>
+        public int SpawnTimestamp { get; internal set; }
+
+        // Set when this spawn lost a duplicate room ViewID resolution and must not go live.
+        internal bool lostDuplicateSpawn;
+
 
         protected internal bool removedFromLocalViewList;
 

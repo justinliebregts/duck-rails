@@ -41,7 +41,6 @@ public static partial class RailConvenienceStore
         // Clear window opening with thin mullions; no black opaque sheet hiding the interior.
         Box(p,"Window header",new Vector3(x,3.1f,(a+b)/2),new Vector3(.2f,1,b-a),"wall");
         for(float z=a;z<=b;z+=3)Prop(p,"Window mullion",x-.06f,z,.12f,.12f,2.7f,"steel");
-        var g=Group(p,"Clear shop window collision").gameObject;g.layer=6;var c=g.AddComponent<BoxCollider>();c.center=new Vector3(x,1.65f,(a+b)/2);c.size=new Vector3(.08f,2,b-a);
     }
     static void ShopV5(Transform root)
     {

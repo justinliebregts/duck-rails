@@ -8,12 +8,47 @@ Both Quackwatt cooling towers have internal maintenance ramps and a rail-facing 
 
 The November 25 [Quackwatt plant layout](nuclear-power-plant-layout.md) uses one enterable cooling tower on each side of the railway, with the turbine hall opposite the reactor, overhead pipe crossings, raised northern waterworks and a concrete-and-gravel yard. Green glowing waste puddles dress the barrel spill.
 
+November 23 Canyon art direction adds a dark south mine shaft leading to a cold, dimly lit passage with three small side rooms beneath the river, linked northern mine workings and grounded exterior lanterns. See [Canyon layout](canyon-layout.md).
+
+November 23 deep night (Justin): until the train reaches the mid shop
+(helipad) block the night is darker (sky, mountains, ambient light); over the
+first 30 m of that block it fades to the regular night. Fog, pre-dawn and the
+sunny dawn win effect are unchanged. Driven by the shared train distance, so all
+clients and late joiners match. See
+[storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).
+
+November 23 shovel audio: a hard swing into scenery while holding the Scrap Duck shovel plays one of three clangs at the contact point (spade, hammer or the first shield strike). The initial impact threshold is 2 m/s into the surface. [Queued for playtest](playtest-queue.md#held-shovel-scenery-impacts--queued-for-playtest-2026-11-23).
+
+The public compound has a yellow JOIN button on a metal panel on the left departure pillar. It boards the pressing player onto a running public expedition with space. Private expeditions use their existing code-based join flow.
+
+November 23 sunny dawn (Justin): the successful-escape dawn should feel really
+sunny, not foggy or overcast. Supersedes "muted dawn, never daytime" and the
+overcast dawn below: blue sky with broken gold-lit clouds, a low warm sun
+(realtime sunlight, no shadows) and a light golden haze instead of grey fog.
+Night and pre-dawn are unchanged. See
+[storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).
+
+November 22 storm sky (user-confirmed, supersedes the November 7 built-in
+procedural sky): Expedition and Login use the Duckz animated storm-cloud sky.
+Night is dark olive, a bit darker than Duckz; pre-dawn lifts slightly; a
+successful escape turns the sky brighter and warmer, still overcast, with a warm
+sunrise glow on the horizon. A distant mountain ring surrounds the route and
+blends to dawn. Compound keeps its plain dark background. The rest of the
+November 7 direction (almost-dark night, muted dawn never daytime, existing
+fog/timing, failures never reach dawn) is unchanged. See
+[storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).
+
 November 17 admin tools: the signed-in admin's pause menu has a Test tab with
 Deposit 1 coal, Deposit 50 coal, No Clip: On/Off and Invincibility: On/Off.
 The standalone L3/wrist/desktop test panel and Game-view toggle are retired.
 No Clip uses head-relative horizontal left-stick movement and right-stick
 forward/backward for vertical flight, without solid collision or fall recovery.
 Implemented; runtime/headset/multiplayer acceptance is queued.
+November 18: a fifth button, Train Speed: 1x/5x, sets the shared cruise speed
+(4 or 20 m/s) for the current run; it resets with the next run.
+November 20: the admin Test tab and its gameplay controls are limited to
+the Editor and Development Builds. Player-facing Submit Bug is available
+in production.
 See [testing tools](testing-tools.md#admin-pause-page--november-17-2026).
 
 November 17 ambience refinement: long positional details play randomized excerpts
@@ -28,6 +63,11 @@ up; no expedition-wide increase). Defenders approach the controls without needin
 initial line of sight, retaining ordinary player pursuit and combat reactions.
 New-fortress navigation, loot distribution and build lighting export are updated;
 runtime acceptance is queued. See [finale refresh](final-escape-layout.md#fortress-encounter-refresh--november-17-2026).
+
+November 18: user requested that idle finale enemies seek the bridge control area
+while the bridge is actively lowering (not while paused). Implemented for wandering
+enemies inside the finale block; chasing/searching and train-boarding enemies keep
+their behavior. Runtime acceptance queued for playtest.
 
 November 16 ambient audio: user-approved Artlist selection imported with a local
 location-aware director for the five enabled scavenging blocks, starting station
@@ -52,6 +92,9 @@ with their contents retained and clears the saved bag. Only a worn bag and its
 contents persist through UserPlayerPrefs; taking it off clears that save. Restore
 on next entry, respecting an existing recovered room copy. Implemented; live
 rejoin/transition and headset acceptance is [queued for playtest](playtest-queue.md#duckz-backpack-downing-and-persistence--queued-2026-11-16).
+
+November 18 head equipment on down: downing also drops any worn head items
+(helmet, night vision goggles), like the bag. Implemented; [queued for playtest](playtest-queue.md#downing-drops-head-equipment--queued-2026-11-18).
 
 November 16 coal audio: pickups use Furnace_CoalGrab_01; dropped coal surface impacts use Furnace_CoalThud_01 through shared networked item audio. Existing furnace deposit sequence remains. Editor asset checks pass; listening/multiplayer acceptance is queued in [playtest queue](playtest-queue.md#coal-pickup-and-drop-sounds--queued-2026-11-16).
 
@@ -177,6 +220,8 @@ November 12 shared-store decision: Compound, Departure Shop and midpoint helicop
 
 November 12 bundle presentation correction: use Duckz horizontal weapon–bag–avatar rows and identical heading/countdown text styling in both shops. User permits overlap for manual adjustment; see [bundle layout](character-bundles.md#horizontal-duckz-layout--november-12).
 
+November 20 bundle art decisions (user): the Scrap Duck shovel works exactly like the nail bat, and the Scrap Duck and Huggy bags have 8 slots. Huggy's finger gun is a pan-style melee weapon that also fires a yellow/orange flare from the fingertip on the use button. The flare flies about 25 m, then floats down like a death flare; if it hits something first, it sparks, deflects and falls. It burns for 15 s, and enemies fear it like death flares. A direct enemy hit gives a light push. The gun has a 10 s cooldown, owned by the gun, shown by a green bar on the forearm. Peers see the shot. See [Huggy flare gun](character-bundles.md#huggy-final-art-and-flare-gun--november-20).
+
 November 12 character bundles: Quackbear, Huggy and Scrap Duck each provide an immediately equippable avatar and separate placeholder bag/weapon pulls with independent two-minute per-player cooldowns, matching Duckz. Installed in the compound and Departure Shop; bundle ownership remains separate from standard coin purchases. Initial placeholders use four-slot basic bags and Rails frying pans. This request authorizes these compound bundle supplies; Meta product/pricing setup and live purchase/gameplay acceptance remain pending. See [character bundles](character-bundles.md).
 
 November 12 audio: user approved broad reverb zones with soft edges. Installed 25 across Final Bridge, Farm, Skyscraper, Convenience Store, Motel and Container Yard; Helicopter Shop excluded. Editor checks pass; listening/headset acceptance queued. See [block reverb](block-reverb.md).
@@ -286,10 +331,13 @@ Skyscraper. See [enemy spawn balance](enemy-spawn-balance.md) for tuning and evi
 
 November 8 resource balance implementation: 0–100 fuel gauge, two-block full-tank
 range, 50 starting fuel (station exit plus half the first block) and 50 fuel per 160 m. Approved effective scavenging crew
-E = 1 + (N - 1) * 0.6 applies to coal and gold. Target 4E coal collected; spawn at
-most floor(6E), each worth 12.5/E fuel. Gold spawns floor(10E) bars per block and
+E = 1 + (N - 1) * 0.6 applies to coal and gold. Target 12E coal collected; spawn at
+most floor(18E), each worth 50/(12E) fuel (November 24: tripled from 4E/6E at a third
+of the value). Gold spawns floor(10E) bars per block and
 pays a total of 100 coins per eligible player when fully collected. Physical coal
-stockpiling is allowed. Departure roster is retained; fractional gold uses integer
+stockpiling is allowed. November 24 (Justin): coal, gold and enemy counts follow the
+live crew for blocks the train has not reached yet, scaling up and down; coal already
+aboard may lose value. Flashlights stay per departing player. Fractional gold uses integer
 carry with server-calculated credits. See [resource tuning](resource-balance.md)
 for tuning locations, validation and deployment limits. Source/editor/API checks
 pass; API rollout and real-client/headset acceptance remain pending. This supersedes
@@ -314,7 +362,7 @@ editor checks passed; full bag/network and headset acceptance remain pending. Se
 
 November 8 retreat tuning: port Duckz `a1be1207774efb66bbe6e7df0c0003c2793a926f`, changing zombie retreat duration from 4–10 to 1–8 seconds. Existing retreat triggers and Rails boarding restrictions remain. Editor checks passed; real-client/headset balance review remains pending. See [port evidence](duckz-ports.md#a1be1207774efb66bbe6e7df0c0003c2793a926f--zombie-retreat-duration).
 
-November 10 ZombieHook: a fifth enemy type joins the scavenging mix (port of Duckz `73b78c46`, `7ed6d880`, `2719d1a1`). It keeps block boundaries and does not board; only minions and spiders board. Per-crew counts are unchanged. See [port evidence](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e).
+November 10 ZombieHook: a fifth enemy type joins the scavenging mix (port of Duckz `73b78c46`, `7ed6d880`, `2719d1a1`). It can pursue across ground seams. Only minions and spiders board. Per-crew counts are unchanged. See [port evidence](duckz-ports.md#zombiehook-group--73b78c46-7ed6d880-2719d1a1-b591543e).
 
 November 8 confirmed smasher port: retain 12 m jump height, 16 m horizontal reach and rooftop exploration, including Skyscraper Works. Smashers remain excluded from train boarding and confined to their home block. See [port evidence and acceptance limits](duckz-fix-ports.md#smasher-rooftop-exploration--november-8-2026).
 
@@ -326,7 +374,7 @@ November 7 follow-up: user selects **#060603** for pre-dawn fog, doubles keyboar
 
 November 7 test convenience: user requested an in-game test-panel 5x train-speed toggle for reaching lighting transitions quickly. This is a private development-run tool; normal gameplay speed and the successful dawn ride remain unchanged. See [test speed toggle](testing-tools.md#train-speed-toggle--november-7).
 
-November 7 confirmed atmosphere: use Unity's built-in procedural sky without plugins or a visible sun disk. Expedition starts almost pitch black; entering the final bridge block introduces a subtle pre-dawn lift while remaining dark. Successful escape transitions to muted dawn, never daytime. Match fog to the sky horizon and reduce density toward the ending. This supersedes November 4 scene-only atmosphere ownership and the abrupt ambient-only ending. See [atmosphere implementation](block-lighting.md#procedural-night-to-dawn--november-7).
+November 7 confirmed atmosphere: use Unity's built-in procedural sky without plugins or a visible sun disk. Expedition starts almost pitch black; entering the final bridge block introduces a subtle pre-dawn lift while remaining dark. Successful escape transitions to muted dawn, never daytime. Match fog to the sky horizon and reduce density toward the ending. This supersedes November 4 scene-only atmosphere ownership and the abrupt ambient-only ending. See [atmosphere implementation](block-lighting.md#procedural-night-to-dawn--november-7). November 22: the procedural sky itself is superseded by the storm sky (top of this document).
 
 November 6 underground station revision: user approved the low-ceiling horror metro and lower-floor crashed-train layout for 3D. V2 rough Quackville geometry is installed: 2.13 m pedestrian ceilings, curved offset railway, enclosed stairs/stopped escalator, lower wreck platform and maintenance loops. See [implementation and validation](underground-station-layout.md#v2-installed-rough-metro). Headset/multiplayer acceptance remains pending.
 
@@ -334,7 +382,7 @@ November 6 furnace decision: user selected the **front exterior fuel hole only**
 
 November 6 typography: CutePixel SDF is the required font for all game text, including UI, world signs, runtime labels and camera-tablet text. TMP Settings uses it as the default. Preserve custom sign colors with CutePixel-compatible atlas materials.
 
-November 6 results UI: show the remaining compound-return delay above win/lose results using the existing text object and shared network deadline. Current normal delay is 32 seconds plus the two-second return stage. See [countdown implementation](week2-session.md#results-return-countdown--november-6-2026).
+November 6 results UI: show the remaining compound-return delay above win/lose results using the existing text object and shared network deadline. Current normal delay is 18 seconds (changed from 32 on November 24) plus the two-second return stage. See [countdown implementation](week2-session.md#results-return-countdown--november-6-2026).
 
 November 6 encounter coverage: user requests enemy spawn candidates on both sides and at track level in every encounter block following train boarding support. Installed and checked across all 17 blocks and Expedition's finale, retaining 4–6 enemies, guaranteed bilateral selection and the safe starting station. Railway candidates participate in random selection. See [track-level spawn coverage](mixed-enemies.md#track-level-spawn-coverage--november-6-2026).
 
@@ -391,6 +439,12 @@ November 5 container-yard build: user approved the wider V5 with gantry crane an
 November 5 container-yard simplification: user liked the dense concept but requested an easier-to-build version. [V3](container-yard-layout.md#v3--simplified-alternative-current-review-proposal) proposes two three-row clusters, six ground interiors, two fallen containers, one low roof route per side and selected four-high backdrops. Removes upper interiors and bridge/stair networks; counts/heights remain proposals awaiting drawing approval.
 
 November 5 container-yard direction: user requested a tall container maze with open/closed interiors, fallen containers and climbable stacks. The [top-down layout and height study](container-yard-layout.md) proposes mazes on both sides, selected four-to-five-high stacks, rooftop routes and supporting loading/repair areas toward the block ends. Exact heights, routes and footprints await drawing approval before rough Quackville blockout; no Unity implementation is claimed.
+
+The approved Hospital District exterior is installed across the full block, with a staff garden and ER arrival to the south and a working laundry yard and sheltered shuttle stop to the north. [Campus details](hospital-district-layout.md#finished-campus-in-unity).
+
+Canyon now runs from a cable yard and survey camp at the southern rim, across the central gorge, to a winch shed and shaft headframe in the north. At Lakeside Campground the camper and fallen-tree camp frame the southern approach, cabin terraces face the central dock, and the northern trail opens onto the canoe beach. A wooden lookout east of the railway has a wraparound ramp and a view across the water. Three tent clearings each gather around a burning fire, with ground lanterns and small solar lights on the lake banks. Walk-through ferns and the open gravel trail give players two ways to approach the shore. [Canyon](canyon-layout.md) · [Lakeside Campground](lakeside-campground-layout.md).
+
+The Nuclear Power Plant’s turbine hall stands west of the railway and both open cooling towers stand east. A shift bus and pipe yard mark the south approach. A settling pond and discharge flume frame the north end. [Plant layout](nuclear-power-plant-layout.md) · [Installed site plan](../output/nuclear-full-block/blueprint.png).
 
 November 4 hospital build: user approved V4 for 3D. Installed [Hospital District](hospital-district-layout.md#installed-rough-blockout) with two storeys, two roof-reaching stairs, open courtyard, south ER, glowing sign, ambulance wrecks, upper surgery rooms and roof plant. Rough Quackville materials, navigation and lighting are baked; 2,479 physical/navigation/UV checks, 757 catalogue checks and two offline route rounds passed. Headset/multiplayer/performance acceptance remains open.
 
@@ -640,13 +694,13 @@ October 31 authoring update: coal placements use reusable, editor-visible CoalSp
 - Runtime placement must correctly transform graph data if block transforms vary.
 - Retain every selected block until the expedition ends; clear network objects at staging before another departure.
 
-Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets per location, six coal chunks and 4–6 randomized enemies per selected stop. Encounter bounds occupy local Z 45–115, leaving 90 metres between adjacent encounters (22.5 seconds at 4 m/s). Four templates have gentle internal curves. Stable versioned IDs, placements and variation indices are retained in room properties. Navigation is baked in the editor and translated/reindexed at load without generating geometry, rebaking or connecting blocks. See [week3-session.md](week3-session.md) for setup and actual validation limits.
+Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets per location, six coal chunks and 4–6 randomized enemies per selected stop. Encounter bounds occupy local Z 45–115, leaving 90 metres between adjacent encounters (22.5 seconds at 4 m/s). Four templates have gentle internal curves. Stable versioned IDs, placements and variation indices are retained in room properties. Navigation is baked in the editor and translated/reindexed at load without generating geometry or rebaking. On-foot pursuit and search can cross adjoining blocks wherever walkable baked seam endpoints coincide. Idle patrol remains home-bound, and a pursuer outside its home block seeks a return path when it resumes wandering. See [week3-session.md](week3-session.md) for setup and actual validation limits.
 
 ## Compound, public departure, and private rooms
 
 ### Confirmed
 - Compound is a social room for mingling, cosmetics, shopping, and meeting friends.
-- November 11: provide a local rating-page button in the compound with a replaceable PNG instruction canvas beside it. See [rating station](subway-compound.md#rating-station--november-11-2026); headset/store acceptance remains queued.
+- November 20: the Compound rating panel pairs the Discord station's layout with warm gold and bronze colors and the Raider Legends store walkthrough. Its physical button is centered 0.38 m above the Station Info floor. Headset reach and store acceptance are queued. See [rating station](subway-compound.md#rating-station--november-20-2026).
 - The social room is NOT automatically the expedition group.
 - Public departure platform counts down and takes only its occupants, up to eight.
 - People outside the platform cannot hold up departure.
@@ -665,6 +719,7 @@ Implementation defaults: 160-metre blocks, three authored coal/enemy spawn sets 
 - Show time and occupancy; clearly indicate who is aboard and when full.
 - At zero, lock the roster, transfer it, and reopen the source platform afterward.
 - Validate membership/capacity through the room's coordinating authority.
+- A two-second train horn plays once for each crew member when they leave the compound for a public or private expedition.
 
 ### Confirmed private lifecycle
 - Successful creation enters private staging; friends can arrive before or after departure.
@@ -698,6 +753,12 @@ Current validation target: the shared DuckPlayer with simulated input, including
 Confirmed October 29, 2026: the current implementation scope is Week 2 plus the bridge finale and a world-space run-results board for both success and failure. This supersedes the earlier gate/power-restoration concept. These are confirmed design requirements, not verified runtime behavior. Commerce and persistent escape-count implementation remain outside this scope.
 
 ### Sequence
+November 23: the admin Train Speed setting also controls bridge lowering. At 5x, a continuous hold takes 12 seconds and the reinforcement wave arrives at 50% progress. Switching speeds preserves accumulated progress.
+
+November 23 (Justin, via the project chat): the moment the Final Bridge reaches 100% (with the thud and siren), the master adds one extra enemy per player in the room. They head for the train and fall back on normal chase/boarding once they see a duck. This happens once per run. The count is fixed at that moment, so rejoins and master changes neither respawn nor recount it. See [final escape layout](final-escape-layout.md#bridge-surge-at-100). Runtime balance and headset acceptance are pending.
+
+On the short Convenience Store route, both surge minions used pursuit speed on the route to the train before seeing a duck. Both clients observed the pair within 2.7 m of the train goal inside 25 seconds. The returning peer saw the same two Photon views. [Desktop fixture trace](validation/playtest-queue/2026-11-23-fixes-surge.txt).
+
 November 1 confirmed change: the external bridge button requires a continuous physical hold. Releasing pauses lowering and retains all progress; anyone can resume it. This supersedes the one-touch, unattended minute-long timer. The train remains safe from enemies. See [bridge hold](bridge-hold.md) for implementation and validation.
 
 1. Warning signs before the raised bridge give the crew time to brake. Players must stop the train before it hits the raised or incompletely lowered bridge; a collision causes the train to explode and the run to fail for the whole team. Do not automatically stop the train to prevent this failure. A volunteer leaves the stopped train and holds down the external button to lower the bridge.
@@ -887,3 +948,19 @@ November 16 compound music: supplied Max H Dark Horizons track loops throughout 
 Compound music follow-up: fade in over 1.5 seconds on entry and out over 0.75 seconds before normal scene departure; repeat boundaries keep looping without an extra fade.
 
 November 16 station audio: added Compound and Starting Station reverb, with stronger, longer tunnel reverb than the station hall. Saved prefab checks pass; listening/client acceptance queued. See [reverb settings](block-reverb.md#compound-and-starting-station--november-16-2026).
+
+November 18 held-item carry: an item or bag held in a hand when the player moves between Compound and Expedition (or changes room) comes along and drops at the player's feet on arrival; it is not put back in the hand. Held gold and coal carry like bagged ones. Implemented in `RailHeldCarry` and compiles; client acceptance queued. See [playtest queue](playtest-queue.md#held-items-carry-between-compound-and-expedition--queued-2026-11-18).
+
+November 18 loadout persistence (user request): moving between Compound and Expedition, or changing room, keeps the worn bag with its contents and worn helmet/night vision goggles; held items drop at the player's feet. After a quit, crash or disconnect the worn bag with contents and head gear are restored when the player returns; hand-held items may be lost. A wearer who leaves a room (including dropping out) takes their worn bag and head gear with them instead of leaving them for the crew; the user confirmed that coal and gold in that bag leave the expedition with them. See [playtest queue](playtest-queue.md#loadout-survives-scene-changes-quits-crashes-and-disconnects--2026-11-18).
+
+### Tales from the Rails
+
+Station Info displays five lifetime totals (individual attempts, individual escapes, coal gathered, gold gathered, and combined passenger kilometers), three weekly awards (most-looted stop by coal, deadliest zombie by duck downs, most-bonked zombie with hit count and most-used item), and the weekly and lifetime top ten escape artists side by side. First pickup of each original expedition coal or gold spawn earns collection credit. Exchanging the same item does not earn another credit. The server assigns new counter increases to the week it receives them, starting Monday at 00:00 UTC.
+
+Ordinary players capture persistent loading and departure failures. Master and client evidence share an incident ID. See [testing tools](testing-tools.md#paired-incidents).
+
+November 23 bridge finish. Players drive across the full lowered span. When the train front reaches the far bank, the crew aboard escapes and the train eases to 4 m/s over two seconds.
+
+## PC spectator — November 24, 2026
+
+Confirmed (user, project chat): a private Windows spectator build, ported from Duckz, can watch compounds, public trains (including running ones) and private rooms by code. It has no duck, never counts as crew and never runs the room. Train rooms stay at eight players, so a spectator uses one of the eight slots. Tool behavior and limits: [pc-spectator.md](pc-spectator.md).

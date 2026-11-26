@@ -109,7 +109,7 @@ public class PhotonEyeLook : MonoBehaviour
 
     void Start()
     {
-        _local = _view != null && _view.IsMine && GetComponent<DuckCompanion>() == null;
+        _local = _view != null && _view.IsMine;
     }
 
     void LateUpdate()
@@ -125,19 +125,7 @@ public class PhotonEyeLook : MonoBehaviour
 
         if (hasGaze)
         {
-            var companion = _player.Companion;
-            var buddy = companion != null && !companion.IsDead ? PhotonPlayer.ForActor(companion.TargetActor) : null;
-            // The response actor is replicated with the command pause. Every
-            // peer tracks the same speaker, even when Duck refuses another
-            // player's request while already following someone else.
-            if (companion != null && companion.State == DuckCompanion.Activity.Waiting
-                && companion.CommandResponseSpeaker != null)
-                buddy = companion.CommandResponseSpeaker;
-            else if (companion != null && companion.ConversationSpeaker != null)
-                buddy = companion.ConversationSpeaker;
-            Vector3 lookPoint = buddy != null && !buddy.IsDead && buddy.TryGetHeadPosition(out Vector3 buddyHead)
-                ? buddyHead
-                : TryInterest(eyePos, forward, out Vector3 interest)
+            Vector3 lookPoint = TryInterest(eyePos, forward, out Vector3 interest)
                 ? interest
                 : IdlePoint(eyePos, forward);
 
@@ -295,9 +283,8 @@ public class PhotonEyeLook : MonoBehaviour
         Quaternion parentRot = parent != null ? parent.rotation : Quaternion.identity;
         Quaternion delta = Quaternion.Inverse(rest) * (Quaternion.Inverse(parentRot) * worldLook);
         Vector3 euler = delta.eulerAngles;
-        bool companion = _player != null && _player.IsCompanion;
-        float yawLimit = companion ? 12f : maxYaw;
-        float pitchLimit = companion ? 8f : maxPitch;
+        float yawLimit = maxYaw;
+        float pitchLimit = maxPitch;
         Quaternion clamped = rest * Quaternion.Euler(
             ClampDegrees(euler.x, -pitchLimit, pitchLimit),
             ClampDegrees(euler.y, -yawLimit, yawLimit),

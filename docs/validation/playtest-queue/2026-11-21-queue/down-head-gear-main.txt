@@ -1,0 +1,242 @@
+2026-11-21T21:24:10.5308345Z START down-head-gear two-client playtest; Unity 6000.3.24f1 role=main privateCode=29960
+2026-11-21T21:24:10.5323605Z STATE PeerCreated room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:10.5328783Z step=0
+2026-11-21T21:24:13.0276330Z STATE ConnectingToNameServer room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:13.3117711Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:13.6930966Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:14.2827571Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:14.5106719Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:14.7525236Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:15.3107234Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:15.4351620Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:15.6564935Z STATE Joined room=57712 kind=compound phase=Compound master=True actor=1 step=0 ready=False players=1/1 down=False
+2026-11-21T21:24:16.7206195Z STATE Joined room=57712 kind=compound phase=Compound master=True actor=1 step=0 ready=True players=1/1 down=False
+2026-11-21T21:24:18.8696944Z STATE Joined room=57712 kind=compound phase=Compound master=True actor=1 step=0 ready=True players=2/2 down=False
+2026-11-21T21:24:19.8229935Z BACKUP 6 of 9 saved loadout keys present for this account
+2026-11-21T21:24:19.8255054Z CLEARED own loadout room=57712 kind=compound phase=Compound master=True actor=1 step=0
+2026-11-21T21:24:20.0399940Z STATE Leaving room=57712 kind=compound phase=Compound master=True actor=1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:20.1469903Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:20.4648724Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:20.5663093Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:20.6715044Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:21.3010790Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:21.5067795Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=0 ready=False players=0 down=False
+2026-11-21T21:24:21.6142329Z STATE Joined room=29960 kind=private phase=Staging master=True actor=1 step=0 ready=True players=1/1 down=False
+2026-11-21T21:24:24.7063822Z ACK step=0 account loadout backed up and cleared
+2026-11-21T21:24:24.8144035Z STATE Joined room=29960 kind=private phase=Staging master=True actor=1 step=1 ready=True players=1/1 down=False
+2026-11-21T21:24:24.8154109Z step=1
+2026-11-21T21:24:26.3958875Z STATE Joined room=29960 kind=private phase=Staging master=True actor=1 step=1 ready=True players=2/2 down=False
+2026-11-21T21:24:27.8758522Z ACK step=1 both in private staging 29960
+2026-11-21T21:24:29.5890563Z STATE Joined room=29960 kind=private phase=Staging master=True actor=1 step=2 ready=True players=2/2 down=False
+2026-11-21T21:24:29.5890563Z step=2
+2026-11-21T21:24:32.8324531Z STATE Joined room=29960 kind=private phase=Departing master=True actor=1 step=2 ready=False players=2/2 down=False
+2026-11-21T21:24:37.8728479Z STATE Joined room=29960 kind=private phase=Departing master=True actor=1 step=2 ready=True players=2/2 down=False
+2026-11-21T21:24:38.7560806Z STATE Joined room=29960 kind=private phase=Running master=True actor=1 step=2 ready=True players=2/2 down=False
+2026-11-21T21:24:38.7595936Z STOP train requested (speed 0.00)
+2026-11-21T21:24:38.7595936Z ACK step=2 running together; train speed 0.00
+2026-11-21T21:24:42.0108350Z STATE Joined room=29960 kind=private phase=Running master=True actor=1 step=10 ready=True players=2/2 down=False
+2026-11-21T21:24:42.0113468Z step=10 round 1 Clean downed=: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:24:47.1968283Z ACK step=10 clean; master=True; non-test copies in room: helmets=0 goggles=0; saves head='' eyes='' bag.back=''
+2026-11-21T21:24:47.2029882Z ROUND 1 downed role player2 (master=False): non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:24:47.2975205Z STATE Joined room=29960 kind=private phase=Running master=True actor=1 step=11 ready=True players=2/2 down=False
+2026-11-21T21:24:47.2975205Z step=11 round 1 Wear downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:24:52.8548819Z ACK step=11 worn: #2 wears helmet#2002 goggles#2003 bag#125 (observer) totals helmet=1 goggles=1
+2026-11-21T21:24:52.9650657Z STATE Joined room=29960 kind=private phase=Running master=True actor=1 step=12 ready=True players=2/2 down=False
+2026-11-21T21:24:52.9650657Z step=12 round 1 Down downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:24:52.9675720Z STAND away aboard while the peer goes down
+2026-11-21T21:25:00.2359550Z ACK step=12 DROP observer: downed #2 (player2) down=True totals helmet=1 goggles=1 | RailShopItemHelmet#2002 loose 0.49m dyHead=-0.39 owner#2 @7.00,1.15,70.54; RailGoggles#2003 loose 0.71m dyHead=-0.16 owner#2 @7.00,1.38,70.75; bag#125 Dropped 0.59m @6.99,1.08,69.45; observer: no head item equipped by #2
+2026-11-21T21:25:00.3262342Z STATE Joined room=29960 kind=private phase=Running master=True actor=1 step=13 ready=True players=2/2 down=False
+2026-11-21T21:25:00.3267442Z step=13 round 1 Revive downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:25:00.3292547Z RESCUER teleported beside the downed duck (attempt 1)
+2026-11-21T21:25:04.2587315Z REVIVED; rescuer steps away
+2026-11-21T21:25:09.3869151Z ACK step=13 AFTER REVIVE (nothing returned automatically): downed #2 (player2) down=False totals helmet=1 goggles=1 | RailShopItemHelmet#2002 loose 0.49m dyHead=-0.39 owner#2 @7.00,1.15,70.54; RailGoggles#2003 loose 0.71m dyHead=-0.16 owner#2 @7.00,1.38,70.75; bag#125 Dropped 0.59m @6.99,1.08,69.45; observer: no head item equipped by #2
+2026-11-21T21:25:09.4939439Z STATE Joined room=29960 kind=private phase=Running master=True actor=1 step=14 ready=True players=2/2 down=False
+2026-11-21T21:25:09.4954569Z step=14 round 1 LateJoin downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:25:12.5080243Z LEAVE the running expedition (Back to Compound) as master=True
+2026-11-21T21:25:12.9926408Z STATE Leaving room=29960 kind=private phase=Running master=True actor=1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:13.2085053Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:13.5537343Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:13.6624099Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:13.8801057Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:14.3235930Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:14.4363888Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:14.5473706Z STATE Joined room=46243 kind=compound phase=Compound master=True actor=1 step=14 ready=False players=1/1 down=False
+2026-11-21T21:25:15.6133614Z STATE Joined room=46243 kind=compound phase=Compound master=True actor=1 step=14 ready=True players=1/1 down=False
+2026-11-21T21:25:15.6148739Z REJOIN by code from 46243 kind=compound
+2026-11-21T21:25:15.8014307Z STATE Leaving room=46243 kind=compound phase=Compound master=True actor=1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:15.9185369Z STATE ConnectingToMasterServer room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:16.3424071Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:16.4444242Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:16.5528760Z STATE ConnectingToGameServer room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:16.9747092Z STATE Authenticating room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:17.1834125Z STATE Joining room= kind= phase=Compound master=False actor=-1 step=14 ready=False players=0 down=False
+2026-11-21T21:25:17.2906155Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=14 ready=False players=2/2 down=False
+2026-11-21T21:25:22.2000755Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=14 ready=True players=2/2 down=False
+2026-11-21T21:25:30.3014537Z ACK step=14 LATE JOINER sees master=False: downed #2 (player2) down=False totals helmet=1 goggles=1 | RailShopItemHelmet#2002 loose 0.49m dyHead=-0.39 owner#2 @7.00,1.15,70.54; RailGoggles#2003 loose 0.70m dyHead=-0.16 owner#2 @7.00,1.38,70.75; bag#125 Dropped 0.59m @6.99,1.08,69.45; observer: no head item equipped by #2
+2026-11-21T21:25:30.4021274Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=15 ready=True players=2/2 down=False
+2026-11-21T21:25:30.4021274Z step=15 round 1 TakeHelmet downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:25:35.1301819Z TryGrab RailShopItemHelmet#2002 owner#2 -> True attempt 1
+2026-11-21T21:25:39.1238770Z   pickup not confirmed: not held: holder=LeftHand (PlayerHand) pending=False mine=True
+2026-11-21T21:25:39.5728259Z GRIP press (own item RailShopItemHelmet#2002) attempt 2
+2026-11-21T21:25:41.2052789Z ACK step=15 TAKE holds RailShopItemHelmet#2002 in right (now owner, pickup confirmed, own item)
+2026-11-21T21:25:41.3086354Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=16 ready=True players=2/2 down=False
+2026-11-21T21:25:41.3086354Z step=16 round 1 WearHelmet downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:25:44.9204368Z RELEASE RailShopItemHelmet#2002 at the head anchor; equipped=True
+2026-11-21T21:25:47.1069108Z ACK step=16 REWEAR RailShopItemHelmet#2002 worn by self #3; saves head='RailShopItemHelmet' eyes='' bag.back=''
+2026-11-21T21:25:47.4378649Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=17 ready=True players=2/2 down=False
+2026-11-21T21:25:47.4378649Z step=17 round 1 TakeGoggles downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:26:02.2822237Z ACK step=17 SEES RailGoggles#2003 held by #2 owner#2
+2026-11-21T21:26:02.9343458Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=18 ready=True players=2/2 down=False
+2026-11-21T21:26:02.9343458Z step=18 round 1 WearGoggles downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:26:08.2600849Z ACK step=18 SEES RailGoggles#2003 worn by #2; NVG effect active here=False; saves head='RailShopItemHelmet' eyes='' bag.back=''
+2026-11-21T21:26:08.3681378Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=19 ready=True players=2/2 down=False
+2026-11-21T21:26:08.3691354Z step=19 round 1 TakeBag downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:26:12.9628938Z ACK step=19 SEES bag#125 Held by #2
+2026-11-21T21:26:13.5127833Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=20 ready=True players=2/2 down=False
+2026-11-21T21:26:13.5138016Z step=20 round 1 WearBag downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:26:17.7988726Z ACK step=20 SEES bag#125 Stowed by #2
+2026-11-21T21:26:18.8020978Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=21 ready=True players=2/2 down=False
+2026-11-21T21:26:18.8031037Z step=21 round 1 Final downed=player2: non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:26:26.9412576Z ACK step=21 FINAL helmet#2002 on rescuer #3, goggles#2003 + bag#125 on revived #2; 1 copy each; totals helmet=1 goggles=1; self saves head='RailShopItemHelmet' eyes='' bag.back=''; NVG here=False
+2026-11-21T21:26:27.0516015Z CHECK round 1 PASS (downed player2, master=False) non-master downed off the train (RequestDown); rescuer late-joins after revive
+2026-11-21T21:26:27.1536367Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=30 ready=True players=2/2 down=False
+2026-11-21T21:26:27.1541571Z step=30 round 2 Clean downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:26:32.5142754Z ACK step=30 clean; master=False; non-test copies in room: helmets=0 goggles=0; saves head='' eyes='' bag.back=''
+2026-11-21T21:26:32.6200796Z ROUND 2 downed role player2 (master=True): master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:26:32.7247952Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=31 ready=True players=2/2 down=False
+2026-11-21T21:26:32.7253111Z step=31 round 2 Wear downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:26:38.0459418Z ACK step=31 worn: #2 wears helmet#2004 goggles#2005 bag#125 (observer) totals helmet=1 goggles=1
+2026-11-21T21:26:38.1499584Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=32 ready=True players=2/2 down=False
+2026-11-21T21:26:38.1504810Z step=32 round 2 Down downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:26:38.1530107Z STAND away aboard while the peer goes down
+2026-11-21T21:26:46.7091210Z ACK step=32 DROP observer: downed #2 (player2) down=True totals helmet=1 goggles=1 | RailShopItemHelmet#2004 loose 0.62m dyHead=-0.35 owner#2 @-0.44,1.16,68.49; RailGoggles#2005 loose 0.18m dyHead=-0.41 owner#2 @-0.01,1.10,68.24; bag#125 Dropped 0.61m @-0.01,1.05,67.45; observer: no head item equipped by #2
+2026-11-21T21:26:46.8107332Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=33 ready=True players=2/2 down=False
+2026-11-21T21:26:46.8122507Z step=33 round 2 Revive downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:26:46.8153076Z RESCUER teleported beside the downed duck (attempt 1)
+2026-11-21T21:26:50.9359181Z REVIVED; rescuer steps away
+2026-11-21T21:26:56.1367582Z ACK step=33 AFTER REVIVE (nothing returned automatically): downed #2 (player2) down=False totals helmet=1 goggles=1 | RailShopItemHelmet#2004 loose 0.62m dyHead=-0.35 owner#2 @-0.44,1.16,68.49; RailGoggles#2005 loose 0.18m dyHead=-0.41 owner#2 @-0.01,1.10,68.24; bag#125 Dropped 0.61m @-0.01,1.05,67.45; observer: no head item equipped by #2
+2026-11-21T21:26:56.2381939Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=35 ready=True players=2/2 down=False
+2026-11-21T21:26:56.2381939Z step=35 round 2 TakeHelmet downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:27:00.9425987Z TryGrab RailShopItemHelmet#2004 owner#2 -> True attempt 1
+2026-11-21T21:27:05.0386051Z   pickup not confirmed: not held: holder=LeftHand (PlayerHand) pending=False mine=True
+2026-11-21T21:27:05.4897272Z GRIP press (own item RailShopItemHelmet#2004) attempt 2
+2026-11-21T21:27:07.1551843Z ACK step=35 TAKE holds RailShopItemHelmet#2004 in right (now owner, pickup confirmed, own item)
+2026-11-21T21:27:07.2565933Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=36 ready=True players=2/2 down=False
+2026-11-21T21:27:07.2565933Z step=36 round 2 WearHelmet downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:27:10.3300559Z RELEASE RailShopItemHelmet#2004 at the head anchor; equipped=True
+2026-11-21T21:27:12.5481743Z ACK step=36 REWEAR RailShopItemHelmet#2004 worn by self #3; saves head='RailShopItemHelmet' eyes='' bag.back=''
+2026-11-21T21:27:13.3813886Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=37 ready=True players=2/2 down=False
+2026-11-21T21:27:13.3818922Z step=37 round 2 TakeGoggles downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:27:28.5718134Z ACK step=37 SEES RailGoggles#2005 held by #2 owner#2
+2026-11-21T21:27:29.0093017Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=38 ready=True players=2/2 down=False
+2026-11-21T21:27:29.0105054Z step=38 round 2 WearGoggles downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:27:34.3338665Z ACK step=38 SEES RailGoggles#2005 worn by #2; NVG effect active here=False; saves head='RailShopItemHelmet' eyes='' bag.back=''
+2026-11-21T21:27:34.4484407Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=39 ready=True players=2/2 down=False
+2026-11-21T21:27:34.4484407Z step=39 round 2 TakeBag downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:27:38.9635262Z ACK step=39 SEES bag#125 Held by #2
+2026-11-21T21:27:39.5112511Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=40 ready=True players=2/2 down=False
+2026-11-21T21:27:39.5122495Z step=40 round 2 WearBag downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:27:44.2106623Z ACK step=40 SEES bag#125 Stowed by #2
+2026-11-21T21:27:44.8507520Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=41 ready=True players=2/2 down=False
+2026-11-21T21:27:44.8507520Z step=41 round 2 Final downed=player2: master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:27:52.9663671Z ACK step=41 FINAL helmet#2004 on rescuer #3, goggles#2005 + bag#125 on revived #2; 1 copy each; totals helmet=1 goggles=1; self saves head='RailShopItemHelmet' eyes='' bag.back=''; NVG here=False
+2026-11-21T21:27:52.9727018Z CHECK round 2 PASS (downed player2, master=True) master downed aboard by a boarded enemy (enemy-down request)
+2026-11-21T21:27:53.0778731Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=50 ready=True players=2/2 down=False
+2026-11-21T21:27:53.0778731Z step=50 round 3 Clean downed=player2: non-master downed off the train (RequestDown), other role
+2026-11-21T21:27:58.3090199Z ACK step=50 clean; master=False; non-test copies in room: helmets=0 goggles=0; saves head='' eyes='' bag.back=''
+2026-11-21T21:27:58.5206185Z ROUND 3 downed role main (master=False): non-master downed off the train (RequestDown), other role
+2026-11-21T21:27:58.6177249Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=51 ready=True players=2/2 down=False
+2026-11-21T21:27:58.6177249Z step=51 round 3 Wear downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:28:01.6894887Z WEAR spawned and equipped RailShopItemHelmet view 3002
+2026-11-21T21:28:01.6914979Z WEAR spawned and equipped RailGoggles view 3003
+2026-11-21T21:28:04.1347028Z ACK step=51 worn: #3 wears helmet#3002 goggles#3003 bag#128 (self saves head='RailShopItemHelmet' eyes='RailGoggles' bag.back='2|RailShopItemFlashlight|RailCoal||', NVG active) totals helmet=1 goggles=1
+2026-11-21T21:28:04.4801561Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=52 ready=True players=2/2 down=False
+2026-11-21T21:28:04.4806613Z step=52 round 3 Down downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:28:04.4831710Z WARP off the train to 7.00,1.50,70.00 wearing helmet+NVG+bag; train speed 0.00
+2026-11-21T21:28:06.0160204Z REQUEST down (self) aboard=False
+2026-11-21T21:28:06.3450058Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=52 ready=True players=2/2 down=True
+2026-11-21T21:28:11.3587740Z ACK step=52 DROP self downed (master=False, off train, self down): downed #3 (main) down=True totals helmet=1 goggles=1 | RailShopItemHelmet#3002 loose 0.55m dyHead=-0.38 owner#3 @7.00,1.15,70.54; RailGoggles#3003 loose 0.76m dyHead=-0.14 owner#3 @7.00,1.38,70.75; bag#128 Dropped 0.53m @6.99,1.08,69.45; self: nothing worn, no back bag, saves head='' eyes='' bag.back='', NVG effect off
+2026-11-21T21:28:11.7767516Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=53 ready=True players=2/2 down=True
+2026-11-21T21:28:11.7767516Z step=53 round 3 Revive downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:28:15.4284024Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=53 ready=True players=2/2 down=False
+2026-11-21T21:28:20.5107275Z ACK step=53 AFTER REVIVE (nothing returned automatically): downed #3 (main) down=False totals helmet=1 goggles=1 | RailShopItemHelmet#3002 loose 0.55m dyHead=-0.38 owner#3 @7.00,1.15,70.54; RailGoggles#3003 loose 0.76m dyHead=-0.14 owner#3 @7.00,1.38,70.75; bag#128 Dropped 0.53m @6.99,1.08,69.45; self: nothing worn, no back bag, saves head='' eyes='' bag.back='', NVG effect off
+2026-11-21T21:28:20.7284349Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=55 ready=True players=2/2 down=False
+2026-11-21T21:28:20.7298565Z step=55 round 3 TakeHelmet downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:28:26.8163019Z ACK step=55 SEES RailShopItemHelmet#3002 held by #2 owner#2
+2026-11-21T21:28:29.8567885Z   (check flipped back to failing: peer pickup not seen (held by #0))
+2026-11-21T21:28:31.7578490Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=56 ready=True players=2/2 down=False
+2026-11-21T21:28:31.7578490Z step=56 round 3 WearHelmet downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:28:36.9695291Z ACK step=56 SEES RailShopItemHelmet#3002 worn by #2; NVG effect active here=False; saves head='' eyes='' bag.back=''
+2026-11-21T21:28:37.1917174Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=57 ready=True players=2/2 down=False
+2026-11-21T21:28:37.1922453Z step=57 round 3 TakeGoggles downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:28:42.1395382Z GRIP press (own item RailGoggles#3003) attempt 1
+2026-11-21T21:28:46.1765551Z   pickup not confirmed: not held: holder= pending=False mine=True
+2026-11-21T21:28:46.5990101Z GRIP press (own item RailGoggles#3003) attempt 2
+2026-11-21T21:28:50.6881080Z   pickup not confirmed: not held: holder= pending=False mine=True
+2026-11-21T21:28:50.9139590Z TryGrab RailGoggles#3003 owner#3 -> True attempt 3
+2026-11-21T21:28:52.5869140Z ACK step=57 TAKE holds RailGoggles#3003 in right (now owner, pickup confirmed, own item)
+2026-11-21T21:28:52.6955293Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=58 ready=True players=2/2 down=False
+2026-11-21T21:28:52.6965371Z step=58 round 3 WearGoggles downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:28:55.7569703Z RELEASE RailGoggles#3003 at the head anchor; equipped=True
+2026-11-21T21:28:57.9623615Z ACK step=58 REWEAR RailGoggles#3003 worn by self #3; saves head='' eyes='RailGoggles' bag.back=''; NVG effect active=True
+2026-11-21T21:28:58.1945787Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=59 ready=True players=2/2 down=False
+2026-11-21T21:28:58.1945787Z step=59 round 3 TakeBag downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:29:01.5394215Z GRIP press on own dropped bag attempt 1
+2026-11-21T21:29:03.2092965Z ACK step=59 TAKE bag#128 in right hand (injected grip press)
+2026-11-21T21:29:03.3155855Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=60 ready=True players=2/2 down=False
+2026-11-21T21:29:03.3165906Z step=60 round 3 WearBag downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:29:06.4014558Z RELEASE bag at the back zone; state Stowed
+2026-11-21T21:29:08.5567886Z ACK step=60 REWEAR bag#128 on own back; saves head='' eyes='RailGoggles' bag.back='2|RailShopItemFlashlight|RailCoal||'
+2026-11-21T21:29:08.6565155Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=61 ready=True players=2/2 down=False
+2026-11-21T21:29:08.6570299Z step=61 round 3 Final downed=main: non-master downed off the train (RequestDown), other role
+2026-11-21T21:29:16.7836867Z ACK step=61 FINAL helmet#3002 on rescuer #2, goggles#3003 + bag#128 on revived #3; 1 copy each; totals helmet=1 goggles=1; self saves head='' eyes='RailGoggles' bag.back='2|RailShopItemFlashlight|RailCoal||'; NVG here=True
+2026-11-21T21:29:16.7887909Z CHECK round 3 PASS (downed main, master=False) non-master downed off the train (RequestDown), other role
+2026-11-21T21:29:16.8822010Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=70 ready=True players=2/2 down=False
+2026-11-21T21:29:16.8822010Z step=70 round 4 Clean downed=main: master downed off the train by an enemy-down request
+2026-11-21T21:29:22.2835453Z ACK step=70 clean; master=False; non-test copies in room: helmets=0 goggles=0; saves head='' eyes='' bag.back=''
+2026-11-21T21:29:22.2881542Z ROUND 4 downed role player2 (master=True): master downed off the train by an enemy-down request
+2026-11-21T21:29:22.3771538Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=71 ready=True players=2/2 down=False
+2026-11-21T21:29:22.3776803Z step=71 round 4 Wear downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:29:27.8059344Z ACK step=71 worn: #2 wears helmet#2006 goggles#2007 bag#129 (observer) totals helmet=1 goggles=1
+2026-11-21T21:29:27.8973525Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=72 ready=True players=2/2 down=False
+2026-11-21T21:29:27.8973525Z step=72 round 4 Down downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:29:27.9013906Z STAND away aboard while the peer goes down
+2026-11-21T21:29:34.9979139Z ACK step=72 DROP observer: downed #2 (player2) down=True totals helmet=1 goggles=1 | RailShopItemHelmet#2006 loose 0.36m dyHead=-0.33 owner#2 @7.00,1.21,70.40; RailGoggles#2007 loose 0.70m dyHead=-0.16 owner#2 @7.00,1.38,70.74; bag#129 Dropped 0.60m @6.99,1.08,69.45; observer: no head item equipped by #2
+2026-11-21T21:29:35.0885499Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=73 ready=True players=2/2 down=False
+2026-11-21T21:29:35.0890570Z step=73 round 4 Revive downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:29:35.0928055Z RESCUER teleported beside the downed duck (attempt 1)
+2026-11-21T21:29:39.0699679Z REVIVED; rescuer steps away
+2026-11-21T21:29:44.2643727Z ACK step=73 AFTER REVIVE (nothing returned automatically): downed #2 (player2) down=False totals helmet=1 goggles=1 | RailShopItemHelmet#2006 loose 0.36m dyHead=-0.33 owner#2 @7.00,1.21,70.40; RailGoggles#2007 loose 0.70m dyHead=-0.16 owner#2 @7.00,1.38,70.74; bag#129 Dropped 0.60m @6.99,1.08,69.45; observer: no head item equipped by #2
+2026-11-21T21:29:44.3716785Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=75 ready=True players=2/2 down=False
+2026-11-21T21:29:44.3716785Z step=75 round 4 TakeHelmet downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:29:49.0850806Z TryGrab RailShopItemHelmet#2006 owner#2 -> True attempt 1
+2026-11-21T21:29:53.1751395Z   pickup not confirmed: not held: holder=LeftHand (PlayerHand) pending=False mine=True
+2026-11-21T21:29:53.5986785Z GRIP press (own item RailShopItemHelmet#2006) attempt 2
+2026-11-21T21:29:57.6244735Z   pickup not confirmed: not held: holder= pending=False mine=True
+2026-11-21T21:29:57.8458016Z TryGrab RailShopItemHelmet#2006 owner#3 -> True attempt 3
+2026-11-21T21:29:59.4742992Z ACK step=75 TAKE holds RailShopItemHelmet#2006 in right (now owner, pickup confirmed, own item)
+2026-11-21T21:29:59.5875791Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=76 ready=True players=2/2 down=False
+2026-11-21T21:29:59.5880905Z step=76 round 4 WearHelmet downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:30:02.6890466Z RELEASE RailShopItemHelmet#2006 at the head anchor; equipped=True
+2026-11-21T21:30:04.8095117Z ACK step=76 REWEAR RailShopItemHelmet#2006 worn by self #3; saves head='RailShopItemHelmet' eyes='' bag.back=''
+2026-11-21T21:30:05.1419880Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=77 ready=True players=2/2 down=False
+2026-11-21T21:30:05.1435090Z step=77 round 4 TakeGoggles downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:30:20.0033814Z ACK step=77 SEES RailGoggles#2007 held by #2 owner#2
+2026-11-21T21:30:20.5290812Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=78 ready=True players=2/2 down=False
+2026-11-21T21:30:20.5296024Z step=78 round 4 WearGoggles downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:30:25.8085868Z ACK step=78 SEES RailGoggles#2007 worn by #2; NVG effect active here=False; saves head='RailShopItemHelmet' eyes='' bag.back=''
+2026-11-21T21:30:25.9076176Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=79 ready=True players=2/2 down=False
+2026-11-21T21:30:25.9081310Z step=79 round 4 TakeBag downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:30:30.5947811Z ACK step=79 SEES bag#129 Held by #2
+2026-11-21T21:30:31.1443127Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=80 ready=True players=2/2 down=False
+2026-11-21T21:30:31.1443127Z step=80 round 4 WearBag downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:30:35.3253227Z ACK step=80 SEES bag#129 Stowed by #2
+2026-11-21T21:30:36.3958650Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=81 ready=True players=2/2 down=False
+2026-11-21T21:30:36.3958650Z step=81 round 4 Final downed=player2: master downed off the train by an enemy-down request
+2026-11-21T21:30:44.4447529Z ACK step=81 FINAL helmet#2006 on rescuer #3, goggles#2007 + bag#129 on revived #2; 1 copy each; totals helmet=1 goggles=1; self saves head='RailShopItemHelmet' eyes='' bag.back=''; NVG here=False
+2026-11-21T21:30:44.5652826Z CHECK round 4 PASS (downed player2, master=True) master downed off the train by an enemy-down request
+2026-11-21T21:30:44.6646757Z STATE Joined room=29960 kind=private phase=Running master=False actor=3 step=90 ready=True players=2/2 down=False
+2026-11-21T21:30:44.6651873Z step=90
+2026-11-21T21:30:44.6697303Z CLEAN destroy RailShopItemHelmet#2006
+2026-11-21T21:30:44.6707354Z COMPLETE all down-head-gear rounds passed (role main)
+2026-11-21T21:30:46.7272060Z RESTORED account loadout saves (run finished)

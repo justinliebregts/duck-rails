@@ -19,6 +19,8 @@ public sealed class RailWorld : MonoBehaviour
     string presentedRoom, presentedRun;
     bool presentedOnTrain, positioned, menu;
     float nextManifest;
+    string announcedDeparture;
+    double announcementUntil;
     string code = "";
     GUIStyle statusStyle;
     public static bool InputBlocked => Instance != null && (Instance.menu || PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady);
@@ -26,6 +28,7 @@ public sealed class RailWorld : MonoBehaviour
     void Awake()
     {
         Instance = this;
+        RailBoardReports.Install();
         PhotonPreparePool.Register(batPrefab); PhotonPreparePool.Register(bagPrefab);
     }
     void OnDestroy() { if (Instance == this) Instance = null; DesktopPlayer.SuppressCursorCapture = false; }
@@ -55,7 +58,8 @@ public sealed class RailWorld : MonoBehaviour
         var session = PhotonSession.Instance;
         if (session == null) return;
         if (PhotonSession.IsRailsRoom && gameObject.scene.name != PhotonSession.RequiredScene) { session.MarkWorldLoading(); return; }
-        if (RailDesktopInput.GetKeyDown(KeyCode.Tab))
+        // The spectator uses Tab to switch players; its own panel replaces the session menu.
+        if (!SpectatorMode.Active && RailDesktopInput.GetKeyDown(KeyCode.Tab))
         {
             menu = !menu;
             Cursor.lockState = menu ? CursorLockMode.None : CursorLockMode.Locked;
@@ -81,7 +85,9 @@ public sealed class RailWorld : MonoBehaviour
             else
             {
                 ClearCompoundPurchases();
-                if (PhotonNetwork.IsMasterClient) MaintainCargo();
+                // A new master first receives the previous master's in-flight spawns,
+                // so seeding cannot reallocate their room view IDs (room 26164).
+                if (PhotonMasterHandoff.CanSpawnRoomObjects) MaintainCargo();
             }
         }
         var local = GR.Player.instance;
@@ -100,14 +106,31 @@ public sealed class RailWorld : MonoBehaviour
             if (!aboard) session.MarkWorldLoading();
             return;
         }
-        if (!positioned)
+        if (!positioned || (!aboard && session.SpawnAtJoinBoard))
         {
+            // Wait for the retained train pose after the route has loaded.
+            if (aboard && (train == null || !train.HasRunPose)) return;
             int spawnSlot = (PhotonNetwork.LocalPlayer.ActorNumber - 1) % 12;
-            Vector3 position = aboard ? train.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 4 - 1.5f) * .7f, .35f, -2f))
+            Vector3 position = aboard ? train.cabin.transform.TransformPoint(new Vector3((PhotonNetwork.LocalPlayer.ActorNumber % 4 - 1.5f) * .7f, .35f, -2f))
                 : compoundSpawn.position + new Vector3((spawnSlot % 4 - 1.5f) * 1.5f, 0, spawnSlot / 4 * 1.5f);
+            Quaternion facing = aboard ? Quaternion.Euler(0f, train.cabin.transform.eulerAngles.y, 0f) : Quaternion.identity;
+            if (!aboard && (session.SpawnAtJoinBoard || session.SpawnAtPrivatePlatform))
+            {
+                var board = session.SpawnAtJoinBoard ? compound.GetComponentInChildren<RailPublicTrainButton>(true) : null;
+                var target = board != null ? board.transform : boardingTrigger.transform;
+                Vector3 forward = Vector3.ProjectOnPlane(target.forward, Vector3.up).normalized;
+                float distance = board != null ? 1.5f : boardingTrigger.bounds.extents.z + 1f;
+                position = (board != null ? target.position : boardingTrigger.bounds.center) - forward * distance;
+                position.y = compoundSpawn.position.y;
+                facing = Quaternion.LookRotation(forward);
+            }
+            // WarpFloorLift raycasts immediately, before the next physics update.
+            if (aboard) Physics.SyncTransforms();
             var desktop = local.GetComponent<DesktopPlayer>();
-            if (desktop != null) desktop.Teleport(position, Quaternion.identity, true);
-            else if (NewPlayer.instance != null) NewPlayer.instance.Warp(position, Quaternion.identity);
+            if (desktop != null) desktop.Teleport(position, facing, true);
+            else if (NewPlayer.instance != null) NewPlayer.instance.Warp(position, facing);
+            else return;
+            session.ClearSpawnDestination();
             positioned = true;
         }
         session.MarkWorldReady();
@@ -117,11 +140,43 @@ public sealed class RailWorld : MonoBehaviour
             session.SetBoarding(onPlatform);
             int[] roster = PhotonSession.Get(RailSessionRules.Roster, Array.Empty<int>());
             double deadline = PhotonSession.Get(RailSessionRules.Deadline, 0d);
-            departureBoard.text = PhotonSession.IsPrivate ? "PRIVATE CREW\nCode " + room
-                : "PUBLIC DEPARTURE\n" + roster.Length + " / 8 aboard\n" +
-                    (deadline > 0 ? Math.Max(0, Math.Ceiling(deadline - PhotonNetwork.Time)) + " seconds" : "Step onto the platform") +
-                    (onPlatform && roster.Length == 8 && !roster.Contains(PhotonNetwork.LocalPlayer.ActorNumber) ? "\nFULL — wait for the next departure" : "");
+            bool departing = PhotonSession.Get(RailSessionRules.Destination, "").Length > 0;
+            int secondsLeft = deadline > 0 ? (int)Math.Max(0, Math.Ceiling(deadline - PhotonNetwork.Time)) : -1;
+            departureBoard.text = PhotonSession.IsPrivate ? $"PRIVATE CREW\n<size=50%>Code {room}</size>"
+                : PublicDepartureText(roster.Length, secondsLeft, departing, roster.Contains(PhotonNetwork.LocalPlayer.ActorNumber));
         }
+    }
+
+    // FollowTransfer can run inside the room-property callback, before Update can paint the board.
+    public bool ShowingDepartureAnnouncement(string destination)
+    {
+        if (departureBoard == null || !departureBoard.isActiveAndEnabled) return false;
+        if (destination != announcedDeparture)
+        {
+            announcedDeparture = destination;
+            announcementUntil = Time.realtimeSinceStartupAsDouble + 1.5;
+            departureBoard.text = PublicDepartureText(0, -1, true, true);
+        }
+        return Time.realtimeSinceStartupAsDouble < announcementUntil;
+    }
+
+    /// <summary>
+    /// Public departure board wording. Everyone on the platform when the countdown ends
+    /// travels together, so every state says so; the last line is personal to the viewer.
+    /// </summary>
+    /// <param name="secondsLeft">Countdown seconds, or -1 when no countdown is running.</param>
+    public static string PublicDepartureText(int aboard, int secondsLeft, bool departing, bool localAboard)
+    {
+        if (departing)
+            return localAboard ? "ALL ABOARD!\n<size=50%>Departing together...</size>"
+                : "TRAIN DEPARTING\n<size=50%>Next train boards soon</size>";
+        if (aboard >= RailSessionRules.CrewCapacity && !localAboard)
+            return $"FULL ({aboard}/{RailSessionRules.CrewCapacity})\n<size=50%>Next train after this one</size>";
+        if (secondsLeft >= 0)
+            return $"DEPARTS IN <color=#FFD34F>{secondsLeft}</color>\n" +
+                $"<size=50%>{aboard} {(aboard == 1 ? "duck" : "ducks")} boarding together\n" +
+                (localAboard ? "You're aboard!" : "Step on to join this crew") + "</size>";
+        return "PUBLIC TRAIN\n<size=50%>Stand on the platform to board\nEveryone on it leaves together</size>";
     }
 
     // The Photon registry includes inactive/stowed objects and excludes local
@@ -200,7 +255,10 @@ public sealed class RailWorld : MonoBehaviour
                 data[0] as string == "rails" && data[1] as string == run &&
                 data[2] is string marker && marker.StartsWith("flashlight:", StringComparison.Ordinal))
                 granted.Add(marker.Substring("flashlight:".Length));
-        int count = Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey, 1), 1, 8);
+        // rails.resourceCrew follows the live crew mid-run (loot scaling); flashlights stay per departing player.
+        var route = RailRoute.Instance;
+        int count = Mathf.Clamp(route != null && route.Selection != null && route.LoadedRun == run
+            ? route.Selection.resourceCrew : PhotonSession.Get(RailResourceBalance.CrewKey, 1), 1, 8);
         for (int slot = 0; slot < count; slot++)
         {
             string id = slot.ToString(System.Globalization.CultureInfo.InvariantCulture);

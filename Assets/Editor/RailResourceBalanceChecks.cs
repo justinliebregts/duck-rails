@@ -13,19 +13,21 @@ public static class RailResourceBalanceChecks
         var blocks = AssetDatabase.FindAssets("t:Prefab", new[] { "Assets/DuckRails/Blocks" })
             .Select(id => AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(id)).GetComponent<RailBlock>())
             .Where(b => b != null && b.allowedInNormalRuns).ToArray();
-        Check(blocks.Length == 4, "Four normal blocks");
+        Check(blocks.Length == 5, "Five normal blocks (Container Yard, Convenience Store, Farm Silos, Roadside Motel, Skyscraper Works)");
         for (int crew = 1; crew <= 8; crew++)
         {
             int coal = RailResourceBalance.CoalCount(crew), gold = RailResourceBalance.GoldCount(crew);
             float value = RailResourceBalance.CoalValue(crew);
             Check(coal * value <= 75.0001f && coal * value > 65, "Fuel availability ceiling and useful surplus");
-            Check(Math.Abs(4 * (float)RailResourceBalance.Workers(crew) * value - 50) < .0001f, "Collection target buys one block");
+            Check(Math.Abs(RailResourceBalance.CoalTargetPerWorker * (float)RailResourceBalance.Workers(crew) * value - 50) < .0001f, "Collection target buys one block");
             Check(Enumerable.Range(1, gold).Sum(i => RailResourceBalance.GoldCredit(gold, i)) == 100, "Full gold budget");
             Check(Enumerable.Range(1, gold * 4).Sum(i => RailResourceBalance.GoldCredit(gold, i)) == 400, "Four-block gold carry");
             var state = RailRoute.ChooseNormal("resource-check", blocks, 427);
             state.resourceCrew = crew;
             var restored = JsonUtility.FromJson<RailRouteState>(JsonUtility.ToJson(state));
             Check(restored.resourceCrew == crew, "Late-join/master snapshot preserves crew");
+            Check(Enumerable.Range(0, RailResourceBalance.CoalCount(8)).Count(i => RailResourceBalance.CrewForResource(true, i) <= crew) == coal &&
+                Enumerable.Range(0, RailResourceBalance.GoldCount(8)).Count(i => RailResourceBalance.CrewForResource(false, i) <= crew) == gold, "Crew prefix matches loot counts");
             foreach (var block in blocks)
                 for (int seed = 0; seed < 12; seed++)
                 {
@@ -40,7 +42,7 @@ public static class RailResourceBalanceChecks
                     Check(RailSpawnPool.Select(block, RailSpawnKind.Enemy, seed).Length == block.enemyCount, "Enemy counts unchanged");
                 }
         }
-        Check(RailResourceBalance.CoalCount(8) == 31 && RailResourceBalance.GoldCount(8) == 52, "Eight-player workload");
+        Check(RailResourceBalance.CoalCount(8) == 93 && RailResourceBalance.GoldCount(8) == 52, "Eight-player workload");
         RailSessionRules.EvaluateTrain(new object[] { 0d, 0f, 4f, 4f }, 100, 80, out var distance, out _, out var fuel);
         Check(distance == 320 && fuel == 0, "Full tank gives 320 powered metres");
         RailSessionRules.EvaluateTrain(new object[] { 0d, 0f, 0f, 0f }, 25, 1000, out _, out _, out fuel);

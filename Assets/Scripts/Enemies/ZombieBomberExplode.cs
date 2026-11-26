@@ -93,8 +93,6 @@ public sealed class ZombieBomberExplode : MonoBehaviourPun
         lastExplosionRevision = explosionRevision;
         SpawnEffect(position, rotation);
         radius = Mathf.Max(0f, radius);
-        foreach (var duck in FindObjectsByType<DuckCompanion>(FindObjectsSortMode.None))
-            if ((duck.transform.position - position).sqrMagnitude <= radius * radius) duck.TryKill();
 
         // GR.Player is the local DuckPlayer or DesktopPlayer, not a remote Photon avatar.
         // SetDead handles local ragdoll/respawn; PhotonPlayer replicates the death state.

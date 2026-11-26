@@ -21,6 +21,7 @@ public class StoreWallItem : Grabbable
     [Tooltip("Resistance beyond the purchase distance while waiting for confirmation. 0 follows the hand fully; 1 stops at the purchase distance.")]
     [SerializeField, Range(0f, 1f)] float pendingPullResistance = 0.02f;
     [SerializeField] LineRenderer line;
+    [SerializeField] Transform displayEffect;
     [Tooltip("Optional close-fitting surface collider for the tether. Use a primitive or convex MeshCollider that stays inside the visible mesh.")]
     [SerializeField] Collider pullSurface;
     [SerializeField] Gradient pullColor = DefaultPullColor();
@@ -245,6 +246,8 @@ public class StoreWallItem : Grabbable
         float distance = Vector3.Distance(target, HomePosition);
         transform.position = target;
         UpdateLine(distance / pullDistance, false);
+        // Pulses speed up the further the item is pulled from the wall.
+        VibrationManager.instance?.TriggerDriftWarning(Holder, Mathf.InverseLerp(.05f, 1f, distance / pullDistance));
 
         if (distance >= pullDistance)
             BeginPurchase();
@@ -300,6 +303,8 @@ public class StoreWallItem : Grabbable
         ItemSounds bought = item != null && item.prefab != null ? item.prefab.GetComponent<ItemSounds>() : null;
         if (bought != null)
             RoomRpc.PlaySound(bought.Get(ItemSound.Grab), transform.position);
+        else if (item != null && item.IsWearable && store != null && store.WearableGrabSound != null)
+            RoomRpc.PlaySound(store.WearableGrabSound, transform.position);
         if (pullOffHaptic != null && VibrationManager.instance != null)
             VibrationManager.instance.TriggerVibration(pullOffHaptic, Holder);
     }
@@ -314,7 +319,7 @@ public class StoreWallItem : Grabbable
 
         ItemPickupPose pose = ItemPickupPose.Capture(prefab, transform, hand.HoldPoint.position);
         if (!pose.ClampGripToSurface(prefab, hand.HoldPoint.position)) return false;
-        Grabbable weapon = pose.Spawn(prefab, hand, storePurchase: true);
+        Grabbable weapon = pose.Spawn(prefab, hand);
         if (weapon == null) return false;
         StartVanish();
         hand.Release();
@@ -423,6 +428,7 @@ public class StoreWallItem : Grabbable
         bool hasBounds = false;
         foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
         {
+            if (displayEffect != null && renderer.transform.IsChildOf(displayEffect)) continue;
             if (!(renderer is MeshRenderer) && !(renderer is SkinnedMeshRenderer)) continue;
             Bounds bounds = renderer.localBounds;
             for (int i = 0; i < 8; i++)

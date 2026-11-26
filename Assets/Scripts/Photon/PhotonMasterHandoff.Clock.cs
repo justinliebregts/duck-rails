@@ -43,6 +43,20 @@ public sealed partial class PhotonMasterHandoff
 
     static int WallMilliseconds => unchecked((int)(DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond));
 
+    /// <summary>EditMode checks only: forces the server-clock state of a synthetic, unconnected peer.</summary>
+    public static bool? ServerClockPendingOverride;
+
+    // Photon reports ServerTimestamp as 0 on a connected peer until its first server-time
+    // fetch is acknowledged. November 20 room 26164: a joining peer stayed unsynchronised
+    // for ~5 s, rejected every live-host heartbeat and replaced that host mid-seed.
+    internal static bool ServerClockPending => ServerClockPendingOverride ??
+        (PhotonNetwork.NetworkingClient?.LoadBalancingPeer?.PeerState == PeerStateValue.Connected &&
+            PhotonNetwork.ServerTimestamp == 0);
+
+    /// <summary>A structurally valid heartbeat from the actor arrived within the timeout, by local receipt time.</summary>
+    bool HeardRecently(int actor) => arrivals.TryGetValue(actor, out Arrival a) && a.LastLocal >= arrivalsSince &&
+        Time.realtimeSinceStartupAsDouble - a.LastLocal < TimeoutMilliseconds / 1000d;
+
     void ResetArrivals()
     {
         arrivals.Clear();

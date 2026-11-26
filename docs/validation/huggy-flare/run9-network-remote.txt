@@ -1,0 +1,28 @@
+2026-11-21T05:11:45.2547094Z Started two-client Huggy flare gun check
+2026-11-21T05:11:55.6442064Z Stage=0 room=11111 players=2
+2026-11-21T05:11:55.6462341Z ACK 0 actor=2 master=False
+2026-11-21T05:11:55.7017588Z ACK 0 actor=2 master=False
+2026-11-21T05:11:55.7518668Z ACK 0 actor=2 master=False
+2026-11-21T05:11:59.8675179Z Stage=1 room=11111 players=2
+2026-11-21T05:12:03.1419334Z PASS peer received shot key=00100001 charge=0.02 pos=(1.41, 2.17, 73.64)
+2026-11-21T05:12:07.9509650Z Sample at charge 0.50: pos=(0.95, 1.10, 72.62) phase=Rest
+2026-11-21T05:12:08.1331755Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:12:08.1885263Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:12:08.2440037Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:12:08.3082200Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:12:10.2923650Z Stage=2 room=11111 players=2
+2026-11-21T05:12:11.8369332Z PASS handover kept charge 0.89
+2026-11-21T05:12:12.9357545Z PASS recharged to full after 10 s and stays full
+2026-11-21T05:12:12.9372583Z ACK 2 actor=2 master=False
+2026-11-21T05:12:12.9918999Z ACK 2 actor=2 master=False
+2026-11-21T05:12:13.0457176Z ACK 2 actor=2 master=False
+2026-11-21T05:12:13.2780074Z Stage=3 room=11111 players=2
+2026-11-21T05:12:15.7880536Z Spot 0 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:12:16.9993482Z Spot 1 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:12:18.2297620Z Spot 2 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:12:19.4418565Z Aimed from spot 3: muzzle=(0.21, 2.58, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.58, 71.38)
+2026-11-21T05:12:19.5011914Z Aimed from spot 3: muzzle=(0.21, 2.44, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.44, 71.38)
+2026-11-21T05:12:19.5543990Z Aimed from spot 3: muzzle=(0.21, 2.29, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.29, 71.38)
+2026-11-21T05:12:20.0577797Z Firing at enemy: along=2.50 sideways=0.00 muzzleAboveRoot=0.70 enemy=(0.21, 2.03, 71.38) muzzle=(0.21, 2.73, 68.88)
+2026-11-21T05:12:23.9928687Z Shot sample: phase=Rest bounces=3 travel=1.87 pos=(0.21, 1.10, 67.38) fromAim=4.17 fromEnemyNow=6.35 enemyNow=(0.21, 0.97, 73.74)
+2026-11-21T05:12:23.9928687Z FAIL Flare came down near where the enemy was hit, 4.17 m

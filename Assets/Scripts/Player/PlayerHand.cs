@@ -263,6 +263,7 @@ public partial class PlayerHand : MonoBehaviour
 
         if (grabHaptic != null && VibrationManager.instance != null)
             VibrationManager.instance.TriggerVibration(grabHaptic, this);
+        VibrationManager.instance?.TriggerGrabTick(this, true);
         return true;
     }
 
@@ -289,6 +290,7 @@ public partial class PlayerHand : MonoBehaviour
         sampleFilled = 0;
         sampleWrite = 0;
         item.Release(lin * throwLinearScale, ang * throwAngularScale);
+        VibrationManager.instance?.TriggerGrabTick(this, false);
         if (pendingHookDrop != null && item != null && pendingHookDrop == item.transform
             && item.Holder == this && held == null) held = item;
     }
@@ -416,6 +418,7 @@ public partial class PlayerHand : MonoBehaviour
 
         if (grabHaptic != null && VibrationManager.instance != null)
             VibrationManager.instance.TriggerVibration(grabHaptic, this);
+        VibrationManager.instance?.TriggerGrabTick(this, true);
 
         return true;
     }

@@ -1,0 +1,81 @@
+2026-11-24T10:36:26.1322483Z START crew batch two-client test; Unity 6000.3.24f1 role=player2
+2026-11-24T10:36:26.1339952Z STATE PeerCreated room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:26.1345181Z step=0
+2026-11-24T10:36:31.0267774Z STATE ConnectingToNameServer room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:31.3645876Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:31.5707535Z STATE ConnectingToMasterServer room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:33.0206333Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:33.1260372Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:33.2400574Z STATE ConnectingToGameServer room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:33.7133681Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:33.8304115Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0
+2026-11-24T10:36:33.9633222Z STATE Joined room=96613 phase=Compound run=- step=0 master=False ready=False players=2
+2026-11-24T10:36:35.0751978Z STATE Joined room=96613 phase=Compound run=- step=0 master=True ready=True players=1
+2026-11-24T10:36:35.0788424Z ACK step=0 pass=True waiting in public compound 
+2026-11-24T10:36:39.3065350Z STATE Joined room=96613 phase=Compound run=- step=1 master=True ready=True players=1
+2026-11-24T10:36:39.3065350Z step=1
+2026-11-24T10:36:39.3075745Z ACK step=1 pass=True held in public compound during solo run 
+2026-11-24T10:37:17.3578870Z STATE Joined room=96613 phase=Compound run=- step=2 master=True ready=True players=1
+2026-11-24T10:37:17.3588853Z step=2
+2026-11-24T10:37:17.3603891Z JOIN by code room=96613 phase=Compound run=- step=2 master=True
+2026-11-24T10:37:17.4647191Z STATE Leaving room=96613 phase=Compound run=- step=2 master=True ready=False players=0
+2026-11-24T10:37:17.5737524Z STATE ConnectingToMasterServer room= phase=Compound run=- step=2 master=False ready=False players=0
+2026-11-24T10:37:17.8908543Z STATE Authenticating room= phase=Compound run=- step=2 master=False ready=False players=0
+2026-11-24T10:37:18.0024303Z STATE Joining room= phase=Compound run=- step=2 master=False ready=False players=0
+2026-11-24T10:37:18.2091806Z STATE ConnectingToGameServer room= phase=Compound run=- step=2 master=False ready=False players=0
+2026-11-24T10:37:18.6277597Z STATE Authenticating room= phase=Compound run=- step=2 master=False ready=False players=0
+2026-11-24T10:37:18.7288649Z STATE Joining room= phase=Compound run=- step=2 master=False ready=False players=0
+2026-11-24T10:37:18.9394764Z STATE Joined room=96629 phase=Running run=894ef2 step=2 master=False ready=False players=2
+2026-11-24T10:37:25.1246463Z STATE Joined room=96629 phase=Running run=894ef2 step=2 master=False ready=True players=2
+2026-11-24T10:37:38.2528858Z ACK step=2 pass=True tOk=0.000 oldBad=0.000 enemyBad=0.000 joinDup=0.000 newLoot=0.000 dLocal=- dRemote=- value=2.604 crew=2 enemyBad=0;joinDup=0;newLoot=0;oldBad=0;tOk=0;value=2.6041667461395264;c=18/28;g=10/16;e=4/4;dup=0;crew=2;ids=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97
+2026-11-24T10:37:38.3534737Z STATE Joined room=96629 phase=Running run=894ef2 step=3 master=False ready=True players=2
+2026-11-24T10:37:38.3534737Z step=3
+2026-11-24T10:37:38.3534737Z ACK step=3 pass=True waiting for the host to move one extra 
+2026-11-24T10:37:39.9825662Z STATE Joined room=96629 phase=Running run=894ef2 step=4 master=False ready=True players=2
+2026-11-24T10:37:39.9835657Z step=4
+2026-11-24T10:37:39.9835657Z LEAVE to public room=96629 phase=Running run=894ef2 step=4 master=False
+2026-11-24T10:37:40.0934549Z STATE Leaving room=96629 phase=Running run=894ef2 step=4 master=False ready=False players=0
+2026-11-24T10:37:40.1950907Z STATE ConnectingToMasterServer room= phase=Compound run=- step=4 master=False ready=False players=0
+2026-11-24T10:37:40.6212910Z STATE Authenticating room= phase=Compound run=- step=4 master=False ready=False players=0
+2026-11-24T10:37:40.7304414Z STATE Joining room= phase=Compound run=- step=4 master=False ready=False players=0
+2026-11-24T10:37:40.8438879Z STATE ConnectingToGameServer room= phase=Compound run=- step=4 master=False ready=False players=0
+2026-11-24T10:37:41.1635735Z STATE Authenticating room= phase=Compound run=- step=4 master=False ready=False players=0
+2026-11-24T10:37:41.2788543Z STATE Joining room= phase=Compound run=- step=4 master=False ready=False players=0
+2026-11-24T10:37:41.5772297Z STATE Joined room=93551 phase=Compound run=- step=4 master=True ready=False players=1
+2026-11-24T10:37:42.3410575Z STATE Joined room=93551 phase=Compound run=- step=4 master=True ready=True players=1
+2026-11-24T10:37:42.3427891Z ACK step=4 pass=True left to public compound 
+2026-11-24T10:38:05.3622163Z STATE Joined room=93551 phase=Compound run=- step=5 master=True ready=True players=1
+2026-11-24T10:38:05.3627282Z step=5
+2026-11-24T10:38:05.3627282Z REJOIN by code room=93551 phase=Compound run=- step=5 master=True
+2026-11-24T10:38:05.4655165Z STATE Leaving room=93551 phase=Compound run=- step=5 master=True ready=False players=0
+2026-11-24T10:38:05.5718389Z STATE ConnectingToMasterServer room= phase=Compound run=- step=5 master=False ready=False players=0
+2026-11-24T10:38:05.8827135Z STATE Authenticating room= phase=Compound run=- step=5 master=False ready=False players=0
+2026-11-24T10:38:06.0904742Z STATE Joining room= phase=Compound run=- step=5 master=False ready=False players=0
+2026-11-24T10:38:06.1983276Z STATE ConnectingToGameServer room= phase=Compound run=- step=5 master=False ready=False players=0
+2026-11-24T10:38:06.6235919Z STATE Authenticating room= phase=Compound run=- step=5 master=False ready=False players=0
+2026-11-24T10:38:06.8372679Z STATE Joining room= phase=Compound run=- step=5 master=False ready=False players=0
+2026-11-24T10:38:06.9412477Z STATE Joined room=96629 phase=Running run=894ef2 step=5 master=False ready=False players=2
+2026-11-24T10:38:12.6519247Z STATE Joined room=96629 phase=Running run=894ef2 step=5 master=False ready=True players=2
+2026-11-24T10:38:35.7466266Z ACK step=5 pass=False rejoined b0r coal=18/18 gold=10/10 b1u coal=28/28 gold=16/16 moved=False crew=2 dup=0 c=18/28;g=10/16;e=4/4;dup=0;crew=2;ids=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,83,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112
+2026-11-24T10:38:35.9636129Z STATE Joined room=96629 phase=Running run=894ef2 step=6 master=False ready=True players=2
+2026-11-24T10:38:35.9654133Z step=6
+2026-11-24T10:38:39.2096148Z STATE Joined room=96629 phase=Running run=894ef2 step=6 master=True ready=True players=2
+2026-11-24T10:38:44.2250078Z ACK step=6 pass=True peer as master c=18/28;g=10/16;e=4/4;dup=0 crew=2 c=18/28;g=10/16;e=4/4;dup=0;crew=2;ids=2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,83,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112
+2026-11-24T10:38:44.3256597Z STATE Joined room=96629 phase=Running run=894ef2 step=7 master=True ready=True players=2
+2026-11-24T10:38:44.3256597Z step=7
+2026-11-24T10:38:44.3268612Z HANDBACK to host
+2026-11-24T10:38:44.5421222Z STATE Joined room=96629 phase=Running run=894ef2 step=7 master=False ready=True players=2
+2026-11-24T10:38:47.6222426Z ACK step=7 pass=True handed back to host 
+2026-11-24T10:38:47.7331465Z STATE Joined room=96629 phase=Running run=894ef2 step=8 master=False ready=True players=2
+2026-11-24T10:38:47.7367886Z step=8
+2026-11-24T10:38:47.7380151Z ACK step=8 pass=True run 894ef2c8abbf40d18c84f85f543ca1a3 valid=True runId=894ef2c8abbf40d18c84f85f543ca1a3
+2026-11-24T10:38:47.8415116Z STATE Joined room=96629 phase=Running run=894ef2 step=9 master=False ready=True players=2
+2026-11-24T10:38:47.8431143Z step=9
+2026-11-24T10:39:16.4222156Z CROSSED seam along=0.091 room=96629 phase=Running run=894ef2 step=9 master=False
+2026-11-24T10:39:19.4394388Z ACK step=9 pass=True crossed peakAlong=5.231 crossedAt=28.581 
+2026-11-24T10:39:19.5460120Z STATE Joined room=96629 phase=Running run=894ef2 step=10 master=False ready=True players=2
+2026-11-24T10:39:19.5475223Z step=10
+2026-11-24T10:39:49.6269301Z ACK step=10 pass=True end along=0.000 peakAlong=5.231 lastChaseAge=1.756 quiet=True back=True 
+2026-11-24T10:39:49.7337112Z STATE Joined room=96629 phase=Running run=894ef2 step=11 master=False ready=True players=2
+2026-11-24T10:39:49.7347168Z step=11
+2026-11-24T10:39:49.7347168Z DONE COMPLETE

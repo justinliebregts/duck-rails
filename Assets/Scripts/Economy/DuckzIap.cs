@@ -121,25 +121,43 @@ public class DuckzIap : MonoBehaviour
             if (!IsUserCancellation(message) && DuckzLog.AllowWarning(out var logNotice2, sku))
                 logNotice2.Write($"[Iap] Checkout for '{sku}' failed ({ErrorText(message)}). Reading purchases again in case it was already bought.");
             // Meta refuses a second checkout for a durable SKU; if that's why, a fresh read unlocks it.
-            RestoreDurablePurchases();
-            DuckzAnalytics.IapFailed(sku, ErrorText(message));
+            try
+            {
+                RestoreDurablePurchases();
+                DuckzAnalytics.IapFailed(sku, ErrorText(message));
+            }
+            catch (Exception exception)
+            {
+                if (DuckzLog.AllowError(out var logNotice17, sku))
+                    logNotice17.Write($"[Iap] After the failed checkout for '{sku}', the follow-up threw: {exception}");
+            }
             completed?.Invoke(false);
             yield break;
         }
 
         string bought = message.Data.Sku;
         DuckzLog.Log($"[Iap] Bought '{bought}' (purchase {message.Data.ID}), granting on server");
-        if (owned.Add(bought))
+        // The store stays busy until completed runs, so a throwing OnChanged listener or analytics call
+        // must not skip it (that left owned bundles unpullable until a restart).
+        try
         {
-            DuckzWallet wallet = DuckzWallet.Instance;
-            if (wallet != null)
-                wallet.MarkPlatformOwned(bought);
+            if (owned.Add(bought))
+            {
+                DuckzWallet wallet = DuckzWallet.Instance;
+                if (wallet != null)
+                    wallet.MarkPlatformOwned(bought);
+            }
+            StoreBundle bundle = Catalog != null ? Catalog.FindBundle(bought) : null;
+            int cents = DuckzAnalytics.ParsePriceCents(bundle != null ? bundle.displayPrice : null);
+            if (cents <= 0)
+                cents = 999;
+            DuckzAnalytics.IapPurchased(bought, cents);
         }
-        StoreBundle bundle = Catalog != null ? Catalog.FindBundle(bought) : null;
-        int cents = DuckzAnalytics.ParsePriceCents(bundle != null ? bundle.displayPrice : null);
-        if (cents <= 0)
-            cents = 999;
-        DuckzAnalytics.IapPurchased(bought, cents);
+        catch (Exception exception)
+        {
+            if (DuckzLog.AllowError(out var logNotice16, bought))
+                logNotice16.Write($"[Iap] After buying '{bought}', marking it owned threw: {exception}");
+        }
         completed?.Invoke(true);
 
         // Meta already owns it; if this grant fails, the next restore retries it.

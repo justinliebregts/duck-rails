@@ -75,6 +75,7 @@ new bake, then re-export/rebuild/import. Do not rerun the one-time screenshot
 migration. Current production fingerprint/payload are in `FarmSilosPolish`, and
 `RailFarmSilosAtlasProduction` validates those when its production-state exists.
 The earlier FarmSilosAtlas review/source is historical and uses the previous bake.
+Light-only changes may use the [lights-only rebake workflow](../../atlas-lights-only-rebake.md) instead.
 
 ## Ditch water follow-up
 
@@ -83,3 +84,21 @@ ditch water, with Water AudioSurface assigned. Three direct contact rays and
 Water lookup pass; Farm navigation rebuilt. Visual meshes/lightmaps unchanged,
 production atlas guard passes. Listening remains queued for playtest.
 
+## Lights-only rebake (2026-11-17, user-approved)
+
+Ten baked lamp lights were trapped inside their own meshes (shadow-casting
+lantern glass/metal, yard light post column, attic roof slope) and lit nothing.
+Moved in `farm-silos-v1.prefab` (light transforms only; not part of the fingerprint):
+yard posts x=±12/13 → 0.15 m toward the track and y 4.90 (below the housing,
+off the pole); attic spot (-31, 135) y 10.58 → 10.40; five pond lanterns
+y 1.95 → 2.30 (inside the glass, above the metal top).
+
+Rebaked per the shared [lights-only rebake workflow](../../atlas-lights-only-rebake.md).
+Bake-only setting: `Pond lanterns Warm lantern glass` shadows Off during the bake
+(the prefab keeps shadows On). Layout 907/907 identical, 1 lightmap, same
+texture/LightingData GUIDs, 554 probes (shared with `farm-silos-v1-Lighting.unity`).
+The user approved the new fingerprint in `ArtSource/FarmSilosPolish/production-state.json`
+(4a583248… → 59a2d0ac…); `ValidateSaved` passes and the Console is clear.
+
+Editor preview showed the pond lanterns now light the surrounding path. Runtime
+appearance is queued for playtest.

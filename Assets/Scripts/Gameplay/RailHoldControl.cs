@@ -89,7 +89,7 @@ public sealed class RailHoldControl : MonoBehaviour
             foreach (var player in PhotonNetwork.PlayerList)
             {
                 bool active = player.IsLocal ? held : IsLive(player.CustomProperties[Key], PhotonSession.RunId, PhotonNetwork.Time);
-                if (active && !player.IsInactive && RailExpedition.Position(player.ActorNumber, out var position) &&
+                if (active && RailSpectators.IsLiveCrew(player) && RailExpedition.Position(player.ActorNumber, out var position) &&
                     Vector3.Distance(position, transform.position) < 4) current.Add(player.ActorNumber);
             }
         if (radio)
@@ -112,7 +112,18 @@ public sealed class RailHoldControl : MonoBehaviour
         // Like the handheld walkie, only the local interaction broadcasts each edge.
         // Lease heartbeats and remote hold updates must not replay the cue.
         if (radio && !bridge) RoomRpc.PlaySound(value ? radioTalkOn : radioTalkOff, transform.position);
+        if (value && !bridge) PressFeedback();
         Publish(value);
+    }
+    // Buzz whichever hand is touching the horn/talk button.
+    void PressFeedback()
+    {
+        var player = GR.Player.instance;
+        var volume = button != null ? button.GetComponent<Collider>() : null;
+        if (player == null || volume == null || VibrationManager.instance == null) return;
+        foreach (var hand in new[] { player.leftPlayerHand, player.rightPlayerHand })
+            if (hand != null && hand.isActiveAndEnabled && !hand.IsDesktopInput && hand.TouchesButton(volume))
+                VibrationManager.instance.TriggerButtonPress(hand);
     }
     void Publish(bool value)
     {

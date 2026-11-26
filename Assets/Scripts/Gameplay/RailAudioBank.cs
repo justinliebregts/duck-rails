@@ -17,12 +17,21 @@ public sealed class RailAudioBank : ScriptableObject
     [Header("Train")]
     public SoundEvent railJoint;
     public SoundEvent trainStop, outOfFuel, lowFuelWarning, bridgeCrash;
+    [Tooltip("Spatialized one-shot at the bridge hinge when the bridge finishes lowering. Played locally by every client from synced state.")]
+    public SoundEvent bridgeLowered;
+    [Tooltip("Loud spatialized siren at the bridge control box. Repeats with a pause until the run finishes.")]
+    public SoundEvent bridgeSiren;
+    [Min(0f)] public float bridgeSirenGap = 5f;
     [Tooltip("Seamless loop. Volume fades in with speed and pitch follows speed.")]
     public AudioClip rumbleLoop;
     [Tooltip("One-shots played while the horn button is held. Never loops; fades quickly on release.")]
     public AudioClip[] hornClips = new AudioClip[0];
+    [Tooltip("One-shot 2D horn heard when the expedition crew leaves the compound.")]
+    public AudioClip departureHorn;
     [Tooltip("Plays 2D for the whole successful ending, fading out as the crew returns to the compound.")]
     public AudioClip bridgeMusic;
+    [Tooltip("One-shot 2D sting played once when the run is lost (crash or everyone down). Fades out when the crew is sent back.")]
+    public AudioClip defeatSting;
 
     [Header("Throttle")]
     public SoundEvent throttleGrab;
@@ -37,6 +46,7 @@ public sealed class RailAudioBank : ScriptableObject
     [Min(0)] public float lowFuelThreshold = 20f;
     [Min(.1f)] public float lowFuelSlowInterval = 2.2f, lowFuelFastInterval = .6f;
     [Range(0f, 1f)] public float musicVolume = .8f;
+    [Range(0f, 1f)] public float defeatVolume = 1f;
     [Min(.1f)] public float musicFadeOutSeconds = 3f;
     [Tooltip("The ending ride is longer than the track, so repeat it. Turn off if the loop seam is audible.")]
     public bool loopMusic = true;

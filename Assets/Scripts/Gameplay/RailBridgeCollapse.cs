@@ -11,6 +11,7 @@ public sealed class RailBridgeCollapse : MonoBehaviour
     Renderer[] originalRenderers;
     Collider[] originalColliders;
     bool[] rendererStates, colliderStates;
+    Collider[][] walkColliders;
     Quaternion startRotation;
     GameObject burst;
     bool fireStarted;
@@ -51,6 +52,11 @@ public sealed class RailBridgeCollapse : MonoBehaviour
 
     public void Sample(float age)
     {
+        if (walkColliders == null)
+        {
+            walkColliders = new Collider[sections.Length][];
+            for (int i = 0; i < sections.Length; i++) walkColliders[i] = sections[i].GetComponentsInChildren<Collider>(true);
+        }
         for (int i = 0; i < sections.Length; i++)
         {
             Pose(i, startRotation, age, out var p, out var q);
@@ -58,6 +64,8 @@ public sealed class RailBridgeCollapse : MonoBehaviour
             float t = Mathf.Clamp01((age - i * .14f) / 2.4f);
             p.y += (restHeights[i] + 8.6f) * t * t;
             sections[i].SetLocalPositionAndRotation(p, q);
+            // Rest pose is identical every run; only solid once landed so falling spans never shove players.
+            foreach (var c in walkColliders[i]) c.enabled = t >= 1f;
         }
         if (!fireStarted && age >= 2.1f)
         {

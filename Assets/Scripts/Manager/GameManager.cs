@@ -9,12 +9,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] bool observePhotonRoomsInEditor;
     public static bool observePhotonRooms;
     public Transform respawnPoint;
-    [Tooltip("Duck companion spawn, respawn and stuck-recovery point. Falls back to the player spawn if unassigned.")]
-    public Transform companionSpawnPoint;
     [Tooltip("Stops EnemyManager from creating new enemies. Enemies already in the scene keep running.")]
     public bool disableEnemySpawning;
-    [Tooltip("Master Client: the only Duck enable switch in every build. Checked removes Duck from the room; unchecked allows automatic spawning and retries.")]
-    public bool disableDuckCompanion;
     [Tooltip("Enables Voice Patrol moderation on this client. Off by default. Set before starting the game; restart to apply changes. Photon voice chat works independently.")]
     public bool enableVoicePatrol = false;
     [HideInInspector] public bool usingDesktopPlayer = false;
@@ -63,9 +59,6 @@ public class GameManager : MonoBehaviour
     public bool TryGetPlayerSpawnPose(out Vector3 position, out Quaternion rotation)
         => TryGetSpawnPose(respawnPoint, out position, out rotation);
 
-    public bool TryGetCompanionSpawnPose(out Vector3 position, out Quaternion rotation)
-        => TryGetSpawnPose(companionSpawnPoint != null ? companionSpawnPoint : respawnPoint, out position, out rotation);
-
     static bool TryGetSpawnPose(Transform point, out Vector3 position, out Quaternion rotation) {
         position = default;
         rotation = Quaternion.identity;
@@ -90,12 +83,11 @@ public class GameManager : MonoBehaviour
         GR.Player.instance.IsDead = false;
         GR.Player.instance.playerHUD.DisableDeathEffect();
         GR.Player.instance.ragdoll.gameObject.SetActive(false);
-        DuckzAnalytics.MarkAlive();
     }
 
     public PhotonPlayer GetPhotonPlayer(int actorNumber) {
         for (int i = 0; i < photonPlayers.Count; i++) {
-            if (!photonPlayers[i].IsCompanion && photonPlayers[i].photonView.OwnerActorNr == actorNumber) {
+            if (photonPlayers[i].photonView.OwnerActorNr == actorNumber) {
                 return photonPlayers[i];
             }
         }

@@ -2,6 +2,8 @@
 
 ## Fortress encounter refresh — November 17, 2026
 
+On November 20, three authenticated desktop clients agreed on the 29.197-second pause, one midpoint reinforcement and completion at 60 seconds through two mid-hold master changes. Two public wins crossed the lowered bridge. An idle base zombie kept its assigned route after release, reached the cabinet approach within 0.18 m, and then wandered away. Fortress traversal, headset lighting and encounter pressure remain queued. [Multiplayer bridge evidence](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
+
 **Scoped live follow-up:** one authenticated Unity editor run passed November 17:
 both tower enemies naturally reached the control approach at 11.415 seconds of
 holding, the third appeared at the 30-second threshold (observed at 30.209 s) and
@@ -26,6 +28,13 @@ flare retreat and boarding rules retain priority; this does not make enemies
 see players through walls. The objective is reconstructed from room spawn data
 after authority changes. Matchmaking suffix advances to `-tower-finale-v2` so
 old 30-second builds cannot share these runs; rebuild all participating clients.
+
+November 18: while the bridge is actively lowering (lever held, progress < 100%),
+every other idle (wandering) enemy inside the finale block's enemy bounds also
+paths to the same cabinet point. Pausing the hold stops new attraction; enemies
+already en route finish that path, then resume wandering. Enemies aboard or
+crossing onto the train keep their boarding plan. Code:
+`RailBridgeEncounter.LowerAttracts`. Runtime check queued for playtest.
 
 - Offline graph rebaked against the saved current bake scene: **73,371 nodes**,
   656,236 edges. Both initial tower defenders and the reinforcement have complete
@@ -383,3 +392,25 @@ User feedback after viewing the block in the editor.
 - **Floors:** walking surfaces (deck and terrace tops, stairs, cap courses) use a new `Fort floor concrete` material in `Assets/DuckRails/FinaleFort/ArtPass`: the same worn-concrete tile tinted about twice as bright as the shared depot material, which is unchanged. Yard asphalt stays dark.
 - **Evidence:** `Check()` 312 passed, 0 failed. Captures: `output/finale-fort-art-pass/r4-*.png`.
 - **Still outstanding:** lighting and crawlgraph rebakes; confirm on headset that the slatted walkway is comfortable to look through and that nothing shimmers. Queued for playtest; not verified.
+
+## DAWN sign removed and tunnel lining z-fighting — November 23, 2026
+
+Justin asked to remove the old `DAWN` placeholder sign (`Env/DAWN` in `bridge-finale-v1.prefab`) and fix z-fighting at the tunnel portals without remodelling. The sign had no references or lighting bindings. The lining boxes now sit 2 cm clear of the portal plaster faces: walls scale X 1.58 at ±6.31 (inner face 5.52 m, outer 7.10 m) and roof scale Y 0.97 at Y 7.505 (underside 7.02 m, top 7.99 m). Tunnel width grows by 4 cm; lightmap bindings are unchanged. `RailFinalePolish` uses the same values. Editor close-ups show no gaps; headset check is part of the storm sky playtest item.
+
+## Far ridge removed, meadow extended — November 23, 2026
+
+Justin: the far ridge closing Happy Land popped in at the 175 m far plane ("a mountain out of thin air"); remove the back and let the grass go farther. Edited the saved meshes directly (no builder rerun, so lighting bindings and object IDs are unchanged):
+- `Happy Land grass` and `Happy Land collision`: the far-ridge term is removed (vertices beyond Z320 take the side-hill height only, so the valley floor stays flat and the side hills continue), and the valley extends from Z380 to Z580 with the same jittered side-hill bands and a flat floor. Extension faces borrow nearby lightmap texels; a lighting rebake would refine them.
+- The five trees that stood on the ridge (`Happy Land timber`/`leaf`, plus their trunk box colliders) were lowered onto the new meadow (5.8–21.8 m).
+- `Far meadow ground continuation` (Z380–410 slab) sunk 2 cm so it does not z-fight the new floor.
+- Note: rerunning `RailFinaleFortArtPass.Apply()` would rebuild the old ridge; update `FarHill`/`Hills()` first if that builder is ever reused.
+Editor dawn captures show the meadow and side hills running on to the distant mountain ring with no ridge popping in; review video `output/skybox-videos/4-dawn-meadow-no-far-ridge.mp4` (not committed). Headset check is part of the storm sky playtest item.
+
+## Bridge surge at 100%
+
+November 23, 2026. Justin requested one extra enemy per player in the room when the Final Bridge first reaches 100%, at the same moment as the bridge thud and siren, with the new enemies heading for the train.
+
+- `RailRunState.UpdateBridgeSurge` latches `bridgeSurgeTriggered` and `bridgeSurgeCount` (live players then, capped at 8) on the master tick that first sees `BridgeProgress == 1`. The count is part of the retained run snapshot, so master changes, rejoins and late joiners cannot recount or retrigger it. Replays reset it.
+- `RailBridgeSurge.Spawn` (called with `SpawnEnemies` on the spawning master) creates RailZombie room objects with markers `bridge-surge-N` and skips markers that already exist. It honours `RailEnemySpawns.ForcedEnemyType`. Spawn points use the finale's `bridgeReinforcements` first, then its enemy candidates, in a stable order. Laps beyond those points step out on a ring onto supported ground, so a full crew does not stack. `RailEnemyBounds.TryRespawn` uses the same mapping.
+- Aggro: `RailBridgeEncounter.TryGetObjective` gives surge enemies the train deck as their wander objective. Minions resolve this to a boarding opening while the train is slow; normal perception, chase and boarding take over once they see a duck. Surge enemies are not lever defenders.
+- Checks: `RailBridgeSurgeLiveChecks.RunUnitChecks()` (12 Edit Mode checks) and `RailBridgeSurgeLiveChecks.Start()` (two clients: one surge enemy per player on both clients, enemies close on the stopped train, rejoin sees the same surge). Output: `Temp/rails-bridge-surge/`.

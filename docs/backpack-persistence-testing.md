@@ -15,6 +15,26 @@ back clears that save immediately. Rewearing saves it again, including changes
 to its contents. Revival alone never restores the dropped bag. Room recovery
 takes precedence over a stale disk copy, so reconnecting cannot duplicate loot.
 
+November 18 loadout persistence (user request): the worn bag, helmet and night
+vision goggles stay with the player across every scene/room change and come back
+after a quit, crash or disconnect. Changes from the contract above:
+
+- A world transition (`PhotonSession.Begin`, same-room `LoadWorldScene`) refreshes
+  the saves and network-destroys the worn bag/head gear without clearing them
+  (`RailHeldCarry.RemovingWorn`); `BagInventory` and `EquipmentInventory` restore
+  from disk once per world. Head-gear restore was previously disabled in Rails.
+- When a wearer leaves a Rails room, including going inactive, their worn bag is
+  destroyed ("goes with them") instead of being dropped as a shared room object;
+  worn head gear likewise no longer waits for an inactive wearer. A bag held in a
+  hand still drops for the room. So scenario 6 no longer expects "recover the
+  original": a solo rejoin reattaches it, otherwise the disk save restores it once.
+- Restore waits (rechecks every 0.5 s) while the saved copy still exists in the
+  room, instead of giving up for that world.
+- Hand-held items are not saved for a crash; they are lost or stay where they fell.
+
+See [playtest queue](playtest-queue.md#loadout-survives-scene-changes-quits-crashes-and-disconnects--2026-11-18)
+for the checks and live evidence.
+
 ## Setup and evidence
 
 - Use two authenticated real clients with distinct accounts and the same build;

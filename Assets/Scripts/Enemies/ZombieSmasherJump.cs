@@ -69,6 +69,16 @@ namespace Game.AI
         const float AirDriftSpeed = 6f;
         const float AirNudgeCap = 3f;
         float _airTime, _fallStartY;
+        Enemy _landingBlocker;
+        Vector3 _landingSlide;
+        float _landingWait, _landingRetry;
+        int _landingCandidate;
+        bool _landingRecovery;
+        static int lastLandingSearchFrame = -1;
+        static readonly Unity.Profiling.ProfilerMarker LandingSearchMarker = new("EnemyPath.CrowdedLanding");
+        // This is body contact, not an unsupported fall. The next movement tick
+        // refreshes the contact; destroyed/pooled blockers stop supporting it.
+        internal bool WaitingForLandingSpace => IsFalling && _landingBlocker && !_landingBlocker.IsDormant;
         public bool IsFalling => IsJumping && _falling;
         public bool IsJumping { get; private set; }
         public event System.Action Landed;
@@ -83,7 +93,7 @@ namespace Game.AI
         }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void ResetCheckPhases() => nextCheckPhase = 0;
+        static void ResetCheckPhases() { nextCheckPhase = 0; lastLandingSearchFrame = -1; }
 
         public void ResetJump()
         {
@@ -99,6 +109,16 @@ namespace Game.AI
             _airNudge = Vector3.zero;
             _airNudgeFrom = 0f;
             _fallDrift = Vector3.zero;
+            ResetLandingRecovery();
+        }
+
+        void ResetLandingRecovery()
+        {
+            _landingBlocker = null;
+            _landingSlide = Vector3.zero;
+            _landingWait = _landingRetry = 0f;
+            _landingCandidate = 0;
+            _landingRecovery = false;
         }
 
         /// <summary>Shift the remaining jump. A forward hit shortens it; a side hit slides the landing.</summary>
@@ -461,6 +481,7 @@ namespace Game.AI
             }
             if (!IsJumping)
             {
+                ResetLandingRecovery();
                 // Each jump or fall starts without knockback from the previous flight.
                 _airNudge = Vector3.zero;
                 _airNudgeFrom = 0f;
@@ -504,12 +525,14 @@ namespace Game.AI
             }
 
             _airTime += dt;
+            _landingRetry -= dt;
             if (!_plannedJump) _ground.RecordUnplannedFall(dt);
+            bool landed = false;
+            Vector3 landNormal = Vector3.up;
             if (_falling)
             {
                 TickFallDrift(manager.SurfaceMask, dt);
-                if (_ground.TickFall(ref _position, ref _fallSpeed, dt, manager.SurfaceMask, out Vector3 landNormal))
-                    Finish(landNormal);
+                landed = _ground.TickFall(ref _position, ref _fallSpeed, dt, manager.SurfaceMask, out landNormal);
             }
             else
             {
@@ -521,7 +544,7 @@ namespace Game.AI
                 {
                     float sample = Mathf.Lerp(previous, next, (float)i / steps);
                     Vector3 point = Arc(sample);
-                    if (!ClearSegment(_position, point, manager.SurfaceMask))
+                    if (!ClearSegment(_position, point, manager.SurfaceMask, _landingRecovery))
                     {
                         AbsorbNudgeIntoFall(committed);
                         _falling = true;
@@ -534,11 +557,34 @@ namespace Game.AI
                 if (!_falling && next >= 1f)
                 {
                     // A vehicle may have moved or been removed since takeoff.
-                    if (Supported(_landingPoint, manager.SurfaceMask)) Finish(_landingNormal);
+                    if (Supported(_landingPoint, manager.SurfaceMask)) { landed = true; landNormal = _landingNormal; }
                     else _falling = true;
                 }
             }
+            Vector3 before = enemy.Root.position, requested = _position;
             enemy.SetRootPose(_position, _rotation);
+            _position = enemy.Root.position;
+            _landingBlocker = null;
+            bool clipped = (_position - requested).sqrMagnitude > 1e-8f;
+            if (clipped && requested.y < before.y)
+            {
+                enemy.LimitNeighbors(before, requested, out _landingBlocker);
+                _falling = true;
+            }
+            // A valid intended landing is not enough: spacing may have stopped
+            // the actual body above another zombie. Never publish a false impact.
+            if (landed && !clipped && _ground.HasGroundSupport(_position, manager.SurfaceMask))
+            {
+                Finish(landNormal);
+                enemy.SetRootPose(_position, _rotation);
+                _position = enemy.Root.position;
+                ResetLandingRecovery();
+            }
+            else if (landed) _falling = true;
+            if (_landingBlocker) TickCrowdedLanding(enemy, manager, dt);
+            // Keep the deflection through the small contact gaps while sliding
+            // around a round body. Clearing it each frame repeatedly stalls descent.
+            else if (IsFalling && _landingWait > 0f) SlideLanding(enemy, manager.SurfaceMask, dt);
             if (!IsJumping && !_plannedJump)
                 _ground.CheckAfterUnplannedLanding(enemy, manager, _position);
             // Publish after the landing pose is committed so attached audio starts at impact.
@@ -550,6 +596,98 @@ namespace Game.AI
                 Landed?.Invoke();
             }
             return true;
+        }
+
+        void TickCrowdedLanding(Enemy enemy, EnemyManager manager, float dt)
+        {
+            _fallSpeed = 0f;
+            _landingWait += dt;
+            LayerMask mask = manager.SurfaceMask;
+            if (_landingRetry <= 0f)
+            {
+                _landingRetry = .25f;
+                Vector3 away = Vector3.ProjectOnPlane(_position - _landingBlocker.Root.position, Vector3.up);
+                if (away.sqrMagnitude < .01f) away = Vector3.ProjectOnPlane(enemy.Root.forward, Vector3.up);
+                if (away.sqrMagnitude < .01f) away = Vector3.forward;
+                away.Normalize();
+                if (_landingWait >= .5f && TryLandingHop(enemy, manager, away)) return;
+                Vector3 side = Vector3.Cross(Vector3.up, away);
+                // A deferred search retains its turn for the next frame. Do not
+                // repeat physics probes while another Smasher owns this frame's slot.
+                for (int i = 0; _landingRetry > 0f && i < 3; i++)
+                {
+                    Vector3 direction = i == 0 ? away : i == 1 ? side : -side;
+                    Vector3 probe = _position + direction * .1f;
+                    if (!ClearSegment(_position, probe, mask, true) ||
+                        !Physics.Raycast(probe + Vector3.up * .2f, Vector3.down, out RaycastHit floor,
+                            Mathf.Min(3f, maxDropHeight) + .2f, mask, QueryTriggerInteraction.Ignore) ||
+                        !CrawlGraph.IsWalkableGround(floor.normal)) continue;
+                    _landingSlide = direction;
+                    break;
+                }
+            }
+            SlideLanding(enemy, mask, dt);
+        }
+
+        void SlideLanding(Enemy enemy, LayerMask mask, float dt)
+        {
+            if (_landingSlide.sqrMagnitude < .5f) return;
+            Vector3 next = _position + _landingSlide * Mathf.Min(2f * dt, .15f);
+            if (!ClearSegment(_position, next, mask, true)) { _landingSlide = Vector3.zero; return; }
+            enemy.SetRootPose(next, _rotation);
+            _position = enemy.Root.position;
+        }
+
+        bool TryLandingHop(Enemy enemy, EnemyManager manager, Vector3 away)
+        {
+            if (lastLandingSearchFrame == Time.frameCount ||
+                !NavigationWorkBudget.TryBegin(manager.PathBudgetMilliseconds, NavigationWorkBudget.PendingDuckPlans > 0,
+                    out long started, out _))
+            {
+                // Charging the normal cooldown without doing a search synchronizes
+                // blocked actors and repeatedly favors the first ones in the list.
+                _landingRetry = 0f;
+                return false;
+            }
+            lastLandingSearchFrame = Time.frameCount;
+            using var marker = LandingSearchMarker.Auto();
+            try
+            {
+                // One candidate / admitted frame, two small rings, then a pause.
+                // Reuse the normal arc evaluator and collision checks; no path allocation.
+                int candidate = _landingCandidate++;
+                if (_landingCandidate >= 16) { _landingCandidate = 0; _landingRetry = 2f; }
+                _ground.GetCapsuleSize(out float radius, out _);
+                float distance = Mathf.Min(2.5f, Mathf.Max(1.1f, radius * 2f + .25f) + (candidate / 8) * .6f);
+                Vector3 probe = _position + Quaternion.AngleAxis((candidate % 8) * 45f, Vector3.up) * away * distance;
+                LayerMask mask = manager.SurfaceMask;
+                if (!Physics.Raycast(probe + Vector3.up * .25f, Vector3.down, out RaycastHit hit,
+                        Mathf.Min(3f, maxDropHeight) + .25f, mask, QueryTriggerInteraction.Ignore) ||
+                    !CrawlGraph.IsWalkableGround(hit.normal) || !Supported(hit.point, mask)) return false;
+                Vector3 end = _ground.RootFromCapsuleBottom(_ground.CapsuleBottomOnSurface(hit.point, hit.normal));
+                float apex = Mathf.Max(.55f, end.y - _position.y + .15f);
+                if (apex > .6f) return false;
+                float peak = Mathf.Sqrt(apex) / (Mathf.Sqrt(apex) + Mathf.Sqrt(apex - (end.y - _position.y)));
+                Vector3 previous = _position;
+                for (int step = 1; step <= ArcSteps; step++)
+                {
+                    Vector3 next = JumpArc(_position, end, apex, peak, step / (float)ArcSteps);
+                    if (!ClearSegment(previous, next, mask, true)) return false;
+                    previous = next;
+                }
+                _start = _position; _end = end; _apex = apex; _peakTime = peak;
+                _landingPoint = hit.point; _landingNormal = hit.normal;
+                _duration = .65f; _elapsed = _fallSpeed = 0f;
+                _airNudge = _fallDrift = Vector3.zero; _airNudgeFrom = 0f;
+                _landingRecovery = true; _falling = false; _plannedJump = true;
+                _landingBlocker = null; _landingSlide = Vector3.zero;
+                // A moving obstacle may interrupt this hop. Bound the retry rate,
+                // rather than permanently exhausting recovery while still airborne.
+                _landingRetry = 2f;
+                _rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(end - _start, Vector3.up).normalized);
+                return true;
+            }
+            finally { NavigationWorkBudget.End(started); }
         }
 
         void Finish(Vector3 normal)
@@ -697,13 +835,14 @@ namespace Game.AI
                 delta / distance, distance, mask, QueryTriggerInteraction.Ignore);
         }
 
-        Vector3 Arc(float t)
+        Vector3 Arc(float t) => JumpArc(_start, _end, _apex, _peakTime, t) + AirOffset(t);
+
+        static Vector3 JumpArc(Vector3 start, Vector3 end, float apex, float peakTime, float t)
         {
             // Ease horizontal motion so the body gains clearance before crossing the ledge.
-            Vector3 point = Vector3.Lerp(_start, _end, Mathf.SmoothStep(0f, 1f, t));
-            float relative = (t - _peakTime) / _peakTime;
-            point.y = _start.y + _apex * (1f - relative * relative);
-            point += AirOffset(t);
+            Vector3 point = Vector3.Lerp(start, end, Mathf.SmoothStep(0f, 1f, t));
+            float relative = (t - peakTime) / peakTime;
+            point.y = start.y + apex * (1f - relative * relative);
             return point;
         }
 
@@ -793,10 +932,12 @@ namespace Game.AI
             return point + horizontalOffset;
         }
 
-        bool ClearSegment(Vector3 from, Vector3 to, LayerMask mask)
+        bool ClearSegment(Vector3 from, Vector3 to, LayerMask mask, bool landingRecovery = false)
         {
             if (!AllowsRailsPoint(to) || RailTrainObstacle.BlocksSegment(from, to)) return false;
-            if (!_enemy.AllowsFlareMovement(from, to)) return false;
+            _enemy.LimitNeighbors(from, to, out Enemy blocker);
+            if (blocker) return false;
+            if (!landingRecovery && !_enemy.AllowsFlareMovement(from, to)) return false;
             Capsule(to, out Vector3 bottom, out Vector3 top, out float radius);
             return !Physics.CheckCapsule(bottom, top, radius, mask, QueryTriggerInteraction.Ignore)
                 && !Sweep(from, to - from, mask, out _);

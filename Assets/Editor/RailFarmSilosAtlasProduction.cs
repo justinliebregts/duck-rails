@@ -142,6 +142,10 @@ public static class RailFarmSilosAtlasProduction
 public sealed class RailFarmSilosAtlasBuildGuard : IPreprocessBuildWithReport
 {
     public int callbackOrder => 0;
-    public void OnPreprocessBuild(BuildReport report) => RailFarmSilosAtlasProduction.ValidateSaved();
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        // Fingerprints hold Android dependency hashes; a Windows PC spectator build cannot match them.
+        if (!DuckzSpectatorBuild.InProgress) RailFarmSilosAtlasProduction.ValidateSaved();
+    }
 }
 #endif

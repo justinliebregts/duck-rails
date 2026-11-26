@@ -250,6 +250,8 @@ MonoBehaviour:
   grab: {fileID: 11400000, guid: 4bc6633df3f244b4caf04b616a29df55, type: 2}
   drop: {fileID: 11400000, guid: 8e96153c7242ee6418f6f22c47680c6e, type: 2}
   minimumImpactSpeed: 0.5
+  minimumHeldImpactSpeed: 0
+  heldSurfaceImpact: {fileID: 0}
   impactSoundCooldown: 0.1
   fleshImpact: {fileID: 0}
   fleshImpactCooldown: 0.1

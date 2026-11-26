@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 public static class RailBundleSetup
 {
     public const string Folder = "Assets/DuckRails/Economy/Bundles/";
-    const string Module = "Assets/DuckRails/Compound/SubwayV2/Modules/05 Walk-through supplies store.prefab";
+    public const string WeaponFolder = "Assets/Prefabs/Weapons/";
     public static readonly string[] Names = { "Quackbear", "Huggy", "ScrapDuck" };
     public static readonly string[] Keys = { "quackbear", "huggy", "scrap_duck" };
     static T Load<T>(string path) where T : Object => AssetDatabase.LoadAssetAtPath<T>(path);
@@ -109,7 +109,7 @@ public static class RailBundleSetup
             {
                 string n = Names[i], k = Keys[i], sku = "duckrails_" + k + "_bundle";
                 var bag = Copy("Assets/Prefabs/Bags/BagModel_Basic.prefab", Folder + "BagModel_" + n + ".prefab");
-                var weapon = Copy("Assets/DuckRails/Economy/RailShopWeaponFryPan.prefab", Folder + "Weapon_" + n + ".prefab");
+                var weapon = Copy("Assets/DuckRails/Economy/RailShopWeaponFryPan.prefab", WeaponFolder + "Weapon_" + n + ".prefab");
                 // Distinct root names are Photon spawn IDs, independent of future mesh replacements.
                 var instance = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(weapon));
                 try { instance.name = "RailBundleWeapon" + n; PrefabUtility.SaveAsPrefabAsset(instance, AssetDatabase.GetAssetPath(weapon)); }
@@ -160,21 +160,45 @@ public static class RailBundleSetup
             finally { Object.DestroyImmediate(root); }
             MatchDuckzLayout();
         }
-        var module = PrefabUtility.LoadPrefabContents(Module);
+        InstallWallLights();
+        AssetDatabase.SaveAssets(); Debug.Log("Rail bundles installed; gameplay and platform checkout queued for playtest.");
+    }
+
+    const string GlowName = "Display glow";
+    // Real, cheap lights on the wall display copies only: a flare glow at the Huggy fingertip and the cupcake's candle light.
+    // Idempotent. Positions come from the held prefab (muzzle / light) mapped through the display mesh's transform.
+    [MenuItem("Duck Rails/Bundles/Install wall display lights")]
+    public static void InstallWallLights()
+    {
+        string wallPath = Folder + "RailBundleWall.prefab";
+        var wall = PrefabUtility.LoadPrefabContents(wallPath);
         try
         {
-            if (module.transform.Find("RailBundleWall") == null)
-            {
-                var wall = (GameObject)PrefabUtility.InstantiatePrefab(Load<GameObject>(wallPath), module.transform);
-                wall.transform.localPosition = new Vector3(.7f,0,.95f);
-                // Hide only rear shelf filler; retain existing shelving and side stock.
-                var rear = module.transform.Find("Salvaged shelving");
-                foreach (Transform child in rear) if (child.name.StartsWith("Placeholder stock")) child.gameObject.SetActive(false);
-                PrefabUtility.SaveAsPrefabAsset(module, Module);
-            }
+            var huggyHeld = Load<GameObject>(WeaponFolder + "Weapon_Huggy.prefab");
+            var cupHeld = Load<GameObject>(WeaponFolder + "Weapon_Quackbear.prefab");
+            var flareLight = Load<GameObject>("Assets/Prefabs/Effects/HuggyFlare.prefab").GetComponentInChildren<Light>(true);
+            var cupLight = cupHeld.GetComponentInChildren<Light>(true);
+            AddGlow(wall, "weapon_huggy", "FlareGunModel", huggyHeld.GetComponentInChildren<MeshFilter>(true).transform,
+                huggyHeld.transform.Find("Muzzle").position, flareLight.color, 3f);
+            AddGlow(wall, "weapon_quackbear", "CupcakeModel", cupHeld.GetComponentInChildren<MeshFilter>(true).transform,
+                cupLight.transform.position, cupLight.color, 3f);
+            PrefabUtility.SaveAsPrefabAsset(wall, wallPath);
         }
-        finally { PrefabUtility.UnloadPrefabContents(module); }
-        AssetDatabase.SaveAssets(); Debug.Log("Rail bundles installed; gameplay and platform checkout queued for playtest.");
+        finally { PrefabUtility.UnloadPrefabContents(wall); }
+    }
+
+    static void AddGlow(GameObject wall, string item, string modelName, Transform heldMesh, Vector3 heldPoint, Color color, float intensity)
+    {
+        var display = wall.GetComponentsInChildren<StoreWallItem>(true).Single(w => w.name == item).transform;
+        var model = display.Find(modelName);
+        var old = display.Find(GlowName); if (old != null) Object.DestroyImmediate(old.gameObject);
+        var go = new GameObject(GlowName); go.transform.SetParent(display, false);
+        // Held point -> mesh space -> display model -> display root.
+        go.transform.position = model.TransformPoint(heldMesh.InverseTransformPoint(heldPoint));
+        var light = go.AddComponent<Light>();
+        light.type = LightType.Point; light.color = color; light.intensity = intensity; light.range = 2.5f;
+        light.shadows = LightShadows.None; light.renderMode = LightRenderMode.Auto;
+        go.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalLightData>();
     }
 
     [MenuItem("Duck Rails/Bundles/Match Duckz horizontal layout")]

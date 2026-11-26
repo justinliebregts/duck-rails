@@ -40,6 +40,776 @@ Read the hall sign from the moving train, inspect adjacent bends and cascade fac
 
 Approach from the south at duck eye height and read the station sign. Ride under all three pipe bridges, enter each cooling tower and return through the turbine hall. Follow the west ramp and east steps to the raised northern waterworks. Check spilled-waste visibility under expedition lighting, headset frame timing near the stacks of drums and late-join lighting on a second client. The [plant layout](nuclear-power-plant-layout.md) records the Edit Mode checks.
 
+## Lakeside terrain, scavenging and audio | queued for playtest, November 25, 2026
+
+Walk from the southwest woods past a fire to the dock and listen for the leaves, localized crackle and pond cicadas. Compare a footstep or shovel tap on the porch with one inside the bunk cabin, boathouse and washrooms. Listen for timber creaks and drips during a quiet interval. Check that nearby crew speech and enemy cues remain clear on headset.
+
+Collect the new lookout loot from the third landing, upper gallery and observation deck while another player uses the ramp. Check reach from inside the tents and at the supply-cabin shelf.
+
+Follow both pond banks and search the fern beds with a full crew. Check whether individual pickups feel separated from eye level, the shoreline items are reachable from dry ground, and the ferns conceal loot without making it frustrating to find.
+
+Use Lakeside in Test Block Order. Walk the shoreline, gully bridge, railway crossing and lookout ramp. Listen for the change between grass, gravel, sleepers, rails, decking and lake water. Move through tall ferns, stop, then leave the patch and check the rustle cadence. On host and peer, collect loot from cabin furniture, the lookout, dock and fern stands. Check reach, item settling, enemy travel across the terrain transitions, and Quest frame time in the woods. Edit Mode counts and terrain measurements are in the [layout notes](lakeside-campground-layout.md).
+
+## Party size and join analytics | queued for delivery check, November 24, 2026
+
+- Changed: `run:join`, `run:launch`, `run:result` and `run:result_end` report launch versus mid-run joins and win rate by party size at launch and at the end. Run start/launch/end are claimed in the committed run state so they send once ([analytics-setup.md](analytics-setup.md#party-size-and-joins-november-24)).
+- Passed November 24: 16 Edit Mode checks and four two-client editor runs ([events](validation/playtest-queue/2026-11-24-party-analytics/verdicts.txt)).
+- Not verified: delivery. On a release Quest build, depart from the Compound, have someone join mid-run, finish, and confirm one `run:launch:public:*`, one `run:result:public:*` and one `run:join:public:late` in the GameAnalytics live view. A development build reports kind `test` instead. The 30-second slow-loader window and crews of 3 to 8 have only Edit Mode coverage.
+
+## Duplicate room ViewID resolution | queued for playtest, November 24, 2026
+
+- Changed: when two clients allocate the same room ViewID during a master handoff, every client (and late joiners replaying the room cache) now keeps the newer spawn (server timestamp, then spawn token) and the master removes the loser's cached spawn event. A stale view can no longer unregister a live view with its ID ([duckz-ports.md](duckz-ports.md)).
+- Fast check: Duck Rails > Tests > Networking > Run Duplicate ViewID Checks (synthetic room, no Photon connection). Passed 49 assertions on November 24, 2026.
+- Two clients: hand off master (leave/stall the master) while enemies and items spawn; confirm both clients show the same object per ID, no "allocated twice" warning storms, and a client joining afterwards sees the same objects. Not verified.
+
+
+## Hospital ambient SFX and reverb | queued for playtest, November 24, 2026
+
+Load Hospital District through Test Block Order. Listen near the reception and upper north strip lights, middle rooftop HVAC unit and laundry washer bank. Check that each loop localizes to its fixture and fades on departure. Walk from reception to the upper surgery scrub sink and listen for the drip (14–32 seconds). Step through the courtyard and onto the roof to hear the indoor tail drop away. Listen near the rooftop duct for a rare metal creak (55–105 seconds). Visit the clinic exam sink and laundry pipes for their intermittent accents (30–65 seconds). Compare the pharmacy and laundry tails with footsteps or a shovel tap. Check that the quiet stretches feel eerie and crew voice and enemy cues stay clear.
+
+## PC spectator | queued for playtest, November 24, 2026
+
+- Changed: Windows `DuckRailsSpectator.exe` joins live rooms as an invisible camera with no duck ([pc-spectator.md](pc-spectator.md)). Every build leaves it out of the crew through `RailSpectators`. Compile, spectator Edit Mode checks and existing session checks passed in batch mode; see the [ports entry](duckz-ports.md#pc-spectator--491b6f2-fcdff53-a6e6a40).
+- Needs a Quest (or desktop) build from the same commit plus the spectator exe. Check that the spectator connects and lists rooms (if Photon rejects it, it needs anonymous clients allowed). Join a public compound: no duck appears, the players menu and colours ignore it, and boarding/departure work normally. Leave **Follow departing crews aboard** on, depart with a crew, and confirm the spectator lands on that train. On a running public train and a private room (by code): fly, F/Tab follow, R ride, wall pull-in, fog toggle, voice audible near ducks and nothing transmitted. With the spectator present, confirm resupply still triggers, crew scaling and bridge surge count only ducks, and a full wipe still ends the run. Have the host quit: the spectator must hand master to a duck (no stalled train, no duplicate loot). Confirm it returns to the room list when the crew leaves, and that a seven-duck train plus spectator refuses an eighth duck (accepted limit).
+
+## Bridge surge at 100% | queued for playtest, November 23, 2026
+
+- November 23 desktop rerun passed all three short-route cases. Both clients measured minima of 1.9 m and 2.7 m within 25 seconds, and Player2 observed views 70 and 71 again after rejoining. Player2 handed master back before the main editor operated the bridge. Headset audio timing and full-crew balance remain queued for playtest. [Fixture and objective trace](validation/playtest-queue/2026-11-23-fixes-surge.txt).
+
+- Changed: when the Final Bridge first reaches 100%, the master spawns one extra enemy per player in the room (`bridge-surge-N`). They head for the train and fall back on normal chase/boarding. See [final escape layout](final-escape-layout.md#bridge-surge-at-100). Edit Mode surge checks (12) and a player-define compile pass.
+- Check: run `RailBridgeSurgeLiveChecks.Start()` (two clients; output in `Temp/rails-bridge-surge/`). Both clients see exactly two surge enemies right after the thud and siren. They close on the stopped train with both ducks aboard. A peer who leaves and rejoins by code sees the same two, and no more spawn. On headset with a full crew, judge the pressure and check that the enemies do not stack at their spawn points.
+
+## Canyon terrain optimization | queued for playtest
+
+Confirm the ground beneath the camp and winch is visible from the train, both bridges and the opposite rim in a headset build.
+
+Walk both switchbacks, cross the broad rim faces with a carried item, and inspect the shaft lips and cave mouths at headset eye height. Follow the coarser mine floor through the gallery and look up along the roof. Check for collision snags, daylight cracks, stretched sandstone bands and baked lighting seams. Compare headset frame timing from the same bridge viewpoint with the previous build.
+
+## Held item names in diagnostics | queued for playtest
+
+Hold the shovel while a peer holds another item. Submit a report and check that the snapshot and recent history identify both held items by prefab name, holder and network view ID.
+
+## Canyon loot, encounters and ambient audio | queued for playtest
+
+Check the six added outdoor coal pickups for visibility and hand reach, especially the raised cable-yard pickup. Check encounters at both ends of the footbridge and on the survey approach after removal of the prototype markers.
+
+Run Canyon with a small crew and a full crew. Check pickup reach and enemy movement in the under-river passage, side pockets, gallery and both mine entrances. Listen for camp insects, creek water, trestle and winch creaks, and underground drips. Walk into the southwest leaf cover from either side and drop through it. Listen for one corn rustle on entry, silence during the rest of the fall, and a new rustle on the next entry. Check the mix and localization on headset.
+
+## Canyon rim rocks, timber fences and trap lantern | queued for playtest
+
+Check the camp and winch talus for bright or black lighting patches, look up at the capped rim rocks from the descent, carry items past the new shoulder boulders, inspect the new angular boulder silhouettes at eye level and from both bridges, follow both side fences through the block seams with an item, and drop through the southwest cover to judge landing clearance and the faint ground light on headset.
+
+## Open canyon echo | queued for playtest, November 23, 2026
+
+Listen while descending both switchbacks, crossing the creek, entering a mine and returning to bridge level. Check that the outdoor tail is audible, the tunnels sound stronger and voices stay clear on headset.
+
+## Canyon mine reverb and Survey Camp sign | queued for playtest, November 23, 2026
+
+- Listen on headset while dropping into both shafts, walking the full tunnel and gallery, entering each side room, and returning to the surface. Check the strength of the tail, voice clarity and portal transitions. View both sign posts from the camp approach at close and rail-view distances for flicker. At the north winch shed, inspect both eaves from outside and inside and check the pixel-metal roof at headset viewing distances.
+
+## Canyon mine workings | queued for playtest, November 23, 2026
+
+- Approach the southwest shaft through the cable yard. Check how the ground cover reads at headset eye height, check the scattered rocks, fall through with a carried item and look up for daylight through the foliage. Inspect the five ledges and judge the cold blue light at both ends and the middle of the under-river tunnel. Enter all three side rooms carrying an item and check the dim blue-green lighting in both arms of the gallery junction.
+
+- Drop down both shafts with a carried item. In the northwest chamber, inspect compressor saddle and skid contact at low eye height and check clearance around the ore cart, compressor and rock piles while carrying an item to the gallery. Follow the dark under-river passage into the gallery and walk out of both timbered exits. Check ledge recovery, rockfall hand clearance and the dry east bank.
+- Inspect the north winch from above and indoors, the southwest rocks, cactus elbows and exterior lanterns. Cross both bridges in both directions, use both stair runs and check every landing for flicker at headset eye height.
+
+## Victory music return fade — queued for playtest
+
+- Win a public expedition and listen through the final countdown. Confirm the victory music stays audible until departure, then fades over three seconds. Repeat on a private expedition returning to staging. Check the transition into the Compound music and listen for a loop seam near the end of the countdown.
+- November 24 desktop run (private, two clients): one music source, audible through Ending and Returning, then a 2.9 to 3.0 s fade on leaving to staging. The public win, the Compound music transition and the loop seam still need listening.
+
+## Held shovel scenery impacts — queued for playtest, 2026-11-23
+
+- The held Scrap Duck shovel plays `ScrapShovel_SurfaceImpact` at a new solid contact when the shovel moves into the surface at 2 m/s or faster. The event chooses from the spade, the hammer and the first shield strike (trimmed to 1.70 s to retain its decay). Unity compiled and Edit Mode confirmed all three mono imports, prefab references and network registry registration.
+- On Quest, swing into a wall, floor and train prop with each hand. Check for one spatial clang per distinct hard strike, quiet gentle contacts and scrapes, and the usual flesh sound on enemies. Drop and throw the shovel to check loose impacts. With a second client nearby, confirm each clang is audible once at the point of impact.
+
+## Items disappear when taken out of a bag in Compound — queued for playtest
+
+- Android 0.4.5 report `abe3b34ec6d841539fa7684b6a56082d` shows the Quackbear bag holding Huggy's flare gun, the Quackbear cupcake and the Scrap Duck shovel. After the wall pull and bag swap, the flare slot emptied as world readiness briefly dropped. The cupcake slot later emptied. The player confirmed the shovel also disappeared when withdrawn after uploading the report. Compound was treating fresh bag withdrawals as expedition leftovers. Bag withdrawals now use the same Compound lifetime as wall pulls. Stale-cargo diagnostics use the same retention check as cleanup.
+- Unity compiled. `PickupPoseChecks` passed for all three prefabs in simulated public Compound, private staging and a running expedition, including expiration after a run change. The rest of the pickup suite and all six loadout persistence checks also passed in Edit Mode. The report remains open pending headset verification.
+- On Quest in public Compound and private staging, wear the Quackbear bag, stow all three items, pull the Scrap Duck bag off the wall, then take the Quackbear bag off your back. Free one hand and withdraw each item. Hold each through several cleanup ticks, then release and grab it again from the floor. Check that the slot clears only when an item reaches the hand, the item stays present, and the world remains ready. Repeat with a second client watching, then depart and confirm the usual held and worn loadout carry behavior.
+
+## Hospital District spawn distribution and tree crowns — queued for playtest
+
+Select Hospital District in Test Block Order. On Quest, check pickup visibility and reach in the garden, pharmacy and laundry, on both hospital floors and on the roof. Watch for loot settling through a support or obstructing a doorway. Compare enemy arrivals across the tracks, streets and hospital floors with a second client. Walk under the round trees in the staff garden and check the leaf undersides at duck eye height in baked lighting. [Placement and mesh checks](hospital-district-layout.md#spawn-distribution-and-round-trees--november-23).
+
+## Hospital District surfaces and repairs — queued for playtest
+
+On Quest, inspect the ER facade from the train and on foot. Look for flicker at grazing angles on paving seams, ceilings, glazing and counter tops. Walk both stair cores from the ground to the roof, test hand and body contact on the open-edge guards, and check clearance at each turn. Inspect the pharmacy cartons from both sides. Walk around the laundry to check its roof, closed south bays and graded east entry. Listen for turf, ballast, soil, concrete and steel at their boundaries and check frame time facing the pharmacy and main facade. Enemy route acceptance on the new geometry awaits the user-authorized navigation bake. [Repair notes and inspection views](hospital-district-layout.md#hospital-district-repairs--november-23).
+
+## Hospital furnished interiors — queued 2026-11-23
+
+On Quest at night, walk from the train through every interior: the ER (from the south doors), reception, the CT suite and ward, north supplies (out of the north door), both stairs, then surgeries 1 to 3, the nurse station, patient rooms 201 to 203 and the recovery ward. Also walk through the clinic and its three exam rooms, the pharmacy and dispensary, and the laundry. Check hand and body contact on beds, counters, shelving, washers and carts. Check that thrown coal and gold recover from under furniture, that curtains don't catch hands, that sign readability and room darkness are right at duck eye height, and that enemies follow you through the exam doorways and the dispensary pass-through. Measure frame time inside the pharmacy (the densest room) and looking down the ER. With a second client, compare room lighting after late join. [Interior notes and baked captures](hospital-district-layout.md#furnished-interiors--november-23).
+
+## Hospital finished campus — queued for playtest
+
+On Quest, ride through both ends at night, then walk the staff garden, ER canopy, both hospital stair cores, laundry dock and visitor shelter. Check hand contact, loose-item recovery around the wrecks and benches, lit signs, train-side sightlines and frame time. With a second client, check the same landmarks and lamp/probe lighting after late join and route replacement. See the [Unity captures and Edit Mode evidence](hospital-district-layout.md#finished-campus-in-unity).
+
+## Canyon, Lakeside Campground and Nuclear Power Plant — queued for playtest
+
+- **Lakeside fallen lanterns.** At night on Quest, view each of the four lanterns from behind and across its beam. Check that the nearby floor and furnishings pick up warm spill and the directional beam stays distinct. [Cabin lighting comparison](lakeside-campground-layout.md#fallen-lantern-lighting)
+- **Lakeside woodland and campsite details.** Cross the southwest fern passage and inspect each new fern pocket from duck height. Measure frame time facing the old-growth trees. Inspect both ends of a canoe from inside, the folded canvas under the trunk, and the rock bases on the overlook. Approach the entrance and crossing signs on foot and view them from the moving train for flicker. [Woodland pass](lakeside-campground-layout.md#woodland-and-campsite-detail-pass)
+- **Lakeside fern passage and grounded props.** Enter the southwest woods from both ends at duck height. Check how quickly the tents and other players disappear from view, whether leaves clip into the player's eyes at the bends, and headset frame time inside the thickest patch. Follow the canoe-beach path past the removed spur. Inspect the boathouse paddles, tipped lanterns and outer dock pilings from the floor and lakebed. [Geometry and captures](lakeside-campground-layout.md#fern-passage-and-grounded-props)
+- **Canyon.** From the moving train, look for the south survey camp and the north shaft headframe. Carry coal across the trestle and pedestrian bridge, then drop into the shaft and follow the walk-out route. Check hand contact, recovery and frame time while facing across the gorge. [Canyon layout and captures](canyon-layout.md).
+- **Lakeside Campground, November 25 refinement.** Read the entrance and both camper crossing signs from duck height. Walk the gravel junctions, thresholds and seven interiors carrying an item. Look up into the pines, cut through the southwest ferns, then return along the clear trail. Inspect the burning pits, dropped lantern beams and solar stakes at night. Check canoe, boulder and fence contact and recover an item at the water. Measure Quest frame time facing the trees from the dock and from inside the fern patch with a fire visible. [Campground layout and captures](lakeside-campground-layout.md).
+- **Lakeside lookout and tent clearings.** On Quest, climb and descend the full ramp carrying an item. Pass another player at a landing and compare player and item positions from the deck on both clients. Check the crossbucks from a moving cab in each approach direction. Walk among the three fires and inside the northeast tents at night. Check the roof seams at duck height and the transition from the open camp clearing into the broader fern patches. [Latest layout and captures](lakeside-campground-layout.md#lookout-tower-and-tent-clearings).
+- **Nuclear Power Plant.** Ride past the shift bus and pipe yard into the tower precinct. Walk through both tower bases and the turbine gallery, then follow the dry route beside the northern waterworks. Check sign and stair visibility at duck eye height, drum-yard item recovery and frame time looking across the towers. [Plant layout and captures](nuclear-power-plant-layout.md).
+
+For all three, check night visibility on Quest and compare lighting and landmark placement on a second client after late join and block replacement.
+
+## Public train join panel
+
+Crate lantern and lighter corrugated steel face installed. Compound bake completed and the panel receives atlas 0. Edit Mode capture shows warm light across the plate and button. Headset brightness and readability are queued for playtest.
+
+**Two-player desktop playtest passed on real Photon.** The main editor and MPPM Player2 started in public compound 62972. Main boarded alone. Player2 stayed in the compound, aimed at the physical JOIN button via the desktop raycast and pressed it. Both became world-ready in running expedition 67507 with the same run ID, both cabins reported a local passenger, and both trains reported 4 m/s. Player2's head settled at train-local (0.35, 0.44, -2.00).
+
+- Private exclusion passed. The panel hid in private staging. With main running private expedition 81742, Player2's press returned it to a public compound showing “No public train available”. The private train retained one player.
+- Public expedition 56062 was excluded during departure and again while running with one occupied seat and seven Photon expected-user reservations. Clearing the reservations and pressing the same button again put Player2 aboard 56062 with both clients ready. With Player2 back in the compound, an editor-triggered Ending phase and closed room again gave the no-train message.
+- A solo match seeker can return to a different public compound after an unsuccessful search. The control was usable again after recovery.
+- Remaining checks are physical hand reach and sign readability on Quest, plus a train full of eight active players. The two-client test covered full capacity through seat reservations.
+
+Editor evidence includes successful compilation, saved Compound placement, CutePixel heading fit, and launch button prefab reuse.
+
+## LIV recording continuity on tablet close/recall — queued 2026-11-22
+
+- Changed: Duckz `547194e0` port. Closing the camera tablet now hides it instead of switching it off, and recall
+  places it in front of your head.
+- Editor evidence: two MPPM clients passed close/reopen/held-close/cycle checks; details in `duckz-ports.md`.
+- Check on Quest: start a LIV recording, close the tablet from the pause menu, walk around, recall it, stop recording;
+  the saved clip should be one continuous recording with good audio. Also confirm the tablet comes back in front of you.
+
+## Cross-block enemy pursuit — queued for playtest, 2026-11-22
+
+- Unity Edit Mode found complete ground paths in both directions at x = -24, 0 and 24 m across 17 catalogue joins (102 searches). In offline Play Mode a minion chased across Motel/Farm and back 24 m from the centerline ([play log](validation/track-crossing/block-seam.txt)). Check actual movement on two clients across a seam, reverse repeatedly, break sight and watch the enemy walk home. Repeat with a master handoff and confirm boarding eligibility stays minion/spider only.
+- November 24 two-client desktop run: a minion crossed the Motel/Farm seam with both clients within 0.71 m, then walked back after the player left (see Results). Master handoff during pursuit, repeated reversals and boarding eligibility remain open.
+
+## Networked LIV camera proxy — queued 2026-11-22
+
+- Changed: Duckz `35ea28d9` port. Other players see a low-poly proxy of your open LIV camera tablet; on the
+  moving train an unheld tablet in the cabin is synced train-relative.
+- Editor evidence: two MPPM clients on real Photon passed open, move/settle, held (ForceGrab), close/reopen,
+  late join, owner leave and moving-train checks (`RailLIVCameraLiveChecks.Start()`); details in `duckz-ports.md`.
+- Check on Quest with two players: grab the tablet with real grip and wave it; turn follow mode on and ride the
+  moving train; confirm the other player sees it in the right place and it vanishes on close and when you leave.
+
+## Further reduced Minion/Hook kill triggers — queued 2026-11-22
+
+- Changed: port only Duckz `984e4a8c678ee282fa8bef90e7f91c1b32ef4b50` collider
+  depth/center values to ZombieMinion and ZombieHook (forward depth shrinks a further
+  ~1.5 cm Hook / ~3.5 cm Minion); resource variants inherit them.
+- Editor evidence: verified Duck Rails MCP target; synchronous imports and all four
+  base/variant trigger size, center, enabled/isTrigger checks pass.
+- Check: same as the November 18 Minion/Hook item, with real clients/headsets on ground
+  and aboard the moving train. Queued for playtest; no runtime acceptance claimed.
+
+## Quackbear cupcake collider covers the candle — queued 2026-11-22
+
+- Fix: `Weapon_Quackbear.prefab` box collider is now centre (0, 0.0386, 0.0021), size (0.1379, 0.2332, 0.1489). It encloses all 592 mesh vertices with 3 mm to spare, and its top is 10 mm past the candle light (light stays at y 0.1452). Replaces the earlier uncommitted values, with Justin's OK. Edit-mode vertex check passed, no Play Mode run.
+- Check: put the lit cupcake upside down on a floor, a train roof and against a wall in Compound and an expedition. The candle tip should rest on the surface with the glow above it, never poking into the geometry. Confirm it still grabs, drops, throws and sits on shelves normally and that the store wall pull is unaffected.
+
+## Quackbear lips on the equipped avatar — queued 2026-11-22
+
+- Fix: `Skin_Quackbear.prefab` still carried a 90 degree X rotation on `Lips_Quackbear` from before the lips FBX was re-authored (Nov 18), so the lips copied onto the player's head bone sat tilted into the body. They now use Huggy's head-relative pose; `Lip_T` lands at the same spot as Huggy's. Edit-mode numbers only, no Play Mode or headset run. Commit `4d74ad0c8`.
+- Check: equip the Quackbear skin from the store and look down and into a mirror/peer view: the lips sit on the beak at the face, not low on the body, and open and close with voice. A peer and a late joiner see the same. The store wall display (its own baked copy) is unchanged and should still look right.
+
+## Snap turn may not register until the pause menu has been opened once — queued 2026-11-22, retest only
+
+- Reported by Justin as a possible bug, not reproduced and not investigated. No code change, so this is a retest to confirm or rule it out before anyone looks for a cause.
+- Setup: Quest headset with snap turn selected in Settings (also once with a fresh install or cleared settings). Join Compound, do not open the pause menu, then push the right stick left and right.
+- Check: snap turn should step the view on the first stick press of the session. Repeat after a fresh app launch, after a scene change into an expedition, and after rejoining a room. If it does not turn until the pause menu has been opened once (even if closed straight away), record which of these were true: turn mode shown in Settings, scene, whether any other stick input worked, and how the pause menu was opened. Then report the repro rather than guessing at a fix.
+- Needs human: headset input.
+- Priority: normal. Mode: report-only.
+
+## Haptics on/off setting — queued 2026-11-22
+
+- New: Settings > Controls > **Haptics** On/Off row (bottom of the Controls page, default On). Saved per user with the other Settings prefs. Every vibration goes through `VibrationManager.CanHaptic`; turning it off also stops any vibration already running. Commit `ac7f01782`. Edit Mode `HapticsSettingChecks` passed (prefab row and CutePixel SDF text, no row overlap, save/reload, manager ignores everything while off and resumes when on). No Play Mode or headset run.
+- Check on Quest: open Settings > Controls and confirm the five rows read cleanly with no overlap and both buttons are easy to poke. Turn Haptics Off: grab/release items, press the horn or radio, drive the throttle, ride a moving train and get downed. Nothing should vibrate. Turn it Off while holding the throttle at a drift warning: the buzz stops at once. Turn it back On: vibration returns.
+- Set Off, quit the app fully and relaunch: Settings should still show Off and nothing should vibrate. Set On and restart again to confirm it stays On.
+
+## Quackbear cupcake light and 8-slot bag — queued 2026-11-21
+
+- Pull the Quackbear cupcake and bag in Compound, Departure Shop and the midpoint helicopter. The miniatures should grow smoothly into the held models. See [character-bundles.md](character-bundles.md#quackbear-final-art--november-21).
+- Toggle the cupcake with any use button on the holding hand (same as the flashlight). It should light the area around the duck with a warm glow (point light, no shadows) and the cupcake emission should switch with it. Judge brightness on Quest in a dark block.
+- With a peer and a late joiner: both see the light on/off state. Drop it while lit: it stays on, then turns off after 60 s. Stash it lit: it turns off.
+- November 24 two-client desktop run: the peer saw three toggles within 0.25 s, and a dropped lit cupcake went dark after 61.4 s on both clients. Late join, stash-while-lit and the Quest brightness check remain.
+- Equip the bag. Stow eight different items, take them back out, and check every ring is reachable and readable from duck height on Quest. Confirm a peer sees all eight items.
+
+## Huggy flare gun and 8-slot bag — queued 2026-11-20
+
+- Pull Huggy's gun and bag in all three stores and check the miniatures grow into the held models. See [character-bundles.md](character-bundles.md#huggy-final-art-and-flare-gun--november-20).
+- Fire with trigger, A and B (X/Y on the left hand). The flare should leave the fingertip along the finger, fly about 25 m, then float down glowing yellow/orange. The green forearm bar should empty, refill over 10 s from cuff to hand and stay full. Pressing early does nothing. Hand the empty gun to another duck: the bar keeps refilling.
+- Shoot a wall, the train roof and the floor at angles. Expect a spark, a deflection and then a fall to rest. Shoot minions, a spider and a bigger enemy: a light push, then enemies backing away from the flare like a death flare for about 15 s. Swing the gun to confirm pan melee still works.
+- With two or three clients: peers see the same shot, sparks and resting point, including enemy deflections; a late joiner sees the correct charge bar. Fire from the moving train and check it looks sensible.
+- Equip the Huggy bag and stow, retrieve and drop eight items. Check ring reach and readability on Quest.
+
+## Scrap Duck final shovel and 8-slot bag — queued 2026-11-20
+
+- Pull the Scrap Duck shovel and bag in Compound, Departure Shop and the midpoint helicopter. The miniatures should grow smoothly into the held models. See [character-bundles.md](character-bundles.md#scrap-duck-final-art--november-20).
+- Swing the shovel at minions, spiders and a bigger enemy, then compare grab feel, swing/impact sounds, damage and knockback against the nail bat. Throw it and drop it on the moving train. A peer and a late joiner should see it at the same pose.
+- Equip the bag. Stow eight different items, take them back out, and check that every ring is reachable and readable from duck height on Quest. Drop and re-equip the full bag. Confirm a peer sees all eight items.
+
+## Duplicate coal views at public expedition startup (room 26164) — queued 2026-11-20
+
+- Fix: a peer whose Photon clock is unsynchronised no longer replaces a live host. A new master now waits for the previous master's in-flight spawns (events 118/119) before seeding or spawning. See [spawn-startup.md](spawn-startup.md#november-20-room-26164--coal-views-151159-fix-implemented-queued). Compile and synthetic batch checks passed. No live run yet. RC tests 3–5 stay paused.
+- Three authenticated desktop clients on Photon US: depart one public Compound together, repeatedly. Record each master change with its cause (clock pending, recovery, Ready handoff) and the `master settle:` diagnostics events. Pass: every client lists the same coal/gold markers with identical view IDs and spawn tokens, reports no `PhotonView ID duplicate` errors and reaches WorldReady with zero pending cargo.
+- Force a startup handoff: stall or hold the initial master during seeding (`RailStartupRecoveryChecks` faults 0–2), then ask the Ready successor to take over. Confirm the settle ends by acknowledgement for a live old master and by timeout for a stalled one. Check that no marker is spawned twice.
+- After the handoff, transport-reconnect the affected non-master peer. It must reclaim its actor, replay one instantiation per view, and reach WorldReady with the same markers and IDs as the other two clients.
+- **November 21 editor run: FAIL (stalled-host faults 1 and 2). Simultaneous departures, acknowledged handoffs and non-master reconnects PASS.** Results below are from MPPM desktop clients on real Photon, with no headset.
+  - Two clients: three simultaneous public departures with identical coal/gold view IDs and spawn tokens and no duplicates. Five handoffs settled by acknowledgement in 0.22–0.33 s. Two non-master reconnects reclaimed their actor. One three-client round also passed before Unity crashed. Three-client runs are paused because they often crash Unity.
+  - Fault 0 passed, and its settle timed out on the stalled host as designed. Faults 1 and 2 each produced 56–57 duplicate loot views. Root cause: Photon's 50-command reliable send window kept the stalled host's issued loot spawns queued past the successor's 5 s settle timeout. They then went out with the successor's IDs.
+  - Fix proposed, not applied, because it changes networking behaviour: after a timed-out settle, skip the room view ID allocator ahead and destroy any later duplicate-marker view. [Evidence, root cause and proposal](validation/playtest-queue/2026-11-21-queue/departure-settle.md)
+  - **Evening: fix implemented (Justin approved), commit `ae7fdf3f9`.** `PhotonMasterHandoff.Settle.cs` plus `PhotonNetwork.SkipRoomViewIds` in `PhotonNetworkPart.cs`. Two-client re-run: faults 0, 1 and 2 PASS, with zero duplicates, each marker present once and identical inventories. The two-client departure, handoff and reconnect regression still passes. A second simulated transport fault in the same process does not disconnect it; that is a fixture limitation. **Still needs:** a three-client rerun (paused because it crashes Unity) and a headset run. [Details](validation/playtest-queue/2026-11-21-queue/departure-settle.md#fix-and-re-run--november-21-evening-justin-approved-the-proposal)
+
+## Tales from the Rails — queued for playtest
+
+- Verify that a new public departure, private run and Editor quick-start each assign a 32-character lowercase hexadecimal expedition ID. For a public departure, check that both clients join the same train and their board reports use the same ID.
+- November 24: a private run used one 32-character lowercase hex ID on both clients. Public departure and Editor quick-start remain unchecked.
+
+- November 23: Quest 0.5.2 saved six pending reports, including an 846 m escape. The oldest pending report used a public departure ID (`run-` plus 32 hex digits), which the API rejected before storing any counters. The API fix accepts that form and stores its canonical 32-digit ID. After rollout, keep the same signed-in install online, confirm the saved queue drains, and compare the refreshed distance, escape totals and rankings. Recovery is queued for playtest.
+- November 23, single-headset recovery verified against the existing API: corrected three prefixed IDs in six saved pending reports on Quest 0.5.2. The game's signed uploader drained the queue from six to zero. Compound board rendering and automatic recovery on the updated API remain queued for playtest.
+
+- Use two signed-in Quest clients against the updated API. Read both complete leaderboards from the Station Info bench. Check long names and an empty weekly board.
+- Begin with one rider, join the other duck late, and have one leave the train for part of the trip. Check two attempts, individual distance, and only the ducks credited at the bridge appearing among the escape artists.
+- Pass the same coal and gold between ducks, bag and withdraw them, and collect a carrier drop. Each original resource should count once, with coal attributed to its source stop. Hit two enemy types with different items and confirm a hazard down adds no zombie credit.
+- Reconnect, retry a checkpoint, and switch master during the run. After the cache refresh, compare the board on both clients. Check that a temporarily unavailable API keeps the previous display and resumes uploads.
+
+## Expedition departure horn
+
+- Unity recompiled the departure trigger in EditMode and resolved the two-second clip. The earlier import check confirmed stereo and silent fade endpoints. Console showed two Editor Inspector exceptions and no compiler errors.
+- Board a public departure with two players and leave a third in the compound. Confirm each boarding player hears the horn as their transfer starts, with no repeat on arrival. The player staying in the compound should hear the regular countdown without the horn.
+- Launch and replay a private expedition. Confirm host and peer each hear the cue once as they leave staging, with no repeat on arrival. Join by code after the run starts and confirm the horn stays silent. Check the cue's level against voice and the existing cockpit horn.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): trigger cases PASS. Level against voice and the cockpit horn still needs a human on Quest.** The harness counted starts of the horn AudioSource on each client. Audio plays in the clone: each start lasted about 2 s.
+  - Public, one boards: the boarder heard 1 horn as its transfer started and none on arrival. The stayer heard none and saw the normal 20 s countdown.
+  - Public, both board: 1 horn each and no repeat on arrival. Crew returns played no horn.
+  - Private: launch and replay each gave 1 horn per client in Departing and none on arrival or on the return to staging. A peer joining by code mid-run heard nothing.
+  - The three-player variant was not run, because three-client runs crash Unity. [Evidence](validation/playtest-queue/2026-11-21-queue/departure-horn.md)
+
+## Lowered Compound Discord panel — queued 2026-11-20, manual-only
+
+- Check on Quest from the Station Info aisle. Read the expanded panel and its four benefits
+  at normal duck height, then walk up to the south partition and press **JOIN
+  DISCORD** without climbing or reaching overhead. Confirm that the invite opens
+  in the browser and returning leaves the player in the same room.
+
+## Production build gate for admin test tools — 2026-11-20
+
+- In a production Quest build, sign in with an admin account and verify that
+  the pause menu has no Test tab, R3 leaves normal locomotion active, and
+  Settings still shows Submit Bug. In a fresh production-hosted run, verify
+  normal coal deposits and the 4 m/s cruise target.
+- In separate Development Build sessions, repeat with an admin and a non-admin.
+  Confirm all five Test controls are available to the admin only. Check coal
+  and train speed with the admin as both host and peer.
+- **November 21–22, automated: production APK built and launched on Quest; static gate PASS. Headset checks still open.** The 0.4.0 (400) release APK was built through the DuckzBuild steps, with the runtime logging policy passing and no settings changed. Gradle packaging failed transiently once, then the rebuild succeeded. The release IL/IL2CPP/metadata contain no admin request literals, Test button bindings, R3 no-clip toggle or flight code. `RailAdminTools.Available` compiles to `false`, and Submit Bug is present. On Quest 3 (simulated proximity, nobody wearing it), the app reported `Build type 'Release'` and reached the Compound at 72 FPS, with no crash, ANR or missing-asset error over 2 minutes. Minor findings: one unparseable backend response at startup, and CutePixel lacks the em dash in the Compound leaderboard texts. The build is left installed. [Build, scan and logcat evidence](validation/playtest-queue/2026-11-22-headset/build-summary.md)
+  - **Still needs Justin on Quest (this production build):** as an admin and as a non-admin, check that the pause menu has no Test tab, R3 does nothing beyond normal locomotion, and Settings shows Submit Bug. Then host a fresh production run and confirm that coal deposits fuel normally and the train cruises at 4 m/s. The Development Build half of this entry is unchanged.
+
+## Resting items no longer "hit" players riding the train — 2026-11-19
+
+- Bug: a gold bar set down on the moving train, with another player standing on it, spammed blood PFX and hit SFX every frame (the swing sweep measured the item's world-space motion at train speed).
+- Changed: `PhotonGrabbable.TickSwing` only runs `TickPlayerSwings` while the item is held or within 1.5 s of last being held or thrown (`_lastActiveTime`, `PlayerHitFlightWindow`). `NotifyPlayerThrown` also stamps it. Enemy hits are unchanged. Console checked (no compile errors); no Play Mode.
+- Needs human (2+ clients): set a gold bar on the train, have another duck stand on it, start the train: no blood or hit sounds. Still hits a player when swung while held and when thrown within ~1.5 s. Check that a very slow lob that flies for more than 1.5 s still counts, or raise the window.
+- Not covered: `ItemSounds.OnCollisionEnter` can also play a flesh impact for a remote player on a resting item; check whether that still fires on the moving train.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): resting-item and `OnCollisionEnter` checks PASS. Held and throw controls PASS. Lobs flying longer than 1.5 s do not hit (finding).** Feel and a real hand swing still need a human on Quest. [Evidence](validation/playtest-queue/2026-11-21-queue/resting-items.md)
+  - Player2 stood, then crouched, on a gold bar for 32 s at 4 m/s cruise. No locks, flesh, blood or accepted hits on either client, although the bar's motion overlapped Player2 on nearly every frame. Stamping the resting bar active reproduced the spam inside 1.5 s, then it stopped.
+  - Held walk-through, a 7 m/s throw and a 1.2 s lob all hit. Lobs of 1.7 s and 2.2 s passed within 0.06 m of the head and did not hit. The window was not changed; decide whether high lobs should count.
+  - The remote avatar has no colliders on the item owner, so `OnCollisionEnter` cannot play flesh for a remote rider (0 during the run).
+
+## Defeat sting on a lost run — 2026-11-19
+
+- Request: play the 14 s "Horror Buildup" one-shot when the players lose (crash or everyone down).
+- Changed: clip imported as `Assets/Audio/Train/Train_Defeat.wav`, assigned to the new `RailAudioBank.defeatSting` (+ `defeatVolume`). `RailAudioDirector.UpdateDefeat` plays it once per run on every client in the rails room when `State.finished && !State.success` during Ending/Returning (both loss causes go through `RailRunState.Finish`); fades out over 1.5 s when the crew is sent back. Compile and asset wiring checked only; no Play Mode.
+- Needs human: lose by crash and by everyone down; the sting plays once, 2D, on all clients including downed/off-train ducks; no sting on a successful escape (bridge music only); it fades when returning to the compound; a late joiner during Ending hears it from the start. Check the sting sits well against the bridge-crash sound.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): trigger cases PASS. The late-joiner case does not apply. Mix against the bridge crash still needs a human on Quest.** The harness counted starts of the defeat AudioSource on each client. [Evidence](validation/playtest-queue/2026-11-21-queue/defeat-sting.md)
+  - Everyone down off the train, in a public run and in a private run: 1 sting per client. Raised-bridge crash: 1 per client. Success preview: 0 stings and 1 bridge-music start per client. Departures and returns played no sting.
+  - When Returning was forced early, the sting faded to silence in 1.5 s on both clients. In normal play the fade never runs: the 14.1 s sting ends on its own about 18 s before the 32 s Ending gives way to Returning.
+  - A fresh join by code during Ending was refused ("This expedition is ending"), so no late joiner can hear the sting.
+
+## Haptics pass — 2026-11-19
+
+- Changed: `VibrationManager` presets (grab/release tick, rail-joint thump, throttle click, button press, drift warning, both-hand downed/revived). Wired in `PlayerHand` (grab/release), `RailAudio` (rail joint, both hands, scales with speed), `RailControl` (click while held; drift warning toward the 0.36 m breakaway, starting at ~35%), `StoreWallItem` (pull warning), `RailHoldControl` (horn/radio press), `RailExpedition` (local down/revive edges). Compile and Console checked only; no Play Mode.
+- Needs human (Quest, both controllers): each is subtle enough; tick on coal/gold/any item grab and release; joint thump not annoying at full speed and never cutting off a warning; throttle drift pulses speed up before breakaway; store pull pulses speed up toward the purchase threshold; horn and radio button buzz the touching hand; downed and revive buzz both hands. Tune amplitudes in `VibrationManager`.
+- Also: handheld `WalkieTalkie` talk press buzz; bag put-in tick (take-out already ticks via `ForceGrab`).
+
+## Idle finale enemies seek the lowering bridge — 2026-11-18
+
+- November 20 RC desktop PASS with three authenticated Photon clients. Base zombies acquired the cabinet goal while lowering, chased a visible operator, and stopped acquiring that goal on release. After the second host transfer, one finished its existing 34-node path and then wandered away. Encounter pressure on headset remains open. [Case ledger and traces](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
+- Request: on the bridge finale, idle enemies seek the control area while the bridge is lowering.
+- Changed: `RailBridgeEncounter.TryGetObjective` now also returns the cabinet goal for
+  non-defender enemies of the current run that are wandering inside the finale enemy bounds,
+  only while `BridgeMoving` (lever held, progress < 1). Enemies aboard/crossing onto the train
+  are excluded. Defenders keep their existing always-on objective after first activation.
+- Passed: Unity compile only.
+- Check: reach the finale with base enemies wandering in the fortress (not chasing). Hold the
+  lever: they path to the catwalk south of the cabinet. Release before they arrive: no new
+  enemies are drawn; those en route finish, then wander. Enemies that see a player still chase.
+  Repeat as non-master after a master switch. Note whether the extra pressure feels fair with
+  the 60-second hold.
+
+## Admin train speed toggle — 2026-11-18
+
+- Request: dev (Test) page in the pause menu gets a toggle for train speed, 1x or 5x.
+- Changed: `PauseMenu.prefab` Test page has a fifth button `TrainSpeed` ("Train Speed: 1x/5x");
+  the five buttons are respaced (y 0.11 to -0.11). `RailAdminTools.ToggleTrainSpeed` requests
+  `admin-train-speed` from the master (`RailExpedition.ApplyRequest`), which applies
+  `RailTestTools.ApplyTrainSpeed` (4 ↔ 20 m/s cruise, rebasing motion and fuel).
+  As of November 20, the toggle works in public and private rooms in the
+  Editor and Development Builds.
+- Passed: Unity compile; `RailAdminToolsChecks` (five buttons, 5x/1x targets, stopped train stays
+  stopped).
+- Check in a running expedition, as master and as a non-master admin: press Train Speed while
+  moving and while stopped; label flips on all clients; train speeds up/slows smoothly with no
+  jump; after stopping and pressing GO it resumes at the selected speed; fuel burn looks right;
+  the next run starts at 1x. All five buttons are reachable and readable in the headset.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS. Headset readability and fuel feel still
+  need a human.** Master toggled while moving (1x to 5x) and while stopped; the non-master admin toggled through the
+  pause-menu button `Press()` while moving and while stopped. The label flipped on both clients each time, the
+  speed ramped with a worst distance discontinuity of 0.1 m, a stopped train stayed at 0 m/s after a toggle, GO resumed
+  at the selected speed, and the next run started at 1x. [Evidence](validation/playtest-queue/2026-11-21-queue/batch-2026-11-21.md)
+
+
+## Starting station z-fighting: rib joints and supplies header — 2026-11-18
+
+- Request: remove flicker at every column/rib joint in the starting station hall and departure
+  tunnel, and under the timber header over the Supplies doorway.
+- Changed (`ArtSource/StartingStation/build_station.py`, FBX re-exported and rebaked): wall piers
+  and ceiling ribs are 4 cm narrower than the chamfer beams (hall ±0.28 vs beam ±0.30; tunnel
+  ±0.23 vs ±0.25), so the beam ends no longer share side planes with them; the Supplies header
+  underside sits 2 cm below the doorway head (was coplanar at Y 4.0). Triangle counts unchanged.
+- Check in Expedition: look up at the rib joints (wall-to-chamfer and chamfer-to-ceiling) on both
+  hall walls and along the tunnel, and at the underside of the Supplies header, from a few
+  distances. No flicker; station lighting has no new seams or dark patches.
+
+## Loadout survives scene changes, quits, crashes and disconnects — 2026-11-18
+
+- Request: moving between Compound and Expedition keeps the worn bag (with contents) and worn
+  helmet/night-vision goggles, as well as held items (held items drop at your feet). After a
+  quit, crash or disconnect the bag with its contents and the head gear are back when you
+  return. Held items may be lost then.
+- Changed:
+  - `RailHeldCarry.CaptureForTransition` (from `PhotonSession.Begin` and the same-room
+    `LoadWorldScene`) also refreshes the worn-bag/head-gear saves and network-destroys those
+    items without clearing the saves (`RemovingWorn`). `BagInventory.SaveBackForTransition`
+    added.
+  - `EquipmentInventory` restore now runs in Rails rooms (it was disabled), once per world
+    (room/run/aboard) after `WorldReady`, not while downed or waiting for the crew destination.
+    In Compound the restore is spawned with the Compound purchase lifetime
+    (`RoomRpc.SpawnEquipment(..., compoundLifetime)`), so leftover cleanup keeps it;
+    `HeadEquipment` accepts that longer spawn data.
+  - Bag and head restore wait (recheck every 0.5 s) while the saved copy still exists in the
+    room instead of giving up, so a slow master cleanup cannot lose the gear.
+  - When a wearer leaves a Rails room, including going inactive, the master removes their
+    worn bag ("goes with them") instead of dropping it for the room, and worn head gear no
+    longer waits for an inactive wearer. Prevents a duplicate (room copy + restored copy). A bag
+    held in a hand still drops for the room.
+  - `GameManager.prefab` pool registers `RailCoal`, `RailFlashlight`, `RailBat`, `RailHelmet`,
+    `RailGoggles`, `RailWalkie` and `RailGoldBar`, so other clients can spawn them by name when
+    they are carried into Compound or restored inside a bag or on a head. Unity's re-save also
+    dropped two stale GameManager fields from the removed duck companion.
+- Tests:
+  - `RailLoadoutPersistenceChecks` (Duck Rails > Tests > Loadout Persistence (Edit Mode)):
+    every carriable/baggable/wearable item prefab is registered by name on every client and
+    resolves from a fresh pool; GameManager is in both scenes with no pool overrides; head
+    restore data in plain and Compound forms; carry keys; offline capture is a no-op.
+  - `RailLoadoutLiveChecks` (Duck Rails > Tests > Loadout Persistence (Live)), one
+    authenticated client: private departure and failure return (same-room swaps), contents
+    change aboard saved immediately, Back to Compound (room change), creating a private room,
+    connection loss aboard (rejoin) and in a public Compound, quit and simulated crash with
+    relaunch. Each check must hold for 5 s. Backs up the account's saved loadout and restores it.
+    Results in `Temp/rails-loadout-live.txt`.
+- Evidence (Unity 6000.3.24f1, main editor, one authenticated account, no headset):
+  - Edit Mode: `RailLoadoutPersistenceChecks` PASS 6/6 (16 item prefabs covered).
+    `EquipmentPersistenceChecks` and `RailCargoEquipmentChecks` still pass (the former's
+    synthetic-room RaiseEvent errors are pre-existing). `BagClaimChecks`,
+    `HeldItemRecoveryChecks` and `RoomObjectRecoveryChecks` were not re-run: they only run in
+    a disposable batch copy. Their offline fixtures are not Rails rooms and do not assert the
+    changed branches.
+  - Live: `RailLoadoutLiveChecks` PASS, all 20 stages, every check held for 5 s:
+    [run log](validation/loadout-persistence/live-2026-11-18.txt). Earlier runs failed only on
+    fixture bugs (private room kind, bag id 1 has no slots, a dropped FinishRun commit), fixed
+    before this run. The account's 9 saved loadout keys matched the pre-test backup afterwards.
+  - Limit: after the connection loss aboard, the client came back in a public Compound, not the
+    same expedition. That run therefore covered "drop out, return elsewhere, restore from disk".
+    The same-room rejoin (reattaching the still-worn copy) was not exercised.
+  - Console: only the known Meta XR/LCK startup errors and a stale-Inspector error.
+- Still needs real clients: a second player sees one copy of your gear after each transition
+  and nothing left in the old room; a wearer dropping out of a shared expedition takes the bag
+  and head gear with them (no room copy for the crew); headset feel.
+- **November 20 desktop RC — PAUSED during setup, no gameplay verdict.** Three authenticated simulated-rig clients used Unity 6000.3.24f1 on main `c89d1f95e40176e12c029df8df8dcaa41a0b69b6` with local edits. Two reached private staging. Play stopped before the expedition or equipment setup, and the user paused the retry. Same-run recovery, indexed bag contents, helmet and goggles, peer cleanup and headset behavior remain pending. [Staging and shutdown evidence](validation/playtest-queue/2026-11-20-rc/worn-rejoin-paused.txt)
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): every multi-client check PASSES. Headset feel still needs a human.** Player2 wore a bag with contents, a helmet and goggles; main observed. Each check held for 5 s.
+  - Transitions: public departure alone (the old Compound kept no copy), crew return, both boarding together, crew return together, joining private staging by code, and private departure/return/replay. After each one the observer saw exactly one copy of the bag (same contents), helmet and goggles, worn by the mover's avatar.
+  - Drop-outs: transport loss (inactive), then a rejoin that reclaimed the same actor. Clean Back to Compound, then a rejoin by code. In both, the crew's room kept no copy while the mover was away, and after the return there was exactly one restored copy, worn by the mover.
+  - Bag held in a hand, then a client disconnect: the bag stayed dropped in the room with its contents. The worn head gear went with the mover and was restored once on rejoin.
+  - Not run: three clients (they crash Unity). Saved loadouts were backed up and restored. [Evidence](validation/playtest-queue/2026-11-21-queue/loadout.md)
+
+## Brighter store lighting (Compound + starting station) — queued 2026-11-18
+
+- Request: both stores looked too dark. User retuned lights by hand, rebaked both and moved
+  some store items in `Compound.unity` and `Expedition.unity`.
+- Station: two new baked spots `Supplies flood N (1)` / `S (1)` plus retuned supplies lights in
+  `StartingStation.prefab`; rebaked and exported (65 baked lights, all 65 in `bakedFixtures`,
+  95 bindings). Compound: new baked `Supplies warm B (1)` and retuned lights; all 21 enabled
+  baked lights report `isBaked` in the saved bake. Edit Mode checks only.
+- Check: in-game at night fog, both stores read clearly at headset height; no doubled
+  (real-time) light from the new fixtures; moved items still pull/restock correctly.
+
+## Store prices sit under raised items (Compound + starting station) — queued 2026-11-18
+
+- Request: store items sat behind prices that lay on the floor in front. Raise items slightly
+  and put each price underneath its item (bat as the example). Compound store and the starting
+  station store only. Do not move the TV or security camera.
+- Changed: `Assets/DuckRails/Compound/SubwayTerminal/SubwayTerminal.prefab` and
+  `Assets/DuckRails/Economy/RailShop.prefab` (their overridden `Shared Store` children). The 8
+  displays (nail bat, frying pan, basic bag, default duck, helmet, flashlight, walkie, night
+  vision) are raised 0.15 m. Each `*Price` label is centered under its item's visible mesh
+  bounds, 4.5 cm below it, at the item's depth (not flat against the wall, so the item doesn't
+  cover it when viewed from above). SecurityTV/SecurityCam are unchanged. The bundle displays,
+  the `RailSharedStore.prefab` base and the helipad shop are untouched. Neither
+  `Compound.unity` nor `Expedition.unity` overrides these objects.
+- Editor evidence: offscreen renders of the compound store show every price under its item. The
+  station back wall looks the same. The station side wall (bat/pan/bag/duck) is checked by
+  numbers only, because a prefab mesh blocks the out-of-scene preview. Console has 0 errors.
+  No Play Mode run.
+- Check: in both stores at headset height, each price is readable below its item and not
+  hidden by it. Items don't clip into walls/shelves. Pull-to-buy and restock still snap back
+  to the raised spot.
+
+## Rail store bundle avatars use the default duck pose — queued 2026-11-18
+
+- Request: Scrap Duck, Huggy and Quackbear bundle avatars in the rail store were T-posing;
+  give them the default duck display's pose.
+- Changed: `Assets/DuckRails/Economy/RailSharedStore.prefab` only. Copied the 28 bone local
+  rotations under `DefaultAvatarDisplay/DefaultModel/Playermodel_Armature/Torso` (neck,
+  head, shoulders, arms, fingers; not eyes/lips) onto each
+  `skin_duck_*/Skin_*/Playermodel_Armature/Torso`. Both rigs share the same Torso frame.
+  `Assets/Editor/RailBundleSetup.cs` (old wall generator) does not apply this pose.
+- Editor evidence: offscreen camera render shows Huggy and Quackbear fists-up like the default
+  duck; Console 0 errors. No Play Mode run.
+- Check: in the store, all three bundle avatars hold the default duck pose with no clipping
+  or skin stretching; buying/pulling a skin still works. Queued for playtest; not verified.
+
+## Held items carry between Compound and Expedition — queued 2026-11-18
+
+- Request: an item held in a hand when the world changes comes along. It drops at the
+  player's feet on arrival instead of reappearing in the hand (the player may let go during
+  the veil).
+- Changed: new `Assets/Scripts/Photon/RailHeldCarry.cs`, hooked into `PhotonSession`.
+  `Begin` (every room change: public departure, crew return, Back to Compound, private
+  create/join) and `LoadWorldScene` (same-room private departure/return) record each
+  confirmed local hold (`PhotonGrabbable` items by prefab key; hand-held bags by bag type +
+  slot keys), then network-destroy the originals so no copy stays in the old world. Once
+  the destination is `WorldReady` and settled for 0.75 s (not downed/dead, not waiting for
+  the crew destination), copies drop ~0.35 m in front of the body, spread sideways, pulled
+  back from walls. Items spawn with room lifetime; bags via `RoomRpc.SpawnBag(...Dropped)`.
+  In Compound both carry the compound-purchase tag so the leftover cleanup keeps them.
+  Worn bags/head gear keep their existing restore paths. Unresolvable keys, pending pickups
+  and downed/dead players are not carried (old drop behaviour). `carry:` lines go to
+  `RailDiagnostics` events.
+- Editor evidence: Unity compiles; `RailHeldCarry` is in Assembly-CSharp with GUID
+  `9a2b53fbf34046c5b7ab0f2031e44500`; Console has 0 errors (pre-existing warnings only).
+  No Play Mode run.
+- Check (2 clients, public and private, master and non-master): hold one item, two items
+  and a loaded bag in hand through Compound → Expedition and back (success, failure, Back to
+  Compound). Each arrives once at your feet, the other client sees the same, nothing stays
+  behind in the old room, and nothing is cleared within 5 s. Also a held gold bar (it carries,
+  like gold in a worn bag) and a flashlight into Compound (prefab resolves on both clients).
+  Release grip during the veil. Queued for playtest; not verified.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS on 16 of 17 rounds;
+  1 skipped. Headset feel still needs a human.** Each round used one item, two items (one per hand)
+  or a loaded bag in hand, each grabbed with an injected grip press through the real
+  `PlayerHand`/`BagInventory` grip path. Rounds covered public departures (alone and together),
+  failure and success crew returns, Back to Compound (public and private mid-run), private create
+  and join, private departures and returns, and a downed carrier. The carrier was master and
+  non-master in different rounds. Each client saw exactly one copy, dropped 0.29–0.38 m from the
+  carrier's feet, with bag contents intact, for 5 s. A client left behind saw nothing in the old
+  world. The downed carrier carried nothing. Skipped: Compound → Compound by code, because Back to
+  Compound landed in the peer's Compound. [Evidence](validation/playtest-queue/2026-11-21-queue/held-carry.md)
+
+## Phantom coal in worn backpack diagnostics — queued 2026-11-18
+
+- Reported: a player's backpack held 4 coal on the first block of a fresh run without
+  collecting any, and after a disconnect/rejoin he had 4 coal again after removing them.
+  Suspect (unconfirmed): the worn-bag disk save `bag.back` keeps coal from an earlier
+  session and `BagInventory.TryRestore` re-spawns it; the rejoin case may also come from a
+  stale save left when the back bag was lost without being taken off. No design change
+  until a report confirms it.
+- Changed: diagnostics only, no behaviour change. `bag: ...` lines in the `RailDiagnostics`
+  event list: restore check (context + disk save contents, whether it was saved in this
+  room), restore decision (reattached recovered / already wearing / room copy exists /
+  spawning from disk with keys), every save write/clear with reason (wore, took off back,
+  contents changed, debug), back bag lost or destroyed without clearing the save, downing
+  clearing the save, bag spawned for me, room recovery applied to my bag, and (on the host)
+  holder left so the bag returned to the room. Actor numbers, view IDs and the last 6 chars
+  of run/recovery IDs only.
+- Editor evidence: compiles, Console clean. No Play Mode run.
+- Check: when a bag shows coal you never collected, submit a bug report right away (the
+  event list keeps about 60 recent events). For the rejoin case submit right after
+  rejoining; a report from the host also helps. Queued for playtest; not verified.
+
+## Login backdrop blocks use their baked lighting — queued 2026-11-18
+
+- Bug: the motel, skyscraper and convenience-store backdrops in `Login.unity` rendered
+  without their baked lighting.
+- Cause: the scene had removed `RailBakedBlockLighting` from the motel and skyscraper
+  instances, so they never loaded lighting. The store's spot was turned by 1.9°, which
+  failed `RailBlockLightingLoader`'s straightness check (blocks may be moved only, with
+  no rotation or scale).
+- Changed (`Login.unity` only): restored `RailBakedBlockLighting` on both instances. The
+  removed `RailBlock` and `CrawlGraphBaker` stay removed. Rotated LoginSpot3 around the store
+  pivot to rotation (0,0,0), so the store and its view are unchanged but the store is now
+  straight. All three blocks are straight with unit scale, and every lightmap binding points
+  to an active renderer.
+- Editor evidence: verified Duck Rails MCP target; zero Console errors or warnings. No Play
+  Mode run.
+- Check (editor Play Mode, then Quest): at each login spot the block shows its baked
+  lightmaps and probe lighting like it does during an expedition, with no "Block lighting:"
+  errors. Compare ambient light and fog with Expedition. Load time to Compound is not
+  noticeably longer. Queued for playtest; not verified.
+
+## Bundle IAP items pullable right after purchase (no restart) — queued 2026-11-18
+
+- Bug (Ken, Quest, Quackbear and Lethal Company bundles): after buying, the label read
+  "<Bundle> Owned" but pulling the skin, bag and pan snapped back red until an app restart.
+  Likely cause: `StoreUI.busy` was only cleared by the Meta checkout callback; if that callback
+  was lost (or a throwing `DuckzWallet.OnChanged` listener aborted `DuckzIap.PurchaseRoutine`
+  before it), every pull returned `Busy`.
+- Changed: `StoreUI.Purchase` takes owned bundle items and owned/equipped wearables before the
+  busy check; `StoreUI` releases the checkout (busy, `CheckingOut`, and the waiting wall item
+  as `Unlocked`) as soon as the wallet reports the checkout SKU owned, and ignores the stale
+  callback via a checkout id; `DuckzIap.PurchaseRoutine` always calls `completed` even if
+  marking ownership or analytics throws.
+- Editor evidence: verified Duck Rails MCP target; recompile with zero Console errors. No Play
+  Mode or headset run; real Meta checkout needs a human on a Quest with a test account.
+- Check (Quest, test user without the bundle): pull a bundle item, buy in the Meta modal,
+  return. Expect the label to show Owned and each bundle item (skin, bag, weapon) to pull off
+  on the first try without a restart. Also cancel a checkout once: the item snaps back and a
+  later pull reopens checkout. Coin purchases and owned-skin equips still work.
+  Queued for playtest; not verified.
+
+## Late join and rejoin into running public and private expeditions — queued 2026-11-18
+
+- Regression check, no code change. Requested by Justin to confirm late joining still works after
+  recent changes.
+- Expected (user-confirmed 2026-11-18): joining an in-progress expedition works for both public
+  departures and private code rooms, and every arrival, first-time joiner or rejoiner, spawns
+  aboard the train. Restoring a rejoiner's last position is not wanted. Current code does this:
+  `RailWorld.cs:65` clears `positioned` during any room request (including `Rejoin`) and
+  `RailWorld.cs:103-111` warps the arrival aboard.
+- Check (3 clients, A host):
+  1. Public: A + B depart from the compound; once moving past block 1, C joins the running public
+     expedition. Expect C spawns aboard and sees the same block, train pose/motion, fuel, loose items,
+     bag contents, enemies and other players' down states; C can grab items and shovel coal; no
+     extra flashlight granted.
+  2. Private: A creates a code room, A + B depart; C joins by code mid-run. Same expectations.
+  3. Rejoin (both kinds): B walks off the train into the block, then disconnects (drop network or
+     quit) and rejoins within 120 s. Expect B reappears aboard the train; no duplicate avatar or
+     supplies, bag/head gear state kept. Repeat once with B rejoining
+     after a full app restart, and once with B being the master.
+  4. Edge cases (design intents user-confirmed 2026-11-18):
+     - Train stopped at a shop, other players off shopping: joiner spawns aboard, train pose
+       matches, joiner can walk off and use the shop.
+     - Mid bridge hold: joiner sees the same defenders, hold countdown and bridge state; nothing
+       already finished (e.g. the collapse) replays.
+     - Ending/return: new joins are refused cleanly; nobody lands in a finished run.
+- **November 20 desktop RC — PASS after fix `bb87c3ddf`.** Three authenticated clients on real Photon passed fresh joins and off-train peer, former-host and full-process reconnects in public and private runs. The cold private baseline failed on the account’s reserved actor. The fixed public and private clients recovered their original actor aboard moving trains in 75.10 and 75.39 seconds. Shop and mid-bridge arrivals, crash-effect recovery and fresh Ending/Returning refusals also passed. [Per-case results, setup and evidence](validation/playtest-queue/2026-11-20-rc/late-join.md)
+- **Needs human — queued for playtest.** Repeat physical dismount, shelf reach, coal handling, spawn comfort and cross-machine jitter on headsets. The tested public former host returned after fuel exhaustion. Repeat that combination while the train continues moving through arrival.
+
+## Downing drops head equipment — queued 2026-11-18
+
+- Changed: when the local player goes down, every head item they wear (helmet,
+  night vision goggles) is dropped like a Duckz death, alongside the existing bag
+  drop. New `HeadEquipment.DropAllOnDowned()` calls the existing `DropOnDeath()`
+  (no-op for items not locally worn); called from `RailExpedition` beside
+  `BagInventory.DropAllOnDowned()`. Clears the saved head/eyes loadout slot;
+  NVG effect turns off via `LocallyUnequipped`.
+- Editor evidence: verified Duck Rails MCP target; recompile with zero Console
+  errors. No Play Mode run.
+- Check (2 clients): wear helmet + NVG and a bag, get downed by an enemy. Expect
+  helmet, goggles and bag to fall at the downed player on both clients, NVG view
+  turns off for the downed player, and either player can pick up and re-wear
+  them after revive. Late joiner sees the items on the ground, not on the head.
+  Queued for playtest; not verified.
+- **November 21 two-client editor run: PASS (4 rounds, no code change).** The downed role was the non-master twice (off the train, one from each client) and the master twice (aboard via a boarded zombie, and off the train via an enemy-down request). It wore a helmet, NVG and a bag. Both clients saw exactly one loose copy of each item 0.2–0.8 m from the downed duck, nothing on any head and no duplicates. The downed account's head, eyes and bag saves were cleared and NVG turned off. Nothing came back on revive. A rescuer that rejoined by code saw the items on the ground. The peer picked up and re-wore the helmet, and the revived player re-wore its goggles and bag; saves followed. Account keys were restored. [Evidence](validation/playtest-queue/2026-11-21-queue/down-head-gear.md)
+- **Needs human:** real enemy contact downs, downs on a moving train, a third player joining while someone is down, and on Quest: how the drop looks, the NVG view turning off, and grabbing and re-wearing with real hands (an injected grip did not catch the dropped goggles in the editor; a direct grab did).
+
+## Expedition and economy analytics events — queued 2026-11-18
+
+- Changed: new `RailAnalytics` (run start/end, last block, block time, fuel out,
+  bridge start/lowered, downs by cause and block, revives, personal summary, awards,
+  gold picked/unbanked) and economy events (coin source on deposit, coin sink and
+  `shop:*` for expedition shops, `store:*` kept for cosmetics). Removed dead
+  `death:*`, `duck:*`, `gold:count`, `presence:*`. Catalog: `analytics-setup.md`.
+- Editor evidence: verified Duck Rails MCP target; full recompile with zero Console
+  errors (after the concurrent companion removal landed). EditMode: 7 segment/block-name
+  helper assertions pass; `RailAwardsChecks` 65 superlative checks pass (covers the
+  `RailStats` change). Head-pivot/movement play checks that reference
+  `DuckzAnalytics.TryLocalHead` were not re-run. No Play Mode run.
+- Check (editor previews, enable GameAnalytics **Info Log Editor**): with 2 clients,
+  depart, take a down from an enemy and get revived, insert coal, deposit gold, buy at
+  a shop, run out of fuel once, hold the bridge, then finish. Expect on the host one
+  `run:start`, `block:time` per block, `train:fuel_out`, `bridge:start`/`lowered`, and
+  one `run:end` + `run:last_block` + `gold:unbanked`. Expect on the guest none of those,
+  but its own `down:<enemy>:<block>`, `revive:done`, progression Complete/Fail,
+  `player:*`, `award:*`. Repeat with a master handoff mid-run: no duplicate bridge/fuel
+  events. Then confirm delivery in an Android build's GameAnalytics live view.
+  Queued for playtest; not verified.
+
+## Missing down flares diagnostics — queued 2026-11-18
+
+- Reported: in a 3-player run, at least two downs in a row (believed different
+  players) showed no flare. Suspects: flare left behind by the moving train (world-space
+  position), flare clamped under a roof, master rejecting the down, or 45 s cooldown.
+- Changed: diagnostics only, no behaviour change. `RailExpedition` writes `flare: ...`
+  lines to the `RailDiagnostics` event list (which reports include; DuckzLog output is
+  not included in reports): local down requested, master accepted/ignored/skipped (with
+  reason, aboard flag, train speed, cooldown age, attacker state), each client's "seen
+  down" and "shown" (spawned, age, ceiling-clamped `rise`, viewer distance).
+  `DeathFlare.LaunchRise` added for this. Actor numbers only.
+- Editor evidence: compiles, Console clean. No Play Mode run.
+- Check: play until a down shows no flare, then submit a bug report right away (event
+  list keeps the last 100 entries). Best if the host submits too, since master accept/ignore
+  lines only exist on the host. Queued for playtest; not verified.
+- Also changed: `RailDiagnostics` reports now include up to 40 scrubbed Console
+  warning/error/exception lines in `events` (see testing-tools.md). Editor evidence (after the
+  companion removal settled): compiles, Console clean; EditMode check with real Unity logs passed:
+  JWT/long key -> `[token]`, Bearer -> `[redacted]`, 3 identical exceptions -> one `[x3]` line,
+  `Debug.Log` excluded, 100 lines = 40 console + 60 newest events in time order, location
+  skips Debug/Logger/DuckzLog frames to name the caller. Check: in a normal build, trigger a known warning,
+  submit a bug, confirm the uploaded report shows `console Warning: ...` lines, flare lines survive,
+  and no token-like strings appear.
+
+## Duck companion removed — queued 2026-11-18
+
+- Changed: deleted the Duckz duck companion (scripts, `DuckCompanion` prefab, dialogue,
+  `DuckSpeech` plugin + StreamingAssets, skin, jump sound, companion checks/authoring) and
+  every companion branch in `PhotonPlayer`, `PhotonGrabbable` (non-owner master sweep and
+  collider-less item hits were Duck-only), voice/eye/mouth, `Player` death/respawn,
+  `KillTrigger`, enemies (hook target filter, bomber), `GameManager` fields and desktop input.
+  Pose stream format for human avatars is unchanged. See `duckz-ports.md`.
+- Editor evidence: compiles, Console clean; no remaining code references. Removed
+  companion-only cases from shared batch checks (hook impact Duck shots incl. its join-snapshot
+  blood check, knockback Duck impacts, KillTrigger multi-contact test, master-handoff,
+  avatar-recovery and allocation cases); none of the batch suites were re-run.
+- Check: 2+ clients incl. late join: voice, mouth/eye animation, name tags, item hits and
+  knockback between players, hook pulls, bomber and enemy downs, desktop movement/typing
+  focus, death flares/blood and pause-menu mute all behave as before. Queued for playtest; not verified.
+
+## Pause menu player list: 8 per page — queued 2026-11-18
+
+- Changed: pages hold 8 players (was 5), so an 8-player crew fits on one page and a full
+  12-player Compound uses the existing `<`/`>` arrows for a second page of 4. Rows keep the
+  authored 0.05 height up to 5 players; above that, every row on both pages shrinks equally
+  so 8 fit in the original 5-row area above the arrows (0.031, font 0.5 -> 0.31). Mute button
+  size/hitbox unchanged. Files: `PlayersMenu.cs`, `PlayerListItem.cs`; PauseMenu prefab unchanged.
+- Editor evidence: compiles, Console clean; editor renders of both pages of a 12-player list
+  (same size/page formula, rows filled by hand, not through Photon) show no overlap with the arrows.
+- Check: with 6-8 players, one page and no arrows; with 9-12 in the Compound, `>`/`<` switch
+  pages, names readable in-headset, each mute button hits its own row, and a join/leave keeps
+  a valid page (e.g. leaving page 2 when it empties). Queued for playtest; not verified.
+
+## Smaller Minion/Hook kill triggers — queued 2026-11-18
+
+- Changed: port only Duckz `a3d484e994e53c219f62de3caa99af009d20c812` collider
+  size/center values to ZombieMinion and ZombieHook; resource variants inherit them.
+- Editor evidence: verified Duck Rails MCP target; synchronous imports and all four
+  base/variant trigger size, center, enabled/isTrigger and component checks pass.
+- Check: with real clients/headsets, approach both enemies from front and sides,
+  confirm close misses outside the reduced volume survive and actual contact still
+  downs the duck. Repeat aboard the moving train without changing boarding rules.
+  Queued for playtest; no Play Mode run or runtime acceptance claimed.
+
+## Revive-complete SFX via AudioManager — queued 2026-11-18
+
+- Changed: the revive-complete sound now plays through `AudioManager` (pooled voice,
+  occlusion, Effects mixer, game volume) using new SoundEvent
+  `Assets/Resources/RailRevive/ReviveSFX.asset` (clip `ReviveSFX.ogg`), attached to the
+  revived duck. The looping progress sound is unchanged (still its own AudioSource).
+- Editor evidence: none beyond file edits; Console had no errors, but a recompile after
+  the edit was not confirmed.
+- Check: revive a downed duck; everyone in range hears the complete sound at the duck,
+  once, and it respects the volume slider.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS for "once on each client". Volume slider and
+  audibility still need a human.** A downed non-master was revived by the master; each client's AudioManager pool started
+  exactly one `ReviveSFX` voice (Effects mixer group, spatial), none more in the next 5 s.
+  [Evidence](validation/playtest-queue/2026-11-21-queue/batch-2026-11-21.md)
+
+## Settings Submit Bug button — queued 2026-11-18
+
+- Changed: pause menu Settings screen has a **Submit Bug** button (top right) that
+  saves/uploads a manual diagnostic report for any player (not admin-gated).
+  Backend (`duck-rails-web` diagnostics router) now returns `reporter` to admins;
+  needs an API redeploy before reports show the user ID.
+- Editor evidence: compiles; prefab reloads with `SubmitBug`; Go router tests pass.
+- Check: in a headset, open Settings, poke Submit Bug on both pages (feel, label
+  shows "Thank you!" after upload; second press within 30 s shows "Too soon!"). With a non-admin account confirm the report
+  uploads. After redeploy, confirm an admin download includes `reporter`.
+
+## Remove time-alive counter from name badges — queued 2026-11-17
+
+- Changed: removed the Duckz time-alive counter. `PhotonPlayer` no longer keeps an
+  alive clock, `TimeAliveSeconds`, `timeAliveLabel`, or the extra int in the pose
+  stream (living packet is now pose + dead flag; dead adds impact/rotation).
+  `CreatorNametag` no longer binds a local `TimeAlive` label. The `TimeAlive` text
+  object is gone from `PhotonPlayer`, `DuckPlayer` and `DesktopPlayer` prefabs and
+  from `StartingStationProof`. `PhotonAvatarRecoveryChecks` updated to match.
+- Editor evidence: compiles; the three prefabs load with no `TimeAlive` child.
+  Batch-mode `PhotonAvatarRecoveryChecks` not run.
+- Check: with two or more clients, remote name badges show only the name (no
+  counting number under it), poses and death/respawn still sync, and mixed old/new
+  builds are not expected to interoperate (wire format changed).
+
+## Corn rustle variations — queued 2026-11-17
+
+- Changed: the Farm corn rustle now uses a new `Foliage_CornRustle` SoundEvent
+  with four 0.5 s clips (`Assets/Audio/Player/Foliage/CornRustle_01-04.wav`, cut
+  from the Autumn Weather leaves recording at 2.7/13.2/45.0/48.1 s, 25 ms fade-in,
+  150 ms fade-out, loudness-matched, 48 kHz mono) and avoids immediate repeats.
+  (First pass used 1 s clips; user found them too long.)
+  All 52 corn `FoliageVolume`s and `RailFarmFoliage.Configure` point at it;
+  `HandHit_Foliage` is unchanged for hand hits.
+- Editor evidence: clips import at 0.5 s / 48 kHz; 52/52 volumes reference the new
+  event; no Console errors.
+- Check: walk and run through the Farm corn in headset; rustles vary, have no
+  clicks at start/stop, and sit at a sensible volume. Status: queued for
+  playtest; no Play Mode run.
+
+## Walkable collapsed bridge spans — queued 2026-11-17
+
+- Changed: each of the 5 `BridgeCollapse` spans has a "Walk colliders" child
+  (Environment layer, Metal AudioSurface): a deck box topped at rail height and
+  two thin side-railing boxes. The fall is deterministic and the rest pose is the
+  same every run, so the boxes are fixed in the prefab. `RailBridgeCollapse`
+  enables each span's boxes only once that span has landed, so falling pieces
+  never push anyone.
+- Editor evidence: compiles, no Console errors; sampling the prefab enables
+  0 boxes at 0.5 s, 6 at 2.6 s and all 15 at 3.2 s.
+- Check: after a bridge collision, drop onto the fallen spans and walk them. The
+  tops match the visible deck (no floating or sinking), the railings block, the
+  footsteps sound like metal, and a late joiner gets the same solid spans.
+  Status: queued for playtest; no Play Mode run.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS for solidity. Walking, railings, footsteps and
+  late joiners still need a human.** After a bridge crash all 5 spans had their 3 walk boxes enabled on both clients, and a
+  rig dropped onto each span stood on a walk box at the same offset as on the train floor, with no fall-through.
+  [Evidence](validation/playtest-queue/2026-11-21-queue/batch-2026-11-21.md)
+
+## End-of-run results table — queued 2026-11-17
+
+- Changed: RESULTS label stats are now a table (`RailResultsTable`): duck names
+  on the left (green = escaped, red = didn't make it; no legend line; names over
+  20 characters end in "..."), tight Coal/Gold/Revives/Downs columns, then
+  Title. The top value in each stat column is yellow (ties all highlighted;
+  zeros never).
+- Editor evidence: compiles, no Console errors; an offscreen render of an
+  8-duck mock at the label's 5×4.5 size and font fits with no wrapping.
+- Check: finish a run with 2+ clients; the table is readable in headset at the
+  ending position, columns line up, highlights match the highest values, and
+  late joiners see the same table. Status: queued for playtest; no Play Mode run.
+- **November 21 editor run (2 MPPM clients, real Photon, no headset): PASS for the data. Headset readability, column
+  alignment as seen and late joiners still need a human.** After a failed run (both clients down), a bridge crash and a
+  success preview, both clients showed byte-identical tables whose values equal the committed state, with the right
+  green/red names and yellow only on the top non-zero value per column. Coal was exercised for the master only.
+  [Evidence](validation/playtest-queue/2026-11-21-queue/batch-2026-11-21.md)
+
 ## Farm northeast pond water footsteps — queued 2026-11-17
 
 - Changed: pond underside MeshCollider now has Water AudioSurface (prefab-only).
@@ -115,6 +885,47 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 ## Pending
 
+### Motel production atlas and relit lights — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: Motel trapped lights fixed and rebaked (75 baked lights); Motel now ships a triangle-preserving Blender atlas (298 chunks, 79,948 triangles, 349 enabled renderers) instead of the runtime render chunks (`RailSceneryChunks` removed). See `ArtSource/MotelAtlasLowPoly/README.md`.
+- Setup: Motel block, single client, then 2 clients with a late joiner aboard.
+- Check: at night the streetlights, leisure lamp posts and pool floods light the ground around them; no missing, doubled, flickering or unlit (black) scenery, seams or wrong textures, especially putting greens, pool tiles, signs and interiors; neon/ceiling signs still glow; collision, coal/gold/enemy spawns and interactions unchanged; added lights do not also render as realtime lights (no doubled brightness or frame-time spike); late joiner sees the same visuals.
+- Needs human: headset look at visuals/lighting and frame rate across the Motel.
+- Priority: normal
+
+### Skyscraper lights rebake — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: 9 baked point lights added (`Added baked lights`), West side bridge +8m guide lights 1–2 brightened, 18 worklights moved out of their housings; Skyscraper rebaked lights-only with atlas bindings unchanged; new lightmap approved. See `docs/atlas-lights-only-rebake.md`.
+- Setup: Skyscraper block, single client, then 2 clients with a late joiner aboard.
+- Check: at night the tower floors, yard ground and foundation are visibly lit; no dark/blotchy atlas chunks or seams; the raised development sign still lights correctly (it has its own bake); added lights do not also render as realtime lights (no doubled brightness, no frame-time spike); late joiner sees the same lighting.
+- Needs human: headset look at brightness/feel and frame rate through the towers.
+- Priority: normal
+
+### Container Yard lights rebake — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: 4 yard lamp-post lights moved out of their poles, intensity/range retuned, 19 baked lights added (`Added baked lights`), Container Yard rebaked lights-only with atlas bindings unchanged; new lightmap approved. See `docs/atlas-lights-only-rebake.md`.
+- Setup: Container Yard block, single client, then 2 clients with a late joiner aboard.
+- Check: at night the track-side yard between the lamp posts, the west/east container walls and the gantry crane feet are lit; no dark/blotchy atlas chunks or seams; the added lights do not also render as realtime lights (no doubled brightness, no frame-time spike passing the yard); late joiner sees the same lighting.
+- Needs human: headset look at brightness/feel and frame rate through the yard.
+- Priority: normal
+
+### Farm Silos lamp lights rebake — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: 10 Farm baked lamp lights moved out of their meshes (4 yard light posts, attic spot at x=-31, 5 pond lanterns) and Farm rebaked lights-only; atlas bindings unchanged, new lightmap approved. See `docs/validation/farm-silos-polish-2026-11-15/README.md`.
+- Setup: Farm Silos block, single client, then 2 clients with a late joiner aboard.
+- Check: at night the pond lanterns light the path around the pond, the yard posts light the ground beneath them, and the farmhouse attic spot lights its floor; no dark or blotchy atlas chunks or seams elsewhere on Farm compared with before; the late joiner sees the same lighting.
+- Needs human: headset look at lamp brightness/feel.
+- Priority: normal
+
+### Admin R3 noclip toggle and snap turn in noclip — queued 2026-11-17
+- Commit(s): uncommitted
+- Changed: `NewPlayer.Update` toggles `RailAdminTools.ToggleNoClip()` on right thumbstick click (admins only; non-admin dev builds keep the old R3 stickMove toggle). Snap turn (right stick left/right) now also runs while noclip flying.
+- Setup: Quest headset, admin account, snap turn enabled; also once as a non-admin.
+- Check: admin R3 enters/exits noclip; in noclip, right stick left/right snap-turns about the head; right stick up/down still lifts; smooth turn mode unchanged (no turn in noclip); non-admin R3 does nothing to noclip.
+- Needs human: headset
+- Priority: normal
+- Mode: fix-on-fail
+
 ### Finale catwalk metal footsteps — queued 2026-11-17
 - Commit(s): uncommitted
 - Changed: `bridge-finale-v1.prefab` `Cross-track catwalk +8` and `Off-path button balcony` AudioSurface changed Stone to Metal.
@@ -135,10 +946,10 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 - Evidence: Unity Editor and Android release-reference C# compilation,
   28 focused EditMode assertions, prefab render
   inspection. No Play Mode run. See [current behavior](testing-tools.md#admin-pause-page--november-17-2026).
-- Setup: two authenticated clients, one admin and one non-admin; repeat with
-  admin as host and peer, in public and private expeditions. Include release
-  headset builds and an Editor account without admin privileges.
-- Check: non-admin has no Test tab; admin gets only four controls. L3 does
+- Setup: two authenticated clients in Development Builds, one admin and one
+  non-admin. Repeat with the admin as host and peer in public and private
+  expeditions. Include an Editor account without admin privileges.
+- Check: non-admin has no Test tab; admin gets five controls. L3 does
   nothing. Start/P, ordinary pages, grab/follow/dismiss and re-open still work.
   Pokes fire once until withdrawal. Labels immediately reflect each toggle.
 - Check: focused Editor Game view F adds 100 fuel once per key press, capped
@@ -164,6 +975,7 @@ Headset hand tracking and VR feel, real network jitter across machines, audio qu
 
 
 ### Bridge fortress refresh and midpoint defender — queued 2026-11-17
+- November 20 RC desktop PASS for the two defenders, pause at 29.197 s, exactly one reinforcement, late arrival, two mid-hold master changes, completion at 60.000 s and fresh-run reset. Wider combat coverage and target-headset acceptance remain queued. [Case ledger and traces](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
 - Scoped live result November 17: **PASS** in one authenticated editor client for
   both initial defenders naturally reaching controls, one reinforcement near
   the 30-second threshold and bridge completion at exactly 60 seconds accumulated
@@ -329,6 +1141,8 @@ Revision 4 (2026-11-17): z-fighting fixes, see-through steel walkway replacing t
 - **Evidence:** [checks and images](validation/station-raised-signs/README.md).
 
 ### Skyscraper raised development sign — queued 2026-11-16
+
+- November 23 combined lighting bake passed a solo desktop public departure. All 3,439 renderer bindings matched in the running expedition. Ride past the sign on Quest to check the warm uplight and letter contrast through gameplay fog. [Bake and runtime evidence](skyscraper-layout.md#combined-block-and-sign-lighting--november-23-2026).
 - Commit(s): uncommitted.
 - Changed: solid CutePixel lettering and a bottom-mounted baked spotlight on the front development sign; isolated fascia lightmap preserves existing tower atlas lighting.
 - Setup: Skyscraper Works in an expedition; inspect the approach sign at duck height.
@@ -982,6 +1796,13 @@ No new block conversion or device run occurred during this documentation task.
 - Needs human: Quest browser launch/return, headset reach and readability at duck height.
 - Priority: normal
 
+### Compound rating panel and low button — queued 2026-11-20, manual-only
+- Changed: Station Info's rating panel has a warm gold and bronze palette, matching gold heading and button, a blank initial status, three Raider Legends walkthrough panels, and a physical button centered 0.38 m above the floor.
+- Cheap checks: Unity Edit Mode validated the saved callback, font references and three texture crops. A ray check in Compound measured the trigger against the stone floor and found a clear 1 m frontal approach. The gold palette and one-line appeal were checked in Compound and inspected in the [0.50 m eye-level capture](../output/rate-game-board-gold-heading.png).
+- Setup: Compound on a Quest headset and on desktop.
+- Check: approach the panel at normal duck height and press RATE GAME with either hand. Confirm the native Quest prompt opens, cancel back into the room, and check recovery after a failed launch. On desktop, open the store listing and compare its Reviews, See all and Write a Review controls to the illustrated steps. Check readability from the aisle. Stop before submitting a rating.
+- Priority: normal
+
 ### Compound rating button and instruction PNG — queued 2026-11-11, manual-only
 - Regression 2026-11-13: Actual button dispatch/debounce/status/room retention PASS again; external store and headset PNG/readability remain human checks. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
 - Queue run 2026-11-12 evening: **BLOCKED (manual-only)**: previous desktop PASS retained; native Meta UI/cancel, replacement PNG review and headset reach remain pending. No rating submitted. Shared Unity/commit metadata and evidence are in the newest Results entry.
@@ -1003,6 +1824,7 @@ No new block conversion or device run occurred during this documentation task.
 - Priority: normal
 
 ### Stranded return: three clients and the original repro (d9ab4c4fc) — queued 2026-11-11, manual-only
+- November 20 RC desktop PASS after a real public bridge win. The non-master rejoined the retained Returning expedition after its token, issued its leave in 0.060 s and reached the crew’s ready Compound in 2.742 s. The third client then returned there too. The original three-headset win remains open. [Case ledger and traces](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
 - Regression 2026-11-13: Evening stranded-token case excluded; fresh normal public return and cut return-control connection PASS with three clients. See the [fresh scenario ledger](validation/playtest-queue/2026-11-13-regression/scenario-ledger.md).
 - Queue run 2026-11-12 evening: **BLOCKED only on original headset repro (3 clients)**: targeted desktop return/rejoin portion PASS. A disconnected non-master rejoined the retained Returning expedition after its return token, immediately entered Leaving, and recovered to Compound in 2.70 s from that sample. Public-return state was seeded in an isolated private room and third client's session updates held to retain it; not a natural public win. Shared Unity/commit metadata and evidence are in the newest Results entry.
 - Commit(s): d9ab4c4fc (2-client cases PASSED 2026-11-11, see Results)
@@ -1050,6 +1872,34 @@ No new block conversion or device run occurred during this documentation task.
 
 
 ## Results
+
+### Overnight desktop batches, November 24
+
+Unity 6000.3.24f1 on `main` at `56b909c28`, two MPPM desktop clients on real Photon, no headset. Four new editor harnesses in `Assets/Editor/Checks/Networking/` (`RailFinaleBatchLiveChecks`, `RailFinaleDriveLiveChecks`, `RailCrewBatchLiveChecks`, `RailCompoundBatchLiveChecks`). Harness bugs were fixed between runs; no game code changed. [Verdicts and traces](validation/playtest-queue/2026-11-24-overnight/).
+
+- **PASS, 5x burns no fuel.** Fuel stayed at 40.67 on both clients over about 700 m at 20 m/s (60 samples). A peer that left and rejoined during 5x read the same value. Back at 1x, draining resumed with no jump, and toggles while stopped kept the train at 0 m/s. The one failed verdict was a harness sample taken while the peer was leaving the room.
+- **PASS, bridge lowering timing.** A continuous 5x hold reached 100% in 12.8 s with one midpoint reinforcement on both clients. A 1x hold with one 4 s release took 61.9 s of active holding, with one reinforcement. Progress stayed frozen during the release, and a peer that rejoined mid-hold matched the host within 0.3%.
+- **PASS, final bridge driving handoff.** After stopping midspan and a peer GO, the train ramped back in 2.2 s. Control passed at finale-local Z 110.6, and both riders escaped. A 5x approach without stopping slowed from 20 to 4 m/s in 2.0 s at takeover with no distance jump on either client (the harness verdict fired before the ramp ended; see `finale-drive-fast-takeover-samples.txt`). An incomplete bridge crashed at entry with no escape credit.
+- **PASS, victory music fade (private runs).** Both clients played one music source, audible through the Ending and Returning countdown, then faded over 2.9 to 3.0 s on leaving to staging.
+- **PASS, live crew size.** Solo run: 18 coal and 10 gold per block at value 4.17. After a late join, the unreached block reached 28 coal and 16 gold within 5.5 s, the reached block and enemies were unchanged, the nearest new loot was 227 m from a player, and the value was 2.60. After the peer left, extras were gone by 25 s, but a moved coal stayed. The rejoin restored crew-2 counts with no duplicates and identical loot view IDs (88). A master handoff kept counts. The moved coal was moved by the host's transform, so a real grab and bag stash still need a check.
+- **PASS, run ID.** The private run used one 32-hex ID on both clients. Public departure and Editor quick-start were not checked.
+- **PASS, two-client seam pursuit.** A minion crossed the Motel/Farm seam, and the client positions matched within 0.71 m over 33 samples. It stopped chasing and walked back once the player left. Pursuit across a master handoff was not covered.
+- **PASS, cupcake light sync and drop timer.** The peer saw three toggles within 0.23 to 0.25 s. A dropped lit cupcake went dark after 61.4 s on both clients. The rejoin-while-lit and stash checks did not run.
+- **PASS, Roadside Motel capacity (Edit Mode).** 96 coal and 64 gold candidates. Crews 1 to 8 select their exact counts (crew 8: 93/52) on all five normal blocks. `RailResourceBalanceChecks` had been failing on a stale four-block count; fixed in `56b909c28`. `RailSessionChecks.Run()` passed.
+- **PASS, Compound gold bar credit, November 24 rerun.** Two authenticated desktop clients on Photon. In the baseline rerun the untagged test bar disappeared, the peer wallet stayed at 141 coins for 15 s, and the receipt produced no wallet API response. Compound cargo cleanup removes untagged expedition cargo, so the old test mistook disappearance for a crate deposit. The harness now gives the test bar the same Compound lifetime as carried cargo. For the matching receipt, `POST /coins/deposit` returned HTTP 200 and `{"status":200,"data":{"coins":241,"credited":100,"idempotent":false},"success":true}`. The crate consumed one bar and the peer recorded one credit over 15 s. Headset interaction and a carried-back bar through the full return and restore path remain unverified.
+- **BLOCKED, scripted bag withdrawals and departure carry.** The simulated rig's take-out did not complete reliably, so the withdrawal cases were skipped. The November 23 one-client result stands, and the headset check is unchanged.
+
+### Grouped desktop checks, November 23 — report-only
+
+Two-client Photon coverage exercised crew-size changes, bridge lowering and surge, the stop/restart crossing, fuel continuity, and public departure. Three clients passed the baseline departure, acknowledged handoff, and non-master reconnect fixture. Offline and Edit Mode checks added seam pursuit and pickup coverage, and the live seeded-bag withdrawals survived cleanup. The blocked-landing crash retained all 31 watched views. One surge enemy missed the 25-second approach threshold, the boarding client's captured departure skipped “ALL ABOARD!”, and the session fixture failed its build-scene assertion. No fixes were made. Targeted cases that need more evidence remain queued. [Ten-item report and evidence](validation/playtest-queue/2026-11-23-grouped-report.md).
+
+### Bridge, idle enemies and public crew return — November 20 RC
+
+Unity 6000.3.24f1, three authenticated desktop clients, main `bb87c3ddf3df2e718aab9dbbc6b69b8d1a5b3a6b` plus existing local edits. **PASS** for physical 60-second lowering across two master changes, exactly one midpoint reinforcement, idle-enemy attraction/release/chase, two natural public wins, replay reset and post-token recovery to the crew’s Compound. **FAIL** for an intermittent coal view-ID collision during simultaneous public departure. A separate restored-helmet readiness stall passed the `c89d1f95e40176e12c029df8df8dcaa41a0b69b6` ownership fix rerun on all three clients, including a new simultaneous departure with zero sampled duplicate views. **BLOCKED** for original headset victory, grip, traversal and encounter balance. [Case ledger, tested assemblies and per-client traces](validation/playtest-queue/2026-11-20-rc/bridge-return.md)
+
+### Public and private expedition arrivals — desktop PASS after fix, 2026-11-20
+
+Three real Photon clients on Unity 6000.3.24f1 reproduced the reserved-slot cold-start failure on `1579de836c1b6ceefcd037fcf5dcbc206ab311a3` plus local changes. Fix `bb87c3ddf3df2e718aab9dbbc6b69b8d1a5b3a6b` passed both full process reruns. The client reclaimed actor 2 and avatar 2001 aboard moving trains in both room types. At eleven checkpoints the clients agreed on route, motion command, fuel within 0.008, cargo and enemy identities, downed actors, bag contents and flashlight allocation. The next headset checks remain in the original queue entry. [Case ledger and traces](validation/playtest-queue/2026-11-20-rc/late-join.md)
 
 ### Bridge defender approaches and 60-second hold — PASS (scoped), 2026-11-17
 
@@ -1182,3 +2032,88 @@ with the admin pause page. Historical November 11–13 evidence remains in Resul
 The user requested restoration and revision of the original geometry before another Blender pass. The previous 394-chunk / 228,866-triangle version is retired; use the reduced-source entry above. Historical [integration evidence](validation/skyscraper-atlas/production-integration.md) remains available.
 
 _(empty)_
+
+## Tales from the Rails prefab placement — queued for playtest
+
+Check the Station Info wall on Quest after moving or scaling the Compound prefab instance. Confirm there is one board above the bench and both leaderboards populate after sign-in.
+
+## Station Info bench removed, board lowered — queued for playtest
+
+On Quest in Compound: the bench is gone, the Tales From The Rails board starts just above the floor, the stats canvas still lines up with the board's white panel, and both leaderboards stay readable from duck height. Walk where the bench was (no invisible collision) and check the rebaked lighting on the board and floor. See `docs/subway-compound.md`.
+
+### Rate Game falls back to store page on Meta error 1002 — queued 2026-11-22, headset-only
+- Status: queued for playtest
+- Changed: Diagnostics report c4d768ec (build 0.4.0, Quest) showed `[Rate Game] code 1002 "Not allowed to launch rate and review flow for this user"` from `RateAndReviewLauncher`. `RailRateGame` now falls back to opening the store listing URL on any launcher error or exception. The report is left open until verified.
+- Cheap checks: Unity compiled, Console error query empty. The Android path is not compiled in the editor.
+- Check: on Quest press RATE GAME; if the native flow is refused, confirm the store page opens and the status reads "Store opened. Find Ratings and Reviews."
+
+### Compound fountain pixel water — queued for playtest
+- In the Compound on Quest, inspect the blue-green ripple arcs near the pedestal and from across the hall. Check both eyes for shimmer, clipping at the chipped rim, and excessive brightness in the station lighting.
+- Edit Mode confirmed the saved surface mesh and supported shader.
+
+## Paired diagnostic incidents — queued for playtest
+
+Use two signed-in non-admin clients. Delay one world load beyond 90 seconds. Verify High with separate master and client histories, delivery after upload retries, and surviving evidence when the witness disconnects. Hold Departing for 90 seconds for Critical. Recover a 30–90 second load for Warning. Repeat in another run, verify recurrence in the web inbox, and check headset notification and normal departures for false positives.
+
+## Public departure board and platform glow — queued 2026-11-23
+
+- November 23 desktop rerun passed. Only the committed actor transferred. Both active boards showed their personalized departure copy, and stepping off during the first countdown cleared both glows before re-entry. Quest readability remains queued for playtest. [Two-client board and roster capture](validation/playtest-queue/2026-11-23-fixes-boards.txt).
+
+- Changed: the public departure board now says the platform leaves as one crew in every state: idle "PUBLIC TRAIN / Stand on the platform to board / Everyone on it leaves together"; countdown "DEPARTS IN N / K ducks boarding together" plus a personal "You're aboard!" or "Step on to join this crew"; after the timer "ALL ABOARD! / Departing together..." for the crew and "TRAIN DEPARTING / Next train boards soon" for others (it no longer falls back to the idle prompt); "FULL (8/8) / Next train after this one" for ducks left out. An amber strip around the pressure plate pulses while the countdown runs.
+- Editor evidence: the player-define compile and wording checks passed. The November 23 follow-up allowed the sign exporter's exact supplemental lighting scene in the build list and reran `RailSessionChecks.Run()` through both cargo checks. Unity logged 46 passes.
+- Check with two clients: one duck steps on, both boards count down with the right personal line and both see the glow; let it depart and confirm the crew sees "ALL ABOARD!" and the other duck "TRAIN DEPARTING", then idle again. Step off mid-countdown to confirm the glow turns off. On Quest, check the board fits and reads from the plate, and the glow is visible but not blinding.
+
+## Held weapon contacts and compound arrivals — November 23
+
+- [ ] On headset, touch the Huggy grip, stock and muzzle to a wall and floor. Check for contact at the visible gun and absence of contact above it.
+- [ ] Compare the held cupcake with the shop display, then check grip, candle light and dropped collision.
+- [ ] With no eligible running public train, press JOIN. Verify the return position faces the readable error, then retry with an eligible train and verify boarding.
+- [ ] Create a private code from the compound. Verify the creator faces the platform from outside its trigger, and a normal public arrival still uses the regular spawn slots.
+
+## Final bridge driving handoff — queued for playtest (2026-11-23)
+
+Drive partway across a lowered bridge, stop and restart. Confirm both clients retain controls until the front reaches the far bank at finale Z110. Check escape credit for riders, position continuity and a two-second ramp to 4 m/s from slow and fast approaches. Capture headset frame times across takeover and results display. An incomplete bridge should still crash at entry.
+
+- November 24 desktop run passed the stop and restart, Z110 takeover, escape credit, slow and fast ramps and the incomplete-bridge crash (see Results). Headset frame times across the takeover and results display remain queued for playtest.
+
+## Canyon mine entrance lanterns — queued for playtest
+
+On headset, approach both creek-facing mine openings from the bank and bridges at night. Check that the hanging lanterns identify both entrances and preserve a clear view into the passages.
+
+## Canyon creek and mine contact audio — queued for playtest
+
+On headset, step and push off the creek bed and each of the five underground puddles. Listen for splashes on wet contact and stone in the dry gaps. Check timber, metal, sand and ballast on the route back. With a second player, listen to their wet and dry hand contacts.
+
+## Spawns follow live crew size — queued 2026-11-24
+
+- [ ] Two clients, private run: start as solo (second client stays in compound/menu), then have the second client join after departure. Within about 5 s of joining, blocks ahead of the train gain coal/gold (solo 18 coal → duo 28 coal per block) and enemies only once the crew reaches 3; blocks already reached keep their counts. Nothing appears within 35 m of either player. Coal value in the furnace popup drops from about 4.2 to 2.6.
+- [ ] Have the second client leave. After about 20 s, untouched extra loot in unreached blocks disappears on both clients; held, stashed or moved items stay. Re-join and confirm the loot comes back without duplicates. Master handoff mid-run keeps counts unchanged. A 3-player join (enemy 4 → 8 per block) needs a headset or three-client session.
+- November 24 desktop run passed the first two items with two clients (see Results). A real grab or bag stash of an extra before the peer leaves is still unchecked; the run moved the coal by transform.
+- [ ] Tripled coal (November 24): on headset with a duo, check a block has noticeably more coal (28 per block), the fuel gauge rises about 2.6 per chunk, and frame time stays steady near coal piles and during departure seeding.
+- [ ] Full coal on headset (queued November 24): with an eight-player crew, every block ahead seeds 93 coal (plus 52 gold and 12 enemies). On a Quest client, capture frame times at departure seeding, while the train passes a fully stocked block, standing in the densest coal area (Skyscraper towers, Container Yard, Motel arrival lot) and after several crew changes. Compare against a solo run on the same route. If eight players are not available, record the largest crew tested and leave this item open. Also check the new Roadside Motel coal (bus roofs, guest rooms, pool basins) for hand reach.
+
+## Mixed enemy crowds, occupied landings and LIV selfie voice | queued for playtest, November 23, 2026
+
+- In a disposable private two-client expedition, use the master editor's Duck Rails / Tests / Enemies / Spawn 22 mixed crowd actors. Observe 10 minutes of chase, narrow doors, stairs and overlapping death and Huggy flares. Record both views, frame times and any penetration or stalled retreat. Check ground crowds and the boarding minion/spider on the moving train. Verify the current minion/hook contact volumes and flare protection.
+- On the master select a live blocker and choose Launch three Smashers at selected blocker. Repeat for minion, bomber, Smasher, spider and hook. Check both views for actual contention, supported landings and one impact per completed landing. Exercise moving blockers, bomber removal and repeated flares during descent.
+- On the surviving editor choose Observe mixed crowd master crash. Terminate the disposable master client during a blocked landing, then repeat during a corrective hop. Record the process-exit timestamp, view IDs, post-handoff movement, landed state and recovery on each remaining client. Repeat with desktop and Quest as master. The observer checks IDs, authority and movement. Visual contact, impact counts, crash timing and device performance require separate observation.
+- Open the owner's LIV selfie view with a second voice client listening. Compare quiet room noise below the detector threshold, muted speech, transmitting speech and release to silence. Confirm the local beak follows the audible transmission in each case.
+
+## Persistent bundle display previews
+
+In Compound, look for the Huggy flare's yellow glow and falling embers at the muzzle, and the Quackbear cupcake's lit candle and pink point light. Check from the aisle at duck eye height, with and without bundle ownership, and after pulling and releasing each display. Repeat at the departure and midpoint displays that use the shared prefab.
+
+- The Huggy display emitters are 28% larger and sit 9 cm farther along the muzzle axis. Previewed the saved tuning in the open Windows Play Mode session. See `output/compound-shop-huggy-flare-tuned.png`. Pull and release remains queued.
+
+- Windows Unity Edit Mode, 2026-11-23. Simulated the three authored Huggy flare emitters and captured the revised shop with the candle's original emission mask and the pink light. See `output/compound-shop-authored-effects.png`. The earlier oval effects passed a desktop pull and snap-back check. Repeat it with the revised effects in Play Mode.
+
+## Compound and moving-train fixes
+
+- Windows integration checks, 2026-11-23. Unity compiled and `RailSessionChecks.Run` passed. The Go `./router` and `./router/duckz` tests passed. The scenarios below remain queued for playtest.
+
+- Start public and private runs normally. Separately move an active train past the station and onto a curve, then join using the Compound JOIN button or a private room code. Confirm the player first appears on the current deck and is carried on the next frame. Delay motion or the clock until route and cargo are ready, and verify that placement and readiness wait.
+- Deposit a real bar at the Compound and at each expedition receiver with two clients. Check one consumption and one depositor credit, including repeated intake contact and a capped wallet. Listen near and beyond 15 m for deposit audio and 10 m for the recharge cue while moving the gun.
+- Confirm the authenticated list and checkout charge 500 for the nail bat, 350 for night vision and 75 for the helmet with the companion config in a test environment.
+- Inspect all three capped supplies lights and the golden countdown. Check both Quack Mart window openings and surrounding solid surfaces. Check Container Yard edges from both banks, on board, and above stacked or angled containers.
+- Toggle the held cupcake repeatedly and observe it from a second headset. Verify the warm 14 m light and emission clear when switched off or stashed.
+- Held Quackbear cupcake flame, 2026-11-24. Edit Mode render of `Weapon_Quackbear` showed the candle emission lit after the material now uses `WeaponQuackbear_Emissive`. Toggle it in a headset and from a second client: the flame texture must show when on and be black when off or stashed. Two-client check not yet run.

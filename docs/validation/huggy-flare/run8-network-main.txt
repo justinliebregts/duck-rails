@@ -1,0 +1,26 @@
+2026-11-21T05:03:52.1310744Z Started two-client Huggy flare gun check
+2026-11-21T05:04:02.8380570Z Stage=0 room=11111 players=2
+2026-11-21T05:04:02.8402877Z ACK 0 actor=1 master=True
+2026-11-21T05:04:02.9142088Z ACK 0 actor=1 master=True
+2026-11-21T05:04:02.9719588Z ACK 0 actor=1 master=True
+2026-11-21T05:04:06.8589130Z Spawned Weapon_Huggy(Clone) view=1002
+2026-11-21T05:04:07.0181627Z Stage=1 room=11111 players=2
+2026-11-21T05:04:07.0311056Z Grabbed gun; charged=True
+2026-11-21T05:04:10.0231929Z Trigger press 1
+2026-11-21T05:04:10.1300998Z PASS fired via trigger key=00100001 charge=0.00 muzzle=(1.41, 2.39, 72.88) dir=(0.00, 0.00, 1.00)
+2026-11-21T05:04:15.0985929Z Sample at charge 0.50: pos=(1.41, 1.10, 72.50) phase=Rest
+2026-11-21T05:04:16.0535157Z Trigger press 2 during cooldown, charge=0.60
+2026-11-21T05:04:17.0834906Z PASS cooldown blocked the early press
+2026-11-21T05:04:17.0844948Z ACK 1 actor=1 master=True same shot within 0.00 m
+2026-11-21T05:04:17.1330697Z ACK 1 actor=1 master=True same shot within 0.00 m
+2026-11-21T05:04:17.1952490Z ACK 1 actor=1 master=True same shot within 0.00 m
+2026-11-21T05:04:17.4654390Z Stage=2 room=11111 players=2
+2026-11-21T05:04:20.1157290Z Peer sees charge full
+2026-11-21T05:04:20.1167316Z ACK 2 actor=1 master=True
+2026-11-21T05:04:20.1751937Z ACK 2 actor=1 master=True
+2026-11-21T05:04:20.2340429Z ACK 2 actor=1 master=True
+2026-11-21T05:04:20.4692578Z Stage=3 room=11111 players=2
+2026-11-21T05:04:27.1198323Z Placed RailZombie(Clone) view=86 root=(0.21, 2.18, 71.38) aim=(0.21, 2.73, 71.38) (aim 1.76 m above floor)
+2026-11-21T05:04:27.4672917Z Released RailZombie(Clone) for the shot
+2026-11-21T05:04:31.2208397Z Shot sample: phase=Rest bounces=3 travel=3.73 pos=(0.21, 1.10, 69.72) fromEnemy=4.02
+2026-11-21T05:04:31.2223471Z FAIL Flare came down near the enemy, 4.02 m

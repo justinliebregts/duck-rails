@@ -38,10 +38,11 @@ queued for playtest; it is not verified in Play Mode, multiplayer or headset.
   [Station Info](../output/subway-terminal-model/scene-info.png),
   [Supplies](../output/subway-terminal-model/scene-supplies.png),
   [reverse](../output/subway-terminal-model/scene-reverse.png).
-- Known consequences: `Validate Subway Blockout`, `Render Subway Views`, the Compound
-  material pass and `Apply Sample Setup` still target SubwayV2 and were not updated or
-  run. A whole-scene rebuild through `RailSceneBuilder` reinstalls SubwayV2 and drops
-  this swap. Supplies stock is still visual only. Sections below describe SubwayV2.
+- Update November 22: the SubwayV2 editor tooling was removed (builder, blockout checks, Compound
+  material pass and baked-lighting sample pass). `RailSceneBuilder` now installs SubwayTerminal through
+  `RailCompoundInstaller`, so a rebuild no longer brings SubwayV2 back. The disabled SubwayV2 instance and its
+  prefab folders are being deleted by hand. Supplies stock is still visual only. Sections below describe the
+  retired SubwayV2 and are kept as history.
 
 ### Gate faces and wire mesh — November 15, 2026
 
@@ -153,49 +154,56 @@ queued for playtest; it is not verified in Play Mode, multiplayer or headset.
   [side](../output/subway-terminal-model/full-trackedge.png),
   [upper volume](../output/subway-terminal-model/full-upper.png).
 
-## Discord station — November 11, 2026
+## Discord station — November 20, 2026
 
-A local **JOIN DISCORD** physical button with a "Join the Discord!" TextMeshPro
-heading sits on the inner right partition of the Station Info nook, facing the
-rating station across the bench. It reuses `PressableButton`; `RailDiscordLink`
-opens `https://discord.gg/sfyvhahnDW` with `Application.OpenURL` (Quest browser on
-headset), ignoring repeat presses for 3 seconds. No networking or room change.
+The 1.66 × 0.91 m wall panel on the south partition of Station Info uses the
+[Discord Clyde logo](https://discord.com/branding) and CutePixel SDF lettering.
+The larger logo sits above four spaced rows for finding crewmates, getting game
+updates, sharing ideas and feedback, and giveaways. The **JOIN DISCORD** physical
+button is centered 0.38 m above the floor for players around 0.5 m tall.
 
-The editable prefab is `Assets/DuckRails/Compound/Discord/DiscordStation.prefab`
-(change the invite on its `RailDiscordLink.inviteUrl`). `Duck Rails > Compound >
-Install Discord Station` installs it under `Compound Geometry` only when absent and
-validates the callback, URL and CutePixel SDF labels. Validation: installed through
-Unity MCP in the open editor, validation passed, no Console errors; a scene camera
-capture confirmed placement and readability. Browser launch on desktop/Quest and
-headset reach are queued for playtest.
+The editable prefab is `Assets/DuckRails/Compound/Discord/DiscordStation.prefab`.
+`Duck Rails > Compound > Install Discord Station` installs it under
+`Compound Geometry` when absent. Its `PressableButton` calls
+`RailDiscordLink.OpenInvite` to open `https://discord.gg/sfyvhahnDW` in the
+system browser. A three-second guard prevents repeat opens.
 
-## Rating station — November 11, 2026
+Unity Edit Mode confirmed the trigger height against the local floor, clear
+access from the aisle, the invite callback and URL, and the fit of all six
+CutePixel labels. Both Unity renders use a camera 0.50 m above the floor.
+[Panel close-up](../output/compound-discord/panel.png) ·
+[View from the aisle](../output/compound-discord/compound-eye-level.png).
+Quest reach and browser launch are queued for playtest.
 
-The compound has a local **RATE GAME** physical button beside a world-space PNG
-instruction canvas on the inner left wall of the Station Info nook. It reuses
-`PressableButton` for VR touch and desktop aiming/clicking. On Quest it requests
-the initialized Meta SDK's native rating/review UI; desktop opens the configured
-Meta app's store listing. Failure shows a retry message and does not change the
-room. No rewards or submitted-review tracking are attached.
+## Rating station — November 20, 2026
 
-Replace `Assets/DuckRails/Compound/Rating/RateGameInstructions.png` with your art,
-keeping its `.meta` file. The canvas updates automatically. Use 1024 × 768 (4:3)
-to retain the current proportions, or assign another texture to the prefab's
-`Instructions PNG - replace texture` RawImage. The editable prefab is
-`Assets/DuckRails/Compound/Rating/RateGameStation.prefab`; its instance is under
-`Compound Geometry` in `Assets/Scenes/Compound.unity`.
+The north wall of Station Info has a **RATE DUCK RAILS** panel with a dark bronze
+face, copper-toned gold trim and a rich gold button. It uses the same framed
+layout and CutePixel SDF lettering as the Discord station, with the heading
+matching the button's gold. The appeal reads
+“Please rate us! It helps a ton for making new content.” The **RATE GAME** button
+is centered 0.38 m above the floor for players around 0.5 m tall.
 
-`Duck Rails > Compound > Install Rating Station` installs the saved prefab only
-when absent and preserves subsequent art/placement edits. The placeholder uses
-the CutePixel font source and all live labels use CutePixel SDF.
-Quest store launch, return, physical reach and readability are queued for playtest.
-Validation: Unity 6000.3.24f1 batch Edit Mode compilation and installation passed
-with exit code 0, no C# errors or exceptions. The station's persistent callback,
-PNG reference, world-space canvas and CutePixel labels passed setup checks;
-the scene diff contains only the new station instance. Unity MCP was unavailable;
-the existing project-scoped relay configuration was checked and CLI validation
-targeted `X:/Work/duck-rails`. No Play Mode or review submission was performed.
-The SDK integration follows [Meta's rating/review documentation](https://developers.meta.com/vr/documentation/unity/ps-rate-and-review/).
+The world-space canvas displays the original Raider Legends walkthrough side by
+side, with captions for scrolling to Reviews, selecting See all and choosing
+Write a Review. The source PNG is Assets/Textures/UI/review_instructions_vert.png
+in the Raider Legends project. In Duck Rails it is stored as
+Assets/DuckRails/Compound/Rating/RateGameInstructions.png. The three RawImages
+crop the same 1024 × 2048 texture into separate steps.
+
+Quest requests the Meta SDK's native rating prompt. Desktop opens the Duck Rails
+store listing, where the illustrated steps apply. PressableButton handles VR
+touch and desktop clicks. The status area starts blank and shows feedback
+after pressing the button. Quest store launch, cancel/return, physical reach and
+readability are queued for playtest.
+
+Duck Rails > Compound > Install Rating Station places the saved
+RateGameStation.prefab under Compound Geometry when absent.
+
+Unity Edit Mode verified the button callback, height against the stone floor,
+clear frontal approach and all three instruction crops. The updated gold panel
+and single-line appeal passed the scene check.
+[0.50 m eye-level capture](../output/rate-game-board-gold-heading.png).
 
 ## Material concept — November 4, 2026
 
@@ -336,3 +344,19 @@ Source: `ArtSource/SubwayTerminal/build_quackville_sign.py` and `QuackvilleSign/
 - Scene-owned `Compound Music - Dark Horizons` AudioSource automatically loops at fixed pitch throughout Compound (2D, initial volume 0.0175, existing Effects mixer, no reverb/doppler). Scene unloading stops it; returning creates a fresh loop. Volume is an initial mix choice for listening review.
 - Unity import and command compilation passed in the verified Duck Rails editor; saved clip/importer and scene references checked. No Play Mode run. Listening, loop boundary and Quest streaming acceptance are queued for playtest. Preserve this scene-owned object if using legacy scene rebuild tools.
 - Fade follow-up: `CompoundMusic` starts silent and fades to the authored volume over 1.5 seconds using unscaled time. `PhotonSession.LoadWorldScene` starts a 0.75-second exit fade alongside veil cover and waits for silence before scene unloading. Normal loop boundaries do not fade. Autoplay is disabled; the component starts playback. Disabling/destroying the object directly or quitting still stops immediately. Compilation and saved component/settings checks passed; runtime listening remains queued.
+
+### Supplies canopy lightmap fix — November 18, 2026
+- User saw the Supplies Store roof sheets bake black in the lightmap view. Cause: `canopy()` in `build_terminal.py` assumed `x0 < x1`. Both Supplies canopies run `x0 > x1`, so each two-sided sheet was inside-out: the down-facing quad sat 2 cm above the up-facing one, and its texels hit the other quad's backface. Station Info's canopy was already correct.
+- Fix: whichever quad faces down now always sits 2 cm lower. Quad order, UVs, vertex and triangle counts are unchanged (Supplies_Store: 964 vertices). Rebuilt the `.blend` headless and re-exported the FBX. A Unity import check shows all 7 Supplies sheets the right way round (all 7 were inverted before). Console errors: empty.
+- Rebaked Compound synchronously, with the existing LightingData and 2 lightmaps. In the new lightmap, the undersides of all 7 Supplies sheets measure 0.74–0.77 luminance at their centres, against 0.58–0.85 on their tops. Edit Mode lightmap sampling only; headset appearance not checked.
+
+### Station Info bench removed, board lowered — November 20, 2026
+- User review: the bench under the Tales From The Rails board is removed, and the board moves down 0.9 m to sit just above the floor. In `build_info()` the timber board now spans Blender Z 0.05–1.85 and its white panel 0.20–1.70; the warm strip light above stays at 2.85. Rebuilt the `.blend` headless (Blender 5.3) and re-exported the FBX. Station_Info: 458 → 402 triangles.
+- Compound scene: `TalesFromTheRails` canvas moved from Y 1.845 to 0.945, so it still covers the panel (now Y 0.18–1.71).
+- Audio collision: re-partitioned Station_Info only, with the `RailStationAudioSurfaces` rules and the same three mesh assets (Metal 100, Stone 6, Wood 352 → 296). Edit Mode rays: the floor where the bench stood is clear (Stone at Y 0), and the board face is hit at X -8.72 at 0.15 m.
+- Rebaked Compound with **Bake Sample** (2 lightmaps). Edit Mode capture after the bake:
+  [Station Info board](../output/subway-terminal-model/scene-info-board-lowered.png). No new Console errors. No Play Mode or headset check; queued for playtest.
+
+### Fountain collision matched to raised rim — November 24, 2026
+- `Meshes/FountainSolidCollision.asset` regenerated from `Meshes/Fountain raised rim.asset` (the visual mesh used by the Compound scene override) minus the eight water-plane triangles at Y 0.34, so colliders follow the rim pieces raised in d6331e97c. GUID unchanged. Edit-mode check only; manual playtest by user.
+- Follow-up: the enabled fountain colliders are the `Audio collision - Stone/Metal` children (`Assets/DuckRails/StationAudioCollision/Compound-Fountain-*.asset`), not the disabled parent MeshCollider. Re-partitioned them from the raised-rim collision mesh (Stone 392, Metal 332 triangles). Downward physics raycasts over the 4.6 m footprint (8,589 samples) match the visible rim heights with 0 mismatches. Rerun `RailStationAudioSurfaces` partitioning if the fountain mesh changes again.

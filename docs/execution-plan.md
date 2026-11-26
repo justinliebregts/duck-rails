@@ -25,6 +25,19 @@
 - [x] Install and bake the [Quackwatt layout](nuclear-power-plant-layout.md) in the B project. All 2,587 Edit Mode checks passed.
 - [ ] Review the entrance, tower and waterworks traversal, multiplayer lighting and headset performance in the [playtest queue](playtest-queue.md).
 
+- [x] Simplify Lakeside ground, rebake navigation and lighting, connect fern and surface sounds, and validate saved scavenging pools for crews of 1–8. [Lakeside measurements](lakeside-campground-layout.md#ground-contact-audio-and-scavenging--november-25-2026)
+- [ ] Review Lakeside sound transitions, item reach, terrain traversal and headset frame time in play. [Playtest queue](playtest-queue.md)
+
+- [ ] Canyon mine revision is queued for headset traversal, visual seam and bridge review. See [Canyon layout](canyon-layout.md) and the [playtest queue](playtest-queue.md).
+- [x] Reduce the Canyon terrain to 4,654 triangles per render and collision representation. Comparing 74,551 surface samples with the previous mesh found a maximum height change of 1.8 cm.
+
+- [ ] Public train panel is installed. Verify public-only matchmaking, no-match recovery and headset reach with real clients. See [playtest queue](playtest-queue.md#public-train-join-panel).
+
+## Expedition departure horn
+
+- [x] Reuse the cockpit horn as a two-second cue when crew leave the compound for a public or private expedition.
+- [ ] Check timing and volume on host and peer, including private replay and a code join to a running expedition. [Queued for playtest](playtest-queue.md#expedition-departure-horn).
+
 ## November 17 — admin pause page
 
 - [x] Replace standalone L3 panel with an admin-only Test tab, four requested
@@ -35,6 +48,10 @@
 - [ ] Validate headset flight/collision restoration, invincibility and admin/non-admin
   visibility in release builds; verify host/peer refuelling and lifecycle reset.
   [Queued for playtest](playtest-queue.md#admin-pause-page--queued-2026-11-17).
+- [x] November 18: fifth Test button, Train Speed: 1x/5x, host-routed; Unity compile and
+  admin pause EditMode checks pass.
+- [ ] Validate the train speed toggle from master and non-master admins in a headset run, including bridge lowering at both speeds and a switch during a hold.
+  [Queued for playtest](playtest-queue.md#admin-train-speed-toggle--2026-11-18).
 
 - [x] November 17: implement random bounded ambience excerpts and bake overlaps
   into 13 background loops. Compilation, 1,236 excerpt/import EditMode checks and
@@ -62,6 +79,12 @@
   late-join/replay behavior, voice clarity and Quest streaming cost are queued for playtest.
 
 - [ ] November 16: validate bridge alarm four-second start spacing, release/re-grab cooldown, completion and spatial listening on real clients/headsets; queued for playtest.
+
+- [ ] November 18: loadout persistence: the worn bag (with contents), helmet and goggles survive
+  every scene/room change and a quit, crash or disconnect; held items drop at your feet when
+  changing worlds. A single-client live fixture passes all 20 stages. Second-client views, a
+  same-room rejoin and headsets remain
+  [queued for playtest](playtest-queue.md#loadout-survives-scene-changes-quits-crashes-and-disconnects--2026-11-18).
 
 - [ ] November 16: validate Duckz-style backpack downing and persistence: worn/held
   bags drop intact on downing; only worn bags restore on entry. Implementation,
@@ -140,6 +163,7 @@
 - [ ] Departure bundle natural pulls, checkout, shared cooldowns and headset/multiplayer acceptance: queued for playtest.
 
 - [x] November 12: install Quackbear, Huggy and Scrap Duck bundle assets/displays, separate replaceable bags/weapons and reused two-minute pull cooldowns. Unity compile, 103 EditMode checks and backend economy tests pass; see [character bundles](character-bundles.md).
+- [x] November 20: final Scrap Duck (shovel, 8-slot bag) and Huggy (flare gun, 8-slot bag) art hooked up; EditMode bundle, pickup-pose, shared-store and Huggy flare simulation checks pass. Combat, flare sync and headset acceptance are queued for playtest.
 - [ ] Configure Meta bundle products/prices, deploy backend catalog and validate checkout/restoration, pulls/cooldowns, real peers and headset reach. Queued for playtest; implementation does not complete commerce acceptance.
 
 - [x] November 12: install 25 broad box reverb zones across six selected prefabs; saved reference/settings checks and Console query pass. See [block reverb](block-reverb.md).
@@ -194,7 +218,7 @@
 - [x] November 11: install approved Farm northeast pond/playground replacement, redistribute 14 coal/14 gold candidates and author six paddock enemy candidates. Net 43,104 fewer triangles (21.5% of Farm); navigation and lighting baked/exported; scoped geometry/spawn/export checks pass. See [Farm evidence](farm-silos-layout.md#northeast-paddock-polish--november-11-2026).
 - [ ] Playtest Farm paddock climbing/slide, shallow pond and loose-item recovery, enemy pursuit, peer/late-join consistency and Quest performance. Queued; editor checks do not complete acceptance.
 
-- [ ] November 11: validate the compound rating button on Quest (native review UI, cancel/return, failure retry, physical reach) and inspect the replaceable instruction PNG. See [rating station](subway-compound.md#rating-station--november-11-2026).
+- [ ] November 20: validate the 0.38 m Compound rating button on Quest (physical reach, native review UI, cancel/return and failure retry) and check legibility and accuracy of the illustrated store steps. See [rating station](subway-compound.md#rating-station--november-20-2026).
 
 - [x] November 10: add midpoint (21 coal / 21 gold) and finale (28 / 26) candidate pools; route includes fixed 6 coal / 2 gold at each. Footprint/clearance, saved references, 100 seeds per pool and assembled eight-player route checks pass. See [evidence](validation/special-block-loot.txt).
 - [ ] Inspect special-block loot placement and playtest physical settling, reach, balance, late joining and host handoff.
@@ -219,9 +243,13 @@
 
 - November 9 fog tuning: night 0.06, pre-dawn 0.05, successful dawn 0.0125;
   runtime values and Expedition scene starting density updated. Headset readability review remains open.
+- [x] November 22: storm sky (Expedition and Login) with night/pre-dawn/dawn sky, sunrise glow and a
+  route mountain ring, ported from Duckz. Editor checks pass. See [storm sky](block-lighting.md#storm-sky-night-to-dawn--november-22).
+- [x] November 23: Justin verified the storm sky, sunny dawn and deep night in Play Mode; removed from the playtest queue at his request. Not measured: Quest 3 GPU before/after.
 
 - [x] November 9 deep regression: four authenticated desktop clients completed three private lifecycle passes (nine expeditions) and four public departure/return rounds, including late joins, handoff/rejoin, packet loss, loaded bags, downs/rescue, exact coal intake, both shops and safe payouts. Final repeat also proves all five dynamic bridge defenders with exact counts, unique markers and matching peer identities/controllers/poses. Fixed transport saturation, inconsistent local finish position and premature zero-clock departure deadlines; follow-up runs passed. All 15 final editor suites, three startup recovery faults and the complete two-client catalogue sweep pass. See [regression evidence and limits](overnight-regression.md).
 - [x] Two-client physical front-furnace checks pass stopped/moving/after handoff, duplicate rejection, empty-fuel recovery and resumed travel. Minion/spider transport and six isolated natural AI loops pass. These close the exercised desktop cases only; headset feel, natural multiplayer combat and target-device performance remain open.
+- [x] November 20 desktop RC. Three authenticated clients verified onboard arrival in running public and private expeditions after a fresh join, peer disconnect, former-host disconnect and complete process restart. A reserved-slot recovery fix passed both cold reruns. Target-headset checks remain queued. [Per-case evidence and limits](validation/playtest-queue/2026-11-20-rc/late-join.md)
 
 - [x] November 9: gate normal host eligibility on local world readiness and the candidate's retained current-run/phase token; preserve runtime room-owned loot on scene transitions and suspend expedition authority updates during transitions. Two-client startup, deliberate handoff and late join retain identical loot identities. See [evidence and remaining coverage](spawn-startup.md).
 - [x] November 9 review follow-up: recover interrupted startup without depending on master-produced route/cargo readiness. Require host heartbeat silence and a current-context reliable server barrier before requesting takeover. Two-editor faults before route creation, before manifest commit and before first cargo pose passed; original host resumed, both peers reached Running with identical loot identities and no duplicate-ID errors. See [recovery evidence](spawn-startup.md#interrupted-startup-recovery).
@@ -243,6 +271,7 @@
   (2,739), session (40), economy (53), cockpit and assembled-route (430) checks
   pass; API service/repository/routes pass. See [resource balance](resource-balance.md).
 - [x] November 9: validate matching scaled-gold client/API through actual four-account shop and safe reward transport, per-recipient remainders, late join/reconnect, authority handoff and no failure payout. See [private regression](overnight-regression.md#four-player-private-lifecycle-repeated).
+- [ ] November 24: coal, gold and enemy counts follow the live crew mid-run for unreached blocks (Justin). Implemented; see [resource balance](resource-balance.md#crew-scaling). Two-client and headset acceptance pending.
 - [ ] Validate natural first-coal reachability and resource balance on target headsets.
 - [ ] Playtest resource balance across solo/intermediate/eight-player crews on real
   clients/headsets, including uneven participation and stocked physical coal.
@@ -355,6 +384,7 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 
 ## November 6 — enemy track crossings
 
+- [ ] Verify cross-block pursuit, loss of target, homeward movement and authority handoff on headsets and real clients. See the playtest queue.
 - [x] Remove permanent railway exclusions and rebake all 17 block graphs offline; preserve outer block boundaries.
 - [x] Verify ground connections between both rail sides in every block and motel crossing paths; add train-relative occupied-node filtering and movement/shortcut checks.
 - [x] Actual motel/minion Play Mode: natural empty-track pursuit, parked-train detour, reverse pursuit after departure, and a stale path replanning around newly occupied track. 125 graph/avoidance checks and existing boarding/navigation regressions pass. See [track crossings](track-crossing.md).
@@ -402,6 +432,16 @@ Handoff date: October 28, 2026. Read `game-design.md` for decision status and sc
 - [x] User approved hospital district V2 site layout and specified two storeys plus accessible roof with ventilation, water tanks and HVAC.
 - [x] Record hospital V4 direction: south ER, glowing hospital sign, crashed/overturned ambulances in ER parking and surgery-room replacements; retain two-storey/roof arrangement.
 - [x] User approved hospital V4 for 3D; install rough Quackville hospital district, ground/upper/roof routes, surgery rooms, south ER, glowing sign and ambulance wrecks. Bake graph/lighting and register catalogue: 2,479 geometry/navigation/UV checks, 757 catalogue checks and 42 assertions across two offline Play Mode route rounds pass. See [hospital evidence](hospital-district-layout.md#validation-and-limits).
+- [x] Install the approved Hospital full-block exterior, rebuild its crawlgraph and lighting, and verify rail clearance, all spawn candidates, roof/stair access and saved receiver bindings. [Hospital evidence](hospital-district-layout.md#finished-campus-in-unity).
+- [x] Build the [Canyon survey camp and shaft works](canyon-layout.md) and the [Lakeside Campground arrival, cabin terraces and canoe beach](lakeside-campground-layout.md). Inspect the full-block Unity captures, rebuild navigation and lighting, and check routes and saved lightmap bindings in Edit Mode.
+- [x] November 25. Refine the Lakeside buildings, vegetation, shoreline, paths, railway and lighting. Rebuild offline navigation and lightmaps and verify window openings, trail clearance, existing spawn clearance and saved bindings in Edit Mode. [Refinement and captures](lakeside-campground-layout.md#november-25-campground-refinement).
+- [x] Build the Lakeside lookout and wraparound ramp, regroup tents around three fires and close the seven building roofs. Revise the woodland, crossing signs, paths and bank lights. Rebuild navigation and lighting and check the finished geometry in Edit Mode. [Lookout and tent clearings](lakeside-campground-layout.md#lookout-tower-and-tent-clearings).
+- [x] Deepen the Lakeside fern beds, clear the canoe-beach trail bend, mount the boathouse paddles and ground the dock pilings and loose scenery. Measure eye-height sightlines, ground contact and path clearance in Edit Mode. [Fern passage and grounded props](lakeside-campground-layout.md#fern-passage-and-grounded-props).
+- [x] Thin the Lakeside fern meshes, add compact fern patches and mature pines, refit the canoes, fold the crushed tent and remove the marked campsite clutter. Replace the overlook rocks, check every sign for coplanar faces and rebuild navigation and lighting. [Woodland and campsite detail pass](lakeside-campground-layout.md#woodland-and-campsite-detail-pass).
+- [ ] Playtest the refined campground on Quest and two clients, including the lookout climb, crossing visibility, foliage, thresholds, lanterns, the lakeshore and frame time. [Queued checks](playtest-queue.md#canyon-lakeside-campground-and-nuclear-power-plant--queued-for-playtest).
+- [x] Install the [Nuclear Power Plant exterior](nuclear-power-plant-layout.md) with the west turbine hall, east cooling towers, shift arrival and northern waterworks. Verify 3,210 geometry/navigation checks, 41 baked fixtures and all 1,353 saved lightmap bindings. Headset and real-client checks for all four exteriors are [queued for playtest](playtest-queue.md).
+
+- [x] Distribute hospital coal, gold and enemies across the furnished layout. Verify 176 saved candidates and seeded selections for crews of one through eight in Edit Mode. [Placement notes](hospital-district-layout.md#spawn-distribution-and-round-trees--november-23).
 - [ ] Validate hospital natural stairs/hand traversal, roof/courtyard recovery, low-eye lighting, enemy pursuit, real-client behavior and Quest performance. Offline checks do not close these acceptance items.
 
 - [x] Record separate skyscraper and hospital districts, with skyscraper first; deliver the [four-tower top-down layout and height section](skyscraper-layout.md). Drawing delivery only.
@@ -465,6 +505,7 @@ November 3 art-test utility: implemented Page Down block skip using the existing
 - [x] Revise mine drawing to [V4 staggered pits and crane](quarry-layout.md#v4--staggered-pits-and-crane), retaining three branching underground connections and lit office. User endorsed V3's concept; V4 exact offsets/crane placement remain drawing proposals.
 
 - [x] Review and build the approved [Canyon rough block](canyon-layout.md) with bridges, wall paths, worker routes, caves and creek. Catalogue, navigation and lighting checks passed. Raider Legends rope reuse, real-client/headset traversal and performance remain pending.
+- [x] Author Canyon's tunnel-weighted loot, underground enemies, local ambient sounds and southwest shaft rustle. The full crawlgraph was rebaked and the saved pools passed 800 crew/seed selections in Edit Mode. Headset audio and encounter traversal are queued for playtest.
 
 - [x] User approved Farm Silos V3 for 3D with apple trees. Install rough Quackville farm, four-level farmhouse and nine apple trees; preserve rail/loot/enemy contracts and bake offline navigation/lighting. See [implementation and validation](farm-silos-layout.md#installed-rough-blockout).
 - [ ] Review farm stairs, basement recovery, attic headroom, hay-to-roof climbing/descent, corn visibility and apple-tree scale on headset; complete real-client and Quest performance acceptance.
@@ -596,7 +637,7 @@ Deliverable: runnable baseline plus a verified reuse inventory.
 
 October 28 authentication progress: separate Unity and simplified backend copies are confirmed; client/backend sign-in compatibility changes compile and local backend tests pass. See `authentication-setup.md`. Justin subsequently confirmed backend and Photon authentication setup completed. This milestone targets DesktopPlayer first; headset acceptance is deferred. The broader readiness items below are not complete.
 
-Analytics follow-up: separate Duck Rails Android keys are now entered, inherited gold polling is removed, and Rails session events are instrumented. Editor previews are local only. Actual dashboard delivery and Windows platform configuration remain pending; see `analytics-setup.md`.
+Analytics follow-up: separate Duck Rails Android keys are now entered, inherited gold polling is removed, and Rails session events are instrumented. Editor previews are local only. Actual dashboard delivery and Windows platform configuration remain pending; see `analytics-setup.md`. November 18: expedition (run outcome, blocks, fuel, bridge, downs, revives, awards) and gameplay-coin economy events added; dead Duckz events removed. Implemented, queued for playtest, not validated.
 
 - [ ] Obtain the intended Duckz source location and confirm whether this repo will be a full project fork, an imported subset, or another supported arrangement.
 - [ ] Read source/project guidance before copying or changing anything. Preserve the original Duckz project.
@@ -615,6 +656,8 @@ Do not copy credentials into tracked documentation. Do not claim systems verifie
 ## Week 1 — session architecture with real state
 
 Deliverable: friends can form a crew, depart, join halfway through, see the same moving platform and objects, and return together.
+
+- [x] November 23 desktop regression with two authenticated clients. Leaving the public platform canceled the countdown. On re-entry only the rostered duck departed, after seeing “ALL ABOARD!”. The other duck saw “TRAIN DEPARTING” and the idle board. [Board and roster capture](validation/playtest-queue/2026-11-23-fixes-boards.txt).
 
 ### Decisions confirmed October 28
 - Standalone Login art and random camera spots; authenticate/connect/join before transitioning to Compound. No Quackville use.
@@ -996,6 +1039,7 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [ ] Review Skyscraper yard traversal, foundation recovery, upper-floor loot distribution, nighttime readability and real-client/headset performance (queued for playtest).
 
 - [x] November 11: repair eight Skyscraper yard workbenches and install brighter baked construction lighting. See docs/skyscraper-layout.md for validation.
+- [x] November 23: consolidate the raised sign into the main Skyscraper bake. Solo public departure reached Running with 3,439 matching lightmap bindings and the loading veil cleared. [Bake and runtime evidence](skyscraper-layout.md#combined-block-and-sign-lighting--november-23-2026).
 - [ ] Review brighter Skyscraper lighting on headset, including glare, shadows and upper-floor readability; queued with the existing yard playtest.
 
 - [x] November 11: document Farm-derived 1 m side-fence centerline inset; install two 3 m concrete boundary walls on Skyscraper with world-scaled repeating UVs. See docs/side-fences.md and docs/skyscraper-layout.md.
@@ -1011,6 +1055,7 @@ Starting-station art planning: split-platform direction selected; detailed platf
 - [x] November 13: install Motel-only offline spatial render chunks, retaining editable source geometry, collision/spawns and baked atlases. Compile and EditMode geometry/UV, saved-state and reversible-switch checks pass; see docs/quest-performance.md.
 - [ ] Motel consolidation: matched Quest frame-time/draw/memory/load A/B and runtime lighting/culling/interior acceptance; queued for playtest. Renderer-count reduction alone does not establish performance acceptance.
 - November 13 full-map atlas scoped Quest evidence: same-build 120 m pair has four valid views each; draws 24–70% lower, CPU medians and p95 improve, forward GPU p95 10.0 -> 10.4 ms. Both remain within sampled 72 Hz p95 budget. Pose difference 0.176 m / 0.23 degrees and both variants resident; memory/load, visual fixes, interiors, runtime and multiplayer acceptance remain pending. [Results](validation/motel-full-atlas/results.md). No production rollout.
+- [x] November 17: Motel production atlas integrated after the user fixed/rebaked its lights and approved a fresh triangle-preserving review (79,948 -> 79,948 triangles, 298 chunks, render chunks retired). Authoring guards pass; runtime/headset acceptance queued for playtest. See docs/roadside-motel-layout.md.
 
 - November 13 Motel Quest partial evidence: four valid Motel-first viewpoints, worst median CPU/GPU 14.7/14.7 ms and 61.5 FPS. Still over 72 Hz budget; comparison pitch differs ~8 degrees, controlled A/B and remaining acceptance stay open. See docs/quest-performance.md.
 
@@ -1037,3 +1082,9 @@ Starting-station art planning: split-platform direction selected; detailed platf
 
 - [x] November 16: install approved Blender bridge lever terminal with train hand snapping, shared progress display and mechanical loop. 27 terminal, 17 bridge-hold and 27 drive EditMode checks pass. See docs/final-escape-layout.md.
 - [ ] Validate bridge terminal headset feel, audio, two-client hold/release, late join/master handoff and replay; queued for playtest.
+
+- [ ] Tales from the Rails is implemented on client and API. Station Info readability, real-client event attribution, reconnects and deployed end-to-end acceptance are queued in docs/playtest-queue.md.
+
+- [ ] Validate paired incident capture across real non-admin clients and Quest, including unavailable witnesses and upload retries. See [playtest queue](playtest-queue.md).
+
+- [ ] Verify the far-bank win and smooth two-second train takeover on two clients and a headset. See the final bridge entry in the playtest queue.

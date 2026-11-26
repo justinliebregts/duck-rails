@@ -40,12 +40,6 @@ namespace Liv.Lck.UI
         private int _colorId;
         private bool _isDisabled;
 
-        private void Start()
-        {
-            _propertyBlock = new MaterialPropertyBlock();
-            _colorId = Shader.PropertyToID("_Color");
-        }
-
         public void SetLabelText(string text)
         {
             _labelText.text = text;
@@ -189,12 +183,19 @@ namespace Liv.Lck.UI
 
             if (!_renderer) return;
             
-            _propertyBlock = new MaterialPropertyBlock();
             SetMeshColor(_colors.NormalColor);
         }
         
         private void SetMeshColor(Color color)
         {
+            if (!_renderer) return;
+            // Focus and disabled-state callbacks can arrive before Start, including
+            // when a tablet is first activated. Initialize at the first actual use.
+            if (_propertyBlock == null)
+            {
+                _propertyBlock = new MaterialPropertyBlock();
+                _colorId = Shader.PropertyToID("_Color");
+            }
             _propertyBlock.SetColor(_colorId, color);
             _renderer.SetPropertyBlock(_propertyBlock);
         }

@@ -28,7 +28,7 @@ public static class RailAudio
 
 /// <summary>
 /// Drives the sounds that follow shared train state: rumble, rail joints, stop, fuel warnings,
-/// coal deposits and the ending music. Read-only on session state, so every client hears the same events.
+/// coal deposits, departure and ending cues. Read-only on session state.
 /// </summary>
 [DefaultExecutionOrder(200)]
 public sealed class RailAudioDirector : MonoBehaviour
@@ -37,7 +37,8 @@ public sealed class RailAudioDirector : MonoBehaviour
 
     static RailAudioDirector instance;
     readonly List<Cue> cues = new List<Cue>();
-    AudioSource rumble, music;
+    AudioSource rumble, music, defeat, departureHorn;
+    string defeatRun;
     float rumbleVolume, rumblePitch = 1f, pitchVelocity, aboardBlend, musicVolume;
     string musicRun;
     float prevDistance, prevFuel = -1f, nextWarning;
@@ -82,6 +83,7 @@ public sealed class RailAudioDirector : MonoBehaviour
         RunCues();
         UpdateRumble(bank, train);
         UpdateMusic(bank, onTrain);
+        UpdateDefeat(bank);
         if (train == null)
         {
             haveDistance = false; wasMoving = false; prevFuel = -1f;
@@ -89,6 +91,18 @@ public sealed class RailAudioDirector : MonoBehaviour
         }
         UpdateMotion(bank, train);
         UpdateFuel(bank, train);
+    }
+
+    public static void PlayDepartureHorn()
+    {
+        var clip = RailAudio.Bank?.departureHorn;
+        if (instance == null || clip == null) return;
+        if (instance.departureHorn == null)
+            instance.departureHorn = instance.MakeSource("Expedition departure horn", false);
+        var source = instance.departureHorn;
+        source.outputAudioMixerGroup = EffectsGroup();
+        source.clip = clip;
+        source.Play();
     }
 
     void UpdateCountdown(RailAudioBank bank)
@@ -156,7 +170,11 @@ public sealed class RailAudioDirector : MonoBehaviour
             int after = Mathf.FloorToInt(distance / bank.railJointSpacing);
             // A large jump is a re-sync or teleport, not wheels crossing joints.
             if (after > before && after - before <= 2 && speed > .3f)
-                RailAudio.Play(bank.railJoint, train.transform.position, Mathf.Lerp(.55f, 1f, Mathf.Clamp01(speed / bank.rumbleFullSpeed)));
+            {
+                float speed01 = Mathf.Clamp01(speed / bank.rumbleFullSpeed);
+                RailAudio.Play(bank.railJoint, train.transform.position, Mathf.Lerp(.55f, 1f, speed01));
+                if (PhotonSession.OnTrain) VibrationManager.instance?.TriggerTrackJoint(speed01);
+            }
         }
         prevDistance = distance; haveDistance = true;
         if (speed > .2f) wasMoving = true;
@@ -217,7 +235,32 @@ public sealed class RailAudioDirector : MonoBehaviour
         if (!rumble.isPlaying) rumble.Play();
     }
 
-    // Starts with a successful ending and fades out as the crew is sent back to the compound.
+    // One-shot sting for a lost run (crash or everyone down): every client in the rails room hears it
+    // once per run, wherever they are, and it fades out once the crew is sent back to the compound.
+    void UpdateDefeat(RailAudioBank bank)
+    {
+        var expedition = RailExpedition.Instance;
+        string run = PhotonSession.RunId;
+        bool lost = bank.defeatSting != null && PhotonSession.IsRailsRoom && expedition != null &&
+            expedition.State.finished && !expedition.State.success && expedition.State.run == run &&
+            (PhotonSession.Phase == RailPhase.Ending || PhotonSession.Phase == RailPhase.Returning);
+        if (lost && defeatRun != run)
+        {
+            defeatRun = run;
+            if (defeat == null) defeat = MakeSource("Defeat sting", false);
+            defeat.clip = bank.defeatSting; defeat.loop = false;
+            defeat.outputAudioMixerGroup = EffectsGroup();
+            defeat.volume = bank.defeatVolume; defeat.Play();
+        }
+        if (defeat == null || !defeat.isPlaying) return;
+        if (!lost || PhotonSession.Phase == RailPhase.Returning)
+        {
+            defeat.volume = Mathf.MoveTowards(defeat.volume, 0f, Time.unscaledDeltaTime / 1.5f);
+            if (defeat.volume <= 0f) defeat.Stop();
+        }
+    }
+
+    // Keep playing through the return countdown, then fade on leaving the expedition.
     void UpdateMusic(RailAudioBank bank, bool onTrain)
     {
         var expedition = RailExpedition.Instance;
@@ -225,25 +268,18 @@ public sealed class RailAudioDirector : MonoBehaviour
         bool active = onTrain && bank.bridgeMusic != null && expedition != null && expedition.State.finished &&
             expedition.State.success && expedition.State.run == run &&
             (PhotonSession.Phase == RailPhase.Ending || PhotonSession.Phase == RailPhase.Returning);
-        float target = 0f;
-        if (active)
+        if (active && musicRun != run)
         {
-            if (musicRun != run)
-            {
-                musicRun = run;
-                if (music == null) music = MakeSource("Bridge music", false);
-                music.clip = bank.bridgeMusic; music.loop = bank.loopMusic;
-                music.outputAudioMixerGroup = EffectsGroup();
-                musicVolume = 0f; music.volume = 0f; music.Play();
-            }
-            double deadline = PhotonSession.Get(RailSessionRules.Deadline, 0d) + RailSessionRules.ReturnDelaySeconds;
-            float remaining = (float)(deadline - PhotonNetwork.Time);
-            float fade = PhotonSession.Phase == RailPhase.Returning ? 0f : Mathf.Clamp01(remaining / bank.musicFadeOutSeconds);
-            target = bank.musicVolume * fade;
+            musicRun = run;
+            if (music == null) music = MakeSource("Bridge music", false);
+            music.clip = bank.bridgeMusic; music.loop = bank.loopMusic;
+            music.outputAudioMixerGroup = EffectsGroup();
+            musicVolume = 0f; music.volume = 0f; music.Play();
         }
         if (music == null) return;
-        float rate = target > musicVolume ? .5f : (active ? .15f : 1f);
-        musicVolume = Mathf.MoveTowards(musicVolume, target, Time.unscaledDeltaTime * bank.musicVolume / rate);
+        float target = active ? bank.musicVolume : 0f;
+        float fadeSeconds = active ? .5f : bank.musicFadeOutSeconds;
+        musicVolume = Mathf.MoveTowards(musicVolume, target, Time.unscaledDeltaTime * bank.musicVolume / fadeSeconds);
         music.volume = musicVolume;
         if (!active && musicVolume <= 0f && music.isPlaying) music.Stop();
     }

@@ -150,6 +150,15 @@ public sealed class RailControl : MonoBehaviour
             if (up && k == 4) PlayThrottle(bank.throttleLatch);
         }
         clickStep = step;
+        // Only the gripping hand feels it; the unheld spring-back is sound only.
+        if (driveHand != null) VibrationManager.instance?.TriggerThrottleClick(driveHand);
+    }
+    // Warn with faster pulses as the palm drifts toward the breakaway distance.
+    void DriftWarning()
+    {
+        if (driveHand == null || drivePalm == null || handle == null) return;
+        float drift = Vector3.Distance(drivePalm.position, handle.TransformPoint(gripPalmLocal)) / BreakDistance;
+        VibrationManager.instance?.TriggerDriftWarning(driveHand, Mathf.InverseLerp(.35f, 1f, drift));
     }
     public void ReleaseDrive()
     {
@@ -184,6 +193,7 @@ public sealed class RailControl : MonoBehaviour
                 forwardLatched = RailDriveLease.ForwardDetent(forwardLatched, travel);
                 driveProgress = forwardLatched ? 1 : travel;
                 if (previous != forwardLatched && driveHand != null) DetentFeedback();
+                DriftWarning();
             }
         }
         float progress = driveHand != null || simulatedDrive ? driveProgress :
@@ -233,6 +243,7 @@ public sealed class RailControl : MonoBehaviour
                     nextHeartbeat = 0; // Send STOP/GO edges immediately, not on the heartbeat timer.
                     if (driveHand != null && gripGranted) DetentFeedback();
                 }
+                if (!simulatedDrive) DriftWarning();
                 if (Time.unscaledTime >= nextHeartbeat)
                 {
                     nextHeartbeat = Time.unscaledTime + .15f;

@@ -29,6 +29,8 @@ public sealed class RailRoute : MonoBehaviour
     public string LoadedRun { get; private set; }
     public RailRouteState Selection { get; private set; }
     public float FinaleStart { get; private set; }
+    /// <summary>Shared route distance where the mid shop (helipad) block begins; -1 before the route is built.</summary>
+    public float MidpointStart { get; private set; } = -1;
     public const float StationLength = 160;
     public const float StationDepartureLength = StationLength / 2;
     public const float StartZ = 150;
@@ -86,7 +88,7 @@ public sealed class RailRoute : MonoBehaviour
             {
                 var chosen = RailTestTools.TryRoute(run, out var repeat) ? repeat : ChooseNormal(run, catalog, UnityEngine.Random.Range(0, int.MaxValue));
                 chosen.resourceCrew = Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey,
-                    PhotonNetwork.PlayerList.Count(p => !p.IsInactive)), 1, 8);
+                    RailSpectators.LiveCrewCount()), 1, 8);
                 PhotonSession.Instance.Commit(new Hashtable { [StateKey] = JsonUtility.ToJson(chosen) });
             }
             return false;
@@ -142,16 +144,35 @@ public sealed class RailRoute : MonoBehaviour
         Blocks.Clear(); var coal = new List<Transform>(); var enemies = new List<Transform>(); var gold = new List<Transform>();
         var graphs = new List<Game.AI.CrawlGraph>(); var offsets = new List<Vector3>();
         var enemyTypes = new List<int>();
-        float distance = StationDepartureLength;
+        // Scavenging blocks hold full-crew (8) selections. Each point records the smallest crew
+        // that uses it and where its block starts, so the master can scale blocks the train has
+        // not reached yet when the live crew changes. Fixed stops use crew 1 and start -1.
+        var coalNeed = new List<int>(); var goldNeed = new List<int>(); var enemyNeed = new List<int>();
+        var coalStart = new List<float>(); var goldStart = new List<float>(); var enemyStart = new List<float>();
+        float distance = StationDepartureLength; MidpointStart = -1;
         for (int i = 0; i < count; i++)
         {
             var block = Instantiate(catalog.Single(b => b.id == state.blocks[i]), state.placements[i], Quaternion.identity, transform);
-            Blocks.Add(block); distance += block.TrackLength;
-            coal.AddRange(SelectResources(block, RailSpawnKind.Coal, state));
-            RailEnemySpawnBalance.Append(block, state.enemySeed, state.resourceCrew, enemies, enemyTypes);
-            gold.AddRange(SelectResources(block, RailSpawnKind.Gold, state));
+            Blocks.Add(block);
+            float blockStart = distance;
+            distance += block.TrackLength;
+            if (i == MidpointBlockIndex(count)) MidpointStart = distance;
+            foreach (var kind in new[] { RailSpawnKind.Coal, RailSpawnKind.Gold })
+            {
+                var points = SelectResources(block, kind, RailResourceBalance.MaxCrew, state.enemySeed);
+                (kind == RailSpawnKind.Coal ? coal : gold).AddRange(points);
+                for (int p = 0; p < points.Length; p++)
+                {
+                    (kind == RailSpawnKind.Coal ? coalNeed : goldNeed).Add(RailResourceBalance.CrewForResource(kind == RailSpawnKind.Coal, p));
+                    (kind == RailSpawnKind.Coal ? coalStart : goldStart).Add(blockStart);
+                }
+            }
+            int before = enemies.Count;
+            RailEnemySpawnBalance.Append(block, state.enemySeed, RailResourceBalance.MaxCrew, enemies, enemyTypes, enemyNeed);
+            for (int p = before; p < enemies.Count; p++) enemyStart.Add(blockStart);
             graphs.Add(Game.AI.CrawlGraph.Load(block.graph)); offsets.Add(block.transform.position);
         }
+        void Fixed(List<int> need, List<float> start, int total) { while (need.Count < total) { need.Add(1); start.Add(-1); } }
         int middle = MidpointBlockIndex(count);
         midpointBlock.transform.position = state.placements[middle] + Vector3.forward * Blocks[middle].length;
         // The short service stop uses its authored counts, like the finale.
@@ -166,11 +187,15 @@ public sealed class RailRoute : MonoBehaviour
         RailSpawnPool.SelectEnemies(finale, state.enemySeed, enemies, enemyTypes);
         coal.AddRange(RailSpawnPool.Select(finale, RailSpawnKind.Coal, state.enemySeed));
         gold.AddRange(RailSpawnPool.Select(finale, RailSpawnKind.Gold, state.enemySeed));
+        Fixed(coalNeed, coalStart, coal.Count); Fixed(goldNeed, goldStart, gold.Count); Fixed(enemyNeed, enemyStart, enemies.Count);
+        expedition.routeCrew = state.resourceCrew;
+        expedition.coalCrew = coalNeed.ToArray(); expedition.goldCrew = goldNeed.ToArray(); expedition.enemyCrew = enemyNeed.ToArray();
+        expedition.coalStart = coalStart.ToArray(); expedition.goldStart = goldStart.ToArray(); expedition.enemyStart = enemyStart.ToArray();
         expedition.goldPoints = gold.ToArray();
         expedition.enemyTypes = enemyTypes.ToArray();
         expedition.coalPoints = coal.ToArray(); expedition.enemyPoints = enemies.ToArray();
         expedition.bridgeZ = z + 80;
-        var graph = RailGraphAssembly.Combine(graphs, offsets);
+        var graph = RailGraphAssembly.Combine(graphs, offsets, Blocks.Select(b => b.length).Concat(new[] { midpointBlock.length, finale.length }).ToArray());
         graph.RestrictToBounds(TravelBlocks.Select(b => new Bounds(b.transform.position + b.enemyBounds.center, b.enemyBounds.size))
             .Concat(new[] { new Bounds(finaleRoot.position + finale.enemyBounds.center, finale.enemyBounds.size) }).ToArray());
         manager.SetGraph(graph);
@@ -201,13 +226,16 @@ public sealed class RailRoute : MonoBehaviour
     }
 
     public static Transform[] SelectResources(RailBlock block, RailSpawnKind kind, RailRouteState state)
+        => SelectResources(block, kind, state.resourceCrew, state.enemySeed);
+    // The pool is shuffled once per seed, so a smaller crew's selection is a prefix of a larger one.
+    public static Transform[] SelectResources(RailBlock block, RailSpawnKind kind, int crew, int seed)
     {
         int count = RailSpawnPool.Count(block, kind) == 0 ? 0 : kind == RailSpawnKind.Coal
-            ? RailResourceBalance.CoalCount(state.resourceCrew) : RailResourceBalance.GoldCount(state.resourceCrew);
-        var selected = RailSpawnPool.Select(block, kind, state.enemySeed, count);
+            ? RailResourceBalance.CoalCount(crew) : RailResourceBalance.GoldCount(crew);
+        var selected = RailSpawnPool.Select(block, kind, seed, count);
         if (selected.Length < count)
             if (DuckzLog.AllowWarning(out var notice, block.id + " " + kind))
-                notice.Write($"Resource pool shortfall: {block.id} {kind} has {selected.Length}/{count} usable candidates for crew {state.resourceCrew}.", block);
+                notice.Write($"Resource pool shortfall: {block.id} {kind} has {selected.Length}/{count} usable candidates for crew {crew}.", block);
         return selected;
     }
     // Authored blocks run along world +Z; use their footprint length, not curved track distance.

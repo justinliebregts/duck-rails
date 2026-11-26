@@ -209,10 +209,10 @@ public sealed class SimulatedRigInput : MonoBehaviour
 
     void Update()
     {
-        if (RailDesktopInput.GetKeyDown(KeyCode.F2) && !DuckCompanionDebug.IsTyping) SetSimulating(!IsSimulating);
+        if (RailDesktopInput.GetKeyDown(KeyCode.F2)) SetSimulating(!IsSimulating);
         if (RailDesktopInput.GetKeyDown(KeyCode.F1)) showHelp = !showHelp;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (!UseInjectedInput && focused && !DuckCompanionDebug.IsTyping && !RailWorld.InputBlocked &&
+        if (!UseInjectedInput && focused && !RailWorld.InputBlocked &&
             !RailDiagnosticPanel.BlocksDesktopInput && (!IsSimulating || Cursor.lockState == CursorLockMode.Locked) &&
             RailDesktopInput.GetKeyDown(KeyCode.PageDown))
         {
@@ -230,7 +230,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
             // The keyboard throttle is also available while Quest Link supplies
             // tracked poses. VR does not capture the desktop cursor.
             bool held = UseInjectedInput ? InjectedInput.throttle : RailDesktopInput.GetKey(KeyCode.T);
-            SampleThrottle(held, !focused || DuckCompanionDebug.IsTyping || RailWorld.InputBlocked ||
+            SampleThrottle(held, !focused || RailWorld.InputBlocked ||
                 RailDiagnosticPanel.BlocksDesktopInput || RailExpedition.LocalDown);
             return;
         }
@@ -253,9 +253,9 @@ public sealed class SimulatedRigInput : MonoBehaviour
         // Session Controls owns the pointer while open. Editor overlays also
         // write the legacy suppression flag, so that flag alone is insufficient.
         if (RailDesktopInput.GetMouseButtonDown(0) && Cursor.lockState != CursorLockMode.Locked && !RailWorld.InputBlocked &&
-            !DesktopPlayer.SuppressCursorCapture && !DuckCompanionDebug.IsHovered && !DuckCompanionDebug.IsTyping)
+            !DesktopPlayer.SuppressCursorCapture)
             CaptureCursor();
-        if (!focused || Cursor.lockState != CursorLockMode.Locked || DuckCompanionDebug.IsTyping || Time.frameCount == cursorFrame)
+        if (!focused || Cursor.lockState != CursorLockMode.Locked || Time.frameCount == cursorFrame)
         { ResetThrottle(); return default; }
         if (RailWorld.InputBlocked) awaitNeutral = true;
         if (!RailDesktopInput.GetMouseButton(0) && !RailDesktopInput.GetMouseButton(1) && !RailDesktopInput.GetKey(KeyCode.T)) awaitNeutral = false;
@@ -282,7 +282,7 @@ public sealed class SimulatedRigInput : MonoBehaviour
         // Hands/head remain positionable for the diagnostic panel while loading.
         // Gameplay acquisition is still gated by the shared PlayerHand/control code.
         Buttons = blocked ? default : frame;
-        SampleThrottle(frame.throttle, blocked || !focused || DuckCompanionDebug.IsTyping ||
+        SampleThrottle(frame.throttle, blocked || !focused ||
             RailDiagnosticPanel.BlocksDesktopInput || RailExpedition.LocalDown);
         yaw += frame.look.x;
         pitch = Mathf.Clamp(pitch - frame.look.y, -80, 80);

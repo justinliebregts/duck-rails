@@ -18,7 +18,7 @@ public static class RailCanyon
     public const string Id="canyon-v1", RootName="Canyon authored v1", Folder="Assets/DuckRails/Canyon";
     public const string PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab", LightingFolder="Assets/DuckRails/Lighting/Blocks/"+Id;
     public const string BakeScene=LightingFolder+"/"+Id+"-bake.unity";
-    public const int LightCount=12;
+    public const int LightCount=21;
     static Material sand,rock,wood,steel,green,water;
     static Mesh cube;
     static readonly Dictionary<string,Mesh> boxes=new();
@@ -28,9 +28,119 @@ public static class RailCanyon
     static Transform Group(Transform p,string n){var g=new GameObject(n);g.transform.SetParent(p,false);return g.transform;}
     static float Segment(Vector2 p,Vector3 a,Vector3 b,out float t)
     {var aa=new Vector2(a.x,a.z);var d=new Vector2(b.x-a.x,b.z-a.z);t=Mathf.Clamp01(Vector2.Dot(p-aa,d)/d.sqrMagnitude);return Vector2.Distance(p,aa+d*t);}
-    public static bool Shaft(float x,float z)=>x>=-30&&x< -24&&z>=116&&z<122;
-    public static bool Cave(float x,float z)=>(x>=-30&&x< -24&&z>=89&&z<122)||(x>=-34&&x< -20&&z>=113&&z<125)||(x>=10&&x<18&&z>=82&&z<110);
-    public static float CaveFloor(float x,float z)=>x<0?-12-4*Mathf.Clamp01((z-89)/24):-12-6*Mathf.Clamp01((z-82)/24);
+    // Centerlines are shared by excavation, timber sets and traversal checks.
+    public static float RiverTunnelX(float z) => -9 + 3.7f * Mathf.Sin((z-45)*.12f);
+    public static float GalleryZ(float x) => Mathf.Lerp(118,107,Mathf.InverseLerp(-27,14,x)) + 1.5f*Mathf.Sin((x+27)*.23f);
+    public static bool Shaft(float x,float z) =>
+        (x>=-30 && x< -24 && z>=116 && z<122) || (x>=-14 && x< -8 && z>=38 && z<44);
+    // Small rounded pockets overlap the corridor along one shoulder.
+    public static readonly (int z,int side)[] MinePockets={(61,-1),(80,1),(98,-1)};
+    static bool InMinePocket(float x,float z)
+    {
+        foreach(var room in MinePockets)
+        {
+            float dz=(z-room.z)/2.25f;
+            if(Mathf.Abs(dz)>=1)continue;
+            float dx=(x-RiverTunnelX(room.z)-room.side*3.4f)/2.9f;
+            if(dx*dx+dz*dz<=1)return true;
+        }
+        return false;
+    }
+    public static bool Cave(float x,float z) =>
+        (x>=-30 && x< -24 && z>=89 && z<122) || (x>=-34 && x< -20 && z>=113 && z<125)
+        || (x>=10 && x<18 && z>=85 && z<112)
+        || (x>=-27 && x<=14 && Mathf.Abs(z-GalleryZ(x))<1.9f)
+        || (x>=-15 && x< -7 && z>=37 && z<46)
+        || InMinePocket(x,z)
+        || (z>=43 && z<=GalleryZ(x) && Mathf.Abs(x-RiverTunnelX(z))<2.15f);
+    public static float CaveFloor(float x,float z)
+    {
+        float west = -12-4*Mathf.Clamp01((z-89)/24);
+        float east = -12-3.6f*Mathf.Clamp01((z-85)/8)-2.4f*Mathf.Clamp01((z-93)/17);
+        if(x<=-19) return west;
+        if(x>=10) return east;
+        if(z<104) return -18;
+        return Mathf.Lerp(Mathf.Lerp(west,-18,Mathf.InverseLerp(-19,-14,x)),east,Mathf.InverseLerp(4,10,x));
+    }
+    internal static bool Covered(int x,int z)
+    {
+        for(int dx=0;dx<=1;dx++) for(int dz=0;dz<=1;dz++)
+            if(Height(x+dx,z+dz)<CaveFloor(x+dx,z+dz)+2.8f)return false;
+        return true;
+    }
+    // All reachable space below the river shares one acoustic. Split the rising
+    // approaches by elevation so an exterior listener on the bank stays dry.
+    public static void InstallMineReverb(Transform shell)
+    {
+        var group=Group(shell,"Canyon mine reverb");
+        var regions=new Dictionary<string,Bounds>();
+        for(int z=37;z<125;z++)for(int x=-34;x<18;x++)
+        {
+            if(!Cave(x+.5f,z+.5f)||(!Shaft(x+.5f,z+.5f)&&!Covered(x,z)))continue;
+            string region=x< -19 ? "West workings "+Mathf.Min(z/5,23) :
+                x>=10 ? "East workings "+Mathf.Min(z/5,21) :
+                z>=105 ? "Connecting gallery" : "Under-river tunnel and pockets";
+            for(int dx=0;dx<=1;dx++)for(int dz=0;dz<=1;dz++)
+            {
+                var floor=new Vector3(x+dx,CaveFloor(x+dx,z+dz),z+dz);
+                if(!regions.TryGetValue(region,out var bounds))bounds=new Bounds(floor,Vector3.zero);
+                bounds.Encapsulate(floor);
+                bounds.Encapsulate(floor+Vector3.up*2.7f);
+                regions[region]=bounds;
+            }
+        }
+        // Begin the vertical volumes at the chamber ceilings; fade out below each lip.
+        ShaftZone("Northwest shaft",-27,119,-13.3f);
+        ShaftZone("Southwest shaft",-11,41,-15.3f);
+        foreach(var region in regions)
+        {
+            var box=Group(group,region.Key);
+            box.localPosition=region.Value.center;
+            var settings=Group(box,"Reverb settings").gameObject.AddComponent<AudioReverbZone>();
+            settings.reverbPreset=AudioReverbPreset.Cave;
+            settings.reverbPreset=AudioReverbPreset.User;
+            settings.room=-400;
+            settings.roomHF=-750;
+            settings.decayTime=3.8f;
+            settings.decayHFRatio=.78f;
+            settings.reflections=-850;
+            settings.reflectionsDelay=.035f;
+            settings.reverb=180;
+            settings.reverbDelay=.045f;
+            BindReverbBox(box,settings,region.Value.size,.65f);
+        }
+        void ShaftZone(string name,float x,float z,float bottom)
+        {
+            const float top=-.65f;
+            regions[name]=new Bounds(new Vector3(x,(bottom+top)/2,z),new Vector3(6,top-bottom,6));
+        }
+    }
+    public static void InstallGorgeReverb(Transform shell)
+    {
+        var box=Group(shell,"Open gorge reverb");
+        // Span the two lower banks, including the creek bed, below the bridge decks.
+        box.localPosition=new Vector3(0,-6.7f,80);
+        var settings=Group(box,"Reverb settings").gameObject.AddComponent<AudioReverbZone>();
+        settings.reverbPreset=AudioReverbPreset.Mountains;
+        settings.reverbPreset=AudioReverbPreset.User;
+        settings.room=-1500;
+        settings.roomHF=-1500;
+        settings.decayTime=1.65f;
+        settings.decayHFRatio=.65f;
+        settings.reflections=-1250;
+        settings.reflectionsDelay=.09f;
+        settings.reverb=-850;
+        settings.reverbDelay=.07f;
+        BindReverbBox(box,settings,new Vector3(84,11.6f,68),1f);
+    }
+    static void BindReverbBox(Transform box,AudioReverbZone settings,Vector3 size,float fade)
+    {
+        var serialized=new SerializedObject(box.gameObject.AddComponent<Game.Audio.BoxReverbZone>());
+        serialized.FindProperty("size").vector3Value=size;
+        serialized.FindProperty("fadeDistance").floatValue=fade;
+        serialized.FindProperty("zone").objectReferenceValue=settings;
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+    }
     public static float Creek(float x)=>80+1.5f*Mathf.Sin(x*.12f);
     public static float Height(float x,float z)
     {
@@ -56,8 +166,24 @@ public static class RailCanyon
     static Mesh Save(string name,Mesh m)
     {
         m.name=name;string path=Folder+"/Meshes/"+name+".asset";var old=AssetDatabase.LoadAssetAtPath<Mesh>(path);
-        if(old){old.Clear();old.indexFormat=m.indexFormat;old.vertices=m.vertices;old.normals=m.normals;old.uv=m.uv;old.uv2=m.uv2;old.subMeshCount=m.subMeshCount;for(int i=0;i<m.subMeshCount;i++)old.SetTriangles(m.GetTriangles(i),i);old.bounds=m.bounds;old.UploadMeshData(false);Object.DestroyImmediate(m);EditorUtility.SetDirty(old);return old;}
+        if(old){CopySurfaceMesh(m,old);Object.DestroyImmediate(m);return old;}
         AssetDatabase.CreateAsset(m,path);return m;
+    }
+    // Replacing serialized mesh fields alone can leave the renderer using stale GPU indices.
+    // Write through the Mesh API so live prefab and scene instances see the same surface.
+    public static void CopySurfaceMesh(Mesh source,Mesh destination)
+    {
+        destination.Clear();
+        destination.indexFormat=source.vertexCount>ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16;
+        destination.vertices=source.vertices;
+        destination.normals=source.normals;
+        destination.uv=source.uv;
+        destination.uv2=source.uv2;
+        destination.subMeshCount=source.subMeshCount;
+        for(int i=0;i<source.subMeshCount;i++) destination.SetTriangles(source.GetTriangles(i),i);
+        destination.bounds=source.bounds;
+        destination.UploadMeshData(false);
+        EditorUtility.SetDirty(destination);
     }
     static GameObject MeshGo(Transform p,string n,Mesh mesh,Material mat,bool collision=true)
     {var g=Group(p,n).gameObject;g.layer=6;g.AddComponent<MeshFilter>().sharedMesh=mesh;var r=g.AddComponent<MeshRenderer>();r.sharedMaterial=mat;r.receiveGI=ReceiveGI.Lightmaps;r.scaleInLightmap=.3f;GameObjectUtility.SetStaticEditorFlags(g,StaticEditorFlags.ContributeGI);if(collision)g.AddComponent<MeshCollider>().sharedMesh=mesh;return g;}
@@ -73,43 +199,148 @@ public static class RailCanyon
         readonly List<Vector3> v=new();readonly List<Vector2> uv=new();readonly List<int> tr=new();
         public void Quad(Vector3 a,Vector3 b,Vector3 c,Vector3 d)
         {int k=v.Count;v.AddRange(new[]{a,b,c,d});var n=Vector3.Cross(b-a,c-a).normalized;foreach(var q in new[]{a,b,c,d})uv.Add((Mathf.Abs(n.y)>.5f?new Vector2(q.x,q.z):Mathf.Abs(n.x)>.5f?new Vector2(q.z,q.y):new Vector2(q.x,q.y))/3);tr.AddRange(new[]{k,k+1,k+2,k,k+2,k+3});}
-        public void Build(Transform p,string n,Material mat,bool collision=true){if(v.Count==0)return;var m=new Mesh{indexFormat=IndexFormat.UInt32};m.SetVertices(v);m.SetUVs(0,uv);m.SetTriangles(tr,0);m.RecalculateNormals();Unwrapping.GenerateSecondaryUVSet(m);MeshGo(p,n,Save(n,m),mat,collision);}
+        public Mesh CreateMesh(string name)
+        {
+            if (v.Count == 0) return null;
+            var mesh = new Mesh { name = name, indexFormat = v.Count>ushort.MaxValue ? IndexFormat.UInt32 : IndexFormat.UInt16 };
+            mesh.SetVertices(v);
+            mesh.SetUVs(0,uv);
+            mesh.SetTriangles(tr,0);
+            mesh.RecalculateNormals();
+            if (!Unwrapping.GenerateSecondaryUVSet(mesh)) throw new InvalidOperationException("Lightmap unwrap failed for "+name);
+            return mesh;
+        }
     }
-    static void Terrain(Transform root)
+
+    // A layer has one material and one height at each covered grid position. Holes
+    // remain empty. Floors and ceilings are separate layers even where they overlap.
+    sealed class TerrainLayer
     {
-        var p=Group(root,"Terraced canyon and hollow caves");
+        const int Chunk = 16;
+        readonly bool[,] cells = new bool[Chunk,Chunk];
+        readonly float[,] heights = new float[Chunk+1,Chunk+1];
+        readonly int originX, originZ;
+
+        public TerrainLayer(int originX, int originZ, Func<float,float,float> height)
+        {
+            this.originX = originX;
+            this.originZ = originZ;
+            for (int z=0; z<=Chunk; z++)
+            for (int x=0; x<=Chunk; x++)
+                heights[x,z] = height(originX+x,originZ+z);
+        }
+
+        public void Add(int x,int z) => cells[x-originX,z-originZ] = true;
+
+        bool Fits(int x,int z,int width,int depth,float tolerance)
+        {
+            float a = heights[x,z], b = heights[x,z+depth];
+            float c = heights[x+width,z+depth], d = heights[x+width,z];
+            // Changing the diagonal of a twisted strip can move its middle even
+            // when every original vertex lies on the new perimeter.
+            if ((width>1 || depth>1) && Mathf.Abs(a+c-b-d)>tolerance) return false;
+            for (int dz=0; dz<=depth; dz++)
+            for (int dx=0; dx<=width; dx++)
+            {
+                float u = (float)dx/width, v = (float)dz/depth;
+                float y = v >= u ? a + v*(b-a) + u*(c-b) : a + u*(d-a) + v*(c-d);
+                // A large edge may adjoin several short ones, another chunk or a mine wall.
+                bool edge = dx==0 || dz==0 || dx==width || dz==depth;
+                if (Mathf.Abs(y-heights[x+dx,z+dz]) > (edge ? .00001f : tolerance)) return false;
+            }
+            return true;
+        }
+
+        public void AppendTo(Surface surface,int maxSpan,float tolerance,bool ceiling=false)
+        {
+            Vector3 Point(int x,int z) => new Vector3(originX+x,heights[x,z],originZ+z);
+            for (int z=0; z<Chunk; z++)
+            for (int x=0; x<Chunk; x++)
+            {
+                if (!cells[x,z]) continue;
+                int bestWidth=1, bestDepth=1, availableWidth=Math.Min(maxSpan,Chunk-x);
+                for (int depth=1; depth<=maxSpan && z+depth<=Chunk; depth++)
+                {
+                    int run=0;
+                    while (run<availableWidth && cells[x+run,z+depth-1]) run++;
+                    availableWidth=run;
+                    if (run==0) break;
+                    for (int width=run; width*depth>bestWidth*bestDepth; width--)
+                    {
+                        if (!Fits(x,z,width,depth,tolerance)) continue;
+                        bestWidth=width;
+                        bestDepth=depth;
+                        break;
+                    }
+                }
+                var a=Point(x,z); var b=Point(x,z+bestDepth);
+                var c=Point(x+bestWidth,z+bestDepth); var d=Point(x+bestWidth,z);
+                if (ceiling) surface.Quad(a,d,c,b);
+                else surface.Quad(a,b,c,d);
+                for (int dz=0; dz<bestDepth; dz++)
+                for (int dx=0; dx<bestWidth; dx++)
+                    cells[x+dx,z+dz]=false;
+            }
+        }
+    }
+
+    public static IEnumerable<Mesh> BuildTerrainMeshes()
+    {
         for(int zz=0;zz<160;zz+=16)for(int xx=-48;xx<48;xx+=16)
         {
-            var rim=new Surface();var cliff=new Surface();var underground=new Surface();
+            var rim=new TerrainLayer(xx,zz,Height); var cliff=new TerrainLayer(xx,zz,Height);
+            var floor=new TerrainLayer(xx,zz,CaveFloor); var roofLayer=new TerrainLayer(xx,zz,(x,z)=>CaveFloor(x,z)+2.7f);
+            var underground=new Surface();
             for(int z=zz;z<zz+16;z++)for(int x=xx;x<xx+16;x++)
             {
                 var a=new Vector3(x,Height(x,z),z);var b=new Vector3(x,Height(x,z+1),z+1);var c=new Vector3(x+1,Height(x+1,z+1),z+1);var d=new Vector3(x+1,Height(x+1,z),z);
                 bool cave=Cave(x+.5f,z+.5f),shaft=Shaft(x+.5f,z+.5f);float low=Mathf.Min(a.y,b.y,c.y,d.y);
-                float floorA=CaveFloor(x,z),floorB=CaveFloor(x,z+1),roofA=floorA+2.7f,roofB=floorB+2.7f;
-                bool roof=low>=Mathf.Max(roofA,roofB)+.1f;
-                if(!shaft&&(!cave||roof))(low<-.01f?cliff:rim).Quad(a,b,c,d);
+                Vector3 Floor(Vector3 v) => new(v.x,CaveFloor(v.x,v.z),v.z);
+                Vector3 cap=Vector3.up*2.7f;
+                bool roof=cave && Covered(x,z);
+                if(!shaft&&(!cave||roof))(low<-.01f?cliff:rim).Add(x,z);
                 if(cave)
                 {
-                    underground.Quad(new(x,floorA,z),new(x,floorB,z+1),new(x+1,floorB,z+1),new(x+1,floorA,z));
-                    if(roof&&!shaft)underground.Quad(new(x,roofA,z),new(x+1,roofA,z),new(x+1,roofB,z+1),new(x,roofB,z+1));
+                    floor.Add(x,z);
+                    if(roof&&!shaft)roofLayer.Add(x,z);
                     Edge(x-1,z,a,b);Edge(x,z+1,b,c);Edge(x+1,z,c,d);Edge(x,z-1,d,a);
                     void Edge(int nx,int nz,Vector3 u,Vector3 v)
                     {
                         float uf=CaveFloor(u.x,u.z),vf=CaveFloor(v.x,v.z),ur=uf+2.7f,vr=vf+2.7f;
-                        if(!Cave(nx+.5f,nz+.5f)){float uy=Mathf.Clamp(u.y,uf,ur),vy=Mathf.Clamp(v.y,vf,vr);if(uy>uf+.01f||vy>vf+.01f)underground.Quad(new(u.x,uf,u.z),new(u.x,uy,u.z),new(v.x,vy,v.z),new(v.x,vf,v.z));}
+                        if(!Cave(nx+.5f,nz+.5f)){float uy=Mathf.Clamp(u.y,uf,roof?ur:Mathf.Max(uf,u.y)),vy=Mathf.Clamp(v.y,vf,roof?vr:Mathf.Max(vf,v.y));if(uy>uf+.01f||vy>vf+.01f)underground.Quad(new(u.x,uf,u.z),new(u.x,uy,u.z),new(v.x,vy,v.z),new(v.x,vf,v.z));}
+                        if(roof && !shaft && Cave(nx+.5f,nz+.5f) && !Covered(nx,nz))
+                            underground.Quad(Floor(v)+cap,v,u,Floor(u)+cap);
                         if(shaft&&!Shaft(nx+.5f,nz+.5f))underground.Quad(new(u.x,ur,u.z),new(u.x,u.y,u.z),new(v.x,v.y,v.z),new(v.x,vr,v.z));
                     }
                 }
             }
-            rim.Build(p,"Rim "+xx+" "+zz,sand);cliff.Build(p,"Cliff "+xx+" "+zz,rock);underground.Build(p,"Cave "+xx+" "+zz,rock);
+            var rimSurface=new Surface();
+            var cliffSurface=new Surface();
+            rim.AppendTo(rimSurface,16,.08f);
+            cliff.AppendTo(cliffSurface,8,.08f);
+            floor.AppendTo(underground,8,.04f);
+            roofLayer.AppendTo(underground,8,.04f,true);
+            string suffix=" "+xx+" "+zz;
+            foreach(var mesh in new[]{rimSurface.CreateMesh("Rim"+suffix),cliffSurface.CreateMesh("Cliff"+suffix),underground.CreateMesh("Cave"+suffix)})
+                if(mesh) yield return mesh;
         }
-        var creek=new Surface();for(int x=-40;x<40;x++){float a=Creek(x),b=Creek(x+1);creek.Quad(new(x,-12.06f,a-1.8f),new(x,-12.06f,a+1.8f),new(x+1,-12.06f,b+1.8f),new(x+1,-12.06f,b-1.8f));}creek.Build(root,"Shallow creek surface",water,false);
+    }
+
+    static void Terrain(Transform root)
+    {
+        var p=Group(root,"Terraced canyon and hollow caves");
+        foreach(var mesh in BuildTerrainMeshes())
+        {
+            string name=mesh.name;
+            MeshGo(p,name,Save(name,mesh),name.StartsWith("Rim ") ? sand : rock);
+        }
+        var creek=new Surface();for(int x=-40;x<40;x++){float a=Creek(x),b=Creek(x+1);creek.Quad(new(x,-12.06f,a-1.8f),new(x,-12.06f,a+1.8f),new(x+1,-12.06f,b+1.8f),new(x+1,-12.06f,b-1.8f));}const string creekName="Shallow creek surface";MeshGo(root,creekName,Save(creekName,creek.CreateMesh(creekName)),water,false);
         var terraces=Group(root,"Exploration landings");for(int i=0;i<Landings.Length;i++)Group(terraces,"Plateau "+(i+1)).localPosition=Landings[i];
     }
     static void Railway(Transform root)
     {
         var p=Group(root,"Rickety railway trestle");
-        Box(p,"Continuous physical train deck",new(0,-.25f,80),new(8,.5f,72),wood);
+        Box(p,"Continuous physical train deck",new(0,-.23f,80),new(8,.5f,72),wood);
         // Flat approach ballast meets the bridge deck even where the underlying canyon falls away.
         Box(p,"South ballast support",new(0,-.25f,22),new(8,.5f,44),sand);Box(p,"North ballast support",new(0,-.25f,138),new(8,.5f,44),sand);
         foreach(float x in new[]{-1.5f,1.5f})Box(p,"Track rail",new(x,.06f,80),new(.12f,.12f,160),steel,false);
@@ -123,51 +354,101 @@ public static class RailCanyon
         var cat=Group(root,"Broken worker catwalk and scaffolding");
         foreach(float x in new[]{-5.8f,5.8f})
         {
-            foreach(var span in new[]{new Vector2(66,75),new Vector2(77,85),new Vector2(87,96)})
+            foreach(var span in new[]{new Vector2(66,70.5f),new Vector2(73.5f,75),new Vector2(77,80.5f),new Vector2(83.5f,85),new Vector2(87,90.5f),new Vector2(93.5f,96)})
             {Box(cat,"Worker walkway segment",new(x,-3.15f,(span.x+span.y)/2),new(2.4f,.3f,span.y-span.x),wood);Beam(cat,"Outer worker handrail",new(x+Mathf.Sign(x)*1.1f,-2.1f,span.x),new(x+Mathf.Sign(x)*1.1f,-2.1f,span.y),.12f,steel);}
-            for(int i=0;i<15;i++)Box(cat,"Access stair",new(x,-i*.2f-.1f,66+i*.4f),new(2.4f,.2f,.4f),wood);
-            Box(cat,"Deck stair landing",new(Mathf.Sign(x)*4.7f,-.1f,65.5f),new(3.4f,.2f,2),wood);
+            for(int i=0;i<15;i++)Box(cat,"Access stair",new(x,-i*.2f-.1f,x<0?101.8f-i*.4f:60.2f+i*.4f),new(2.4f,.2f,.4f),wood);
+            Box(cat,"Deck stair landing",new(Mathf.Sign(x)*5.2f,-.075f,x<0?102.6f:59.4f),new(2.4f,.2f,1.2f),wood);
             foreach(float z in new[]{72f,82f,92f}){Box(cat,"Scaffold landing",new(x,-3.15f,z),new(3.4f,.3f,3),wood);foreach(float xx in new[]{x-1.5f,x+1.5f})Beam(cat,"Scaffold upright",new(xx,-12,z),new(xx,-1.9f,z),.12f,steel);}
         }
     }
-    public static float FootbridgeY(float z)=>-.8f*Mathf.Sin(Mathf.PI*Mathf.Clamp01((z-43)/74));
+    public static float FootbridgeY(float z)=>.065f-.8f*Mathf.Sin(Mathf.PI*Mathf.Clamp01((z-50)/60));
     static void Footbridge(Transform root)
     {
         var p=Group(root,"East pedestrian suspension bridge");
-        for(int z=43;z<117;z++)
+        for(int z=45;z<115;z++)
         {
-            float a=FootbridgeY(z),b=FootbridgeY(z+1);var deck=Box(p,"Plank deck",new(24,(a+b)/2-.12f,z+.5f),new(3.2f,.24f,1.01f),wood);deck.transform.localRotation=Quaternion.Euler(-Mathf.Atan2(b-a,1)*Mathf.Rad2Deg,0,0);
+            float a=FootbridgeY(z),b=FootbridgeY(z+1);var deck=Box(p,"Plank deck",new(24,(a+b)/2-.12f,z+.5f),new(3.2f,.24f,.996f),wood);deck.transform.localRotation=Quaternion.Euler(-Mathf.Atan2(b-a,1)*Mathf.Rad2Deg,0,0);
             foreach(float x in new[]{22.35f,25.65f}){float ca=a+1.2f+1.8f*Mathf.Pow((z-80)/37f,2),cb=b+1.2f+1.8f*Mathf.Pow((z+1-80)/37f,2);Beam(p,"Suspension cable",new(x,ca,z),new(x,cb,z+1),.09f,steel,false);Beam(p,"Pedestrian handrail",new(x,a+1,z),new(x,b+1,z+1),.1f,wood);if(z%3==0)Beam(p,"Cable hanger",new(x,a,z),new(x,ca,z),.06f,steel,false);}
         }
-        foreach(float z in new[]{43f,117f}){Box(p,"Rim landing",new(24,-.12f,z),new(5,.24f,4),wood);foreach(float x in new[]{22.35f,25.65f})Box(p,"Anchor post",new(x,1.5f,z),new(.3f,3,.3f),wood);Box(p,"Rim connection",new(-5,.012f,z<80?40:120),new(60,.02f,3),sand,false);}
+        foreach(float z in new[]{43f,117f}){Box(p,"Rim landing",new(24,FootbridgeY(z<80?45:115)-.12f,z),new(5,.24f,4),wood);foreach(float x in new[]{22.35f,25.65f})Box(p,"Anchor post",new(x,1.5f,z),new(.3f,3,.3f),wood);}
     }
-    static void Lamp(Transform root,string name,Vector3 p)
-    {Box(root,name+" housing",p,new(.4f,.16f,.4f),steel,false);var l=Group(root,name).gameObject.AddComponent<Light>();l.transform.localPosition=p-Vector3.up*.15f;l.transform.localRotation=Quaternion.Euler(90,0,0);l.type=LightType.Spot;l.lightmapBakeType=LightmapBakeType.Baked;l.intensity=65;l.range=18;l.spotAngle=125;l.innerSpotAngle=85;l.color=new(1,.79f,.52f);l.shadows=LightShadows.Soft;}
+    static void Frame(Transform parent,float x,float z,float halfWidth,float yaw)
+    {
+        var frame=Group(parent,"Mine timber set");
+        frame.localPosition=new(x,CaveFloor(x,z),z);
+        frame.localRotation=Quaternion.Euler(0,yaw,0);
+        foreach(float side in new[]{-halfWidth,halfWidth})
+            Box(frame,"Pit prop",new(side,1.15f,0),new(.23f,2.5f,.26f),wood);
+        Box(frame,"Cap timber",new(0,2.50f,0),new(halfWidth*2+.42f,.26f,.32f),wood);
+    }
     static void Dressing(Transform root)
     {
         var p=Group(root,"Cactus and rim maintenance scenery");var rng=new System.Random(731);
         foreach(float side in new[]{-1f,1f})foreach(float z in new[]{10f,20f,31f,132f,143f,151f})
         {
             float x=side*(15+rng.Next(24));float h=1.7f+(float)rng.NextDouble()*1.3f;
-            Box(p,"Cactus trunk",new(x,h/2,z),new(.48f,h,.48f),green);Box(p,"Cactus arm",new(x+.6f,h*.55f,z),new(1.2f,.35f,.35f),green);Box(p,"Cactus arm tip",new(x+1,h*.7f,z),new(.35f,h*.4f,.35f),green);
+            var cactus=Group(p,"Cactus");
+            cactus.localPosition=new(x,0,z);
+            cactus.localRotation=Quaternion.Euler(0,Mathf.Repeat(x*73+z*31,360),0);
+            Box(cactus,"Cactus trunk",new(0,h/2,0),new(.48f,h,.48f),green);
+            Box(cactus,"Cactus arm",new(.55f,h*.55f,0),new(.72f,.35f,.35f),green);
+            Box(cactus,"Cactus arm tip",new(1.08f,h*.55f+h*.2f-.175f,0),new(.36f,h*.4f,.37f),green);
             Box(p,"Sandstone outcrop",new(x-side*4,.5f,z+2),new(2.8f,1,2),rock);
         }
         foreach(var c in new[]{new Vector3(-25,0,25),new Vector3(30,0,135)})
-        {Box(p,"Tool shelter roof",c+new Vector3(0,3.1f,0),new(10,.25f,7),wood);Box(p,"Tool shelter back",c+new Vector3(0,1.5f,3.4f),new(10,3,.2f),wood);foreach(float x in new[]{-4.8f,4.8f})Box(p,"Tool shelter post",c+new Vector3(x,1.5f,-3.2f),new(.25f,3,.25f),wood);Box(p,"Maintenance crates",c+new Vector3(-3,.65f,1.8f),new(2,1.3f,2),wood);Lamp(root,"Shelter worklight",c+new Vector3(0,2.8f,0));}
-        foreach(var q in Landings){Box(p,"Ledge supplies",q+new Vector3(3.5f,.5f,0),new(1,1,1),wood);Lamp(root,"Plateau worklight",q+new Vector3(3.5f,2.7f,0));}
-        Lamp(root,"Shaft cave worklight",new(-27,-13.6f,119));Lamp(root,"Cave exit worklight",new(-27,-12,103));Lamp(root,"East cave worklight",new(14,-15.4f,105));Lamp(root,"Underbridge worklight",new(5,-.8f,82));
+        {Box(p,"Tool shelter roof",c+new Vector3(0,3.1f,0),new(10,.25f,7),wood);Box(p,"Tool shelter back",c+new Vector3(0,1.5f,3.4f),new(10,3,.2f),wood);foreach(float x in new[]{-4.8f,4.8f})Box(p,"Tool shelter post",c+new Vector3(x,1.5f,-3.2f),new(.25f,3,.25f),wood);Box(p,"Maintenance crates",c+new Vector3(-3,.65f,1.8f),new(2,1.3f,2),wood);}
+        foreach(var q in Landings)Box(p,"Ledge supplies",q+new Vector3(3.5f,.5f,0),new(1,1,1),wood);
+        var sets=Group(root,"Mine workings");
+        foreach(int z in new[]{94,101,108,113})Frame(sets,-27,z,2.46f,0);
+        foreach(int z in new[]{93,99,105,110})Frame(sets,14,z,3.35f,0);
+        for(int x=-21;x<=7;x+=7)Frame(sets,x,GalleryZ(x),1.42f,90);
+        for(int z=46;z<110;z+=9)Frame(sets,RiverTunnelX(z),z,1.58f,
+            Mathf.Atan(.444f*Mathf.Cos((z-45)*.12f))*Mathf.Rad2Deg);
+    }
+    static void InitializeMaterials()
+    {
+        Directory.CreateDirectory(Folder+"/Meshes");Directory.CreateDirectory(LightingFolder);boxes.Clear();
+        cube=AssetDatabase.LoadAssetAtPath<Mesh>("Assets/DuckRails/Lighting/Blocks/quarry-v1/Cube Block UV.asset");if(!cube)throw new Exception("Missing UV cube");
+        sand=Mat("Canyon sand","gravel",new(.8f,.65f,.43f));rock=Mat("Layered sandstone","concrete",new(.72f,.43f,.26f));wood=Mat("Weathered bridge timber","timber",new(.55f,.39f,.23f));steel=Mat("Bridge iron","weathered paint",new(.3f,.34f,.33f));green=Mat("Cactus","foliage",new(.34f,.48f,.24f));water=Mat("Shallow creek","lake water",new(.23f,.52f,.54f));
+    }
+
+    [MenuItem("Duck Rails/Authoring/Canyon/Rebuild canyon mine workings")]
+    public static void RebuildMine()
+    {
+        Guard();
+        InitializeMaterials();
+        var content=PrefabUtility.LoadPrefabContents(PrefabPath);
+        try
+        {
+            var root=RailBlock.FindEnvironment(content.transform,RootName);
+            foreach(var child in root.Cast<Transform>().ToArray())Object.DestroyImmediate(child.gameObject);
+            Terrain(root);
+            Railway(root);
+            Footbridge(root);
+            Dressing(root);
+            RailCanyonSurvey.Apply(root);
+            PrefabUtility.SaveAsPrefabAsset(content,PrefabPath,out bool saved);
+            if(!saved)throw new IOException("Could not save Canyon prefab");
+        }
+        finally { PrefabUtility.UnloadPrefabContents(content); }
+        AssetDatabase.SaveAssets();
     }
     public static void Guard(){if(Application.dataPath.Replace('\\','/')!="X:/Work/duck-rails/Assets"||EditorApplication.isPlaying||Lightmapping.isRunning)throw new Exception("Use Duck Rails Edit Mode without active bake");for(int i=0;i<SceneManager.sceneCount;i++)if(SceneManager.GetSceneAt(i).isDirty)throw new Exception("Save current scene changes first");}
     [MenuItem("Duck Rails/Authoring/Canyon/Install approved Canyon")]
     public static void Install()
     {
-        Guard();Directory.CreateDirectory(Folder+"/Meshes");Directory.CreateDirectory(LightingFolder);AssetDatabase.Refresh();boxes.Clear();
-        cube=AssetDatabase.LoadAssetAtPath<Mesh>("Assets/DuckRails/Lighting/Blocks/quarry-v1/Cube Block UV.asset");if(!cube)throw new Exception("Missing UV cube");
-        sand=Mat("Canyon sand","gravel",new(.8f,.65f,.43f));rock=Mat("Layered sandstone","concrete",new(.72f,.43f,.26f));wood=Mat("Weathered bridge timber","timber",new(.55f,.39f,.23f));steel=Mat("Bridge iron","weathered paint",new(.3f,.34f,.33f));green=Mat("Cactus","foliage",new(.34f,.48f,.24f));water=Mat("Shallow creek","lake water",new(.23f,.52f,.54f));
+        Guard();
+        var existing = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+        if (existing)
+        {
+            RailCanyonSurvey.Install();
+            return;
+        }
+        InitializeMaterials();
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);var go=new GameObject("Canyon");var b=go.AddComponent<RailBlock>();b.id=Id;b.displayName="Canyon";b.tags=new[]{"canyon","vertical","bridge","straight"};b.length=160;
         b.entry=Group(go.transform,"Track Entry");b.exit=Group(go.transform,"Track Exit");b.exit.localPosition=new(0,0,160);b.stop=Group(go.transform,"Suggested Stop");b.stop.localPosition=new(0,0,80);b.track=Enumerable.Range(0,81).Select(i=>new Vector3(0,0,i*2)).ToArray();
         b.enemyBounds=new Bounds(new(0,-5,80),new(80,16,70));b.enemySurfaceRailExclusion = default;
-        var root=Group(go.transform,RootName);Terrain(root);Railway(root);Footbridge(root);Dressing(root);
+        var root=Group(go.transform,RootName);Terrain(root);Railway(root);Footbridge(root);Dressing(root);RailCanyonSurvey.Apply(root);
         b.variations=new RailSpawnSet[3];
         var coal=new[]{new Vector3(-34,-7.5f,62),new(-34,-7.5f,98),new(-27,-15.5f,113),new(34,-3.5f,54),new(34,-11.5f,90),new(34,-3.5f,106)};
         for(int v=0;v<3;v++)

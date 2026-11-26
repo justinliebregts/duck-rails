@@ -57,6 +57,8 @@ public partial class BagObject
         }
         ApplyPhysics();
         if (data.Length == 14) GetComponent<RailCargo>()?.RestoreFrame(data[13] as object[]);
+        if (holder == LocalActor && holder != 0)
+            BagInventory.Trace("room recovery applied to my bag " + BagInventory.Describe(this));
         BagInventory.Local?.ReattachRecoveredBack(this);
     }
 

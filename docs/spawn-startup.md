@@ -180,3 +180,105 @@ gameplay, full navigation traversal, headset interaction, voice or Quest
 performance acceptance. The original screenshot's exact packet interleaving was
 not captured; the premature election was observed and its readiness gate is now
 explicitly regression-tested.
+
+## November 20 room 26164 — coal views 151–159 (fix implemented, queued)
+
+Incident: three clients departed public Compound 75292 together into expedition
+26164 ([report](validation/playtest-queue/2026-11-20-rc/bridge-return.md)). Actor 2
+(main editor) logged duplicate `RailCoal(Clone)` views 151–159 at 19:49:53 UTC and
+kept them unready, also after its transport rejoin; actors 1 and 3 were ready.
+
+Trace from the client samples (`bridge-return-samples.tsv.gz`):
+
+- All three joined 26164 between 19:49:46.1 and 46.9 with actor 1 as master; none
+  was `WorldReady`. Actor 1 never reported ready while master.
+- **Actor 3's Photon server clock was unsynchronised**: it sampled
+  `PhotonNetwork.Time = 0` from 19:49:46.9 to at least 51.6. This happened in no
+  other room of the run. Photon returns `ServerTimestamp = 0` until the
+  first time fetch is acknowledged.
+- With a zero clock every heartbeat from the live, loading host failed `Fresh`.
+  Its observation start was also stamped 0. After the sync, the wrapped (negative)
+  host stamps still failed the `sentAt - observationStartedAt` filter. The host
+  therefore looked silent.
+- The master switched 1 → 3 at 19:49:52.85 on all three clients. That is about
+  5.9 s after actor 3 joined, just after its five-second observation window. No
+  test handoff was requested. The only path that elects a non-ready peer is the
+  interrupted-startup recovery (event 114 echo, then `SetMasterClient`), so the
+  takeover came from there.
+- Actor 1 was seeding cargo at that time: its samples have a 0.6 s frame gap from
+  51.98 to 52.57. The views 1–159 are ordered flashlights, gold, then coal. The
+  duplicates are exactly the last nine coal (`coal-55`…`coal-63` by index).
+  Actor 3's `SeedCargo` filled the markers it had not yet received, reusing room
+  IDs 151–159 that it did not know about. Actor 1's in-flight tail then arrived
+  with the same IDs.
+- **Two spawns, not one registration replayed:** after actor 2's rejoin, the room
+  cache replayed both instantiations for each of 151–159 and none for 1–150. That
+  requires two cached events per ID. A preserved local object plus a single cached
+  event would have duplicated every view. The incident left no per-view markers or
+  senders. Senders actor 1 and actor 3 for marker-identical spawns are inferred from
+  the timeline and the seeding code; that interleaving was not captured.
+
+Why event 114 did not help: its echo covers spawns queued at the server before the
+probe. Actor 1 was alive, did not yet know it had lost authority, and was still
+sending. The barrier cannot cover spawns a live old master sends after the switch.
+
+Correction (`PhotonMasterHandoff*.cs`, `RailWorld.cs`, `RailExpedition.cs`):
+
+1. **No election without a synchronised clock.** While a connected peer's
+   `ServerTimestamp` is 0 it keeps publishing heartbeats but neither elects nor
+   recovers, and it re-requests server time (2 s cooldown). An observation begun
+   on that clock is restamped, with a fresh five-second window, on the first
+   synchronised frame.
+2. **Silence means no arrivals.** Startup recovery, and the normal path for an
+   unknown master, also require no structurally valid heartbeat *received* from
+   the master in the last five seconds by local time. Disagreeing stamps alone no
+   longer make a live host silent.
+3. **Post-switch settle handshake (events 118/119).** A newly confirmed local master
+   sends the previous master a reliable query. The server orders the switch before
+   that query. The previous master's reliable reply on the instantiation channel
+   therefore follows every spawn it sent while it still believed itself master.
+   Until the reply, `PhotonMasterHandoff.CanSpawnRoomObjects` is false. The wait
+   also ends if that peer leaves or goes inactive, or after five seconds. A host
+   stalled that long has already received the switch and dispatches it in
+   FixedUpdate before its next Update can spawn. The gate covers
+   `RailWorld.MaintainCargo` (cargo seed, flashlights, manifest),
+   `RailExpedition.SpawnEnemies` and `SpawnCarrierDrops`. It also requires a running
+   message queue. All are stateless retries. With one spawn per marker, the room cache
+   is clean, so a rejoining peer replays one instantiation per view.
+
+Not changed: event 114 recovery itself, heartbeat wire format, enemy/item spawn
+markers, room-RPC bag/equipment spawns and the Duckz `EnemyManager` spawner.
+
+Validation: Unity MCP target `X:/Work/duck-rails/Assets` (6000.3.24f1) compiled
+with no errors. In the disposable batch copy, the new
+`MasterHandoffChecks.RunStartupSettle` passed 13/13 assertions. They cover the
+unsynchronised clock, the post-sync restamp, the positive silence control,
+arrival-based liveness, the settle query/reply/nonce, a remote successor and the
+timeout. `HeldItemRecoveryChecks` passed 166. The full `MasterHandoffChecks.Run`
+stops at the pre-existing "lowest ready actor" assertion on HEAD code too, a fixture
+break predating this change and still open.
+[Batch evidence](validation/spawn-startup/coal-collision-26164-settle.txt).
+
+**Not yet verified:** the three-client acceptance described in the playtest queue.
+
+### November 21 — spawns stuck behind a stalled host's send window (fix `ae7fdf3f9`)
+
+The two-client stalled-host faults 1 and 2 failed with 56–57 duplicate loot views. Photon 4.1.8.17
+keeps at most `SequenceDeltaLimitSends` = 50 unacknowledged reliable commands in flight. The
+stalled host's seed (enemies, then 56+ coal/gold) was issued but partly unsent when it froze. The
+successor's settle timed out after 5 s and it seeded the same markers with the same view IDs.
+The host then resumed and sent its queued spawns.
+
+Correction (`PhotonMasterHandoff.Settle.cs`, `PhotonNetworkPart.cs`): when a settle times out while
+the previous master is still connected, the new master moves the room view ID cursor 300 past
+every registered view (`PhotonNetwork.SkipRoomViewIds`) before it spawns. For the rest of that
+room it then destroys, every 0.25 s, any room view below that floor whose `rails/run/marker`
+duplicates one of its own. `PhotonNetwork.Destroy` also clears the cached instantiation. The
+acknowledged path is unchanged. The stalled-host fixture now requires each pre-pause marker
+exactly once, not the original view ID and token, because unsent spawns are replaced.
+
+Two-client validation, Unity 6000.3.24f1, real Photon US: faults 0, 1 and 2 PASS with zero
+`PhotonView ID duplicate` errors, identical peer inventories and every marker once. Faults 1 and 2
+kept 50 and 48 of 106 pre-pause identities; the rest were the successor's copies. Two-client
+departures, three acknowledged handoffs and a non-master reconnect still pass.
+[Evidence](validation/playtest-queue/2026-11-21-queue/departure-settle.md)

@@ -16,12 +16,16 @@ public static class RailTestTools
 {
     public static Func<string, RailRouteState> OrderedRoute;
     public static Func<bool> EnemyInvincibilityRequested;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     // The editor's player preference applies to every test expedition, including
     // public quick-start/stability rooms. Other test mutations stay private-only.
     public static bool EnemyInvincible => RailAdminTools.Invincible || (!RailAdminTools.InvincibilityOverridden && Application.isPlaying && RailDiagnostics.Development && PhotonSession.IsRailsRoom &&
         PhotonSession.Instance != null && PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest &&
         PhotonSession.Phase == RailPhase.Running &&
         EnemyInvincibilityRequested?.Invoke() == true);
+#else
+    public static bool EnemyInvincible => false;
+#endif
     static RailTestPreset preset = new RailTestPreset();
     static int[] previousNetwork;
     static bool configured;
@@ -30,25 +34,40 @@ public static class RailTestTools
         PhotonSession.Instance != null && PhotonSession.Instance.WorldReady && !PhotonSession.Instance.HasRoomRequest;
     public static bool Authority => Allowed && PhotonNetwork.IsMasterClient;
     public static bool CanMutate => Authority && PhotonSession.Phase == RailPhase.Running;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     const string FastTrainRunKey = "rails.test.fastTrainRun";
-    public static bool FastTrainEnabled => RailDiagnostics.Development && PhotonSession.IsPrivate &&
-        PhotonSession.IsRailsRoom && PhotonSession.Phase == RailPhase.Running &&
+    // Written only by the private-run test tool or the master on an admin's request, and scoped to one run.
+    public static bool FastTrainEnabled => PhotonSession.IsRailsRoom && PhotonSession.Phase == RailPhase.Running &&
         !string.IsNullOrEmpty(PhotonSession.RunId) && PhotonSession.Get(FastTrainRunKey, "") == PhotonSession.RunId;
+    public static bool FastTrainBurnsNoFuel => FastTrainEnabled;
     public static float TrainCruiseSpeed => FastTrainEnabled ? 20f : 4f;
+    public static bool FastTrainForTick(Hashtable changes) =>
+        changes[FastTrainRunKey] is string run ? run.Length > 0 : FastTrainEnabled;
     public static void ToggleTrainSpeed()
     {
         if (!CanMutate) { Status = "Train speed requires the master of a ready private run"; return; }
         bool fast = !FastTrainEnabled;
-        double now = PhotonNetwork.Time;
-        var command = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
-        RailSessionRules.EvaluateTrain(command, PhotonSession.Get(RailSessionRules.Fuel, 100f), now,
-            out float distance, out float speed, out float fuel);
-        // Rebase motion and fuel together: no teleport, fuel reset or restart of a stopped train.
-        float target = (float)command[3] > 0 && fuel > 0 ? (fast ? 20f : 4f) : 0f;
-        Commit(new Hashtable { [FastTrainRunKey] = fast ? PhotonSession.RunId : "",
-            [RailSessionRules.Motion] = new object[] { now, distance, speed, target },
-            [RailSessionRules.Fuel] = fuel }, fast ? "Train speed 5x enabled" : "Train speed restored to 1x");
+        var changes = new Hashtable();
+        ApplyTrainSpeed(changes, fast, PhotonNetwork.Time);
+        Commit(changes, fast ? "Train speed 5x enabled" : "Train speed restored to 1x");
     }
+    /// <summary>Master-side: set 1x/5x cruise for this run, rebasing motion and fuel together
+    /// (no teleport, fuel reset or restart of a stopped train). Builds on motion/fuel already in changes.</summary>
+    public static void ApplyTrainSpeed(Hashtable changes, bool fast, double now)
+    {
+        var command = changes[RailSessionRules.Motion] as object[] ?? PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
+        float storedFuel = changes[RailSessionRules.Fuel] is float f ? f : PhotonSession.Get(RailSessionRules.Fuel, 100f);
+        RailSessionRules.EvaluateTrain(command, storedFuel, now, out float distance, out float speed, out float fuel);
+        float target = (float)command[3] > 0 && fuel > 0 ? (fast ? 20f : 4f) : 0f;
+        changes[FastTrainRunKey] = fast ? PhotonSession.RunId : "";
+        changes[RailSessionRules.Motion] = new object[] { now, distance, speed, target };
+        changes[RailSessionRules.Fuel] = fuel;
+    }
+#else
+    public static float TrainCruiseSpeed => 4f;
+    public static bool FastTrainBurnsNoFuel => false;
+    public static bool FastTrainForTick(Hashtable changes) => false;
+#endif
     public static RailTestPreset CurrentPreset()
     {
         var peer = PhotonNetwork.NetworkingClient.LoadBalancingPeer;
@@ -141,7 +160,7 @@ public static class RailTestTools
         var state = JsonUtility.FromJson<RailRunState>(PhotonSession.Get(RailExpedition.StateKey, ""));
         if (state == null || state.run != PhotonSession.RunId || state.finished)
         { Status = "Wait for a running expedition before previewing success"; return; }
-        foreach (var player in PhotonNetwork.PlayerList.Where(p => !p.IsInactive))
+        foreach (var player in PhotonNetwork.PlayerList.Where(RailSpectators.IsLiveCrew))
         {
             var participant = state.Player(player.UserId);
             if (participant == null)
@@ -150,16 +169,16 @@ public static class RailTestTools
         }
         double now = PhotonNetwork.Time;
         state.bridgeElapsed = RailRunState.BridgeSeconds; state.bridgeHeldAt = state.bridgeHoldUntil = 0;
-        state.Finish(now, "Test success preview", PhotonNetwork.PlayerList.Where(p => !p.IsInactive).Select(p => p.UserId));
+        state.Finish(now, "Test success preview", PhotonNetwork.PlayerList.Where(RailSpectators.IsLiveCrew).Select(p => p.UserId));
         if (!state.success) { Status = "No connected participants to preview success"; return; }
         // Use the same ending state as a bridge crossing. Normal presentation catches
         // everyone aboard, shows results, runs the tunnel/dawn ride and returns the crew.
         Commit(new Hashtable {
             [RailExpedition.StateKey] = JsonUtility.ToJson(state),
-            [RailSessionRules.Motion] = new object[] { now, RailRoute.Instance.FinaleStart + 75, 4f, 4f },
+            [RailSessionRules.Motion] = new object[] { now, RailRoute.Instance.FinaleStart + 80 + RailExpedition.BridgeSpan - RailExpedition.TrainFrontOffset, RailTrain.Instance.Speed, 4f },
             [RailSessionRules.Fuel] = 100f,
             [RailSessionRules.Phase] = (int)RailPhase.Ending,
-            [RailSessionRules.Deadline] = now + 32,
+            [RailSessionRules.Deadline] = now + 18,
             ["rails.success"] = true
         }, "Success preview started: bridge, tunnel and dawn ride");
     }

@@ -82,7 +82,7 @@ public struct ItemPickupPose
         return true;
     }
 
-    public Grabbable Spawn(GameObject prefab, PlayerHand hand, bool storePurchase = false)
+    public Grabbable Spawn(GameObject prefab, PlayerHand hand)
     {
         bool networkGrabbable = prefab.GetComponent<PhotonGrabbable>() != null;
         double started = networkGrabbable && PhotonNetwork.InRoom ? PhotonNetwork.Time : Time.timeAsDouble;
@@ -97,7 +97,9 @@ public struct ItemPickupPose
             object[] data = new object[] { "pickup-pose-v1", startScale, fullScale, localGrip, started,
                     PhotonNetwork.LocalPlayer.ActorNumber, hand.IsControllerLTouch,
                     inverse * (position - source.position), inverse * rotation };
-            if (storePurchase) data = RailCargo.WithCompoundPurchase(data, PhotonNetwork.LocalPlayer.UserId);
+            // Wall pulls and bag withdrawals both create fresh cargo in the current scene.
+            // In Compound it needs the retained lifetime so expedition cleanup leaves it alone.
+            data = RailCargo.WithCompoundPurchase(data, PhotonNetwork.LocalPlayer.UserId);
             go = PhotonNetwork.InstantiateWithRoomLifetime(prefab.name, position, rotation, 0, data);
         }
         else

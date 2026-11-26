@@ -38,8 +38,7 @@ public sealed class RemoteHandHitAudio : MonoBehaviour
 
     void LateUpdate()
     {
-        // Companion plants already drive the shared FootstepEmitter on every peer.
-        if (player.IsCompanion || player.photonView.IsMine || player.IsDead || sounds == null) return;
+        if (player.photonView.IsMine || player.IsDead || sounds == null) return;
         Check(player.LeftHand, ref left);
         Check(player.RightHand, ref right);
     }

@@ -13,7 +13,7 @@ public static class RailAvatarChecks
         foreach (var view in PhotonNetwork.PhotonViewCollection)
         {
             var player = view != null ? view.GetComponent<PhotonPlayer>() : null;
-            if (player != null && !player.IsCompanion) avatars.Add(player);
+            if (player != null) avatars.Add(player);
         }
         foreach (var actor in PhotonNetwork.PlayerList)
         {

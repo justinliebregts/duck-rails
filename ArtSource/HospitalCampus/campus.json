@@ -1,0 +1,579 @@
+{
+  "materials": [
+    {
+      "name": "Aged ivory precast",
+      "color": "e2d5b8",
+      "texture": "concrete",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Limestone coping",
+      "color": "ede1cb",
+      "texture": "concrete",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Emergency enamel",
+      "color": "a84036",
+      "texture": "weathered paint",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Fired brick",
+      "color": "a1614c",
+      "texture": "concrete",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Brick variation",
+      "color": "875444",
+      "texture": "concrete",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Oxidised blue green enamel",
+      "color": "416c67",
+      "texture": "weathered paint",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Gunmetal frames",
+      "color": "3e494b",
+      "texture": "weathered paint",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Galvanised sheet",
+      "color": "9caaab",
+      "texture": "weathered paint",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Tar and gravel",
+      "color": "525658",
+      "texture": "dark roofing",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Rubber and shadow gaps",
+      "color": "242a2c",
+      "texture": "",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Old cedar",
+      "color": "9e7955",
+      "texture": "timber",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Mown verge",
+      "color": "69774b",
+      "texture": "grass",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Planting bed",
+      "color": "495d42",
+      "texture": "grass",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Aggregate road",
+      "color": "51525a",
+      "texture": "gravel",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Rail ballast",
+      "color": "77716b",
+      "texture": "gravel",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Sidewalk",
+      "color": "b1afa1",
+      "texture": "concrete",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Worn road paint",
+      "color": "d9cba0",
+      "texture": "concrete",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Amber safety enamel",
+      "color": "d6aa4c",
+      "texture": "",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Ambulance enamel",
+      "color": "dedbd0",
+      "texture": "",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Muted ward glazing",
+      "color": "58777a",
+      "texture": "",
+      "emission": 0.18,
+      "original": ""
+    },
+    {
+      "name": "Lit ward blinds",
+      "color": "ffc88b",
+      "texture": "",
+      "emission": 1.7,
+      "original": ""
+    },
+    {
+      "name": "Cool ward glazing",
+      "color": "b3d8cd",
+      "texture": "",
+      "emission": 0.65,
+      "original": ""
+    },
+    {
+      "name": "Warm ivory lettering",
+      "color": "ffe6c1",
+      "texture": "",
+      "emission": 3.5,
+      "original": ""
+    },
+    {
+      "name": "Emergency marker",
+      "color": "ff6456",
+      "texture": "",
+      "emission": 2.3,
+      "original": ""
+    },
+    {
+      "name": "Foliage 0",
+      "color": "527050",
+      "texture": "foliage",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Foliage 1",
+      "color": "698254",
+      "texture": "foliage",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Foliage 2",
+      "color": "48654b",
+      "texture": "foliage",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Foliage 3",
+      "color": "81905f",
+      "texture": "foliage",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Lilac planting",
+      "color": "a79095",
+      "texture": "",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Window reflection",
+      "color": "829da3",
+      "texture": "",
+      "emission": 0.15,
+      "original": ""
+    },
+    {
+      "name": "Washed linen",
+      "color": "e1d9c6",
+      "texture": "ochre canvas",
+      "emission": 0,
+      "original": ""
+    },
+    {
+      "name": "Map asset - Car blue",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/FinaleFort/Car blue.mat"
+    },
+    {
+      "name": "Map asset - Vehicle glass",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/FinaleFort/Vehicle glass.mat"
+    },
+    {
+      "name": "Map asset - Scaffold steel",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/SkyscraperWorks/Scaffold steel.mat"
+    },
+    {
+      "name": "Map asset - Car faded red",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/FinaleFort/Car faded red.mat"
+    },
+    {
+      "name": "Map asset - Cottage cream",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/FinaleFort/Cottage cream.mat"
+    },
+    {
+      "name": "Map asset - Vehicle rubber",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/FinaleFort/Vehicle rubber.mat"
+    },
+    {
+      "name": "Map asset - Car grey",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/FinaleFort/Car grey.mat"
+    },
+    {
+      "name": "Map asset - Car ivory",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/FinaleFort/Car ivory.mat"
+    },
+    {
+      "name": "Map asset - Old timber",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/FarmSilos/Old timber.mat"
+    },
+    {
+      "name": "Map asset - Quackville foliage",
+      "color": "ffffff",
+      "texture": "",
+      "emission": 0,
+      "original": "Assets/DuckRails/CampgroundGreybox/Quackville foliage.mat"
+    }
+  ],
+  "labels": [
+    {
+      "text": "EMERGENCY",
+      "x": 26,
+      "y": 4.74,
+      "z": 41.94,
+      "size": 1.03,
+      "yaw": 0.0
+    },
+    {
+      "text": "PHARMACY",
+      "x": -27,
+      "y": 4.43,
+      "z": 56.57,
+      "size": 1.06,
+      "yaw": 0.0
+    },
+    {
+      "text": "OUTPATIENT CLINIC",
+      "x": -27,
+      "y": 4.43,
+      "z": 81.57,
+      "size": 1.06,
+      "yaw": 0.0
+    },
+    {
+      "text": "CENTRAL LAUNDRY",
+      "x": -28,
+      "y": 3.3,
+      "z": 125.65,
+      "size": 1,
+      "yaw": 0.0
+    },
+    {
+      "text": "VISITOR TRANSIT",
+      "x": 24,
+      "y": 3.66,
+      "z": 136.07,
+      "size": 0.64,
+      "yaw": 0.0
+    },
+    {
+      "text": "HOSPITAL",
+      "x": 26,
+      "y": 10.03,
+      "z": 54.74,
+      "size": 2.1,
+      "yaw": 0.0
+    },
+    {
+      "text": "MEDICAL CENTER",
+      "x": -18,
+      "y": 2.66,
+      "z": 9.61,
+      "size": 0.97,
+      "yaw": 0.0
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "ER downlight",
+      "x": 21,
+      "y": 4.1,
+      "z": 45,
+      "power": 500,
+      "color": [
+        1,
+        0.75,
+        0.55
+      ]
+    },
+    {
+      "name": "ER downlight",
+      "x": 26,
+      "y": 4.1,
+      "z": 45,
+      "power": 500,
+      "color": [
+        1,
+        0.75,
+        0.55
+      ]
+    },
+    {
+      "name": "ER downlight",
+      "x": 31,
+      "y": 4.1,
+      "z": 45,
+      "power": 500,
+      "color": [
+        1,
+        0.75,
+        0.55
+      ]
+    },
+    {
+      "name": "Shelter",
+      "x": 19,
+      "y": 3.35,
+      "z": 138,
+      "power": 375,
+      "color": [
+        0.62,
+        0.85,
+        1
+      ]
+    },
+    {
+      "name": "Shelter",
+      "x": 29,
+      "y": 3.35,
+      "z": 138,
+      "power": 375,
+      "color": [
+        0.62,
+        0.85,
+        1
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": -7.65,
+      "y": 5.72,
+      "z": 20.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": -7.65,
+      "y": 5.72,
+      "z": 53.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": -7.65,
+      "y": 5.72,
+      "z": 101.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": -8.65,
+      "y": 5.72,
+      "z": 139.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": 8.65,
+      "y": 5.72,
+      "z": 35.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": 7.65,
+      "y": 5.72,
+      "z": 75.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": 8.65,
+      "y": 5.72,
+      "z": 118.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": 32.65,
+      "y": 5.72,
+      "z": 133.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": -34.65,
+      "y": 5.72,
+      "z": 116.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Street pool",
+      "x": -33.65,
+      "y": 5.72,
+      "z": 28.0,
+      "power": 920,
+      "color": [
+        1,
+        0.66,
+        0.36
+      ]
+    },
+    {
+      "name": "Sign wash",
+      "x": -17,
+      "y": 1.9,
+      "z": 8.6,
+      "power": 235,
+      "color": [
+        1,
+        0.57,
+        0.32
+      ]
+    },
+    {
+      "name": "Sign wash",
+      "x": 12.7,
+      "y": 1.9,
+      "z": 15.6,
+      "power": 235,
+      "color": [
+        1,
+        0.57,
+        0.32
+      ]
+    },
+    {
+      "name": "Sign wash",
+      "x": -26,
+      "y": 1.9,
+      "z": 52.6,
+      "power": 235,
+      "color": [
+        1,
+        0.57,
+        0.32
+      ]
+    },
+    {
+      "name": "Sign wash",
+      "x": 26,
+      "y": 1.9,
+      "z": 51.6,
+      "power": 235,
+      "color": [
+        1,
+        0.57,
+        0.32
+      ]
+    }
+  ]
+}

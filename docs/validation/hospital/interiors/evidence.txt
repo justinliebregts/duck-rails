@@ -1,0 +1,16 @@
+Hospital District furnished interiors - November 23, 2026 (Unity MCP, target X:/Work/duck-rails/Assets verified)
+
+Blender build (5.3, headless): 13 room meshes, 39,535 triangles, 18 lights, 20 sign labels, 214 physics boxes.
+  Build-time keep-out assertions passed: no solid prop on corridor loop lines, stair approaches/cores, doorways,
+  ER arrival lane, reception return, north exit lane, street-building entrances or 1 m around any spawn candidate.
+Install (Duck Rails/Authoring/Hospital/Install finished interiors): 214 furniture colliders, 20 CutePixel SDF labels,
+  18 baked room lights; blockout beds/desks/scanner/shelving and street-building counters, shelves and lamps deactivated.
+Navigation (RailFullAreaNavigation.BakeOne): 34,301 nodes, 42 preserved markers, 0 enemy markers without ground within 0.8 m.
+RailHospitalChecks.RunOpen in the bake scene: 2,852 passed, 0 failed (geometry-checks.txt), including new walks through
+  clinic/pharmacy/laundry entrances, the three exam doorways, the dispensary pass-through and the north supplies exit.
+Lighting (Bake Open Block And Keep Open): EXPORTED hospital-district-v1. 1,323 receiver bindings, 0 invalid,
+  2 lightmaps (was 3), 13/13 interior room meshes and 416/416 campus meshes bound, 61 baked fixtures, 398 probes.
+Prefab: about 122.7k triangles on active mesh renderers, 1,360 mesh renderers.
+Console error/exception query after the bake: empty.
+Captures: output/hospital-interiors-review/before-*.png (neutral fill, before), baked-*.png (bake-scene lightmaps, no fill).
+Not run: Play Mode, multiplayer, headset, Quest frame time.

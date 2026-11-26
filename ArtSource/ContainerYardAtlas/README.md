@@ -54,3 +54,21 @@ production state. All original object IDs and disabled renderers remain in place
 visuals reject the old lighting Prepare/Export/Bake Open workflow: restore original
 rendering/bindings, reconcile the bake scene and regenerate the atlas before further
 render-authoring changes. See the integration evidence for rollback details.
+
+## Lights-only rebake (2026-11-17, user-approved)
+
+Rebaked lights-only per [the shared workflow](../../docs/atlas-lights-only-rebake.md);
+no mesh, material or binding changes. The four West/East yard lamp-post lights
+were sealed inside their pole column (25/26 rays blocked) and moved 0.2 m toward
+the track, y 4.87 → 4.80. The user then retuned intensity/range and added 19
+baked lights (beside the yard posts, west/east yard walls, gantry crane feet,
+both floodlight heads). They now sit under the last root child
+`Added baked lights`, because inserting them among existing siblings shifted the
+child-position `sourceKeys` and broke the build guard. `bakedFixtures` 40 → 59.
+Layout 1,191/1,191 identical, 2 lightmaps and 982 probes; texture/LightingData
+GUIDs unchanged. Approved fingerprint bf95ae3b… → 4dc2e6d7…; `ValidateSaved`
+passes. Runtime/headset appearance is queued for playtest.
+
+## Z-fighting vertex nudge (2026-11-24, user-approved)
+
+Justin nudged vertices by about 1-2 cm in 71 of 246 atlas chunks in `ContainerYardAtlasMeshes.asset` (committed in 663e5692a) to stop z-fighting on the containers. UVs, materials and lightmaps are unchanged. Approved fingerprint 4dc2e6d7… → e5c87177…; `ValidateSaved` passes and an Android Player build succeeds. Headset appearance is not yet checked.

@@ -88,6 +88,12 @@ public static partial class RailCampgroundGreybox
     [MenuItem("Duck Rails/Authoring/Campground/Install greybox and rough Quackville materials")]
     public static void Install()
     {
+        var installed=AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
+        if(installed && RailBlock.FindEnvironment(installed.transform,RootName+"/"+RailCampgroundFinish.RootName))
+        {
+            Debug.Log("The finished Pine Lake campground is already installed.");
+            return;
+        }
         if(Application.dataPath!="X:/Work/duck-rails/Assets"||EditorApplication.isPlaying||Lightmapping.isRunning)throw new InvalidOperationException("Use Duck Rails Edit Mode, no bake running");
         for(int i=0;i<SceneManager.sceneCount;i++)if(SceneManager.GetSceneAt(i).isDirty)throw new InvalidOperationException("Save scene work first");
         Directory.CreateDirectory(Folder+"/Meshes");Directory.CreateDirectory(Folder+"/Textures");AssetDatabase.Refresh();
@@ -206,20 +212,18 @@ public static partial class RailCampgroundGreybox
         }
         var g=MeshObject(p,name,mesh,mat,false);g.transform.localPosition=pos;g.transform.localScale=size;g.AddComponent<BoxCollider>();return g;
     }
+    public static Mesh SaveAdaptiveGround() => SaveMesh("Sculpted-ground",RailCampgroundTerrain.Build());
+
     static void Terrain(Transform p)
     {
-        var verts=new List<Vector3>();var uv=new List<Vector2>();var uv2=new List<Vector2>();var tri=new List<int>();var bankTri=new List<int>();
         var waterVerts=new List<Vector3>();var waterTri=new List<int>();
         for(int z=0;z<160;z++)for(int x=-48;x<48;x++)
         {
-            int k=verts.Count;foreach(var q in new[]{new Vector2(x,z),new Vector2(x,z+1),new Vector2(x+1,z+1),new Vector2(x+1,z)})
-            {verts.Add(new Vector3(q.x,Height(q.x,q.y),q.y));uv.Add(q/4);uv2.Add(new Vector2((q.x+48)/96,q.y/160));}
-            var target=x<0&&verts.Skip(k).Take(4).Average(v=>v.y)<-.03f?bankTri:tri;
-            target.AddRange(new[]{k,k+1,k+2,k,k+2,k+3});
-            WaterTriangle(verts[k],verts[k+1],verts[k+2]);WaterTriangle(verts[k],verts[k+2],verts[k+3]);
+            var a=new Vector3(x,Height(x,z),z);var b=new Vector3(x,Height(x,z+1),z+1);
+            var c=new Vector3(x+1,Height(x+1,z+1),z+1);var d=new Vector3(x+1,Height(x+1,z),z);
+            WaterTriangle(a,b,c);WaterTriangle(a,c,d);
         }
-        var m=new Mesh{name="Campground sculpted ground"};m.SetVertices(verts);m.subMeshCount=2;m.SetTriangles(tri,0);m.SetTriangles(bankTri,1);m.SetUVs(0,uv);m.SetUVs(1,uv2);m.RecalculateNormals();m.RecalculateBounds();
-        MeshObject(p,"Sculpted ground",SaveMesh("Sculpted-ground",m),grass).GetComponent<MeshRenderer>().sharedMaterials=new[]{grass,gravel};
+        MeshObject(p,"Sculpted ground",SaveAdaptiveGround(),grass).GetComponent<MeshRenderer>().sharedMaterials=new[]{grass,gravel};
         var w=new Mesh{name="Irregular lake surface"};w.SetVertices(waterVerts);w.SetTriangles(waterTri,0);w.SetUVs(0,waterVerts.Select(a=>new Vector2(a.x,a.z)/4).ToList());w.RecalculateNormals();w.RecalculateBounds();
         var lake=MeshObject(p,"Lake water (no collision)",SaveMesh("Lake-water",w),water,false);GameObjectUtility.SetStaticEditorFlags(lake,0);lake.GetComponent<MeshRenderer>().receiveGI=ReceiveGI.LightProbes;lake.GetComponent<MeshRenderer>().shadowCastingMode=ShadowCastingMode.Off;
         int index=0;foreach(var path in Paths)for(int i=1;i<path.Length;i++)PathSurface(p,path[i-1],path[i],index++);

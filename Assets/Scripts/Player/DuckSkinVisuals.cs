@@ -71,7 +71,6 @@ public class DuckSkinVisuals : MonoBehaviourPunCallbacks
     int colorIndex;
     int colorActor;
     MaterialPropertyBlock tintBlock;
-    MaterialPropertyBlock corpseFaceBlock;
     static readonly int TintId = Shader.PropertyToID("_DuckTint");
     static readonly int TintEnabledId = Shader.PropertyToID("_DuckTintEnabled");
 
@@ -284,50 +283,6 @@ public class DuckSkinVisuals : MonoBehaviourPunCallbacks
         body.sharedMaterials = model.materials;
         body.bones = bones;
         body.rootBone = model.rootBoneName != null && boneMap.TryGetValue(model.rootBoneName, out Transform root) ? root : defaultRootBone;
-        return true;
-    }
-
-    /// <summary>Copy a companion's rendered appearance onto this corpse's own rig.</summary>
-    public bool CopyCompanionAppearance(Transform sourceRig, bool redEyes = false)
-    {
-        Init();
-        SkinnedMeshRenderer original = MainRenderer(sourceRig);
-        if (body == null || original == null) return false;
-        var model = new SkinModel {
-            mesh = original.sharedMesh,
-            materials = original.sharedMaterials,
-            boneNames = System.Array.ConvertAll(original.bones, bone => bone != null ? bone.name : null),
-            rootBoneName = original.rootBone != null ? original.rootBone.name : null
-        };
-        // Rebind by name; never make the corpse depend on the living duck's bones.
-        if (!TryApplyBody(model)) return false;
-        ClearAttachments();
-        foreach (GameObject root in defaultFaceRoots)
-            if (root != null) root.SetActive(true);
-        foreach (string name in FaceNames)
-        {
-            Transform from = FindDeep(sourceRig, name);
-            Transform to = FindDeep(transform, name);
-            if (from == null || to == null) continue;
-            var sourceMesh = from.GetComponent<MeshFilter>();
-            var targetMesh = to.GetComponent<MeshFilter>();
-            if (sourceMesh != null && targetMesh != null) targetMesh.sharedMesh = sourceMesh.sharedMesh;
-            var sourceRenderer = from.GetComponent<Renderer>();
-            var targetRenderer = to.GetComponent<Renderer>();
-            if (sourceRenderer != null && targetRenderer != null)
-            {
-                targetRenderer.sharedMaterials = sourceRenderer.sharedMaterials;
-                // Reuse must also clear the previous death's killer-eye override.
-                if (corpseFaceBlock == null) corpseFaceBlock = new MaterialPropertyBlock();
-                sourceRenderer.GetPropertyBlock(corpseFaceBlock);
-                if (redEyes && (name == "Eye_L" || name == "Eye_R"))
-                    corpseFaceBlock.SetColor("_EmissionColor", Color.red);
-                targetRenderer.SetPropertyBlock(corpseFaceBlock);
-            }
-        }
-        appliedId = 256; // Companion appearance is not a player/store skin ID.
-        colorActor = colorIndex = 0;
-        ApplyTint();
         return true;
     }
 

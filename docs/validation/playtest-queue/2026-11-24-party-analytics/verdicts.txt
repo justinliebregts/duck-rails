@@ -1,0 +1,37 @@
+CASE A public departure of 2, crew down PASS run=d3defa
+  main run:join:test:launch value=0
+  player2 run:start:public value=2
+  player2 run:launch:test:p2 value=2
+  player2 run:join:test:launch value=0
+  player2 run:end:fail:crew_down value=14.19 {kind=public, crew=2, launch_crew=2, end_crew=2, peak_crew=2, late_joins=0, escaped=0, coal=0, gold=0, unbanked=67, downs=2, revives=0, fuel=50, block=station}
+  player2 run:result:test:p2:fail value=14.19
+  player2 run:result_end:test:p2:fail value=14.19
+  player2 run:last_block:station
+CASE B solo launch, mid-run join and rejoin, both escape PASS run=3314ee
+  main run:start:private value=1
+  main run:launch:test:p1 value=1
+  main run:join:test:launch value=0
+  main run:end:success:bridge_crossed value=68.31 {kind=private, crew=2, launch_crew=1, end_crew=2, peak_crew=2, late_joins=1, escaped=2, coal=0, gold=0, unbanked=20, downs=0, revives=0, fuel=20, block=bridge}
+  main run:result:test:p1:success value=68.31
+  main run:result_end:test:p2:success value=68.31
+  main run:last_block:bridge
+  player2 run:join:test:late value=5.69
+CASE C launch 2, master handed over, crew down PASS run=31379a
+  main run:join:test:launch value=0
+  player2 run:start:private value=2
+  player2 run:launch:test:p2 value=2
+  player2 run:join:test:launch value=0
+  player2 run:end:fail:crew_down value=18.02 {kind=private, crew=2, launch_crew=2, end_crew=2, peak_crew=2, late_joins=0, escaped=0, coal=0, gold=0, unbanked=20, downs=2, revives=0, fuel=50, block=station}
+  player2 run:result:test:p2:fail value=18.02
+  player2 run:result_end:test:p2:fail value=18.02
+  player2 run:last_block:station
+CASE D launch 2, master leaves, host ends alone PASS run=3fcd7e
+  main run:start:private value=2
+  main run:launch:test:p2 value=2
+  main run:join:test:launch value=0
+  main run:end:fail:crew_down value=14.11 {kind=private, crew=2, launch_crew=2, end_crew=1, peak_crew=2, late_joins=0, escaped=0, coal=0, gold=0, unbanked=67, downs=1, revives=0, fuel=50, block=station}
+  main run:result:test:p2:fail value=14.11
+  main run:result_end:test:p1:fail value=14.11
+  main run:last_block:station
+  player2 run:join:test:launch value=0
+PASS COMPLETE

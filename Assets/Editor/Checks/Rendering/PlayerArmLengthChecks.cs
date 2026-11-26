@@ -158,14 +158,12 @@ public static class PlayerArmLengthChecks
             "Assets/Prefabs/Enemies/ZombieBomber.prefab",
             "Assets/Prefabs/Enemies/ZombieMinion.prefab",
             "Assets/Prefabs/Enemies/ZombieSmasher.prefab",
-            "Assets/Prefabs/Enemies/ZombieSpider.prefab",
-            "Assets/Resources/DuckCompanion.prefab"
+            "Assets/Prefabs/Enemies/ZombieSpider.prefab"
         };
         // Baseline measured before the player-only prefab overrides.
         float[][] reaches = {
             new[] { 0.4423f, 0.4351f }, new[] { 0.7880f, 0.7880f },
-            new[] { 0.8858f, 0.8858f }, new[] { 0.8553f, 0.8553f, 0.9210f, 0.9210f },
-            new[] { 0.5516f, 0.5516f }
+            new[] { 0.8858f, 0.8858f }, new[] { 0.8553f, 0.8553f, 0.9210f, 0.9210f }
         };
         for (int i = 0; i < paths.Length; i++)
         {

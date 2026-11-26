@@ -1,0 +1,143 @@
+2026-11-21T17:27:31.1384024Z START departure settle acceptance; Unity 6000.3.24f1 rounds=3
+2026-11-21T17:27:31.1394049Z STATE PeerCreated room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:31.1404102Z step=0 round=0
+2026-11-21T17:27:35.7081224Z STATE ConnectingToNameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:36.0391124Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:36.2592557Z STATE ConnectingToMasterServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:36.6781367Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:36.9134106Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:37.0430481Z STATE ConnectingToGameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:37.7057848Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:37.8171638Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:37.9319414Z STATE Joined room=66142 actor=2 phase=Compound ready=False
+2026-11-21T17:27:38.9832365Z STATE Joined room=66142 actor=2 phase=Compound ready=True
+2026-11-21T17:27:41.5460405Z MASTER 1 -> 2 room=66142 phase=Compound ready=True step=0
+2026-11-21T17:27:46.1640230Z step=1 round=0
+2026-11-21T17:27:48.3483149Z STATE Leaving room=66142 actor=2 phase=Compound ready=False
+2026-11-21T17:27:48.4575754Z STATE ConnectingToMasterServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:48.7780219Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:48.9860254Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:49.0897320Z STATE ConnectingToGameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:49.5143562Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:49.6149781Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:27:49.7160110Z STATE Joined room=17331 actor=2 phase=Compound ready=True
+2026-11-21T17:27:52.7546717Z PASS round=0 step=1 gathered in 17331
+2026-11-21T17:27:52.8577697Z step=2 round=0
+2026-11-21T17:28:13.3973748Z STATE Leaving room=17331 actor=2 phase=Compound ready=False
+2026-11-21T17:28:13.4989673Z STATE ConnectingToMasterServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:13.8063407Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:14.0107229Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:14.8465177Z STATE ConnectingToGameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:15.2704446Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:15.3769029Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:15.5817631Z STATE Joined room=98501 actor=2 phase=Departing ready=False
+2026-11-21T17:28:21.6532473Z STATE Joined room=98501 actor=2 phase=Departing ready=True
+2026-11-21T17:28:21.8663505Z MASTER 1 -> 2 room=98501 phase=Departing ready=True step=2
+2026-11-21T17:28:21.8663505Z SETTLE waiting for previous master 1
+2026-11-21T17:28:22.0873282Z SETTLE ended reason=ack after=0.22s previous=1
+2026-11-21T17:28:22.3447841Z STATE Joined room=98501 actor=2 phase=Running ready=True
+2026-11-21T17:28:25.4205526Z PASS round=0 step=2 departed together into 98501 master=2
+2026-11-21T17:28:25.5132050Z step=3 round=0
+2026-11-21T17:28:25.5145288Z HANDOFF request 2 -> 1
+2026-11-21T17:28:25.7248802Z MASTER 2 -> 1 room=98501 phase=Running ready=True step=3
+2026-11-21T17:28:31.5428728Z PASS round=0 step=3 handoff 2 -> 1
+2026-11-21T17:28:31.6422539Z step=4 round=0
+2026-11-21T17:28:31.6443016Z FAULT 100% transport loss
+2026-11-21T17:28:38.9789534Z ERROR Connection lost. OnStatusChanged to TimeoutDisconnect. Client state was: Joined. SCS v0 UDP SocketErrorCode: 0 WinSock
+2026-11-21T17:28:39.0672841Z STATE Disconnected room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:41.0009904Z STATE ConnectingToNameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:47.7411000Z ERROR Connection lost. OnStatusChanged to TimeoutDisconnect. Client state was: ConnectingToNameServer. SCS v0 UDP SocketErrorCode: 0 WinSock
+2026-11-21T17:28:47.9677410Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:48.1777636Z STATE ConnectingToMasterServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:48.6119121Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:48.7114934Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:48.8130900Z STATE ConnectingToGameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:49.2620689Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:49.4751414Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:28:49.5927551Z STATE Joined room=98501 actor=2 phase=Running ready=False
+2026-11-21T17:28:49.5940312Z CLOCK unsynchronised in 98501
+2026-11-21T17:28:49.8168725Z STATE Joined room=98501 actor=2 phase=Running ready=True
+2026-11-21T17:28:50.3541533Z CLOCK synchronised
+2026-11-21T17:28:51.6796174Z FAULT restored transport
+2026-11-21T17:29:01.7183940Z PASS round=0 step=4 non-master transport reconnect reclaimed actor 2 after 30.0s
+2026-11-21T17:29:01.8017859Z step=5 round=0
+2026-11-21T17:29:08.2197380Z STATE Joined room=98501 actor=2 phase=Ending ready=True
+2026-11-21T17:29:21.6530983Z MASTER 1 -> 2 room=98501 phase=Ending ready=True step=5
+2026-11-21T17:29:21.6536106Z SETTLE waiting for previous master 1
+2026-11-21T17:29:21.8726157Z SETTLE ended reason=ack after=0.22s previous=1
+2026-11-21T17:29:40.1957399Z STATE Joined room=98501 actor=2 phase=Returning ready=True
+2026-11-21T17:29:43.7177671Z STATE Leaving room=98501 actor=2 phase=Returning ready=False
+2026-11-21T17:29:43.9276822Z STATE ConnectingToMasterServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:29:44.2402296Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:29:44.3436344Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:29:44.4441815Z STATE ConnectedToMasterServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:29:44.5480100Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:29:44.6512999Z STATE ConnectingToGameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:29:45.0629526Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:29:45.1701668Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:29:45.5693640Z STATE Joined room=18326 actor=1 phase=Compound ready=False
+2026-11-21T17:29:45.5703680Z CLOCK unsynchronised in 18326
+2026-11-21T17:29:46.4421727Z STATE Joined room=18326 actor=1 phase=Compound ready=True
+2026-11-21T17:29:46.4421727Z CLOCK synchronised
+2026-11-21T17:29:47.4121669Z CLOCK unsynchronised in 18326
+2026-11-21T17:29:47.5135919Z CLOCK synchronised
+2026-11-21T17:29:49.5260758Z PASS round=0 step=5 returned to 18326
+2026-11-21T17:29:50.0580197Z step=1 round=1
+2026-11-21T17:29:53.1365773Z PASS round=1 step=1 gathered in 18326
+2026-11-21T17:29:53.2460171Z step=2 round=1
+2026-11-21T17:30:13.7048994Z STATE Leaving room=18326 actor=1 phase=Compound ready=False
+2026-11-21T17:30:13.8120897Z STATE ConnectingToMasterServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:30:14.2369756Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:30:14.3456169Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:30:15.1507667Z STATE ConnectingToGameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:30:15.6746837Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:30:15.7775023Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:30:15.8782581Z STATE Joined room=71873 actor=2 phase=Departing ready=False
+2026-11-21T17:30:15.8782581Z CLOCK unsynchronised in 71873
+2026-11-21T17:30:18.2008107Z CLOCK synchronised
+2026-11-21T17:30:21.7331746Z STATE Joined room=71873 actor=2 phase=Departing ready=True
+2026-11-21T17:30:22.1836916Z STATE Joined room=71873 actor=2 phase=Running ready=True
+2026-11-21T17:30:25.2398698Z PASS round=1 step=2 departed together into 71873 master=1
+2026-11-21T17:30:25.3548223Z step=3 round=1
+2026-11-21T17:30:25.5695171Z MASTER 1 -> 2 room=71873 phase=Running ready=True step=3
+2026-11-21T17:30:25.5712406Z SETTLE waiting for previous master 1
+2026-11-21T17:30:25.9007520Z SETTLE ended reason=ack after=0.33s previous=1
+2026-11-21T17:30:31.3973697Z PASS round=1 step=3 handoff 1 -> 2 settle=ack
+2026-11-21T17:30:31.5998575Z step=4 round=1
+2026-11-21T17:31:01.6585144Z PASS round=1 step=4 observed peer 1 leave and return
+2026-11-21T17:31:01.7599240Z step=5 round=1
+2026-11-21T17:31:07.5442848Z STATE Joined room=71873 actor=2 phase=Ending ready=True
+2026-11-21T17:31:39.5585088Z STATE Joined room=71873 actor=2 phase=Returning ready=True
+2026-11-21T17:31:44.0087882Z STATE Leaving room=71873 actor=2 phase=Returning ready=False
+2026-11-21T17:31:44.1111985Z STATE ConnectingToMasterServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:31:44.5284015Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:31:44.6354348Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:31:44.8546423Z STATE ConnectingToGameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:31:45.2790450Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:31:45.3884377Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:31:46.3064985Z STATE Joined room=73508 actor=2 phase=Compound ready=False
+2026-11-21T17:31:47.1575359Z STATE Joined room=73508 actor=2 phase=Compound ready=True
+2026-11-21T17:31:50.2511685Z PASS round=1 step=5 returned to 73508
+2026-11-21T17:31:50.3506129Z step=1 round=2
+2026-11-21T17:31:53.4385711Z PASS round=2 step=1 gathered in 73508
+2026-11-21T17:31:53.5471394Z step=2 round=2
+2026-11-21T17:32:14.0689197Z STATE Leaving room=73508 actor=2 phase=Compound ready=False
+2026-11-21T17:32:14.1698818Z STATE ConnectingToMasterServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:32:14.5836717Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:32:14.6935830Z STATE ConnectingToGameServer room= actor=-1 phase=Compound ready=False
+2026-11-21T17:32:15.2263736Z STATE Authenticating room= actor=-1 phase=Compound ready=False
+2026-11-21T17:32:15.3343352Z STATE Joining room= actor=-1 phase=Compound ready=False
+2026-11-21T17:32:15.5425833Z STATE Joined room=88569 actor=1 phase=Departing ready=False
+2026-11-21T17:32:15.5425833Z CLOCK unsynchronised in 88569
+2026-11-21T17:32:34.0689929Z CLOCK synchronised
+2026-11-21T17:32:38.2084104Z STATE Joined room=88569 actor=1 phase=Departing ready=True
+2026-11-21T17:32:38.6267883Z STATE Joined room=88569 actor=1 phase=Running ready=True
+2026-11-21T17:32:41.7010624Z PASS round=2 step=2 departed together into 88569 master=1
+2026-11-21T17:32:41.8078851Z step=3 round=2
+2026-11-21T17:32:41.8078851Z HANDOFF request 1 -> 2
+2026-11-21T17:32:42.0349221Z MASTER 1 -> 2 room=88569 phase=Running ready=True step=3
+2026-11-21T17:32:47.9078449Z PASS round=2 step=3 handoff 1 -> 2
+2026-11-21T17:32:48.0184644Z step=4 round=2
+2026-11-21T17:32:48.0194690Z FAULT 100% transport loss
+2026-11-21T17:33:08.0334526Z FAULT restored transport
+2026-11-21T17:35:48.0340435Z FAIL Peer main failure: Timeout step=4 phase=Running status=Ready

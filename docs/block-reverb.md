@@ -1,5 +1,13 @@
 # Broad block reverb — November 12, 2026
 
+## Open canyon, November 23, 2026
+
+The creek, lower terraces and switchbacks share a broad Mountains-derived box with a 1.65 s decay, room -1500 mB, late reverb -850 mB and a 1 m fade. The mine boxes use 3.8 s. Saved-prefab checks covered 9,834 lower-terrain listener samples and checked separation from both bridge decks and the deep tunnel.
+
+## Canyon mine workings, November 23, 2026
+
+Fourteen authored BoxReverbZone volumes cover both drops and landing chambers, the north and east approaches, connecting gallery, under-river passage and all three side rooms. The custom Cave tuning uses a 3.8 s decay, room -400 mB, late reverb +180 mB and a 0.65 m edge fade. Edit Mode sampling of the saved prefab covered 9,160 underground listener positions with no gaps; sampled surface ear positions over and around the workings stayed beyond the fades. Headset listening is queued.
+
 Installed the user-approved broad-zone pass using the existing `Game.Audio.BoxReverbZone`; no runtime code changes. Each prefab has a root `Reverb Zones` group. Select a named box to edit size/fade; its `Reverb settings` child holds the custom audio settings. Helicopter Shop is excluded.
 
 These are initial listening tunings, not audio-quality acceptance. Broad volumes deliberately include some gaps between rooms/containers. Box edges fade in every direction, including vertically; small exterior/roof bleed is expected. The central railway stays outside the volumes except inside the finale tunnel. No acoustic occlusion or room-by-room simulation is added.

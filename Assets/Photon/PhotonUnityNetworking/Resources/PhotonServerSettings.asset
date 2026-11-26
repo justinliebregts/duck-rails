@@ -17,7 +17,7 @@ MonoBehaviour:
     AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 61b7a782-2381-4016-b077-a0d1737f95e3
-    AppVersion: 0.3_dra2
+    AppVersion: 0.5_dra2
     UseNameServer: 1
     FixedRegion: 
     Server: 
@@ -79,6 +79,10 @@ MonoBehaviour:
   - ReceiveHookState
   - CheckHookDefense
   - ReportHookDefense
+  - RpcFlareDeflect
+  - RpcFlareShot
+  - ReceiveCameraSnapshot
+  - RequestCameraSnapshot
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

@@ -29,7 +29,7 @@ public static class PlayerPalmAlignmentChecks
         {
             foreach (string path in Players) CheckPlayer(scene, path);
             foreach (string path in new[] {
-                "Assets/Resources/DuckCompanion.prefab", "Assets/Prefabs/Enemies/ZombieBomber.prefab",
+                "Assets/Prefabs/Enemies/ZombieBomber.prefab",
                 "Assets/Prefabs/Enemies/ZombieMinion.prefab", "Assets/Prefabs/Enemies/ZombieSmasher.prefab",
                 "Assets/Prefabs/Enemies/ZombieSpider.prefab"
             }) CheckNPC(scene, path);

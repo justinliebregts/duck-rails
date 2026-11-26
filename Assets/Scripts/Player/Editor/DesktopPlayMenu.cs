@@ -26,12 +26,17 @@ static class DesktopPlaySceneButtons
     {
         Handles.BeginGUI();
 
-        GUILayout.BeginArea(new Rect(8f, 8f, 168f, 78f));
+        GUILayout.BeginArea(new Rect(8f, 8f, 250f, 78f));
         GUILayout.BeginHorizontal();
-        if (ModeButton("Keyboard", DesktopPlay.UseDesktop))
+        bool spectator = SpectatorMode.Active;
+        if (ModeButton("Keyboard", DesktopPlay.UseDesktop && !spectator))
             SetMode(true);
-        if (ModeButton("VR", !DesktopPlay.UseDesktop))
+        if (ModeButton("VR", !DesktopPlay.UseDesktop && !spectator))
             SetMode(false);
+        // PC spectator play (no duck, free camera, room list); see docs/duckz-ports.md.
+        using (new EditorGUI.DisabledScope(Application.isPlaying))
+            if (ModeButton("Spectator", spectator))
+                SetMode(true, spectator: true);
         GUILayout.EndHorizontal();
         using (new EditorGUI.DisabledScope(Application.isPlaying || LoginIsLoaded()))
         {
@@ -75,8 +80,10 @@ static class DesktopPlaySceneButtons
         Debug.Log("Cleared all PlayerPrefs.");
     }
 
-    static void SetMode(bool desktop)
+    static void SetMode(bool desktop, bool spectator = false)
     {
+        if (!Application.isPlaying)
+            EditorPrefs.SetBool(SpectatorMode.PrefKey, spectator);
         if (Application.isPlaying)
         {
             SimulatedRigInput.Instance?.SetSimulating(desktop);

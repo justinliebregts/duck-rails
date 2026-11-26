@@ -1,10 +1,13 @@
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 using Photon.Pun;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+#endif
 
 // Like the existing admin UI, this is a client convenience gate, not server authorization.
 public static class RailAdminTools
 {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     public const string AdminProperty = "rails.adminTools";
     public static bool Available => PlayerSession.Instance != null && PlayerSession.Instance.IsAdmin;
     static bool noClip, invincible, invincibilityOverridden;
@@ -50,4 +53,17 @@ public static class RailAdminTools
             PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady) return;
         RailExpedition.Instance?.Request("admin-coal", count);
     }
+    // Shared run state: the master applies it for everyone and it resets with the next run.
+    public static void ToggleTrainSpeed()
+    {
+        Refresh();
+        if (!Available || PhotonSession.Phase != RailPhase.Running ||
+            PhotonSession.Instance == null || !PhotonSession.Instance.WorldReady) return;
+        RailExpedition.Instance?.Request("admin-train-speed", RailTestTools.FastTrainEnabled ? 1 : 5);
+    }
+#else
+    public static bool Available => false;
+    public static bool NoClip => false;
+    public static bool Invincible => false;
+#endif
 }

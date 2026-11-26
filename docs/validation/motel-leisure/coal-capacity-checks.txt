@@ -1,0 +1,35 @@
+Roadside Motel coal capacity pass — November 24, 2026
+Verified Unity target: X:/Work/duck-rails/Assets
+
+Goal: every normal-run block holds the eight-player coal ceiling of 93 (floor(18 * 5.2)).
+Motel had 48 coal candidates; 48 appended (Coal 49-96), existing markers, gold and enemies unchanged.
+
+Placement rules (generated through Unity MCP, deterministic, dry run before save):
+- Ring offsets 1.0-2.5 m around existing coal/gold markers, on the same surface height (+-0.03 m, normal >= 0.95).
+- 0.3 m coal envelope: four footprint corners supported; OverlapBox clear with 0.05 m margin
+  (positive control: box under Coal 01 hits Bed 101).
+- Unobstructed line from the source marker at 0.25 m; same covered/uncovered state; 0.6 m clear above.
+- Interior areas (guest rooms, services, change rooms, vendor, golf shack) stay inside the
+  area's existing marker footprint, so no coal lands in closed rooms or outside walls.
+- |local X| >= 8 m (rail clearance), inside the block; >= 1.8 m from all coal, >= 0.8 m from gold/enemies.
+- Pivot 0.2 m above support, matching all 48 existing coal markers.
+
+Additions by area: six guest rooms 2 each (101, 102, 104, 202, 204, 207), motel services 5
+(including the washers top), change-room benches 3, food vendor 1, pool 4 (both basins and two
+loungers), golf 8, golf shack 1, rink/rental 4, arrival 10 (five bus roofs as climb rewards,
+five parking spots).
+
+Saved prefab diff: every original line retained; additions are 48 native CoalSpawnMarker
+prefab instances plus their candidate-list references.
+
+Capacity, all normal-run blocks (Available coal/gold, saved assets):
+container-yard-v1    168 / 142
+convenience-store-v1 126 / 109
+farm-silos-v1        105 / 117
+roadside-motel-v1     96 /  64
+skyscraper-works-v1  202 / 192
+RailRoute.SelectResources for crew 1-8 x 100 seeds: exact CoalCount/GoldCount and unique
+markers in every case; 0 failures. All coal markers keep native prefab references.
+
+Not verified: natural hand reach, bus-roof climb, headset visibility, performance with 93 coal.
+Queued for playtest.

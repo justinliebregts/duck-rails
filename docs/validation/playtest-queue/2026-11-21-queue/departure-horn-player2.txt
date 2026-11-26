@@ -1,0 +1,176 @@
+2026-11-21T17:51:35.0841763Z START departure horn playtest; Unity 6000.3.24f1 role=player2 privateCode=54665
+2026-11-21T17:51:35.0851806Z STATE PeerCreated room= kind= phase=Compound compoundScene=False expeditionScene=False request=False step=0 ready=False players=0
+2026-11-21T17:51:35.0858360Z step=0
+2026-11-21T17:51:38.3396303Z STATE ConnectingToNameServer room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:38.6002047Z STATE Authenticating room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:38.8225637Z STATE ConnectingToMasterServer room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:39.2578002Z STATE Authenticating room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:39.3787566Z STATE Joining room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:39.4954339Z STATE ConnectingToGameServer room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:40.1282138Z STATE Authenticating room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:40.3405609Z STATE Joining room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:40.4497739Z STATE ConnectingToMasterServer room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:40.7915026Z STATE Authenticating room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:40.9117900Z STATE ConnectedToMasterServer room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:41.9347950Z STATE Joining room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:42.0472265Z STATE ConnectingToGameServer room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:42.4900109Z STATE Authenticating room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:42.6267432Z STATE Joining room= kind= phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=0
+2026-11-21T17:51:42.7412106Z STATE Joined room=14153 kind=compound phase=Compound compoundScene=False expeditionScene=False request=True step=0 ready=False players=2
+2026-11-21T17:51:43.7873748Z STATE Joined room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=0 ready=True players=2
+2026-11-21T17:51:44.6447600Z STATE Joined room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=1 ready=True players=2
+2026-11-21T17:51:44.6447600Z step=1
+2026-11-21T17:51:47.7196047Z ACK step=1 horns=0 [] gathered in 14153
+2026-11-21T17:51:47.8183062Z STATE Joined room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=2 ready=True players=2
+2026-11-21T17:51:47.8183062Z step=2
+2026-11-21T17:51:48.2936337Z COUNTDOWN visible from 20s room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=2
+2026-11-21T17:52:08.2806130Z COUNTDOWN cleared (started at 20s) room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=2
+2026-11-21T17:52:08.3514349Z HORN source created; mixer=Effects clip=Train_DepartureHorn audioMasterMute=False listenerVolume=1
+2026-11-21T17:52:08.3519393Z HORN start #1 t=0.01 pollGap=0.02s room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=True step=2
+2026-11-21T17:52:08.3849391Z STATE Leaving room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=True step=2 ready=False players=0
+2026-11-21T17:52:08.4984726Z STATE ConnectingToMasterServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=2 ready=False players=0
+2026-11-21T17:52:08.9209590Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=2 ready=False players=0
+2026-11-21T17:52:09.0290276Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=2 ready=False players=0
+2026-11-21T17:52:09.1327590Z STATE ConnectingToGameServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=2 ready=False players=0
+2026-11-21T17:52:09.5498430Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=2 ready=False players=0
+2026-11-21T17:52:09.7604630Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=2 ready=False players=0
+2026-11-21T17:52:09.8652539Z STATE Joined room=21730 kind=expedition phase=Departing compoundScene=True expeditionScene=False request=True step=2 ready=False players=1
+2026-11-21T17:52:10.3531724Z HORN end after 2.00s maxPollGapWhilePlaying=0.04s room=21730 kind=expedition phase=Departing compoundScene=True expeditionScene=False request=True step=2
+2026-11-21T17:52:14.4061424Z STATE Joined room=21730 kind=expedition phase=Departing compoundScene=False expeditionScene=True request=False step=2 ready=False players=1
+2026-11-21T17:52:16.2816377Z STATE Joined room=21730 kind=expedition phase=Departing compoundScene=False expeditionScene=True request=False step=2 ready=True players=1
+2026-11-21T17:52:16.7137382Z STATE Joined room=21730 kind=expedition phase=Running compoundScene=False expeditionScene=True request=False step=2 ready=True players=1
+2026-11-21T17:52:19.7775689Z ARRIVED room=21730 kind=expedition phase=Running compoundScene=False expeditionScene=True request=False step=2
+2026-11-21T17:52:25.7843032Z ACK step=2 horns=1 [compound/Compound] departed alone into 21730
+2026-11-21T17:52:25.9004766Z STATE Joined room=21730 kind=expedition phase=Running compoundScene=False expeditionScene=True request=False step=3 ready=True players=1
+2026-11-21T17:52:25.9004766Z step=3
+2026-11-21T17:52:31.5323459Z STATE Joined room=21730 kind=expedition phase=Ending compoundScene=False expeditionScene=True request=False step=3 ready=True players=1
+2026-11-21T17:53:03.5486995Z STATE Joined room=21730 kind=expedition phase=Returning compoundScene=False expeditionScene=True request=False step=3 ready=True players=1
+2026-11-21T17:53:07.2943350Z STATE Leaving room=21730 kind=expedition phase=Returning compoundScene=False expeditionScene=True request=True step=3 ready=False players=0
+2026-11-21T17:53:07.5088315Z STATE ConnectingToMasterServer room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=3 ready=False players=0
+2026-11-21T17:53:07.8257134Z STATE Authenticating room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=3 ready=False players=0
+2026-11-21T17:53:08.4713648Z STATE Joining room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=3 ready=False players=0
+2026-11-21T17:53:08.5717570Z STATE ConnectingToGameServer room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=3 ready=False players=0
+2026-11-21T17:53:08.8939314Z STATE Authenticating room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=3 ready=False players=0
+2026-11-21T17:53:09.1115441Z STATE Joining room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=3 ready=False players=0
+2026-11-21T17:53:09.3476990Z STATE Joined room=14153 kind=compound phase=Compound compoundScene=False expeditionScene=True request=True step=3 ready=False players=2
+2026-11-21T17:53:10.1488667Z STATE Joined room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=3 ready=True players=2
+2026-11-21T17:53:13.2150495Z ACK step=3 horns=0 [] returned to 14153
+2026-11-21T17:53:13.3153506Z STATE Joined room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=4 ready=True players=2
+2026-11-21T17:53:13.3163533Z step=4
+2026-11-21T17:53:16.3925662Z ACK step=4 horns=0 [] gathered in 14153
+2026-11-21T17:53:16.5011919Z STATE Joined room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=5 ready=True players=2
+2026-11-21T17:53:16.5011919Z step=5
+2026-11-21T17:53:16.9758720Z COUNTDOWN visible from 20s room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=5
+2026-11-21T17:53:36.8231384Z COUNTDOWN cleared (started at 20s) room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=5
+2026-11-21T17:53:37.0981695Z HORN start #2 t=0.01 pollGap=0.01s room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=True step=5
+2026-11-21T17:53:37.1421820Z STATE Leaving room=14153 kind=compound phase=Compound compoundScene=True expeditionScene=False request=True step=5 ready=False players=0
+2026-11-21T17:53:37.2512251Z STATE ConnectingToMasterServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=5 ready=False players=0
+2026-11-21T17:53:37.5647380Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=5 ready=False players=0
+2026-11-21T17:53:37.6698956Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=5 ready=False players=0
+2026-11-21T17:53:37.8769517Z STATE ConnectingToGameServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=5 ready=False players=0
+2026-11-21T17:53:38.6275739Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=5 ready=False players=0
+2026-11-21T17:53:38.7353801Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=5 ready=False players=0
+2026-11-21T17:53:38.8633739Z STATE Joined room=93002 kind=expedition phase=Departing compoundScene=True expeditionScene=False request=True step=5 ready=False players=1
+2026-11-21T17:53:39.1033800Z HORN end after 2.00s maxPollGapWhilePlaying=0.39s room=93002 kind=expedition phase=Departing compoundScene=True expeditionScene=False request=True step=5
+2026-11-21T17:53:43.0563603Z STATE Joined room=93002 kind=expedition phase=Departing compoundScene=False expeditionScene=True request=False step=5 ready=False players=2
+2026-11-21T17:53:44.9506862Z STATE Joined room=93002 kind=expedition phase=Departing compoundScene=False expeditionScene=True request=False step=5 ready=True players=2
+2026-11-21T17:53:45.5896344Z STATE Joined room=93002 kind=expedition phase=Running compoundScene=False expeditionScene=True request=False step=5 ready=True players=2
+2026-11-21T17:53:48.6277437Z ARRIVED room=93002 kind=expedition phase=Running compoundScene=False expeditionScene=True request=False step=5
+2026-11-21T17:53:54.7208875Z ACK step=5 horns=1 [compound/Compound] departed together into 93002
+2026-11-21T17:53:54.9317860Z STATE Joined room=93002 kind=expedition phase=Running compoundScene=False expeditionScene=True request=False step=6 ready=True players=2
+2026-11-21T17:53:54.9317860Z step=6
+2026-11-21T17:54:01.0107301Z STATE Joined room=93002 kind=expedition phase=Ending compoundScene=False expeditionScene=True request=False step=6 ready=True players=2
+2026-11-21T17:54:33.3652910Z STATE Joined room=93002 kind=expedition phase=Returning compoundScene=False expeditionScene=True request=False step=6 ready=True players=2
+2026-11-21T17:54:37.2556617Z STATE Joined room=93002 kind=expedition phase=Returning compoundScene=False expeditionScene=True request=False step=6 ready=True players=1
+2026-11-21T17:54:38.7560553Z STATE Leaving room=93002 kind=expedition phase=Returning compoundScene=False expeditionScene=True request=True step=6 ready=False players=0
+2026-11-21T17:54:38.9820657Z STATE ConnectingToMasterServer room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=6 ready=False players=0
+2026-11-21T17:54:39.2895710Z STATE Authenticating room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=6 ready=False players=0
+2026-11-21T17:54:39.3963561Z STATE Joining room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=6 ready=False players=0
+2026-11-21T17:54:39.5045533Z STATE ConnectingToGameServer room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=6 ready=False players=0
+2026-11-21T17:54:39.9364589Z STATE Authenticating room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=6 ready=False players=0
+2026-11-21T17:54:40.0469139Z STATE Joining room= kind= phase=Compound compoundScene=False expeditionScene=True request=True step=6 ready=False players=0
+2026-11-21T17:54:40.1551381Z STATE Joined room=83514 kind=compound phase=Compound compoundScene=False expeditionScene=True request=True step=6 ready=False players=2
+2026-11-21T17:54:41.1810123Z STATE Joined room=83514 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=6 ready=True players=2
+2026-11-21T17:54:44.2563121Z ACK step=6 horns=0 [] returned to 83514
+2026-11-21T17:54:44.3646440Z STATE Joined room=83514 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=7 ready=True players=2
+2026-11-21T17:54:44.3646440Z step=7
+2026-11-21T17:54:44.3661623Z ACK step=7 horns=0 [] waiting
+2026-11-21T17:54:44.6791945Z STATE Joined room=83514 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=7 ready=True players=1
+2026-11-21T17:54:49.0994857Z STATE Joined room=83514 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=8 ready=True players=1
+2026-11-21T17:54:49.0994857Z step=8
+2026-11-21T17:54:49.2015224Z STATE Leaving room=83514 kind=compound phase=Compound compoundScene=True expeditionScene=False request=True step=8 ready=False players=0
+2026-11-21T17:54:49.3084047Z STATE ConnectingToMasterServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=8 ready=False players=0
+2026-11-21T17:54:49.6257019Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=8 ready=False players=0
+2026-11-21T17:54:49.7287435Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=8 ready=False players=0
+2026-11-21T17:54:49.8293342Z STATE ConnectingToGameServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=8 ready=False players=0
+2026-11-21T17:54:50.2561891Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=8 ready=False players=0
+2026-11-21T17:54:50.4631386Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=8 ready=False players=0
+2026-11-21T17:54:50.5670200Z STATE Joined room=54665 kind=private phase=Staging compoundScene=True expeditionScene=False request=False step=8 ready=True players=2
+2026-11-21T17:54:53.6631164Z ACK step=8 horns=0 [] in private staging 54665
+2026-11-21T17:54:53.7696759Z STATE Joined room=54665 kind=private phase=Staging compoundScene=True expeditionScene=False request=False step=9 ready=True players=2
+2026-11-21T17:54:53.7701792Z step=9
+2026-11-21T17:54:57.0065541Z HORN start #3 t=0.01 pollGap=0.01s room=54665 kind=private phase=Departing compoundScene=True expeditionScene=False request=True step=9
+2026-11-21T17:54:57.0477118Z STATE Joined room=54665 kind=private phase=Departing compoundScene=True expeditionScene=False request=True step=9 ready=False players=2
+2026-11-21T17:54:59.2852741Z HORN end after 2.28s maxPollGapWhilePlaying=1.55s room=54665 kind=private phase=Departing compoundScene=True expeditionScene=False request=True step=9
+2026-11-21T17:55:01.2243412Z STATE Joined room=54665 kind=private phase=Departing compoundScene=False expeditionScene=True request=False step=9 ready=False players=2
+2026-11-21T17:55:02.5821421Z STATE Joined room=54665 kind=private phase=Departing compoundScene=False expeditionScene=True request=False step=9 ready=True players=2
+2026-11-21T17:55:03.2232239Z STATE Joined room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=9 ready=True players=2
+2026-11-21T17:55:06.2493795Z ARRIVED room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=9
+2026-11-21T17:55:12.2686356Z ACK step=9 horns=1 [private/Departing] private run 2b52af6b82aa480ba68b60ff2949d5fa
+2026-11-21T17:55:12.3745362Z STATE Joined room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=10 ready=True players=2
+2026-11-21T17:55:12.3745362Z step=10
+2026-11-21T17:55:13.7200480Z STATE Joined room=54665 kind=private phase=Ending compoundScene=False expeditionScene=True request=False step=10 ready=True players=2
+2026-11-21T17:55:18.7306843Z STATE Joined room=54665 kind=private phase=Returning compoundScene=False expeditionScene=True request=False step=10 ready=True players=2
+2026-11-21T17:55:20.8058960Z STATE Joined room=54665 kind=private phase=Staging compoundScene=False expeditionScene=True request=True step=10 ready=False players=2
+2026-11-21T17:55:21.8651525Z STATE Joined room=54665 kind=private phase=Staging compoundScene=True expeditionScene=False request=False step=10 ready=False players=2
+2026-11-21T17:55:23.3554966Z STATE Joined room=54665 kind=private phase=Staging compoundScene=True expeditionScene=False request=False step=10 ready=True players=2
+2026-11-21T17:55:26.4328517Z ACK step=10 horns=0 [] back in staging
+2026-11-21T17:55:26.5404230Z STATE Joined room=54665 kind=private phase=Staging compoundScene=True expeditionScene=False request=False step=11 ready=True players=2
+2026-11-21T17:55:26.5404230Z step=11
+2026-11-21T17:55:29.7647612Z HORN start #4 t=0.01 pollGap=0.01s room=54665 kind=private phase=Departing compoundScene=True expeditionScene=False request=True step=11
+2026-11-21T17:55:29.8452217Z STATE Joined room=54665 kind=private phase=Departing compoundScene=True expeditionScene=False request=True step=11 ready=False players=2
+2026-11-21T17:55:32.0635619Z HORN end after 2.30s maxPollGapWhilePlaying=1.57s room=54665 kind=private phase=Departing compoundScene=True expeditionScene=False request=True step=11
+2026-11-21T17:55:33.8519232Z STATE Joined room=54665 kind=private phase=Departing compoundScene=False expeditionScene=True request=False step=11 ready=False players=2
+2026-11-21T17:55:35.2536862Z STATE Joined room=54665 kind=private phase=Departing compoundScene=False expeditionScene=True request=False step=11 ready=True players=2
+2026-11-21T17:55:35.5787685Z STATE Joined room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=11 ready=True players=2
+2026-11-21T17:55:38.6759351Z ARRIVED room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=11
+2026-11-21T17:55:44.7596850Z ACK step=11 horns=1 [private/Departing] private run 078cb714c9ce46eb949150cd0d8f3f31
+2026-11-21T17:55:44.8656958Z STATE Joined room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=12 ready=True players=2
+2026-11-21T17:55:44.8656958Z step=12
+2026-11-21T17:55:45.2897072Z STATE Joined room=54665 kind=private phase=Ending compoundScene=False expeditionScene=True request=False step=12 ready=True players=2
+2026-11-21T17:55:50.2824850Z STATE Joined room=54665 kind=private phase=Returning compoundScene=False expeditionScene=True request=False step=12 ready=True players=2
+2026-11-21T17:55:52.3381249Z STATE Joined room=54665 kind=private phase=Staging compoundScene=False expeditionScene=True request=True step=12 ready=False players=2
+2026-11-21T17:55:53.4137221Z STATE Joined room=54665 kind=private phase=Staging compoundScene=True expeditionScene=False request=False step=12 ready=False players=2
+2026-11-21T17:55:54.9008485Z STATE Joined room=54665 kind=private phase=Staging compoundScene=True expeditionScene=False request=False step=12 ready=True players=2
+2026-11-21T17:55:57.9675225Z ACK step=12 horns=0 [] back in staging
+2026-11-21T17:55:58.0753665Z STATE Joined room=54665 kind=private phase=Staging compoundScene=True expeditionScene=False request=False step=13 ready=True players=2
+2026-11-21T17:55:58.0753665Z step=13
+2026-11-21T17:55:58.1811304Z STATE Leaving room=54665 kind=private phase=Staging compoundScene=True expeditionScene=False request=True step=13 ready=False players=0
+2026-11-21T17:55:58.2899274Z STATE ConnectingToMasterServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=13 ready=False players=0
+2026-11-21T17:55:58.6106405Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=13 ready=False players=0
+2026-11-21T17:55:58.7148958Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=13 ready=False players=0
+2026-11-21T17:55:58.8148730Z STATE ConnectingToGameServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=13 ready=False players=0
+2026-11-21T17:55:59.2345800Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=13 ready=False players=0
+2026-11-21T17:55:59.4418320Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=13 ready=False players=0
+2026-11-21T17:55:59.5457997Z STATE Joined room=98442 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=13 ready=True players=1
+2026-11-21T17:56:02.5931437Z ACK step=13 horns=0 [] left to public 98442
+2026-11-21T17:56:02.6989925Z STATE Joined room=98442 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=14 ready=True players=1
+2026-11-21T17:56:02.6989925Z step=14
+2026-11-21T17:56:02.6989925Z ACK step=14 horns=0 [] waiting in public compound
+2026-11-21T17:56:17.3844425Z STATE Joined room=98442 kind=compound phase=Compound compoundScene=True expeditionScene=False request=False step=15 ready=True players=1
+2026-11-21T17:56:17.3849517Z step=15
+2026-11-21T17:56:17.4861912Z STATE Leaving room=98442 kind=compound phase=Compound compoundScene=True expeditionScene=False request=True step=15 ready=False players=0
+2026-11-21T17:56:17.5931711Z STATE ConnectingToMasterServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=15 ready=False players=0
+2026-11-21T17:56:17.9142520Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=15 ready=False players=0
+2026-11-21T17:56:18.0199535Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=15 ready=False players=0
+2026-11-21T17:56:18.1285491Z STATE ConnectingToGameServer room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=15 ready=False players=0
+2026-11-21T17:56:18.5535073Z STATE Authenticating room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=15 ready=False players=0
+2026-11-21T17:56:18.7611234Z STATE Joining room= kind= phase=Compound compoundScene=True expeditionScene=False request=True step=15 ready=False players=0
+2026-11-21T17:56:18.8622355Z STATE Joined room=54665 kind=private phase=Running compoundScene=True expeditionScene=False request=True step=15 ready=False players=2
+2026-11-21T17:56:23.0545640Z STATE Joined room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=15 ready=False players=2
+2026-11-21T17:56:24.4074191Z STATE Joined room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=15 ready=True players=2
+2026-11-21T17:56:27.4506217Z ARRIVED room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=15
+2026-11-21T17:56:33.5384881Z ACK step=15 horns=0 [] in running private run 8df158d74e70495b8e6db5cb366e5680
+2026-11-21T17:56:33.6507244Z STATE Joined room=54665 kind=private phase=Running compoundScene=False expeditionScene=True request=False step=16 ready=True players=2
+2026-11-21T17:56:33.6507244Z step=16
+2026-11-21T17:56:33.6507244Z COMPLETE total horn starts this client=4

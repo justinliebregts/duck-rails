@@ -1,0 +1,30 @@
+2026-11-21T05:53:56.4137732Z Started two-client Huggy flare gun check
+2026-11-21T05:54:06.8842696Z Stage=0 room=11111 players=2
+2026-11-21T05:54:06.8842696Z ACK 0 actor=2 master=False
+2026-11-21T05:54:06.9381358Z ACK 0 actor=2 master=False
+2026-11-21T05:54:06.9890868Z ACK 0 actor=2 master=False
+2026-11-21T05:54:11.0744897Z Stage=1 room=11111 players=2
+2026-11-21T05:54:14.3453444Z PASS peer received shot key=00100001 charge=0.02 pos=(1.41, 1.59, 74.18)
+2026-11-21T05:54:19.2057082Z Sample at charge 0.51: pos=(1.41, 1.10, 73.41) phase=Rest
+2026-11-21T05:54:19.3759068Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:54:19.4386728Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:54:19.4909809Z ACK 1 actor=2 master=False same shot within 0.00 m
+2026-11-21T05:54:21.4275878Z Stage=2 room=11111 players=2
+2026-11-21T05:54:22.9553233Z PASS handover kept charge 0.88
+2026-11-21T05:54:24.1932320Z PASS recharged to full after 10 s and stays full
+2026-11-21T05:54:24.1932320Z ACK 2 actor=2 master=False
+2026-11-21T05:54:24.2507084Z ACK 2 actor=2 master=False
+2026-11-21T05:54:24.3078867Z ACK 2 actor=2 master=False
+2026-11-21T05:54:24.5287457Z Stage=3 room=11111 players=2
+2026-11-21T05:54:27.0925147Z Spot 0 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:54:28.2985233Z Spot 1 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:54:29.5088553Z Spot 2 blocked by aim outside car; muzzle fwd=(0.00, 0.00, 1.00); moving
+2026-11-21T05:54:30.7228515Z Aimed from spot 3: muzzle=(0.21, 2.57, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.57, 71.38)
+2026-11-21T05:54:31.1561591Z Aimed from spot 3: muzzle=(0.21, 2.49, 68.88) fwd=(0.00, 0.00, 1.00) aim=(0.21, 2.49, 71.38)
+2026-11-21T05:54:31.4459414Z Firing at enemy: along=2.50 sideways=0.00 muzzleAboveRoot=0.36 enemy=(0.21, 2.22, 71.38) muzzle=(0.21, 2.58, 68.88)
+2026-11-21T05:54:31.7748442Z Authority released the enemy; pressing the trigger
+2026-11-21T05:54:35.3981878Z Shot sample: phase=Rest bounces=3 travel=2.13 pos=(0.21, 1.10, 68.02) fromAimFlat=3.36 pastAim=-3.36 fromEnemyNow=5.72 enemyNow=(0.21, 0.97, 73.74)
+2026-11-21T05:54:35.5788186Z ACK 3 actor=2 master=False deflected shot within 0.00 m on both; flare-fear=True
+2026-11-21T05:54:35.6446161Z ACK 3 actor=2 master=False deflected shot within 0.00 m on both; flare-fear=True
+2026-11-21T05:54:35.6963522Z ACK 3 actor=2 master=False deflected shot within 0.00 m on both; flare-fear=True
+2026-11-21T05:56:24.5657013Z FAIL Timeout stage=3 sub=2

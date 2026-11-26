@@ -118,8 +118,8 @@ namespace Game.AI
                 return false;
             }
             Object owner = manager.TargetOwner(slot);
-            if (owner == null || owner is PhotonPlayer duck && (duck.IsCompanion ||
-                Networked && PhotonMasterHandoff.IsUnavailableInRoom(duck.photonView.OwnerActorNr)))
+            if (owner == null || owner is PhotonPlayer duck &&
+                Networked && PhotonMasterHandoff.IsUnavailableInRoom(duck.photonView.OwnerActorNr))
             {
                 AbandonAim();
                 return false;
@@ -396,7 +396,7 @@ namespace Game.AI
         {
             readyAt = Time.time + cooldown;
             Vector3 pull = Vector3.zero;
-            if (victim != null && !victim.IsCompanion || offlineLocal)
+            if (victim != null || offlineLocal)
             {
                 Vector3 center = victim != null && victim.TryGetHeadPosition(out Vector3 head) ? head : point;
                 Vector3 toward = (Vector3)arm.RootPos - center;

@@ -44,7 +44,12 @@ public class PauseMenu : MonoBehaviour
     Quaternion summonLocalRotation;
 
     void Awake() {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         BindTestButtons();
+#else
+        if (testButton != null) testButton.gameObject.SetActive(false);
+        if (testPage != null) testPage.SetActive(false);
+#endif
         BindCameraButton("Open", OpenCameraTablet);
         BindCameraButton("Close", CloseCameraTablet);
         body = GetComponent<Rigidbody>();
@@ -94,15 +99,17 @@ public class PauseMenu : MonoBehaviour
             cameraPage.SetActive(false);
         }
         if (cameraTablet != null) {
-            cameraTablet.SetActive(false);
+            CloseCameraTablet();
         }
     }
 
     private void Update() {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         RailAdminTools.Refresh();
         if (testButton != null) testButton.gameObject.SetActive(RailAdminTools.Available);
         if (!RailAdminTools.Available && testPage != null && testPage.activeSelf) SetActiveButton(playersButton.GetComponent<PauseMenuButton>());
         RefreshTestLabels();
+#endif
         if (GR.Player.instance == null)
             return;
         if (GR.Player.instance.IsDead) {
@@ -163,12 +170,14 @@ public class PauseMenu : MonoBehaviour
         }
     }
 
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     void BindTestButtons() {
         if (testPage == null) return;
         BindTestButton("Deposit1", () => RailAdminTools.DepositCoal(1));
         BindTestButton("Deposit50", () => RailAdminTools.DepositCoal(50));
         BindTestButton("NoClip", () => RailAdminTools.ToggleNoClip());
         BindTestButton("Invincibility", () => RailAdminTools.ToggleInvincibility());
+        BindTestButton("TrainSpeed", () => RailAdminTools.ToggleTrainSpeed());
         testPage.SetActive(false);
         if (testButton != null) testButton.gameObject.SetActive(RailAdminTools.Available);
     }
@@ -184,12 +193,14 @@ public class PauseMenu : MonoBehaviour
         if (testPage == null || !testPage.activeInHierarchy) return;
         SetTestLabel("NoClip", "No Clip: " + (RailAdminTools.NoClip ? "On" : "Off"));
         SetTestLabel("Invincibility", "Invincibility: " + ((RailAdminTools.Invincible || RailTestTools.EnemyInvincible) ? "On" : "Off"));
+        SetTestLabel("TrainSpeed", "Train Speed: " + (RailTestTools.FastTrainEnabled ? "5x" : "1x"));
     }
 
     void SetTestLabel(string name, string value) {
         var label = testPage.transform.Find(name)?.GetComponentInChildren<TMPro.TMP_Text>(true);
         if (label != null) label.text = value;
     }
+#endif
 
     public void OpenCameraTablet() {
         Vector3 position;
@@ -202,20 +213,29 @@ public class PauseMenu : MonoBehaviour
             return;
         }
 
-        ReleaseTabletIfHeld();
         cameraTablet.SetActive(true);
+        TabletGrab tablet = cameraTablet.GetComponent<TabletGrab>();
+        if (tablet == null) {
+            return;
+        }
+        tablet.SetVisible(false);
         cameraTablet.transform.SetParent(null, true);
         cameraTablet.transform.SetPositionAndRotation(position, rotation);
         SnapTabletBody(position, rotation);
+        tablet.SetVisible(true);
     }
 
+    // Hide rather than deactivate, so an active LIV recording keeps running.
     public void CloseCameraTablet() {
-        if (cameraTablet == null) {
+        if (cameraTablet == null || !cameraTablet.activeInHierarchy) {
             return;
         }
 
         ReleaseTabletIfHeld();
-        cameraTablet.SetActive(false);
+        TabletGrab tablet = cameraTablet.GetComponent<TabletGrab>();
+        if (tablet != null) {
+            tablet.SetVisible(false);
+        }
     }
 
     void BindCameraButton(string childName, UnityAction action) {
@@ -436,25 +456,17 @@ public class PauseMenu : MonoBehaviour
     bool TryGetTabletPose(out Vector3 position, out Quaternion rotation) {
         position = Vector3.zero;
         rotation = Quaternion.identity;
-        Camera head = Camera.main;
-        if (head == null || mesh == null || cameraTablet == null) {
+        if (mesh == null || cameraTablet == null
+            || !TryGetHeadPose(0f, out Vector3 summonPosition, out rotation)) {
             return false;
         }
 
-        Bounds menuBounds = GetVisualBounds(mesh, mesh.transform.rotation);
-        Vector3 menuCenter = mesh.transform.position + menuBounds.center;
-        Vector3 facePlayer = Vector3.ProjectOnPlane(head.transform.position - menuCenter, Vector3.up);
-        if (facePlayer.sqrMagnitude < 0.0001f) {
-            facePlayer = Vector3.ProjectOnPlane(-head.transform.forward, Vector3.up);
-        }
-        if (facePlayer.sqrMagnitude < 0.0001f) {
-            facePlayer = Vector3.forward;
-        }
-        rotation = Quaternion.LookRotation(facePlayer, Vector3.up);
-
+        // Recall relative to the current head pose even if the menu was moved.
+        // Retain the usual space above the menu when it is in its default pose.
+        Bounds menuBounds = GetVisualBounds(mesh, rotation);
         Bounds tabletBounds = GetVisualBounds(cameraTablet, rotation);
-        position = menuCenter - tabletBounds.center;
-        position.y = mesh.transform.position.y + menuBounds.max.y
+        position = summonPosition + menuBounds.center - tabletBounds.center;
+        position.y = summonPosition.y + menuBounds.max.y
             + Mathf.Max(0f, tabletGap) - tabletBounds.min.y;
         return true;
     }

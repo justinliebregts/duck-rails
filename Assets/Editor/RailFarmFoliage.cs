@@ -16,7 +16,7 @@ public static class RailFarmFoliage
         if (vertices.Length % verticesPerStalk != 0) throw new InvalidOperationException("Unexpected corn mesh topology");
         var volume = patch.GetComponent<FoliageVolume>() ?? patch.AddComponent<FoliageVolume>();
         volume.surface = surface;
-        volume.rustle = AssetDatabase.LoadAssetAtPath<SoundEvent>("Assets/Audio/Events/Impact/HandHit_Foliage.asset");
+        volume.rustle = AssetDatabase.LoadAssetAtPath<SoundEvent>("Assets/Audio/Events/Impact/Foliage_CornRustle.asset");
         volume.stalks = new Vector4[vertices.Length / verticesPerStalk];
         for (int i = 0; i < volume.stalks.Length; i++)
         {

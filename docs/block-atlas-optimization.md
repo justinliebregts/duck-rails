@@ -242,7 +242,15 @@ bundle art fixes. Start with the full block; no wing pilot or comparison APK nee
 ## Rollout status
 
 - Motel: full-map review and scoped Quest pair complete; optimization approach
-  accepted. Visual fixes and full-map production integration pending.
+  accepted. November 17: after the user fixed and rebaked its lights, a fresh
+  triangle-preserving conversion replaced the triangle-clipped review:
+  79,948 -> 79,948 triangles, 1,921 renderers -> 298 chunks (one 2048 x 1024 atlas
+  plus 13 repeat-exception materials), 51 emission-mapped/unbound originals kept.
+  User approved the visuals; integrated into the original-GUID production prefab
+  November 17, replacing the generated render chunks (`RailSceneryChunks` removed).
+  All other original object IDs, collision, gameplay and lighting retained; build and
+  lighting-workflow guards pass. Runtime/headset acceptance queued for playtest.
+  [Source, checks and integration](../ArtSource/MotelAtlasLowPoly/README.md).
 - Convenience Store: full-block Blender asset and separate Unity review prefab/scene
   imported November 14. 1,139 compatible source renderers -> 285 shared-material
   chunks; 231 retained exceptions; total 1,370 -> 516 enabled mesh renderers.

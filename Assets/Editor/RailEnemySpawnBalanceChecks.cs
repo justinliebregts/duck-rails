@@ -25,6 +25,7 @@ public static class RailEnemySpawnBalanceChecks
                     Check(points.Count == expected, block.id + " feasible crew budget " + crew + "/" + seed);
                     Check(points.Distinct().Count() == points.Count, "Unique locations");
                     Check(points.SequenceEqual(RailEnemySpawnBalance.Select(block, seed, crew)), "Deterministic reconstruction");
+                    if (crew < 8) Check(points.All(RailEnemySpawnBalance.Select(block, seed, crew + 1).Contains), "Larger crew keeps every smaller-crew enemy");
                     for (int q = 0; q < 4; q++)
                     {
                         var indices = Enumerable.Range(0, points.Count).Where(i => RailEnemySpawnBalance.Quadrant(block, points[i]) == q).ToArray();

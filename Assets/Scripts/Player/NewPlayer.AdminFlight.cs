@@ -2,6 +2,7 @@ using UnityEngine;
 
 public partial class NewPlayer
 {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     bool adminFlying, adminGravity, adminCollisions, adminKinematic;
     RigidbodyInterpolation adminInterpolation;
     readonly System.Collections.Generic.List<Collider> adminSolidColliders = new System.Collections.Generic.List<Collider>();
@@ -63,4 +64,7 @@ public partial class NewPlayer
         lastBodyMidpoint = bodyMidpoint.position;
         lastPos = transform.position;
     }
+#else
+    void RestoreAdminFlight() { }
+#endif
 }

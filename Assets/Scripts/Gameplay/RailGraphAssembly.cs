@@ -4,10 +4,10 @@ using System.Linq;
 using Game.AI;
 using UnityEngine;
 
-/// <summary>Reindexes translated, already baked graphs. Never samples geometry or creates navigation edges.</summary>
+/// <summary>Reindexes translated, already baked graphs. Optionally joins coincident walkable endpoints at authored block seams.</summary>
 public static class RailGraphAssembly
 {
-    public static CrawlGraph Combine(IReadOnlyList<CrawlGraph> sources, IReadOnlyList<Vector3> offsets)
+    public static CrawlGraph Combine(IReadOnlyList<CrawlGraph> sources, IReadOnlyList<Vector3> offsets, IReadOnlyList<float> lengths = null)
     {
         if (sources.Count == 0 || sources.Count != offsets.Count || sources.Any(g => g == null)) throw new ArgumentException("Missing authored graph.");
         var first = sources[0];
@@ -42,6 +42,51 @@ public static class RailGraphAssembly
         result.EdgeStart = new int[count + 1]; result.ChunkStart = new int[result.ChunkCount + 1];
         var map = sources.Select(g => new int[g.NodeCount]).ToArray();
         for (int n = 0; n < count; n++) map[records[n].graph][records[n].node] = n;
+        var links = new Dictionary<int, List<int>>();
+        var linkedClusters = new Dictionary<int, List<int>>();
+        var parents = Enumerable.Range(0, components).ToArray();
+        int Root(int c)
+        {
+            while (parents[c] != c) { parents[c] = parents[parents[c]]; c = parents[c]; }
+            return c;
+        }
+        void Link(Dictionary<int, List<int>> index, int a, int b)
+        {
+            if (!index.TryGetValue(a, out var list)) index[a] = list = new List<int>();
+            if (!list.Contains(b)) list.Add(b);
+        }
+        if (lengths != null)
+        {
+            var order = Enumerable.Range(0, sources.Count).OrderBy(i => offsets[i].z).ToArray();
+            for (int i = 1; i < order.Length; i++)
+            {
+                int left = order[i-1], right = order[i];
+                if (!Mathf.Approximately(offsets[left].z + lengths[left], offsets[right].z)) continue;
+                var ends = new Dictionary<Vector3, List<int>>();
+                var a = sources[left]; var b = sources[right];
+                for (int n = 0; n < a.NodeCount; n++)
+                {
+                    var p = a.GetPosition(n);
+                    if (!Mathf.Approximately(p.z, lengths[left]) || !a.IsGroundNode(n)) continue;
+                    var key = p + offsets[left];
+                    if (!ends.TryGetValue(key, out var nodes)) ends[key] = nodes = new List<int>();
+                    nodes.Add(n);
+                }
+                for (int n = 0; n < b.NodeCount; n++)
+                {
+                    var p = b.GetPosition(n);
+                    if (Mathf.Abs(p.z) > .0001f || !b.IsGroundNode(n) || !ends.TryGetValue(p + offsets[right], out var nodes)) continue;
+                    foreach (int next in nodes)
+                    {
+                        int u = map[left][next], v = map[right][n];
+                        Link(links, u, v); Link(links, v, u);
+                        int ca = clusterBase[left] + a.NodeCluster[next], cb = clusterBase[right] + b.NodeCluster[n];
+                        Link(linkedClusters, ca, cb); Link(linkedClusters, cb, ca);
+                        parents[Root(componentBase[left] + a.GetComponent(next))] = Root(componentBase[right] + b.GetComponent(n));
+                    }
+                }
+            }
+        }
         var edges = new List<int>();
         for (int n = 0; n < count; n++)
         {
@@ -50,6 +95,7 @@ public static class RailGraphAssembly
             result.NodeNormal[n] = g.NodeNormal[r.node]; result.NodeSurface[n] = g.NodeSurface[r.node]; result.NodeCluster[n] = g.NodeCluster[r.node] + clusterBase[r.graph];
             result.ChunkStart[r.chunk + 1]++; result.EdgeStart[n] = edges.Count;
             for (int e = g.EdgeStart[r.node]; e < g.EdgeStart[r.node + 1]; e++) edges.Add(map[r.graph][g.EdgeTarget[e]]);
+            if (links.TryGetValue(n, out var neighbors)) edges.AddRange(neighbors);
         }
         result.EdgeStart[count] = edges.Count; result.EdgeTarget = edges.ToArray();
         for (int c = 1; c < result.ChunkStart.Length; c++) result.ChunkStart[c] += result.ChunkStart[c - 1];
@@ -59,12 +105,13 @@ public static class RailGraphAssembly
         {
             var g = sources[s]; int dest = clusterBase[s] + c; Vector3 p = g.GetClusterCenter(c) + offsets[s];
             result.ClusterCenter[dest * 3] = p.x; result.ClusterCenter[dest * 3 + 1] = p.y; result.ClusterCenter[dest * 3 + 2] = p.z;
-            result.ClusterComponent[dest] = componentBase[s] + g.ClusterComponent[c];
+            result.ClusterComponent[dest] = Root(componentBase[s] + g.ClusterComponent[c]);
             result.ClusterNode[dest] = g.ClusterNode[c] < 0 ? -1 : map[s][g.ClusterNode[c]];
             int representative = g.ClusterNode[c] >= 0 ? g.ClusterNode[c] : Array.FindIndex(g.NodeCluster, value => value == c);
             result.ClusterChunk[dest] = representative < 0 ? 0 : result.ChunkOfKey(result.NodeKey[map[s][representative]]);
             result.ClusterEdgeStart[dest] = edges.Count;
             for (int e = g.ClusterEdgeStart[c]; e < g.ClusterEdgeStart[c + 1]; e++) edges.Add(clusterBase[s] + g.ClusterEdgeTarget[e]);
+            if (linkedClusters.TryGetValue(dest, out var neighbors)) edges.AddRange(neighbors);
         }
         result.ClusterEdgeStart[clusters] = edges.Count; result.ClusterEdgeTarget = edges.ToArray();
         // Translation can split an authored cluster across spatial chunks (e.g. a 60m stop).

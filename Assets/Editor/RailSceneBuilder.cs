@@ -95,7 +95,8 @@ public static class RailSceneBuilder
         var trigger = new GameObject("Departure occupancy trigger").AddComponent<BoxCollider>();
         trigger.transform.SetParent(root); trigger.transform.position = new Vector3(0, 1.65f, 4);
         trigger.size = new Vector3(8, 3, 6); trigger.isTrigger = true; world.boardingTrigger = trigger;
-        world.departureBoard = Text("Public countdown", root, "PUBLIC DEPARTURE\nStep onto the platform", new Vector3(0, 3, 8));
+        world.departureBoard = Text("Public countdown", root, RailWorld.PublicDepartureText(0, -1, false, false), new Vector3(0, 3, 8));
+        world.departureBoard.fontSize = 4;
         Text("Title", root, "DUCK RAILS", new Vector3(0, 5, 11.6f), 2);
         var spawn = new GameObject("Compound spawn").transform; spawn.position = new Vector3(0, .2f, -8); world.compoundSpawn = spawn;
         var flashlight = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Items/ItemFlashlight.prefab"));
@@ -108,7 +109,7 @@ public static class RailSceneBuilder
         var gm = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Manager/GameManager.prefab"));
         gm.transform.position = Vector3.zero;
         var manager = gm.GetComponent<GameManager>(); manager.respawnPoint = spawn;
-        manager.disableEnemySpawning = true; manager.disableDuckCompanion = true;
+        manager.disableEnemySpawning = true;
         PrefabUtility.RecordPrefabInstancePropertyModifications(manager);
         var rig = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Player/DuckPlayer.prefab"));
         rig.transform.position = spawn.position;
@@ -135,7 +136,7 @@ public static class RailSceneBuilder
         cabin.swayBobMeters = cabin.swayPitchDegrees = cabin.swayRollDegrees = 0;
         world.train = carriage.AddComponent<RailTrain>(); world.train.cabin = cabin;
         world.expedition.SetActive(false);
-        RailSubwayCompoundBuilder.InstallExisting(world);
+        RailCompoundInstaller.InstallExisting(world);
         EditorSceneManager.SaveScene(scene, "Assets/Scenes/Compound.unity");
     }
     static void BuildLogin()

@@ -11,6 +11,7 @@ namespace Game.Audio
         bool sampled;
         FoliageRustleMotion motion;
         AudioHandle handle;
+        FoliageVolume entryVolume;
 
         public static void EnsureExists()
         {
@@ -34,6 +35,19 @@ namespace Game.Audio
             previous = position;
             var volume = FoliageVolume.Find(position);
             bool inside = volume != null && volume.rustle != null && !WaterListenerEffects.HeadSubmerged;
+            if (inside && volume.rustleOnEntry)
+            {
+                if (entryVolume != volume)
+                {
+                    handle.Stop(0.04f);
+                    handle = default;
+                    manager.PlayAttached(volume.rustle, head, this);
+                }
+                entryVolume = volume;
+                motion = default;
+                return;
+            }
+            entryVolume = null;
             bool play = motion.Step(delta, Time.deltaTime, inside, Time.time);
             if (!motion.Moving)
             {
@@ -53,6 +67,7 @@ namespace Game.Audio
             handle.Stop();
             handle = default;
             motion = default;
+            entryVolume = null;
             sampled = false;
         }
 

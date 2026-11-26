@@ -1,0 +1,117 @@
+2026-11-21T18:07:23.3035834Z t=0.00 START resting-item hit playtest; Unity 6000.3.24f1 role=main code=30854
+2026-11-21T18:07:23.3035834Z t=0.00 STATE PeerCreated room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:23.3051019Z t=0.00 step=0 phase=
+2026-11-21T18:07:25.8765012Z t=0.71 STATE ConnectingToNameServer room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:26.1747379Z t=0.91 STATE Authenticating room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:26.4074551Z t=1.08 STATE ConnectingToMasterServer room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:27.0528334Z t=1.60 STATE Authenticating room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:27.2336526Z t=1.74 STATE Joining room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:27.4663535Z t=1.91 STATE ConnectingToGameServer room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:28.1225834Z t=2.46 STATE Authenticating room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:28.2391484Z t=2.58 STATE Joining room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:28.3943474Z t=2.69 STATE Joined room=97911 kind=compound phase=Compound ready=False players=1 master=True
+2026-11-21T18:07:29.4507466Z t=2.80 STATE Joined room=97911 kind=compound phase=Compound ready=True players=1 master=True
+2026-11-21T18:07:31.6594597Z t=4.57 STATE Joined room=97911 kind=compound phase=Compound ready=True players=2 master=True
+2026-11-21T18:07:32.4798152Z t=5.39 CREATE private 30854
+2026-11-21T18:07:32.5349392Z t=5.44 STATE Leaving room=97911 kind=compound phase=Compound ready=False players=0 master=True
+2026-11-21T18:07:32.6054439Z t=5.50 STATE ConnectingToMasterServer room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:33.0033447Z t=5.91 STATE Authenticating room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:33.1197982Z t=6.03 STATE Joining room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:33.2864396Z t=6.19 STATE ConnectingToGameServer room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:33.7264680Z t=6.63 STATE Authenticating room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:33.8321162Z t=6.74 STATE Joining room= kind= phase=Compound ready=False players=0 master=False
+2026-11-21T18:07:33.9983844Z t=6.90 STATE Joined room=30854 kind=private phase=Staging ready=True players=1 master=True
+2026-11-21T18:07:37.1072320Z t=10.01 step=1 phase=gather
+2026-11-21T18:07:38.8151631Z t=11.72 STATE Joined room=30854 kind=private phase=Staging ready=True players=2 master=True
+2026-11-21T18:07:40.1220815Z t=13.03 GATHERED in 30854
+2026-11-21T18:07:40.1729159Z t=13.08 step=2 phase=launch
+2026-11-21T18:07:43.2079789Z t=16.10 LAUNCH StartPrivateRun
+2026-11-21T18:07:43.3765799Z t=16.27 STATE Joined room=30854 kind=private phase=Departing ready=False players=2 master=True
+2026-11-21T18:07:48.4234524Z t=18.58 STATE Joined room=30854 kind=private phase=Departing ready=True players=2 master=True
+2026-11-21T18:07:49.2903411Z t=19.45 STATE Joined room=30854 kind=private phase=Running ready=True players=2 master=True
+2026-11-21T18:07:55.3890662Z t=25.51 BOARD fuel=50 trainSpeed=0 runId=94f5011f0bb742cab6a22d1c9dddb3a9 enemies=16
+2026-11-21T18:07:58.9437239Z t=28.60 step=3 phase=place-bar
+2026-11-21T18:07:58.9487606Z t=28.60 BAR RailGoldBar(Clone) view=18 owner=0 fleshSound=FleshImpact_Items radius=0.04411973 mass=1 damping=0 launch=0
+2026-11-21T18:07:59.9939143Z t=29.63 SET DOWN bar on train floor at (-0.60,1.30,69.00) owner=1 mine=True
+2026-11-21T18:08:02.5822352Z t=32.20 step=4 phase=resting-settle
+2026-11-21T18:08:06.6471355Z t=36.26 RESTING bar=(-0.60,1.01,69.00) sinceActive=6.6s attachedToTrain=True p2head=(-0.60,1.35,69.00) p2chest=(-0.60,1.09,68.93) p2hands=(-0.82,1.19,69.26)/(-0.38,1.18,69.26) p2note=private=True phase=Running settled=True players=2 pos=(-0.60,-0.02,69.00)
+2026-11-21T18:08:06.6471355Z t=36.26 AVATAR colliders on main for actor 2: 0 [] barLayer=Grabbable
+2026-11-21T18:08:06.6486439Z t=36.26 STEP resting-settle (stopped) mainLocks(hit registered)=0 mainFlesh(PlayFleshImpact)=0 p2FleshEvents=0 p2Accepted=0 p2Blood=0 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=0/196 avatarContactFrames=0
+2026-11-21T18:08:06.7090203Z t=36.32 step=5 phase=cruise-standing
+2026-11-21T18:08:06.7110443Z t=36.32 TRAIN SetTrainMoving(true) fuel=50
+2026-11-21T18:08:08.8177006Z t=38.38 CRUISE reached speed=3.94 during accel mainLocks(hit registered)=0 mainFlesh(PlayFleshImpact)=0 p2FleshEvents=0 p2Accepted=0 p2Blood=0 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=48/98 avatarContactFrames=0
+2026-11-21T18:08:29.3261474Z t=58.40 STEP cruise-standing 20s speed=4.00 mainLocks(hit registered)=0 mainFlesh(PlayFleshImpact)=0 p2FleshEvents=0 p2Accepted=0 p2Blood=0 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=961/962 avatarContactFrames=0 barToP2Head=0.34 enemiesNear=0 p2note=private=True phase=Running settled=True players=2 pos=(-0.62,-0.02,153.74)
+2026-11-21T18:08:29.3930093Z t=58.46 step=6 phase=cruise-crouched
+2026-11-21T18:08:41.7561464Z t=70.79 STEP cruise-crouched 12s speed=4.00 mainLocks(hit registered)=0 mainFlesh(PlayFleshImpact)=0 p2FleshEvents=0 p2Accepted=0 p2Blood=0 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=569/580 avatarContactFrames=0 barToP2Head=0.34 enemiesNear=0 p2note=private=True phase=Running settled=True players=2 pos=(-3.65,0.68,204.03)
+2026-11-21T18:08:41.8175705Z t=70.85 step=7 phase=gate-control
+2026-11-21T18:08:41.8180950Z t=70.85 GATE NotifyPlayerThrown on resting bar speed=4.00
+2026-11-21T18:08:41.8472322Z t=70.88 LOCK victim actor=2 (this client's item hit that player) phase=gate-control
+2026-11-21T18:08:41.8472322Z t=70.88 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.70,0.97,204.83) held=False phase=gate-control
+2026-11-21T18:08:41.8477469Z t=70.88 BLOOD active hit effects 0 -> 1 phase=gate-control
+2026-11-21T18:08:41.9605521Z t=70.99 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.73,0.97,205.32) held=False phase=gate-control
+2026-11-21T18:08:41.9605521Z t=70.99 BLOOD active hit effects 1 -> 2 phase=gate-control
+2026-11-21T18:08:42.0614864Z t=71.09 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.76,0.97,205.72) held=False phase=gate-control
+2026-11-21T18:08:42.0614864Z t=71.09 BLOOD active hit effects 2 -> 3 phase=gate-control
+2026-11-21T18:08:42.1165605Z t=71.14 LOCK victim actor=2 (this client's item hit that player) phase=gate-control
+2026-11-21T18:08:42.1789662Z t=71.21 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.79,0.97,206.19) held=False phase=gate-control
+2026-11-21T18:08:42.1789662Z t=71.21 BLOOD active hit effects 3 -> 4 phase=gate-control
+2026-11-21T18:08:42.2943204Z t=71.31 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.82,0.97,206.61) held=False phase=gate-control
+2026-11-21T18:08:42.2953241Z t=71.31 BLOOD active hit effects 4 -> 5 phase=gate-control
+2026-11-21T18:08:42.3844629Z t=71.41 LOCK victim actor=2 (this client's item hit that player) phase=gate-control
+2026-11-21T18:08:42.4067614Z t=71.43 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.85,0.97,207.09) held=False phase=gate-control
+2026-11-21T18:08:42.4072653Z t=71.43 BLOOD active hit effects 5 -> 6 phase=gate-control
+2026-11-21T18:08:42.5246538Z t=71.55 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.87,0.97,207.57) held=False phase=gate-control
+2026-11-21T18:08:42.5256585Z t=71.55 BLOOD active hit effects 6 -> 7 phase=gate-control
+2026-11-21T18:08:42.6260882Z t=71.65 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.90,0.97,207.98) held=False phase=gate-control
+2026-11-21T18:08:42.6270928Z t=71.65 BLOOD active hit effects 7 -> 8 phase=gate-control
+2026-11-21T18:08:42.6538844Z t=71.67 LOCK victim actor=2 (this client's item hit that player) phase=gate-control
+2026-11-21T18:08:42.7418545Z t=71.76 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.93,0.97,208.44) held=False phase=gate-control
+2026-11-21T18:08:42.7428588Z t=71.76 BLOOD active hit effects 8 -> 9 phase=gate-control
+2026-11-21T18:08:42.8572935Z t=71.88 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.95,0.97,208.90) held=False phase=gate-control
+2026-11-21T18:08:42.8572935Z t=71.88 BLOOD active hit effects 9 -> 10 phase=gate-control
+2026-11-21T18:08:42.9043151Z t=71.92 LOCK victim actor=2 (this client's item hit that player) phase=gate-control
+2026-11-21T18:08:42.9776351Z t=72.00 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.98,0.97,209.38) held=False phase=gate-control
+2026-11-21T18:08:42.9781465Z t=72.00 BLOOD active hit effects 10 -> 11 phase=gate-control
+2026-11-21T18:08:43.0776277Z t=72.10 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-4.00,0.97,209.78) held=False phase=gate-control
+2026-11-21T18:08:43.0776277Z t=72.10 BLOOD active hit effects 11 -> 12 phase=gate-control
+2026-11-21T18:08:43.1713154Z t=72.19 LOCK victim actor=2 (this client's item hit that player) phase=gate-control
+2026-11-21T18:08:43.1907720Z t=72.21 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-4.03,0.97,210.24) held=False phase=gate-control
+2026-11-21T18:08:43.1921229Z t=72.21 BLOOD active hit effects 12 -> 13 phase=gate-control
+2026-11-21T18:08:43.3013021Z t=72.32 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-4.05,0.97,210.67) held=False phase=gate-control
+2026-11-21T18:08:43.3013021Z t=72.32 BLOOD active hit effects 13 -> 14 phase=gate-control
+2026-11-21T18:08:43.4785109Z t=72.50 STEP gate-control window(0-1.6s) mainLocks(hit registered)=6 mainFlesh(PlayFleshImpact)=14 p2FleshEvents=12 p2Accepted=6 p2Blood=10 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=73/74 avatarContactFrames=0 firstHitAfterStamp=0.02s
+2026-11-21T18:08:47.5403780Z t=76.50 STEP gate-control after-window(1.6-5.6s) mainLocks(hit registered)=0 mainFlesh(PlayFleshImpact)=0 p2FleshEvents=2 p2Accepted=0 p2Blood=2 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=185/186 avatarContactFrames=0
+2026-11-21T18:08:47.5923508Z t=76.55 step=8 phase=stop-train
+2026-11-21T18:08:50.6478228Z t=79.60 STOPPED distance=163.6 mainLocks(hit registered)=0 mainFlesh(PlayFleshImpact)=0 p2FleshEvents=0 p2Accepted=0 p2Blood=0 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=54/149 avatarContactFrames=0
+2026-11-21T18:08:50.7146501Z t=79.66 step=9 phase=held-walk
+2026-11-21T18:08:52.7295722Z t=81.68 WALK start main=(-4.12,-0.11,231.93) bar=(-4.09,1.36,232.78) held=True
+2026-11-21T18:08:53.0202470Z t=81.96 LOCK victim actor=2 (this client's item hit that player) phase=held-walk
+2026-11-21T18:08:53.0215864Z t=81.96 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-4.06,1.36,235.34) held=True phase=held-walk
+2026-11-21T18:08:53.0215864Z t=81.96 BLOOD active hit effects 0 -> 1 phase=held-walk
+2026-11-21T18:08:53.4806871Z t=82.43 WALK end main=(-4.13,-0.10,230.63) bar=(-4.03,1.36,238.24)
+2026-11-21T18:08:53.9810840Z t=82.93 LOCK victim actor=2 (this client's item hit that player) phase=held-walk
+2026-11-21T18:08:53.9810840Z t=82.93 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-4.06,1.36,235.60) held=True phase=held-walk
+2026-11-21T18:08:53.9810840Z t=82.93 BLOOD active hit effects 1 -> 2 phase=held-walk
+2026-11-21T18:08:54.0919783Z t=83.04 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-4.06,1.36,235.25) held=True phase=held-walk
+2026-11-21T18:08:54.0919783Z t=83.04 BLOOD active hit effects 2 -> 3 phase=held-walk
+2026-11-21T18:08:55.0106502Z t=83.96 STEP held-walk mainLocks(hit registered)=2 mainFlesh(PlayFleshImpact)=3 p2FleshEvents=3 p2Accepted=2 p2Blood=3 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=10/111 avatarContactFrames=0 closestBarToP2Head=0.17 held=True
+2026-11-21T18:08:55.0753229Z t=84.02 step=10 phase=thrown-quick
+2026-11-21T18:08:59.0336346Z t=87.56 RELEASE thrown-quick from=(-4.08,1.40,234.03) head=(-3.96,1.27,235.43) dist=1.41 plannedFlight=0.20s v=(0.59,0.33,6.94) speed=6.98 apexAboveRelease=0.01 headroomClear=True p2note=private=True phase=Running settled=True players=2 pos=(-3.96,-0.11,235.43)
+2026-11-21T18:08:59.2002962Z t=87.72 LOCK victim actor=2 (this client's item hit that player) phase=thrown-quick
+2026-11-21T18:08:59.2008028Z t=87.72 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(-3.98,1.26,235.19) held=False phase=thrown-quick
+2026-11-21T18:08:59.2008028Z t=87.72 BLOOD active hit effects 0 -> 1 phase=thrown-quick
+2026-11-21T18:09:01.0726529Z t=89.59 STEP thrown-quick mainLocks(hit registered)=1 mainFlesh(PlayFleshImpact)=1 p2FleshEvents=1 p2Accepted=1 p2Blood=1 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=5/101 avatarContactFrames=0 firstHitAfterRelease=0.16s closestBarToP2Head=0.05 at=0.19s
+2026-11-21T18:09:01.1314165Z t=89.66 step=11 phase=lob-1.2s
+2026-11-21T18:09:04.6947133Z t=93.21 RELEASE lob-1.2s from=(0.97,0.43,232.78) head=(1.03,0.29,234.38) dist=1.61 plannedFlight=1.20s v=(0.05,5.77,1.33) speed=5.92 apexAboveRelease=1.70 headroomClear=True p2note=private=True phase=Running settled=True players=2 pos=(1.03,-1.08,234.38)
+2026-11-21T18:09:05.8767253Z t=94.38 LOCK victim actor=2 (this client's item hit that player) phase=lob-1.2s
+2026-11-21T18:09:05.8767253Z t=94.38 FLESH PlayFleshImpact item=RailGoldBar(Clone) pos=(1.03,0.29,234.35) held=False phase=lob-1.2s
+2026-11-21T18:09:05.8767253Z t=94.38 BLOOD active hit effects 0 -> 1 phase=lob-1.2s
+2026-11-21T18:09:07.4250973Z t=95.93 STEP lob-1.2s mainLocks(hit registered)=1 mainFlesh(PlayFleshImpact)=1 p2FleshEvents=1 p2Accepted=1 p2Blood=1 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=3/135 avatarContactFrames=0 firstHitAfterRelease=1.17s closestBarToP2Head=0.04 at=1.17s
+2026-11-21T18:09:07.4800005Z t=95.99 step=12 phase=lob-1.7s
+2026-11-21T18:09:11.1125356Z t=99.55 RELEASE lob-1.7s from=(0.91,0.43,232.78) head=(1.03,0.29,234.38) dist=1.61 plannedFlight=1.70s v=(0.07,8.26,0.94) speed=8.31 apexAboveRelease=3.48 headroomClear=True p2note=private=True phase=Running settled=True players=2 pos=(1.03,-1.08,234.38)
+2026-11-21T18:09:14.3776235Z t=102.78 STEP lob-1.7s mainLocks(hit registered)=0 mainFlesh(PlayFleshImpact)=0 p2FleshEvents=0 p2Accepted=0 p2Blood=0 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=3/143 avatarContactFrames=0 firstHitAfterRelease=none closestBarToP2Head=0.05 at=1.67s
+2026-11-21T18:09:14.4531998Z t=102.85 step=13 phase=lob-2.2s
+2026-11-21T18:09:18.0590717Z t=106.39 RELEASE lob-2.2s from=(0.91,0.43,232.78) head=(1.03,0.29,234.38) dist=1.61 plannedFlight=2.20s v=(0.05,10.73,0.73) speed=10.75 apexAboveRelease=5.87 headroomClear=True p2note=private=True phase=Running settled=True players=2 pos=(1.03,-1.08,234.38)
+2026-11-21T18:09:21.8133526Z t=110.15 STEP lob-2.2s mainLocks(hit registered)=0 mainFlesh(PlayFleshImpact)=0 p2FleshEvents=0 p2Accepted=0 p2Blood=0 overlapOpportunities(frames where TickPlayerSwings would overlap at >=minHitSpeed)=3/184 avatarContactFrames=0 firstHitAfterRelease=none closestBarToP2Head=0.06 at=2.18s
+2026-11-21T18:09:21.8740596Z t=110.21 step=14 phase=done
+2026-11-21T18:09:21.8740596Z t=110.21 COMPLETE totals main locks=10 flesh=19 blood=19; player2 events=19 accepted=10 blood=17

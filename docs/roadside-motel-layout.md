@@ -186,6 +186,10 @@ Pre-commit crawl-graph rebake (November 12, explicitly requested): 27,836 nodes;
 
 November 12 evening queue run: the current prefab had six null baked-renderer bindings and prevented expedition readiness. Fix `3c64b55a4` re-exports the existing Motel lighting scene through the standard exporter, leaving **1,964 valid bindings**; the bake scene and lighting companion are unchanged. The same five-block route then reaches Running/WorldReady, including a third authenticated late joiner, with matching peer geometry/cargo/enemy inventories. This supersedes the 1,970-binding count above; it does not establish natural traversal, enemy pursuit or headset acceptance. See [queue evidence](validation/playtest-queue/2026-11-12-evening/run-notes.txt).
 
+## Eight-player coal capacity — November 24, 2026
+
+Tripled coal tuning needs 93 coal candidates for an eight-player crew; the motel had 48. Appended Coal 49–96 (existing markers, gold and enemies unchanged): two per guest room, five in motel services, three on change-room benches, one at the food vendor, four at the pool (both basins and loungers), eight across the golf greens, one in the golf shack, four at the rink/rental and ten in the arrival lot (five bus roofs as climb rewards). Pool is now 96 coal / 64 gold / 32 enemies; crews 1–8 select full counts. [Checks](validation/motel-leisure/coal-capacity-checks.txt). Hand reach, bus-roof climbing and headset performance are queued for playtest.
+
 ## Motel render consolidation pilot — November 13, 2026
 
 The user authorized a Motel-only optimization pilot with the current layout retained.
@@ -258,3 +262,25 @@ fewer draws, improved CPU medians and CPU p95, and a small forward GPU p95 regre
 and 0.23 degrees; this is scoped evidence, not full acceptance. See
 [results/build correction](validation/motel-full-atlas/results.md). Visual fixes,
 production rollout and remaining runtime/headset checks are still pending.
+
+## Production atlas — November 17, 2026
+
+**Supersedes the render-consolidation pilot and the November 13 full-map review
+above.** After the user fixed the trapped lights and rebaked (ba8d8871b, eb4e8553d),
+a fresh triangle-preserving Blender atlas was built, approved by the user and
+integrated into the original-GUID production prefab:
+79,948 -> 79,948 triangles; 1,921 originals (disabled in place) -> 298 chunks
+(one 2048 x 1024 atlas + 13 repeat-exception materials); 51 emission-mapped or
+unbound originals kept; 349 enabled mesh renderers. `RailSceneryChunks` and the
+generated root were removed; **Regenerate optimized render chunks** now refuses.
+All 13,170 other prefab object IDs, 1,900 colliders and 75 lights are unchanged.
+`RailMotelAtlasProduction` guards builds against `production-state.json`.
+
+Authoring workflow now matches the other atlas blocks:
+- Light changes: Block Lighting Tool, **Rebake atlas block lights**
+  ([lights-only rebake](atlas-lights-only-rebake.md)). New lights go under an
+  `Added baked lights` object that is the last root child.
+- Mesh, material or layout changes: restore original rendering/bindings, rebake and
+  regenerate the atlas ([source/workflow](../ArtSource/MotelAtlasLowPoly/README.md)).
+
+Runtime, multiplayer and headset appearance are **queued for playtest**.

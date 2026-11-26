@@ -11,6 +11,7 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 /// <summary>Authoritative Week 2 encounter, rescue, furnace and bridge lifecycle.</summary>
 public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
 {
+    RailRunState reportedState;
     public const string StateKey = "rails.expedition";
     const byte ActionEvent = 108;
     public static RailExpedition Instance { get; private set; }
@@ -25,23 +26,36 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     public TMP_Text[] runningLabels;
     public Material explosionMaterial;
     public Game.AI.EnemyManager enemies;
+    public const float BridgeSpan = 30f, TrainFrontOffset = 5f;
+    RailRunState displayedResults;
+    int displayedCountdown;
     public float bridgeZ = 550;
     public int baseEnemyCount = 2;
+    // Crew scaling, set by RailRoute: per point, the smallest crew that uses it and the track
+    // distance where its block starts (-1 for the fixed midpoint/finale points).
+    [NonSerialized] public int[] coalCrew = Array.Empty<int>(), goldCrew = Array.Empty<int>(), enemyCrew = Array.Empty<int>();
+    [NonSerialized] public float[] coalStart = Array.Empty<float>(), goldStart = Array.Empty<float>(), enemyStart = Array.Empty<float>();
+    /// <summary>Run id once the master has changed the crew mid-run; later spawns then avoid reached blocks and nearby players.</summary>
+    public const string CrewRunKey = "rails.crewRun";
+    const float CrewClearance = 35f, CrewRaiseDelay = 5f, CrewLowerDelay = 20f;
+    int pendingCrew; double pendingCrewSince; string reconciledRun; int reconciledCrew; double reconcileRetryAt;
     public DeathFlare flarePrefab;
     public RailRunState State { get; private set; } = new RailRunState();
     readonly Queue<(int actor, string action, int target, object[] coal)> requests = new Queue<(int, string, int, object[])>();
     readonly Dictionary<string, double> shownFlares = new Dictionary<string, double>();
+    readonly Dictionary<string, bool> tracedDown = new Dictionary<string, bool>();
     string lastJson, localRun, caughtRun;
     string pendingRequestJson;
     int pendingRequestRevision;
     double pendingRequestAt;
     bool wasDown;
     readonly RailAtmosphere atmosphere = new RailAtmosphere();
-    double nextTick, nextDownRequest, fallAt;
+    double nextTick, nextDownRequest;
     RailReviveEffects reviveEffects;
     readonly Dictionary<string, TMP_Text> downLabels = new Dictionary<string, TMP_Text>();
     RailBridgeCollapse collapse;
     GameObject collapsePrefab;
+    float lastBridgeProgress = -1f, lastBridgeSampleAt;
     readonly HashSet<string> carrierHits = new HashSet<string>();
     readonly HashSet<string> issuedDrops = new HashSet<string>();
     public void CarrierHit(string marker) { if (PhotonSession.Phase == RailPhase.Running && State.carriers.Any(c => c.marker == marker && c.carrying)) carrierHits.Add(marker); }
@@ -74,6 +88,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         var instance = Instance;
         if (instance == null || PhotonNetwork.Time < instance.nextDownRequest || LocalDown) return;
         instance.nextDownRequest = PhotonNetwork.Time + .3;
+        TraceFlare("local down requested via=self onTrain=" + PhotonSession.OnTrain + " " + LocalWhere());
         instance.Request("down");
     }
     public static void RequestEnemyDown(Game.AI.Enemy enemy)
@@ -83,8 +98,20 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (instance == null || enemy == null || PhotonNetwork.Time < instance.nextDownRequest || LocalDown) return;
         instance.nextDownRequest = PhotonNetwork.Time + .3;
         var view = enemy.GetComponent<PhotonView>();
+        TraceFlare("local down requested via=enemy view=" + (view != null ? view.ViewID : 0) + " onTrain=" + PhotonSession.OnTrain + " " + LocalWhere());
         instance.Request("enemy-down", view != null ? view.ViewID : 0);
     }
+    // Flare/down diagnostics go to the bounded RailDiagnostics event list so a submitted
+    // report carries them. Actor numbers only; never user IDs or nicknames.
+    static void TraceFlare(string message) => RailDiagnostics.Instance?.Event("flare: " + message);
+    static string Where(Vector3 point)
+    {
+        var train = RailTrain.Instance;
+        return "pos=" + point.ToString("F1") + " aboard=" + (train != null && train.Contains(point))
+            + " trainSpeed=" + (train != null ? train.Speed.ToString("F1") : "-");
+    }
+    static string LocalWhere() => PhotonNetwork.LocalPlayer != null && Position(PhotonNetwork.LocalPlayer.ActorNumber, out var point)
+        ? Where(point) : "pos=unknown";
     public void Request(string action, int target = 0)
     {
         if (!PhotonSession.IsRailsRoom || !PhotonSession.OnTrain || PhotonNetwork.LocalPlayer == null) return;
@@ -96,6 +123,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (e.Code != ActionEvent || !PhotonNetwork.IsMasterClient || PhotonSession.Phase != RailPhase.Running) return;
         if (!(e.CustomData is object[] d) || (d.Length != 3 && d.Length != 4) || d[0] as string != PhotonSession.RunId || !(d[1] is string action) || !(d[2] is int target)) return;
         if (requests.Count < 64) requests.Enqueue((e.Sender, action, target, d.Length == 4 ? d[3] as object[] : null));
+        else if (action == "down" || action == "enemy-down") TraceFlare("master dropped down actor=" + e.Sender + ": request queue full");
     }
     // Legacy test carriages retain their radius; modular fireboxes also require a point inside the cavity.
     public bool AcceptsFurnaceSample(Vector3 offset)
@@ -103,6 +131,14 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (furnace == null) return false;
         var module = furnace.GetComponentInParent<RailFurnaceModule>();
         return module == null || module.AcceptsSample(offset);
+    }
+    public void RequestGather(PhotonView view)
+    {
+        if (view == null || !(view.InstantiationData is object[] data) || data.Length != 3 ||
+            data[0] as string != "rails" || data[1] as string != State.run || !(data[2] is string marker) ||
+            State.gatheredMarkers?.Contains(marker) == true) return;
+        PhotonNetwork.RaiseEvent(ActionEvent, new object[] { State.run, "gather", view.ViewID, new object[] { marker } },
+            new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient }, SendOptions.SendReliable);
     }
     public void RequestStats(object[] values)
     {
@@ -179,7 +215,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (!PhotonNetwork.IsMessageQueueRunning || PhotonSession.Instance == null || PhotonSession.Instance.HasRoomRequest) { reviveEffects.StopProgress(); return; }
 #if UNITY_EDITOR
         if (PhotonSession.Phase == RailPhase.Running && PhotonSession.Instance.WorldReady &&
-            !RailWorld.InputBlocked && !DuckCompanionDebug.IsTyping && RailDesktopInput.GetKeyDown(KeyCode.F))
+            !RailWorld.InputBlocked && RailDesktopInput.GetKeyDown(KeyCode.F))
             Request("editor-fuel-100");
 #endif
         ReadState();
@@ -194,35 +230,42 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (RailRoute.Instance != null && !RailRoute.Instance.Ready) return;
         if (localRun != PhotonSession.RunId)
         {
-            localRun = PhotonSession.RunId; caughtRun = null; shownFlares.Clear(); wasDown = false; requests.Clear(); pendingRequestJson = null;
+            localRun = PhotonSession.RunId; caughtRun = null; shownFlares.Clear(); tracedDown.Clear(); wasDown = false; requests.Clear(); pendingRequestJson = null;
             RestoreNightAtmosphere();
             ResetCollapse();
+            lastBridgeProgress = -1f;
         }
         float intoFinale = RailRoute.Instance != null && RailTrain.Instance != null
             ? RailTrain.Instance.Distance - RailRoute.Instance.FinaleStart : -1;
         atmosphere.Apply(RailAtmosphere.Progress(intoFinale, State.finished && State.success, PhotonNetwork.Time - State.finishedAt));
         Present();
         RailStats.Tick();
+        RailAnalytics.Observe(State);
+        if (reportedState != State) { reportedState = State; RailBoardReports.Observe(State, LocalParticipant); }
         ConsumeCommittedCoal();
         ShowFuelPopups();
         RailGoldReceiver.PresentRewards(this);
-        if (PhotonNetwork.IsMasterClient) SpawnCarrierDrops();
-        if (PhotonNetwork.IsMasterClient && PhotonNetwork.Time >= nextTick)
+        if (PhotonMasterHandoff.CanSpawnRoomObjects) SpawnCarrierDrops();
+        // A PC spectator can hold master for a moment before handing it on; it never runs the run.
+        if (PhotonNetwork.IsMasterClient && !SpectatorMode.Active && PhotonNetwork.Time >= nextTick)
         { nextTick = PhotonNetwork.Time + .1; TickAuthority(); }
     }
     void TickAuthority()
     {
         bool ending = PhotonSession.Phase == RailPhase.Ending && State.finished;
         if (PhotonSession.Phase != RailPhase.Running && !ending) return;
-        if (!ending) SpawnEnemies();
+        if (!ending && PhotonMasterHandoff.CanSpawnRoomObjects) ReconcileCrew(PhotonNetwork.Time);
+        if (!ending && PhotonMasterHandoff.CanSpawnRoomObjects) { SpawnEnemies(); RailBridgeSurge.Spawn(PhotonSession.RunId, State.run == PhotonSession.RunId ? State.bridgeSurgeCount : 0); }
         if (pendingRequestJson != null && PhotonNetwork.Time - pendingRequestAt < 1.2) return;
         pendingRequestJson = null;
         var next = JsonUtility.FromJson<RailRunState>(JsonUtility.ToJson(State));
         double now = PhotonNetwork.Time;
+        string[] launchCrew = PhotonSession.Get(RailSessionRules.LaunchCrew, Array.Empty<string>());
         foreach (var player in PhotonNetwork.PlayerList)
         {
+            if (RailSpectators.Is(player)) continue;
             var p = next.Player(player.UserId);
-            if (p == null) { p = new RailParticipant { id = player.UserId, name = player.NickName }; next.players.Add(p); }
+            if (p == null) { p = new RailParticipant { id = player.UserId, name = player.NickName }; next.Join(p, now, launchCrew); next.players.Add(p); }
             p.actor = player.ActorNumber; p.name = player.NickName;
         }
         var changes = new Hashtable();
@@ -234,6 +277,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             var p = next.players.Find(x => x.actor == request.actor);
             if (p != null && Position(request.actor, out var position))
                 ApplyRequest(next, p, position, request.action, request.target, now, changes, request.coal);
+            else if (request.action == "down" || request.action == "enemy-down")
+                TraceFlare("master skipped down actor=" + request.actor + ": " + (p == null ? "no participant" : "position unavailable"));
         }
         foreach (var p in next.players.Where(p => p.down))
         {
@@ -272,29 +317,32 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             if (rescued != lastJson) PhotonSession.Instance.Commit(new Hashtable { [StateKey] = rescued });
             return;
         }
-        next.UpdateBridgeHold(now, BridgeHoldUntil(next, now));
+        next.UpdateBridgeHold(now, BridgeHoldUntil(next, now), RailTestTools.FastTrainForTick(changes));
         next.UpdateBridgeReinforcements(now, Mathf.Max(0, enemyPoints.Length - baseEnemyCount));
+        next.UpdateBridgeSurge(now, RailBridgeSurge.LivePlayers());
+        UpdateCrew(changes, now);
         SampleStats(next, now);
         bool allDown = next.players.Any(p => IsConnected(p.actor)) && next.players.Where(p => IsConnected(p.actor)).All(p => p.down);
         if (!allDown) next.allDownAt = 0;
         else if (next.allDownAt <= 0) next.allDownAt = now;
         var train = RailTrain.Instance;
-        if (train != null && train.transform.position.z + 5 >= bridgeZ)
+        if (train != null && train.transform.position.z + TrainFrontOffset >= bridgeZ)
         {
             if (next.BridgeProgress(now) < 1) next.Finish(now, "Bridge collision", Array.Empty<string>());
-            else next.Finish(now, "Bridge crossed", next.players.Where(p => IsConnected(p.actor) && Position(p.actor, out var point) && train.ContainsPadded(point)).Select(p => p.id));
+            else if (train.transform.position.z + TrainFrontOffset >= bridgeZ + BridgeSpan) next.Finish(now, "Bridge crossed", next.players.Where(p => IsConnected(p.actor) && Position(p.actor, out var point) && train.ContainsPadded(point)).Select(p => p.id));
         }
         if (!next.finished && next.allDownAt > 0 && now - next.allDownAt >= RailRunState.AllDownGrace)
             next.Finish(now, "Crew down", Array.Empty<string>());
+        next.TrackCrew(now, RailSpectators.LiveCrewCount(), PhotonNetwork.LocalPlayer.ActorNumber, launchCrew);
         if (next.finished)
         {
             var motion = PhotonSession.Get(RailSessionRules.Motion, new object[] { now, 0f, 0f, 0f });
-            float distance = train != null ? train.Distance : 0;
-            changes[RailSessionRules.Motion] = new object[] { now, distance, next.success ? 4f : 0f, next.success ? 4f : 0f };
-            // Ending has a fuel budget far beyond its fixed 32-second ride.
-            changes[RailSessionRules.Fuel] = next.success ? 100f : PhotonSession.CurrentFuel;
+            RailSessionRules.EvaluateTrain(motion, PhotonSession.Get(RailSessionRules.Fuel, 100f), now, out float distance, out float speed, out float fuel);
+            changes[RailSessionRules.Motion] = new object[] { now, distance, next.success ? speed : 0f, next.success ? 4f : 0f };
+            // Ending has a fuel budget far beyond its fixed 18-second ride (+2s return delay = 20s countdown).
+            changes[RailSessionRules.Fuel] = next.success ? 100f : fuel;
             changes[RailSessionRules.Phase] = (int)RailPhase.Ending;
-            changes[RailSessionRules.Deadline] = now + 32;
+            changes[RailSessionRules.Deadline] = now + 18;
             changes["rails.success"] = next.success;
         }
         string json = JsonUtility.ToJson(next);
@@ -317,9 +365,13 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     {
         if (s.startAt <= 0) s.startAt = now;
         float dt = s.sampleAt > 0 ? (float)Math.Min(now - s.sampleAt, .5) : 0;
+        bool sampledTrain = s.sampleAt > 0;
         s.sampleAt = now;
         var train = RailTrain.Instance;
-        if (dt <= 0 || train == null) return;
+        if (train == null) return;
+        float travelled = sampledTrain ? Mathf.Max(0, train.Distance - s.lastTrainDistance) : 0;
+        s.lastTrainDistance = train.Distance;
+        if (dt <= 0) return;
         var present = new List<(RailParticipant p, Vector3 pos)>();
         foreach (var p in s.players)
             if (IsConnected(p.actor) && Position(p.actor, out var pos)) present.Add((p, pos));
@@ -334,7 +386,8 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             bool hadPrevious = p.trackedSeconds > 0;
             p.trackedSeconds += dt;
             bool aboard = train.Contains(pos);
-            if (aboard) p.aboardSeconds += dt; else p.offTrainSeconds += dt;
+            if (aboard) { p.aboardSeconds += dt; if (hadPrevious && p.sampledAboard) p.riddenMeters += travelled; }
+            else p.offTrainSeconds += dt;
             if (p.down) p.downSeconds += dt;
             p.maxFromTrain = Mathf.Max(p.maxFromTrain, Vector3.Distance(pos, train.transform.position));
             if (present.Count > 1)
@@ -363,7 +416,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         {
             var participant = state.players.Find(p => p.actor == player.ActorNumber);
             var value = player.CustomProperties[RailHoldControl.BridgeKey];
-            if (player.IsInactive || participant == null || participant.down ||
+            if (!RailSpectators.IsLiveCrew(player) || participant == null || participant.down ||
                 !RailHoldControl.IsLive(value, state.run, now) ||
                 !Position(player.ActorNumber, out var position) || Vector3.Distance(position, bridgeButton.position) >= 3 ||
                 (RailTrain.Instance != null && RailTrain.Instance.Contains(position)) ||
@@ -396,6 +449,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             return;
         }
 #endif
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         if (action == "admin-coal")
         {
             var sender = PhotonNetwork.CurrentRoom?.GetPlayer(p.actor);
@@ -403,20 +457,54 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
                 (target == 1 || target == 50)) ApplyCoalFuel(changes, now, target);
             return;
         }
+        if (action == "admin-train-speed")
+        {
+            var sender = PhotonNetwork.CurrentRoom?.GetPlayer(p.actor);
+            if (sender?.CustomProperties[RailAdminTools.AdminProperty] is bool admin && admin &&
+                (target == 1 || target == 5)) RailTestTools.ApplyTrainSpeed(changes, target == 5, now);
+            return;
+        }
+#endif
+        if (action == "gather")
+        {
+            if (coalSample?.Length == 1 && coalSample[0] is string markerKey && markerKey.Length <= 64)
+            {
+                var gatheredView = PhotonView.Find(target);
+                // A bar can already be in a bag when the reliable grab reaches the master.
+                // If the original view still exists, bind the report to its actual run and marker.
+                if (gatheredView == null || (gatheredView.InstantiationData is object[] provenance &&
+                    provenance.Length == 3 && provenance[0] as string == "rails" &&
+                    provenance[1] as string == state.run && provenance[2] as string == markerKey))
+                    RecordGather(state, p, markerKey);
+            }
+            return;
+        }
         if (action == "stats") { RailStats.Apply(p, coalSample); return; }
         if (action == "down" || action == "enemy-down")
         {
-            if (PhotonSession.Phase != RailPhase.Running) return;
-            if (p.down || now < p.protectedUntil) return;
+            string who = "actor=" + p.actor + " via=" + action;
+            if (PhotonSession.Phase != RailPhase.Running) { TraceFlare("master ignored down " + who + ": phase " + PhotonSession.Phase); return; }
+            if (p.down) return; // Repeat while already down: expected, not traced.
+            if (now < p.protectedUntil) { TraceFlare("master ignored down " + who + ": revive protection"); return; }
             if (RailTrain.Instance.Contains(position))
             {
                 var attacker = action == "enemy-down" ? PhotonView.Find(target)?.GetComponent<Game.AI.Enemy>() : null;
                 if (attacker == null || attacker.Boarding == null || !attacker.Boarding.IsAboard || attacker.IsDormant
                     || attacker.IsKnocked || attacker.IsStunned || attacker.Root == null
-                    || Vector3.Distance(attacker.Root.position, position) >= 2f) return;
+                    || Vector3.Distance(attacker.Root.position, position) >= 2f)
+                {
+                    TraceFlare("master ignored down " + who + " " + Where(position) + ": aboard, attacker " +
+                        (attacker == null ? "none" : "aboard=" + (attacker.Boarding != null && attacker.Boarding.IsAboard) +
+                        " dormant=" + attacker.IsDormant + " knocked=" + attacker.IsKnocked + " stunned=" + attacker.IsStunned +
+                        " dist=" + (attacker.Root != null ? Vector3.Distance(attacker.Root.position, position).ToString("F1") : "-")));
+                    return;
+                }
             }
             p.down = true; p.downs++;
-            if (p.flareAt <= 0 || now - p.flareAt >= RailRunState.FlareCooldown) { p.flareAt = now; p.flarePosition = position; }
+            bool flare = p.flareAt <= 0 || now - p.flareAt >= RailRunState.FlareCooldown;
+            TraceFlare("master accepted down " + who + " " + Where(position) + " flare=" +
+                (flare ? "new" : "cooldown (last " + (now - p.flareAt).ToString("F0") + "s ago)"));
+            if (flare) { p.flareAt = now; p.flarePosition = position; }
             return;
         }
         if (p.down) return;
@@ -440,8 +528,43 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         else if (item.IsHeldByAnyPlayer || item.IsStashed || Vector3.Distance(coal.transform.position, furnace.position) > .9f ||
             !AcceptsFurnaceSample(Quaternion.Inverse(furnace.rotation) * (coal.transform.position - furnace.position))) return;
         state.consumed.Add(target); state.consumedSpawns.Add(view.SpawnToken); p.coal++;
-        if (view.InstantiationData is object[] data && data.Length >= 3 && data[data.Length - 1] is string marker) state.consumedMarkers.Add(marker);
+        if (view.InstantiationData is object[] data && data.Length >= 3 && data[data.Length - 1] is string marker)
+            state.consumedMarkers.Add(marker);
         ApplyCoalFuel(changes, now);
+    }
+    void RecordGather(RailRunState state, RailParticipant player, string marker)
+    {
+        state.gatheredMarkers ??= new List<string>();
+        if (state.gatheredMarkers.Contains(marker)) return;
+        string[] parts = marker.Split('-');
+        Transform source;
+        if (parts.Length == 2 && int.TryParse(parts[1], out int index) && index >= 0)
+        {
+            if (parts[1] != index.ToString()) return;
+            if (parts[0] == "gold" && index < goldPoints.Length)
+            {
+                state.gatheredMarkers.Add(marker);
+                player.gatheredGold++;
+                return;
+            }
+            if (parts[0] != "coal" || index >= coalPoints.Length) return;
+            source = coalPoints[index];
+        }
+        else if (parts.Length == 4 && parts[0] == "carrier" && parts[1] == "enemy" &&
+            int.TryParse(parts[2], out int enemy) && enemy >= 0 && enemy < enemyPoints.Length &&
+            int.TryParse(parts[3], out int drop) && drop >= 0 &&
+            marker == $"carrier-enemy-{enemy}-{drop}" &&
+            state.carriers.Exists(c => c.marker == "enemy-" + enemy && drop < c.drops.Count))
+            source = enemyPoints[enemy];
+        else return;
+        state.gatheredMarkers.Add(marker);
+        player.gatheredCoal++;
+        string stop = source != null ? RailAnalytics.BlockAt(source.position) : null;
+        if (stop == null) return;
+        player.stopCoal ??= new List<RailBoardReports.Metric>();
+        var counter = player.stopCoal.Find(m => m.key == stop);
+        if (counter == null) player.stopCoal.Add(new RailBoardReports.Metric { key = stop, value = 1 });
+        else counter.value++;
     }
     // Shared by physical furnace deposits and the explicit development-panel simulation.
     public static void ApplyCoalFuel(Hashtable changes, double now, int count = 1)
@@ -450,7 +573,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         RailSessionRules.EvaluateTrain(motion, PhotonSession.Get(RailSessionRules.Fuel, RailResourceBalance.StartingFuel), now, out var z, out var speed, out var fuel);
         changes[RailSessionRules.Motion] = new object[] { now, z, speed, (float)motion[3] };
         changes[RailSessionRules.Fuel] = Mathf.Min(RailResourceBalance.Capacity,
-            fuel + count * RailResourceBalance.CoalValue(RailRoute.Instance?.Selection?.resourceCrew ?? 1));
+            fuel + count * RailResourceBalance.CoalValue(Crew));
     }
     readonly HashSet<string> shownFuel = new HashSet<string>();
     string fuelPopupRun;
@@ -462,7 +585,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         var module = furnace != null ? furnace.GetComponentInParent<RailFurnaceModule>() : null;
         for (int i = 0; i < State.consumed.Count && i < State.consumedSpawns.Count; i++)
             if (shownFuel.Add(State.consumed[i] + "|" + State.consumedSpawns[i]) && !seed && module != null)
-                module.ShowFuelGain(RailResourceBalance.CoalValue(RailRoute.Instance?.Selection?.resourceCrew ?? 1));
+                module.ShowFuelGain(RailResourceBalance.CoalValue(Crew));
     }
     void ConsumeCommittedCoal()
     {
@@ -480,12 +603,30 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             (gauge.GetComponentInParent<RailTrainAssembly>() == null ? "\nRelease coal into furnace (+2.5)" : "");
         float progress = State.BridgeProgress(now);
         bridgeDeck.localRotation = Quaternion.Euler(-80 * (1 - progress), 0, 0);
+        // Bridge state is synced time, so each client sees the 100% crossing itself; play it locally for a 3D sound everyone hears.
+        // A fresh sample (<1s old) guards late joiners and returning players from hearing a stale completion.
+        if (lastBridgeProgress >= 0 && lastBridgeProgress < 1 && progress >= 1 && !State.finished && Time.unscaledTime - lastBridgeSampleAt < 1f && RailAudio.Bank != null)
+            RailAudio.Play(RailAudio.Bank.bridgeLowered, bridgeDeck.position);
+        lastBridgeProgress = progress; lastBridgeSampleAt = Time.unscaledTime;
         bridgeLabel.text = progress >= 1 ? "BRIDGE READY\nBOARD THE TRAIN" :
             (State.BridgeMoving(now) ? "LOWERING BRIDGE" : State.bridgeAt > 0 ? "PAUSED - HOLD LEVER FORWARD" : "HOLD LEVER FORWARD TO LOWER");
         foreach (var p in State.players)
         {
             if (p.flareAt > 0 && (!shownFlares.TryGetValue(p.id, out var shown) || shown != p.flareAt))
-            { shownFlares[p.id] = p.flareAt; DeathFlare.SpawnAfterDeath(flarePrefab, p.flarePosition, (float)(now - p.flareAt)); }
+            {
+                shownFlares[p.id] = p.flareAt;
+                var flare = DeathFlare.SpawnAfterDeath(flarePrefab, p.flarePosition, (float)(now - p.flareAt));
+                var view = Camera.main != null ? Camera.main.transform.position : (Vector3?)null;
+                TraceFlare("shown actor=" + p.actor + " age=" + (now - p.flareAt).ToString("F1") + " " + Where(p.flarePosition) +
+                    " spawned=" + (flare != null) + (flarePrefab == null ? " prefab=missing" : "") +
+                    " rise=" + (flare != null ? flare.LaunchRise.ToString("F1") : "-") +
+                    " viewerDist=" + (view.HasValue ? Vector3.Distance(view.Value, p.flarePosition).ToString("F0") : "-"));
+            }
+            bool sawDown = tracedDown.TryGetValue(p.id, out var priorDown) && priorDown;
+            if (p.down && !sawDown)
+                TraceFlare("seen down actor=" + p.actor + " lastFlare=" + (p.flareAt > 0 ? (now - p.flareAt).ToString("F1") + "s ago" : "never") +
+                    " " + (Position(p.actor, out var downAt) ? Where(downAt) : "pos=unknown"));
+            tracedDown[p.id] = p.down;
             if (!downLabels.TryGetValue(p.id, out var label))
             {
                 var go = new GameObject("Crew condition"); go.transform.SetParent(transform); label = go.AddComponent<TextMeshPro>();
@@ -506,7 +647,11 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
             GR.Player.instance?.leftPlayerHand?.Release(); GR.Player.instance?.rightPlayerHand?.Release();
             // Match Duckz death bag cleanup while preserving Rails revival.
             BagInventory.DropAllOnDowned();
+            HeadEquipment.DropAllOnDowned();
+            VibrationManager.instance?.TriggerDowned();
         }
+        else if (local != null && !local.down && wasDown)
+            VibrationManager.instance?.TriggerRevived();
         wasDown = local?.down == true;
         reviveEffects.Present(State, transform, now);
         bool bridgeCrash = State.finished && State.reason == "Bridge collision";
@@ -531,15 +676,18 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         {
             int returnSeconds = RailSessionRules.ReturnCountdown(PhotonSession.Phase,
                 PhotonSession.Get(RailSessionRules.Deadline, 0d), now);
-            results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
-                (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
-                string.Join("\n", State.players.Select(p => Safe(p.name) + " — " + (p.escaped ? "Escaped" : "Didn't make it") + "\n<size=65%>Coal " + p.coal + "   Gold " + p.gold + "   Revives " + p.revives + "   Downs " + p.downs + "  •  " + (string.IsNullOrEmpty(p.award) ? RailAwards.Fallback : p.award) + "</size>"));
+            if (displayedResults != State || displayedCountdown != returnSeconds)
+            {
+                displayedResults = State;
+                displayedCountdown = returnSeconds;
+                results.text = "<size=65%>" + (returnSeconds > 0 ? "Returning to compound in " + returnSeconds + "s" : "Returning to compound…") + "</size>\n" +
+                    (State.success ? "<color=#8AFFBA>SUCCESS</color>" : "<color=#FF8866>FAIL</color>") + "\n" + State.reason + "\n\n" +
+                    RailResultsTable.Build(State.players);
+            }
             bool localAboard = Position(PhotonNetwork.LocalPlayer.ActorNumber, out var localPoint) && RailTrain.Instance.ContainsPadded(localPoint);
             if (caughtRun != State.run)
             { caughtRun = State.run; if (GR.Player.instance != null && !localAboard && !RailAdminTools.NoClip) TeleportAboard(); }
-            if (GR.Player.instance != null && !localAboard && !RailAdminTools.NoClip)
-            { if (fallAt <= 0) fallAt = now; if (now - fallAt > 2) TeleportAboard(); }
-            else fallAt = 0;
+            // Teleport aboard only once per finished run; afterwards the player may walk off freely.
         }
         if (Camera.main != null) Camera.main.backgroundColor = RenderSettings.fogColor;
         if (runningLabels != null) foreach (var label in runningLabels) if (label != null) label.gameObject.SetActive(!State.finished);
@@ -557,19 +705,115 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         string run = PhotonSession.RunId;
         bool Has(string marker) => HasMarker(run, marker);
         // Other equipment is bought at shops. RailWorld grants one train flashlight per player.
+        // Points beyond the current crew stay empty; ReconcileCrew fills them if the crew grows.
+        int crew = Crew;
         for (int i = 0; i < goldPoints.Length; i++)
-            if (!Has("gold-" + i) && !State.consumedMarkers.Contains("gold-" + i))
+            if (Need(goldCrew, i) <= crew && !Has("gold-" + i) && !State.consumedMarkers.Contains("gold-" + i))
                 PhotonNetwork.InstantiateRoomObject(goldPrefab.name, goldPoints[i].position, Quaternion.identity, 0, new object[] { "rails", run, "gold-" + i });
         for (int i = 0; i < coalPoints.Length; i++)
-            if (!Has("coal-" + i)) PhotonNetwork.InstantiateRoomObject(coalPrefab.name, coalPoints[i].position, Quaternion.identity, 0, new object[] { "rails", run, "coal-" + i });
+            if (Need(coalCrew, i) <= crew && !Has("coal-" + i)) PhotonNetwork.InstantiateRoomObject(coalPrefab.name, coalPoints[i].position, Quaternion.identity, 0, new object[] { "rails", run, "coal-" + i });
+    }
+    /// <summary>Crew size used for loot, enemies and coal value. Departure count until the master rescales it.</summary>
+    public static int Crew => Instance != null ? Instance.CurrentCrew : Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey,
+        RailRoute.Instance?.Selection?.resourceCrew ?? 1), 1, RailResourceBalance.MaxCrew);
+    /// <summary>Departure crew of the built route (set by RailRoute); the fallback outside a room.</summary>
+    [NonSerialized] public int routeCrew = 1;
+    public int CurrentCrew => Mathf.Clamp(PhotonSession.Get(RailResourceBalance.CrewKey, routeCrew), 1, RailResourceBalance.MaxCrew);
+    /// <summary>Points the current crew uses, ignoring blocks frozen by a mid-run change. For checks and diagnostics.</summary>
+    public Transform[] ActivePoints(RailSpawnKind kind)
+    {
+        var (points, needs) = kind == RailSpawnKind.Coal ? (coalPoints, coalCrew) : kind == RailSpawnKind.Gold ? (goldPoints, goldCrew) : (enemyPoints, enemyCrew);
+        int crew = CurrentCrew;
+        return (points ?? Array.Empty<Transform>()).Where((p, i) => Need(needs, i) <= crew).ToArray();
+    }
+    public int ActiveBaseEnemyCount
+    {
+        get { int crew = CurrentCrew, n = 0; for (int i = 0; i < baseEnemyCount; i++) if (Need(enemyCrew, i) <= crew) n++; return n; }
+    }
+    static bool CrewScaled => PhotonSession.Get(CrewRunKey, "") == PhotonSession.RunId;
+    static int Need(int[] needs, int i) => needs != null && i < needs.Length ? needs[i] : 1;
+    static float Start(float[] starts, int i) => starts != null && i < starts.Length ? starts[i] : -1;
+    static bool TrainBefore(float start) => RailTrain.Instance != null && RailTrain.Instance.Distance < start;
+    static bool CrewNear(Vector3 point)
+    {
+        foreach (var player in PhotonNetwork.PlayerList)
+            if (RailSpectators.IsLiveCrew(player) && Position(player.ActorNumber, out var head) && Vector3.Distance(head, point) < CrewClearance) return true;
+        return false;
+    }
+    /// <summary>Master-only. Commits the live player count as the crew after it has held steady,
+    /// so brief reconnects do not churn loot. Coal already aboard simply changes value.</summary>
+    void UpdateCrew(Hashtable changes, double now)
+    {
+        int live = Mathf.Clamp(RailSpectators.LiveCrewCount(), 1, RailResourceBalance.MaxCrew);
+        int crew = Crew;
+        if (live == crew) { pendingCrew = 0; return; }
+        if (pendingCrew != live) { pendingCrew = live; pendingCrewSince = now; return; }
+        if (now - pendingCrewSince < (live > crew ? CrewRaiseDelay : CrewLowerDelay)) return;
+        changes[RailResourceBalance.CrewKey] = live;
+        changes[CrewRunKey] = PhotonSession.RunId;
+        DuckzLog.Log("Rail crew " + crew + " -> " + live + "; rescaling blocks the train has not reached", this);
+    }
+    /// <summary>Master-only. After a crew change, adds or removes coal, gold and enemies in blocks the train
+    /// has not reached. Only untouched loot and enemies away from every player are removed; spawns also
+    /// wait until no player is near. Deferred points retry every two seconds while the block is ahead.</summary>
+    void ReconcileCrew(double now)
+    {
+        string run = PhotonSession.RunId;
+        if (!CrewScaled || RailTrain.Instance == null) return;
+        int crew = Crew;
+        if (reconciledRun == run && reconciledCrew == crew && (reconcileRetryAt <= 0 || now < reconcileRetryAt)) return;
+        reconciledRun = run; reconciledCrew = crew; reconcileRetryAt = 0;
+        var views = new Dictionary<string, PhotonView>(StringComparer.Ordinal);
+        foreach (var v in PhotonNetwork.PhotonViewCollection)
+            if (v != null && v.InstantiationData is object[] d && d.Length >= 3 && d[d.Length - 2] as string == run && d[d.Length - 1] is string m)
+                views[m] = v;
+        bool deferred = false;
+        bool Ready(float start, Vector3 point)
+        {
+            if (start < 0 || !TrainBefore(start)) return false;
+            if (CrewNear(point)) { deferred = true; return false; }
+            return true;
+        }
+        void Loot(string prefix, Transform[] points, int[] needs, float[] starts, GameObject prefab)
+        {
+            for (int i = 0; i < points.Length; i++)
+            {
+                string marker = prefix + i;
+                bool active = Need(needs, i) <= crew;
+                views.TryGetValue(marker, out var view);
+                if (active == (view != null) || State.consumedMarkers.Contains(marker) || (State.gatheredMarkers?.Contains(marker) ?? false)) continue;
+                if (active)
+                {
+                    if (Ready(Start(starts, i), points[i].position))
+                        PhotonNetwork.InstantiateRoomObject(prefab.name, points[i].position, Quaternion.identity, 0, new object[] { "rails", run, marker });
+                    continue;
+                }
+                var item = view.GetComponent<PhotonGrabbable>();
+                bool untouched = view.IsMine && (item == null || (!item.IsHeldByAnyPlayer && !item.IsStashed)) &&
+                    Vector3.Distance(view.transform.position, points[i].position) < .75f;
+                if (untouched && Ready(Start(starts, i), view.transform.position)) PhotonNetwork.Destroy(view.gameObject);
+            }
+        }
+        Loot("coal-", coalPoints, coalCrew, coalStart, coalPrefab);
+        Loot("gold-", goldPoints, goldCrew, goldStart, goldPrefab);
+        // Enemies above the crew are removed here; SpawnEnemies adds missing ones within the crew.
+        for (int i = 0; i < baseEnemyCount && i < enemyPoints.Length; i++)
+            if (Need(enemyCrew, i) > crew && views.TryGetValue("enemy-" + i, out var enemy) && enemy.IsMine &&
+                Ready(Start(enemyStart, i), enemy.transform.position))
+                PhotonNetwork.Destroy(enemy.gameObject);
+        if (deferred) reconcileRetryAt = now + 2;
     }
     void SpawnEnemies()
     {
         int count = State.bridgeAt > 0 && State.BridgeProgress(PhotonNetwork.Time) < 1 ? enemyPoints.Length : baseEnemyCount;
+        int crew = Crew; bool scaled = CrewScaled;
         for (int i = 0; i < count; i++)
         {
+            if (Need(enemyCrew, i) > crew) continue;
             string marker = "enemy-" + i;
             bool exists = HasMarker(PhotonSession.RunId, marker);
+            // After a mid-run crew change, new block enemies appear only ahead of the train and out of sight.
+            if (!exists && scaled && Start(enemyStart, i) >= 0 && (!TrainBefore(Start(enemyStart, i)) || CrewNear(enemyPoints[i].position))) continue;
             if (!exists) PhotonNetwork.InstantiateRoomObject(RailEnemySpawns.ForcedEnemyType >= 0 ? RailEnemySpawns.Prefab(RailEnemySpawns.ForcedEnemyType).name : i < enemyTypes.Length ? RailEnemySpawns.Prefab(enemyTypes[i]).name : enemyPrefab.name, enemyPoints[i].position, enemyPoints[i].rotation, 0, new object[] { "rails", PhotonSession.RunId, marker });
         }
         var points = RailRoute.Instance != null ? RailRoute.Instance.finale.bridgeReinforcements : null;
@@ -635,7 +879,7 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
       {
           foreach (var player in PhotonNetwork.PlayerList)
           {
-              if (player.IsInactive) continue;
+              if (!RailSpectators.IsLiveCrew(player)) continue;
               var avatar = PhotonPlayer.ForActor(player.ActorNumber);
               if (avatar == null || !avatar.TryGetGaze(out var eye, out var forward)) return false;
               Vector3 delta = position + Vector3.up - eye;
@@ -667,14 +911,12 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
         if (changed) PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable {
             [receiptKey] = receipts.Concat(issuedDrops).Where(r => r.StartsWith(State.run + ":", StringComparison.Ordinal)).Distinct().ToArray() });
     }
-    static string Safe(string text) => (text ?? "Duck").Replace("<", "").Replace(">", "");
     void TeleportAboard()
     {
         if (GR.Player.instance == null || RailTrain.Instance == null) return;
         Vector3 position = RailTrain.Instance.AboardPoint(PhotonNetwork.LocalPlayer.ActorNumber);
         var desktop = GR.Player.instance.GetComponent<DesktopPlayer>();
         if (desktop != null) desktop.Teleport(position, Quaternion.identity, true); else NewPlayer.instance?.Warp(position, Quaternion.identity);
-        fallAt = 0;
     }
 }
 

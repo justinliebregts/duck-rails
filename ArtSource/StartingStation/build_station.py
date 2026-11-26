@@ -164,11 +164,12 @@ def build_shell(b, m):
         # vault chamfer
         if s > 0: b.quad((WX, Y0, SPR), (CHX - WX, 0, CEIL - SPR), (0, L, 0), "charcoal")
         else: b.quad((-WX, Y0, SPR), (0, L, 0), (WX - CHX, 0, CEIL - SPR), "charcoal")
-        # ribs: wall pier, chamfer beam
+        # ribs: wall pier, chamfer beam. Pier and ceiling rib are 4 cm narrower than the beam so their
+        # side faces are not coplanar with the beam's where the slanted beam ends overlap them (z-fighting).
         n = V((-s * (CEIL - SPR), 0, -(WX - CHX))).normalized()
         for yr in (68.3, 74, 80, 86, 91.7):
             x0, x1 = sorted((s * WX, s * (WX - .45)))
-            b.box((x0, yr - .3, PZ), (x1, yr + .3, SPR), "concrete", skip="tb" + ("x+" if s > 0 else "x-"))
+            b.box((x0, yr - .28, PZ), (x1, yr + .28, SPR), "concrete", skip="tb" + ("x+" if s > 0 else "x-"))
             b.beam(V((s * WX, yr, SPR)) + n * .225, V((s * CHX, yr, CEIL)) + n * .225, .6, .45, "concrete", up=tuple(n), caps=False)
         # end walls
         x0, x1 = sorted((s * 3, s * WX))
@@ -182,7 +183,7 @@ def build_shell(b, m):
         b.beam((s * (TW + .3), Y1 - .15, TSPR + .2), (s * (TCX + .25), Y1 - .15, TH + .35), .3, .7, "concrete", up=(0, -1, 0))
     b.quad((-CHX, Y1, CEIL), (2 * CHX, 0, 0), (0, -L, 0), "charcoal")     # ceiling
     for yr in (68.3, 74, 80, 86, 91.7):
-        b.box((-CHX, yr - .3, CEIL - .45), (CHX, yr + .3, CEIL), "concrete", skip="tx+x-")
+        b.box((-CHX, yr - .28, CEIL - .45), (CHX, yr + .28, CEIL), "concrete", skip="tx+x-")
     b.wy(Y1, -TW, TW, TH, SPR, "plaster", -1)
     b.wy(Y1, -CHX, CHX, SPR, CEIL, "plaster", -1)
     b.box((-TCX - .2, Y1 - .3, TH), (TCX + .2, Y1, TH + .7), "concrete", skip="y+")
@@ -247,7 +248,7 @@ def build_rooms(b, m):
     S = scheme(PZ)
     # Supplies: 7 x 12 m, west of the platform wall. Walls are left clear for the shared store.
     room(b, -20.4, -13.4, 80, 92, 4.4, S, "concrete", -13.4, [(86.5, 89.5, PZ, 4.0)])
-    b.beam((-13.2, 86.3, 4.08), (-13.2, 89.7, 4.08), .5, .16, "timber")
+    b.beam((-13.2, 86.3, 4.06), (-13.2, 89.7, 4.06), .5, .16, "timber")   # underside 2 cm below the reveal head (was coplanar)
     # Unity places the shared store (a 2.8 m wide U) at (-19.02, 1, 85.38) facing +Z, against the west and north walls.
     flood(b, (-16.9, 82.6, 4.4), (0, 0, -1), (-17.4, 84.2, PZ), "Supplies flood S", "small")
     flood(b, (-16.4, 89.4, 4.4), (0, 0, -1), (-17.6, 88.6, PZ), "Supplies flood N", "small")
@@ -436,10 +437,10 @@ def build_tunnel(b, m):
     while y < YP:
         for s in (-1, 1):
             xa, xb = sorted((s * TW, s * (TW - .25)))
-            b.box((xa, y - .25, 0), (xb, y + .25, TSPR), "concrete", skip="tb" + ("x+" if s > 0 else "x-"))
+            b.box((xa, y - .23, 0), (xb, y + .23, TSPR), "concrete", skip="tb" + ("x+" if s > 0 else "x-"))   # narrower than the beam: no coplanar sides
             n = V((-s * (TH - TSPR), 0, -(TW - TCX))).normalized()
             b.beam(V((s * TW, y, TSPR)) + n * .125, V((s * TCX, y, TH)) + n * .125, .5, .25, "concrete", up=tuple(n), caps=False)
-        b.box((-TCX, y - .25, TH - .25), (TCX, y + .25, TH), "concrete", skip="tx+x-")
+        b.box((-TCX, y - .23, TH - .25), (TCX, y + .23, TH), "concrete", skip="tx+x-")
         y += 8.0
     for y, s in ((100.0, -1), (116.0, 1), (132.0, -1)):        # sparse wall floods, alternating sides
         flood(b, (s * TW, y, 4.7), (-s, 0, 0), (-s * 1.5, y + 2.5, 0), f"Tunnel flood {y:.0f}")

@@ -136,10 +136,11 @@ public static class RailSkyscraperAtlasProduction
             sign.GetComponentInChildren<Light>().lightmapBakeType != LightmapBakeType.Baked ||
             root.GetComponentsInChildren<TMPro.TextMeshPro>().Length != 0))
             throw new BuildFailedException("Invalid raised development sign.");
-        if (sign && (lighting.supplementalLightingScene != RailSkyscraperSign.LightingCompanion ||
-            !AssetDatabase.LoadAssetAtPath<SceneAsset>(lighting.supplementalLightingScene) ||
-            !EditorBuildSettings.scenes.Any(s => s.enabled && s.path == lighting.supplementalLightingScene)))
-            throw new BuildFailedException("The raised development sign requires its lighting companion in the build.");
+        var primaryAssets = AssetDatabase.GetDependencies(lighting.lightingScene);
+        if (!string.IsNullOrEmpty(lighting.supplementalLightingScene) ||
+            !EditorBuildSettings.scenes.Any(s => s.enabled && s.path == lighting.lightingScene) ||
+            lighting.bindings.Select(b => b.color).Distinct().Any(map => !map || !primaryAssets.Contains(AssetDatabase.GetAssetPath(map))))
+            throw new BuildFailedException("All Skyscraper lightmaps must ship in the primary lighting companion.");
         if (chunks.Length != 648 || chunks.Any(r => !r.enabled || !r.sharedMaterial || !r.GetComponent<MeshFilter>().sharedMesh) ||
             chunks.Select(r => r.sharedMaterial).Distinct().Count() != 5 || lighting.bindings.Length != expectedBindings ||
             chunks.Sum(r => r.GetComponent<MeshFilter>().sharedMesh.triangles.Length / 3) != 37184 ||
@@ -152,6 +153,10 @@ public static class RailSkyscraperAtlasProduction
 public sealed class RailSkyscraperAtlasBuildGuard : IPreprocessBuildWithReport
 {
     public int callbackOrder => 0;
-    public void OnPreprocessBuild(BuildReport report) => RailSkyscraperAtlasProduction.ValidateSaved();
+    public void OnPreprocessBuild(BuildReport report)
+    {
+        // Fingerprints hold Android dependency hashes; a Windows PC spectator build cannot match them.
+        if (!DuckzSpectatorBuild.InProgress) RailSkyscraperAtlasProduction.ValidateSaved();
+    }
 }
 #endif

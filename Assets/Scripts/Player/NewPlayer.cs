@@ -552,7 +552,7 @@ public partial class NewPlayer : MonoBehaviour
 
           }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        if (controllerInput.rightThumbstickButton.wasPressed) {
+        if (!RailAdminTools.Available && controllerInput.rightThumbstickButton.wasPressed) {
             stickMove = !stickMove;
         }
 #endif
@@ -582,8 +582,18 @@ public partial class NewPlayer : MonoBehaviour
         const float deadGravityScale = 0.8f;
 
         void Update() {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
           RailAdminTools.Refresh();
-          if (UpdateAdminFlight()) return;
+          // R3 toggles noclip for admins only.
+          if (RailAdminTools.Available && controllerInput != null && controllerInput.rightThumbstickButton.wasPressed)
+              RailAdminTools.ToggleNoClip();
+          if (UpdateAdminFlight())
+          {
+              // Snap turning stays available in noclip (right stick left/right).
+              if (rotateMode == 0) Rotate();
+              return;
+          }
+#endif
           Rotate();
           if (hookHandsActive && (_bodyDriver == null || _bodyDriver.Body == null))
               ResolveHookHands();
@@ -1012,10 +1022,14 @@ public partial class NewPlayer : MonoBehaviour
                 int hitCount = 0;
                 RaycastHit reportHit = default;
                 Vector3 reportFinal = Vector3.zero;
+                RaycastHit impactHit = default;
+                float impactSpeed = 0f;
+                bool newContact = notCollidingTime > 0.1f;
 
                 for (int i = 0; i < count; i++)
                 {
-                    Vector3 distanceTraveled = current[i] - last[i] + gravityStep;
+                    Vector3 sampleMotion = current[i] - last[i];
+                    Vector3 distanceTraveled = sampleMotion + gravityStep;
                     if (!IterativeCollisionSphereCast(last[i], radius, distanceTraveled, defaultPrecision, out Vector3 finalPosition, true, out RaycastHit hit))
                         continue;
 
@@ -1027,18 +1041,31 @@ public partial class NewPlayer : MonoBehaviour
                         reportFinal = finalPosition;
                     }
                     hitCount++;
+                    if (newContact)
+                    {
+                        float speed = -Vector3.Dot(sampleMotion, hit.normal) / dTime;
+                        if (speed > impactSpeed)
+                        {
+                            impactHit = hit;
+                            impactSpeed = speed;
+                        }
+                    }
                 }
 
                 if (hitCount > 0)
                 {
                     firstIteration = bodySum / hitCount;
                     colliding = true;
-                    if (notCollidingTime > 0.1f)
+                    if (newContact)
                     {
                         PlayerHand hand = rightHand ? Player.instance.rightPlayerHand : Player.instance.leftPlayerHand;
                         PlayHandHitHaptic(hand, velHistory);
-                        float vol = HandVelocityToVolume(velHistory);
-                        PlayHandHit(reportHit.collider, reportFinal, vol);
+                        var itemSounds = hand.Held != null ? hand.Held.GetComponent<ItemSounds>() : null;
+                        if (itemSounds == null || !itemSounds.TryPlayHeldSurfaceImpact(impactHit, impactSpeed))
+                        {
+                            float vol = HandVelocityToVolume(velHistory);
+                            PlayHandHit(reportHit.collider, reportFinal, vol);
+                        }
                     }
                     notCollidingTime = 0f;
                     return true;

@@ -38,6 +38,8 @@ public static class RailSessionRules
     public const string Schema = "rails.schema", Kind = "rails.kind", Phase = "rails.phase", Revision = "rails.revision";
     public const string Run = "rails.run", Deadline = "rails.deadline", Roster = "rails.roster", Destination = "rails.destination";
     public const string TransferUsers = "rails.users", TransferUntil = "rails.transferUntil", Ready = "rails.ready", Boarding = "rails.boarding";
+    // User ids of the crew that departed together; anyone else joined mid-run (analytics).
+    public const string LaunchCrew = "rails.launchCrew";
     public const string Block = "rails.block", Fuel = "rails.fuel", Motion = "rails.motion", Cargo = "rails.cargo";
     public const string CompoundKind = "compound", PrivateKind = "private", ExpeditionKind = "expedition";
 
@@ -111,7 +113,10 @@ public static class RailSessionRules
         EvaluateMotion(command, now, out distance, out speed);
         float travelled = Math.Max(0f, distance - (float)command[1]);
         float available = Math.Max(0f, startingFuel);
-        fuel = Math.Max(0f, available - travelled * FuelPerMetre);
+        // The 5x test mode burns no fuel. The flag is a room property committed atomically with
+        // the motion/fuel rebase (RailTestTools.ApplyTrainSpeed), so every client evaluates identically.
+        float perMetre = RailTestTools.FastTrainBurnsNoFuel ? 0f : FuelPerMetre;
+        fuel = Math.Max(0f, available - travelled * perMetre);
         if (fuel <= 0f)
         {
             // Find the exact exhaustion point within the ramp or subsequent cruise.

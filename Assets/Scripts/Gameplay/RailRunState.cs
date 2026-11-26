@@ -11,8 +11,12 @@ public sealed class RailRunState
     public string run;
     public double bridgeAt, allDownAt, finishedAt, startAt, sampleAt;
     public double bridgeElapsed, bridgeHeldAt, bridgeHoldUntil;
+    public bool bridgeFast;
+    public float lastTrainDistance;
     public bool bridgeReinforcementsTriggered;
     public int bridgeReinforcementCount;
+    public bool bridgeSurgeTriggered;
+    public int bridgeSurgeCount;
     public bool finished, success;
     public string reason;
     public List<RailGoldDeposit> gold = new List<RailGoldDeposit>();
@@ -20,8 +24,36 @@ public sealed class RailRunState
     public List<int> consumed = new List<int>();
     public List<string> consumedSpawns = new List<string>();
     public List<string> consumedMarkers = new List<string>();
+    public List<string> gatheredMarkers = new List<string>();
     public List<RailCarrierState> carriers = new List<RailCarrierState>();
     public double recoveryAt;
+    // Crew analytics (see RailAnalytics). Reporter actors are claimed in the same CAS commit as the
+    // event they report, so a master handoff cannot send a run's start, launch or end twice.
+    public const double LaunchWindowSeconds = 30;
+    public int startReporter, launchReporter, endReporter;
+    // Departing players who arrived, most connected at once, and connected at the finish.
+    public int launchCrew, peakCrew, endCrew;
+    /// <summary>Marks a new participant as part of the departure or as a mid-run join. The roster is the
+    /// departing crew's user ids; an empty roster (editor quick start) falls back to the window alone.</summary>
+    public void Join(RailParticipant p, double now, string[] roster)
+    {
+        p.joinedAt = now;
+        p.launched = (startAt <= 0 || now - startAt <= LaunchWindowSeconds) &&
+            (roster == null || roster.Length == 0 || Array.IndexOf(roster, p.id) >= 0);
+    }
+    /// <summary>Master-only, after the tick's finish check.</summary>
+    public void TrackCrew(double now, int live, int actor, string[] roster)
+    {
+        if (startReporter == 0) startReporter = actor;
+        peakCrew = Math.Max(peakCrew, live);
+        // Slow loaders arrive after Running starts: settle once the whole departure is here,
+        // the window closes or the run ends.
+        int arrived = players.Count(p => p.launched), expected = roster?.Length ?? 0;
+        if (launchReporter == 0 && (finished || (expected > 0 && arrived >= expected) ||
+            (startAt > 0 && now - startAt > LaunchWindowSeconds)))
+        { launchCrew = Math.Max(1, arrived); launchReporter = actor; }
+        if (finished && endReporter == 0) { endCrew = live; endReporter = actor; }
+    }
     public bool WasConsumed(int viewId, string spawnToken)
     {
         for (int i = 0; i < consumed.Count && i < consumedSpawns.Count; i++)
@@ -30,17 +62,18 @@ public sealed class RailRunState
     }
     public RailParticipant Player(string id) => players.Find(p => p.id == id);
     public double BridgeElapsed(double now) => Math.Min(BridgeSeconds, bridgeElapsed +
-        (bridgeHeldAt > 0 ? Math.Max(0, Math.Min(now, bridgeHoldUntil) - bridgeHeldAt) : 0));
+        (bridgeHeldAt > 0 ? Math.Max(0, Math.Min(now, bridgeHoldUntil) - bridgeHeldAt) * (bridgeFast ? 5 : 1) : 0));
     public float BridgeProgress(double now) => Mathf.Clamp01((float)(BridgeElapsed(now) / BridgeSeconds));
     public bool BridgeMoving(double now) => !finished && bridgeHeldAt > 0 && bridgeHoldUntil > now && BridgeProgress(now) < 1;
     // Retain both completed work and a bounded live segment. A missing operator or
     // master cannot turn a stale hold into an unattended lowering timer.
-    public void UpdateBridgeHold(double now, double until)
+    public void UpdateBridgeHold(double now, double until, bool fast = false)
     {
         if (finished) return;
         if (double.IsNaN(until) || double.IsInfinity(until) || until <= now || until > now + 2) until = 0;
-        if (until == bridgeHoldUntil && until > now && BridgeProgress(now) < 1) return;
+        if (fast == bridgeFast && until == bridgeHoldUntil && until > now && BridgeProgress(now) < 1) return;
         bridgeElapsed = BridgeElapsed(now);
+        bridgeFast = fast;
         bridgeHeldAt = bridgeElapsed < BridgeSeconds && until > now ? now : 0;
         bridgeHoldUntil = bridgeHeldAt > 0 ? until : 0;
         if (bridgeHeldAt > 0 && bridgeAt <= 0) bridgeAt = now;
@@ -53,10 +86,17 @@ public sealed class RailRunState
         bridgeReinforcementsTriggered = true;
         bridgeReinforcementCount = Mathf.CeilToInt(Mathf.Max(0, bridgeDefenders) * .3f);
     }
+    // Final Bridge surge: latched the first time the bridge reads 100%, sized by the players in the room then.
+    public void UpdateBridgeSurge(double now, int players)
+    {
+        if (finished || bridgeSurgeTriggered || BridgeProgress(now) < 1) return;
+        bridgeSurgeTriggered = true;
+        bridgeSurgeCount = RailBridgeSurge.CountFor(players);
+    }
     public void Finish(double now, string cause, IEnumerable<string> aboard)
     {
         if (finished) return;
-        UpdateBridgeHold(now, 0);
+        UpdateBridgeHold(now, 0, bridgeFast);
         var winners = new HashSet<string>(aboard);
         foreach (var p in players) { p.escaped = winners.Contains(p.id); p.reviveAt = 0; p.rescuer = ""; }
         finished = true; finishedAt = now; reason = cause; success = players.Any(p => p.escaped);
@@ -92,7 +132,13 @@ public sealed class RailParticipant
     public int revived, repels, spent, drops, pickups;
     public float downSeconds, throttleSeconds, bridgeSeconds, flashlightSeconds, trackedSeconds, aboardSeconds,
         offTrainSeconds, loneSeconds, nearSeconds, stillSeconds, maxFromTrain;
+    public List<RailBoardReports.Metric> stopCoal;
+    public float riddenMeters;
+    public int gatheredCoal, gatheredGold;
     public bool down, escaped, sampledAboard;
+    // Analytics: departed with the crew, or joined mid-run; and when the run first saw them.
+    public bool launched;
+    public double joinedAt;
     public double protectedUntil, flareAt, reviveAt, reviveLostAt;
     // Presentation receipt independent of frozen ending statistics; committed with the revival.
     public int reviveSequence;

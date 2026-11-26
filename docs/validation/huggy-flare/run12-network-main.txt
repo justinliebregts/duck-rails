@@ -1,0 +1,13 @@
+2026-11-21T05:22:31.9957152Z Started two-client Huggy flare gun check
+2026-11-21T05:22:44.7435906Z Stage=0 room=11111 players=2
+2026-11-21T05:22:44.7446512Z ACK 0 actor=1 master=True
+2026-11-21T05:22:44.8361570Z ACK 0 actor=1 master=True
+2026-11-21T05:22:48.7906347Z Spawned Weapon_Huggy(Clone) view=1002
+2026-11-21T05:22:49.0060032Z Stage=1 room=11111 players=2
+2026-11-21T05:22:49.0203866Z Grabbed gun; charged=True
+2026-11-21T05:22:52.0221300Z Trigger press 1
+2026-11-21T05:22:52.1320147Z PASS fired via trigger key=00100001 charge=0.01 muzzle=(1.41, 2.37, 72.88) dir=(0.00, 0.00, 1.00)
+2026-11-21T05:22:57.1446482Z Sample at charge 0.51: pos=(1.41, 1.10, 72.67) phase=Rest
+2026-11-21T05:22:58.0069324Z Trigger press 2 during cooldown, charge=0.59
+2026-11-21T05:22:59.0579388Z PASS cooldown blocked the early press
+2026-11-21T05:24:49.0679480Z FAIL Timeout stage=1 sub=5

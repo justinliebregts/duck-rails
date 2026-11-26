@@ -1,0 +1,26 @@
+PASS — single authenticated client; see the stage list above
+stage=20
+started 2026-11-18 18:54:38Z
+backed up 7 saved loadout keys for this account
+PASS Signed in to a public Compound; account loadout backed up and cleared
+PASS Cleared loadout stayed cleared; creating private room 76065
+PASS Private staging: test loadout spawned (basic bag RailCoal,RailGoldBar,RailShopItemFlashlight,, RailShopItemHelmet, RailGoggles, holding RailShopItemWalkieTalkie)
+delivered bag 2|RailCoal|RailGoldBar|RailShopItemFlashlight|
+PASS Loadout worn and held; disk saves already current (bag.back, equipment.head, equipment.eyes)
+PASS Private departure: worn bag, helmet and goggles kept once; held item dropped once at feet; nothing left behind
+PASS Put RailCoal into the worn bag aboard
+PASS Bag contents change saved to disk immediately: 2|RailCoal|RailGoldBar|RailShopItemFlashlight|RailCoal
+PASS Private failure return: loadout kept with the new contents; held item dropped once; nothing left behind
+PASS Second private departure: loadout kept; held item dropped once
+PASS Back to Compound mid-run: loadout kept in a public Compound; held item dropped once
+PASS Create private room from a public Compound: loadout kept; held item dropped once; nothing left behind
+PASS Aboard before connection loss (holding the carried item)
+PASS Connection timed out aboard
+PASS Reconnected to room 92734: worn bag, helmet and goggles back exactly once (held item after the drop-out: 0 in the room; losing it is allowed)
+PASS Public Compound before connection loss
+PASS Connection timed out in Compound
+PASS Reconnected to Compound 00310: loadout back exactly once from disk
+PASS Saves current before quitting; stopping Play Mode
+PASS Quit left the saves untouched (crash state identical); relaunching
+PASS Relaunch: worn bag with contents, helmet and goggles restored exactly once
+account loadout saves restored

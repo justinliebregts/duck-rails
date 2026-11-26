@@ -168,13 +168,13 @@ public static class RailSpawnNetworkChecks
             Require(views.GroupBy(v => v.ViewID).All(g => g.Count() == 1), "unique live ViewIDs");
             Require(views.All(v => PhotonView.Find(v.ViewID) == v), "every live view registered");
             var loot = views.Where(v => v.GetComponent<RailCoal>() != null || v.GetComponent<ItemGoldBar>() != null).ToArray();
-            Require(loot.Count(v => v.GetComponent<RailCoal>() != null) == route.expedition.coalPoints.Length, "exact coal count");
-            Require(loot.Count(v => v.GetComponent<ItemGoldBar>() != null) == route.expedition.goldPoints.Length, "exact gold count");
-            Require(Game.AI.Enemy.Active.Count == route.expedition.baseEnemyCount, "exact base enemy count");
+            Require(loot.Count(v => v.GetComponent<RailCoal>() != null) == route.expedition.ActivePoints(RailSpawnKind.Coal).Length, "exact coal count");
+            Require(loot.Count(v => v.GetComponent<ItemGoldBar>() != null) == route.expedition.ActivePoints(RailSpawnKind.Gold).Length, "exact gold count");
+            Require(Game.AI.Enemy.Active.Count == route.expedition.ActiveBaseEnemyCount, "exact base enemy count");
             var markers = loot.Select(v => string.Join("/", v.InstantiationData.Select(x => x.ToString()))).ToArray();
             Require(markers.Distinct().Count() == markers.Length, "unique loot markers");
             Require(errors == 0, "no unexpected errors since startup (" + errors + ")");
-            Record("PASS block=" + block.id + " step=" + requested + " run=" + PhotonSession.RunId + " route=" + string.Join(",", route.Selection.blocks) + " coal=" + route.expedition.coalPoints.Length + " gold=" + route.expedition.goldPoints.Length + " enemies=" + Game.AI.Enemy.Active.Count);
+            Record("PASS block=" + block.id + " step=" + requested + " run=" + PhotonSession.RunId + " route=" + string.Join(",", route.Selection.blocks) + " coal=" + route.expedition.ActivePoints(RailSpawnKind.Coal).Length + " gold=" + route.expedition.ActivePoints(RailSpawnKind.Gold).Length + " enemies=" + Game.AI.Enemy.Active.Count);
             Record("LOOT " + string.Join(",", loot.OrderBy(v => v.ViewID).Select(v => v.ViewID + ":" + v.SpawnToken)));
             PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { ["test.spawn.ack"] = requested });
             step = requested;

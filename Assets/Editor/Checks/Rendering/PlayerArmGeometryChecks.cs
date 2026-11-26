@@ -98,7 +98,7 @@ public static class PlayerArmGeometryChecks
     static void CheckExclusions(Scene scene)
     {
         foreach (string path in new[] {
-            "Assets/Resources/DuckCompanion.prefab", "Assets/Prefabs/Player/DuckSkin_Ragdoll.prefab",
+            "Assets/Prefabs/Player/DuckSkin_Ragdoll.prefab",
             "Assets/Prefabs/Enemies/ZombieBomber.prefab", "Assets/Prefabs/Enemies/ZombieMinion.prefab",
             "Assets/Prefabs/Enemies/ZombieSmasher.prefab", "Assets/Prefabs/Enemies/ZombieSpider.prefab"
         })

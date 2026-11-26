@@ -24,6 +24,7 @@
 - Existing Duckz capabilities described in the design are user-reported, not findings from a code audit.
 
 ## Working approach
+- Every spawn placement pass must leave the block able to fill an 8-player lobby: at least 93 coal and 52 gold usable candidates (the crew-8 ceilings in `RailResourceBalance`) and enemy pools that pass the 4/8/12 quadrant checks. Recheck the ceilings if tuning changes, and verify with `RailRoute.SelectResources` for crews 1–8 before declaring a block ready.
 - For assisted coal/gold/enemy spawn placement, read `docs/spawn-placement-workflow.md` and the target block's layout notes. Use the user's Convenience Store placements as the style reference; preserve candidate counts separately from per-run counts and leave new passes ready for inspection. Work only on requested blocks.
 - Use "CutePixel SDF" ("Assets/Fonts/CutePixel SDF.asset") for all game text, including TextMeshPro UI/world text, runtime-created labels, signs and material presets. Keep TMP Settings default font set to CutePixel SDF; do not introduce Liberation Sans or other fonts.
 - Block art workflow: first prepare a top-down layout and get user confirmation; only then block out with rough Quackville materials. Keep the featured location mainly in the middle third, but distribute supporting scenery and secondary areas toward the block edges through the approach/departure thirds. Avoid empty outer thirds; preserve flat seams and railway clearance.

@@ -65,7 +65,7 @@ public class PhotonVoiceMouth : MonoBehaviour
     void Start()
     {
         var view = GetComponent<PhotonView>();
-        _local = view != null && view.IsMine && GetComponent<DuckCompanion>() == null;
+        _local = view != null && view.IsMine;
     }
 
     Transform _poseTop;
@@ -146,12 +146,6 @@ public class PhotonVoiceMouth : MonoBehaviour
         if (_level != null)
             return _level;
 
-        if (GetComponent<DuckCompanion>() != null)
-        {
-            _level = GetComponentInChildren<PhotonVoiceLevel>();
-            return _level;
-        }
-
         var voice = GetComponent<PhotonVoiceView>();
         Speaker speaker = voice != null ? voice.SpeakerInUse : null;
         if (speaker == null)
@@ -176,7 +170,11 @@ public class PhotonVoiceMouth : MonoBehaviour
                 _localRecorder = primary;
         }
 
-        Photon.Voice.AudioUtil.ILevelMeter meter = _localRecorder != null ? _localRecorder.LevelMeter : null;
+        // Match what others hear: silence, mute and voice detection keep the beak shut.
+        if (_localRecorder == null || !_localRecorder.IsCurrentlyTransmitting)
+            return 0f;
+
+        Photon.Voice.AudioUtil.ILevelMeter meter = _localRecorder.LevelMeter;
         if (meter == null)
             return 0f;
 

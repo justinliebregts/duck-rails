@@ -1,5 +1,14 @@
 # Underground starting station — split-platform proposal
 
+## Z-fighting fixes — November 18, 2026
+
+The user reported flicker at every rib joint (hall and tunnel) and under the Supplies door header.
+Cause: the pier, chamfer beam and ceiling rib of each rib shared the same side planes where the
+slanted beam ends overlap the other two pieces, and the header's underside was coplanar with the
+doorway head. In `build_station.py` the piers and ceiling ribs are now 4 cm narrower than their
+beams and the header is 2 cm lower. FBX re-exported, station rebaked and the companion exported.
+Queued for playtest (see `playtest-queue.md`).
+
 ## Raised sign lettering — November 16, 2026
 
 User requested solid, raised letters. All four current city-station labels now

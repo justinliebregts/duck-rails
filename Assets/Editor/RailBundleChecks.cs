@@ -38,7 +38,44 @@ public static class RailBundleChecks
             Check(skin.pullCooldown == 0 && bag.pullCooldown == 120 && weapon.pullCooldown == 120, "Cooldown settings");
             Check(new[] { skin, bag, weapon }.All(i => i.bundleSku == "duckrails_" + key + "_bundle"), "Shared SKU");
             Check(catalog.FindBagModel(bag.bagId) == bag.bagModel, "Network bag lookup");
-            Check(bag.bagModel.GetComponentsInChildren<BagSlot>(true).Length == 4, "Four-slot placeholder");
+            // All three bundles ship final 8-slot bags.
+            Check(bag.bagModel.GetComponentsInChildren<BagSlot>(true).Length == 8, "Bag slot count");
+            if (key == "quackbear")
+            {
+                // The cupcake light is a flashlight variant with a point light instead of a spotlight.
+                var source = PrefabUtility.GetCorrespondingObjectFromSource(weapon.prefab);
+                Check(source != null && AssetDatabase.GetAssetPath(source) == "Assets/DuckRails/Economy/RailShopItemFlashlight.prefab", "Cupcake based on flashlight");
+                var lamp = weapon.prefab.GetComponent<HandFlashlight>();
+                Check(lamp != null && weapon.prefab.GetComponent<PhotonView>().ObservedComponents.Contains(lamp), "Cupcake light synced by Photon");
+                var cupLight = new SerializedObject(lamp).FindProperty("spotLight").objectReferenceValue as Light;
+                Check(cupLight != null && cupLight.type == LightType.Point && cupLight.shadows == LightShadows.None, "Cupcake point light");
+                Check(weapon.prefab.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Models/WeaponQuackbear/WeaponQuackbear.fbx"), "Cupcake mesh");
+                Check(bag.bagModel.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Skins/Bag_Quackbear/Bag_Quackbear.fbx"), "Quackbear bag mesh");
+            }
+            if (key == "huggy")
+            {
+                var gun = weapon.prefab.GetComponent<HuggyFlareGun>();
+                Check(gun != null, "Huggy flare gun component");
+                var gs = new SerializedObject(gun);
+                var flare = gs.FindProperty("flarePrefab").objectReferenceValue as DeathFlare;
+                Check(flare != null && AssetDatabase.GetAssetPath(flare) == "Assets/Prefabs/Effects/HuggyFlare.prefab", "Huggy flare prefab");
+                Check(Mathf.Approximately(new SerializedObject(flare).FindProperty("lifetime").floatValue, 15f), "Huggy flare burns 15 s");
+                Check(Mathf.Approximately(gs.FindProperty("cooldownSeconds").floatValue, 10f), "Huggy 10 s cooldown");
+                var muzzle = gs.FindProperty("muzzle").objectReferenceValue as Transform;
+                Check(muzzle != null && muzzle.localPosition.z > 0.55f, "Muzzle at the fingertip");
+                Check(gs.FindProperty("chargeFill").objectReferenceValue != null, "Charge bar");
+                Check(weapon.prefab.GetComponent<PhotonView>().ObservedComponents.Contains(gun), "Charge synced by Photon");
+                Check(weapon.prefab.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Models/WeaponHuggy/WeaponHuggy.fbx"), "Huggy gun mesh");
+                Check(bag.bagModel.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Skins/Bag_Huggy/Bag_Huggy.fbx"), "Huggy bag mesh");
+            }
+            if (key == "scrap_duck")
+            {
+                // The shovel is a nail-bat variant: same grab, sounds and swing behavior, new mesh.
+                var source = PrefabUtility.GetCorrespondingObjectFromSource(weapon.prefab);
+                Check(source != null && AssetDatabase.GetAssetPath(source) == "Assets/Prefabs/Weapons/WeaponNailBat.prefab", "Shovel based on nail bat");
+                Check(weapon.prefab.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Models/WeaponScrapDuck/WeaponScrapDuck.fbx"), "Shovel mesh");
+                Check(bag.bagModel.GetComponentsInChildren<MeshFilter>(true).Any(m => AssetDatabase.GetAssetPath(m.sharedMesh) == "Assets/Skins/Bag_ScrapDuck/Bag_ScrapDuck.fbx"), "Scrap bag mesh");
+            }
             Check(weapon.prefab.GetComponent<RailCargo>() != null, "Moving-train cargo");
             var view = weapon.prefab.GetComponent<PhotonView>();
             Check(view.ObservedComponents.Contains(weapon.prefab.GetComponent<RailCargo>()), "Cargo observed by Photon");

@@ -1,0 +1,154 @@
+2026-11-24T10:24:03.2020005Z START finale drive two-client test; Unity 6000.3.24f1 role=main
+2026-11-24T10:24:03.2035093Z STATE PeerCreated room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:03.2040132Z step=0
+2026-11-24T10:24:06.5624816Z STATE ConnectingToNameServer room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:06.8784848Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:07.1244554Z STATE ConnectingToMasterServer room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:07.5060258Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:07.7340118Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:07.9674536Z STATE ConnectingToGameServer room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:08.4421265Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:08.6635792Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:08.7871216Z STATE Joined room=39287 phase=Compound run=- step=0 master=True ready=False players=1 master=True
+2026-11-24T10:24:09.8664852Z STATE Joined room=39287 phase=Compound run=- step=0 master=True ready=True players=1 master=True
+2026-11-24T10:24:12.9577021Z STATE Joined room=39287 phase=Compound run=- step=0 master=True ready=True players=2 master=True
+2026-11-24T10:24:13.0610174Z STATE Leaving room=39287 phase=Compound run=- step=0 master=True ready=False players=0 master=True
+2026-11-24T10:24:13.1678671Z STATE ConnectingToMasterServer room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:13.5900741Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:13.6971846Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:13.8019892Z STATE ConnectingToGameServer room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:14.2381444Z STATE Authenticating room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:14.4551713Z STATE Joining room= phase=Compound run=- step=0 master=False ready=False players=0 master=False
+2026-11-24T10:24:14.5581716Z STATE Joined room=16611 phase=Staging run=- step=0 master=True ready=True players=1 master=True
+2026-11-24T10:24:17.6313259Z ACK step=0 pass=True created private 16611 
+2026-11-24T10:24:17.7322023Z STATE Joined room=16611 phase=Staging run=- step=1 master=True ready=True players=1 master=True
+2026-11-24T10:24:17.7322023Z step=1
+2026-11-24T10:24:19.3168470Z STATE Joined room=16611 phase=Staging run=- step=1 master=True ready=True players=2 master=True
+2026-11-24T10:24:20.8127005Z ACK step=1 pass=True in private staging 
+2026-11-24T10:24:22.5177646Z STATE Joined room=16611 phase=Staging run=- step=2 master=True ready=True players=2 master=True
+2026-11-24T10:24:22.5182680Z step=2
+2026-11-24T10:24:25.6122902Z LAUNCH room=16611 phase=Staging run=- step=2 master=True
+2026-11-24T10:24:25.8192845Z STATE Joined room=16611 phase=Departing run=b89556 step=2 master=True ready=False players=2 master=True
+2026-11-24T10:24:31.5202297Z STATE Joined room=16611 phase=Departing run=b89556 step=2 master=True ready=True players=2 master=True
+2026-11-24T10:24:31.7439200Z STATE Joined room=16611 phase=Departing run=b89556 step=2 master=False ready=True players=2 master=False
+2026-11-24T10:24:31.9537929Z STATE Joined room=16611 phase=Running run=b89556 step=2 master=False ready=True players=2 master=False
+2026-11-24T10:24:31.9537929Z ARRIVED room=16611 phase=Running run=b89556 step=2 master=False
+2026-11-24T10:24:32.1698924Z STATE Joined room=16611 phase=Running run=b89556 step=2 master=True ready=True players=2 master=True
+2026-11-24T10:24:36.3459779Z ACK step=2 pass=True private run b89556 
+2026-11-24T10:24:39.1751000Z STATE Joined room=16611 phase=Running run=b89556 step=3 master=True ready=True players=2 master=True
+2026-11-24T10:24:39.1756084Z step=3
+2026-11-24T10:24:42.2031765Z BRIDGE approach (test tool): Room update pending; try again
+2026-11-24T10:24:45.1975353Z BRIDGE approach (test tool): Train moved to bridge approach
+2026-11-24T10:24:45.4188224Z AT approach room=16611 phase=Running run=b89556 step=3 master=True local=50.00
+2026-11-24T10:24:47.5444735Z HOLD on (1x) at 1665523.846
+2026-11-24T10:25:48.8737623Z FULL (host) t100=61.33
+2026-11-24T10:25:49.9709612Z ACK step=3 pass=True bridge full at 1x 
+2026-11-24T10:25:50.0751917Z STATE Joined room=16611 phase=Running run=b89556 step=4 master=True ready=True players=2 master=True
+2026-11-24T10:25:50.0757174Z step=4
+2026-11-24T10:25:50.0757174Z BOARD aboard=True
+2026-11-24T10:25:50.1808307Z ACK step=4 pass=True aboard 
+2026-11-24T10:25:50.6255684Z STATE Joined room=16611 phase=Running run=b89556 step=5 master=True ready=True players=2 master=True
+2026-11-24T10:25:50.6255684Z step=5
+2026-11-24T10:25:52.6405588Z GO 1x (master path) room=16611 phase=Running run=b89556 step=5 master=True
+2026-11-24T10:25:54.2342891Z MOVING seen speed=3.19
+2026-11-24T10:26:04.9509225Z STOP midspan local=95.24
+2026-11-24T10:26:07.0380692Z ACK step=5 pass=True stopped midspan local=99.40 
+2026-11-24T10:26:07.1360510Z STATE Joined room=16611 phase=Running run=b89556 step=6 master=True ready=True players=2 master=True
+2026-11-24T10:26:07.1360510Z step=6
+2026-11-24T10:26:09.7613033Z RESTART seen speed=0.67
+2026-11-24T10:26:09.7613033Z ACK step=6 pass=True restarted 
+2026-11-24T10:26:09.8771955Z STATE Joined room=16611 phase=Running run=b89556 step=7 master=True ready=True players=2 master=True
+2026-11-24T10:26:09.8781942Z step=7
+2026-11-24T10:26:13.3386401Z FINISH run=b89556 reason=Bridge crossed success=True local=110.58 v=4.00 escaped=2/2 progress=1.000 room=16611 phase=Ending run=b89556 step=7 master=True
+2026-11-24T10:26:13.3386401Z MUSIC start #1 run=b89556 room=16611 phase=Ending run=b89556 step=7 master=True
+2026-11-24T10:26:13.3401413Z STATE Joined room=16611 phase=Ending run=b89556 step=7 master=True ready=True players=2 master=True
+2026-11-24T10:26:13.3431536Z CASE1 control grip actors seen=[0] reason=Bridge crossed local at takeover=110.58
+2026-11-24T10:26:13.3446667Z ACK step=7 pass=True takeover observed c1_escaped=2;c1_gripCount=1;c1_maxExcess=0.026272905044203626;c1_minV=4;c1_players=2;c1_rampS=2.1809999998658895;c1_restartLocal=99.517547607421875;c1_stopLocal=99.40399169921875;c1_success=1;c1_takeLocal=110.57998657226563
+2026-11-24T10:26:13.3529399Z VERDICT CASE 1 slow approach: stop and GO restart on lowered bridge PASS | ramp 1.6-2.4 s, control to z110, no jump, both escaped | main[c1_escaped=2;c1_gripCount=1;c1_maxExcess=0.026272905044203626;c1_minV=4;c1_players=2;c1_rampS=2.1809999998658895;c1_restartLocal=99.517547607421875;c1_stopLocal=99.40399169921875;c1_success=1;c1_takeLocal=110.57998657226563] player2[c1_escaped=2;c1_gripCount=1;c1_maxExcess=0.041998047003289685;c1_minV=4;c1_players=2;c1_rampS=2.1359999999403954;c1_restartLocal=99.530029296875;c1_stopLocal=99.40399169921875;c1_success=1;c1_takeLocal=110.5679931640625]
+2026-11-24T10:26:13.4427085Z STATE Joined room=16611 phase=Ending run=b89556 step=8 master=True ready=True players=2 master=True
+2026-11-24T10:26:13.4432301Z step=8
+2026-11-24T10:26:45.3527057Z STATE Joined room=16611 phase=Returning run=b89556 step=8 master=True ready=True players=2 master=True
+2026-11-24T10:26:47.4594148Z STATE Joined room=16611 phase=Staging run=- step=8 master=True ready=False players=2 master=True
+2026-11-24T10:26:48.6028578Z STATE Joined room=16611 phase=Staging run=- step=8 master=True ready=True players=2 master=True
+2026-11-24T10:26:50.3443244Z MUSIC end room=16611 phase=Staging run=- step=8 master=True
+2026-11-24T10:26:51.6200695Z ACK step=8 pass=True staging after A m_audible=1;m_fadePhase=1;m_fadeSec=2.9720000000670552;m_fadeStartS=34.252999999793246;m_maxSources=1;m_peak=0.800000011920929;m_returnS=32.142999999923632;m_starts=1
+2026-11-24T10:26:52.6645236Z VERDICT CASE 3a victory music return fade, ending A PASS | audible to fade, 2.5-3.5 s fade, one start | main[m_audible=1;m_fadePhase=1;m_fadeSec=2.9720000000670552;m_fadeStartS=34.252999999793246;m_maxSources=1;m_peak=0.800000011920929;m_returnS=32.142999999923632;m_starts=1] player2[m_audible=1;m_fadePhase=1;m_fadeSec=2.9660000000149012;m_fadeStartS=34.241999999852851;m_maxSources=1;m_peak=0.800000011920929;m_returnS=32.162999999942258;m_starts=1]
+2026-11-24T10:26:52.7661401Z STATE Joined room=16611 phase=Staging run=- step=9 master=True ready=True players=2 master=True
+2026-11-24T10:26:52.7661401Z step=9
+2026-11-24T10:26:55.7811855Z LAUNCH room=16611 phase=Staging run=- step=9 master=True
+2026-11-24T10:26:55.9892730Z STATE Joined room=16611 phase=Departing run=2416d4 step=9 master=True ready=False players=2 master=True
+2026-11-24T10:27:01.3474164Z STATE Joined room=16611 phase=Departing run=2416d4 step=9 master=True ready=True players=2 master=True
+2026-11-24T10:27:01.6809561Z STATE Joined room=16611 phase=Departing run=2416d4 step=9 master=False ready=True players=2 master=False
+2026-11-24T10:27:01.7871229Z STATE Joined room=16611 phase=Departing run=2416d4 step=9 master=True ready=True players=2 master=True
+2026-11-24T10:27:01.8891839Z STATE Joined room=16611 phase=Running run=2416d4 step=9 master=True ready=True players=2 master=True
+2026-11-24T10:27:01.8891839Z ARRIVED room=16611 phase=Running run=2416d4 step=9 master=True
+2026-11-24T10:27:05.9715112Z ACK step=9 pass=True private run 2416d4 
+2026-11-24T10:27:09.1384626Z STATE Joined room=16611 phase=Running run=2416d4 step=10 master=True ready=True players=2 master=True
+2026-11-24T10:27:09.1389665Z step=10
+2026-11-24T10:27:12.2242944Z BRIDGE approach (test tool): Room update pending; try again
+2026-11-24T10:27:15.1445429Z BRIDGE approach (test tool): Room update pending; try again
+2026-11-24T10:27:18.1726296Z BRIDGE approach (test tool): Room update pending; try again
+2026-11-24T10:27:21.2380865Z BRIDGE approach (test tool): Train moved to bridge approach
+2026-11-24T10:27:21.4474970Z AT approach room=16611 phase=Running run=2416d4 step=10 master=True
+2026-11-24T10:27:21.5607329Z FAST 5x requested
+2026-11-24T10:27:22.1191017Z WARP to lever (5x)
+2026-11-24T10:27:24.2188334Z HOLD on (5x) at 1665680.515
+2026-11-24T10:27:36.9383207Z FULL (host) t100=12.72
+2026-11-24T10:27:37.9528128Z ACK step=10 pass=True bridge full at 5x 
+2026-11-24T10:27:38.0706444Z STATE Joined room=16611 phase=Running run=2416d4 step=11 master=True ready=True players=2 master=True
+2026-11-24T10:27:38.0706444Z step=11
+2026-11-24T10:27:38.0706444Z BOARD aboard=True
+2026-11-24T10:27:38.1826156Z ACK step=11 pass=True aboard 
+2026-11-24T10:27:38.7395176Z STATE Joined room=16611 phase=Running run=2416d4 step=12 master=True ready=True players=2 master=True
+2026-11-24T10:27:38.7395176Z step=12
+2026-11-24T10:27:40.8176513Z GO 5x (master path) room=16611 phase=Running run=2416d4 step=12 master=True
+2026-11-24T10:27:45.0595720Z FINISH run=2416d4 reason=Bridge crossed success=True local=114.27 v=18.96 escaped=2/2 progress=1.000 room=16611 phase=Ending run=2416d4 step=12 master=True
+2026-11-24T10:27:45.0595720Z MUSIC start #1 run=2416d4 room=16611 phase=Ending run=2416d4 step=12 master=True
+2026-11-24T10:27:45.1246024Z STATE Joined room=16611 phase=Ending run=2416d4 step=12 master=True ready=True players=2 master=True
+2026-11-24T10:27:45.1267736Z ACK step=12 pass=False takeover observed c2_approach=20;c2_escaped=2;c2_maxAfter=18.959999084472656;c2_maxExcess=0.083155938851907862;c2_minApproach=20;c2_monotone=1;c2_players=2;c2_rampS=NaN;c2_takeLocal=114.27239990234375
+2026-11-24T10:27:45.1328798Z VERDICT CASE 2 fast approach at 5x, no stop FAIL | approach 20 m/s, ramp to 4 m/s in 1.6-2.4 s, both escaped | main[c2_approach=20;c2_escaped=2;c2_maxAfter=18.959999084472656;c2_maxExcess=0.083155938851907862;c2_minApproach=20;c2_monotone=1;c2_players=2;c2_rampS=NaN;c2_takeLocal=114.27239990234375] player2[c2_missing=1]
+2026-11-24T10:27:45.2268845Z STATE Joined room=16611 phase=Ending run=2416d4 step=13 master=True ready=True players=2 master=True
+2026-11-24T10:27:45.2268845Z step=13
+2026-11-24T10:28:17.1297085Z STATE Joined room=16611 phase=Returning run=2416d4 step=13 master=True ready=True players=2 master=True
+2026-11-24T10:28:19.1799777Z STATE Joined room=16611 phase=Staging run=- step=13 master=True ready=False players=2 master=True
+2026-11-24T10:28:20.1692017Z STATE Joined room=16611 phase=Staging run=- step=13 master=True ready=True players=2 master=True
+2026-11-24T10:28:22.0760872Z MUSIC end room=16611 phase=Staging run=- step=13 master=True
+2026-11-24T10:28:23.2575223Z ACK step=13 pass=True staging after B m_audible=1;m_fadePhase=1;m_fadeSec=2.9089999999850988;m_fadeStartS=34.127000000094995;m_maxSources=1;m_peak=0.800000011920929;m_returnS=32.072000000160187;m_starts=1
+2026-11-24T10:28:24.3245837Z VERDICT CASE 3b victory music return fade, ending B PASS | audible to fade, 2.5-3.5 s fade, one start | main[m_audible=1;m_fadePhase=1;m_fadeSec=2.9089999999850988;m_fadeStartS=34.127000000094995;m_maxSources=1;m_peak=0.800000011920929;m_returnS=32.072000000160187;m_starts=1] player2[m_audible=1;m_fadePhase=1;m_fadeSec=2.9849999998696148;m_fadeStartS=34.087000000057742;m_maxSources=1;m_peak=0.800000011920929;m_returnS=32.040000000037253;m_starts=1]
+2026-11-24T10:28:24.4345618Z STATE Joined room=16611 phase=Staging run=- step=14 master=True ready=True players=2 master=True
+2026-11-24T10:28:24.4355707Z step=14
+2026-11-24T10:28:27.4748668Z LAUNCH room=16611 phase=Staging run=- step=14 master=True
+2026-11-24T10:28:27.6934118Z STATE Joined room=16611 phase=Departing run=4fad15 step=14 master=True ready=False players=2 master=True
+2026-11-24T10:28:32.9767296Z STATE Joined room=16611 phase=Departing run=4fad15 step=14 master=False ready=False players=2 master=False
+2026-11-24T10:28:33.8962704Z STATE Joined room=16611 phase=Departing run=4fad15 step=14 master=True ready=False players=2 master=True
+2026-11-24T10:28:35.0427172Z STATE Joined room=16611 phase=Departing run=4fad15 step=14 master=True ready=True players=2 master=True
+2026-11-24T10:28:36.6175581Z STATE Joined room=16611 phase=Running run=4fad15 step=14 master=True ready=True players=2 master=True
+2026-11-24T10:28:36.6175581Z ARRIVED room=16611 phase=Running run=4fad15 step=14 master=True
+2026-11-24T10:28:36.7491333Z STATE Joined room=16611 phase=Running run=4fad15 step=14 master=False ready=True players=2 master=False
+2026-11-24T10:28:39.3760835Z STATE Joined room=16611 phase=Running run=4fad15 step=14 master=True ready=True players=2 master=True
+2026-11-24T10:28:40.7004628Z ACK step=14 pass=True private run 4fad15 
+2026-11-24T10:28:43.5428501Z STATE Joined room=16611 phase=Running run=4fad15 step=15 master=True ready=True players=2 master=True
+2026-11-24T10:28:43.5433732Z step=15
+2026-11-24T10:28:46.5783897Z BRIDGE approach (test tool): Room update pending; try again
+2026-11-24T10:28:49.6283918Z BRIDGE approach (test tool): Train moved to bridge approach
+2026-11-24T10:28:52.0164701Z HOLD on (1x) toward 50%
+2026-11-24T10:29:22.8866663Z RELEASE at progress 0.500
+2026-11-24T10:29:25.3847182Z ACK step=15 pass=True half-lowered and frozen progress=0.505 
+2026-11-24T10:29:25.4900254Z STATE Joined room=16611 phase=Running run=4fad15 step=16 master=True ready=True players=2 master=True
+2026-11-24T10:29:25.4910310Z step=16
+2026-11-24T10:29:25.4910310Z BOARD aboard=True
+2026-11-24T10:29:28.5918500Z GO 1x into half-lowered bridge room=16611 phase=Running run=4fad15 step=16 master=True
+2026-11-24T10:29:37.5658199Z FINISH run=4fad15 reason=Bridge collision success=False local=80.83 v=0.00 escaped=0/2 progress=0.505 room=16611 phase=Ending run=4fad15 step=16 master=True
+2026-11-24T10:29:37.5663444Z STATE Joined room=16611 phase=Ending run=4fad15 step=16 master=True ready=True players=2 master=True
+2026-11-24T10:29:37.5673491Z ACK step=16 pass=True crash observed c4_crashLocal=80.8280029296875;c4_escaped=0;c4_music=0;c4_progress=0.50476664304733276;c4_success=0
+2026-11-24T10:29:37.8109002Z STATE Joined room=16611 phase=Ending run=4fad15 step=17 master=True ready=True players=2 master=True
+2026-11-24T10:29:37.8124043Z step=17
+2026-11-24T10:30:09.5985404Z STATE Joined room=16611 phase=Returning run=4fad15 step=17 master=True ready=True players=2 master=True
+2026-11-24T10:30:11.6511433Z STATE Joined room=16611 phase=Staging run=- step=17 master=True ready=False players=2 master=True
+2026-11-24T10:30:12.8170840Z STATE Joined room=16611 phase=Staging run=- step=17 master=True ready=True players=2 master=True
+2026-11-24T10:30:15.8194912Z ACK step=17 pass=True staging after C 
+2026-11-24T10:30:18.4029558Z VERDICT CASE 4 incomplete bridge crash at entry PASS | bridge collision at z80, progress about 0.5, no escape credit | main[] player2[]
+2026-11-24T10:30:18.5113316Z STATE Joined room=16611 phase=Staging run=- step=18 master=True ready=True players=2 master=True
+2026-11-24T10:30:18.5128601Z step=18
+2026-11-24T10:30:18.5128601Z VERDICT FAIL 1 case(s) COMPLETE
+2026-11-24T10:30:18.5128601Z FAIL 1 case(s) COMPLETE

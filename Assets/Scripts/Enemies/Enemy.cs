@@ -130,9 +130,12 @@ namespace Game.AI
         float _localRecoveryRetry;
 
         public State CurrentState { get; private set; }
+        bool pursuingTrain;
+        public bool UsesWanderSpeed => CurrentState == State.Wander && !pursuingTrain;
         public Transform Root => root;
         public IGaitDriver Gait => _gait;
         public IEnemyLocomotion Locomotion => _loco;
+        RailEnemyBounds railBounds;
         public RailEnemyBoarding Boarding { get; private set; }
         public bool HitMovementActive => _flying || _shoveActive || _dropActive || _retreatActive || _stunned;
         public bool CanTargetPosition(Vector3 point) => Boarding != null || RailTrain.Instance == null || !RailTrain.Instance.Contains(point);
@@ -271,6 +274,7 @@ namespace Game.AI
             _vocal = GetComponent<IEnemyHitVocal>();
             _loco = GetComponent<IEnemyLocomotion>();
             Boarding = GetComponent<RailEnemyBoarding>();
+            railBounds = GetComponent<RailEnemyBounds>();
             _climb = _loco as ClimbLocomotion;
             _ground = _loco as GroundLocomotion;
             _jump = GetComponent<ZombieSmasherJump>();
@@ -318,6 +322,8 @@ namespace Game.AI
             if (_gait is SpiderGait spider) spider.ResetRaise();
             _flareRetreat = _searchingFlareLocation = false;
             _flareThreat = null;
+            followingEscape = false;
+            avoidEscapeNode = -1;
             _killRetreatPending = _searchKillLocation = _searchingKillLocation = false;
             _localMeleeGraceUntil = 0f;
             _nextFarPerception = _farPerceptionInterval = 0f;
@@ -346,7 +352,37 @@ namespace Game.AI
         }
 
         /// <summary>Writes the gait root through its rigidbody so physics does not snap the transform back. The transform is updated in the same call so later reads in this frame see the new pose.</summary>
-        public void SetRootPose(Vector3 position, Quaternion rotation)
+        public void SetRootPose(Vector3 position, Quaternion rotation) => SetSpacedPose(position, rotation, false);
+
+        internal void SetSpacedPose(Vector3 position, Quaternion rotation, bool snapshot)
+        {
+            if (root) position = LimitNeighbors(root.position, position, out _, snapshot);
+            WriteRootPose(position, rotation);
+        }
+
+        internal void SpacingBody(out Vector3 lower, out float axis, out float radius)
+        {
+            axis = 0;
+            if (_flying && _capsule != null)
+            {
+                // Tumble rotates the physics capsule. Enclose its swept orientations.
+                var scale = root.lossyScale;
+                radius = Mathf.Max(_capsule.height * .5f, _capsule.radius) * Mathf.Max(Mathf.Abs(scale.x),Mathf.Max(Mathf.Abs(scale.y),Mathf.Abs(scale.z)));
+                lower = root.TransformVector(_capsule.center);
+            }
+            else if (_climb != null)
+                _climb.SpacingSphere(out lower,out radius);
+            else
+            {
+                float height;
+                if (_ground != null) _ground.GetCapsuleSize(out radius,out height);
+                else { radius = bodyRadius; height = Mathf.Max(2 * radius,bodyHeight); }
+                lower = Vector3.up * radius;
+                axis = height - radius * 2;
+            }
+        }
+
+        void WriteRootPose(Vector3 position, Quaternion rotation)
         {
             if (_body != null)
             {
@@ -361,7 +397,7 @@ namespace Game.AI
         {
             Boarding?.ResetFrame();
             if (_flying) AbortFlight();
-            SetRootPose(position, rotation);
+            WriteRootPose(position, rotation);
             // Teleports must be visible to AI/gait and network serialization immediately,
             // even before physics synchronizes the rigidbody pose back to the Transform.
             root.SetPositionAndRotation(position, rotation);
@@ -527,7 +563,10 @@ namespace Game.AI
             else if (_climb != null)
                 supported = _climb.HasSurfaceSupport(position, manager.SurfaceMask);
             else if (_ground != null)
-                supported = _ground.HasGroundSupport(position, manager.SurfaceMask);
+                // A crowded Smasher descent can rest against another live body
+                // while trying bounded local recovery. It is not falling through the world.
+                supported = (_jump != null && _jump.WaitingForLandingSpace)
+                    || _ground.HasGroundSupport(position, manager.SurfaceMask);
             else
                 supported = Physics.Raycast(position + Vector3.up * 0.1f, Vector3.down,
                     out RaycastHit floorHit, 0.25f, manager.SurfaceMask, QueryTriggerInteraction.Ignore)
@@ -563,7 +602,7 @@ namespace Game.AI
 
         public void CarryNavigationFrame(Matrix4x4 motion, Quaternion rotation)
         {
-            SetRootPose(motion.MultiplyPoint3x4(root.position), rotation * root.rotation);
+            WriteRootPose(motion.MultiplyPoint3x4(root.position), rotation * root.rotation);
             _ground?.CarryFrame(motion, rotation);
             _climb?.CarryFrame(motion, rotation);
             if (_gait is SpiderGait spider) spider.CarryFrame(motion, rotation);
@@ -591,7 +630,6 @@ namespace Game.AI
             float bestSq = rangeSq;
             float nearSq = nearSenseRadius * nearSenseRadius;
             int best = -1;
-            bool bestIsCompanion = false;
             Vector3 bestHead = default;
 
             for (int s = 0; s < EnemyManager.MaxTargets; s++)
@@ -601,18 +639,13 @@ namespace Game.AI
                 if (IsFlareProtected(headPos)) continue;
                 Vector3 d = headPos - eyePos;
                 float sq = d.sqrMagnitude;
-                // Hook can chase Duck, but only a human can be pulled. A nearby
-                // companion must not keep a visible player from ever being selected.
-                bool companion = _hook != null && m.TargetOwner(s) is PhotonPlayer player && player.IsCompanion;
-                if (companion && best >= 0 && !bestIsCompanion) continue;
-                if (sq > (bestIsCompanion && !companion ? rangeSq : bestSq)) continue;
+                if (sq > bestSq) continue;
                 float dist = Mathf.Sqrt(sq);
                 if (sq > nearSq && Vector3.Dot(fwd, d) < _fovCos * dist) continue;
                 if (dist > 0.01f && AIQueryProfile.VisionCast(eyePos, d / dist, out RaycastHit hit, dist, m.VisionMask)
                     && hit.distance < dist - 0.35f)
                     continue;
                 best = s;
-                bestIsCompanion = companion;
                 bestSq = sq;
                 bestHead = headPos;
             }
@@ -648,7 +681,7 @@ namespace Game.AI
             switch (CurrentState)
             {
                 case State.Wander:
-                    if (RailBridgeEncounter.TryGetObjective(this, out var bridgeGoal))
+                    if (RailBridgeEncounter.TryGetObjective(this, out var bridgeGoal, out pursuingTrain) || (railBounds != null && railBounds.TryGetReturnGoal(out bridgeGoal)))
                     {
                         if ((root.position - bridgeGoal).sqrMagnitude <= 1f) { _loco.ClearPath(); break; }
                         _repathTimer -= dt;
@@ -815,13 +848,14 @@ namespace Game.AI
 
         public void LockSwing() => _localSwingLock = Time.time + hitCooldown;
 
-        public void SubmitSwing(Vector3 swingVelocity, float weaponScale, Vector3 hitPosition = default)
+        public void SubmitSwing(Vector3 swingVelocity, float weaponScale, Vector3 hitPosition = default, string itemName = null)
         {
             // Match the local hit acceptance gates. Sound-only cooldown contacts and
             // RPCs received from another player must not extend this protection.
             if (IsDormant || swingVelocity.magnitude <= minHitSpeed || Time.time < _nextHitTime) return;
             _localMeleeGraceUntil = Time.time + LocalMeleeGraceSeconds;
             if (_vocal != null) _vocal.PlayWhimper();
+            RailBoardReports.Hit(gameObject.name, itemName);
             if (_net != null) _net.SubmitSwing(swingVelocity, weaponScale, hitPosition);
             else ReceiveSwing(swingVelocity, weaponScale, hitPosition);
         }
@@ -1003,13 +1037,14 @@ namespace Game.AI
             && DeathFlare.TryFindNear(position, flareFearRadius, out _);
 
         public bool AllowsFlareMovement(Vector3 from, Vector3 to) => flareFearRadius <= 0f
-            || DeathFlare.AllowsMovement(from, to, flareFearRadius);
+            || DeathFlare.AllowsMovement(from, to, flareFearRadius, _flareRetreat && followingEscape);
 
         bool TickFlareFear(EnemyManager manager, float dt)
         {
             if (!HasAuthority || flareFearRadius <= 0f || root == null || _loco == null) return false;
             DeathFlare nearby = DeathFlare.FindNear(root.position, flareFearRadius);
-            if (nearby != null && (!_flareRetreat || _flareThreat != nearby))
+            var graph = manager.Graph;
+            if (nearby != null && (!_flareRetreat || !_flareThreat || !_flareThreat.IsBurning))
             {
                 _flareThreat = nearby;
                 Vector3 up = SupportUp();
@@ -1024,15 +1059,8 @@ namespace Game.AI
                 // Pick on the enemy's support plane, at the chosen 3D distance.
                 _flareDestination = nearby.transform.position + up * height
                     + away * Mathf.Sqrt(Mathf.Max(0f, distance * distance - height * height));
-                int destinationNode = _ground != null ? manager.ResolveGroundNode(_flareDestination)
-                    : manager.ResolveNode(_flareDestination);
-                if (destinationNode >= 0)
-                {
-                    Vector3 snapped = manager.Graph.GetPosition(destinationNode);
-                    float fromFlare = Vector3.Distance(snapped, nearby.transform.position);
-                    if (fromFlare >= 10f && fromFlare <= 14f && !IsFlareProtected(snapped))
-                        _flareDestination = snapped;
-                }
+                followingEscape = false;
+                avoidEscapeNode = -1;
                 _flareRepath = 0f;
                 _retreatProgressPosition = root.position;
                 _retreatStalledTime = 0f;
@@ -1050,6 +1078,7 @@ namespace Game.AI
                 if (_flareRetreat)
                 {
                     _flareRetreat = false;
+                    followingEscape = false;
                     _flareThreat = null;
                     _loco.Interrupt();
                     if (_retreatActive) return false; // Preserve an interrupted hit/kill retreat.
@@ -1069,6 +1098,31 @@ namespace Game.AI
                 return true;
             }
             _flareRepath -= dt;
+            if (graph != null)
+            {
+                bool stalled = EscapeStalled(graph, dt);
+                bool needRoute = !followingEscape || _loco.PathDone || stalled ||
+                    (nearby != null && nearby != _flareThreat && IsFlareProtected(_flareDestination));
+                if (needRoute && _flareRepath <= 0 && lastEscapeFrame != Time.frameCount &&
+                    NavigationWorkBudget.TryBegin(manager.PathBudgetMilliseconds, NavigationWorkBudget.PendingDuckPlans > 0,
+                        out long escapeStarted, out _))
+                {
+                    try
+                    {
+                        if (stalled)
+                        {
+                            avoidEscapeNode = _ground ? _ground.EscapeWaypoint : _climb.EscapeWaypoint;
+                            if (_ground) _ground.BlockEscapeWaypoint();
+                        }
+                        if (nearby) _flareThreat = nearby;
+                        lastEscapeFrame = Time.frameCount;
+                        PlanEscape(graph);
+                    }
+                    finally { NavigationWorkBudget.End(escapeStarted); }
+                }
+                if (followingEscape && !_loco.PathDone) _loco.TickMove(this, manager, dt);
+                return true;
+            }
             if (_flareRepath <= 0f)
             {
                 _loco.ForcePathToWorld(manager, _flareDestination);
@@ -1421,13 +1475,14 @@ namespace Game.AI
             return Vector3.up;
         }
 
-        public void SubmitThrownHit(Vector3 throwVelocity, Vector3 hitPosition = default)
+        public void SubmitThrownHit(Vector3 throwVelocity, Vector3 hitPosition = default, string itemName = null)
         {
             float speed = throwVelocity.magnitude;
             if (IsDormant || speed <= minHitSpeed) return;
             if (Time.time < _nextHitTime) return;
             _localMeleeGraceUntil = Time.time + LocalMeleeGraceSeconds;
             if (_vocal != null) _vocal.PlayWhimper();
+            RailBoardReports.Hit(gameObject.name, itemName);
             if (_net != null) _net.SubmitThrownHit(throwVelocity, hitPosition);
             else ReceiveThrownHit(throwVelocity, hitPosition);
         }
@@ -1652,14 +1707,27 @@ namespace Game.AI
             _body.interpolation = RigidbodyInterpolation.Interpolate;
             _body.linearVelocity = launch;
             _body.angularVelocity = Tumble(launch);
+            previousFlightPosition = _body.position;
             _flying = true;
             _grounded = false;
             _landNormal = Vector3.up;
             _flightStartTime = Time.time;
         }
 
+        Vector3 previousFlightPosition;
+
         void TickKnock()
         {
+            Vector3 current = _body.position;
+            Vector3 safe = LimitNeighbors(previousFlightPosition, current, out _);
+            if ((current - safe).sqrMagnitude > 1e-9f)
+            {
+                _body.position = safe;
+                _body.linearVelocity = Vector3.zero;
+                Recover(Vector3.up);
+                return;
+            }
+            previousFlightPosition = current;
             bool grounded = _grounded;
             Vector3 normal = _landNormal;
             _grounded = false;

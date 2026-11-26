@@ -36,7 +36,8 @@ public class PhotonAvatarSpawner : MonoBehaviour
 
     void TrySpawn()
     {
-        if (photonPlayerPrefab == null || !PhotonNetwork.InRoom || !PhotonNetwork.IsMessageQueueRunning)
+        // The PC spectator never has a networked duck.
+        if (photonPlayerPrefab == null || !PhotonNetwork.InRoom || !PhotonNetwork.IsMessageQueueRunning || SpectatorMode.Active)
             return;
 
         // Joining an expedition can complete while the outgoing Compound rig
@@ -68,7 +69,6 @@ public class PhotonAvatarSpawner : MonoBehaviour
         var player = avatar.GetComponent<PhotonPlayer>();
         player.BindSources(head, driver.LeftPalmSource, driver.RightPalmSource, driver);
         _boundPlayer = player;
-        DuckzAnalytics.MarkAlive();
     }
 
 }

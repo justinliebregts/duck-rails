@@ -107,6 +107,7 @@ public static class RailAmbienceSetup
                 Area("Change rooms", -32.5f, 1.85f, 100, 18, 3.4f, 17.5f, Sounds("SlowLeak", "Fluorescent"), Sounds("WaterDrops")),
                 Area("Pool vendor", -16.5f, 1.85f, 100, 12, 3.4f, 17.5f, Sounds("MachineHum"), Sounds("WaterDrops"))),
             NuclearPlantProfile(),
+            LakesideProfile(),
             Profile("bridge-finale-v1", Sounds("DistantWind", "HorridSignal"), Sounds("MetalCreak"), true,
                 Area("Gorge floor", 0, -6, 100, 96, 10, 38, Sounds("RiverRush"), Sounds("WaterDrops", "MetalCreak")),
                 Area("Bridge and river banks", 0, 2, 100, 96, 6, 38, Sounds("GentleStream", "DistantWind"), Sounds("MetalCreak")),
@@ -115,6 +116,25 @@ public static class RailAmbienceSetup
         EditorUtility.SetDirty(settings);
         AssetDatabase.SaveAssets();
         Debug.Log($"Installed {manifest.tracks.Length} ambience clips/events and {settings.profiles.Length} location profiles.");
+    }
+
+    public static RailAmbienceProfile LakesideProfile()
+    {
+        var timber = Sounds("HouseCreak");
+        var drips = Sounds("WaterDrops", "HouseCreak");
+        var quiet = Array.Empty<SoundEvent>();
+        var attic = Sounds("SpookyAttic");
+        // Interior bounds follow the raised cabin floors. They take precedence over the shore.
+        return Profile("lakeside-campground-v1", Sounds("Crickets"), Sounds("SubtleLeaves", "CrowCaw"), false,
+            Area("Bunk cabin", 34, 2.64f, 76, 9.4f, 3, 9.4f, attic, timber),
+            Area("Mess cabin", 34, 3.64f, 99, 9.4f, 3, 9.4f, quiet, timber),
+            Area("North cabin", 20, 2.64f, 121.5f, 9.4f, 3, 8.4f, attic, timber),
+            Area("Reception", 18, 1.64f, 27, 11.4f, 3, 9.4f, quiet, timber),
+            Area("Washrooms", 34, 1.64f, 50, 9.4f, 3, 7.4f, Sounds("SlowLeak"), Sounds("WaterDrops")),
+            Area("Supply cabin", -11, 1.64f, 57.5f, 9.4f, 3, 8.4f, quiet, timber),
+            Area("Boathouse", -11, 1.64f, 97, 9.4f, 3, 11.4f, quiet, drips),
+            Area("Pond and dock", -27, 1.8f, 80, 29, 7, 63, Sounds("NightCicadas"), Sounds("GentleLeaves")),
+            Area("Southwest woods", -27, 2.5f, 27, 36, 8, 42, Sounds("NightLeaves"), Sounds("SubtleLeaves", "CrowCaw")));
     }
 
     public static RailAmbienceProfile NuclearPlantProfile() =>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEditor;
 using UnityEngine;
 
@@ -43,7 +44,96 @@ public static class PickupPoseChecks
         Require(checkedDisplays == paths.Length, "All four wall displays must be checked");
         VerifyStream();
         VerifySurfaceStreams();
+        if (!Application.isPlaying && !PhotonNetwork.IsConnected)
+            VerifyCompoundLifetime();
         Debug.Log("PickupPoseChecks PASS: four bag miniatures and four wall displays; mesh alignment, anchored growth, remote pose reconstruction, delayed arrival and completion.");
+    }
+
+    sealed class EditModePickupPool : IPunPrefabPool
+    {
+        public GameObject prefab, instance;
+
+        public GameObject Instantiate(string prefabId, Vector3 position, Quaternion rotation)
+        {
+            Require(prefabId == prefab.name, "spawned the selected bag item");
+            instance = UnityEngine.Object.Instantiate(prefab, position, rotation);
+            instance.SetActive(false);
+            typeof(PhotonGrabbable).GetMethod("Awake", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(instance.GetComponent<PhotonGrabbable>(), null);
+            return instance;
+        }
+
+        public void Destroy(GameObject instance) => UnityEngine.Object.DestroyImmediate(instance);
+    }
+
+    sealed class WithdrawalTestPlayer : Player
+    {
+        public WithdrawalTestPlayer() : base("withdrawal test", 1, true) { }
+    }
+
+    static void VerifyCompoundLifetime()
+    {
+        var client = PhotonNetwork.NetworkingClient;
+        var oldRoom = client.CurrentRoom;
+        var oldState = client.State;
+        var oldPool = PhotonNetwork.PrefabPool ?? new DefaultPool();
+        var oldDebug = client.LoadBalancingPeer.DebugOut;
+        var room = new Room("12345", RailSessionRules.Options(RailSessionRules.CompoundKind))
+            { LoadBalancingClient = client };
+        var oldLocal = client.LocalPlayer;
+        var localPlayer = typeof(LoadBalancingClient).GetProperty(nameof(LoadBalancingClient.LocalPlayer));
+        var local = new WithdrawalTestPlayer();
+        var pool = new EditModePickupPool();
+        var root = new GameObject("Compound withdrawal check");
+        try
+        {
+            typeof(Player).GetProperty(nameof(Player.UserId)).SetValue(local, "withdrawal-test");
+            room.AddPlayer(local);
+            client.CurrentRoom = room;
+            localPlayer.SetValue(client, local);
+            client.State = ClientState.Joined;
+            client.LoadBalancingPeer.DebugOut = ExitGames.Client.Photon.DebugLevel.OFF;
+            PhotonNetwork.PrefabPool = pool;
+            PlayerHand hand = root.AddComponent<PlayerHand>();
+            foreach (string name in new[] { "Weapon_Huggy", "Weapon_Quackbear", "Weapon_ScrapDuck" })
+            {
+                pool.prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Weapons/" + name + ".prefab");
+                Require(pool.prefab != null && pool.prefab.GetComponent<RailCargo>() != null, name + " is networked cargo");
+                GameObject mini = BagMiniModel.Build(pool.prefab, name, root.transform, .065f);
+                var pose = ItemPickupPose.Capture(pool.prefab, mini.transform.GetChild(0), hand.HoldPoint.position);
+                Require(pose.ClampGripToSurface(pool.prefab, hand.HoldPoint.position), name + " has a bag pickup surface");
+                foreach (RailPhase phase in new[] { RailPhase.Compound, RailPhase.Staging, RailPhase.Running })
+                {
+                    room.CustomProperties[RailSessionRules.Phase] = (int)phase;
+                    Grabbable item = pose.Spawn(pool.prefab, hand);
+                    Require(item != null, name + " spawned from the bag pose");
+                    PhotonView view = item.GetComponent<PhotonView>();
+                    bool inCompoundScene = phase != RailPhase.Running;
+                    Require(RailCargo.IsCompoundPurchase(view) == inCompoundScene, name + " retains Compound data only in the Compound scene");
+                    Require(RailCargo.KeepCompoundPurchase(view) == inCompoundScene, name + " cleanup lifetime in " + phase);
+                    if (inCompoundScene)
+                    {
+                        room.CustomProperties[RailSessionRules.Run] = "next-run";
+                        Require(!RailCargo.KeepCompoundPurchase(view), name + " expires across a run change");
+                        room.CustomProperties[RailSessionRules.Run] = "";
+                    }
+                    pool.Destroy(pool.instance);
+                    pool.instance = null;
+                }
+                UnityEngine.Object.DestroyImmediate(mini);
+            }
+            Debug.Log("Bag pickup lifetime PASS: Huggy, Quackbear and Scrap Duck survive Compound cleanup in public and private staging, expire across run changes, and use expedition lifetime aboard.");
+        }
+        finally
+        {
+            if (pool.instance != null) pool.Destroy(pool.instance);
+            UnityEngine.Object.DestroyImmediate(root);
+            PhotonNetwork.PrefabPool = oldPool;
+            client.LoadBalancingPeer.DebugOut = oldDebug;
+            client.CurrentRoom = oldRoom;
+            localPlayer.SetValue(client, oldLocal);
+            client.State = oldState;
+        }
     }
 
     // Exercise the new surface correction together with actual PUN spawn/stream callbacks.

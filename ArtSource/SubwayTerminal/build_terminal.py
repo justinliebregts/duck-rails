@@ -492,10 +492,13 @@ def bulb(b, x, y, z, top):
 def canopy(b, x0, x1, y0, y1, z0, z1, n, tile="corr"):
     """Sloped salvaged roof sheets, z0 at x0 to z1 at x1, visible from both sides."""
     w = (y1 - y0) / n
+    # The first quad faces down when x0 < x1 and up when x0 > x1. The up-facing sheet must sit above the
+    # down-facing one; inverted, the underside's lightmap texels see the other sheet's backface and bake black.
+    lift_first = .02 if x1 < x0 else 0
     for i in range(n):
         ya, dz = y0 + i * w, .03 * (i % 2)
-        b.quad((x0, ya + w - .03, z0 + dz), (x1 - x0, 0, z1 - z0), (0, -(w - .03), 0), tile, fit=True)
-        b.quad((x0, ya, z0 + dz + .02), (x1 - x0, 0, z1 - z0), (0, w - .03, 0), tile, fit=True)
+        b.quad((x0, ya + w - .03, z0 + dz + lift_first), (x1 - x0, 0, z1 - z0), (0, -(w - .03), 0), tile, fit=True)
+        b.quad((x0, ya, z0 + dz + .02 - lift_first), (x1 - x0, 0, z1 - z0), (0, w - .03, 0), tile, fit=True)
 
 
 def signboard(b, lo, hi):
@@ -565,14 +568,12 @@ def build_info(b):
     for y in (-2.38, 2.38):
         b.beam((-4.78, y, 0), (-4.78, y, 3.55), .14, .14, "timber", up=(0, 1, 0), caps=False)
     canopy(b, -8.85, -6.5, -2.6, 2.6, 3.08, 2.92, 3)
-    # Map board with a warm strip light, bench and pinned notices
-    b.box((-8.8, -1.5, .95), (-8.72, 1.5, 2.75), "timber", skip="x-")
-    b.quad((-8.715, -1.35, 1.1), (0, 2.7, 0), (0, 0, 1.5), "whitepanel", fit=True)
+    # Map board with a warm strip light and pinned notices. November 20 review: the bench was removed and
+    # the board lowered 0.9 m to sit just above the floor (the Tales From The Rails canvas follows it).
+    b.box((-8.8, -1.5, .05), (-8.72, 1.5, 1.85), "timber", skip="x-")
+    b.quad((-8.715, -1.35, .2), (0, 2.7, 0), (0, 0, 1.5), "whitepanel", fit=True)
     b.box((-8.72, -.7, 2.85), (-8.5, .7, 2.93), "darkmetal", fit=True, skip="b")
     b.flat([(-8.72, .7, 2.85), (-8.5, .7, 2.85), (-8.5, -.7, 2.85), (-8.72, -.7, 2.85)], WARM)
-    b.box((-8.3, -1.2, .4), (-7.85, 1.2, .47), "timber")
-    for y in (-1.0, 1.0):
-        b.box((-8.25, y - .05, 0), (-7.9, y + .05, .4), "timber", skip="tb")
     # Notices stay toward the front; the rear of each partition is kept clear for the Discord and rating stations.
     for x, z, t in ((-6.2, 1.15, "yellowworn"), (-5.6, 1.4, "whitepanel")):
         sheet(b, (x, -2.52, z), (0, 1), .5, .62, t, rng.uniform(-5, 5))
@@ -590,7 +591,7 @@ def build_info(b):
     lamp(b, (-PX + .5, 3 - .2, 4.3), (1, 0, 0), (-.8, 1.0, 0))
 
 
-def shelf(b, ox, oy, yaw, L, rng):
+def shelf(b, ox, oy, yaw, L, rng, *, closed_stock=False):
     b.push(Matrix.Translation((ox, oy, 0)) @ Matrix.Rotation(math.radians(yaw), 4, "Z"))
     for x in (0.03, L - .03):
         for y in (-.42, -.03):
@@ -603,7 +604,8 @@ def shelf(b, ox, oy, yaw, L, rng):
             w, h = rng.uniform(.24, .42), rng.uniform(.18, .36)
             if rng.random() > .22 and x + w < L - .05:
                 t = rng.choice(stock)
-                b.box((x, -.4, z + .04), (x + w, -.06, z + .04 + h), t, skip="by-", fit=TILES[t][0] == "I")
+                b.box((x, -.4, z + .04), (x + w, -.06, z + .04 + h), t,
+                      skip="" if closed_stock else "by-", fit=TILES[t][0] == "I")
             x += w + rng.uniform(.03, .12)
     b.pop()
 

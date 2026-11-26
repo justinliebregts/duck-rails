@@ -41,7 +41,8 @@ public sealed partial class HeadEquipment : MonoBehaviour, IPunObservable, IInRo
     public void OnPhotonInstantiate(PhotonMessageInfo info)
     {
         object[] data = photonView.InstantiationData;
-        if (data != null && data.Length == 2 && data[0] is string tag &&
+        // A Compound restore appends its retained purchase lifetime (RailCargo) after the actor.
+        if (data != null && data.Length >= 2 && data[0] is string tag &&
             tag == "equipment-restore-v1" && data[1] is int actor)
             restoreActor = actor;
     }
@@ -98,7 +99,8 @@ public sealed partial class HeadEquipment : MonoBehaviour, IPunObservable, IInRo
         equippedActorNumber = 0;
         restoreActor = 0;
         // OnDisable may run before Photon disconnects during application shutdown.
-        if (!replacement && !ConnectionHandler.AppQuits && PhotonNetwork.InRoom && gameObject.scene.isLoaded &&
+        // A world transition removes worn gear on purpose and restores it from this save on arrival.
+        if (!replacement && !ConnectionHandler.AppQuits && !RailHeldCarry.RemovingWorn && PhotonNetwork.InRoom && gameObject.scene.isLoaded &&
             GR.Player.instance != null && GR.Player.instance.helmetAnchor != null)
             EquipmentInventory.Clear(slot);
         LocallyUnequipped?.Invoke();
@@ -327,6 +329,13 @@ public sealed partial class HeadEquipment : MonoBehaviour, IPunObservable, IInRo
             networkItem.NotifyEquipmentDropped();
     }
 
+    /// <summary>Rails downing: drop every locally worn head item (helmet, night vision goggles) like a Duckz death.</summary>
+    public static void DropAllOnDowned()
+    {
+        foreach (var item in FindObjectsByType<HeadEquipment>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            item.DropOnDeath();
+    }
+
     Transform FindHeadAnchor(int actorNumber)
     {
         for (int i = 0; i < PhotonPlayer.Active.Count; i++)
@@ -390,8 +399,11 @@ public sealed partial class HeadEquipment : MonoBehaviour, IPunObservable, IInRo
     {
         // Hand-held equipment follows the shared drop path, not worn-item persistence cleanup.
         if (networkGrabbable != null && networkGrabbable.IsHeldByAnyPlayer) return;
+        // Worn gear is saved on the wearer's disk and restored wherever they arrive, so it leaves with them,
+        // including when they only drop out (inactive): a rejoin restores it from that save. Keeping it here
+        // for an inactive wearer could strand it if they come back as a new actor or in another room.
         if (otherPlayer == null ||
-            otherPlayer.IsInactive ||
+            (!PhotonSession.IsRailsRoom && otherPlayer.IsInactive) ||
             (otherPlayer.ActorNumber != equippedActorNumber && otherPlayer.ActorNumber != restoreActor))
             return;
 
