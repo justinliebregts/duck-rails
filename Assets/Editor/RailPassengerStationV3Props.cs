@@ -223,6 +223,34 @@ public static partial class RailAbandonedStation
         return Proc(t, "Rail bed (swept)", mesh, new[] { m }, Vector3.zero, Quaternion.identity, true, true);
     }
 
+    // Standard-width track (polish, Justin: the station's track was narrower than every other block's). Uses the
+    // same "Track rail" (0.12 m square, 2.02 m long, at +/-1.5 m) and "Sleeper" (3.8 x 0.04 x 0.35 m every 2 m) meshes
+    // and materials as the Convenience Store, placed along the curved, graded line. Visual only, no colliders.
+    static void StandardTrack(Transform t)
+    {
+        var template = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/DuckRails/Blocks/convenience-store-v1.prefab");
+        MeshRenderer Find(string n) => template.GetComponentsInChildren<MeshRenderer>(true).First(r => r.name == n);
+        var rail = Find("Track rail"); var sleeper = Find("Sleeper");
+        void Place(MeshRenderer src, string n, Vector3 pos, Quaternion rot)
+        {
+            var g = Group(t, n).gameObject; g.layer = 6; GameObjectUtility.SetStaticEditorFlags(g, StaticEditorFlags.ContributeGI);
+            g.transform.localPosition = pos; g.transform.localRotation = rot; g.transform.localScale = src.transform.localScale;
+            g.AddComponent<MeshFilter>().sharedMesh = src.GetComponent<MeshFilter>().sharedMesh;
+            var r = g.AddComponent<MeshRenderer>(); r.sharedMaterials = src.sharedMaterials; r.receiveGI = ReceiveGI.Lightmaps; r.scaleInLightmap = .22f;
+        }
+        for (float z = 1; z < 160; z += 2)
+        {
+            var c = new Vector3(RailX(z), RailHeight(z), z);
+            var tg = new Vector3(RailX(z + .5f) - RailX(z - .5f), RailHeight(z + .5f) - RailHeight(z - .5f), 1);
+            var rot = Quaternion.LookRotation(tg); var lat = Vector3.Cross(Vector3.up, tg).normalized;
+            Place(sleeper, "Sleeper", c + rot * Vector3.up * .02f, rot);
+            // Rails lift 2 mm off the bed and every other 2.02 m length is 5 mm fatter, so the 2 cm overlaps at the
+            // joints and the rail/sleeper undersides never share a plane (no z-fighting).
+            bool odd = ((int)z / 2) % 2 == 1;
+            foreach (float s in new[] { -1.5f, 1.5f }) { Place(rail, "Track rail", c + lat * s + rot * Vector3.up * (odd ? .067f : .062f), rot); if (odd) t.GetChild(t.childCount - 1).localScale = Vector3.Scale(rail.transform.localScale, new(125f / 120, 125f / 120, 1)); }
+        }
+    }
+
     // Straight staircase climbing +Z from the origin: treads, risers, side faces, back face; nosings in submesh 1.
     static Mesh StairMesh(float width, int count, float step, float rise) => SaveProc("stair-" + width.ToString("F2") + "-" + count + "-" + step.ToString("F3") + "-" + rise.ToString("F3"), () =>
     {
@@ -365,11 +393,11 @@ public static partial class RailAbandonedStation
         Cube(mb, new Vector3(.15f, .78f, -.15f), new Vector3(.06f, .03f, .03f)); // flush lever
         return mb;
     }, false);
-    static Mesh BasinMesh() => SaveProc("basin", () =>
+    static Mesh BasinMesh() => SaveProc("basin-v2", () =>
     {
         var mb = new MB();
         Lathe(mb, new[] { new Vector2(0, 0), new Vector2(.08f, 0), new Vector2(.22f, .12f), new Vector2(.25f, .16f), new Vector2(.25f, .18f), new Vector2(0, .18f) }, 10, 1.1f, .85f);
-        Lathe(mb, new[] { new Vector2(.03f, -.55f), new Vector2(.04f, 0) }, 6);                                    // pedestal
+        Lathe(mb, new[] { new Vector2(0, -.62f), new Vector2(.09f, -.62f), new Vector2(.06f, -.56f), new Vector2(.035f, -.5f), new Vector2(.045f, 0) }, 8);   // pedestal down to the floor (polish: sinks were floating)
         Lathe(mb, new[] { new Vector2(.02f, .18f), new Vector2(.02f, .36f) }, 6, 1, 1, new Vector3(0, 0, -.2f));   // tap riser
         Cube(mb, new Vector3(0, .35f, -.12f), new Vector3(.035f, .035f, .17f));                                   // spout
         return mb;
@@ -428,7 +456,7 @@ public static partial class RailAbandonedStation
             for (int i = 0; i < basins; i++)
             {
                 float x = -31.2f + i * 1.05f;
-                Fixture(room, "Basin", BasinMesh(), tile, new(x, F + .62f, basinZ - .22f), 180);
+                Fixture(room, "Basin", BasinMesh(), tile, new(x, F + .62f, basinZ - .03f), 180);   // back of the bowl against the wall
                 TopLoot(isMen ? "men's toilet" : "women's toilet", new(x + .45f, F, basinZ - .55f), .3f);
             }
             float mw = basins * 1.05f; float mx = -31.2f + (basins - 1) * .525f;
@@ -437,11 +465,11 @@ public static partial class RailAbandonedStation
             Box(room, "Mirror crack", new(mx + .3f, -1.25f, basinZ + .088f), new(.02f, .6f, .004f), darkTile, false).transform.localRotation = Quaternion.Euler(0, 0, 28);
             Fixture(room, "Hand dryer", DryerMesh(), tile, new(-28.4f, -1.9f, basinZ + .18f), 180, false);   // below the area stripe
             Fixture(room, "Soap dispenser", SaveProc("soap", () => Cube(new MB(), Vector3.zero, new(.1f, .16f, .08f)), false), steel, new(-27.3f, -1.45f, basinZ + .12f), 0, false);
-            var bin = Fixture(room, "Toppled bin", BinMesh(), steel, new(-27.6f, F + .2f, basinZ - .8f), 30, true, 90);
+            if (!isMen) Fixture(room, "Toppled bin", BinMesh(), steel, new(-27.6f, F + .2f, basinZ - .8f), 30, true, 90);   // polish: no bin in the men's room
             Box(room, "Puddle", new(-30.2f, F + .004f, (z0 + z1) / 2), new(1.4f, .006f, .9f), roof, false);
             if (isMen)
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 7; i++)   // polish: seven urinals along the south wall (was three)
                 {
                     Proc(room, "Urinal", UrinalMesh(), new[] { whitePanel, darkTile }, new(-34.0f + i * .9f, F, z0 + .13f), Quaternion.identity, false, true);
                     if (i > 0) Box(room, "Urinal privacy divider", new(-34.45f + i * .9f, F + 1.0f, z0 + .36f), new(.03f, .8f, .45f), whitePanel, false);
@@ -472,7 +500,7 @@ public static partial class RailAbandonedStation
                 }
                 Enemy("women's toilet", -30.5f, F, 61.2f);
             }
-            Tube(room, new(-30.5f, F + pc - .08f, (z0 + z1) / 2), false, isMen ? 1 : 0);
+            Tube(room, new(-30.5f, F + pc - .08f, (z0 + z1) / 2), false, 1, true, 4, .12f);   // polish: toilets super dim (flickering, 12% power)
             FloorLoot(isMen ? "men's toilet" : "women's toilet", -33.8f, z0 + .5f, -27.2f, z1 - .5f, F, .3f, 2.2f, .5f);
         }
     }

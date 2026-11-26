@@ -318,6 +318,15 @@ public static partial class RailAbandonedStation
             roofSlab.GetComponent<MeshRenderer>().scaleInLightmap = .02f;   // only its top is ever seen
         }
         RoofBuildings(Group(t, "Rooftop buildings"));
+        // Polish (Justin): invisible walls from the top of each facade up into the sky so nobody can climb onto the
+        // station. Default layer: players and grabbables collide with it, but the crawl-graph bake (Environment only)
+        // and the station checks ignore it.
+        foreach (float z in new[] { 6f - .6f, 154f + .6f })
+        {
+            var sky = Group(t, "Invisible sky wall"); sky.gameObject.layer = 0;
+            sky.localPosition = new(0, 9 + 50, z);
+            sky.gameObject.AddComponent<BoxCollider>().size = new(96, 100, 1);
+        }
     }
 
     // A few very low-poly buildings on the roof in the middle of the block: plain boxes, a parapet, window bands.

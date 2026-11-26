@@ -126,7 +126,7 @@ public static partial class RailAbandonedStation
             // Ends: gangway openings between cars, a cab front on car 1.
             foreach (float e in new[] { -1f, 1f })
             {
-                float ez = e * (hl - .035f);   // outer faces 5 mm inside the side panel ends (no coplanar faces)
+                float ez = e * (hl - .06f);   // polish: outer faces 3 cm inside the side panel ends (5 mm still depth-fought at a distance)
                 bool cab = front && e > 0;
                 if (cab)
                 {
@@ -172,8 +172,8 @@ public static partial class RailAbandonedStation
         foreach (float gz in new[] { 70.35f, 90.35f })
         {
             Slab(t, "Gangway plate", CarCentreX - .5f, gz - .3f, 1f, .6f, F - .003f, steel);
-            foreach (float s in new[] { -1f, 1f }) Box(t, "Gangway bellows", new(CarCentreX + s * .62f, F + 1.05f, gz), new(.12f, 2.1f, .55f), darkTile);
-            Box(t, "Gangway bellows", new(CarCentreX, F + 2.16f, gz), new(1.36f, .12f, .55f), darkTile);
+            foreach (float s in new[] { -1f, 1f }) Box(t, "Gangway bellows", new(CarCentreX + s * .62f, F + 1.05f, gz), new(.12f, 2.1f, .8f), darkTile);   // polish: ends buried in both cars' end walls (they stopped 5 mm short and flickered)
+            Box(t, "Gangway bellows", new(CarCentreX, F + 2.16f, gz), new(1.36f, .12f, .8f), darkTile);
         }
     }
 }

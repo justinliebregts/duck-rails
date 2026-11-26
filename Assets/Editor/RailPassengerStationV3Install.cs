@@ -45,16 +45,16 @@ public static partial class RailAbandonedStation
             if (old.Length != 1) throw new Exception("Expected one existing station root, found " + old.Length);
             var trackBefore = b.track.ToArray();
             var root = Group(env, RootName);
-            var railway = Group(root, "Railway (retained atlas rails)");
-            foreach (var r in old[0].GetComponentsInChildren<Transform>(true).Where(t => t.name == "Visual rail" || t.name == "Visual sleeper").ToArray())
-                r.SetParent(railway, true);
+            var railway = Group(root, "Railway");
+            Material OldMat(params string[] names) => old[0].GetComponentsInChildren<MeshRenderer>(true).Where(r => names.Any(n => r.name.StartsWith(n))).Select(r => r.sharedMaterial).FirstOrDefault(m => m)
+                ?? throw new Exception("No material for " + names[0]);
             // Nov 26 batch 4: the per-metre rail-bed boxes become one swept ballast mesh (same material).
-            var bedMat = old[0].GetComponentsInChildren<MeshRenderer>(true).Where(r => r.name.StartsWith("Rail bed")).Select(r => r.sharedMaterial).FirstOrDefault(m => m)
-                ?? throw new Exception("No rail bed material");
+            // Polish (Justin): the live track is rebuilt at the standard width of the other blocks (rails at +/-1.5 m,
+            // 0.12 m square; 3.8 x 0.35 m sleepers every 2 m) instead of the old V2 rails at +/-0.8 m.
+            var bedMat = OldMat("Rail bed");
             Object.DestroyImmediate(old[0].gameObject);
             SweepBed(railway, bedMat);
-            int rails = railway.GetComponentsInChildren<Transform>().Count(t => t.name == "Visual rail");
-            if (rails < 300) throw new Exception("Retained railway missing: " + rails);
+            StandardTrack(railway);
             lootSpots = new(); enemySpots = new(); v3Lights = 0; reverbRooms = new();
             BuildV3(root, b);
             if (!b.track.SequenceEqual(trackBefore)) throw new Exception("Track changed");

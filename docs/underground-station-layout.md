@@ -93,6 +93,16 @@ Justin's fifth batch, executed on his "execute":
 - **Pram**: a lathed oval bassinet with rim and inner shell, a four-segment folding hood, a tube frame joining the wheels to a push handle fixed into the body, rimmed wheels with hubs and a blanket over the side.
 - Validation: [2,913 checks](validation/passenger-station-v3/checks.txt) pass; navigation 69,839 nodes; 66 enemy candidates; 120 coal / 64 gold; 75 baked lights; 478 light probes.
 
+### Revision — polish (November 26 evening)
+
+- **Track width**: the live track now matches every other block: the Convenience Store's "Track rail" (0.12 m square, 2.02 m lengths at ±1.5 m) and "Sleeper" (3.8 x 0.04 x 0.35 m every 2 m) meshes and materials, placed along the curved, graded line (`StandardTrack`). The old V2 rails sat at ±0.8 m. Rails sit 2 mm off the bed and alternate lengths are 5 mm fatter so the joint overlaps never z-fight. The dead track under the wreck keeps its narrower rails to match the wreck's bogies.
+- **Toilets**: seven urinals in the men's (was three); pedestal sinks reach the floor with the bowl against the wall (they floated 7 cm up and 20 cm out); no bin in the men's; both toilets lit by one flickering tube at 12% power.
+- **Invisible sky walls** (Default layer, no renderer): from the top of each facade (Y 9) 100 m up across the block width, so players can't climb onto the roof. Players and grabbables collide with Default; the crawl-graph bake (Environment only) and the station checks ignore it.
+- **Train car connections**: end walls now sit 3 cm inside the side panels and the gangway bellows run 0.8 m so their ends are buried in both cars (the 5 mm gaps depth-fought at a distance).
+- **North caution tape** runs from the east stair shaft wall to the abandoned platform door unit at X 3.3 (there is no wall at platform height beside the cave-in, so it ended in mid-air).
+- Justin's own prefab edits are carried into the builder: the fan gallery ladder is gone and the block stays allowed in normal runs (that RailBlock field is not touched by the install).
+- Validation: [2,913 checks](validation/passenger-station-v3/checks.txt) pass; navigation 69,811 nodes; 66 enemy candidates; 120 coal / 64 gold; 75 baked lights.
+
 ### Spawns
 
 Replaced the V2 markers (they sat on removed geometry). 120 coal and 64 gold candidates (crew-8 ceilings 93/52), chosen round-robin across 30 areas from 607 supported, clear surface spots, 1.8 m same-type and 0.8 m cross-type spacing. Gold is weighted to Platform 3, the wreck, cable rooms, pump, fan control, parts and electrical rooms, the north concourse and the office. 51 enemy candidates (quadrants roughly 12–14 each) after removing those without ground navigation within 0.8 m.

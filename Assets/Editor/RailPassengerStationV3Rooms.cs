@@ -265,8 +265,9 @@ public static partial class RailAbandonedStation
             }
         }
         // Warning tape (batch 6: anchored, off the stairs): south of the cave-in from the east stair shaft wall to
-        // the wreck's side, north of it from the stair shaft wall to the cave-in shaft wall; a knot at every end.
-        foreach (var (z, x1, dz) in new[] { (97.8f, 4.6f, 0f), (106.6f, 1.86f, 0f) })
+        // the wreck's side; north of it (polish) from the stair shaft wall to the abandoned platform door unit at X 3.3
+        // (there is no wall at platform height beside the cave-in, so the old north tape ended in mid-air); knots at the ends.
+        foreach (var (z, x1, dz) in new[] { (97.8f, 4.6f, 0f), (105.85f, 3.29f, 0f) })
             foreach (var (ya, yb, off) in new[] { (F + .95f, F + 1.25f, 0f), (F + 1.3f, F + .9f, .01f) })
             {
                 Vector3 a = new(.04f, ya, z + off), b = new(x1, yb, z + off);
@@ -609,8 +610,6 @@ public static partial class RailAbandonedStation
             Sign3(gallery, "FAN " + (z == 18 ? 1 : z == 28 ? 2 : 3), new(8.32f, -.75f, z), 90, .25f);
         }
         P(gallery, "Spare fan blade", 12.6f, F + .6f, 23, .1f, 1.2f, 2.8f, concrete, true, 0, -8);
-        P(gallery, "Ladder rail", 12.75f, -1.9f, 36.3f, .05f, 2.1f, .05f, steel, false); P(gallery, "Ladder rail", 12.75f, -1.9f, 36.8f, .05f, 2.1f, .05f, steel, false);
-        for (int r = 0; r < 6; r++) P(gallery, "Ladder rung", 12.75f, -2.8f + r * .35f, 36.55f, .04f, .04f, .5f, steel, false);
         Tube(gallery, new(10.5f, F + hc - .08f, 20), true, 0); Tube(gallery, new(10.5f, F + hc - .08f, 34), true, 1);
         FloorLoot("fan gallery", 10.5f, 13, 10.5f, 43, F, .7f, 4f, 0);
         Enemy("fan gallery south", 10.5f, F, 15); Enemy("fan gallery north", 10.5f, F, 33);
