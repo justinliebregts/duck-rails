@@ -28,29 +28,79 @@ public static partial class RailAbandonedStation
     // Escalator shafts: x0 of a 4.5 m wide shaft; 18 m runs keep the 6 m rise walkable.
     const float WestShaft = -23.2f, EastShaft = -4.6f;
 
+    // Area colours: wall stripes and a tint on that area's tube light, so players can tell where they are.
+    static Material zoneGreen, zoneBlue, zonePurple, zoneRed, zoneYellow, zoneOrange, zoneTeal;
+    static Color zoneTint = Color.white;
+    static void Zone(Material stripe) { band = stripe; zoneTint = stripe.GetColor("_BaseColor"); }
+
     static void V3Materials()
     {
-        concrete = Mat("Worn station concrete", "concrete", new(.7f, .7f, .65f));
-        paint = Mat("Faded station green", "weathered paint", new(.52f, .63f, .55f));
-        steel = Mat("Oxidized station metal", "weathered paint", new(.36f, .41f, .42f));
-        roof = Mat("Dark station roof", "dark roofing", new(.4f, .43f, .44f));
-        wood = Mat("Abandoned timber", "timber", new(.57f, .43f, .3f));
-        yellow = Mat("Faded safety yellow", "weathered paint", new(.82f, .65f, .25f));
-        gravel = Mat("Tunnel rock and ballast", "gravel", new(.5f, .5f, .45f));
-        grass = Mat("Outer ground", "grass", new(.48f, .55f, .4f));
-        tile = Mat("Station cream tile", "concrete", new(.86f, .83f, .74f));
-        band = Mat("Line colour band", "weathered paint", new(.24f, .6f, .4f));
-        floorTile = Mat("Platform floor tile", "concrete", new(.56f, .57f, .58f));
-        darkTile = Mat("Abandoned grime tile", "concrete", new(.42f, .43f, .38f));
-        wreckRed = Mat("Wreck carriage red", "weathered paint", new(.62f, .2f, .17f));
-        rubbleMat = Mat("Cave-in rubble", "gravel", new(.46f, .41f, .35f));
+        // Same Quackville atlas tiles and 16 px/m density as the Compound subway terminal (plaster walls,
+        // speckled concrete floors, timber, dark ceilings), cut into repeating tiles for box UVs.
+        Color dim = new(.72f, .71f, .66f);
+        tile = AtlasTile("Atlas plaster", "plaster", true, 0, 64, 64, dim, 4);
+        concrete = AtlasTile("Atlas concrete", "concrete", true, 192, 128, 64, new(.66f, .66f, .63f), 4);
+        floorTile = AtlasTile("Atlas speckled floor", "speckled concrete", false, 32, 0, 32, dim, 2);
+        darkTile = AtlasTile("Atlas grimy concrete", "concrete", true, 192, 128, 64, new(.42f, .42f, .4f), 4);
+        paint = AtlasTile("Atlas olive paint", "olive paint", true, 0, 192, 64, new(.66f, .68f, .6f), 4);
+        roof = AtlasTile("Atlas dark ceiling", "dark asphalt", true, 128, 128, 64, new(.5f, .5f, .52f), 4);
+        steel = AtlasTile("Atlas metal panel", "metal panel", false, 96, 0, 32, new(.62f, .64f, .66f), 2);
+        wood = AtlasTile("Atlas timber", "timber", true, 192, 64, 64, dim, 4);
+        yellow = AtlasTile("Atlas yellow paint", "yellow paint", true, 0, 128, 64, new(.85f, .8f, .62f), 4);
+        gravel = AtlasTile("Atlas gravel", "gravel", true, 64, 0, 64, new(.6f, .6f, .58f), 4);
+        grass = AtlasTile("Atlas grass", "grass", true, 0, 0, 64, new(.6f, .65f, .55f), 4);
+        wreckRed = AtlasTile("Atlas wreck red", "red paint", true, 192, 192, 64, new(.78f, .62f, .58f), 4);
+        rubbleMat = AtlasTile("Atlas rubble", "rock", true, 192, 0, 64, new(.62f, .6f, .56f), 4);
         deadTube = Mat("Dead tube", "weathered paint", new(.3f, .32f, .33f));
+        zoneGreen = AtlasTile("Stripe green (Platform 1)", "white panel", false, 128, 0, 32, new(.25f, .78f, .38f), 2);
+        zoneBlue = AtlasTile("Stripe blue (ticket concourse)", "white panel", false, 128, 0, 32, new(.28f, .52f, 1f), 2);
+        zonePurple = AtlasTile("Stripe purple (shuttered concourse)", "white panel", false, 128, 0, 32, new(.66f, .38f, .95f), 2);
+        zoneRed = AtlasTile("Stripe red (Platform 3)", "white panel", false, 128, 0, 32, new(.95f, .2f, .16f), 2);
+        zoneYellow = AtlasTile("Stripe yellow (west halls)", "white panel", false, 128, 0, 32, new(1f, .85f, .25f), 2);
+        zoneOrange = AtlasTile("Stripe orange (maintenance)", "white panel", false, 128, 0, 32, new(1f, .52f, .15f), 2);
+        zoneTeal = AtlasTile("Stripe teal (cable rooms)", "white panel", false, 128, 0, 32, new(.2f, .8f, .8f), 2);
+        band = zoneGreen;
         glowTube = Glow("Glow tube steady", new(.82f, .9f, 1f), 2.2f, 0);
         glowFlicker = Glow("Glow tube flickering", new(.82f, .9f, 1f), 2.2f, .55f);
         glowRed = Glow("Glow emergency red", new(1f, .12f, .08f), 2.4f, 0);
         glowAmber = Glow("Glow wreck window amber", new(1f, .6f, .28f), 1.2f, .12f);
         glowScreen = Glow("Glow machine screen", new(.45f, .85f, .75f), 1.4f, .2f);
         glowWindow = Glow("Glow cable gallery window", new(1f, .78f, .45f), 1.6f, 0);
+    }
+
+    // Crops one atlas tile (pixel rect, top-left origin) into its own repeating texture and a material
+    // cloned from the Compound subway's atlas material. Box UVs are metres/3, so scale by 3/repeat.
+    static Material AtlasTile(string matName, string texName, bool town, int px, int py, int size, Color tint, float metresPerRepeat)
+    {
+        string texPath = Folder + "/Textures/Tile " + texName + ".png";
+        if (!System.IO.File.Exists(texPath))
+        {
+            var atlas = new Texture2D(2, 2);
+            atlas.LoadImage(System.IO.File.ReadAllBytes("Assets/Models/Quackville/Quackville_" + (town ? "Town" : "Industrial") + "_Diffuse.jpg"));
+            var crop = new Texture2D(size, size, TextureFormat.RGB24, false);
+            crop.SetPixels(atlas.GetPixels(px, atlas.height - py - size, size, size)); crop.Apply();
+            System.IO.Directory.CreateDirectory(Folder + "/Textures");
+            System.IO.File.WriteAllBytes(texPath, crop.EncodeToPNG());
+            Object.DestroyImmediate(atlas); Object.DestroyImmediate(crop);
+            AssetDatabase.ImportAsset(texPath);
+            var importer = (TextureImporter)AssetImporter.GetAtPath(texPath);
+            importer.filterMode = FilterMode.Point; importer.wrapMode = TextureWrapMode.Repeat; importer.mipmapEnabled = true; importer.maxTextureSize = 64;
+            importer.SaveAndReimport();
+        }
+        var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
+        string path = Folder + "/" + matName + ".mat";
+        var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (!m)
+        {
+            var template = AssetDatabase.LoadAssetAtPath<Material>("Assets/DuckRails/Compound/SubwayTerminal/Materials/Subway Town atlas.mat");
+            if (!template) throw new Exception("Missing Compound atlas material");
+            m = new Material(template); AssetDatabase.CreateAsset(m, path);
+        }
+        float s = 3f / metresPerRepeat;
+        m.SetTexture("_BaseMap", tex); m.SetTexture("_MainTex", tex);
+        m.SetTextureScale("_BaseMap", new Vector2(s, s)); m.SetTextureScale("_MainTex", new Vector2(s, s));
+        m.SetColor("_BaseColor", tint); m.SetColor("_Color", tint); m.enableInstancing = true;
+        EditorUtility.SetDirty(m); return m;
     }
 
     static Material Glow(string n, Color c, float intensity, float flicker)
@@ -86,7 +136,7 @@ public static partial class RailAbandonedStation
         Box(p, "Tube housing", pos + Vector3.up * .06f, S(.26f, .06f, 1.3f), steel, false);
         if (state == 2) Box(p, "Dead tube", pos, S(.12f, .06f, 1.2f), deadTube, false);
         else GlowBox(p, state == 1 ? "Flickering tube" : "Tube", pos, S(.12f, .06f, 1.2f), state == 1 ? glowFlicker : glowTube);
-        if (light && state != 2) PL(p, "Baked tube light", pos - Vector3.up * .2f, Cool, state == 1 ? 7 : 16, range);
+        if (light && state != 2) PL(p, "Baked tube light", pos - Vector3.up * .2f, Color.Lerp(Cool, zoneTint, .5f), state == 1 ? 7 : 16, range);
     }
 
     static void RedLamp(Transform p, Vector3 pos, float yaw)
@@ -107,7 +157,24 @@ public static partial class RailAbandonedStation
         if (e != null) Wall(t, "Wall", true, x1, z0, z1, y, h, wallM, e);
         if (s != null) Wall(t, "Wall", false, z0, x0, x1, y, h, wallM, s);
         if (n != null) Wall(t, "Wall", false, z1, x0, x1, y, h, wallM, n);
+        // Area-colour stripe on the inside of every wall this room builds.
+        if (w != null) Stripe(t, true, x0 + .15f, z0, z1, y + 1.6f, w);
+        if (e != null) Stripe(t, true, x1 - .15f, z0, z1, y + 1.6f, e);
+        if (s != null) Stripe(t, false, z0 + .15f, x0, x1, y + 1.6f, s);
+        if (n != null) Stripe(t, false, z1 - .15f, x0, x1, y + 1.6f, n);
         return t;
+    }
+
+    static void Stripe(Transform p, bool alongZ, float axis, float a, float b, float y, float[] gaps)
+    {
+        float cursor = a;
+        for (int i = 0; i <= gaps.Length; i += 2)
+        {
+            float end = i < gaps.Length ? gaps[i] : b;
+            if (end - cursor > .2f)
+                Box(p, "Area stripe", alongZ ? new(axis, y, (cursor + end) / 2) : new((cursor + end) / 2, y, axis), alongZ ? new(.03f, .3f, end - cursor) : new(end - cursor, .3f, .03f), band, false);
+            if (i < gaps.Length) cursor = gaps[i + 1];
+        }
     }
 
     static void FloorLoot(string area, float x0, float z0, float x1, float z1, float y, float gold, float step = 2.2f, float margin = .7f)
@@ -159,42 +226,35 @@ public static partial class RailAbandonedStation
     // ---------------- tunnels ----------------
     static void Tunnels(Transform t)
     {
+        // Train-sized tunnel: walls 3.05 m from the rail centre (train 2.3 m half width plus curve swing),
+        // roof underside at least 2 m above the train top (rail + 1 + 2.56 + 2), plus slope allowance.
+        zoneTint = Cool;
         float[] fans = { 18, 28, 38 };
         for (int z = 6; z < 154; z++)
         {
             if (z >= 53 && z < 107) continue;
             var a = new Vector3(RailX(z), RailHeight(z), z); var c = new Vector3(RailX(z + 1), RailHeight(z + 1), z + 1);
-            bool crossing = z >= 40 && z < 120;    // under a concourse deck
+            float wallY = (TunnelRoof + .3f - .5f) / 2, wallH = TunnelRoof + .8f;
             foreach (float side in new[] { -1f, 1f })
             {
                 bool fanGap = side > 0 && fans.Any(f => Mathf.Abs(z + .5f - f) < 2.5f);
-                if (!fanGap)
-                {
-                    if (crossing)
-                    {
-                        float bottom = a.y - .5f, top = Deck - .3f;
-                        Beam(t, "Narrow tunnel wall", new Vector3(a.x + side * 7, (bottom + top) / 2, a.z), new Vector3(c.x + side * 7, (bottom + top) / 2, c.z), .4f, top - bottom, tile);
-                    }
-                    else Beam(t, "Narrow tunnel wall", a + new Vector3(side * 7, 3, 0), c + new Vector3(side * 7, 3, 0), .4f, 7, tile);
-                }
+                if (!fanGap) Beam(t, "Tunnel wall", a + new Vector3(side * TunnelHalf, wallY, 0), c + new Vector3(side * TunnelHalf, wallY, 0), .4f, wallH, tile);
                 else
                 {
-                    // Recessed ventilation fan bay behind the walkway.
-                    Beam(t, "Fan bay back wall", a + new Vector3(8.6f, 3, 0), c + new Vector3(8.6f, 3, 0), .4f, 7, darkTile);
-                    Beam(t, "Fan bay floor", a + new Vector3(7.8f, .85f, 0), c + new Vector3(7.8f, .85f, 0), 1.6f, .3f, concrete);
-                    Beam(t, "Fan bay ceiling", a + new Vector3(7.8f, 5.6f, 0), c + new Vector3(7.8f, 5.6f, 0), 1.6f, .3f, roof);
+                    // Recessed ventilation fan bay in the east wall.
+                    Beam(t, "Fan bay back wall", a + new Vector3(TunnelHalf + 1.6f, wallY, 0), c + new Vector3(TunnelHalf + 1.6f, wallY, 0), .4f, wallH, darkTile);
+                    Beam(t, "Fan bay floor", a + new Vector3(TunnelHalf + .8f, -.15f, 0), c + new Vector3(TunnelHalf + .8f, -.15f, 0), 1.6f, .3f, gravel);
+                    Beam(t, "Fan bay ceiling", a + new Vector3(TunnelHalf + .8f, TunnelRoof + .15f, 0), c + new Vector3(TunnelHalf + .8f, TunnelRoof + .15f, 0), 1.6f, .3f, roof);
                 }
-                Beam(t, "Tunnel walkway", a + new Vector3(side * 5.7f, .85f, 0), c + new Vector3(side * 5.7f, .85f, 0), 2.5f, .3f, concrete);
-                Beam(t, "Low walkway ceiling", a + new Vector3(side * 5.7f, 3.28f, 0), c + new Vector3(side * 5.7f, 3.28f, 0), 2.5f, .3f, roof);
             }
-            if (!crossing) Beam(t, "Rail channel roof", a + Vector3.up * 6.6f, c + Vector3.up * 6.6f, 9.2f, .4f, roof);
-            if (z % 12 == 0) Tube(t, (a + c) / 2 + Vector3.up * (crossing ? 5.4f : 5.8f), true, z % 36 == 0 ? 1 : 0, true, 14);
+            Beam(t, "Tunnel roof", a + Vector3.up * (TunnelRoof + .15f), c + Vector3.up * (TunnelRoof + .15f), TunnelHalf * 2 + .4f, .3f, roof);
+            if (z % 12 == 0) Tube(t, (a + c) / 2 + Vector3.up * (TunnelRoof - .08f), true, z % 36 == 0 ? 1 : 0, true, 12);
             // Lit cable-gallery windows staggered along the outside of the departure curve.
             if (z >= 124 && z < 147 && z % 5 == 0)
             {
-                var g = GlowBox(t, "Cable gallery window (lit)", (a + c) / 2 + new Vector3(-6.78f, 2.4f, 0), new(.05f, .9f, 1.5f), glowWindow);
+                var g = GlowBox(t, "Cable gallery window (lit)", (a + c) / 2 + new Vector3(-TunnelHalf + .23f, 2.4f, 0), new(.05f, .9f, 1.5f), glowWindow);
                 g.transform.localRotation = Quaternion.LookRotation(c - a);
-                Box(t, "Window frame", (a + c) / 2 + new Vector3(-6.76f, 2.4f, 0), new(.04f, 1.1f, 1.7f), steel, false).transform.localRotation = Quaternion.LookRotation(c - a);
+                Box(t, "Window frame", (a + c) / 2 + new Vector3(-TunnelHalf + .21f, 2.4f, 0), new(.04f, 1.1f, 1.7f), steel, false).transform.localRotation = Quaternion.LookRotation(c - a);
             }
         }
         // Fan bay end caps and the three stopped fans facing the track.
@@ -203,22 +263,25 @@ public static partial class RailAbandonedStation
             foreach (float zz in new[] { f - 2.5f, f + 2.5f })
             {
                 var e = new Vector3(RailX(zz), RailHeight(zz), zz);
-                Box(t, "Fan bay end wall", e + new Vector3(7.8f, 3, 0), new(1.8f, 7, .4f), darkTile);
+                Box(t, "Fan bay end wall", e + new Vector3(TunnelHalf + .8f, (TunnelRoof + .3f - .5f) / 2, 0), new(2f, TunnelRoof + .8f, .4f), darkTile);
             }
-            var fc = new Vector3(RailX(f) + 8.25f, RailHeight(f) + 3.2f, f);
+            var fc = new Vector3(RailX(f) + TunnelHalf + 1.25f, RailHeight(f) + 2.8f, f);
             var tangent = new Vector3(RailX(f + .5f) - RailX(f - .5f), 0, 1).normalized;
             var fan = Group(t, "Stopped ventilation fan"); fan.localPosition = fc; fan.localRotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, tangent) * -1, Vector3.up);
-            Box(fan, "Fan shroud", Vector3.zero, new(4.2f, 4.2f, .3f), steel, false);
-            Box(fan, "Fan hub", new(0, 0, -.25f), new(.7f, .7f, .3f), darkTile, false);
+            Box(fan, "Fan shroud", Vector3.zero, new(3.8f, 3.8f, .3f), steel, false);
+            Box(fan, "Fan hub", new(0, 0, -.25f), new(.6f, .6f, .3f), darkTile, false);
             for (int i = 0; i < 4; i++)
             {
-                var blade = Box(fan, "Fan blade", new(0, 0, -.2f), new(.5f, 3.6f, .06f), concrete, false);
+                var blade = Box(fan, "Fan blade", new(0, 0, -.2f), new(.45f, 3.3f, .06f), concrete, false);
                 blade.transform.localRotation = Quaternion.Euler(0, 0, i * 45 + f);
             }
-            Box(fan, "Fan guard bar", new(0, 0, -.42f), new(4f, .08f, .06f), steel, false);
-            Box(fan, "Fan guard bar", new(0, 0, -.42f), new(.08f, 4f, .06f), steel, false);
+            Box(fan, "Fan guard bar", new(0, 0, -.42f), new(3.6f, .08f, .06f), steel, false);
+            Box(fan, "Fan guard bar", new(0, 0, -.42f), new(.08f, 3.6f, .06f), steel, false);
         }
     }
+
+    // Tunnel cross-section around the rail centre line (see Tunnels).
+    const float TunnelHalf = 3.25f, TunnelRoof = 5.95f;   // + 0.4 m for the rigid train chord on the vertical curves
 
     static void Envelope(Transform t)
     {
@@ -227,44 +290,54 @@ public static partial class RailAbandonedStation
         // RailRoute places the existing midpoint shop at (-16,0,148) on any selected middle block.
         Slab(t, "Reserved midpoint shop pad", -44, 140, 38, 14, 0, concrete);
         foreach (float x in new[] { -44f, 43.75f }) Box(t, "Buried outer retaining wall", new(x, -1, 80), new(.5f, 20, 148), gravel);
-        // Overburden with the cave-in hole open to the sky.
-        Slab(t, "Overburden", -44, 6, 87.75f, 92, 9, gravel);
-        Slab(t, "Overburden", -44, 107, 87.75f, 47, 9, gravel);
-        Slab(t, "Overburden", -44, 98, 46, 9, 9, gravel);
-        Slab(t, "Overburden", 9.7f, 98, 34.05f, 9, 9, gravel);
+        // Nov 26: the overburden roof over the whole block is left out on request so the block is easy to look
+        // around; rooms, platforms and tunnels keep their own ceilings. Put it back (Y 9, hole over the cave-in) later.
         Slab(t, "Buried foundation", -44, 6, 87.75f, 148, -11, gravel);
-        foreach (float z in new[] { 6f, 154f }) { Wall(t, "Buried end wall", false, z, -44, -7.3f, -11, 20, gravel); Wall(t, "Buried end wall", false, z, 7.3f, 43.75f, -11, 20, gravel); }
+        foreach (float z in new[] { 6f, 154f })
+        {
+            Wall(t, "Buried end wall", false, z, -44, -TunnelHalf - .2f, -11, 20, gravel);
+            Wall(t, "Buried end wall", false, z, TunnelHalf + .2f, 43.75f, -11, 20, gravel);
+            Box(t, "Tunnel portal lintel", new(0, (TunnelRoof + .3f + 9) / 2, z), new(TunnelHalf * 2 + .4f, 9 - TunnelRoof - .3f, .25f), gravel);
+        }
     }
-
     // ---------------- Platform 1 ----------------
     static void Platform1(Transform t)
     {
-        Slab(t, "Platform floor", -25, 53, 10.1f, 54, F, floorTile);
-        Box(t, "Platform edge face", new(-15f, -3.5f, 80), new(.2f, 1, 54), concrete);
-        // Ceiling with holes over the two escalator shafts.
-        Slab(t, "Platform ceiling", -25, 53, WestShaft + 25, 54, F + PlatformClear + .3f, roof);
-        // Near both platform ends a 14 m carriage still swings out of the curve, so the
-        // channel wall and ceiling edge step back to X -16.2 there (train sweep check).
-        Slab(t, "Platform ceiling", WestShaft + 4.5f, 61, -15 - (WestShaft + 4.5f), 38, F + PlatformClear + .3f, roof);
-        foreach (float z in new[] { 53f, 99f }) Slab(t, "Platform ceiling", WestShaft + 4.5f, z, -16.2f - (WestShaft + 4.5f), 8, F + PlatformClear + .3f, roof);
-        Slab(t, "Platform ceiling", WestShaft, 71f, 4.5f, 18, F + PlatformClear + .3f, roof);
-        // Live track channel: upper walls and roof stay outside the train sweep (rail X -12 +/- 2.7).
-        Wall(t, "Rail channel upper wall", true, -15f, 61, 99, F + PlatformClear, 3.4f, tile);
-        foreach (float z in new[] { 53f, 99f }) Wall(t, "Rail channel upper wall", true, -16.2f, z, z + 8, F + PlatformClear, 3.4f, tile);
-        foreach (float z in new[] { 61f, 99f }) Wall(t, "Rail channel upper wall", false, z, -16.2f, -15f, F + PlatformClear, 3.4f, tile);
-        Wall(t, "Rail channel upper wall", true, -9f, 53, 107, F + PlatformClear, 3.4f, tile);
-        Slab(t, "Rail channel roof", -16.3f, 53, 7.4f, 54, 2.8f, roof);
-        // Shopfront wall and ends. Tunnel walkways enter at both ends.
+        Zone(zoneGreen);
+        // The platform top is level with the train deck (rail + 1) and its edge sits 2.17 m from the rail
+        // centre, 8 cm from the hull. Within 7 m of each end the train body swings ~0.5 m toward this
+        // platform on the curve, so the edge steps back to 2.7 m there.
+        const float edgeMid = -12 - 2.17f, edgeEnd = -12 - 2.7f;
+        Slab(t, "Platform floor", -25, 60, edgeMid + 25, 40, F, floorTile);
+        foreach (float z in new[] { 53f, 100f }) Slab(t, "Platform floor", -25, z, edgeEnd + 25, 7, F, floorTile);
+        Box(t, "Platform edge face", new(edgeMid - .1f, -3.5f, 80), new(.2f, 1, 40), concrete);
+        foreach (float z in new[] { 56.5f, 103.5f }) Box(t, "Platform edge face", new(edgeEnd - .1f, -3.5f, z), new(.2f, 1, 7), concrete);
+        foreach (float z in new[] { 53f, 107f }) Box(t, "Platform end face", new((-25 + edgeEnd) / 2, -3.65f, z), new(edgeEnd + 25, .7f, .2f), concrete);
+        // Low ceiling over the platform, holes over the escalator shafts; it stops at the channel wall.
+        float ceil = F + PlatformClear + .3f, wallMid = -12 - 2.6f, wallEnd = -12 - 3.1f;
+        Slab(t, "Platform ceiling", -25, 53, WestShaft + 25, 54, ceil, roof);
+        Slab(t, "Platform ceiling", WestShaft + 4.5f, 60, wallMid - (WestShaft + 4.5f), 40, ceil, roof);
+        foreach (float z in new[] { 53f, 100f }) Slab(t, "Platform ceiling", WestShaft + 4.5f, z, wallEnd - (WestShaft + 4.5f), 7, ceil, roof);
+        Slab(t, "Platform ceiling", WestShaft, 71f, 4.5f, 18, ceil, roof);
+        // Track channel: same low roof as the tunnels (2 m over the train), walls just outside the train.
+        float roofTop = -4 + TunnelRoof + .3f, upperH = roofTop - (F + PlatformClear);
+        Wall(t, "Rail channel upper wall", true, wallMid, 60, 100, F + PlatformClear, upperH, tile);
+        foreach (float z in new[] { 53f, 100f }) Wall(t, "Rail channel upper wall", true, wallEnd, z, z + 7, F + PlatformClear, upperH, tile);
+        foreach (float z in new[] { 60f, 100f }) Wall(t, "Rail channel upper wall", false, z, wallEnd, wallMid, F + PlatformClear, upperH, tile);
+        Wall(t, "Rail channel upper wall", true, -12 + 2.6f, 53, 107, F + PlatformClear, upperH, tile);
+        Slab(t, "Rail channel roof", wallEnd - .1f, 53, 5.9f, 54, roofTop, roof);
+        // Shopfront wall and ends (the tunnels have no walkways, so the ends are closed).
         Wall(t, "Shopfront wall", true, -25, 53, 110, F, PlatformClear + .3f, tile, 57, 59, 66, 72, 77, 81, 89, 97, 104, 106);
-        BandAlongZ(t, -24.86f, 53, 107, -1.75f, 57, 59, 66, 72, 77, 81, 89, 97, 104, 106);
-        foreach (float z in new[] { 53f, 107f }) Wall(t, "Platform end wall", false, z, -25, -15, F, PlatformClear + .3f, tile, -19.2f, -15f);
-        Box(t, "Tactile strip", new(-15.85f, F + .012f, 80), new(.3f, .024f, 54), yellow, false);
-        Box(t, "Platform edge line", new(-15.12f, F + .012f, 80), new(.12f, .024f, 54), yellow, false);
-        // Platform screen door units, stuck open with wide gaps for boarding.
+        BandAlongZ(t, -24.86f, 53, 107, -1.4f, 57, 59, 66, 72, 77, 81, 89, 97, 104, 106);
+        foreach (float z in new[] { 53f, 107f }) Wall(t, "Platform end wall", false, z, -25, wallEnd - .1f, F, PlatformClear + .3f, tile);
+        Box(t, "Tactile strip", new(edgeEnd - .45f, F + .012f, 80), new(.3f, .024f, 54), yellow, false);
+        Box(t, "Platform edge line", new(edgeMid - .07f, F + .012f, 80), new(.12f, .024f, 40), yellow, false);
+        foreach (float z in new[] { 56.5f, 103.5f }) Box(t, "Platform edge line", new(edgeEnd - .07f, F + .012f, z), new(.12f, .024f, 7), yellow, false);
+        // Platform screen door units, stuck open with wide gaps for boarding (outside the 2.33 m train body).
         for (float z = 63.5f; z < 99; z += 7)
         {
-            Box(t, "Platform door unit", new(-15.4f, F + .65f, z), new(.2f, 1.3f, 1.6f), steel);
-            Box(t, "Platform door top light (dead)", new(-15.4f, F + 1.33f, z), new(.22f, .05f, 1.2f), deadTube, false);
+            Box(t, "Platform door unit", new(-14.6f, F + .65f, z), new(.2f, 1.3f, 1.6f), steel);
+            Box(t, "Platform door top light (dead)", new(-14.6f, F + 1.33f, z), new(.22f, .05f, 1.2f), deadTube, false);
         }
         foreach (float z in new[] { 73.5f, 86.5f })
         {
@@ -292,11 +365,17 @@ public static partial class RailAbandonedStation
         Enemy("platform 1 south", -16.6f, F, 72); Enemy("platform 1 north", -16.6f, F, 88); Enemy("platform 1 middle", -23.6f, F, 80);
 
         // East service ledge beside the train (no side of the train is a dead end).
-        Slab(t, "Service ledge floor", -9f, 53, 4.1f, 54, F, concrete);
-        Box(t, "Service ledge edge face", new(-9f, -3.5f, 80), new(.2f, 1, 54), concrete);
-        Slab(t, "Service ledge ceiling", -9f, 53, 4.1f, 54, F + PlatformClear + .3f, roof);
-        Wall(t, "Ledge back wall", true, -4.9f, 53, 107, F, 5.8f, tile, 79, 81.5f);
-        Box(t, "Ledge edge line", new(-8.82f, F + .012f, 80), new(.12f, .024f, 54), yellow, false);
+        Slab(t, "Service ledge floor", -12 + 2.17f, 53, -4.9f - (-12 + 2.17f), 54, F, floorTile);
+        Box(t, "Service ledge edge face", new(-12 + 2.27f, -3.5f, 80), new(.2f, 1, 54), concrete);
+        foreach (float z in new[] { 53f, 107f })
+        {
+            Box(t, "Service ledge end face", new(-7.4f, -3.65f, z), new(4.9f, .7f, .2f), concrete);
+            Wall(t, "Service ledge end wall", false, z, -12 + 2.6f, -4.9f, F, PlatformClear + .3f, tile);
+        }
+        Slab(t, "Service ledge ceiling", -12 + 2.6f, 53, -4.9f - (-12 + 2.6f), 54, F + PlatformClear + .3f, roof);
+        Wall(t, "Ledge back wall", true, -4.9f, 53, 107, F, -4 + TunnelRoof + .3f - F, tile, 79, 81.5f);
+        BandAlongZ(t, -5.06f, 53, 107, -1.4f, 79, 81.5f);
+        Box(t, "Ledge edge line", new(-12 + 2.24f, F + .012f, 80), new(.12f, .024f, 54), yellow, false);
         Tube(t, new(-6.9f, F + PlatformClear - .08f, 62), true, 0); Tube(t, new(-6.9f, F + PlatformClear - .08f, 80), true, 1); Tube(t, new(-6.9f, F + PlatformClear - .08f, 98), true, 2);
         Sign3(t, "STAFF ONLY", new(-5.06f, -1.5f, 77.6f), -90, .3f);
         FloorLoot("service ledge", -8.6f, 54, -5.3f, 106, F, .35f, 4.4f, .5f);
@@ -306,11 +385,12 @@ public static partial class RailAbandonedStation
     // ---------------- Platform 3 and dead track ----------------
     static void Platform3(Transform t)
     {
-        Slab(t, "Platform 3 floor", -4.75f, 53, 8.75f, 54, F, darkTile);
+        Zone(zoneRed);
+        Slab(t, "Platform 3 floor", -4.75f, 53, 9f, 54, F, darkTile);   // edge 0.15 m from the wreck
         // Ends run under the curving tunnel wall so no gap opens beside it.
         Slab(t, "Platform 3 south end", -5.2f, 46, 9.2f, 7, F, darkTile);
         Slab(t, "Platform 3 north end", -5.2f, 107, 9.2f, 7, F, darkTile);
-        Box(t, "Platform 3 edge face", new(4f, -3.5f, 80), new(.2f, 1, 60), concrete);
+        Box(t, "Platform 3 edge face", new(4.15f, -3.5f, 80), new(.2f, 1, 60), concrete);
         float ceil = F + PlatformClear + .3f;
         Slab(t, "Platform 3 ceiling", EastShaft + 4.5f, 53, 4 - (EastShaft + 4.5f), 45, ceil, roof);   // to Z 98
         Slab(t, "Platform 3 ceiling", EastShaft + 4.5f, 98, 2 - (EastShaft + 4.5f), 9, ceil, roof);     // beside the cave-in
@@ -319,7 +399,7 @@ public static partial class RailAbandonedStation
         Slab(t, "Platform 3 ceiling", -4f, 107, 8, 7, ceil, roof);
         Wall(t, "Platform 3 south wall", false, 46, -4, 13, F, PlatformClear + .3f, darkTile);
         Wall(t, "Platform 3 north wall", false, 114, -4, 13, F, PlatformClear + .3f, darkTile);
-        Box(t, "Platform 3 edge line", new(3.75f, F + .012f, 80), new(.12f, .024f, 66), yellow, false);
+        Box(t, "Platform 3 edge line", new(4.13f, F + .012f, 80), new(.12f, .024f, 66), yellow, false);
         // Dead track: bed, non-catalogue rails, east service walkway, high channel ceiling.
         Slab(t, "Dead track bed", 3.75f, 50, 5.95f, 60, -4f, gravel);
         foreach (float x in new[] { 5.2f, 6.8f }) Box(t, "Dead track rail", new(x, -3.92f, 80), new(.1f, .12f, 60), steel, false);
@@ -420,6 +500,7 @@ public static partial class RailAbandonedStation
     // ---------------- escalators ----------------
     static void Escalator(Transform p, string name, float x0, float zBottom, float zTop)
     {
+        Zone(x0 < -10 ? zoneGreen : zoneRed);
         var t = Group(p, name); const int count = 34; float dir = Mathf.Sign(zTop - zBottom), run = Mathf.Abs(zTop - zBottom);
         float step = run / count, rise = (Deck - F) / count;
         void Flight(float fx, float width, bool esc)
@@ -452,6 +533,7 @@ public static partial class RailAbandonedStation
     // ---------------- concourses ----------------
     static void Concourse(Transform t, float z0, float z1, bool south)
     {
+        Zone(south ? zoneBlue : zonePurple);
         float y = Deck, clear = PlatformClear;
         Slab(t, "Concourse deck", -28, z0, 32, z1 - z0, y, floorTile);
         Slab(t, "Concourse ceiling", -28, z0, 32, z1 - z0, y + clear + .3f, roof);
@@ -460,6 +542,10 @@ public static partial class RailAbandonedStation
         Wall(t, "Concourse wall", false, z1, -28, 4, y, clear + .3f, tile, south ? shafts : Solid);
         Wall(t, "Concourse wall", true, -28, z0, z1, y, clear + .3f, tile);
         Wall(t, "Concourse wall", true, 4, z0, z1, y, clear + .3f, tile);
+        Stripe(t, false, z0 + .15f, -28, 4, y + 1.6f, south ? Solid : shafts);
+        Stripe(t, false, z1 - .15f, -28, 4, y + 1.6f, south ? shafts : Solid);
+        Stripe(t, true, -27.85f, z0, z1, y + 1.6f, Solid);
+        Stripe(t, true, 3.85f, z0, z1, y + 1.6f, Solid);
         float shaftSide = south ? z1 - .16f : z0 + .16f, shaftYaw = south ? 180 : 0;
         Sign3(t, "PLATFORM 1   DAWN LINE", new(WestShaft + 2.25f, y + 2.15f, shaftSide), shaftYaw, .32f);
         Sign3(t, "PLATFORM 3   CLOSED", new(EastShaft + 2.25f, y + 2.15f, shaftSide), shaftYaw, .32f);
@@ -523,6 +609,7 @@ public static partial class RailAbandonedStation
     // ---------------- west rooms ----------------
     static void WestRooms(Transform t)
     {
+        Zone(zoneYellow);
         float pc = PlatformClear;
         RoomV3(t, "Long transfer hall", -42, 18, -36, 146, F, HallClear, tile, darkTile, Solid, new[] { 24f, 27, 43, 46, 99, 101, 106, 108, 136, 139 }, Solid, Solid);
         Box(t, "Stopped moving walkway", new(-40.2f, F + .01f, 82), new(1.2f, .02f, 104), darkTile, false);
@@ -604,6 +691,7 @@ public static partial class RailAbandonedStation
         FloorLoot("staff room", -35f, 102.4f, -25.6f, 109.6f, F, .5f, 2.4f, .5f);
         Enemy("staff room", -27f, F, 108.6f);
 
+        Zone(zoneTeal);
         var vault = RoomV3(t, "Cable vault", -36, 130, -30, 146, F, HallClear, darkTile, concrete, null, new[] { 136f, 139 }, Solid, Solid);
         for (int i = 0; i < 3; i++) { Box(vault, "Cable drum", new(-33.5f, F + .6f, 132.5f + i * 4.8f), new(1.2f, 1.2f, 1.2f), wood); TopLoot("cable vault", new(-33.5f, F + 1.2f, 132.5f + i * 4.8f), 1f); }
         Tube(vault, new(-33, F + HallClear - .08f, 141), true, 1);
@@ -627,6 +715,7 @@ public static partial class RailAbandonedStation
     // ---------------- east maintenance side ----------------
     static void EastRooms(Transform t)
     {
+        Zone(zoneOrange);
         float hc = HallClear;
         RoomV3(t, "Maintenance hall", 13, 40, 17, 128, F, hc, paint, concrete, new[] { 40f, 44, 46, 50, 81.75f, 83.75f, 110, 114 }, new[] { 61f, 63, 75, 77, 89, 91, 103, 105 }, Solid, null);
         int k = 0;

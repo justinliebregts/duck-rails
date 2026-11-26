@@ -23,6 +23,9 @@ public static class RailMetroChecks
         try
         {
             Shot("platform-1" + suffix, new(-17.5f, -1.4f, 58), new(-18, -1.6f, 98));
+            Shot("tunnel-approach" + suffix, new(-10.4f, -1.2f, 38), new(-12, -2.2f, 75));
+            Shot("platform-1-edge" + suffix, new(-14.9f, -1.5f, 70), new(-12.3f, -2.6f, 92));
+            Shot("entrance-portal" + suffix, new(0, 1.8f, -4), new(0, 0.5f, 20));
             Shot("platform-1-escalators" + suffix, new(-20.5f, -1.4f, 82), new(-21, -1f, 66));
             Shot("ticket-concourse" + suffix, new(-25, 4.6f, 51), new(-2, 4.1f, 42));
             Shot("escalator-down-to-platform-3" + suffix, new(-2.4f, 4.6f, 51.5f), new(-2.4f, -1.5f, 69));
@@ -67,7 +70,13 @@ public static class RailMetroChecks
         for (float d = 0; d < b.TrackLength; d += .5f)
         {
             b.Sample(d, out var p, out var r);
-            var hits = Physics.OverlapBox(p + Vector3.up + r * new Vector3(0, 2.25f, 2), new Vector3(2.7f, 2.05f, 7.1f), r, env);
+            // Actual DuckRailsTrain (Nov 26): origin at rail + 1, deck top -0.03, hull below deck +/-2.09,
+            // body/stack above deck +/-2.28, top 2.56, length -5.0..6.0. Boxes add a few cm.
+            var o = p + Vector3.up;
+            var hull = Physics.OverlapBox(o + r * new Vector3(0, -.35f, .5f), new Vector3(2.13f, .3f, 5.55f), r, env);
+            var body = Physics.OverlapBox(o + r * new Vector3(0, 1.31f, .5f), new Vector3(2.33f, 1.29f, 5.55f), r, env);
+            var head = Physics.OverlapBox(o + r * new Vector3(0, 3.55f, .5f), new Vector3(2.05f, .95f, 5.55f), r, env);
+            var hits = hull.Concat(body).Concat(head).ToArray();
             Check(hits.Length == 0, "train sweep " + d + " " + string.Join(",", hits.Select(c => c.name).Distinct()));
         }
         const float F = -3, D = 3f;
@@ -75,7 +84,6 @@ public static class RailMetroChecks
         Line(new(-24.1f, F, 54), new(-24.1f, F, 106), 1, "platform 1 shop side");
         Line(new(-7f, F, 53.5f), new(-7f, F, 106.5f), 1, "service ledge");
         Line(new(1f, F, 46.6f), new(1f, F, 113.4f), 1, "platform 3");
-        Line(new(-17.7f, RailAbandonedStation.RailHeight(50) + 1, 50), new(-16.4f, F, 54), .5f, "tunnel walkway into platform 1");
         Line(new(-26.5f, D, 46.45f), new(-3.6f, D, 46.45f), .5f, "ticket concourse across gates");
         Line(new(-26.5f, D, 116.45f), new(-14, D, 116.45f), .5f, "shuttered concourse west");
         Line(new(-10.5f, D, 116.5f), new(3f, D, 116.5f), .5f, "shuttered concourse east");

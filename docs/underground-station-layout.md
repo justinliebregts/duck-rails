@@ -17,14 +17,26 @@ Confirmed answers: the abandoned platform is on the **same level** as the main p
 - East side: maintenance hall (Z 40–128) with south, middle (through wreck car 2) and north passages to Platform 3; crew lockers, signal room, canteen, electrical room, parts store; SE **fan gallery** and fan control room behind the three recessed stopped fans in the approach tunnel; NE **pump room** with sump grilles.
 - Lighting: 69 baked lights (cool tubes, red emergency, amber wreck, warm windows, moon spot). Glow uses the new `DuckRails/StationGlow` shader (`Assets/Shaders/StationGlow.shader`): unlit, per-object random flicker bursts when `_Flicker > 0`. Flicker materials sit on dim or dying tubes, departure board, screens and wreck windows; their baked light does not flicker.
 
+### Revision — train-sized tunnels and compound style (November 26)
+
+Justin's review: the entrance/exit tunnels were far too large, the platform sat too far from the train, the roof over the track was too high, and the station should use the Compound's texture style with colour-coded areas. He also asked to remove the block's top roof for now.
+
+- Measured the real `DuckRailsTrain` (one rigid body placed at rail + 1): deck top -0.03, hull below the deck ±2.09, body and stack above the deck ±2.28, top 2.56, length -5.0 to 6.0.
+- **Tunnels** now hug the train: walls 3.05 m from the rail centre (train half width plus about 0.6 m swing on the curves), roof underside rail + 5.95 (at least 2 m over the train plus allowance for the rigid body on the vertical curves). Side walkways are gone. The portals at both seams are closed around the tunnel with a lintel. The fan bays and cable-gallery windows were kept and moved onto the new walls.
+- **Platforms**: Platform 1 and the east service ledge are level with the deck, with edges 2.17 m from the rail (8 cm from the hull). Within 7 m of each end Platform 1 steps back to 2.7 m because the rigid body swings toward it on the curve. The track channel has the same low roof as the tunnel; channel walls sit 2.6 m from the rail (3.1 m at the Platform 1 ends). Screen-door units moved to 2.6 m. Platform 3's edge is now 0.15 m from the wreck.
+- **Style**: materials are tiles cut from the same Quackville Town/Industrial atlases the Compound terminal uses, at its 16 px/m density, on a clone of its atlas material (plaster walls, speckled concrete floors, timber, dark ceilings, metal panels). Textures: `Assets/DuckRails/AbandonedStation/Textures`.
+- **Area colours** (wall stripe at 1.6 m and a 50% tint on that area's tube lights): Platform 1 and its escalators green, ticket concourse blue, shuttered concourse purple, Platform 3, wreck and its escalators red, west shops and transfer hall yellow, cable gallery/vault teal, east maintenance, fan and pump rooms orange.
+- **Top roof removed**: the Y 9 overburden is left out (marked in `Envelope()`); rooms, platforms and tunnels keep their own ceilings.
+- The station clearance check now sweeps three boxes from the measured train (hull, body, 2 m headroom) instead of the old generic 2.7 x 4.1 m box. 2,837 checks pass.
+
 ### Spawns
 
 Replaced the V2 markers (they sat on removed geometry). 120 coal and 64 gold candidates (crew-8 ceilings 93/52), chosen round-robin across 30 areas from 607 supported, clear surface spots, 1.8 m same-type and 0.8 m cross-type spacing. Gold is weighted to Platform 3, the wreck, cable rooms, pump, fan control, parts and electrical rooms, the north concourse and the office. 51 enemy candidates (quadrants roughly 12–14 each) after removing those without ground navigation within 0.8 m.
 
 ### Validation (Edit Mode, November 26)
 
-- [2,857 checks](validation/passenger-station-v3/checks.txt) pass: train sweep every 0.5 m, walk lines on every platform, hall, passage, concourse, wreck aisle and door, every escalator/stair tread, coal/gold support heights, entrance-exit sightline blocked, `RailRoute.SelectResources` crews 1–8 × 100 seeds exact and unique, ground graph connects Platform 1 to Platform 3, both concourses, the wreck, transfer hall, maintenance hall, pump room and fan gallery, and `RailEnemySpawnBalance` 4/8/12 for crews 1–8 × 100 seeds. [Install report](validation/passenger-station-v3/install.txt), [prune and probes](validation/passenger-station-v3/prune-and-probes.txt).
-- Navigation: offline full-area bake, 77,690 nodes. The concourse floor was raised from +2.5 to +3 because crawl-graph cells sit at n+0.5 and a floor exactly on a cell centre got no ground nodes.
+- [2,837 checks](validation/passenger-station-v3/checks.txt) pass: real-train sweep every 0.5 m, walk lines on every platform, hall, passage, concourse, wreck aisle and door, every escalator/stair tread, coal/gold support heights, entrance-exit sightline blocked, `RailRoute.SelectResources` crews 1–8 × 100 seeds exact and unique, ground graph connects Platform 1 to Platform 3, both concourses, the wreck, transfer hall, maintenance hall, pump room and fan gallery, and `RailEnemySpawnBalance` 4/8/12 for crews 1–8 × 100 seeds. [Install report](validation/passenger-station-v3/install.txt), [prune and probes](validation/passenger-station-v3/prune-and-probes.txt).
+- Navigation: offline full-area bake, 63,848 nodes after the tunnel revision. The concourse floor was raised from +2.5 to +3 because crawl-graph cells sit at n+0.5 and a floor exactly on a cell centre got no ground nodes.
 - Not yet verified: headset readability and darkness, hand locomotion on the 6 m escalators, moving players and cargo through the sloped track on real clients, late joining, enemy pursuit up escalators, flicker look on Quest, and Quest frame time with the larger graph and 69 lights. Station is not in the normal-run pool; use Test Block Order.
 
 ### Rebuild steps
