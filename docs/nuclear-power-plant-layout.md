@@ -2,7 +2,7 @@
 
 ## November 26 — tower and walkway loot
 
-The first pass added 64 coal and 48 gold on the ramps and 24 and 20 on the walkway; Justin judged that slightly too much up high, so both were halved: 32 coal and 24 gold along the sloped ramp runs (4 and 3 per turn per tower, alternating sides) and 12 coal and 10 gold along the pipe walkway. The block now holds 181 coal and 123 gold candidates; per-run counts are unchanged. At crew 8 over 100 seeds about 37% of coal and 42% of gold picks are on the towers or walkway, including about 6 coal and 4 gold on the walkway.
+Justin asked twice to thin the loot up high (the first pass added 64 coal and 48 gold on the ramps and 24 and 20 on the walkway). The current additions are 16 coal and 8 gold along the sloped ramp runs (2 and 1 per turn per tower) and 5 coal and 7 gold along the pipe walkway. The block now holds 158 coal and 104 gold candidates; per-run counts are unchanged. At crew 8 over 100 seeds about 28% of coal and 32% of gold picks are on the towers or walkway, including about 3 coal and 4 gold on the walkway.
 
 A flat invisible collider flush with the pipe crests keeps loot from dropping through the gaps between pipes. The crawl graph has no ground nodes on the narrow walkway, so enemies cannot follow onto it, and walkway loot is exempt from the near-graph check. Menu: Duck Rails/Authoring/Nuclear Plant/Add tower and walkway loot. Edit Mode checks, including a physics settle test of every new candidate, are in [geometry checks](validation/nuclear-full-block/geometry-checks.txt).
 

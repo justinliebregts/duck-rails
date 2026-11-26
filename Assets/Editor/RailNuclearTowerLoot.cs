@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 public static class RailNuclearTowerLoot
 {
     public const string RampTag = "tower scatter", WalkwayTag = "pipe walkway";
-    public const int RampCoalPerTurn = 4, RampGoldPerTurn = 3, WalkwayCoal = 12, WalkwayGold = 10;
+    public const int RampCoalPerTurn = 2, RampGoldPerTurn = 1, WalkwayCoal = 5, WalkwayGold = 7;
     [Serializable] class Manifest { public Vector3[] rampSamples; }
 
     [MenuItem("Duck Rails/Authoring/Nuclear Plant/Add tower and walkway loot")]
