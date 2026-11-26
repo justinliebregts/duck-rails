@@ -66,7 +66,7 @@ public static class RailWeek3Builder
         if (index == 11)
         {
             var mine = AssetDatabase.LoadAssetAtPath<GameObject>(RailQuarryMine.PrefabPath);
-            if (mine != null && mine.transform.Find(RailQuarryMine.RootName) != null) return mine.GetComponent<RailBlock>();
+            if (mine != null && RailBlock.FindEnvironment(mine.transform,RailQuarryMine.RootName) != null) return mine.GetComponent<RailBlock>();
         }
         // Reviewed blocks retain their authored geometry and lighting on catalogue rebuilds.
         if (index == 0 || index == 1 || index == 2 || index == 6 || index == 9)

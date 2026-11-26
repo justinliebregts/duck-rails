@@ -402,3 +402,100 @@ MonoBehaviour:
       details:
       - {fileID: 11400000, guid: a832a409ea71517409e8c0a4e26ef37f, type: 2}
       - {fileID: 11400000, guid: 58a94d38612572d48b434067ea161a17, type: 2}
+  - blockId: nuclear-power-plant-v1
+    outdoorBeds:
+    - {fileID: 11400000, guid: 61da7514588ee4f4e8d3e35d7805e174, type: 2}
+    outdoorDetails:
+    - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    allowScares: 0
+    areas:
+    - name: Turbine hall
+      bounds:
+        m_Center: {x: -26, y: 4, z: 73}
+        m_Extent: {x: 13.8, y: 4, z: 17.8}
+      beds:
+      - {fileID: 11400000, guid: 2d674f9e2f6635c4ab07a254229b5190, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: West cooling tower
+      bounds:
+        m_Center: {x: -26, y: 18, z: 103}
+        m_Extent: {x: 9, y: 18, z: 9}
+      beds:
+      - {fileID: 11400000, guid: 248a785ec0db9e948badbdda4f736ded, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: East cooling tower
+      bounds:
+        m_Center: {x: 26, y: 18, z: 103}
+        m_Extent: {x: 9, y: 18, z: 9}
+      beds:
+      - {fileID: 11400000, guid: 61da7514588ee4f4e8d3e35d7805e174, type: 2}
+      - {fileID: 11400000, guid: 9315c361fe84c14429aa0b5d75485cec, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Containment
+      bounds:
+        m_Center: {x: 30, y: 6, z: 72}
+        m_Extent: {x: 8.5, y: 6, z: 8.5}
+      beds:
+      - {fileID: 11400000, guid: 9315c361fe84c14429aa0b5d75485cec, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Receiving office
+      bounds:
+        m_Center: {x: -32, y: 1.8, z: 42}
+        m_Extent: {x: 6, y: 1.8, z: 5}
+      beds:
+      - {fileID: 11400000, guid: 5ef73cf439d680b429a261cae9e2ca2e, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Spill workshop
+      bounds:
+        m_Center: {x: 33.5, y: 1.8, z: 43}
+        m_Extent: {x: 6.5, y: 1.8, z: 6}
+      beds:
+      - {fileID: 11400000, guid: 2d674f9e2f6635c4ab07a254229b5190, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Pump hut
+      bounds:
+        m_Center: {x: -32, y: 1.8, z: 145}
+        m_Extent: {x: 4.9, y: 1.8, z: 4.9}
+      beds:
+      - {fileID: 11400000, guid: 2d674f9e2f6635c4ab07a254229b5190, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+    - name: Settling pond
+      bounds:
+        m_Center: {x: -26, y: 4, z: 130}
+        m_Extent: {x: 15, y: 4, z: 10.5}
+      beds:
+      - {fileID: 11400000, guid: fea986e2710b2e64e9a73620fd8c1187, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+    - name: Discharge flume
+      bounds:
+        m_Center: {x: 26, y: 4, z: 149}
+        m_Extent: {x: 14, y: 4.5, z: 9.5}
+      beds:
+      - {fileID: 11400000, guid: c53b891fe8347b04295360456186adbc, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+    - name: Transformer yard
+      bounds:
+        m_Center: {x: 27, y: 2.5, z: 130}
+        m_Extent: {x: 12, y: 2.5, z: 9}
+      beds:
+      - {fileID: 11400000, guid: 9315c361fe84c14429aa0b5d75485cec, type: 2}
+      details:
+      - {fileID: 11400000, guid: 197dd0811c15e7d449970f464f6f49b9, type: 2}
+    - name: Waste loading apron
+      bounds:
+        m_Center: {x: 25, y: 2, z: 25}
+        m_Extent: {x: 13.5, y: 2.5, z: 10}
+      beds:
+      - {fileID: 11400000, guid: ef07f084568ad424ba8787f0e0590e8a, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}

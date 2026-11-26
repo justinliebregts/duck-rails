@@ -1,5 +1,9 @@
 # Broad block reverb — November 12, 2026
 
+## B Quarry
+
+The mine galleries and winding shaft use a 3.25 s Cave-derived reverb. A quieter 1.55 s Mountains-derived reverb covers the open pit, west terraces and work yards. [Geometry, ear-position samples and listening queue](quarry-layout.md#november-26-lighting-acoustics-and-spawn-placements)
+
 ## Open canyon, November 23, 2026
 
 The creek, lower terraces and switchbacks share a broad Mountains-derived box with a 1.65 s decay, room -1500 mB, late reverb -850 mB and a 1 m fade. The mine boxes use 3.8 s. Saved-prefab checks covered 9,834 lower-terrain listener samples and checked separation from both bridge decks and the deep tunnel.

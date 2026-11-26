@@ -1,5 +1,49 @@
 # Playtest queue
 
+## Quarry mountain blockout — queued for playtest, November 25
+
+Select Quarry through Test Block Order in B. Approach through the south gate on the train. Carry an item up the four short west climbs and around the excavator on the fenced haul road. From the west mine entrance, visit each of the three crosscut junctions and the boring machine. Inspect all four mine mouths from inside and outside. Walk the uneven floors with an item, use the open-side stair rails and follow the cliff fence through the south bend. Drop from the hoist collar into the west tunnel with an item. Check landing and recovery among the new fallen rocks. Walk through the southwest timber entrance and office opening with an item. Inspect the timber screen and rock wall from both approaches. Follow the neutral camping lanterns through the caves and look for sharp light changes across the floors and west ledges. Compare the blue-white shaft markers and warm rock-mounted stair lamps. Check the pit floodlights from the road and pit floor, the aqua tint on the pond walls and the shoreline at eye level. Listen for the transition between the open pit and mine while speaking or walking through each mouth and dropping down the winding shaft. Check the south gate ballast for bright orange flecks. Sample loot pickups on the crane, pump and underground office props, and check enemy encounters in all four quadrants. Enter the pump house, inspect the seep puddles, and review the siding and the QUACKRRY gate at night. Check headset hand clearance, enemy pursuit, loose-item recovery and frame time around the tunnel rocks and trees. [Layout and Edit Mode evidence](quarry-layout.md#november-25-mountain-quarry-blockout)
+
+## Quackwatt spiral loot and acoustics — queued for playtest, November 25
+
+Collect coal and gold during both tower climbs. Listen from the train, tower ramp, turbine gallery, pump hut and both waterworks. Check that tails fade outside and that machinery, running water and drips leave footsteps and voice clear.
+
+## Quackwatt scavenging and enemy pursuit — queued for playtest, November 25
+
+Select Nuclear Power Plant through Test Block Order in B. Collect low pickups in both approach yards and interiors, then retrieve gold from the roof and both tower spirals. Check waterworks access, pickup height, loose-item settling, enemy routes back toward the railway and synchronized pickups with another player. Check Quest performance around the towers and lit waterworks. [Spawn map and editor checks](nuclear-power-plant-layout.md#november-25--scavenging-and-enemy-placement)
+
+## Quackwatt waste and pond lighting — queued for playtest, November 25
+
+Check the green spill on the barrels and review the aqua water and concrete from the settling pond ramp and the discharge flume landing at headset eye height. [Nighttime captures](nuclear-power-plant-layout.md#november-25--waste-and-water-lighting)
+
+## Quackwatt gallery and facade lights — queued for playtest, November 25
+
+Check visibility on the control gallery, stairs and turbine aisle at duck eye height with only two working wall lights. Read the turbine hall sign from a moving train and enter both cooling towers past the tripod work lights. [Edit Mode checks and nighttime views](nuclear-power-plant-layout.md)
+
+## Quackwatt tower ramps and pump hut — queued for playtest, November 25
+
+Climb both tower ramps from their dry floors, check the square rails at headset eye height and inspect the outside of the west shell in motion. Walk around all four turbines, through the gallery and into the pump hut. Check the pond corner lights from the train and the nearby ramp. [Edit Mode checks and captures](nuclear-power-plant-layout.md)
+
+## Quackwatt yard lighting and tower entrances — queued for playtest, November 25
+
+Ride through the plant at night and check the paving, bollard clearance and readability from the train. Walk past the bus, workshop and transformer floodlights, approach both cooling towers, and inspect the truck front and the roof stair threshold in motion for shimmer. Check the updated lighting at headset eye height. [Edit Mode evidence and matched nighttime captures](nuclear-power-plant-layout.md)
+
+## Quackwatt flume and turbine hall — queued for playtest, November 25
+
+Read the hall sign from the moving train, inspect adjacent bends and cascade faces for flicker, walk both northern ramps and cross the east rear deck. Use the rooftop headhouse exit and both lower gallery flights in headset. Check compound fence readability through motion at production resolution. [Edit Mode evidence and captures](nuclear-power-plant-layout.md)
+
+## Quackwatt climb and refueling hall — queued for playtest, November 25
+
+- Climb and descend both ramps in headset. Pass another duck at a rest section and check footing, comfort, the rim railings and the view of the train from both lookouts.
+- Reach the turbine roof from the gallery. Walk around the dome pool, recover an item at the pool steps and climb to the crane controls.
+- Approach by train at night. Check tower lighting, facade lettering, side walls and fence transitions. Compare on a late-joining client and profile Quest frame timing inside a stack.
+- Walk the gatehouse, workshop, annex and loading yard. Check the open windows, supported signs and pipe stacks, and look for flicker along the northeast path.
+- B project Edit Mode checks and bake evidence are recorded in the [plant layout](nuclear-power-plant-layout.md).
+
+## Quackwatt power plant — queued for playtest, November 25
+
+Approach from the south at duck eye height and read the station sign. Ride under all three pipe bridges, enter each cooling tower and return through the turbine hall. Follow the west ramp and east steps to the raised northern waterworks. Check spilled-waste visibility under expedition lighting, headset frame timing near the stacks of drums and late-join lighting on a second client. The [plant layout](nuclear-power-plant-layout.md) records the Edit Mode checks.
+
 ## Passenger Station V3 (Tokyo metro) | queued for playtest, November 26, 2026
 
 Pick `passenger-station-v1` in Test Block Order. Stop at Platform 1 and step off both sides of the train (platform and east service ledge). Ride the stopped escalators up to the ticket concourse, cross over the track and come down to Platform 3. Walk past the cave-in on the strip beside the north escalator, go through the wreck cars and out the side door to the maintenance hall, and return over the north concourse. Check the escalator climb in VR, ceiling height feel, whether the dark side is readable with red lamps only, and the tube, screen and wreck-window flicker. With two clients, collect loot from the konbini, wreck seats and pump room, have enemies chase up the escalators, and check the train on the sloped track ends with players and cargo aboard. Measure Quest frame time on Platform 1 and in the concourses. After the tunnel revision, also ride through both tunnels watching for anything touching the train or riders, step straight between the deck and both platforms, and check whether the area colours make it easy to tell where you are. After the November 26 batch: look at both KING'S QUACK STATION facades from the train, walk around the buggies and pallets in both long halls with a carried item, check the collapsed north tunnel can't be entered, and look for any remaining flickering surfaces. Third batch: ride both swept tunnels watching the train's top against the lower roof (0.4 m clearance), step between Platform 3 and the new train, walk through cars 3 and 2 and out the side door, and read the new signs from a few metres away. Batch 4: look into both portals and the tunnel mouths at the station for gaps or flicker, check the open-window train interior reads white under its lights, look up the cave-in shaft, try walking into the short collapsed tunnel, and walk the split pump room and parts store, the locker rooms and the packed cable rooms with a carried item. Batch 5: listen to the reverb in the tunnels, platforms, stairs and small rooms (and whether it muddies voice chat), climb the new single staircases in VR, read the 3D sign lettering and arrows under the real lighting, grab coal/gold off the konbini shelves, check the darker tunnels from the train, and confirm you can't walk around the outside of the station. Batch 6: check the sign letters read white everywhere (Platform 1 KING'S QUACK, both station-name boards), that the EXIT A2 gates block the way to the shutter, and how the kiosk and pram look up close. Edit Mode evidence: [V3 notes](underground-station-layout.md#v3-installed--tokyo-metro-up-and-over-to-a-buried-wreck).

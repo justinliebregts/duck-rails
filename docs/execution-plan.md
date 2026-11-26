@@ -1,5 +1,39 @@
 # Duck Rails — execution plan
 
+## November 25 Quarry blockout
+
+- [x] Install the approved west ridge, east excavator shelf and haul roads, south entry gate, old-growth corner, northeast spoil siding and fourth intersecting tunnel with its boring machine. Verify navigation, original marker support and baked lighting on the B prefab. [Evidence and views](quarry-layout.md#november-25-mountain-quarry-blockout)
+- [x] Replace the core racks with a pump station, connect the full-gauge siding, rebuild the four mine mouths and verify graded fence support, mounted fixtures, tunnel clearance and offline navigation. [Quarry checks](validation/quarry-mountain/geometry-checks.txt)
+- [x] Rebake the Quarry with mine lanterns, stair lights, pit floods and reflected pond light. Verify the portal, office opening, roof repairs, shaft landing and preserved scenery in Edit Mode. [Mesh and scenery checks](validation/quarry-mountain/lantern-pass.txt)
+- [x] Restore the underground office screen and solid rock edge, replace the cave lanterns and check the exported bake across the former terrain tile edges. [Lighting measurements](validation/quarry-mountain/office-lighting.txt)
+- [x] Simplify the mine lamps, correct the entrance bake, assign Quarry reverb and validate resource and enemy selections for crews 1–8. [Placement and acoustic evidence](validation/quarry-mountain/spawns-and-reverb.txt)
+- [ ] Review the summit drop, shaft landing, pump-house interior, exposed stair rails, graded haul-road shoulder, pump station, siding, four mine mouths, tunnel junctions, loaded-item return, night visibility and Quest frame time on headset. [Playtest queue](playtest-queue.md#quarry-mountain-blockout--queued-for-playtest-november-25)
+
+## November 25 — Quackwatt scavenging pass
+
+- [x] Distribute 113 coal, 73 gold and 33 enemy candidates. Rebake the crawlgraph, verify the saved prefab and test the crew-scaled selectors across 800 crew/seed combinations. [Plant evidence](nuclear-power-plant-layout.md#november-25--scavenging-and-enemy-placement)
+- [ ] Run the test-only block on headsets and check pickups, enemy pursuit and return routes in multiplayer.
+
+## November 25 — Quackwatt tower and pond revisions
+
+- [x] Install the lower-triangle tower ramps, four-turbine layout and dressed pump hut with pond lighting. Rebuild the lighting and navigation and check authored clearances in B. [Plant layout](nuclear-power-plant-layout.md)
+- [ ] Inspect the tower climbs, hall circulation and pond lighting in headset. [Playtest queue](playtest-queue.md)
+
+## November 25 — Quackwatt flume and turbine hall
+
+- [x] Install and bake the revised pipe fittings, track-facing sign, roof enclosure, compound-material fence panels, off-path lights and northern flume ramp and platform in B. [Plant evidence](nuclear-power-plant-layout.md)
+- [ ] Check moving-view readability and headset traversal during the queued playtest.
+
+## November 25 — playable Quackwatt interiors
+
+- [x] Install the approved twin tower ramps, refueling hall, roof stair, interior dressing and yard revisions in B. The [plant checks](nuclear-power-plant-layout.md) cover the authored routes, collision and lighting export.
+- [ ] Check the climbs, roof and pool at duck eye height, verify late-join appearance, and profile the revised block on Quest.
+
+## November 25 — nuclear power plant layout
+
+- [x] Install and bake the [Quackwatt layout](nuclear-power-plant-layout.md) in the B project. All 2,587 Edit Mode checks passed.
+- [ ] Review the entrance, tower and waterworks traversal, multiplayer lighting and headset performance in the [playtest queue](playtest-queue.md).
+
 - [x] Simplify Lakeside ground, rebake navigation and lighting, connect fern and surface sounds, and validate saved scavenging pools for crews of 1–8. [Lakeside measurements](lakeside-campground-layout.md#ground-contact-audio-and-scavenging--november-25-2026)
 - [ ] Review Lakeside sound transitions, item reach, terrain traversal and headset frame time in play. [Playtest queue](playtest-queue.md)
 
