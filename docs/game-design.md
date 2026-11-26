@@ -1,5 +1,13 @@
 # Duck Rails — V1 game design
 
+Quackwatt now has two dry, climbable cooling towers, four turbines in the hall and a windowless pump hut beside the floodlit settling pond. [Plant layout](nuclear-power-plant-layout.md)
+
+The Quackwatt turbine hall sign faces the railway, and a roofed stair headhouse opens onto its roof. Both northern waterworks use ramps, with a full-width rear platform at the east flume. [Current plant layout](nuclear-power-plant-layout.md)
+
+Both Quackwatt cooling towers have internal maintenance ramps and a rail-facing lookout. The reactor dome contains an enterable refueling hall, and the turbine gallery connects to its roof. The gatehouse and spill workshop share an interrupted-delivery story. [Current plant layout](nuclear-power-plant-layout.md)
+
+The November 25 [Quackwatt plant layout](nuclear-power-plant-layout.md) uses one enterable cooling tower on each side of the railway, with the turbine hall opposite the reactor, overhead pipe crossings, raised northern waterworks and a concrete-and-gravel yard. Green glowing waste puddles dress the barrel spill.
+
 November 17 admin tools: the signed-in admin's pause menu has a Test tab with
 Deposit 1 coal, Deposit 50 coal, No Clip: On/Off and Invincibility: On/Off.
 The standalone L3/wrist/desktop test panel and Game-view toggle are retired.

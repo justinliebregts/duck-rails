@@ -1,5 +1,41 @@
 # Playtest queue
 
+## Quackwatt scavenging and enemy pursuit — queued for playtest, November 25
+
+Select Nuclear Power Plant through Test Block Order in B. Collect low pickups in both approach yards and interiors, then retrieve gold from the roof and both tower spirals. Check waterworks access, pickup height, loose-item settling, enemy routes back toward the railway and synchronized pickups with another player. Check Quest performance around the towers and lit waterworks. [Spawn map and editor checks](nuclear-power-plant-layout.md#november-25--scavenging-and-enemy-placement)
+
+## Quackwatt waste and pond lighting — queued for playtest, November 25
+
+Check the green spill on the barrels and review the aqua water and concrete from the settling pond ramp and the discharge flume landing at headset eye height. [Nighttime captures](nuclear-power-plant-layout.md#november-25--waste-and-water-lighting)
+
+## Quackwatt gallery and facade lights — queued for playtest, November 25
+
+Check visibility on the control gallery, stairs and turbine aisle at duck eye height with only two working wall lights. Read the turbine hall sign from a moving train and enter both cooling towers past the tripod work lights. [Edit Mode checks and nighttime views](nuclear-power-plant-layout.md)
+
+## Quackwatt tower ramps and pump hut — queued for playtest, November 25
+
+Climb both tower ramps from their dry floors, check the square rails at headset eye height and inspect the outside of the west shell in motion. Walk around all four turbines, through the gallery and into the pump hut. Check the pond corner lights from the train and the nearby ramp. [Edit Mode checks and captures](nuclear-power-plant-layout.md)
+
+## Quackwatt yard lighting and tower entrances — queued for playtest, November 25
+
+Ride through the plant at night and check the paving, bollard clearance and readability from the train. Walk past the bus, workshop and transformer floodlights, approach both cooling towers, and inspect the truck front and the roof stair threshold in motion for shimmer. Check the updated lighting at headset eye height. [Edit Mode evidence and matched nighttime captures](nuclear-power-plant-layout.md)
+
+## Quackwatt flume and turbine hall — queued for playtest, November 25
+
+Read the hall sign from the moving train, inspect adjacent bends and cascade faces for flicker, walk both northern ramps and cross the east rear deck. Use the rooftop headhouse exit and both lower gallery flights in headset. Check compound fence readability through motion at production resolution. [Edit Mode evidence and captures](nuclear-power-plant-layout.md)
+
+## Quackwatt climb and refueling hall — queued for playtest, November 25
+
+- Climb and descend both ramps in headset. Pass another duck at a rest section and check footing, comfort, the rim railings and the view of the train from both lookouts.
+- Reach the turbine roof from the gallery. Walk around the dome pool, recover an item at the pool steps and climb to the crane controls.
+- Approach by train at night. Check tower lighting, facade lettering, side walls and fence transitions. Compare on a late-joining client and profile Quest frame timing inside a stack.
+- Walk the gatehouse, workshop, annex and loading yard. Check the open windows, supported signs and pipe stacks, and look for flicker along the northeast path.
+- B project Edit Mode checks and bake evidence are recorded in the [plant layout](nuclear-power-plant-layout.md).
+
+## Quackwatt power plant — queued for playtest, November 25
+
+Approach from the south at duck eye height and read the station sign. Ride under all three pipe bridges, enter each cooling tower and return through the turbine hall. Follow the west ramp and east steps to the raised northern waterworks. Check spilled-waste visibility under expedition lighting, headset frame timing near the stacks of drums and late-join lighting on a second client. The [plant layout](nuclear-power-plant-layout.md) records the Edit Mode checks.
+
 ## Farm northeast pond water footsteps — queued 2026-11-17
 
 - Changed: pond underside MeshCollider now has Water AudioSurface (prefab-only).

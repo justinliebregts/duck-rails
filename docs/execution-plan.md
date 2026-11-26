@@ -1,5 +1,30 @@
 # Duck Rails — execution plan
 
+## November 25 — Quackwatt scavenging pass
+
+- [x] Distribute 113 coal, 73 gold and 33 enemy candidates. Rebake the crawlgraph, verify the saved prefab and test the crew-scaled selectors across 800 crew/seed combinations. [Plant evidence](nuclear-power-plant-layout.md#november-25--scavenging-and-enemy-placement)
+- [ ] Run the test-only block on headsets and check pickups, enemy pursuit and return routes in multiplayer.
+
+## November 25 — Quackwatt tower and pond revisions
+
+- [x] Install the lower-triangle tower ramps, four-turbine layout and dressed pump hut with pond lighting. Rebuild the lighting and navigation and check authored clearances in B. [Plant layout](nuclear-power-plant-layout.md)
+- [ ] Inspect the tower climbs, hall circulation and pond lighting in headset. [Playtest queue](playtest-queue.md)
+
+## November 25 — Quackwatt flume and turbine hall
+
+- [x] Install and bake the revised pipe fittings, track-facing sign, roof enclosure, compound-material fence panels, off-path lights and northern flume ramp and platform in B. [Plant evidence](nuclear-power-plant-layout.md)
+- [ ] Check moving-view readability and headset traversal during the queued playtest.
+
+## November 25 — playable Quackwatt interiors
+
+- [x] Install the approved twin tower ramps, refueling hall, roof stair, interior dressing and yard revisions in B. The [plant checks](nuclear-power-plant-layout.md) cover the authored routes, collision and lighting export.
+- [ ] Check the climbs, roof and pool at duck eye height, verify late-join appearance, and profile the revised block on Quest.
+
+## November 25 — nuclear power plant layout
+
+- [x] Install and bake the [Quackwatt layout](nuclear-power-plant-layout.md) in the B project. All 2,587 Edit Mode checks passed.
+- [ ] Review the entrance, tower and waterworks traversal, multiplayer lighting and headset performance in the [playtest queue](playtest-queue.md).
+
 ## November 17 — admin pause page
 
 - [x] Replace standalone L3 panel with an admin-only Test tab, four requested
