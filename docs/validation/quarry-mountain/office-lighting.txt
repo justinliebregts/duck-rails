@@ -1,0 +1,10 @@
+Quarry office and lighting, B editor, 2026-11-26
+6,463 Edit Mode checks passed. Every lantern mantle had a clear sightline and cleared nearby rock. Both wood screen faces and the exposed back of the office rock wall accepted front-facing collision rays. Two capsule paths crossed the aisle between the office and the pit.
+
+Compared lightmap luminance 4 mm apart across former 16 m tile edges. Selected adjoining terrain at similar heights and normals. Relative step is the absolute difference divided by the brighter sample. Percentiles cover lit pairs (brighter linear grayscale above 0.012).
+
+With individually unwrapped tiles, the interim bake had a 95th-percentile relative step of 76.48% inside and 70.48% on the west ridge. The final joined charts measured 0.60% and 0.46%, respectively. Final tunnel sample: 785 pairs, 561 lit. Final west ridge sample: 1,261 pairs, 1,087 lit. Largest observed steps were 2.12% and 15.18%, respectively.
+
+The initial prefab-stage inspection found zero of 70 terrain renderers assigned and zero of 37 fixtures marked baked. The bake scene had all 70 terrain assignments and 37 baked fixtures. The final prefab preview matched all 2,468 renderer bindings (texture plus UV scale and offset), with all 37 fixtures marked baked over both the Quarry bake scene and an empty scene. Closing the prefab restored the empty scene's atlas list and left the scene clean.
+
+Quarry export: three color atlases, 1,241 probes. Headset review queued.
