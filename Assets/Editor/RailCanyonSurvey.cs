@@ -196,7 +196,9 @@ public static class RailCanyonSurvey
         {
             var renderer = f.GetComponent<MeshRenderer>();
             if (f.name.StartsWith("Rim ", StringComparison.Ordinal)) { renderer.sharedMaterial = rim; continue; }
-            var src = f.GetComponent<MeshCollider>().sharedMesh;
+            var src = f.name == RailCanyon.TunnelMeshName || f.name == RailCanyonGallery.Name
+                ? AssetDatabase.LoadAssetAtPath<Mesh>(RailCanyon.Folder + "/Meshes/" + f.name + ".asset")
+                : f.GetComponent<MeshCollider>().sharedMesh;
             if (!saved.TryGetValue(src.name, out var bedded))
             {
                 // Original render triangles and UV2 charts stay intact. X/Z drift gives the beds

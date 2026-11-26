@@ -284,6 +284,79 @@ public static class RailCanyon
         }
     }
 
+    const int TunnelStart = 46;
+    internal const int TunnelEnd = 106;
+    public const string TunnelMeshName = "Under-river sandstone shell";
+    static bool TunnelCell(int x, int z) => z >= TunnelStart && z < TunnelEnd && x >= -19 && x < 1;
+
+    // The two open ends meet the existing shaft landing and gallery on their grid edges.
+    // The rings in between follow the centerline and widen around the three side rooms.
+    static Mesh RiverShell(bool exterior = true)
+    {
+        var vertices = new List<Vector3>();
+        var indices = new List<int>();
+        const int ringSize = 8;
+        int stride = exterior ? ringSize * 2 : ringSize;
+        for (int z = TunnelStart; z <= TunnelEnd; z++)
+        {
+            float center = RiverTunnelX(z), left = center - 2.2f, right = center + 2.2f;
+            foreach (var room in MinePockets)
+            {
+                float dz = (z - room.z) / 3.35f;
+                if (Mathf.Abs(dz) >= 1) continue;
+                float amount = (1 + Mathf.Cos(Mathf.PI * dz)) * .5f;
+                float extent = RiverTunnelX(room.z) + room.side * 6.35f;
+                if (room.side < 0) left = Mathf.Lerp(left, extent, amount);
+                else right = Mathf.Lerp(right, extent, amount);
+            }
+            bool portal = z == TunnelStart || z == TunnelEnd;
+            if (portal)
+            {
+                int row = z == TunnelStart ? z - 1 : z;
+                var mouth = Enumerable.Range(-19, 20).Where(x => Cave(x + .5f, row + .5f)).ToArray();
+                left = mouth.First();
+                right = mouth.Last() + 1;
+            }
+            float bevel = portal ? 0 : .23f + .04f * Mathf.Sin(z * .47f);
+            int first = vertices.Count;
+            // Inner walkable rock and an outward-facing skin to occlude light from outside.
+            for (int skin = 0; skin < stride / ringSize; skin++)
+            {
+                float a = left - skin * .35f, b = right + skin * .35f;
+                void Point(float x, float dy) => vertices.Add(new Vector3(x, CaveFloor(x,z) + dy, z));
+                Point(a + bevel, -.30f * skin); Point(b - bevel, -.30f * skin);
+                Point(b, .4f); Point(b, 2.18f);
+                Point(b - bevel * 1.8f, 2.7f + .30f * skin); Point(a + bevel * 1.8f, 2.7f + .30f * skin);
+                Point(a, 2.18f); Point(a, .4f);
+                if (z == TunnelStart) continue;
+                for (int i = 0; i < ringSize; i++)
+                {
+                    int j = first + skin * ringSize + i, k = first + skin * ringSize + (i + 1) % ringSize;
+                    int prevJ = j - stride, prevK = k - stride;
+                    if (skin == 0) indices.AddRange(new[]{prevJ, j, k, prevJ, k, prevK});
+                    else indices.AddRange(new[]{prevJ, k, j, prevJ, prevK, k});
+                }
+            }
+        }
+        return FinishTunnelMesh(TunnelMeshName, vertices, indices);
+    }
+
+    internal static Mesh FinishTunnelMesh(string name, List<Vector3> vertices, List<int> indices)
+    {
+        var mesh = new Mesh { name = name };
+        mesh.SetVertices(vertices);
+        mesh.SetTriangles(indices, 0);
+        mesh.SetUVs(0, vertices.Select(p => new Vector2(p.x * .17f + p.z * .13f, p.y * .43f)).ToList());
+        mesh.RecalculateNormals();
+        UnwrapParam.SetDefaults(out var unwrap);
+        unwrap.packMargin = .015f;
+        if (!Unwrapping.GenerateSecondaryUVSet(mesh, unwrap)) throw new InvalidOperationException("Canyon tunnel unwrap failed.");
+        return mesh;
+    }
+
+    public static Mesh SaveRiverTunnelCollider() => Save(TunnelMeshName + " collision", RiverShell(false));
+    public static Mesh SaveGalleryCollider() => Save(RailCanyonGallery.Name + " collision", RailCanyonGallery.Build(false));
+
     public static IEnumerable<Mesh> BuildTerrainMeshes()
     {
         for(int zz=0;zz<160;zz+=16)for(int xx=-48;xx<48;xx+=16)
@@ -299,13 +372,14 @@ public static class RailCanyon
                 Vector3 cap=Vector3.up*2.7f;
                 bool roof=cave && Covered(x,z);
                 if(!shaft&&(!cave||roof))(low<-.01f?cliff:rim).Add(x,z);
-                if(cave)
+                if(cave && !TunnelCell(x,z) && !RailCanyonGallery.ReplacesCell(x,z))
                 {
                     floor.Add(x,z);
                     if(roof&&!shaft)roofLayer.Add(x,z);
                     Edge(x-1,z,a,b);Edge(x,z+1,b,c);Edge(x+1,z,c,d);Edge(x,z-1,d,a);
                     void Edge(int nx,int nz,Vector3 u,Vector3 v)
                     {
+                        if (TunnelCell(nx,nz)) return;
                         float uf=CaveFloor(u.x,u.z),vf=CaveFloor(v.x,v.z),ur=uf+2.7f,vr=vf+2.7f;
                         if(!Cave(nx+.5f,nz+.5f)){float uy=Mathf.Clamp(u.y,uf,roof?ur:Mathf.Max(uf,u.y)),vy=Mathf.Clamp(v.y,vf,roof?vr:Mathf.Max(vf,v.y));if(uy>uf+.01f||vy>vf+.01f)underground.Quad(new(u.x,uf,u.z),new(u.x,uy,u.z),new(v.x,vy,v.z),new(v.x,vf,v.z));}
                         if(roof && !shaft && Cave(nx+.5f,nz+.5f) && !Covered(nx,nz))
@@ -324,6 +398,8 @@ public static class RailCanyon
             foreach(var mesh in new[]{rimSurface.CreateMesh("Rim"+suffix),cliffSurface.CreateMesh("Cliff"+suffix),underground.CreateMesh("Cave"+suffix)})
                 if(mesh) yield return mesh;
         }
+        yield return RiverShell();
+        yield return RailCanyonGallery.Build(true);
     }
 
     static void Terrain(Transform root)
@@ -332,7 +408,12 @@ public static class RailCanyon
         foreach(var mesh in BuildTerrainMeshes())
         {
             string name=mesh.name;
-            MeshGo(p,name,Save(name,mesh),name.StartsWith("Rim ") ? sand : rock);
+            var part=MeshGo(p,name,Save(name,mesh),name.StartsWith("Rim ") ? sand : rock);
+            if (name == TunnelMeshName || name == RailCanyonGallery.Name)
+            {
+                part.GetComponent<MeshRenderer>().scaleInLightmap = 1.25f;
+                part.GetComponent<MeshCollider>().sharedMesh = name == TunnelMeshName ? SaveRiverTunnelCollider() : SaveGalleryCollider();
+            }
         }
         var creek=new Surface();for(int x=-40;x<40;x++){float a=Creek(x),b=Creek(x+1);creek.Quad(new(x,-12.06f,a-1.8f),new(x,-12.06f,a+1.8f),new(x+1,-12.06f,b+1.8f),new(x+1,-12.06f,b-1.8f));}const string creekName="Shallow creek surface";MeshGo(root,creekName,Save(creekName,creek.CreateMesh(creekName)),water,false);
         var terraces=Group(root,"Exploration landings");for(int i=0;i<Landings.Length;i++)Group(terraces,"Plateau "+(i+1)).localPosition=Landings[i];
@@ -384,16 +465,27 @@ public static class RailCanyon
     static void Dressing(Transform root)
     {
         var p=Group(root,"Cactus and rim maintenance scenery");var rng=new System.Random(731);
+        // Surveyed sites leave clearance for the full cactus, including its arms.
+        Vector2[] cactusSites = {
+            new(-40, 6), new(-14.5f, 21.5f), new(-34, 43),
+            new(-13, 150.5f), new(-13, 154), new(9.5f, 151),
+            new(21, 6), new(40, 11.5f), new(35.5f, 8.5f),
+            new(31, 151.5f), new(15.5f, 153.5f), new(10.5f, 147.5f)
+        };
+        int siteIndex = 0;
         foreach(float side in new[]{-1f,1f})foreach(float z in new[]{10f,20f,31f,132f,143f,151f})
         {
             float x=side*(15+rng.Next(24));float h=1.7f+(float)rng.NextDouble()*1.3f;
             var cactus=Group(p,"Cactus");
-            cactus.localPosition=new(x,0,z);
+            var site = cactusSites[siteIndex++];
+            cactus.localPosition = new(site.x, 0, site.y);
             cactus.localRotation=Quaternion.Euler(0,Mathf.Repeat(x*73+z*31,360),0);
             Box(cactus,"Cactus trunk",new(0,h/2,0),new(.48f,h,.48f),green);
             Box(cactus,"Cactus arm",new(.55f,h*.55f,0),new(.72f,.35f,.35f),green);
             Box(cactus,"Cactus arm tip",new(1.08f,h*.55f+h*.2f-.175f,0),new(.36f,h*.4f,.37f),green);
-            Box(p,"Sandstone outcrop",new(x-side*4,.5f,z+2),new(2.8f,1,2),rock);
+            var outcrop = new Vector3(x-side*4,.5f,z+2);
+            if (outcrop == new Vector3(14,.5f,33)) outcrop = new Vector3(14,.5f,42);
+            Box(p,"Sandstone outcrop",outcrop,new(2.8f,1,2),rock);
         }
         foreach(var c in new[]{new Vector3(-25,0,25),new Vector3(30,0,135)})
         {Box(p,"Tool shelter roof",c+new Vector3(0,3.1f,0),new(10,.25f,7),wood);Box(p,"Tool shelter back",c+new Vector3(0,1.5f,3.4f),new(10,3,.2f),wood);foreach(float x in new[]{-4.8f,4.8f})Box(p,"Tool shelter post",c+new Vector3(x,1.5f,-3.2f),new(.25f,3,.25f),wood);Box(p,"Maintenance crates",c+new Vector3(-3,.65f,1.8f),new(2,1.3f,2),wood);}

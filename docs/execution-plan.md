@@ -38,6 +38,7 @@
 - [ ] Review Lakeside sound transitions, item reach, terrain traversal and headset frame time in play. [Playtest queue](playtest-queue.md)
 
 - [ ] Canyon mine revision is queued for headset traversal, visual seam and bridge review. See [Canyon layout](canyon-layout.md) and the [playtest queue](playtest-queue.md).
+- [x] Rebuild the under-river passage and side chambers as a continuous shell, clear the survey tent and bring Canyon to eight-player loot capacity. The saved block passed 800 crew/seed selections and 4,770 geometry checks. [Canyon results](canyon-layout.md#under-river-cavern-and-survey-camp-corrections-november-26-2026)
 - [x] Reduce the Canyon terrain to 4,654 triangles per render and collision representation. Comparing 74,551 surface samples with the previous mesh found a maximum height change of 1.8 cm.
 
 - [ ] Public train panel is installed. Verify public-only matchmaking, no-match recovery and headset reach with real clients. See [playtest queue](playtest-queue.md#public-train-join-panel).

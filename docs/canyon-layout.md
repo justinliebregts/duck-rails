@@ -1,5 +1,25 @@
 # Canyon
 
+## Connecting gallery, November 26, 2026
+
+The west and east gallery arms now meet the under-river passage in one faceted sandstone junction. The two arms span 30 m between the winch workings and the east mine. A separate outer skin blocks light around the bends. The interior collision mesh contains 724 triangles. The lanterns and timber frames retain their authored positions. Compare the baked player-height views of the [west arm before](../output/canyon-survey/gallery-west-before.jpg) and [after](../output/canyon-survey/gallery-west-after.jpg), and the [east arm before](../output/canyon-survey/gallery-east-before.jpg) and [after](../output/canyon-survey/gallery-east-after.jpg).
+
+The rebuilt crawlgraph has 32,140 nodes. Ground routes from the southwest shaft reached all 42 samples along the gallery and both mine exits. All 959 baked lighting bindings resolved, including the gallery. [Geometry and seam checks](validation/canyon-survey/geometry-checks.txt)
+
+## Under-river cavern and survey camp corrections, November 26, 2026
+
+Between Z=46 and Z=106, the under-river passage and three side chambers share a low-poly sandstone mesh. Its outer skin blocks light, and only the inner surface has collision. The floor and ceiling meet the original shaft and gallery openings. The lightmaps were rebaked with a larger allocation for the cavern. [Before](../output/canyon-survey/cavern-before.jpg) · [After, from the same camera](../output/canyon-survey/cavern-after.jpg)
+
+The sandstone box beside the northwest survey tent moved 9 m. Minimum horizontal clearance from the three tents, including their guy lines, is 3.53 m for the moved box and 13.50 m for the nearest cactus. [Tent entrance](../output/canyon-survey/tent-clearance.jpg)
+
+The saved pool now contains 93 coal, 64 gold and 26 enemy candidates. Fourteen new coal sites are underground and eleven are at surface landmarks. All three selectors passed for crews 1–8 over 100 seeds each. The rebuilt crawlgraph contains 32,276 nodes. Floor routes from the southwest shaft reached all 45 sampled locations, including the side chambers and both mine exits. The Canyon geometry suite passed all 4,770 checks and all 961 baked lighting bindings resolved. [Spawn and clearance checks](validation/canyon-survey/camp-and-spawns.txt) · [Geometry checks](validation/canyon-survey/geometry-checks.txt)
+
+## Survey camp, November 26, 2026
+
+The three south-rim tents use the Lakeside Campground A-frame mesh and its canvas atlas. Each tent stands 2.25 m tall and faces the shared camp clearing. The ground and mine lanterns use an emission mask on the survey atlas so the amber and blue glass glow while the iron frames stay dark. All 12 cacti stand on level rim terrain. The closest measured clearance from a cactus, including its arms, to surrounding scenery was 5.13 m. [Individual cactus measurements](validation/canyon-survey/cactus-clearance.txt)
+
+At the end of this earlier pass the crawlgraph contained 32,696 nodes, and the outstanding failure was eight-player coal capacity. The subsequent cavern and camp correction above filled that shortfall. [Survey tents](../output/canyon-survey/lakeside-survey-tents.jpg) · [Mine lantern](../output/canyon-survey/lit-mine-lantern.jpg)
+
 ## Connected mine workings, November 23, 2026
 
 The southwest shaft has a visual-only cover of leaf litter with scrub around the lip. The leaf cover has a textured underside. Five small rocks sit in two uneven groups beside it. Five staggered sandstone ledges descend below it. The rim boulders, scrub and survey stake were moved west onto solid ground, and the trail through the cable-reel shelter was removed.

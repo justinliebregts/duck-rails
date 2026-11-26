@@ -66,6 +66,17 @@ public static class RailCanyonChecks
                 if(z>RailCanyon.GalleryZ(x))break;
                 Walk(new(x,RailCanyon.CaveFloor(x,z),z),"Under-river tunnel "+z);
             }
+            var tunnel = root.Find("Terraced canyon and hollow caves/" + RailCanyon.TunnelMeshName);
+            var lining = tunnel.GetComponent<MeshCollider>();
+            Check(tunnel.GetComponent<MeshFilter>().sharedMesh.triangles.Length == 2 * lining.sharedMesh.triangles.Length,
+                "Under-river tunnel has an exterior light barrier and interior-only collision");
+            for (int z = 47; z < 106; z++)
+            {
+                var middle = new Vector3(RailCanyon.RiverTunnelX(z), -16.65f, z + .01f);
+                foreach (var direction in new[]{Vector3.down, Vector3.up, Vector3.left, Vector3.right})
+                    Check(lining.Raycast(new Ray(middle, direction), out _, 8),
+                        "Continuous under-river lining at " + z + " towards " + direction);
+            }
             foreach(var room in RailCanyon.MinePockets)
             {
                 for(int step=1;step<=5;step++)
@@ -79,6 +90,17 @@ public static class RailCanyonChecks
             {
                 float z=RailCanyon.GalleryZ(x);
                 Walk(new(x,RailCanyon.CaveFloor(x,z),z),"Connecting gallery "+x);
+            }
+            var gallery = root.Find("Terraced canyon and hollow caves/" + RailCanyonGallery.Name).GetComponent<MeshCollider>();
+            for (float x = -19.75f; x < 10; x += .5f)
+            {
+                float z = RailCanyon.GalleryZ(x);
+                var eye = new Vector3(x, RailCanyon.CaveFloor(x,z) + 1.3f, z);
+                foreach (var direction in new[]{ Vector3.up, Vector3.down, Vector3.forward, Vector3.back })
+                {
+                    if (direction == Vector3.back && RailCanyon.Cave(Mathf.Floor(x) + .5f, RailCanyon.TunnelEnd + .5f)) continue;
+                    Check(gallery.Raycast(new Ray(eye,direction),out _,9), "Continuous gallery lining at " + x + " towards " + direction);
+                }
             }
             Check(85>RailCanyon.Creek(14)+1.8f,"East cave mouth clears the creek");
             Check(Physics.Raycast(new Vector3(-27,1,119),Vector3.down,out var hit,22,1<<6,QueryTriggerInteraction.Ignore)&&Mathf.Abs(hit.point.y+16)<.05f,"Shaft falls directly to cave floor without ground/ceiling obstruction");

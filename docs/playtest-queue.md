@@ -1,10 +1,18 @@
 # Playtest queue
 
+## Canyon survey camp | queued for playtest, November 26, 2026
+
+At the underground junction, walk the west gallery toward the winch workings and the east gallery toward the mine exit. Inspect the three openings and the wall-to-floor seams from both directions near the lanterns. [Baked gallery views](canyon-layout.md#connecting-gallery-november-26-2026)
+
+On a private Test Block Order run, walk between the three south-rim tents and inspect their interiors and guy lines at player height. Approach the surface and mine lanterns in expedition lighting and check that the glass reads as lit from a distance, with the frames still visible up close. Walk the north and south rims to check the relocated cacti alongside the camp, rail corridor and shelters.
+
+Enter the southwest shaft, follow the rebaked cavern past all three side chambers and return through either mine exit. Inspect the wall and floor seams while moving, retrieve coal from a chamber and the winch works, and check that the sandstone box clears the survey tent. Canyon now passes full-crew resource and enemy selection. [Edit Mode results](validation/canyon-survey/camp-and-spawns.txt)
+
 ## Five post-trailer blocks | queued for playtest, November 26, 2026
 
 Use a private Test Block Order route to walk Canyon, Hospital, Lakeside Campground, Nuclear Power Plant and Passenger Station on Quest. Dismount and reboard at each stop, retrieve coal and gold from representative interiors, watch enemies follow the baked navigation, and verify a second client sees the same scenery, loot and enemies. The individual entries below cover the block-specific paths.
 
-All five are referenced by Expedition and have enabled lighting payload scenes. Edit Mode exercised crews 1–8 over 100 seeds each. All five met the enemy quadrant quotas. Lakeside Campground, Nuclear Power Plant and Passenger Station met the coal and gold targets throughout. Canyon and Hospital met the loot targets for crews 1–5. They have 68 and 64 usable coal markers respectively, against the current eight-player target of 93, and fall short from crew 6 onward. Keep those two out of normal rotation pending a placement pass and rerun.
+All five are referenced by Expedition and have enabled lighting payload scenes. The original Edit Mode pass exercised crews 1–8 over 100 seeds each. All five met the enemy quadrant quotas. Lakeside Campground, Nuclear Power Plant and Passenger Station met the coal and gold targets throughout. Canyon and Hospital originally had 68 and 64 usable coal markers respectively and fell short from crew 6 onward. Canyon subsequently reached 93 and passed the rerun above. Hospital's earlier result still needs a separate placement pass.
 
 ### Automated Quest 3 results
 
