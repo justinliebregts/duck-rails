@@ -361,11 +361,16 @@ def horsetail(x,y):
             verts=[(-.2,0,z),(0,.2,z+.06),(.2,0,z),(0,-.2,z+.06)]
             geo(leaf[1],verts,[(0,1,2,3),(3,2,1,0)])
 
+# Uniform size of each finished fern. Placement and passage spacing use the unscaled values.
+FERN_SCALE=.75
+
 def fern(x,y,height,reach):
-    global zone
+    global zone,frame
     zone="Fern thicket"
-    ferns.append(dict(x=x,y=ground(x,y),z=y,w=height))
-    with local(x,y,ground(x,y)-.09,random.uniform(0,2*pi)):
+    ferns.append(dict(x=x,y=ground(x,y),z=y,w=height*FERN_SCALE))
+    with local(x,y,ground(x,y)-.09*FERN_SCALE,random.uniform(0,2*pi)):
+        # Shrinks about the buried crown; local() restores the frame afterwards.
+        frame=frame@Matrix.Scale(FERN_SCALE,4)
         # Stagger outer and inner fronds around a broad, buried crown.
         for k in range(5):
             with local(0,0,0,2*pi*k/5+random.uniform(-.16,.16)):
@@ -741,6 +746,7 @@ def gravel_surfaces():
     # Every resulting face is parallel to its supporting terrain face, including across slopes.
     zone="Gravel trails"
     distances={}
+    tops=[]
     for path in routes["paths"]:
         for (ax,ay),(bx,by) in zip(path,path[1:]):
             dx,dy=bx-ax,by-ay
@@ -761,8 +767,50 @@ def gravel_surfaces():
                     clipped.append((a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t))
             if len(clipped)>=3:
                 # The top stays below each raised floor and the dock footbridge deck.
-                geo(gravel_mix,[(u,v,ground(u,v)+.065) for u,v in clipped],
+                geo(gravel_mix,[(u,v,ground(u,v)+PATH_RAISE) for u,v in clipped],
                     [tuple(range(len(clipped)))])
+                tops.append(clipped)
+    path_banks(tops)
+
+PATH_RAISE=.065
+BANK_WIDTH=.24
+BANK_SINK=.035
+
+def path_banks(tops):
+    """Earth shoulders from every outer path edge down into the soil, so trails read as raised ground."""
+    key=lambda p:(round(p[0],4),round(p[1],4))
+    edges={}
+    for poly in tops:
+        for a,b in zip(poly,poly[1:]+poly[:1]):
+            if key(a)!=key(b):edges[key(a),key(b)]=(a,b)
+    # An edge shared by two top faces appears once in each direction; the rest form the outline.
+    outline=[(k,e) for k,e in edges.items() if (k[1],k[0]) not in edges]
+    normals=defaultdict(list)
+    for (ka,kb),(a,b) in outline:
+        dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
+        # Top faces wind counterclockwise, so the outside is to the right of each edge.
+        for k in (ka,kb):normals[k].append((dy/length,-dx/length))
+    feet={}
+    def foot(k,p):
+        if k not in feet:
+            nx=sum(n[0] for n in normals[k]);ny=sum(n[1] for n in normals[k]);length=math.hypot(nx,ny)
+            if length<.001:nx,ny=normals[k][0];length=1
+            nx/=length;ny/=length
+            # Mitre neighbouring edges, limited so that sharp junctions do not grow spikes.
+            reach=BANK_WIDTH/max(.65,nx*normals[k][0][0]+ny*normals[k][0][1])
+            u,v=p[0]+nx*reach,p[1]+ny*reach
+            feet[k]=(u,v,ground(u,v)-BANK_SINK)
+        return feet[k]
+    highest=-1
+    for (ka,kb),(a,b) in outline:
+        low_a,low_b=foot(ka,a),foot(kb,b)
+        for t in (0,.25,.5,.75,1):
+            u,v,z=(low_a[i]+(low_b[i]-low_a[i])*t for i in range(3))
+            highest=max(highest,z-ground(u,v))
+        top_a=(a[0],a[1],ground(*a)+PATH_RAISE);top_b=(b[0],b[1],ground(*b)+PATH_RAISE)
+        geo(loam,[top_a,low_a,low_b,top_b],[(0,1,2),(0,2,3)])
+    print("Path banks:",len(outline),"outline edges; highest foot above soil",round(highest,5))
+    assert highest<0,"A path bank foot floats above the soil"
 
 campground()
 details()

@@ -17,6 +17,7 @@ public static class RailCampgroundFinish
     public const string RootName = "Pine Lake finish";
     public const int LightCount = 19;
     public const float FloorLift = .14f;
+    public const float FireScale = 2, FireLightLift = .65f, FireLightIntensity = 16, FireLightRange = 12;
     const string FirePrefab = "Assets/Plugins/PolygonParticleFX/Prefabs/FX_Fire_Small_01.prefab";
     public const string Folder = RailCampgroundGreybox.Folder + "/Finish";
     const string ModelPath = Folder + "/Lakeside finish.fbx";
@@ -134,12 +135,7 @@ public static class RailCampgroundFinish
                 light.range = fire ? 11 : solar ? 4 : 7;
                 light.shadows = LightShadows.Soft;
                 if (tipped) AddLanternFill(light);
-                if (fire)
-                {
-                    var flame = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(FirePrefab),go.transform);
-                    flame.name = "Burning firewood";
-                    flame.transform.localPosition = Vector3.down*.36f;
-                }
+                if (fire) AddCampfire(light);
             }
             RailCampgroundAudio.Configure(prefab,additions,layout.ferns);
             PrefabUtility.SaveAsPrefabAsset(prefab,RailCampgroundGreybox.PrefabPath,out bool success);
@@ -147,6 +143,28 @@ public static class RailCampgroundFinish
         }
         finally { PrefabUtility.UnloadPrefabContents(prefab); }
         AssetDatabase.SaveAssets();
+    }
+
+    static void AddCampfire(Light light)
+    {
+        // The fixture marker sits inside the crossed logs, which would block the whole bake.
+        light.transform.localPosition += Vector3.up*FireLightLift;
+        light.color = new Color(1,.55f,.22f);
+        light.intensity = FireLightIntensity;
+        light.range = FireLightRange;
+        light.shadowRadius = .3f;
+        var flame = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(FirePrefab),light.transform);
+        flame.name = "Burning firewood";
+        flame.transform.localPosition = Vector3.down*(.36f+FireLightLift);
+        flame.transform.localScale = Vector3.one*FireScale;
+        foreach (var particles in flame.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            // The imported effect ignores parent scale until it follows the hierarchy.
+            var main = particles.main;
+            main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+            PrefabUtility.RecordPrefabInstancePropertyModifications(particles);
+        }
+        PrefabUtility.RecordPrefabInstancePropertyModifications(flame.transform);
     }
 
     static void AddLanternFill(Light spot)

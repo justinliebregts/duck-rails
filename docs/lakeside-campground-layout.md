@@ -1,5 +1,13 @@
 # Lakeside Campground
 
+## Ferns, campfires and raised trails | November 26, 2026
+
+The ferns are 75% of their previous size, shrunk about their buried crowns so every clump keeps its position. The rustle volumes shrank with them. Tall fronds now top out near 1.85 m, so the older sightline and head-clearance measurements below no longer describe the passage. `FERN_SCALE` in the Blender script sets the size.
+
+Each campfire effect is at twice its previous size, with the particle systems set to follow hierarchy scale. The baked light sits 1.3 m above the fire bed, clear of the crossed logs that used to enclose it, with a warmer colour, intensity 16 and a 12 m range. The existing looping 3D crackle at each fire is twice as loud (0.26–0.30) and its priority moved from 220 to 200, ahead of the 210 ambience beds when voices run short.
+
+A 24 cm earth bank runs from every outer trail edge down into the soil. The 1,706 outline edges add no colliders. Blender confirmed every sampled bank foot is below the terrain. Lighting was rebaked and the campground geometry checks passed. Collision geometry is unchanged, so the crawlgraph was kept. Headset review is queued for playtest. [Fire at night](validation/campground-polish/fire-at-night.jpg) · [Raised trails](validation/campground-polish/raised-trails.jpg)
+
 ## Ambient sound and cabin reverb
 
 Outdoor crickets give way to cicadas by the pond and dock and nighttime leaves in the southwest woods. Each of the three campfires has a positional crackle with a 14 m range. The seven timber buildings have room-sized reverb with a 0.6 m edge fade. The bunk and north cabins have an attic bed and occasional timber creaks. Reception, the mess cabin and the supply cabin have intermittent creaks with quiet stretches. The washrooms have a slow leak and drips. The boathouse mixes drips and timber creaks.

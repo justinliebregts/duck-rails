@@ -35,7 +35,7 @@ static class RailCampgroundAudio
             var volume=new GameObject("Fern rustle "+cell.Key).AddComponent<FoliageVolume>();
             volume.transform.SetParent(finish,false);
             volume.stalks=cell.ToArray();
-            volume.radius=.86f;
+            volume.radius=.65f; // matches the fern crowns at FERN_SCALE in build_finish.py
             volume.surface=Surface("Foliage");
             volume.rustle=sound;
             var bounds=new Bounds((Vector3)volume.stalks[0],Vector3.zero);
