@@ -26,8 +26,8 @@ assembly, replay and late join. It uses actual block transforms and the local
 AudioManager listener. Settings are in `Assets/Resources/RailAmbienceSettings.asset`.
 Open them with **Duck Rails > Audio > Select ambience settings**.
 
-- Seven profiles cover Starting Station, Skyscraper Works, Container Yard, Farm
-  Silos, Convenience Store, Roadside Motel and Bridge Finale. The separate midpoint
+- Eight profiles cover Starting Station, Skyscraper Works, Container Yard, Farm
+  Silos, Convenience Store, Roadside Motel, Lakeside Campground and Bridge Finale. The separate midpoint
   helipad has no profile in this pass.
 - Each profile has up to two outdoor beds, a detail pool, and ordered local bounds
   for interiors/river regions. The first matching area wins, with 0.4 m boundary

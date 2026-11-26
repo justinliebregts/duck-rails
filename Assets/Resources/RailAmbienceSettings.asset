@@ -324,3 +324,81 @@ MonoBehaviour:
       - {fileID: 11400000, guid: ef07f084568ad424ba8787f0e0590e8a, type: 2}
       details:
       - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+  - blockId: lakeside-campground-v1
+    outdoorBeds:
+    - {fileID: 11400000, guid: 4ce6e4d1744f4e344a29be8070ad0cb1, type: 2}
+    outdoorDetails:
+    - {fileID: 11400000, guid: a832a409ea71517409e8c0a4e26ef37f, type: 2}
+    - {fileID: 11400000, guid: 58a94d38612572d48b434067ea161a17, type: 2}
+    allowScares: 0
+    areas:
+    - name: Bunk cabin
+      bounds:
+        m_Center: {x: 34, y: 2.64, z: 76}
+        m_Extent: {x: 4.7, y: 1.5, z: 4.7}
+      beds:
+      - {fileID: 11400000, guid: 0187c367a032b4a44b49cb9814a808c9, type: 2}
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: Mess cabin
+      bounds:
+        m_Center: {x: 34, y: 3.64, z: 99}
+        m_Extent: {x: 4.7, y: 1.5, z: 4.7}
+      beds: []
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: North cabin
+      bounds:
+        m_Center: {x: 20, y: 2.64, z: 121.5}
+        m_Extent: {x: 4.7, y: 1.5, z: 4.2}
+      beds:
+      - {fileID: 11400000, guid: 0187c367a032b4a44b49cb9814a808c9, type: 2}
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: Reception
+      bounds:
+        m_Center: {x: 18, y: 1.64, z: 27}
+        m_Extent: {x: 5.7, y: 1.5, z: 4.7}
+      beds: []
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: Washrooms
+      bounds:
+        m_Center: {x: 34, y: 1.64, z: 50}
+        m_Extent: {x: 4.7, y: 1.5, z: 3.7}
+      beds:
+      - {fileID: 11400000, guid: ef07f084568ad424ba8787f0e0590e8a, type: 2}
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+    - name: Supply cabin
+      bounds:
+        m_Center: {x: -11, y: 1.64, z: 57.5}
+        m_Extent: {x: 4.7, y: 1.5, z: 4.2}
+      beds: []
+      details:
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: Boathouse
+      bounds:
+        m_Center: {x: -11, y: 1.64, z: 97}
+        m_Extent: {x: 4.7, y: 1.5, z: 5.7}
+      beds: []
+      details:
+      - {fileID: 11400000, guid: 5796b119398079447a52c74763d0ce27, type: 2}
+      - {fileID: 11400000, guid: 1715381cd6f436b46befeaa4c1d6e8d8, type: 2}
+    - name: Pond and dock
+      bounds:
+        m_Center: {x: -27, y: 1.8, z: 80}
+        m_Extent: {x: 14.5, y: 3.5, z: 31.5}
+      beds:
+      - {fileID: 11400000, guid: 04a08c30fc21aaf48a3365f88bbd5378, type: 2}
+      details:
+      - {fileID: 11400000, guid: 9b8dd10e4a8d7b849a906cc69fe60ac4, type: 2}
+    - name: Southwest woods
+      bounds:
+        m_Center: {x: -27, y: 2.5, z: 27}
+        m_Extent: {x: 18, y: 4, z: 21}
+      beds:
+      - {fileID: 11400000, guid: 285dca57855eb744f884f1ed61f6ca10, type: 2}
+      details:
+      - {fileID: 11400000, guid: a832a409ea71517409e8c0a4e26ef37f, type: 2}
+      - {fileID: 11400000, guid: 58a94d38612572d48b434067ea161a17, type: 2}

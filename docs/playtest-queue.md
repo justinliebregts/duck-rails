@@ -1,5 +1,15 @@
 # Playtest queue
 
+## Lakeside terrain, scavenging and audio | queued for playtest, November 25, 2026
+
+Walk from the southwest woods past a fire to the dock and listen for the leaves, localized crackle and pond cicadas. Compare a footstep or shovel tap on the porch with one inside the bunk cabin, boathouse and washrooms. Listen for timber creaks and drips during a quiet interval. Check that nearby crew speech and enemy cues remain clear on headset.
+
+Collect the new lookout loot from the third landing, upper gallery and observation deck while another player uses the ramp. Check reach from inside the tents and at the supply-cabin shelf.
+
+Follow both pond banks and search the fern beds with a full crew. Check whether individual pickups feel separated from eye level, the shoreline items are reachable from dry ground, and the ferns conceal loot without making it frustrating to find.
+
+Use Lakeside in Test Block Order. Walk the shoreline, gully bridge, railway crossing and lookout ramp. Listen for the change between grass, gravel, sleepers, rails, decking and lake water. Move through tall ferns, stop, then leave the patch and check the rustle cadence. On host and peer, collect loot from cabin furniture, the lookout, dock and fern stands. Check reach, item settling, enemy travel across the terrain transitions, and Quest frame time in the woods. Edit Mode counts and terrain measurements are in the [layout notes](lakeside-campground-layout.md).
+
 ## Party size and join analytics | queued for delivery check, November 24, 2026
 
 - Changed: `run:join`, `run:launch`, `run:result` and `run:result_end` report launch versus mid-run joins and win rate by party size at launch and at the end. Run start/launch/end are claimed in the committed run state so they send once ([analytics-setup.md](analytics-setup.md#party-size-and-joins-november-24)).
@@ -98,8 +108,12 @@ On Quest, ride through both ends at night, then walk the staff garden, ER canopy
 
 ## Canyon, Lakeside Campground and Nuclear Power Plant — queued for playtest
 
+- **Lakeside fallen lanterns.** At night on Quest, view each of the four lanterns from behind and across its beam. Check that the nearby floor and furnishings pick up warm spill and the directional beam stays distinct. [Cabin lighting comparison](lakeside-campground-layout.md#fallen-lantern-lighting)
+- **Lakeside woodland and campsite details.** Cross the southwest fern passage and inspect each new fern pocket from duck height. Measure frame time facing the old-growth trees. Inspect both ends of a canoe from inside, the folded canvas under the trunk, and the rock bases on the overlook. Approach the entrance and crossing signs on foot and view them from the moving train for flicker. [Woodland pass](lakeside-campground-layout.md#woodland-and-campsite-detail-pass)
+- **Lakeside fern passage and grounded props.** Enter the southwest woods from both ends at duck height. Check how quickly the tents and other players disappear from view, whether leaves clip into the player's eyes at the bends, and headset frame time inside the thickest patch. Follow the canoe-beach path past the removed spur. Inspect the boathouse paddles, tipped lanterns and outer dock pilings from the floor and lakebed. [Geometry and captures](lakeside-campground-layout.md#fern-passage-and-grounded-props)
 - **Canyon.** From the moving train, look for the south survey camp and the north shaft headframe. Carry coal across the trestle and pedestrian bridge, then drop into the shaft and follow the walk-out route. Check hand contact, recovery and frame time while facing across the gorge. [Canyon layout and captures](canyon-layout.md).
-- **Lakeside Campground.** Check whether the camper and fallen-tree camp read on arrival and the canoe beach and overlook read on departure. Carry an item along the cabin terraces, dock and overlook path. Check hand clearance and item recovery around the water, and measure frame time facing the trees from the dock. [Campground layout and captures](lakeside-campground-layout.md).
+- **Lakeside Campground, November 25 refinement.** Read the entrance and both camper crossing signs from duck height. Walk the gravel junctions, thresholds and seven interiors carrying an item. Look up into the pines, cut through the southwest ferns, then return along the clear trail. Inspect the burning pits, dropped lantern beams and solar stakes at night. Check canoe, boulder and fence contact and recover an item at the water. Measure Quest frame time facing the trees from the dock and from inside the fern patch with a fire visible. [Campground layout and captures](lakeside-campground-layout.md).
+- **Lakeside lookout and tent clearings.** On Quest, climb and descend the full ramp carrying an item. Pass another player at a landing and compare player and item positions from the deck on both clients. Check the crossbucks from a moving cab in each approach direction. Walk among the three fires and inside the northeast tents at night. Check the roof seams at duck height and the transition from the open camp clearing into the broader fern patches. [Latest layout and captures](lakeside-campground-layout.md#lookout-tower-and-tent-clearings).
 - **Nuclear Power Plant.** Ride past the shift bus and pipe yard into the tower precinct. Walk through both tower bases and the turbine gallery, then follow the dry route beside the northern waterworks. Check sign and stair visibility at duck eye height, drum-yard item recovery and frame time looking across the towers. [Plant layout and captures](nuclear-power-plant-layout.md).
 
 For all three, check night visibility on Quest and compare lighting and landmark placement on a second client after late join and block replacement.
