@@ -84,6 +84,15 @@ Justin's fifth batch, executed on his "execute":
 - **Reverb**: a `BoxReverbZone` (with its child `AudioReverbZone`) for every room and hall, both platforms, both concourses, each stair shaft (sloped), the cave-in shaft and every 8 m of both tunnels (turned along the curve). Big spaces 4.2 s, tunnels 5.5 s, mid rooms 2.4 s, small rooms 1.4 s.
 - Validation: [2,913 checks](validation/passenger-station-v3/checks.txt) pass; navigation 70,046 nodes; 120 coal / 64 gold; 75 baked lights.
 
+### Revision — batch 6: sign lighting, EXIT A2 gates, pram (November 26)
+
+- **Sign lettering stays white**: each sign's letters and arrow sample light at a "Sign probe anchor" 0.35 m in front of the board, and `PruneAndProbesV3` puts a light probe at every anchor (32). The Platform 1 KING'S QUACK letters had been tinted red by probes on the Platform 3 side of the wall next to the emergency lamps; the facade name letters had too few probes outside.
+- **Station-name boards** raised to Y 7.6, above the arch pilasters that covered both ends of the wider mesh-lettered board.
+- **Caution tape** now runs from the east stair shaft wall to the wreck's side (south of the cave-in) and to the cave-in shaft wall (north), off the stairs, with knots at the ends. The cable vault DANGER LIVE CABLES sign was removed.
+- **EXIT A2**: a line of 13 ticket gate cabinets with closed flaps, card readers and red stop lights across the room in front of the shuttered exit, a hanging EXIT A2 sign, and a glass-fronted service kiosk (counter, speaking slot, INFORMATION sign, desk, CRT, ticket printer, stool). Benches moved in front of the mural; spawns kept on the open side of the gates and outside the kiosk.
+- **Pram**: a lathed oval bassinet with rim and inner shell, a four-segment folding hood, a tube frame joining the wheels to a push handle fixed into the body, rimmed wheels with hubs and a blanket over the side.
+- Validation: [2,913 checks](validation/passenger-station-v3/checks.txt) pass; navigation 69,839 nodes; 66 enemy candidates; 120 coal / 64 gold; 75 baked lights; 478 light probes.
+
 ### Spawns
 
 Replaced the V2 markers (they sat on removed geometry). 120 coal and 64 gold candidates (crew-8 ceilings 93/52), chosen round-robin across 30 areas from 607 supported, clear surface spots, 1.8 m same-type and 0.8 m cross-type spacing. Gold is weighted to Platform 3, the wreck, cable rooms, pump, fan control, parts and electrical rooms, the north concourse and the office. 51 enemy candidates (quadrants roughly 12–14 each) after removing those without ground navigation within 0.8 m.

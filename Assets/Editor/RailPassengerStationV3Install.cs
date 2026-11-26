@@ -209,6 +209,16 @@ public static partial class RailAbandonedStation
                 }
             }
         foreach (float z in new[] { 0f, 159f }) foreach (float x in new[] { -4f, 0f, 4f }) points.Add(new(x, 2, z));
+        // Batch 6: a probe at every sign's probe anchor (0.35 m in front of its board), so each sign's lettering
+        // is lit by its own side of any wall.
+        var block = Object.FindFirstObjectByType<RailBlock>(); int signProbes = 0;
+        foreach (var a in block.GetComponentsInChildren<Transform>().Where(t => t.name == "Sign probe anchor"))
+        {
+            var q = block.transform.InverseTransformPoint(a.position);
+            points.RemoveAll(p => (p - q).sqrMagnitude < .09f);
+            points.Add(q); signProbes++;
+        }
+        report.Add("Sign probes: " + signProbes);
         probes.probePositions = points.ToArray();
         EditorSceneManager.MarkSceneDirty(scene); EditorSceneManager.SaveScene(scene);
         report.Add("Light probes: " + points.Count);

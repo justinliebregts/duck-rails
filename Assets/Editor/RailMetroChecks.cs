@@ -429,7 +429,7 @@ public static class RailMetroChecks
         Check(fights.Count == 0, "no coplanar overlapping faces on any mesh (z-fighting), " + triCount + " triangles: " + fights.Count);
         foreach (var f in fights.Take(60)) lines.Add("  z-fight " + f);
         // Wall-mounted thin visuals (posters, panels, signs, vests...) must have something solid right behind them.
-        string[] freeStanding = { "Stall door", "Open locker door", "Fan blade", "Hanging strap", "Jammed door leaf", "Trolley handle", "Fan guard bar", "Turnstile arm", "Stall partition", "Urinal privacy divider", "Shutter", "Shutter rib", "Arrow", "Sign hanger rod", "Litter", "Crushed roof panel", "Hi-vis vest on bench", "Spilled newspaper", "Grille slat", "Fan duct grille", "Line colour band", "Area stripe", "Wainscot", "Bike", "Seat armrest", "Cooling fin" };
+        string[] freeStanding = { "Stall door", "Open locker door", "Fan blade", "Hanging strap", "Jammed door leaf", "Trolley handle", "Fan guard bar", "Turnstile arm", "Stall partition", "Urinal privacy divider", "Shutter", "Shutter rib", "Arrow", "Sign hanger rod", "Litter", "Crushed roof panel", "Hi-vis vest on bench", "Spilled newspaper", "Grille slat", "Fan duct grille", "Line colour band", "Area stripe", "Wainscot", "Bike", "Seat armrest", "Cooling fin", "Kiosk glass", "Kiosk side glass" };
         int floating = 0;
         foreach (var r in b.GetComponentsInChildren<MeshRenderer>())
         {

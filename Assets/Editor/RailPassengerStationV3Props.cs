@@ -265,11 +265,14 @@ public static partial class RailAbandonedStation
             var f = Group(t, side > 0 ? "Front" : "Back"); if (side < 0) f.localRotation = Quaternion.Euler(0, 180, 0);
             // Raised CutePixel mesh lettering and a bold pixel arrow, lit like everything else (batch 5).
             float textX = arrowW / 2 * (arrow == 'r' ? -1 : 1), z = side > 0 ? .005f : -.055f;   // the board face this side
-            if (text.Trim().Length > 0) Proc(f, "Lettering", PixelTextMesh(text, letterH), new[] { signIvory }, new(textX, 0, z), Quaternion.identity, false, false);   // probe-lit: lightmapped 2 cm letters baked too dark to read
+            // Batch 6: letters sample light 0.35 m in front of the board, where PruneAndProbesV3 adds probes, so a
+            // wall between the sign and another area's lamps can't tint them (the red Platform 1 sign).
+            var anchor = Group(f, "Sign probe anchor"); anchor.localPosition = new(0, 0, z - .35f);
+            if (text.Trim().Length > 0) Proc(f, "Lettering", PixelTextMesh(text, letterH), new[] { signIvory }, new(textX, 0, z), Quaternion.identity, false, false).GetComponent<MeshRenderer>().probeAnchor = anchor;   // probe-lit: lightmapped 2 cm letters baked too dark to read
             if (arrow != ' ')
             {
                 float ax = (arrow == 'r' ? textW / 2 + arrowW * .5f : -textW / 2 - arrowW * .5f) + textX;
-                Proc(f, "Arrow", PixelArrowMesh(letterH), new[] { signIvory }, new(ax, 0, z), Quaternion.Euler(0, 0, arrow == 'u' ? 0 : arrow == 'd' ? 180 : arrow == 'l' ? 90 : -90), false, false);
+                Proc(f, "Arrow", PixelArrowMesh(letterH), new[] { signIvory }, new(ax, 0, z), Quaternion.Euler(0, 0, arrow == 'u' ? 0 : arrow == 'd' ? 180 : arrow == 'l' ? 90 : -90), false, false).GetComponent<MeshRenderer>().probeAnchor = anchor;
             }
         }
         Face(1); if (twoSided) Face(-1);

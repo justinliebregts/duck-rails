@@ -51,6 +51,98 @@ public static partial class RailAbandonedStation
             Box(t, "Locker tier seam", baseCentre + Off(face * .312f, 0) + Vector3.up * (height * i / tiers), S(.024f, .025f, length - .06f), darkTile, false);
     }
 
+    // Low-poly pram (batch 6): oval bassinet with rim and inner shell, segmented folding hood over the rear, tube
+    // frame joining the wheels to a push handle fixed to the body, rimmed wheels with hubs, a blanket over the side.
+    // Local +Z is the front; the hood and handle are at the rear (-Z). Solid as one box for spawn clearance.
+    static void Pram(Transform g, Material fabric)
+    {
+        var bowl = SaveProc("pram-bassinet", () => Lathe(new MB(), new[] { new Vector2(0, 0), new Vector2(.16f, 0), new Vector2(.21f, .08f), new Vector2(.23f, .22f), new Vector2(.235f, .3f),
+            new Vector2(.212f, .3f), new Vector2(.205f, .2f), new Vector2(.18f, .1f), new Vector2(0, .07f) }, 10, 1, 1.75f), false);
+        Proc(g, "Pram bassinet", bowl, new[] { fabric }, new(0, .38f, 0), Quaternion.identity, false, false);
+        var pivot = new Vector3(0, .68f, -.2f);   // hood arc from the rear rim up over the back half
+        for (int k = 0; k < 4; k++)
+        {
+            float th = (75 + 30 * k) * Mathf.Deg2Rad, r = .21f + k * .006f;
+            var radial = new Vector3(0, Mathf.Sin(th), Mathf.Cos(th)); var tangent = new Vector3(0, Mathf.Cos(th), -Mathf.Sin(th));
+            Box(g, "Pram hood segment", pivot + radial * r, new(.48f + k * .01f, .02f, .125f), darkTile, false).transform.localRotation = Quaternion.LookRotation(tangent, radial);
+        }
+        void Tube(Vector3 a, Vector3 b, float rad = .012f, Material mat = null)
+        {
+            float len = Mathf.Round((b - a).magnitude * 100) / 100;
+            Proc(g, "Pram frame", PipeMesh(rad, len), new[] { mat ? mat : steel }, a, Quaternion.FromToRotation(Vector3.up, (b - a).normalized), false, false);
+        }
+        foreach (float sx in new[] { -.2f, .2f })
+        {
+            Tube(new(sx, .14f, .33f), new(sx * .65f, .42f, .2f));     // front leg up into the bassinet
+            Tube(new(sx, .14f, -.33f), new(sx * .65f, .42f, -.2f));   // rear leg
+            Tube(new(sx * .75f, .58f, -.3f), new(sx * .85f, 1.0f, -.74f));   // push handle, fixed into the bassinet's rear side
+        }
+        Tube(new(-.19f, 1.0f, -.74f), new(.19f, 1.0f, -.74f), .018f, darkTile);   // grip
+        foreach (float sz in new[] { -.33f, .33f })
+        {
+            Tube(new(-.25f, .14f, sz), new(.25f, .14f, sz), .01f);   // axle
+            foreach (float sx in new[] { -.25f, .25f })
+            {
+                Proc(g, "Pram wheel", WheelMesh(), new[] { darkTile }, new(sx, .14f, sz), Quaternion.Euler(0, 0, 90), false, false).transform.localScale = Vector3.one * .3f;
+                Box(g, "Pram wheel hub", new(sx + Mathf.Sign(sx) * .025f, .14f, sz), new(.012f, .05f, .05f), steel, false);
+            }
+        }
+        Box(g, "Pram blanket", new(.02f, .69f, .12f), new(.36f, .015f, .42f), zoneOrange, false).transform.localRotation = Quaternion.Euler(0, 0, 4);
+        Box(g, "Pram blanket (hanging)", new(.245f, .55f, .14f), new(.015f, .3f, .38f), zoneOrange, false).transform.localRotation = Quaternion.Euler(0, 0, 8);
+        var col = g.gameObject.AddComponent<BoxCollider>(); col.center = new(0, .5f, -.1f); col.size = new(.52f, 1f, 1.15f);
+        g.gameObject.layer = 6;
+    }
+
+    // ---------------- EXIT A2 (batch 6) ----------------
+    // A full line of closed ticket gates across the room in front of the shuttered street exit, and a glass-fronted
+    // service kiosk in the north-west corner. Room: X -36..-16, Z 18..34.
+    static void ExitA2Gates(Transform portal)
+    {
+        const float gx = -20.6f;   // gate line (cabinets 1.3 m long in X, 1.0 m passages between them)
+        for (int i = 0; i < 13; i++)
+        {
+            float z = 18.27f + i * 1.28f;
+            Box(portal, "Ticket gate cabinet", new(gx, F + .5f, z), new(1.3f, 1f, .28f), steel);
+            Box(portal, "Gate card reader", new(gx - .35f, F + 1.01f, z), new(.25f, .02f, .2f), darkTile, false);
+            GlowBox(portal, "Gate stop light", new(gx - .66f, F + .82f, z), new(.02f, .12f, .12f), glowRed);
+            GlowBox(portal, "Gate stop light", new(gx + .66f, F + .82f, z), new(.02f, .12f, .12f), glowRed);
+            if (i < 12)
+                foreach (float s in new[] { -1f, 1f })   // closed flaps meeting in the middle of each passage
+                    Box(portal, "Gate flap (closed)", new(gx, F + .75f, z + .64f + s * .255f), new(.04f, .5f, .49f), wreckRed);
+        }
+        SignBoard(portal, "EXIT  A2", new(gx - .1f, F + 1.86f, 26f), -90, .2f, 'u', F + HallClear);
+        foreach (var (x, m) in new[] { (-27.5f, zoneBlue), (-25f, wreckRed), (-22.5f, zoneGreen), (-18.5f, yellow) })
+            P(portal, "Faded poster", x, -1.35f, 33.84f, 1.1f, 1.5f, .02f, m, false);
+        foreach (float x in new[] { -27.5f, -24f }) { P(portal, "Waiting bench", x, F + .22f, 20.6f, 3f, .45f, .6f, wood); TopLoot("service portal", new(x - .8f, F + .45f, 20.6f), .3f); TopLoot("service portal", new(x + .8f, F + .45f, 20.6f), .3f); }
+
+        // Service kiosk: counter wall, glass above with a speaking slot, header with an INFORMATION sign, desk inside.
+        var glass = AtlasTile("Booth glass", "dark asphalt", true, 128, 128, 64, new(.32f, .4f, .44f), 4);
+        const float kx0 = -35.4f, kx1 = -29f, kz = 29.6f, cx = (kx0 + kx1) / 2, depth = 33.875f - kz;
+        Box(portal, "Kiosk counter wall", new(cx, F + .5f, kz + .06f), new(kx1 - kx0, 1f, .12f), whitePanel);
+        Box(portal, "Kiosk counter top", new(cx, F + 1.02f, kz - .05f), new(kx1 - kx0 + .1f, .04f, .42f), wood);
+        Box(portal, "Kiosk side wall", new(kx1 - .06f, F + .5f, kz + .12f + (depth - .13f) / 2), new(.12f, 1f, depth - .13f), whitePanel);   // starts behind the counter wall
+        foreach (var (x0, x1) in new[] { (kx0, -33.2f), (-31.2f, kx1) })
+            Box(portal, "Kiosk glass", new((x0 + x1) / 2, F + 1.33f, kz + .06f), new(x1 - x0 - .06f, .58f, .006f), glass, false);
+        Box(portal, "Kiosk glass (over the speaking slot)", new(-32.2f, F + 1.5f, kz + .06f), new(1.94f, .24f, .006f), glass, false);
+        Box(portal, "Kiosk side glass", new(kx1 - .06f, F + 1.33f, kz + depth / 2), new(.006f, .58f, depth - .1f), glass, false);
+        foreach (float x in new[] { kx0 + .05f, -33.2f, -31.2f, kx1 - .05f }) Box(portal, "Kiosk mullion", new(x, F + 1.33f, kz + .06f), new(.06f, .58f, .07f), steel);
+        Box(portal, "Kiosk header", new(cx, F + 1.84f, kz + .06f), new(kx1 - kx0, .42f, .14f), whitePanel);
+        Box(portal, "Kiosk roof", new(cx, F + 2.07f, kz + depth / 2), new(kx1 - kx0, .04f, depth - .02f), whitePanel, false);
+        SignBoard(portal, "INFORMATION", new(cx, F + 1.84f, kz - .065f), 180, .14f);
+        Box(portal, "Kiosk desk", new(cx, F + .38f, 32.9f), new(3f, .76f, .8f), wood);
+        Box(portal, "Kiosk CRT", new(cx - .7f, F + .98f, 33.0f), new(.45f, .4f, .4f), tile);
+        GlowBox(portal, "Kiosk CRT screen", new(cx - .7f, F + .99f, 32.79f), new(.34f, .26f, .02f), glowScreen);
+        Box(portal, "Ticket printer", new(cx + .6f, F + .86f, 32.9f), new(.4f, .2f, .35f), darkTile);
+        Box(portal, "Kiosk stool", new(cx, F + .3f, 31.9f), new(.4f, .6f, .4f), steel);
+        for (int i = 0; i < 3; i++) Box(portal, "Kiosk paperwork", new(cx + .2f + i * .25f, F + .765f, 32.7f), new(.21f, .004f, .3f), tile, false).transform.localRotation = Quaternion.Euler(0, i * 23, 0);
+        TopLoot("service portal", new(-34.2f, F + 1.04f, kz - .05f), .4f); TopLoot("service portal", new(-30.2f, F + 1.04f, kz - .05f), .4f);
+
+        Tube(portal, new(-28, F + HallClear - .08f, 26), false, 0); Tube(portal, new(-20, F + HallClear - .08f, 26), false, 1);
+        FloorLoot("service portal", -34.5f, 18.5f, -21.8f, 29.0f, F, .3f, 3f, .6f);   // the open side of the gates, outside the kiosk
+        FloorLoot("service portal", -28.6f, 29.0f, -21.8f, 33.5f, F, .3f, 3f, .3f);
+        Enemy("service portal", -26, F, 24); Enemy("service portal east", -23.5f, F, 31f);
+    }
+
     // ---------------- reverb (batch 5: "lots of reverb") ----------------
     static List<(string name, Bounds b)> reverbRooms;
     enum Echo { Small, Medium, Big, Tunnel }
@@ -125,7 +217,7 @@ public static partial class RailAbandonedStation
             ("suitcase", -2.6f, F, 62f, 40), ("papers", 2.4f, F, 70f, 0), ("umbrella", -1.6f, F, 100f, 120),
             ("rolling bag", -27.2f, F, 66.2f, 0), ("basket", -27.6f, F, 93.8f, 20), ("bento", -30.5f, F + .76f, 106.3f, 15),
             ("papers", -1.6f, D + .01f, 43.8f, 0), ("rolling bag", 5.35f, F, 75f, 0), ("shoe", -21.0f, F + 11 * (Deck - F) / 24, 59.75f, 80),
-            ("cup", 21.9f, F + .76f, 87.6f, 0), ("tickets", -27.5f, F, 30.2f, 0), ("umbrella", -33.8f, F, 38.4f, 60),
+            ("cup", 21.9f, F + .76f, 87.6f, 0), ("tickets", -26.5f, F, 27.6f, 0), ("umbrella", -33.8f, F, 38.4f, 60),
         };
         Material[] bagMats = { wreckRed, zoneBlue, darkTile, zoneGreen };
         int n = 0;
@@ -146,12 +238,7 @@ public static partial class RailAbandonedStation
                     Box(g, "Rolling bag handle", new(.1f, .1f, .52f), new(.02f, .02f, .5f), steel, false);
                     Box(g, "Rolling bag handle", new(-.1f, .1f, .52f), new(.02f, .02f, .5f), steel, false); break;
                 case "pram":
-                    Box(g, "Pram body", new(0, .5f, 0), new(.5f, .35f, .8f), m);
-                    Box(g, "Pram hood", new(0, .78f, -.25f), new(.48f, .3f, .3f), darkTile, false).transform.localRotation = Quaternion.Euler(-20, 0, 0);
-                    Box(g, "Pram handle", new(0, .95f, .5f), new(.46f, .03f, .03f), steel, false);
-                    foreach (float sx in new[] { -.22f, .22f }) foreach (float sz in new[] { -.3f, .3f })
-                            Proc(g, "Pram wheel", WheelMesh(), new[] { darkTile }, new(sx, .14f, sz), Quaternion.Euler(0, 0, 90), false, false).transform.localScale = Vector3.one * .3f;
-                    break;
+                    Pram(g, m); break;   // batch 6: proper low-poly pram
                 case "cleaning trolley":
                     Box(g, "Trolley base", new(0, .12f, 0), new(.5f, .08f, .9f), yellow);
                     Box(g, "Trolley frame", new(0, .5f, -.42f), new(.48f, .8f, .05f), yellow);
@@ -177,10 +264,15 @@ public static partial class RailAbandonedStation
                     Box(g, "Dropped shop basket", new(0, .06f, 0), new(.3f, .12f, .4f), zoneBlue, false).transform.localRotation = Quaternion.Euler(0, 0, 80); break;
             }
         }
-        // Warning tape left across Platform 3 on both sides of the cave-in.
-        foreach (var (a, b) in new[] { (new Vector3(-4.6f, F + .95f, 97.8f), new Vector3(1.9f, F + 1.25f, 97.8f)), (new Vector3(-4.6f, F + 1.3f, 97.81f), new Vector3(1.9f, F + .9f, 97.81f)),
-                                       (new Vector3(-4.6f, F + .95f, 107.2f), new Vector3(1.9f, F + 1.25f, 107.2f)), (new Vector3(-4.6f, F + 1.3f, 107.21f), new Vector3(1.9f, F + .9f, 107.21f)) })
-            Beam(t, "Warning tape", a, b, .005f, .07f, yellow, false);
+        // Warning tape (batch 6: anchored, off the stairs): south of the cave-in from the east stair shaft wall to
+        // the wreck's side, north of it from the stair shaft wall to the cave-in shaft wall; a knot at every end.
+        foreach (var (z, x1, dz) in new[] { (97.8f, 4.6f, 0f), (106.6f, 1.86f, 0f) })
+            foreach (var (ya, yb, off) in new[] { (F + .95f, F + 1.25f, 0f), (F + 1.3f, F + .9f, .01f) })
+            {
+                Vector3 a = new(.04f, ya, z + off), b = new(x1, yb, z + off);
+                Beam(t, "Warning tape", a, b, .005f, .07f, yellow, false);
+                foreach (var e in new[] { a, b }) Box(t, "Tape knot", e + new Vector3(0, 0, .015f), new(.05f, .08f, .03f), yellow, false);
+            }
     }
 
     // Open shop shelf unit on floor point c: uprights, a kick base, three boards (0.6 m apart so a spawn fits on
@@ -312,23 +404,7 @@ public static partial class RailAbandonedStation
         P(portal, "Rolled-down street shutter", -16.15f, F + 1.15f, 26, .12f, 2.3f, 4.5f, steel);
         for (int r = 0; r < 7; r++) P(portal, "Shutter rib", -16.24f, F + .2f + r * .32f, 26, .03f, .05f, 4.4f, darkTile, false);
         Sign3(portal, "EXIT A2   CLOSED", new(-16.25f, -1.0f, 26), -90, .32f);
-        P(portal, "Ticket booth", -31, F + .55f, 31.5f, 4f, 1.1f, 1.2f, wood);
-        foreach (float x in new[] { -32.9f, -29.1f }) P(portal, "Booth window post", x, F + 1.75f, 31.0f, .08f, 1.3f, .08f, steel, false);
-        P(portal, "Booth window frame", -31, F + 2.42f, 31.0f, 3.9f, .08f, .08f, steel, false);
-        P(portal, "Booth counter shelf", -31, F + 1.12f, 30.8f, 3.8f, .04f, .35f, wood);
-        for (int i = 0; i < 4; i++)
-        {
-            float x = -27.5f + i * 2.2f;
-            P(portal, "Turnstile post", x, F + .5f, 28.5f, .3f, 1f, .5f, steel);
-            P(portal, "Turnstile arm", x + .45f, F + .85f, 28.5f, .6f, .05f, .05f, steel, false, i * 40);
-        }
-        foreach (var (x, m) in new[] { (-33f, zoneBlue), (-30f, wreckRed), (-22f, zoneGreen), (-19f, yellow) })
-            P(portal, "Faded poster", x, -1.35f, 33.84f, 1.1f, 1.5f, .02f, m, false);
-        foreach (float z in new[] { 21.5f, 25.5f }) { P(portal, "Waiting bench", -20.5f, F + .22f, z, 3f, .45f, .6f, wood); TopLoot("service portal", new(-21.3f, F + .45f, z), .3f); TopLoot("service portal", new(-19.7f, F + .45f, z), .3f); }
-        TopLoot("service portal", new(-32, F + 1.1f, 31.8f), .4f); TopLoot("service portal", new(-30, F + 1.1f, 31.8f), .4f);
-        Tube(portal, new(-28, F + HallClear - .08f, 26), false, 0); Tube(portal, new(-20, F + HallClear - .08f, 26), false, 1);
-        FloorLoot("service portal", -34.5f, 18.5f, -16.5f, 33.5f, F, .3f, 3f, .6f);
-        Enemy("service portal", -26, F, 24); Enemy("service portal east", -18.5f, F, 31);
+        ExitA2Gates(portal);   // batch 6: a real gate line and service kiosk (RailPassengerStationV3Rooms.ExitA2Gates)
 
         var lost = RoomV3(t, "Lost and found", -36, 36, -29, 52, F, HallClear, tile, vinyl, null, Solid, Solid, Solid);
         for (int i = 0; i < 3; i++) { P(lost, "Lost property shelf", -29.6f, F + .6f, 39 + i * 4.5f, .7f, 1.2f, 3f, steel); TopLoot("lost and found", new(-29.6f, F + 1.2f, 38.2f + i * 4.5f), .7f); TopLoot("lost and found", new(-29.6f, F + 1.2f, 39.8f + i * 4.5f), .7f); }
@@ -464,7 +540,6 @@ public static partial class RailAbandonedStation
         P(vault, "Cable drum", -31.2f, F + .6f, 132.6f, 1.2f, 1.2f, 1.2f, wood); TopLoot("cable vault", new(-31.2f, F + 1.2f, 132.6f), 1f);
         foreach (float x in new[] { -35.55f, -30.45f }) P(vault, "Overhead cable tray", x, F + 2.06f, 126f, .45f, .08f, 15.5f, steel, false);
         for (int i = 0; i < 4; i++) PipeRun(vault, "Conduit drop", new[] { new Vector3(-35.4f, F + 1.85f, 118.8f + i * 1.1f), new Vector3(-35.4f, F + 2.02f, 118.8f + i * 1.1f) }, .04f, steel);
-        Sign3(vault, "DANGER   LIVE CABLES", new(-30.2f, -1.0f, 131.5f), -90, .28f);
         Tube(vault, new(-33, F + HallClear - .08f, 129), true, 1);
         FloorLoot("cable vault", -35.5f, 118.5f, -30.5f, 133.5f, F, 1f, 2.4f, .5f);
         Enemy("cable vault", -32.5f, F, 132);
@@ -696,7 +771,7 @@ public static partial class RailAbandonedStation
         P(t, "Keystone", 0, TunnelRoof + .7f, At(0, 0, .55f).z, .7f, 1.1f, .2f, yellow);
         P(t, "Arch hazard band", 0, TunnelRoof + .2f, At(0, 0, .58f).z, TunnelHalf * 2, .12f, .05f, yellow, false);
         // Station name sign over the arch, lit by two cowl lamps.
-        float signY = TunnelRoof + 1.95f;
+        float signY = TunnelRoof + 3.65f;   // batch 6: above the arch pilasters (top 6.6) now the mesh-lettered board is ~10 m wide
         SignBoard(t, StationName, At(0, signY, .25f), south ? 180 : 0, .55f);
         foreach (float x in new[] { -3.2f, 3.2f })
         {
