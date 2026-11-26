@@ -1,5 +1,20 @@
 # Quarry / twin mine layout
 
+## November 26 machine rebuild
+
+Requested: better versions of the four Quarry machines at realistic scale and shape, still low poly, in the Quackville palette, with every cab enterable. `RailQuarryMine.Machines.cs` now builds them, and **Duck Rails > Authoring > Quarry Mine > Rebuild machines** swaps only those four groups in the saved prefab, keeps the terrain, spawns and the hoist wall rubble, rebakes the crawl graph and clears the lighting bindings. Run **Bake Open Block And Keep Open** afterwards.
+
+- Summit shaft hoist: a timber stiff-leg derrick with a hand crab winch, sheave and hook over the collar. No cab. The fall line through the collar stays clear.
+- Pit crane: a full-size lattice-boom crawler crane (the old one was scaled to 72%). Two crawler tracks, a slewing house with engine housing and counterweight, an A-frame, pendants and a hook block. Four steps climb to a side walkway and an open doorway into the operator cab, which has a seat and levers.
+- Loader: an articulated wheel loader with four tyres, a centre pivot, lift arms and a toothed bucket. A four-rung ladder with solid risers leads to an open cab doorway.
+- Tunnel boring machine: a 4.2 m gripper machine with a cutter head and disc cutters, a shield, gripper shoes, a trailing gantry and tail conveyor. Three steps lead into a walk-in operator cabin on the gantry. The old vent duct is gone.
+
+Each machine is merged into one flat-shaded mesh per material, so the crane dropped from 110 renderers to 24 and the loader from 102 to 6. Triangle counts are 2,860 for the crane, 2,220 for the loader, 2,648 for the hoist and 3,860 for the borer. New materials are tinted copies of Quackville materials in `Assets/DuckRails/QuarryMine`.
+
+**Check machine cabs** in the same menu writes [the cab report](validation/quarry-machines/checks.txt): each cab has a supported landing, standing room, a doorway that passes a 1.65 m capsule, headroom and steps with rises of 0.30 to 0.44 m, and every saved coal, gold and enemy marker still passes placement validation. `RailQuarryMineChecks.Run()` passed after the rebuild and the lighting rebake. Before and after captures are in `output/quarry-machines/`. Headset entry, step feel and scale are queued for playtest.
+
+The Quarry mountain commit was merged from the B clone into this checkout before the work, so B needs to pull this commit before further Quarry edits there.
+
 ## November 25 mountain quarry blockout
 
 The B Quarry uses a gravel floor and a long, elevated western boundary. Four short flights connect broad exposed rock shelves to the +14.4 m hoist summit. Fractured buttresses, ledge slabs and loose rock mark the changes in height. The stair rails follow the exposed sides of the flights. Tall firs and thick-trunked trees rise behind the ledges. An extruded CutePixel QUACKRRY sign spans the south entrance. Its two-rail timber fence reaches both long side fences, which follow the ground one metre inside the lateral edges.

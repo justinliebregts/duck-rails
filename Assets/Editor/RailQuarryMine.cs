@@ -606,92 +606,6 @@ public static partial class RailQuarryMine
         pool.transform.localPosition=new(23,-6.23f,88);pool.transform.localScale=new(6.4f,1,10.5f);
     }
 
-    static void Loader(Transform root){
-        var p=Group(root,"Articulated quarry loader");p.localPosition=new(13,0,145);p.localRotation=Quaternion.Euler(0,115,0);
-        var paint=Finish("Loader marigold",new(.84f,.49f,.095f));
-        var rubber=Finish("Industrial rubber",new(.075f,.084f,.088f));var glassBlue=Finish("Loader glazing",new(.16f,.30f,.36f));
-        foreach(float side in new[]{-1f,1f})foreach(float z in new[]{-1.82f,1.73f}){
-            float x=side*1.38f;
-            Tube(p,"Tyre",new(x-.36f,.94f,z),new(x+.36f,.94f,z),.94f,rubber,true);
-            Tube(p,"Wheel hub",new(x+side*.345f,.94f,z),new(x+side*.405f,.94f,z),.55f,paint);
-            Tube(p,"Hub cap",new(x+side*.403f,.94f,z),new(x+side*.47f,.94f,z),.22f,steel);
-            for(int j=0;j<14;j++){float a=j*Mathf.PI/7;
-                var lug=Solid(p,"Tyre lug",new(x,.94f+.91f*Mathf.Cos(a),z+.91f*Mathf.Sin(a)),new(.71f,.11f,.24f),rubber,false);
-                lug.transform.localRotation=Quaternion.Euler(a*Mathf.Rad2Deg,side*12,0);}
-        }
-        Solid(p,"Rear chassis",new(0,1.22f,-1.23f),new(2.63f,.62f,2.79f),steel);
-        Solid(p,"Engine bonnet",new(0,1.99f,-2.12f),new(2.55f,1.14f,1.81f),paint);
-        Solid(p,"Counterweight",new(0,1.13f,-3.08f),new(3.07f,.62f,.44f),paint);
-        for(int j=0;j<6;j++)Solid(p,"Engine grille",new(0,1.63f+.13f*j,-3.036f),new(1.97f,.069f,.045f),rubber,false);
-        Tube(p,"Exhaust stack",new(.9f,2.53f,-2.18f),new(.9f,3.65f,-2.18f),.12f,steel);
-        Solid(p,"Cab pedestal",new(0,1.77f,-.36f),new(2.0f,.73f,1.87f),steel);
-        Solid(p,"Operator cab",new(0,2.87f,-.36f),new(2.03f,1.85f,1.74f),glassBlue);
-        foreach(float x in new[]{-1.03f,1.03f})foreach(float z in new[]{-1.24f,.53f})
-            Solid(p,"Cab pillar",new(x,2.89f,z),new(.15f,1.98f,.15f),paint);
-        Solid(p,"Cab roof",new(0,3.92f,-.36f),new(2.4f,.22f,2.14f),paint);
-        Solid(p,"Articulation joint",new(0,1.28f,.75f),new(1.41f,.73f,1.37f),steel);
-        foreach(float x in new[]{-.83f,.83f}){
-            Beam(p,"Bucket lift arm",new(x,1.94f,1.29f),new(x,.82f,3.67f),.32f,paint);
-            Tube(p,"Lift cylinder",new(x,.98f,1.27f),new(x,1.44f,2.24f),.16f,steel);
-            Tube(p,"Polished piston",new(x,1.44f,2.24f),new(x,1.57f,2.58f),.095f,glassBlue);
-        }
-        Solid(p,"Bucket sole",new(0,.23f,3.98f),new(3.37f,.18f,1.43f),steel);
-        Solid(p,"Curved bucket back",new(0,.67f,3.41f),new(3.5f,.94f,.20f),paint).transform.localRotation=Quaternion.Euler(-18,0,0);
-        foreach(float x in new[]{-1.67f,1.67f})Solid(p,"Bucket side plate",new(x,.54f,3.93f),new(.146f,.62f,1.22f),paint);
-        for(int i=0;i<6;i++)Solid(p,"Cutting tooth",new(-1.43f+i*.57f,.17f,4.76f),new(.23f,.14f,.46f),steel);
-    }
-    static void Crane(Transform root)
-    {
-        var p=Group(root,"Crane");
-        Box(p,"Crane pad",new(30,.1f,137),new(12,.2f,10),gravel);
-        foreach(float x in new[]{27.6f,32.4f})
-            Solid(p,"Crawler tread",new(x,.88f,137),new(1.25f,1.35f,6.9f),steel);
-        Solid(p,"Slewing base",new(30,1.8f,137),new(5.2f,.9f,5.2f),yellow);
-        Solid(p,"Engine housing",new(31,3,138),new(2.7f,2.1f,4),yellow);
-        Solid(p,"Operator cab",new(28.5f,3.45f,136),new(2.3f,2.7f,2.7f),yellow);
-        Solid(p,"Cab front glazing",new(28.5f,3.8f,134.6f),new(1.93f,1.45f,.1f),glass,false);
-        Solid(p,"Cab side glazing",new(27.32f,3.8f,136),new(.1f,1.45f,2.15f),glass,false);
-        Solid(p,"Counterweight",new(30,2.85f,140),new(5.4f,1.65f,1.65f),steel);
-        Vector3 foot=new(30,2.9f,134.8f), tip=new(30,13.5f,116);
-        for(int i=0;i<2;i++){
-            var side=Vector3.right*(i==0?-.72f:.72f);
-            var a=foot+side;var b=tip+side;var up=Vector3.up*1.02f;
-            Beam(p,"Boom chord",a,b,.21f,yellow);Beam(p,"Boom chord",a+up,b+up,.21f,yellow);
-            for(int j=0;j<7;j++){
-                var lower=Vector3.Lerp(a,b,j/7f);var upper=Vector3.Lerp(a,b,(j+1)/7f);
-                Beam(p,"Lattice brace",lower,upper+up,.15f,steel);
-                Beam(p,"Lattice brace",lower+up,upper,.13f,yellow);
-            }
-            Beam(p,"Backstay",new(30+side.x,4,140),b+up,.10f,steel);
-        }
-        Beam(p,"Head sheave",tip-Vector3.right*.8f,tip+Vector3.right*.8f,.34f,yellow);
-        Beam(p,"Hoist cable",tip,new(30,3.6f,116),.09f,steel);
-        foreach(float x in new[]{28.8f,31.2f})Beam(p,"Bucket sling",new(30,3.6f,116),new(x,2.2f,116),.10f,steel);
-        Solid(p,"Suspended ore skip",new(30,1.5f,116),new(2.7f,1.6f,2.55f),yellow);
-        Solid(p,"Ore in skip",new(30,2.32f,116),new(2.32f,.2f,2.2f),rock);
-        var wheelMetal=Finish("Crane running gear",new(.25f,.255f,.23f));
-        foreach(float side in new[]{-1f,1f}){
-            float x=30+side*2.4f;
-            for(int i=0;i<5;i++){
-                float z=134.62f+i*1.18f;
-                Tube(p,"Crawler road wheel",new(x+side*.59f,.91f,z),new(x+side*.71f,.91f,z),.49f,wheelMetal);
-            }
-            for(int j=0;j<11;j++)Solid(p,"Tread shoe",new(x,.29f,133.83f+j*.62f),new(1.39f,.19f,.34f),steel,false);
-        }
-        Tube(p,"Turntable bearing",new(30,1.59f,137),new(30,1.88f,137),2.85f,wheelMetal);
-        Solid(p,"Cab canopy",new(28.5f,4.88f,136),new(2.61f,.17f,3.02f),yellow);
-        for(int i=0;i<6;i++)Solid(p,"Engine louvre",new(32.405f,2.45f+i*.20f,138.18f),new(.10f,.095f,2.49f),steel,false);
-        Tube(p,"Engine exhaust",new(31.5f,4.01f,138.98f),new(31.5f,5.15f,138.98f),.19f,steel);
-        for(int i=0;i<4;i++)Beam(p,"Cab ladder rung",new(26.96f,1.68f+i*.36f,136.54f),new(26.96f,1.68f+i*.36f,137.22f),.09f,wheelMetal);
-        foreach(float z in new[]{136.54f,137.22f})Beam(p,"Cab ladder stile",new(26.96f,1.44f,z),new(26.96f,2.9f,z),.10f,wheelMetal);
-        Tube(p,"Hoist winch",new(28.55f,4.18f,139.36f),new(30.34f,4.18f,139.36f),.51f,wheelMetal);
-        for(int j=0;j<6;j++)Tube(p,"Winch rope winding",new(28.66f+j*.24f,4.18f,139.36f),new(28.77f+j*.24f,4.18f,139.36f),.53f,steel);
-        foreach(float x in new[]{29.42f,30.58f})Tube(p,"Boom pulley",new(x-.11f,13.55f,116),new(x+.11f,13.55f,116),.56f,wheelMetal);
-        Tube(p,"Hook block",new(29.78f,3.77f,116),new(30.22f,3.77f,116),.32f,wheelMetal);
-        foreach(float x in new[]{28.70f,31.30f})Solid(p,"Skip corner strap",new(x,1.48f,114.69f),new(.18f,1.65f,.11f),steel,false);
-        Lamp(p,"Crane worklight",new(28.5f,4.75f,134.53f),true,65);
-    }
-
     static Texture2D AggregateTexture()
     {
         const int size=192;
@@ -842,59 +756,6 @@ public static partial class RailQuarryMine
             surf.Build(sign,word+" solid CutePixel letters",ivory,false);
         }finally{RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(image);}
     }
-    static void SummitHoist(Transform root){
-        var rig=Group(root,"Summit shaft hoist");rig.localPosition=new(-42,14.4f,106);
-        var iron=Finish("Headframe iron",new(.225f,.20f,.165f));var pale=Finish("Weathered headframe",new(.47f,.31f,.18f));
-        void Timber(Vector3 a,Vector3 b,float w)=>Beam(rig,"Headframe timber",a,b,w,pale);
-        // A three-sided collar leaves the south lip accessible from the summit stairs.
-        foreach(float x in new[]{-3.48f,3.62f})Solid(rig,"Shaft collar",new(x,.11f,0),new(x<0?.96f:1.24f,.22f,6.96f),wood);
-        Solid(rig,"Rear collar",new(0,.11f,3.5f),new(5.998f,.22f,1f),wood);
-        Rail(rig,new(-3.82f,.22f,-3.39f),new(-3.82f,.22f,3.63f));
-        Rail(rig,new(-3.82f,.22f,3.8f),new(4.96f,.22f,3.8f));
-        Solid(rig,"Winch sill",new(4.55f,.22f,.1f),new(2.72f,.42f,6.5f),wood);
-        foreach(float z in new[]{-1.46f,1.46f}){
-            Timber(new(3.27f,.36f,z),new(4.57f,5.35f,z),.41f);
-            Timber(new(5.87f,.36f,z),new(4.57f,5.28f,z),.36f);
-            Solid(rig,"Bolted bearing plate",new(4.56f,5.15f,z),new(.77f,.56f,.16f),iron);
-        }
-        Timber(new(4.58f,5.28f,-1.6f),new(4.58f,5.28f,1.6f),.42f);
-        void Reel(string name,Vector3 c,float radius,float width){
-            Tube(rig,name,c-Vector3.forward*width/2,c+Vector3.forward*width/2,radius,iron);
-        }
-        var drum=new Vector3(4.54f,1.13f,-.1f);Reel("Winding drum",drum,.62f,2.3f);
-        for(int j=0;j<11;j++)Reel("Wound rope",drum+Vector3.forward*(-1.02f+j*.20f),.66f,.10f);
-        foreach(float z in new[]{-1.35f,1.14f})Solid(rig,"Winch bearing",new(4.54f,.88f,z),new(1.30f,.99f,.22f),iron);
-        var wheel=new Vector3(4.57f,5.14f,-1.67f);Reel("Sheave hub",wheel,.26f,.47f);
-        Sheave(rig,wheel,iron);
-        var tip=new Vector3(-1.72f,4.65f,-1.74f);
-        Timber(new(4.1f,2.45f,-1.6f),tip,.34f);Timber(new(4.5f,3.86f,-1.6f),tip,.24f);
-        Reel("Jib sheave",tip,.36f,.31f);
-        Beam(rig,"Hoist rope",drum+new Vector3(-.53f,0,-.93f),wheel+Vector3.left*1.15f,.07f,steel);
-        Beam(rig,"Hoist rope",wheel+Vector3.up*1.17f,tip+Vector3.up*.32f,.07f,steel);
-        Beam(rig,"Drop rope",tip,new(tip.x,1.70f,tip.z),.065f,steel);
-        var skip=new Vector3(tip.x,.47f,tip.z);
-        Solid(rig,"Bucket sole",skip,new(1.05f,.12f,1.05f),iron);
-        foreach(float sign in new[]{-1f,1f}){
-            Solid(rig,"Bucket plate",skip+new Vector3(sign*.52f,.33f,0),new(.10f,.68f,1.10f),iron);
-            Solid(rig,"Bucket plate",skip+new Vector3(0,.33f,sign*.50f),new(.925f,.68f,.10f),iron);
-            Beam(rig,"Bucket bail",skip+new Vector3(sign*.48f,.65f,0),new(tip.x+sign*.042f,1.70f,tip.z),.075f,steel);
-        }
-        Solid(rig,"Lamp upright",new(5.65f,1.98f,-2.32f),new(.14f,3.55f,.14f),iron);
-        Solid(rig,"Winch lamp bracket",new(5.31f,3.72f,-2.32f),new(.79f,.13f,.16f),iron);
-        Lamp(rig,"Winch work light",new(4.98f,3.61f,-2.32f),true,67);
-        Solid(rig,"Spare tackle crate",new(4.57f,.82f,2.48f),new(1.03f,.79f,.84f),pale);
-        var slab=AssetDatabase.LoadAssetAtPath<Mesh>(Folder+"/Meshes/Split slate slab.asset");
-        for(int tier=0;tier<5;tier++){
-            float y=-1.2f-tier*3.35f;
-            foreach(float x in new[]{-2.96f,2.96f})Timber(new(x,y,-3),new(x,y,3),.22f);
-            foreach(float z in new[]{-2.96f,2.96f})Timber(new(-2.85f,y,z),new(2.85f,y,z),.215f);
-            for(int j=0;j<4;j++){var b=MeshGo(rig,"Wall rubble",slab,rock);float offset=1.7f*Mathf.Sin(1.82f*tier+j);
-                b.transform.localPosition=new(j<2?(j==0?-3f:3f):offset,y-.9f,j<2?offset:(j==2?-3f:3f));
-                b.transform.localScale=new(.46f,.63f,.52f);b.transform.localRotation=Quaternion.Euler(0,47*j+19*tier,0);}
-            if(tier%2==0)ColdShaftLamp(rig,tier,new(-2.90f,y-.14f,.77f));
-        }
-    }
-
     static void MinePuddles(Transform root){
         var water=Finish("Mine seep water",new(.15f,.24f,.265f));water.SetFloat("_Smoothness",.91f);
         var floor=new Surface();var rng=new System.Random(7003);
@@ -912,60 +773,6 @@ public static partial class RailQuarryMine
         }
         floor.Build(root,"Mine seep puddles",water,false);
     }
-    static void BoringMachine(Transform root)
-    {
-        var rig=Group(root,"Tunnel boring machine");rig.localPosition=new(-13,-6,130);
-        var wheel=RingMesh("Mining cylinder",new[]{1f,1},new[]{-.5f,.5f},20,0);
-        var cutter=Finish("Cutter steel",new(.40f,.45f,.49f));
-        var orange=Finish("Borer safety orange",new(.91f,.39f,.085f));
-        void Drum(string name,float y,float z,float radius,float length,Material mat){
-            var g=MeshGo(rig,name,wheel,mat);g.transform.localPosition=new(0,y,z);g.transform.localScale=new(radius,length,radius);
-            g.transform.localRotation=Quaternion.Euler(90,0,0);
-        }
-        Drum("Segmented shield",2.15f,3.8f,1.76f,4.7f,orange);
-        Drum("Cutter head",2.25f,6.75f,2.19f,.64f,cutter);
-        Drum("Spindle",2.25f,6.84f,.56f,1.1f,yellow);
-        for(int i=0;i<12;i++){
-            float angle=i*Mathf.PI/6;float dx=Mathf.Cos(angle),dy=Mathf.Sin(angle);
-            var arm=Solid(rig,"Radial cutter arm",new(1.21f*dx,2.25f+1.21f*dy,7.12f),new(1.46f,.27f,.31f),yellow,false);
-            arm.transform.localRotation=Quaternion.Euler(0,0,i*30);
-            var tooth=Solid(rig,"Replaceable disc cutter",new(1.95f*dx,2.25f+1.95f*dy,7.24f),new(.38f,.35f,.57f),steel,false);
-            tooth.transform.localRotation=arm.transform.localRotation;
-        }
-        foreach(float x in new[]{-1.17f,1.17f}){
-            Solid(rig,"Crawler assembly",new(x,1.01f,.27f),new(.57f,.59f,5.5f),steel);
-            Solid(rig,"Hydraulic thrust jack",new(x,1.29f,.2f),new(.42f,.44f,3.8f),yellow);
-        }
-        Solid(rig,"Operator cab",new(-.65f,1.96f,-1.14f),new(1.45f,1.7f,1.65f),orange);
-        Solid(rig,"Rear cab glazing",new(-.65f,2.1f,-2.0f),new(1.15f,.92f,.09f),glass,false);
-        Solid(rig,"Tail conveyor",new(.55f,1.04f,-3.1f),new(1.16f,.42f,4.7f),steel);
-        foreach(float x in new[]{.02f,1.08f})Solid(rig,"Conveyor lip",new(x,1.33f,-3.1f),new(.12f,.28f,4.7f),orange);
-        foreach(float z in new[]{-7f,-2.5f,2.2f,6.5f}){
-            foreach(float side in new[]{-1f,1f})Solid(rig,"Bore bay rib",new(side*5.55f,2.3f,z),new(.23f,4.6f,.28f),steel);
-            Solid(rig,"Bore bay crossbeam",new(0,4.68f,z),new(11.2f,.22f,.28f),steel);
-        }
-        Drum("Rear drive collar",2.15f,1.32f,1.61f,.35f,cutter);
-        for(int i=0;i<6;i++){
-            float a=i*Mathf.PI/3;Solid(rig,"Drive fastener",new(1.32f*Mathf.Cos(a),2.15f+1.32f*Mathf.Sin(a),1.12f),new(.21f,.21f,.17f),yellow,false);
-        }
-        for(int j=-7;j<=7;j+=2)Solid(rig,"Machine track sleeper",new(0,.04f,j),new(3.18f,.23f,.29f),wood,false);
-        foreach(float side in new[]{-1f,1f}){
-            float x=side*1.17f;
-            Solid(rig,"Machine rail",new(x,.21f,0),new(.15f,.19f,15.55f),cutter,false);
-            for(int j=-2;j<=2;j+=2)Tube(rig,"Bogie wheel",new(x-.27f,.64f,j),new(x+.27f,.64f,j),.34f,cutter);
-            for(int j=0;j<3;j++)Tube(rig,"Thrust line",new(side*1.5f,1.41f+j*.16f,-1.64f),new(side*1.5f,1.41f+j*.16f,2.58f),.061f,cutter);
-            for(int j=0;j<7;j++){float z=-6.35f+2.08f*j;float xx=side*(3.83f+.46f*Mathf.Sin(j*1.9f));
-                var debris=MeshGo(rig,"Bore spoil",AssetDatabase.LoadAssetAtPath<Mesh>(Folder+"/Meshes/Split slate slab.asset"),rock);
-                debris.transform.localPosition=new(xx,MineFloor(-13+xx,130+z)+6-.11f,z);debris.transform.localScale=new(.65f+.13f*(j%3),.67f+.19f*(j%4),.79f);debris.transform.localRotation=Quaternion.Euler(0,51*j,0);}
-        }
-        Solid(rig,"Cab visor",new(-.65f,2.83f,-1.91f),new(1.64f,.13f,.59f),steel);
-        for(int i=0;i<5;i++)Solid(rig,"Cab cooling slot",new(-1.394f,1.62f+i*.13f,-1.18f),new(.064f,.07f,1.12f),cutter,false);
-        for(int i=0;i<7;i++)Solid(rig,"Conveyor flight",new(.55f,1.29f,-5.18f+i*.61f),new(.91f,.085f,.09f),cutter,false);
-        for(int i=0;i<3;i++)Drum("Shield reinforcing ring",2.15f,2.15f+i*1.38f,1.81f,.13f,cutter);
-        Lamp(rig,"Service flood",new(-.65f,2.72f,-2.16f),true,65);
-        Lamp(rig,"Cutter inspection lamp",new(2.9f,4.52f,6.5f),false,28);
-    }
-
     static void RoadFence(Transform root)
     {
         var fences=Group(root,"Yellow haul road fence");
@@ -1325,8 +1132,7 @@ public static partial class RailQuarryMine
         Crane(p);
         var crane=p.Find("Crane");
         crane.localRotation=Quaternion.Euler(0,90,0);
-        crane.localScale=Vector3.one*.72f;
-        crane.localPosition=new Vector3(36.1f,1.5f,75)-crane.localRotation*(new Vector3(30,0,137)*.72f);
+        crane.localPosition=CraneSite;
         RoadFence(p);
         Loader(p);
         Outcrops(p);ClearCornerTrees(p);HeadframeYard(p);HaulTurnout(p);RidgeTrees(p);
