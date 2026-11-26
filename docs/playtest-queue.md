@@ -1,5 +1,9 @@
 # Playtest queue
 
+## Whole-number coal fuel, 10% higher | queued for playtest, November 26, 2026
+
+Deposit coal solo and with two clients. Each deposit should float a whole number (+5 solo, +3 for two players) that matches on both clients, and the cockpit gauge should show whole numbers only, reading 0 only when the tank is empty. Judge whether the difficulty is now right at the crew sizes played ([values by crew](resource-balance.md#fuel)). Editor checks passed; no Play Mode run.
+
 ## Quackwatt slime, water, tower walkway and lighting | queued for playtest, November 26, 2026
 
 On headset, visit Quackwatt through Test Block Order. In the drum yard, check the thick slime edges and the 3 and 2 pipe stacks with the east rack empty. Enter the settling pond, refueling pool and all four flume steps. Duck under each surface and confirm teal fog, muffled sound, splash in and out, footsteps and hand splashes, and that every basin can be left by its steps. Check that opaque water looks acceptable from above and below. Walk the three-pipe walkway between the tower lookouts, including footing, falls, enemy behavior on it and frame rate. Judge the dimmer maintenance shed, gatehouse and Turbine Hall front, and the furnished service annex. With two clients, confirm loot on the raised pool deck and enemy pursuit around the basins.

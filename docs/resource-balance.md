@@ -45,11 +45,20 @@ crew increase (accepted). Host handoff does not change N.
   first scavenging block. This supersedes the earlier 25-fuel start.
 - November 24 (Justin): three times the coal at a third of the value, so players find
   coal more often; total fuel per block is unchanged and gold is unchanged.
-- Coal value: 50 / (12 * E) fuel per chunk (4.17 solo, 2.6 duo).
-- Target collection: 12 * E chunks per block (50 fuel). Fractional targets are averages.
-- Spawn ceiling: floor(18 * E) chunks per scavenging block, at most 75 fuel total
+- November 26 (Justin, the game was slightly too hard): coal value is 50 / (12 * E),
+  plus 10%, rounded up to a whole number. Fuel added and the cockpit gauge show no
+  decimals (the gauge rounds the burning tank up, so 0 means empty).
+- Rounding up makes the real increase differ by crew size:
+
+  | Crew | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+  |---|---|---|---|---|---|---|---|---|
+  | Fuel per chunk | 5 | 3 | 3 | 2 | 2 | 2 | 1 | 1 |
+  | Over old value | +20% | +15% | +58% | +34% | +63% | +92% | +10% | +25% |
+  | Chunks for 50 fuel | 10 | 17 | 17 | 25 | 25 | 25 | 50 | 50 |
+  | Spawned fuel per block | 90 | 84 | 117 | 100 | 122 | 144 | 82 | 93 |
+
+- Spawn ceiling: floor(18 * E) chunks per scavenging block
   (solo 18, duo 28, three 39, four 50, eight 93).
-- Eight players: 93 chunks spawned, about 62 needed, about 0.80 fuel/chunk.
 - Capacity: every normal-run block holds the eight-player 93: Container Yard (168),
   Convenience Store (126), Farm (105), Roadside Motel (96 after the November 24 pass,
   [checks](validation/motel-leisure/coal-capacity-checks.txt)) and Skyscraper (202).
@@ -58,7 +67,8 @@ crew increase (accepted). Host handoff does not change N.
   skipped stops; no mandatory-stop rule. Excess fuel beyond the tank cap is discarded
   on insertion, retaining the existing consumption behavior.
 
-The original 20/block and 30 spawned fuel/block discussion is rescaled to 50/75.
+The original 20/block and 30 spawned fuel/block discussion was rescaled to 50/75
+(superseded by the November 26 values above).
 Starting fuel was subsequently increased to 50 to reach the first encounter's middle.
 The 100-point tank is capacity, not a full-run budget.
 The current normal tracks are 160 m, except Farm at approximately 160.246 m. Distance

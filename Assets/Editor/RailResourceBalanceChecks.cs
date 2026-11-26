@@ -18,8 +18,9 @@ public static class RailResourceBalanceChecks
         {
             int coal = RailResourceBalance.CoalCount(crew), gold = RailResourceBalance.GoldCount(crew);
             float value = RailResourceBalance.CoalValue(crew);
-            Check(coal * value <= 75.0001f && coal * value > 65, "Fuel availability ceiling and useful surplus");
-            Check(Math.Abs(RailResourceBalance.CoalTargetPerWorker * (float)RailResourceBalance.Workers(crew) * value - 50) < .0001f, "Collection target buys one block");
+            // Crew 1-8: +10% on 50 / (12 x workers), rounded up to whole fuel.
+            Check(value == new[] { 5f, 3f, 3f, 2f, 2f, 2f, 1f, 1f }[crew - 1], "Whole coal value for crew " + crew);
+            Check(coal * value >= 75, "Spawned fuel keeps a useful surplus");
             Check(Enumerable.Range(1, gold).Sum(i => RailResourceBalance.GoldCredit(gold, i)) == 100, "Full gold budget");
             Check(Enumerable.Range(1, gold * 4).Sum(i => RailResourceBalance.GoldCredit(gold, i)) == 400, "Four-block gold carry");
             var state = RailRoute.ChooseNormal("resource-check", blocks, 427);

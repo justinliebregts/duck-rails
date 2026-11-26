@@ -599,8 +599,9 @@ public sealed class RailExpedition : MonoBehaviour, IOnEventCallback
     void Present()
     {
         double now = PhotonNetwork.Time;
-        if (gauge != null) gauge.text = "FUEL  " + PhotonSession.CurrentFuel.ToString("0.0") +
-            (gauge.GetComponentInParent<RailTrainAssembly>() == null ? "\nRelease coal into furnace (+2.5)" : "");
+        // Whole numbers only; round up so the gauge reads 0 only when truly empty.
+        if (gauge != null) gauge.text = "FUEL  " + Mathf.CeilToInt(PhotonSession.CurrentFuel - .001f) +
+            (gauge.GetComponentInParent<RailTrainAssembly>() == null ? "\nRelease coal into furnace (+" + RailResourceBalance.CoalValue(Crew) + ")" : "");
         float progress = State.BridgeProgress(now);
         bridgeDeck.localRotation = Quaternion.Euler(-80 * (1 - progress), 0, 0);
         // Bridge state is synced time, so each client sees the 100% crossing itself; play it locally for a 3D sound everyone hears.

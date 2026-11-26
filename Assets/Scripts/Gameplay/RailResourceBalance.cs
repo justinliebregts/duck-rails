@@ -11,7 +11,11 @@ public static class RailResourceBalance
     public const int CoalTargetPerWorker = 12, CoalSpawnsPerWorker = 18;
     public const int GoldSpawnsPerWorker = 10, GoldBudgetPerBlock = 100;
     public static decimal Workers(int crew) => 1m + (Math.Clamp(crew, 1, 8) - 1) * ParticipationFactor;
-    public static float CoalValue(int crew) => FuelPerBlock / (CoalTargetPerWorker * (float)Workers(crew));
+    // November 26 (Justin): +10% per coal, then rounded up so every deposit adds a whole number.
+    public const decimal CoalFuelBonus = 1.1m;
+    // Decimal keeps exact results from ceiling one too high.
+    public static float CoalValue(int crew) =>
+        (float)Math.Ceiling((decimal)FuelPerBlock * CoalFuelBonus / (CoalTargetPerWorker * Workers(crew)));
     public static int CoalCount(int crew) => (int)(CoalSpawnsPerWorker * Workers(crew));
     public static int GoldCount(int crew) => (int)(GoldSpawnsPerWorker * Workers(crew));
     public const int MaxCrew = 8;

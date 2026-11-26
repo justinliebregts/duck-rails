@@ -311,7 +311,7 @@ public sealed class RailWorld : MonoBehaviour
             GUILayout.Label("Owner: " + PhotonNetwork.MasterClient?.NickName + " launches at the departure gate.");
         if (PhotonSession.Phase == RailPhase.Running)
         {
-            GUILayout.Label("Fuel: " + PhotonSession.CurrentFuel.ToString("0.0") + "   Stops: 5 + bridge");
+            GUILayout.Label("Fuel: " + Mathf.CeilToInt(PhotonSession.CurrentFuel - .001f) + "   Stops: 5 + bridge");
             GUI.enabled = session.WorldReady && !session.HasRoomRequest;
             if (GUILayout.Button("GO — accelerate")) session.SetTrainMoving(true);
             if (GUILayout.Button("STOP — brake")) session.SetTrainMoving(false);
