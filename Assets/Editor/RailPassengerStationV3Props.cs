@@ -129,24 +129,41 @@ public static partial class RailAbandonedStation
 
     // ---------------- swept tunnel ----------------
     // One continuous mesh per tunnel: U-shaped section (two walls and the roof) swept along the curved,
-    // graded track every 0.5 m. East wall strips are left out across the fan bays.
+    // graded track every 2 m (Justin: half the density or less). East wall strips are left out across
+    // the fan bays (fan centre +/- FanBayHalf), and both ends are capped so the wall thickness never shows.
+    const float SweepStep = 2f, FanBayHalf = 2f;
     static void SweepTunnel(Transform t, string name, float z0, float z1, float[] fans)
     {
         float hi = TunnelHalf + .2f, lo = TunnelHalf - .2f, top = TunnelRoof + .3f, bottom = -.5f;
         Vector2[] loop = { new(-hi, bottom), new(-hi, top), new(hi, top), new(hi, bottom), new(lo, bottom), new(lo, TunnelRoof), new(-lo, TunnelRoof), new(-lo, bottom) };
         bool[] roofEdge = { false, true, false, false, false, true, false, false };
         bool[] eastEdge = { false, false, true, true, true, false, false, false };
-        string key = name + "-" + TunnelRoof.ToString("F2") + "-" + TunnelHalf.ToString("F2");
+        string key = name + "-" + TunnelRoof.ToString("F2") + "-" + TunnelHalf.ToString("F2") + "-s" + SweepStep;
         var mesh = SaveProc(key, () =>
         {
             var mb = new MB(2);
             Vector3 Centre(float z) => new(RailX(z), RailHeight(z), z);
             Vector3 Lat(float z) { var tg = new Vector3(RailX(z + .25f) - RailX(z - .25f), 0, .5f); return Vector3.Cross(Vector3.up, tg).normalized; }
-            float along = 0;
-            for (float z = z0; z < z1 - .001f; z += .5f)
+            // Section stations: every SweepStep, plus the fan bay edges so the gaps start and end on a section.
+            var cuts = new SortedSet<float> { z0, z1 };
+            for (float z = z0; z < z1; z += SweepStep) cuts.Add(z);
+            foreach (float f in fans) { cuts.Add(f - FanBayHalf); cuts.Add(f + FanBayHalf); }
+            var zs = cuts.Where(z => z >= z0 && z <= z1).ToArray();
+            void Cap(float z, Vector3 facing)
             {
-                float za = z, zb = Mathf.Min(z1, z + .5f); var ca = Centre(za); var cb = Centre(zb); var la = Lat(za); var lb = Lat(zb);
-                bool gap = fans.Any(f => Mathf.Abs((za + zb) / 2 - f) < 2.5f);
+                var c = Centre(z); var la = Lat(z);
+                Vector3 P(float x, float y) => c + la * x + Vector3.up * y;
+                mb.Quad(P(-hi, bottom), P(-hi, TunnelRoof), P(-lo, TunnelRoof), P(-lo, bottom), facing);
+                mb.Quad(P(-hi, TunnelRoof), P(-hi, top), P(hi, top), P(hi, TunnelRoof), facing, 1);
+                mb.Quad(P(lo, bottom), P(lo, TunnelRoof), P(hi, TunnelRoof), P(hi, bottom), facing);
+            }
+            Cap(z0, -(Centre(zs[1]) - Centre(z0)).normalized);
+            Cap(z1, (Centre(z1) - Centre(zs[zs.Length - 2])).normalized);
+            float along = 0;
+            for (int s = 0; s < zs.Length - 1; s++)
+            {
+                float za = zs[s], zb = zs[s + 1]; var ca = Centre(za); var cb = Centre(zb); var la = Lat(za); var lb = Lat(zb);
+                bool gap = fans.Any(f => Mathf.Abs((za + zb) / 2 - f) < FanBayHalf);
                 float step = (cb - ca).magnitude; float u0 = 0;
                 for (int i = 0; i < loop.Length; i++)
                 {
@@ -161,8 +178,8 @@ public static partial class RailAbandonedStation
                     u0 += len;
                 }
                 // Close the east wall where a fan bay starts or ends.
-                bool gapNext = fans.Any(f => Mathf.Abs(zb + .25f - f) < 2.5f) && zb < z1 - .001f;
-                if (gap != gapNext && zb < z1 - .001f)
+                bool gapNext = s + 2 < zs.Length && fans.Any(f => Mathf.Abs((zb + zs[s + 2]) / 2 - f) < FanBayHalf);
+                if (gap != gapNext && s + 2 < zs.Length)
                 {
                     var dirT = (cb - ca).normalized;
                     mb.Quad(cb + lb * lo + Vector3.up * bottom, cb + lb * hi + Vector3.up * bottom, cb + lb * hi + Vector3.up * TunnelRoof, cb + lb * lo + Vector3.up * TunnelRoof, gap ? -dirT : dirT);
@@ -172,6 +189,38 @@ public static partial class RailAbandonedStation
             return mb;
         }, true);
         Proc(t, name, mesh, new[] { tile, roof }, Vector3.zero, Quaternion.identity, true, true);
+    }
+
+    // One continuous ballast bed under the whole line (replaces the per-metre bed boxes): 9 m wide, 0.3 m
+    // deep, top at rail height, sectioned every SweepStep plus the station and tunnel ends.
+    static GameObject SweepBed(Transform t, Material m)
+    {
+        const float half = 4.5f, depth = .3f;
+        var mesh = SaveProc("rail-bed-s" + SweepStep, () =>
+        {
+            var mb = new MB();
+            var cuts = new SortedSet<float> { 0, 6, 53, 107, 154, 160 };
+            for (float z = 0; z < 160; z += SweepStep) cuts.Add(z);
+            var zs = cuts.ToArray();
+            Vector3 Centre(float z) => new(RailX(z), RailHeight(z), z);
+            Vector3 Lat(float z) { var tg = new Vector3(RailX(z + .25f) - RailX(z - .25f), 0, .5f); return Vector3.Cross(Vector3.up, tg).normalized; }
+            Vector3 P(float z, float x, float y) => Centre(z) + Lat(z) * x + Vector3.up * y;
+            float along = 0;
+            for (int s = 0; s < zs.Length - 1; s++)
+            {
+                float a = zs[s], b = zs[s + 1]; float len = (Centre(b) - Centre(a)).magnitude;
+                Vector2[] Uv(float u0, float u1) => new[] { new Vector2(u0 / 3, along / 3), new Vector2(u1 / 3, along / 3), new Vector2(u1 / 3, (along + len) / 3), new Vector2(u0 / 3, (along + len) / 3) };
+                mb.Quad(P(a, -half, 0), P(a, half, 0), P(b, half, 0), P(b, -half, 0), Vector3.up, 0, Uv(-half, half));
+                mb.Quad(P(a, -half, -depth), P(a, half, -depth), P(b, half, -depth), P(b, -half, -depth), Vector3.down, 0, Uv(-half, half));
+                foreach (float sx in new[] { -1f, 1f })
+                    mb.Quad(P(a, sx * half, -depth), P(a, sx * half, 0), P(b, sx * half, 0), P(b, sx * half, -depth), Lat(a) * sx, 0, new[] { new Vector2(along / 3, -depth / 3), new Vector2(along / 3, 0), new Vector2((along + len) / 3, 0), new Vector2((along + len) / 3, -depth / 3) });
+                along += len;
+            }
+            foreach (float z in new[] { 0f, 160f })
+                mb.Quad(P(z, -half, -depth), P(z, -half, 0), P(z, half, 0), P(z, half, -depth), z == 0 ? Vector3.back : Vector3.forward);
+            return mb;
+        }, true);
+        return Proc(t, "Rail bed (swept)", mesh, new[] { m }, Vector3.zero, Quaternion.identity, true, true);
     }
 
     // ---------------- signs (Compound style) ----------------
@@ -227,14 +276,15 @@ public static partial class RailAbandonedStation
         var c = zone.GetColor("_BaseColor");
         return AtlasTile("Pipe paint " + zone.name, "rust", false, 96, 32, 32, Color.Lerp(c, new(.55f, .4f, .35f), .35f), 2);
     }
-    static Mesh PipeMesh(float r, float len) => SaveProc("pipe-" + r.ToString("F2") + "-" + len.ToString("F2"), () =>
-        Lathe(new MB(), new[] { new Vector2(r, 0), new Vector2(r, len) }, 8), false);
+    // Capped at both ends so no open faces show where a run stops (Justin, Nov 26 batch 4).
+    static Mesh PipeMesh(float r, float len) => SaveProc("pipe-c-" + r.ToString("F2") + "-" + len.ToString("F2"), () =>
+        Lathe(new MB(), new[] { new Vector2(0, 0), new Vector2(r, 0), new Vector2(r, len), new Vector2(0, len) }, 8), false);
 
     // A pipe run through the given points: 8-sided pipe, flanges every 3 m and at bends, hangers up to ceilingY.
     static void PipeRun(Transform p, string name, Vector3[] pts, float r, Material mat, float ceilingY = float.NaN)
     {
         var t = Group(p, name);
-        var flange = SaveProc("flange-" + r.ToString("F2"), () => Lathe(new MB(), new[] { new Vector2(r * 1.45f, 0), new Vector2(r * 1.45f, .07f) }, 8), false);
+        var flange = SaveProc("flange-c-" + r.ToString("F2"), () => Lathe(new MB(), new[] { new Vector2(0, 0), new Vector2(r * 1.45f, 0), new Vector2(r * 1.45f, .07f), new Vector2(0, .07f) }, 8), false);
         for (int i = 0; i < pts.Length - 1; i++)
         {
             var a = pts[i]; var b = pts[i + 1]; float len = (b - a).magnitude; if (len < .01f) continue;
@@ -255,12 +305,39 @@ public static partial class RailAbandonedStation
     }
 
     // ---------------- low-poly fixtures ----------------
-    static Mesh UrinalMesh() => SaveProc("urinal", () =>
+    // Wall-hung urinal (Justin, Nov 26 batch 4: the lathed egg did not read as a urinal). Origin on the wall
+    // face at floor level, front toward +Z: a half-round shell whose front drops to a lip at 0.66 m, open
+    // scooped bowl with a dark floor (submesh 1), back plate, flush pipe and valve.
+    static Mesh UrinalMesh() => SaveProc("urinal-v2", () =>
     {
-        var mb = new MB();
-        Lathe(mb, new[] { new Vector2(0, .0f), new Vector2(.12f, .02f), new Vector2(.2f, .15f), new Vector2(.22f, .4f), new Vector2(.19f, .62f), new Vector2(.12f, .7f), new Vector2(0, .72f) }, 8, 1, .75f);
-        Lathe(mb, new[] { new Vector2(.025f, .7f), new Vector2(.025f, 1.25f) }, 6, 1, 1, new Vector3(0, 0, -.12f));   // flush pipe
-        Cube(mb, new Vector3(0, 1.3f, -.12f), new Vector3(.12f, .12f, .1f));                                        // flush valve
+        var mb = new MB(2);
+        const int N = 8; const float yb = .48f, lip = .66f, top = 1.02f, floorY = .56f;
+        Vector2 ro = new(.2f, .32f), ri = new(.165f, .26f);
+        Vector3 Ring(Vector2 r, float a, float y) => new(Mathf.Cos(a) * r.x, y, Mathf.Sin(a) * r.y + .02f);
+        bool Front(int i) { float m = (i + .5f) * 180f / N; return m > 50 && m < 130; }
+        float A(int i) => i * Mathf.PI / N;
+        var centreBottom = new Vector3(0, yb, .12f); var centreFloor = new Vector3(0, floorY, .12f);
+        for (int i = 0; i < N; i++)
+        {
+            float a0 = A(i), a1 = A(i + 1), am = (a0 + a1) / 2, h = Front(i) ? lip : top;
+            var dir = new Vector3(Mathf.Cos(am), 0, Mathf.Sin(am));
+            mb.Quad(Ring(ro, a0, yb), Ring(ro, a1, yb), Ring(ro, a1, h), Ring(ro, a0, h), dir);                         // outer shell
+            mb.Quad(Ring(ri, a0, floorY), Ring(ri, a1, floorY), Ring(ri, a1, h), Ring(ri, a0, h), -dir);                // inner bowl wall
+            mb.Quad(Ring(ro, a0, h), Ring(ro, a1, h), Ring(ri, a1, h), Ring(ri, a0, h), Vector3.up);                     // rim
+            mb.Tri(centreBottom, Ring(ro, a0, yb), Ring(ro, a1, yb), Vector3.down);                                      // underside
+            mb.Tri(centreFloor, Ring(ri, a0, floorY), Ring(ri, a1, floorY), Vector3.up, 1);                             // dark bowl floor
+            if (i + 1 < N && Front(i) != Front(i + 1))
+            {
+                var tangent = new Vector3(-Mathf.Sin(a1), 0, Mathf.Cos(a1)) * (Front(i) ? -1 : 1);                      // faces the open front
+                mb.Quad(Ring(ro, a1, lip), Ring(ro, a1, top), Ring(ri, a1, top), Ring(ri, a1, lip), tangent);           // side cheek of the opening
+            }
+        }
+        mb.Tri(centreBottom, Ring(ro, Mathf.PI, yb), Ring(ro, 0, yb), Vector3.down);
+        mb.Tri(centreFloor, Ring(ri, Mathf.PI, floorY), Ring(ri, 0, floorY), Vector3.up, 1);
+        Cube(mb, new Vector3(0, .78f, .02f), new Vector3(.44f, .74f, .04f));                                         // back plate
+        Cube(mb, new Vector3(0, floorY + .006f, .1f), new Vector3(.07f, .012f, .07f), 1);                              // drain
+        Lathe(mb, new[] { new Vector2(0, top - .02f), new Vector2(.02f, top - .02f), new Vector2(.02f, 1.32f), new Vector2(0, 1.32f) }, 6, 1, 1, new Vector3(0, 0, .09f));   // flush pipe
+        Cube(mb, new Vector3(0, 1.36f, .09f), new Vector3(.1f, .1f, .1f));                                           // flush valve
         return mb;
     }, false);
     static Mesh ToiletMesh() => SaveProc("toilet", () =>
@@ -284,10 +361,19 @@ public static partial class RailAbandonedStation
     }, false);
     static Mesh BinMesh() => SaveProc("bin", () => Lathe(new MB(), new[] { new Vector2(0, 0), new Vector2(.16f, 0), new Vector2(.19f, .55f), new Vector2(.2f, .56f), new Vector2(0, .56f) }, 8), false);
     static Mesh DryerMesh() => SaveProc("hand dryer", () => Extrude(new MB(), new[] { new Vector2(-.14f, -.12f), new Vector2(.14f, -.12f), new Vector2(.16f, .04f), new Vector2(.12f, .14f), new Vector2(-.12f, .14f), new Vector2(-.16f, .04f) }, 0, .22f), false);
-    static Mesh PersonSignMesh(bool woman) => SaveProc(woman ? "pictogram woman" : "pictogram man", () =>
+    static Mesh PersonSignMesh(bool woman) => SaveProc(woman ? "pictogram duck woman" : "pictogram duck man", () =>
     {
         var mb = new MB();
-        Lathe(mb, new[] { new Vector2(0, -.01f), new Vector2(.07f, -.01f), new Vector2(.07f, .01f), new Vector2(0, .01f) }, 8, 1, 1, new Vector3(0, .32f, 0));
+        // Head disc facing the viewer (lathe around Y, then the disc is rotated into the XY plane by building it flat).
+        for (int s = 0; s < 8; s++)
+        {
+            float a0 = s * Mathf.PI / 4, a1 = (s + 1) * Mathf.PI / 4; var c = new Vector3(0, .32f, 0);
+            Vector3 R(float a, float z) => c + new Vector3(Mathf.Cos(a) * .075f, Mathf.Sin(a) * .075f, z);
+            mb.Tri(c + new Vector3(0, 0, -.01f), R(a0, -.01f), R(a1, -.01f), Vector3.back);
+            mb.Tri(c + new Vector3(0, 0, .01f), R(a0, .01f), R(a1, .01f), Vector3.forward);
+            mb.Quad(R(a0, -.01f), R(a1, -.01f), R(a1, .01f), R(a0, .01f), new Vector3(Mathf.Cos((a0 + a1) / 2), Mathf.Sin((a0 + a1) / 2), 0));
+        }
+        Extrude(mb, new[] { new Vector2(.06f, .29f), new Vector2(.17f, .305f), new Vector2(.17f, .325f), new Vector2(.06f, .345f) }, -.01f, .01f);   // duck beak
         if (woman) Extrude(mb, new[] { new Vector2(-.14f, -.12f), new Vector2(.14f, -.12f), new Vector2(.05f, .22f), new Vector2(-.05f, .22f) }, -.01f, .01f);
         else Cube(mb, new Vector3(0, .07f, 0), new Vector3(.17f, .3f, .02f));
         Cube(mb, new Vector3(-.05f, -.24f, 0), new Vector3(.05f, .24f, .02f)); Cube(mb, new Vector3(.05f, -.24f, 0), new Vector3(.05f, .24f, .02f));
@@ -317,8 +403,11 @@ public static partial class RailAbandonedStation
             float door = isMen ? 55.5f : 61.0f;
             // Privacy screen just inside the doorway.
             Wall(room, "Privacy screen", true, -26.7f, door - 1.4f, door + 1.4f, F, 2.1f, ceramic);
-            var sign = SignBoard(room, isMen ? "MEN" : "WOMEN", new(-24.84f, -1.05f, door), 90, .22f);
-            Fixture(sign, "Pictogram", PersonSignMesh(!isMen), signIvory, new(isMen ? -.4f : -.55f, 0, -.012f), 0, false).transform.localScale = Vector3.one * .9f;
+            // Pictogram sized to sit inside the board, left of the word (leading spaces make room), with a beak.
+            string word = isMen ? "    MEN" : "    WOMEN"; const float letterH = .22f;
+            var sign = SignBoard(room, word, new(-24.84f, -1.05f, isMen ? 53.95f : 63.45f), 90, letterH);   // on the wall beside the doorway
+            float boardW = word.Length * letterH * .78f + letterH * 1.4f;
+            Fixture(sign, "Pictogram", PersonSignMesh(!isMen), signIvory, new(-boardW / 2 + .2f, .015f, -.008f), 0, false).transform.localScale = Vector3.one * .38f;
             // Basins with a framed (cracked) mirror on the divider wall side.
             float basinZ = isMen ? 58.185f : 63.685f; int basins = isMen ? 2 : 3;   // wall inner face - 0.19
             for (int i = 0; i < basins; i++)
@@ -331,13 +420,17 @@ public static partial class RailAbandonedStation
             Box(room, "Mirror frame", new(mx, -1.3f, basinZ + .115f), new(mw + .1f, .9f, .03f), steel, false);
             Box(room, "Mirror glass", new(mx, -1.3f, basinZ + .095f), new(mw - .05f, .78f, .01f), whitePanel, false);
             Box(room, "Mirror crack", new(mx + .3f, -1.25f, basinZ + .088f), new(.02f, .6f, .004f), darkTile, false).transform.localRotation = Quaternion.Euler(0, 0, 28);
-            Fixture(room, "Hand dryer", DryerMesh(), tile, new(-28.4f, -1.55f, basinZ + .18f), 180, false);
+            Fixture(room, "Hand dryer", DryerMesh(), tile, new(-28.4f, -1.9f, basinZ + .18f), 180, false);   // below the area stripe
             Fixture(room, "Soap dispenser", SaveProc("soap", () => Cube(new MB(), Vector3.zero, new(.1f, .16f, .08f)), false), steel, new(-27.3f, -1.45f, basinZ + .12f), 0, false);
             var bin = Fixture(room, "Toppled bin", BinMesh(), steel, new(-27.6f, F + .2f, basinZ - .8f), 30, true, 90);
             Box(room, "Puddle", new(-30.2f, F + .004f, (z0 + z1) / 2), new(1.4f, .006f, .9f), roof, false);
             if (isMen)
             {
-                for (int i = 0; i < 3; i++) Fixture(room, "Urinal", UrinalMesh(), tile, new(-34.0f + i * .9f, F + .45f, z0 + .32f), 0);
+                for (int i = 0; i < 3; i++)
+                {
+                    Proc(room, "Urinal", UrinalMesh(), new[] { whitePanel, darkTile }, new(-34.0f + i * .9f, F, z0 + .13f), Quaternion.identity, false, true);
+                    if (i > 0) Box(room, "Urinal privacy divider", new(-34.45f + i * .9f, F + 1.0f, z0 + .36f), new(.03f, .8f, .45f), whitePanel, false);
+                }
                 // Two stalls along the west wall.
                 for (int i = 0; i < 2; i++)
                 {

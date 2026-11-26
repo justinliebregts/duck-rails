@@ -38,8 +38,12 @@ public static partial class RailAbandonedStation
 
     static void TrainWreck(Transform t)
     {
-        var cream = AtlasTile("Train cream", "white panel", false, 128, 0, 32, new(.95f, .9f, .75f), 2);
-        var glass = AtlasTile("Train window glass", "dark asphalt", true, 128, 128, 64, new(.22f, .25f, .27f), 4);
+        // Justin, Nov 26 batch 4: open windows (no panes), dark grey floor, white interior, light grey body
+        // with the line colour as a stripe; the car shape stays.
+        var cream = AtlasTile("Train roof grey", "white panel", false, 128, 0, 32, new(.62f, .64f, .66f), 2);
+        var body = AtlasTile("Train body white", "white panel", false, 128, 0, 32, new(.9f, .91f, .9f), 2);
+        var floorGrey = AtlasTile("Train floor grey", "metal panel", false, 96, 0, 32, new(.3f, .31f, .33f), 2);
+        var glass = AtlasTile("Train window glass", "dark asphalt", true, 128, 128, 64, new(.22f, .25f, .27f), 4);   // cab windscreen only
         Material[] ads = { zoneBlue, zoneGreen, yellow, zoneOrange };
         for (int c = 0; c < 3; c++)
         {
@@ -51,7 +55,7 @@ public static partial class RailAbandonedStation
             float hl = CarLen / 2;
 
             // Floor, underframe, skirt and equipment boxes.
-            Box(car, "Car floor", new(0, -.1f, 0), new(CarHalfW * 2 - .08f, .2f, CarLen - .1f), wood);
+            Box(car, "Car floor", new(0, -.1f, 0), new(CarHalfW * 2 - .08f, .2f, CarLen - .1f), floorGrey);
             Box(car, "Underframe", new(0, -.42f, 0), new(2.5f, .44f, CarLen - 2f), steel);
             foreach (float z in new[] { -4f, -1f, 3.5f }) Box(car, "Underfloor equipment", new(.3f, -.75f, z), new(1.6f, .4f, 1.8f), darkTile, false);
             foreach (float bz in new[] { -7f, 7f })
@@ -64,7 +68,7 @@ public static partial class RailAbandonedStation
                         Proc(bogie, "Wheel", WheelMesh(), new[] { steel }, new(wx, -.4f, wz), Quaternion.Euler(0, 0, 90), false, false);   // wheel bottom on the rail top, 0.86 m under the floor
             }
 
-            // Side walls between the doors: lower panel, window band with pillars and glass, upper band.
+            // Side walls between the doors: lower panel, open window band with pillars, upper band.
             foreach (float side in new[] { -1f, 1f })
             {
                 float x = side * (CarHalfW - .03f);
@@ -75,32 +79,30 @@ public static partial class RailAbandonedStation
                     float len = end - cursor, mid = (cursor + end) / 2;
                     if (len > .05f)
                     {
-                        Box(car, "Car side panel", new(x, WindowLow / 2, mid), new(.06f, WindowLow, len), wreckRed);
-                        Box(car, "Car upper band", new(x, (WindowHigh + WallTop) / 2, mid), new(.06f, WallTop - WindowHigh, len), wreckRed);
-                        Box(car, "Cream stripe", new(x + side * .035f, WindowLow - .12f, mid), new(.012f, .1f, len), cream, false);
+                        Box(car, "Car side panel", new(x, WindowLow / 2, mid), new(.06f, WindowLow, len), body);
+                        Box(car, "Car upper band", new(x, (WindowHigh + WallTop) / 2, mid), new(.06f, WallTop - WindowHigh, len), body);
+                        Box(car, "Line colour stripe", new(x + side * .035f, WindowLow - .14f, mid), new(.012f, .14f, len), wreckRed, false);
                         int panes = Mathf.Max(1, Mathf.RoundToInt(len / 1.35f)); float pw = len / panes;
                         for (int w = 0; w < panes; w++)
                         {
                             float wz = cursor + (w + .5f) * pw;
-                            Box(car, "Window pillar", new(x, (WindowLow + WindowHigh) / 2, cursor + w * pw + .08f), new(.07f, WindowHigh - WindowLow, .16f), wreckRed);
-                            bool lit = !front && (w + d + c) % 3 != 0;
-                            if (lit) { var g = GlowBox(car, "Window (lit)", new(x, (WindowLow + WindowHigh) / 2, wz), new(.03f, WindowHigh - WindowLow - .06f, pw - .2f), glowAmber); g.AddComponent<BoxCollider>(); }
-                            else Box(car, front && w % 2 == 0 ? "Broken window" : "Window", new(x, (WindowLow + WindowHigh) / 2, wz), new(.03f, WindowHigh - WindowLow - .06f, pw - .2f), glass);
+                            Box(car, "Window pillar", new(x, (WindowLow + WindowHigh) / 2, cursor + w * pw + .08f), new(.07f, WindowHigh - WindowLow, .16f), body);
                             Box(car, "Ad frame", new(x - side * .05f, 1.95f, wz), new(.02f, .18f, pw - .3f), ads[(w + d) % ads.Length], false);
                         }
+                        Box(car, "Window pillar", new(x, (WindowLow + WindowHigh) / 2, end - .08f), new(.07f, WindowHigh - WindowLow, .16f), body);   // closes the last opening
                         // Longitudinal bench seat and backrest inside this bay.
                         float sx = side * (CarHalfW - .32f);
                         Box(car, "Bench seat", new(sx, .21f, mid), new(.5f, .42f, len - .25f), zoneBlue);
-                        Box(car, "Seat back", new(side * (CarHalfW - .1f), .65f, mid), new(.08f, .45f, len - .25f), zoneBlue, false);
+                        Box(car, "Seat back", new(side * (CarHalfW - .1f), .65f, mid), new(.08f, .45f, len - .29f), zoneBlue, false);
                         if (!(front && mid > 1)) TopLoot("wreck", new(CarCentreX + (front ? .15f : 0) + sx, F + .42f, zc + mid), 1f);
                     }
                     if (d < CarDoors.Length)
                     {
                         float dz = CarDoors[d];
-                        Box(car, "Door header", new(x, (DoorH + WallTop) / 2, dz), new(.06f, WallTop - DoorH, DoorW), wreckRed);
+                        Box(car, "Door header", new(x, (DoorH + WallTop) / 2, dz), new(.06f, WallTop - DoorH, DoorW), body);
                         // Some sliding doors jammed half open.
                         if ((d + c + (side > 0 ? 1 : 0)) % 3 == 0)
-                            Box(car, "Jammed door leaf", new(x - side * .05f, DoorH / 2, dz - DoorW * .3f), new(.04f, DoorH, DoorW * .4f), wreckRed);
+                            Box(car, "Jammed door leaf", new(x - side * .05f, DoorH / 2, dz - DoorW * .3f), new(.04f, DoorH, DoorW * .4f), steel);
                         foreach (float e in new[] { -1f, 1f })
                             Proc(car, "Grab pole", PipeMesh(.025f, WallTop), new[] { steel }, new(side * (CarHalfW - .45f), 0, dz + e * (DoorW / 2 + .15f)), Quaternion.identity, false, false);
                         cursor = dz + DoorW / 2;
@@ -114,24 +116,24 @@ public static partial class RailAbandonedStation
             // Ends: gangway openings between cars, a cab front on car 1.
             foreach (float e in new[] { -1f, 1f })
             {
-                float ez = e * (hl - .03f);
+                float ez = e * (hl - .035f);   // outer faces 5 mm inside the side panel ends (no coplanar faces)
                 bool cab = front && e > 0;
                 if (cab)
                 {
-                    Box(car, "Cab front lower", new(0, .5f, ez), new(CarHalfW * 2 - .12f, 1f, .08f), wreckRed);
+                    Box(car, "Cab front lower", new(0, .5f, ez), new(CarHalfW * 2 - .12f, 1f, .08f), body);
                     Box(car, "Cab windscreen (broken)", new(0, 1.45f, ez + .01f), new(CarHalfW * 2 - .3f, .85f, .04f), glass);
-                    foreach (float sx2 in new[] { -1.3f, 0f, 1.3f }) Box(car, "Cab pillar", new(sx2, 1.45f, ez), new(.15f, .9f, .1f), wreckRed);
-                    Box(car, "Cab header", new(0, 2f, ez), new(CarHalfW * 2 - .12f, .2f, .08f), wreckRed);
+                    foreach (float sx2 in new[] { -1.3f, 0f, 1.3f }) Box(car, "Cab pillar", new(sx2, 1.45f, ez), new(.15f, .9f, .1f), body);
+                    Box(car, "Cab header", new(0, 2f, ez), new(CarHalfW * 2 - .12f, .2f, .08f), body);
                     foreach (float sx2 in new[] { -.9f, .9f }) GlowBox(car, "Headlight (dying)", new(sx2, .7f, ez + .05f), new(.25f, .15f, .04f), glowAmber);
                     Box(car, "Destination board", new(0, 2f, ez + .06f), new(1.2f, .16f, .03f), darkTile, false);
                     Box(car, "Anticlimber", new(0, -.25f, ez + .1f), new(2.6f, .25f, .3f), steel);
                 }
                 else
                 {
-                    foreach (float s in new[] { -1f, 1f }) Box(car, "Car end wall", new(s * (CarHalfW + .45f) / 2, WallTop / 2, ez), new(CarHalfW - .45f, WallTop, .06f), wreckRed);
-                    Box(car, "Gangway header", new(0, (DoorH + WallTop) / 2, ez), new(.9f, WallTop - DoorH, .06f), wreckRed);
+                    foreach (float s in new[] { -1f, 1f }) Box(car, "Car end wall", new(s * (CarHalfW + .45f) / 2, WallTop / 2, ez), new(CarHalfW - .45f, WallTop, .06f), body);
+                    Box(car, "Gangway header", new(0, (DoorH + WallTop) / 2, ez), new(.9f, WallTop - DoorH, .06f), body);
                 }
-                Proc(car, "Car end top", CarEndTopMesh(), new[] { wreckRed }, new(0, 0, ez), Quaternion.identity, true, false);
+                Proc(car, "Car end top", CarEndTopMesh(), new[] { body }, new(0, 0, ez), Quaternion.identity, true, false);
             }
             // Roof: car 1's front half is crushed under the cave-in.
             float roofLen = front ? 10.6f : CarLen;
@@ -148,9 +150,9 @@ public static partial class RailAbandonedStation
             if (front) Box(car, "Dead light strip", new(0, WallTop + .52f, -3), new(.25f, .04f, 8f), deadTube, false);
             else
             {
-                GlowBox(car, "Car light strip", new(0, WallTop + .52f, 0), new(.25f, .04f, CarLen - 2), glowAmber);
-                PL(car, "Baked carriage light", new(0, 1.9f, -4.5f), Amber, 6, 7);
-                PL(car, "Baked carriage light", new(0, 1.9f, 4.5f), Amber, 6, 7);
+                GlowBox(car, "Car light strip", new(0, WallTop + .52f, 0), new(.25f, .04f, CarLen - 2), c == 1 ? glowFlicker : glowTube);   // cool white so the white interior reads white (batch 4)
+                PL(car, "Baked carriage light", new(0, 1.9f, -4.5f), Color.Lerp(Cool, Amber, .25f), 6, 7);
+                PL(car, "Baked carriage light", new(0, 1.9f, 4.5f), Color.Lerp(Cool, Amber, .25f), 6, 7);
             }
             for (int i = 0; i < 4; i++) Box(car, "Litter", new(-.4f + (i % 2) * .7f, .01f, -6 + i * 3.7f), new(.25f, .02f, .32f), i % 2 == 0 ? cream : tile, false).transform.localRotation = Quaternion.Euler(0, i * 41, 0);
             FloorLoot("wreck", CarCentreX, zc - hl + 1.5f, CarCentreX, front ? zc - 1 : zc + hl - 1.5f, F, 1f, 4.2f, 0);

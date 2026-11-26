@@ -45,6 +45,22 @@ public static class RailMetroChecks
             Shot("transfer-hall" + suffix, new(-39, -1.4f, 30), new(-39, -1.6f, 80));
             Shot("konbini" + suffix, new(-26, -1.4f, 86), new(-33, -1.8f, 99));
             Shot("maintenance-hall" + suffix, new(15, -1.4f, 44), new(15, -1.6f, 90));
+            // Batch 4 review views.
+            Shot("tunnel-inner-mouth" + suffix, new(-12.3f, -1.6f, 44), new(-12, -2.2f, 60));
+            Shot("tunnel-inner-mouth-north" + suffix, new(-12.3f, -1.6f, 116), new(-12, -2.2f, 100));
+            Shot("portal-close" + suffix, new(0, 1.6f, 1.5f), new(0, 2.0f, 12));
+            Shot("portal-close-north" + suffix, new(0, 1.6f, 158.5f), new(0, 2.0f, 148));
+            Shot("mens-urinals" + suffix, new(-32.4f, -1.5f, 56.4f), new(-33.1f, -2.4f, 53.2f));
+            Shot("mens-sign" + suffix, new(-23.4f, -1.05f, 57.4f), new(-24.9f, -1.1f, 53.95f));
+            Shot("womens-sign" + suffix, new(-23.4f, -1.05f, 59.6f), new(-24.9f, -1.1f, 63.45f));
+            Shot("coin-lockers" + suffix, new(-26.0f, -1.3f, 79), new(-34, -2.2f, 79));
+            Shot("crew-lockers" + suffix, new(15.6f, -1.3f, 62), new(26, -2.2f, 62));
+            Shot("cable-gallery" + suffix, new(-18.4f, -1.3f, 113), new(-25, -2.1f, 132));
+            Shot("cable-vault" + suffix, new(-30.8f, -1.3f, 125.5f), new(-35, -2.2f, 119));
+            Shot("cave-in-up" + suffix, new(3.0f, -1.6f, 102.5f), new(6, 3.6f, 102.5f));
+            Shot("pump-room-door" + suffix, new(15, -1.4f, 116.5f), new(24, -.9f, 116.5f));
+            Shot("escalator-light" + suffix, new(-21.2f, -.3f, 62.2f), new(-21.2f, 1.6f, 56.5f));
+            Shot("train-interior-open-windows" + suffix, new(6, -1.4f, 74f), new(4.6f, -1.8f, 66));
         }
         finally { UnityEngine.Object.DestroyImmediate(go); if (fill) UnityEngine.Object.DestroyImmediate(fill); }
         void Shot(string name, Vector3 eye, Vector3 target)
@@ -55,6 +71,120 @@ public static class RailMetroChecks
             finally { cam.targetTexture = null; RenderTexture.active = prior; UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(tex); }
         }
     }
+
+    /// <summary>
+    /// Batch 4: every mesh (not just boxes), triangle by triangle. Pairs of renderers whose triangles share a
+    /// plane, face the same way and overlap by more than 40 cm² in total, unless the shared area is pressed
+    /// against an opposite-facing surface (an underside on a floor, a back against a wall), which hides it.
+    /// </summary>
+    public static List<string> ZFightingAll(RailBlock b, out int triangles)
+    {
+        const int env = 1 << 6;
+        var tris = new List<(Vector3 n, float d, Vector3 a, Vector3 b, Vector3 c, int r)>();
+        var rends = new List<Renderer>();
+        foreach (var r in b.GetComponentsInChildren<MeshRenderer>())
+        {
+            var mf = r.GetComponent<MeshFilter>(); if (!mf || !mf.sharedMesh || !r.enabled || r.GetComponent<TMPro.TMP_Text>()) continue;
+            var m = mf.sharedMesh; var v = m.vertices; var t = r.transform; int ri = rends.Count; rends.Add(r);
+            var w = v.Select(p => t.TransformPoint(p)).ToArray();
+            for (int s = 0; s < m.subMeshCount; s++)
+            {
+                var idx = m.GetTriangles(s);
+                for (int i = 0; i < idx.Length; i += 3)
+                {
+                    Vector3 a = w[idx[i]], c1 = w[idx[i + 1]], c2 = w[idx[i + 2]]; var cr = Vector3.Cross(c1 - a, c2 - a);
+                    if (cr.sqrMagnitude < 1e-10f) continue; var n = cr.normalized;
+                    tris.Add((n, Vector3.Dot(n, a), a, c1, c2, ri));
+                }
+            }
+        }
+        triangles = tris.Count;
+        string Key(Vector3 n, float d, int off) => Mathf.RoundToInt(n.x * 200) + "," + Mathf.RoundToInt(n.y * 200) + "," + Mathf.RoundToInt(n.z * 200) + "|" + (Mathf.RoundToInt(d * 500) + off);
+        var buckets = new Dictionary<string, List<int>>();
+        for (int i = 0; i < tris.Count; i++) { string k = Key(tris[i].n, tris[i].d, 0); if (!buckets.TryGetValue(k, out var l)) buckets[k] = l = new List<int>(); l.Add(i); }
+        float TriOverlap(int i, int j) => TriOverlapAt(i, j, out _);
+        float TriOverlapAt(int i, int j, out Vector3 centroid)
+        {
+            var A = tris[i]; var B = tris[j]; centroid = A.a;
+            var u = Vector3.Cross(A.n, Mathf.Abs(A.n.y) < .9f ? Vector3.up : Vector3.right).normalized; var vv = Vector3.Cross(A.n, u);
+            Vector2 P(Vector3 q) => new(Vector3.Dot(q, u), Vector3.Dot(q, vv));
+            Vector2 a0 = P(A.a), a1 = P(A.b), a2 = P(A.c);
+            var poly = new List<Vector2> { P(B.a), P(B.b), P(B.c) };
+            float orient = Mathf.Sign((a1.x - a0.x) * (a2.y - a0.y) - (a1.y - a0.y) * (a2.x - a0.x));
+            foreach (var (e0, e1) in new[] { (a0, a1), (a1, a2), (a2, a0) })
+            {
+                var o = new List<Vector2>();
+                for (int k = 0; k < poly.Count; k++)
+                {
+                    var p = poly[k]; var q = poly[(k + 1) % poly.Count];
+                    float fp = orient * ((e1.x - e0.x) * (p.y - e0.y) - (e1.y - e0.y) * (p.x - e0.x)), fq = orient * ((e1.x - e0.x) * (q.y - e0.y) - (e1.y - e0.y) * (q.x - e0.x));
+                    if (fp >= 0) o.Add(p); if (fp * fq < 0) o.Add(Vector2.Lerp(p, q, fp / (fp - fq)));
+                }
+                poly = o; if (poly.Count < 3) return 0;
+            }
+            float ar = 0; var cs = Vector2.zero; foreach (var p in poly) cs += p; cs /= poly.Count;
+            for (int k = 0; k < poly.Count; k++) { var p = poly[k]; var q = poly[(k + 1) % poly.Count]; ar += p.x * q.y - q.x * p.y; }
+            centroid = u * cs.x + vv * cs.y + A.n * A.d;
+            return Mathf.Abs(ar) / 2;
+        }
+        // Buried: the space just in front of the shared area is inside some other solid, so nobody can see it.
+        bool Buried(Vector3 at, Vector3 n, int r1, int r2)
+        {
+            foreach (var c in Physics.OverlapSphere(at + n * .006f, .003f, env, QueryTriggerInteraction.Ignore))
+                if (c.gameObject != rends[r1].gameObject && c.gameObject != rends[r2].gameObject) return true;
+            return false;
+        }
+        bool Bounded(int i, int j)
+        {
+            var A = tris[i]; var B = tris[j];
+            var amin = Vector3.Min(Vector3.Min(A.a, A.b), A.c); var amax = Vector3.Max(Vector3.Max(A.a, A.b), A.c);
+            var bmin = Vector3.Min(Vector3.Min(B.a, B.b), B.c); var bmax = Vector3.Max(Vector3.Max(B.a, B.b), B.c);
+            const float e = .002f;   // conservative prefilter; TriOverlap gives the real area
+            return amin.x <= bmax.x + e && bmin.x <= amax.x + e && amin.y <= bmax.y + e && bmin.y <= amax.y + e && amin.z <= bmax.z + e && bmin.z <= amax.z + e;
+        }
+        // Pressed: a triangle coincident with an opposite-facing triangle of another renderer is hidden there.
+        bool Pressed(int i, int other)
+        {
+            var A = tris[i];
+            for (int off = -1; off <= 1; off++)
+                if (buckets.TryGetValue(Key(-A.n, -A.d, off), out var l))
+                    foreach (int j in l) { if (tris[j].r == A.r || tris[j].r == other || Mathf.Abs(tris[j].d + A.d) > .0015f || !Bounded(i, j)) continue; if (TriOverlap(i, j) > .002f) return true; }
+            return false;
+        }
+        var pairArea = new Dictionary<long, (float area, Vector3 at)>();
+        for (int i = 0; i < tris.Count; i++)
+        {
+            var f = tris[i];
+            for (int off = -1; off <= 1; off++)
+            {
+                if (!buckets.TryGetValue(Key(f.n, f.d, off), out var l)) continue;
+                foreach (int j in l)
+                {
+                    if (j <= i) continue; var g = tris[j];
+                    if (g.r == f.r || Vector3.Dot(f.n, g.n) < .9999f || Mathf.Abs(f.d - g.d) > .0015f || !Bounded(i, j)) continue;
+                    float area = TriOverlapAt(i, j, out var at); if (area < 1e-5f) continue;
+                    if (Buried(at, f.n, f.r, g.r) || Pressed(i, g.r) || Pressed(j, f.r)) continue;
+                    long key = ((long)Mathf.Min(f.r, g.r) << 32) | (uint)Mathf.Max(f.r, g.r);
+                    pairArea.TryGetValue(key, out var e); pairArea[key] = (e.area + area, at);
+                }
+            }
+        }
+        var result = new List<string>();
+        foreach (var kv in pairArea.Where(kv => kv.Value.area > .004f).OrderByDescending(kv => kv.Value.area))
+        {
+            var r1 = rends[(int)(kv.Key >> 32)]; var r2 = rends[(int)(kv.Key & 0xffffffff)];
+            result.Add(Path(r1.transform, b.transform) + " <> " + Path(r2.transform, b.transform) + " at " + kv.Value.at.ToString("F2") + " area " + kv.Value.area.ToString("F3"));
+        }
+        return result;
+        static string Path(Transform t, Transform root) { var s = t.name; for (var p = t.parent; p && p != root && p.parent != root; p = p.parent) s = p.name + "/" + s; return s; }
+    }
+
+    static bool HangingSign(Transform t)
+    {
+        for (var p = t; p; p = p.parent) if (p.name.StartsWith("Sign ") && !p.GetComponent<Renderer>()) return p.Cast<Transform>().Any(c => c.name == "Sign hanger rod");
+        return false;
+    }
+    static string Path2(Transform t, Transform root) { var s = t.name; for (var p = t.parent; p && p != root && p.parent != root; p = p.parent) s = p.name + "/" + s; return s; }
 
     /// <summary>Pairs of renderer faces that share a plane, face the same way and overlap by more than 40 cm².</summary>
     public static List<string> ZFighting(RailBlock b)
@@ -162,6 +292,17 @@ public static class RailMetroChecks
                     var dir = Quaternion.Euler(0, k * 45, 0) * Vector3.forward;
                     if (!Physics.Raycast(p + Vector3.up * 1.2f, dir, 200f, env, QueryTriggerInteraction.Ignore)) { Check(false, "enclosure " + label + " open toward " + (k * 45) + " deg"); break; }
                 }
+            // Batch 4: walls must reach the ceiling. Where a level ray meets a wall, the same ray just under the
+            // local ceiling must stop at that wall too (catches open bands above walls, like the pump room door).
+            if (!label.StartsWith("tread") && Physics.Raycast(p + Vector3.up * 1.0f, Vector3.up, out var ceil, 4f, env, QueryTriggerInteraction.Ignore))
+                for (int k = 0; k < 8; k++)
+                {
+                    var dir = Quaternion.Euler(0, k * 45, 0) * Vector3.forward;
+                    if (!Physics.Raycast(p + Vector3.up * 1.2f, dir, out var low, 60f, env, QueryTriggerInteraction.Ignore) || !low.collider.name.ToLower().Contains("wall") || low.collider.name.StartsWith("Car ")) continue;   // train car walls are low by design
+                    var hiStart = new Vector3(p.x, ceil.point.y - .12f, p.z);
+                    if (!Physics.Raycast(hiStart, dir, out var high, 60f, env, QueryTriggerInteraction.Ignore) || high.distance > low.distance + .6f)
+                    { Check(false, "gap above " + low.collider.name + " from " + label + " toward " + (k * 45) + " deg"); break; }
+                }
         }
         void Line(Vector3 a, Vector3 c, float step, string label)
         {
@@ -200,6 +341,12 @@ public static class RailMetroChecks
         foreach (float z in new[] { 55.5f, 61f, 69f, 79f, 93f, 105f }) Line(new(-26.2f, F, z), new(-23.9f, F, z), .5f, "shop door " + z);
         foreach (var (x, z) in new[] { (-36f, 25.5f), (-36f, 44.5f), (-36f, 100f), (-36f, 107f), (-36f, 125.5f), (-30f, 125.5f) }) Line(new(x - 1.2f, F, z), new(x + 1.2f, F, z), .4f, "west door " + x + "," + z);
         foreach (var (x, z) in new[] { (17f, 62f), (17f, 76f), (17f, 90f), (17f, 104f), (17f, 116.5f), (29f, 76f), (13f, 29.5f) }) Line(new(x - 1.2f, F, z), new(x + 1.2f, F, z), .4f, "east door " + x + "," + z);
+        // Batch 4 partitions: pump room (two doorways) and parts store (one), plus a run through the sump room.
+        foreach (float x in new[] { 20.25f, 31.75f }) Line(new(x, F, 119.6f), new(x, F, 122.4f), .4f, "pump partition door " + x);
+        Line(new(36f, F, 77.4f), new(36f, F, 79.8f), .4f, "parts partition door");
+        Line(new(18.6f, F, 119.6f), new(34.2f, F, 119.6f), 1f, "pump sump room");
+        Line(new(-33.4f, F, 75.4f), new(-33.4f, F, 82.6f), 1f, "coin lockers west lane");
+        Line(new(-28.3f, F, 127.5f), new(-28.3f, F, 133.4f), 1f, "cable gallery west lane");
 
         foreach (var t in b.GetComponentsInChildren<Transform>().Where(t => t.name == "Stopped escalator step" || t.name == "Stair tread"))
         { var c = t.GetComponent<BoxCollider>(); Walk(new(c.bounds.center.x, c.bounds.max.y, c.bounds.center.z), "tread " + t.position.ToString("F1")); }
@@ -224,7 +371,7 @@ public static class RailMetroChecks
         if (requireGraph && b.graph)
         {
             var graph = CrawlGraph.Load(b.graph);
-            var probes = new[] { new Vector3(-16.6f, F, 80), new(-7, F, 80), new(1, F, 80), new(-20, D, 46.5f), new(-20, D, 114), new(-39, F, 80), new(15, F, 80), new(6, F, 74), new(26, F, 121), new(10.5f, F, 20) };
+            var probes = new[] { new Vector3(-16.6f, F, 80), new(-7, F, 80), new(1, F, 80), new(-20, D, 46.5f), new(-20, D, 114), new(-39, F, 80), new(15, F, 80), new(6, F, 74), new(26, F, 119), new(10.5f, F, 20) };
             var nodes = probes.Select(q => graph.FindNearestGroundNode(q, 1)).ToArray();
             for (int i = 0; i < probes.Length; i++) Check(nodes[i] >= 0, "graph node near " + probes[i]);
             if (nodes.All(n => n >= 0))
@@ -254,9 +401,37 @@ public static class RailMetroChecks
             if (inside) Check(false, "rubble pokes into a room: " + r.name + " at " + tr.position.ToString("F2"));
         }
         Check(true, "rubble containment checked");
-        var fights = ZFighting(b);
-        Check(fights.Count == 0, "no coplanar overlapping faces (z-fighting): " + fights.Count);
-        foreach (var f in fights.Take(40)) lines.Add("  z-fight " + f);
+        var fights = ZFightingAll(b, out int triCount);
+        Check(fights.Count == 0, "no coplanar overlapping faces on any mesh (z-fighting), " + triCount + " triangles: " + fights.Count);
+        foreach (var f in fights.Take(60)) lines.Add("  z-fight " + f);
+        // Wall-mounted thin visuals (posters, panels, signs, vests...) must have something solid right behind them.
+        string[] freeStanding = { "Stall door", "Open locker door", "Fan blade", "Hanging strap", "Jammed door leaf", "Trolley handle", "Fan guard bar", "Turnstile arm", "Stall partition", "Urinal privacy divider", "Shutter", "Shutter rib", "Arrow", "Sign hanger rod", "Litter", "Crushed roof panel", "Hi-vis vest on bench", "Spilled newspaper", "Grille slat", "Fan duct grille", "Line colour band", "Area stripe", "Wainscot", "Bike", "Seat armrest", "Cooling fin" };
+        int floating = 0;
+        foreach (var r in b.GetComponentsInChildren<MeshRenderer>())
+        {
+            var mf = r.GetComponent<MeshFilter>(); if (!mf || !mf.sharedMesh || mf.sharedMesh.vertexCount != 24 || r.GetComponent<Collider>()) continue;
+            if (freeStanding.Any(n => r.name.StartsWith(n)) || HangingSign(r.transform) || r.GetComponentsInParent<Transform>().Any(p => p.name == "Pipes")) continue;   // pipe fittings sit on pipes
+            var s = Vector3.Scale(mf.sharedMesh.bounds.size, r.transform.lossyScale); s = new(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z));
+            int thin = s.x < s.z ? (s.x < s.y ? 0 : 1) : (s.z < s.y ? 2 : 1);
+            if (thin == 1 || s[thin] > .07f || Mathf.Min(s[(thin + 1) % 3], s[(thin + 2) % 3]) < .12f) continue;   // vertical, thin, panel-sized
+            var axis = thin == 0 ? r.transform.right : r.transform.forward; var c0 = r.bounds.center;
+            bool backed = false;
+            foreach (float sgn in new[] { -1f, 1f }) if (Physics.Raycast(c0, axis * sgn, .26f, env, QueryTriggerInteraction.Ignore)) backed = true;
+            if (Physics.CheckSphere(c0, .01f, env, QueryTriggerInteraction.Ignore)) backed = true;   // partly sunk into the wall
+            if (!backed) { floating++; if (floating <= 40) lines.Add("FAIL floating wall visual " + Path2(r.transform, b.transform) + " at " + c0.ToString("F2")); }
+        }
+        Check(floating == 0, "wall visuals backed by something solid: " + floating + " floating");
+        // Rubble rests on something: each rock touches the floor, the wreck, a wall or a lower rock.
+        int loose = 0;
+        foreach (var r in b.GetComponentsInChildren<MeshRenderer>().Where(r => r.name == "Cave-in rubble" || r.name == "Collapse fill" || r.name == "Jammed roof slab"))
+        {
+            var bc = r.GetComponent<BoxCollider>(); var tr = r.transform;
+            var half = Vector3.Scale(bc.size, tr.lossyScale) * .5f * 1.02f;
+            var hits = Physics.OverlapBox(tr.TransformPoint(bc.center), new(Mathf.Abs(half.x), Mathf.Abs(half.y), Mathf.Abs(half.z)), tr.rotation, env, QueryTriggerInteraction.Ignore);
+            bool held = hits.Any(h => h != bc && (h.bounds.center.y < r.bounds.center.y - .05f || h.name.ToLower().Contains("wall")));
+            if (!held) { loose++; lines.Add("FAIL unsupported rock " + r.name + " at " + tr.position.ToString("F2")); }
+        }
+        Check(loose == 0, "every rock and jammed slab is supported: " + loose + " loose");
         Directory.CreateDirectory(RailAbandonedStation.EvidenceFolder); File.WriteAllLines(RailAbandonedStation.EvidenceFolder + "/checks.txt", lines);
         Debug.Log("METRO V3: " + lines.Count + " checks, " + lines.Count(s => s.StartsWith("FAIL")) + " failures");
         if (lines.Any(s => s.StartsWith("FAIL"))) throw new Exception(string.Join("\n", lines.Where(s => s.StartsWith("FAIL")).Take(25)));

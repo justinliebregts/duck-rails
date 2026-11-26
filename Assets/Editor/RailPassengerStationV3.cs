@@ -67,7 +67,9 @@ public static partial class RailAbandonedStation
         glowAmber = Glow("Glow wreck window amber", new(1f, .6f, .28f), 1.2f, .12f);
         glowScreen = Glow("Glow machine screen", new(.45f, .85f, .75f), 1.4f, .2f);
         glowWindow = Glow("Glow cable gallery window", new(1f, .78f, .45f), 1.6f, 0);
+        voidBlack = Glow("Void black", Color.black, 0, 0);
     }
+    static Material voidBlack;
 
     // Crops one atlas tile (pixel rect, top-left origin) into its own repeating texture and a material
     // cloned from the Compound subway's atlas material. Box UVs are metres/3, so scale by 3/repeat.
@@ -152,7 +154,7 @@ public static partial class RailAbandonedStation
     {
         var t = Group(p, name);
         Slab(t, "Floor", x0, z0, x1 - x0, z1 - z0, y, floorM);
-        Slab(t, "Ceiling", x0, z0, x1 - x0, z1 - z0, y + clear + .3f, roof);
+        Slab(t, "Ceiling", x0 + .005f, z0 + .005f, x1 - x0 - .01f, z1 - z0 - .01f, y + clear + .3f, roof);   // 5 mm inside the wall lines (open sides showed coplanar slab and wall ends)
         float h = clear + .3f;
         if (w != null) Wall(t, "Wall", true, x0, z0, z1, y, h, wallM, w);
         if (e != null) Wall(t, "Wall", true, x1, z0, z1, y, h, wallM, e);
@@ -244,7 +246,7 @@ public static partial class RailAbandonedStation
             float wallY = (TunnelRoof + .2f - .5f) / 2, wallH = TunnelRoof + .7f;   // tops 2 cm under the roof top (no coplanar faces)
             foreach (float side in new[] { -1f, 1f })
             {
-                bool fanGap = side > 0 && fans.Any(f => Mathf.Abs(z + .5f - f) < 2.5f);
+                bool fanGap = side > 0 && fans.Any(f => Mathf.Abs(z + .5f - f) < FanBayHalf);
                 if (fanGap)
                 {
                     // Recessed ventilation fan bay in the east wall.
@@ -254,21 +256,23 @@ public static partial class RailAbandonedStation
                 }
             }
             if (z % 12 == 0) Tube(t, (a + c) / 2 + Vector3.up * (TunnelRoof - .08f), true, z % 36 == 0 ? 1 : 0, true, 12);
-            // Lit cable-gallery windows staggered along the outside of the departure curve.
+            // Dark wall panels staggered along the outside of the departure curve (their glow was removed, Justin Nov 26).
             if (z >= 112 && z < 135 && z % 5 == 2)
             {
-                var g = GlowBox(t, "Cable gallery window (lit)", (a + c) / 2 + new Vector3(-TunnelHalf + .23f, 2.4f, 0), new(.05f, .9f, 1.5f), glowWindow);
-                g.transform.localRotation = Quaternion.LookRotation(c - a);
-                Box(t, "Window frame", (a + c) / 2 + new Vector3(-TunnelHalf + .21f, 2.4f, 0), new(.04f, 1.1f, 1.7f), steel, false).transform.localRotation = Quaternion.LookRotation(c - a);
+                var mid = (a + c) / 2; var lat = -Vector3.Cross(Vector3.up, c - a).normalized;   // toward the west (outer) wall
+                Box(t, "Tunnel wall panel", mid + lat * (TunnelHalf - .23f) + Vector3.up * 2.4f, new(.04f, 1.1f, 1.7f), steel, false).transform.localRotation = Quaternion.LookRotation(c - a);
             }
         }
-        // Fan bay end caps and the three stopped fans facing the track.
+        // Fan bay end caps (covering the swept tunnel's wall caps) and the three stopped fans facing the track.
         foreach (float f in fans)
         {
-            foreach (float zz in new[] { f - 2.5f, f + 2.5f })
+            foreach (float sgn in new[] { -1f, 1f })
             {
+                float zz = f + sgn * (FanBayHalf - .15f);
                 var e = new Vector3(RailX(zz), RailHeight(zz), zz);
-                Box(t, "Fan bay end wall", e + new Vector3(TunnelHalf + .8f, (TunnelRoof + .3f - .5f) / 2, 0), new(2f, TunnelRoof + .8f, .4f), darkTile);
+                var lat = Vector3.Cross(Vector3.up, new Vector3(RailX(zz + .25f) - RailX(zz - .25f), 0, .5f)).normalized;
+                var w = Box(t, "Fan bay end wall", e + lat * (TunnelHalf + .8f) + Vector3.up * ((TunnelRoof + .3f - .5f) / 2), new(2f, TunnelRoof + .79f, .4f), darkTile);
+                w.transform.localRotation = Quaternion.LookRotation(Vector3.Cross(lat, Vector3.up));
             }
             var fc = new Vector3(RailX(f) + TunnelHalf + 1.21f, RailHeight(f) + 1.9f, f);
             var tangent = new Vector3(RailX(f + .5f) - RailX(f - .5f), 0, 1).normalized;
@@ -317,7 +321,7 @@ public static partial class RailAbandonedStation
         foreach (float z in new[] { 53f, 100f }) Slab(t, "Platform floor", -25, z, edgeEnd + 25, 7, F, floorTile);
         Box(t, "Platform edge face", new(edgeMid - .095f, -3.505f, 80), new(.2f, .99f, 40), concrete);   // 5 mm proud of the slab side
         foreach (float z in new[] { 59.9f, 100.1f }) Box(t, "Platform step face", new((edgeMid + edgeEnd) / 2, -3.505f, z), new(edgeMid - edgeEnd, .99f, .2f), concrete);
-        foreach (float z in new[] { 56.5f, 103.5f }) Box(t, "Platform edge face", new(edgeEnd - .095f, -3.505f, z), new(.2f, .99f, 7), concrete);
+        foreach (float z in new[] { 56.505f, 103.495f }) Box(t, "Platform edge face", new(edgeEnd - .095f, -3.505f, z), new(.2f, .99f, 6.99f), concrete);
         foreach (float z in new[] { 53f, 107f }) Box(t, "Platform end face", new((-25 + edgeEnd) / 2, -3.65f, z), new(edgeEnd + 25, .7f, .2f), concrete);
         // Low ceiling over the platform, holes over the escalator shafts; it stops at the channel wall.
         float ceil = F + PlatformClear + .3f, wallMid = -12 - 2.6f, wallEnd = -12 - 3.1f;
@@ -331,7 +335,7 @@ public static partial class RailAbandonedStation
         foreach (float z in new[] { 53f, 100f }) Wall(t, "Rail channel upper wall", true, wallEnd, z, z + 7, F + PlatformClear + .01f, upperH - .01f, tile);
         foreach (float z in new[] { 60f, 100f }) Wall(t, "Rail channel upper wall", false, z, wallEnd, wallMid, F + PlatformClear + .02f, upperH - .02f, tile);
         Wall(t, "Rail channel upper wall", true, -12 + 2.6f, 53, 107, F + PlatformClear + .01f, upperH - .01f, tile);
-        Slab(t, "Rail channel roof", wallEnd - .1f, 53, 5.9f, 54, roofTop + .006f, roof);
+        Slab(t, "Rail channel roof", wallEnd - .1f, 53.008f, 5.9f, 53.984f, roofTop + .006f, roof);   // ends 8 mm in from the wall ends (no coplanar faces at the tunnel mouths)
         // Shopfront wall and ends (the tunnels have no walkways, so the ends are closed).
         Wall(t, "Shopfront wall", true, -25, 53, 110, F, PlatformClear + .3f, tile, 54.75f, 56.25f, 60.25f, 61.75f, 66, 72, 77, 81, 89, 97, 104, 106);
         BandAlongZ(t, -24.86f, 53, 107, -1.4f, 54.75f, 56.25f, 60.25f, 61.75f, 66, 72, 77, 81, 89, 97, 104, 106);
@@ -371,7 +375,7 @@ public static partial class RailAbandonedStation
 
         // East service ledge beside the train (no side of the train is a dead end).
         Slab(t, "Service ledge floor", -12 + 2.17f, 53, -4.9f - (-12 + 2.17f), 54, F, floorTile);
-        Box(t, "Service ledge edge face", new(-12 + 2.265f, -3.505f, 80), new(.2f, .99f, 54), concrete);
+        Box(t, "Service ledge edge face", new(-12 + 2.265f, -3.505f, 80), new(.2f, .99f, 53.98f), concrete);
         foreach (float z in new[] { 53f, 107f })
         {
             Box(t, "Service ledge end face", new(-7.4f, -3.65f, z), new(4.9f, .7f, .2f), concrete);
@@ -382,7 +386,6 @@ public static partial class RailAbandonedStation
         BandAlongZ(t, -5.06f, 53, 107, -1.4f, 79, 81.5f);
         Box(t, "Ledge edge line", new(-12 + 2.24f, F + .012f, 80), new(.12f, .024f, 54), yellow, false);
         Tube(t, new(-6.9f, F + PlatformClear - .08f, 62), true, 0); Tube(t, new(-6.9f, F + PlatformClear - .08f, 80), true, 1); Tube(t, new(-6.9f, F + PlatformClear - .08f, 98), true, 2);
-        Sign3(t, "STAFF ONLY", new(-5.14f, -1.5f, 77.4f), -90, .3f);
         FloorLoot("service ledge", -8.6f, 54, -5.3f, 106, F, .35f, 4.4f, .5f);
         Enemy("service ledge", -7f, F, 96);
     }
@@ -408,47 +411,37 @@ public static partial class RailAbandonedStation
         Box(t, "Platform 3 edge line", new(4.13f, F + .012f, 80), new(.12f, .024f, 66), yellow, false);
         // Dead track: bed, non-catalogue rails, east service walkway, high channel ceiling.
         Slab(t, "Dead track bed", 3.75f, 50, 5.95f, 60, -4f, gravel);
-        Slab(t, "Dead track bed (tunnel)", 4.05f, 110, 4.1f, 12, -4.004f, gravel);
+        Slab(t, "Dead track bed (tunnel)", 4.05f, 110, 4.1f, 3.72f, -4.004f, gravel);
         foreach (float x in new[] { 5.2f, 6.8f }) Box(t, "Dead track rail", new(x, -3.92f, 80.5f), new(.1f, .12f, 61), steel, false);
         for (float z = 51; z < 111; z += 2) Box(t, "Dead track tie", new(6f, -3.98f, z), new(2.4f, .08f, .25f), wood, false);
         // The line the wreck was leaving on: its own tunnel north of the platform, collapsed and impassable.
+        // Justin, Nov 26 batch 4: only a short stub past the portal, a rubble face where players are stopped,
+        // and a black end close behind it (the old 12 m rubble-filled tunnel was too long and too heavy).
         var tunnel = Group(t, "Collapsed north tunnel");
-        Wall(tunnel, "Dead tunnel wall", true, 4.05f, 110, 122, -4.3f, 5.2f, darkTile);
-        Wall(tunnel, "Dead tunnel wall", true, 8.15f, 110, 122, -4.3f, 5.2f, darkTile);
-        Wall(tunnel, "Dead tunnel end", false, 122, 4.05f, 8.15f, -4.29f, 5.19f, rubbleMat);
-        Slab(tunnel, "Dead tunnel roof", 3.9f, 110, 4.4f, 12, .9f, roof);
+        const float stubEnd = 113.6f;
+        Wall(tunnel, "Dead tunnel wall", true, 4.05f, 110, stubEnd + .1f, -4.3f, 5.2f, darkTile);
+        Wall(tunnel, "Dead tunnel wall", true, 8.15f, 110, stubEnd + .1f, -4.3f, 5.2f, darkTile);
+        GlowBox(tunnel, "Dead tunnel black end", new(6.1f, -1.705f, stubEnd - .07f), new(3.85f, 5.15f, .1f), voidBlack).AddComponent<BoxCollider>();
+        Slab(tunnel, "Dead tunnel roof", 3.9f, 110, 4.4f, stubEnd - 110 + .12f, .9f, roof);
         P(tunnel, "Portal pillar", 4.15f, -1.705f, 109.84f, .7f, 5.15f, .3f, tile);
         P(tunnel, "Portal pillar", 8.6f, -1.705f, 109.84f, 2.2f, 5.15f, .3f, tile);
         P(tunnel, "Portal lintel", 6.1f, .48f, 109.82f, 4.5f, .74f, .3f, tile);
-        P(tunnel, "Portal hazard band", 6.1f, .08f, 109.68f, 3.2f, .12f, .03f, yellow, false);
+        P(tunnel, "Portal hazard band", 6.1f, .175f, 109.66f, 3.2f, .12f, .03f, yellow, false);
         P(tunnel, "Dead signal post", 8.45f, -2.4f, 109.55f, .12f, 2.6f, .12f, steel);
         P(tunnel, "Dead signal head", 8.45f, -.9f, 109.5f, .45f, .8f, .3f, darkTile);
         foreach (float y in new[] { -.7f, -1.1f }) P(tunnel, "Dead signal lens", 8.45f, y, 109.34f, .22f, .22f, .03f, y > -1 ? wreckRed : deadTube, false);
-        Sign3(tunnel, "LINE CLOSED", new(6.1f, -.15f, 109.6f), 180, .3f);
+        SignBoard(tunnel, "LINE CLOSED", new(6.1f, .5f, 109.56f), 180, .2f);   // on the lintel face, clear of the wreck's nose
         var bent = P(tunnel, "Bent rail", 5.2f, -3.4f, 111.6f, .1f, .12f, 2.6f, steel); bent.transform.localRotation = Quaternion.Euler(-28, 6, 0);
+        // Rubble face: a sloping pile stacked from the track bed up to the roof, every rock resting on what is below it.
         var fill = new System.Random(19);
-        for (float z = 110.6f; z < 121.6f; z += .9f)
-            for (float y = -3.6f; y < .5f; y += .9f)
-                for (int k = 0; k < 3; k++)
-                {
-                    float s = .9f + fill.Next(3) * .25f, hd = .825f * s;   // few sizes keep the box mesh assets shared
-                    float xMin = 4.18f + hd, xMax = 8.02f - hd, x = xMin + (float)fill.NextDouble() * Mathf.Max(0, xMax - xMin);
-                    float yy = Mathf.Min(y, .58f - hd), zz = Mathf.Min(z, 121.85f - hd);
-                    var rock = Box(tunnel, "Collapse fill", new(x, yy, zz), new(s, s * .85f, s), rubbleMat);
-                    rock.transform.localRotation = Quaternion.Euler(fill.Next(360), fill.Next(360), fill.Next(360));
-                }
-        foreach (float z in new[] { 111.5f, 115f, 119f })
-        {
-            var slab = Box(tunnel, "Fallen roof slab", new(6.1f, -2.2f + (z - 111) * .12f, z), new(3.2f, .3f, 2.2f), roof);
-            slab.transform.localRotation = Quaternion.Euler(z * 3 % 20 - 10, 0, z * 7 % 12 - 6);
-        }
+        StackRubble(tunnel, "Collapse fill", fill, 70, 4.18f, 8.02f, 110.9f, stubEnd - .12f, -4f, .58f, (x, z) => 4.6f * Mathf.Clamp01((z - 110.4f) / 2.2f + .25f), new[] { .9f, 1.15f, 1.4f });
         Box(t, "Buffer stop", new(6f, -3.4f, 50.25f), new(2.6f, 1.2f, .5f), steel);
         Slab(t, "Dead track east walkway", 7.65f, 50, 2.05f, 60, F, concrete);   // 0.18 m from the wreck's doors
         Box(t, "Walkway edge face", new(7.645f, -3.505f, 80), new(.2f, .99f, 60), concrete);
         Box(t, "Dead track wall base", new(9.7f, -3.65f, 80), new(.25f, 1.28f, 60), darkTile);
         Wall(t, "Dead track wall", true, 9.7f, 50, 110, F, 3.9f, darkTile, WreckSideDoorZ - .85f, WreckSideDoorZ + .85f);
         Wall(t, "Dead track channel upper wall", true, 4f, 50, 98, F + PlatformClear + .01f, 1.49f, darkTile);
-        Wall(t, "Dead track channel upper wall", true, 4f, 107, 110, F + PlatformClear + .01f, 1.49f, darkTile);
+        Wall(t, "Dead track channel upper wall", true, 4f, 107.01f, 110, F + PlatformClear + .01f, 1.49f, darkTile);
         Slab(t, "Dead track channel ceiling", 3.75f, 50, 6.1f, 48, .9f, roof);
         Slab(t, "Dead track channel ceiling", 3.75f, 107, 6.1f, 3, .9f, roof);
         Wall(t, "Dead track end wall", false, 50, 3.75f, 9.7f, F + PlatformClear + .02f, 1.48f, darkTile);
@@ -460,7 +453,7 @@ public static partial class RailAbandonedStation
             if (z % 2 < 1) d.transform.localRotation = Quaternion.Euler(0, 20, 88);
         }
         for (float z = 56; z <= 104; z += 6) Tube(t, new(1.6f, F + PlatformClear - .08f, z), true, 2, false);
-        foreach (float z in new[] { 58f, 76f, 94f, 111f }) RedLamp(t, new(-4.72f + (z > 107 ? .72f : 0), -1.2f, z), 90);
+        foreach (float z in new[] { 58f, 76f, 94f, 111f }) RedLamp(t, new(z > 107 ? -5.01f : -4.72f, -1.2f, z), 90);   // on the west wall (X -5.2 at the north end)
         RedLamp(t, new(0, -1.2f, 46.15f), 0);
         foreach (float z in new[] { 74f, 86f }) { Box(t, "Dusty bench", new(-3.9f, F + .22f, z), new(.6f, .45f, 2.6f), wood); TopLoot("platform 3", new(-3.9f, F + .45f, z), .9f); }
         Sign3(t, "PLATFORM 3   OUT OF SERVICE", new(-4.76f, -1.0f, 85), 90, .35f);
@@ -477,37 +470,58 @@ public static partial class RailAbandonedStation
     static void WreckV3(Transform t)
     {
         TrainWreck(t);   // three real-scale commuter cars (RailPassengerStationV3Train.cs)
-        var rng = new System.Random(7); float[] sizes = { .8f, 1.1f, 1.4f, 1.8f };
-        for (int i = 0; i < 90; i++)
+        // Chimney walls first so the rubble can rest against them; slabs jammed across the shaft close it off
+        // (Justin, Nov 26 batch 4: no floating rocks against open sky); thin cracks let the moonlight through.
+        Wall(t, "Cave-in shaft wall", true, 2f, 98, 107, F + PlatformClear + .03f, 5.2f, rubbleMat);
+        Wall(t, "Cave-in shaft wall", true, 9.7f, 98, 107, .9f, 3.9f, rubbleMat);
+        foreach (float z in new[] { 98f, 106.85f }) Wall(t, "Cave-in shaft wall", false, z, 2, 9.7f, F + PlatformClear + .04f, 5.2f, rubbleMat);
+        float[] slabZ = { 99.0f, 101.2f, 103.4f, 105.6f }, slabY = { 3.45f, 3.85f, 3.6f, 4.05f };
+        for (int i = 0; i < slabZ.Length; i++)
         {
-            // Every corner of a randomly rotated rock stays inside its space: clamp by the half-diagonal.
-            float s = sizes[rng.Next(4)], hd = .844f * s;
-            float z = 100.5f + (float)rng.NextDouble() * 9.2f;
-            if (z + hd > 109.65f) continue;                                    // portal plane
-            float xMin = (z + hd > 107f || z - hd < 98f) ? 4.2f + hd : 2.05f + hd, xMax = 9.57f - hd;   // platform ends / track wall
-            if (xMin > xMax) continue;
-            float x = xMin + (float)rng.NextDouble() * (xMax - xMin);
-            float r = Mathf.Clamp01(Mathf.Pow((x - 6f) / 4.2f, 2) + Mathf.Pow((z - 106f) / 6f, 2));
-            float h = 4.6f * (1 - r);
-            float y = -4f + h * (.35f + .65f * (float)rng.NextDouble());
-            if (z + hd > 107f) y = Mathf.Min(y, .58f - hd);                    // under the channel ceiling outside the hole
-            var rock = Box(t, "Cave-in rubble", new(x, y, z), new(s, s * .8f, s * 1.1f), rubbleMat);
-            rock.transform.localRotation = Quaternion.Euler(rng.Next(360), rng.Next(360), rng.Next(360));
+            float d = i == slabZ.Length - 1 ? 2.4f : 2.0f;   // the last slab reaches into the north shaft wall
+            var slab = Box(t, "Jammed roof slab", new(5.85f, slabY[i], slabZ[i] + (d - 2) / 2), new(7.8f, .45f, d), roof);
+            slab.transform.localRotation = Quaternion.Euler(i % 2 == 0 ? 3 : -4, i * 2 - 3, i % 2 == 0 ? -2.5f : 2f);
         }
-        for (int i = 0; i < 10; i++)
-        {
-            var rock = Box(t, "Cave-in rubble", new(4.5f + i % 3 * 1.6f, 1.2f + i * .7f, 100.5f + i % 4 * 1.4f), new(1.4f, 1.1f, 1.5f), rubbleMat);
-            rock.transform.localRotation = Quaternion.Euler(i * 37, i * 53, i * 21);
-        }
-        // Chimney up to the surface, lit by a cold moon shaft.
-        Wall(t, "Cave-in shaft wall", true, 2f, 98, 107, F + PlatformClear + .03f, 12, rubbleMat);
-        Wall(t, "Cave-in shaft wall", true, 9.7f, 98, 107, .9f, 8.2f, rubbleMat);
-        foreach (float z in new[] { 98f, 106.85f }) Wall(t, "Cave-in shaft wall", false, z, 2, 9.7f, F + PlatformClear + .04f, 12, rubbleMat);
+        Physics.SyncTransforms();
+        var rng = new System.Random(7);
+        // Every corner of a rotated rock stays inside its space (clamped by the half-diagonal), and each one rests
+        // on whatever is under it: the track bed, the wreck or rocks already placed.
+        StackRubble(t, "Cave-in rubble", rng, 150, 2.05f, 9.57f, 99.7f, 109.65f, -4f, .58f,
+            (x, z) => 4.6f * (1 - Mathf.Clamp01(Mathf.Pow((x - 6f) / 4.2f, 2) + Mathf.Pow((z - 106f) / 6f, 2))),
+            new[] { .8f, 1.1f, 1.4f, 1.8f },
+            (z, hd) => (z + hd > 106.72f || z - hd < 98.13f) ? 4.2f + hd : 2.13f + hd,   // platform ends, inside the shaft walls
+            (x, z, hd) => (z + hd > 106.72f || z - hd < 98.13f) ? .58f : 3.1f);
         var moon = Group(t, "Baked moonlight shaft").gameObject.AddComponent<Light>();
         moon.transform.localPosition = new(5.85f, 8.2f, 102.5f); moon.transform.localRotation = Quaternion.Euler(90, 0, 0);
         moon.type = LightType.Spot; moon.spotAngle = 70; moon.lightmapBakeType = LightmapBakeType.Baked; moon.intensity = 30; moon.range = 15; moon.color = Moon; moon.shadows = LightShadows.Soft; v3Lights++;
-        Sign3(t, "DANGER   KEEP OUT", new(2.1f, -1.2f, 97.9f), 180, .3f);
         foreach (float z in new[] { 100.2f }) TopLoot("cave-in", new(1.2f, F, z), 1f);
+    }
+
+    // Piles rocks (s x 0.85s x 1.05s boxes) so each rests on what is below it. maxHeight limits the pile above
+    // floorY; xMinAt / ceilAt override the X lower bound and the ceiling per spot.
+    static void StackRubble(Transform p, string name, System.Random rng, int attempts, float xMin, float xMax, float zMin, float zMax, float floorY, float ceilY,
+        Func<float, float, float> maxHeight, float[] sizes, Func<float, float, float> xMinAt = null, Func<float, float, float, float> ceilAt = null)
+    {
+        var ps = p.gameObject.scene.GetPhysicsScene(); var block = p.root;
+        for (int i = 0; i < attempts; i++)
+        {
+            float s = sizes[rng.Next(sizes.Length)], hd = .84f * s;
+            if (zMax - zMin < 2 * hd) continue;
+            float z = zMin + hd + (float)rng.NextDouble() * (zMax - zMin - 2 * hd);
+            float x0 = xMinAt != null ? xMinAt(z, hd) : xMin + hd, x1 = xMax - hd;
+            if (x0 > x1) continue;
+            float x = x0 + (float)rng.NextDouble() * (x1 - x0);
+            float ceil = ceilAt != null ? ceilAt(x, z, hd) : ceilY;
+            float support = floorY;
+            foreach (var (dx, dz) in new[] { (0f, 0f), (.25f, 0f), (-.25f, 0f), (0f, .25f), (0f, -.25f) })
+                if (ps.Raycast(block.TransformPoint(new(x + dx * hd, ceil - .03f, z + dz * hd)), -block.up, out var h, ceil - floorY + .5f, 1 << 6, QueryTriggerInteraction.Ignore))
+                    support = Mathf.Max(support, block.InverseTransformPoint(h.point).y);
+            if (support - floorY > maxHeight(x, z)) continue;
+            float y = Mathf.Min(support + .3f * s, ceil - hd);   // the box's inner sphere (r 0.425 s) dips below every sampled support
+            var rock = Box(p, name, new(x, y, z), new(s, s * .85f, s * 1.05f), rubbleMat);
+            rock.transform.localRotation = Quaternion.Euler(rng.Next(360), rng.Next(360), rng.Next(360));
+            Physics.SyncTransforms();
+        }
     }
 
     // ---------------- escalators ----------------
@@ -537,9 +551,12 @@ public static partial class RailAbandonedStation
         float lo = Mathf.Min(zBottom, zTop), hi = Mathf.Max(zBottom, zTop);
         Wall(t, "Shaft wall", true, x0, lo, hi, F, Deck - F + PlatformClear + .3f, tile);
         Wall(t, "Shaft wall", true, x0 + 4.5f, lo, hi, F, Deck - F + PlatformClear + .3f, tile);
-        Beam(t, "Sloped shaft ceiling", new(x0 + 2.25f, F + PlatformClear + .15f, zBottom), new(x0 + 2.25f, Deck + PlatformClear + .15f, zTop), 4.5f, .3f, roof);
-        var mid = new Vector3(x0 + 2.25f, (F + Deck) / 2 + PlatformClear - .1f, (zBottom + zTop) / 2);
-        Tube(t, mid, true, x0 > -10 ? 2 : (zBottom < 80 ? 0 : 1), x0 < -10);
+        Vector3 ceilA = new(x0 + 2.25f, F + PlatformClear + .15f, zBottom), ceilB = new(x0 + 2.25f, Deck + PlatformClear + .15f, zTop);
+        Beam(t, "Sloped shaft ceiling", ceilA, ceilB, 4.5f, .3f, roof);
+        // The fitting follows the slope and sits 1 cm under the soffit (Justin, Nov 26 batch 4).
+        var mount = Group(t, "Sloped light mount"); var slope = Quaternion.LookRotation(ceilB - ceilA);
+        mount.localRotation = slope; mount.localPosition = (ceilA + ceilB) / 2 - slope * Vector3.up * (.15f + .1f);
+        Tube(mount, Vector3.zero, true, x0 > -10 ? 2 : (zBottom < 80 ? 0 : 1), x0 < -10);
         if (x0 > -10) RedLamp(t, new(x0 + .14f, (F + Deck) / 2 + 1.2f, (zBottom + zTop) / 2), 90);
         TopLoot(x0 < -10 ? "escalator 1" : "escalator 3", new(x0 + 3.2f, F + rise * 17, zBottom + dir * 16.5f * step), x0 < -10 ? .2f : .8f);
     }
