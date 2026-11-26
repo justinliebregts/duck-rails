@@ -1,5 +1,16 @@
 # Nuclear power plant — layout and implementation
 
+## November 26 — feedback pass: slime, water, walkway and lighting
+
+- The five waste spills have rounded rims about 12 cm thick that slope into the floor.
+- The pipe racks stack 3 then 2 pipes (1.21 m diameter, same stack width). The easternmost rack keeps its supports and is empty.
+- All water is now 1 m deep with the lakeside underwater effect (`WaterVolume`: muffled audio, teal fog, enter, exit and bubble sounds, water footsteps and hand hits). This replaces the earlier shallow, non-swimming water decision. The settling pond is a hollow raised tank whose water meets every edge, with exit treads to the east bank. The refueling pool rim rose to 1.12 m (its six deck loot markers rose with it). Each flume step is a 1 m basin with west-side stairs up to the rear deck. Loose items have no surface-based impact sounds, so dropped items do not splash.
+- A walkway of three 24 cm pipes, with no railings, joins the two tower lookouts at 35.5 m. Both facing lookout rails open for it.
+- Maintenance and gatehouse lights are half strength. The three Turbine Hall facade spots are quarter strength.
+- The containment service annex has heat exchanger tanks, a control panel, lockers, parts shelves and a desk.
+
+Navigation and lighting were rebaked. Edit Mode checks are in [geometry checks](validation/nuclear-full-block/geometry-checks.txt). Headset review is queued.
+
 ## November 25 — spiral ramp loot and plant acoustics
 
 Each of the four turns inside each cooling tower gained three coal and two gold candidates. The saved test-only block totals 137 coal, 89 gold and 33 enemy candidates. All 7,523 plant checks passed, including support and clearance and 100 seeds for every crew size. [Current spawn map](../output/nuclear-full-block/spawn-map.png)
@@ -117,7 +128,7 @@ User approved V2 for 3D and requested closer barrel spacing and stacked drums. I
 - Two 22 m-diameter, 35 m-high hollow cooling shells, open undercrofts, designated east/west approaches, internal supports, crosswalks and perimeter circulation. Tower A has shallow water dressing and partial overhead fill; Tower B has a dry floor and fallen panels. Both have a clear central view up through the shell. The shell bases are open between supports, not enclosed rooms with only two door holes.
 - A 28 x 36 m turbine hall with two machinery units, opposite ground-level doors, an 8 m-wide gallery at +3 m, two open stairwells and 3 m-wide stairs, green console displays and workbench. Reactor containment is an exterior landmark with a sealed base.
 - **130 static waste drums:** three tight clusters containing 117 drums, four on the truck bed, six tipped behind the truck and three other loose-positioned upright drums. Cluster spacing is 1.02 m for roughly 0.84 m bodies; 45 base drums, 45 second-tier drums and 27 third-tier drums. Every barrel has a radiation mark. Truck, lowered tailgate and two small spills are scenery, without new damage or moving-physics mechanics.
-- Gatehouse, employee parking, maintenance shed, cooling basin, pump hut, transformers, fences, trees and utilities fill the approach/departure thirds. Flat seams and railway clearance retained. Water is a shallow visual surface above supported floors, not a swimming or deep-basin system.
+- Gatehouse, employee parking, maintenance shed, cooling basin, pump hut, transformers, fences, trees and utilities fill the approach/departure thirds. Flat seams and railway clearance retained. Water was a shallow visual surface until November 26; it is now 1 m deep (see above).
 - Rough Quackville materials, 29 baked environment lights, dedicated authoring/companion scenes and probes. The normal Expedition atmosphere is unchanged. Enemy bounds cover both plant sides at Z=45..115; a 14 m central navigation exclusion keeps enemies off the railway. Three spawn variations retain six coal, six enemy candidates and two gold candidates each.
 
 ### Validation

@@ -54,7 +54,7 @@ public static class RailNuclearPlantChecks
    Check(all.Where(t=>t.name=="Flat ground").All(t=>new[]{"Concrete","Aggregate"}.Contains(t.GetComponent<MeshRenderer>().sharedMaterial.name)),"Concrete and aggregate ground");
    Check(all.Any(t=>t.name=="QUACKWATT" && t.position.z<10),"South-facing station sign");
    foreach(float z in new[]{48f,81f,95f})Check(Physics.Raycast(new Vector3(0,7,z),Vector3.up,4,1<<6),"Overhead crossing "+z);
-   Check(all.Count(t=>t.name.StartsWith("Waste spill ") && t.GetComponent<MeshRenderer>() && t.GetComponent<MeshRenderer>().sharedMaterial.IsKeywordEnabled("_EMISSION"))==2,"Emissive spill surface and highlights");
+   Check(all.Count(t=>t.name.StartsWith("Waste spill ") && t.GetComponent<MeshRenderer>() && t.GetComponent<MeshRenderer>().sharedMaterial.IsKeywordEnabled("_EMISSION"))==4,"Emissive spill surface, raised edges and highlights");
    foreach(var t in all.Where(t=>t.name.StartsWith("Waste drum tier "))){var ray=t.position+Vector3.up*.03f;Check(Physics.Raycast(ray,Vector3.down,out var hit,.15f,1<<6,QueryTriggerInteraction.Ignore),"Barrel supported "+t.position);}
    Check(root.GetComponentsInChildren<Light>().Count(l=>l.name=="Shell uplight" && l.type==LightType.Spot)==12,"Six baked uplights around each shell");Check(root.GetComponentsInChildren<Light>().All(l=>l.lightmapBakeType==LightmapBakeType.Baked),"Environment fixtures bake-only");
    Check(root.GetComponentsInChildren<Rigidbody>().Length==0,"Scenery does not add loose networked physics");
@@ -71,7 +71,7 @@ public static class RailNuclearPlantChecks
    foreach(string zone in new[]{"Shift bus turnaround","Pipe delivery racks","Tower entrance worklights","Supply trunk and collars","Reed settling pond","Stepped discharge flume","Transformer fins"})
     Check(site.GetComponentsInChildren<MeshCollider>().Any(c=>c.name.StartsWith(zone+" ")),zone+" has physical support");
    foreach(var t in site.GetComponentsInChildren<TMPro.TMP_Text>())Check(t.font.name=="CutePixel SDF","Site font "+t.text);
-   Walk(new(-23,.12f,15),"Shift arrival");Walk(new(23,.04f,9),"Between delivery racks");Walk(new(-24,2.33f,131),"Settling pond floor");Walk(new(23,1.23f,142.5f),"First flume step");
+   Walk(new(-23,.12f,15),"Shift arrival");Walk(new(23,.04f,9),"Between delivery racks");Walk(new(-24,1.33f,131),"Settling pond floor");Walk(new(23,.23f,142.5f),"First flume step");
    var manifest=JsonUtility.FromJson<RampManifest>(File.ReadAllText("ArtSource/NuclearFullBlock/site.json"));
    var samples=manifest.rampSamples;
    Check(manifest.pipeJoints.Length>=60,"Authored bend and branch fittings");
@@ -121,8 +121,9 @@ public static class RailNuclearPlantChecks
     }
    }
    var facadeLights=site.GetComponentsInChildren<Light>().Where(l=>l.name=="Hall facade spotlight").ToArray();
-   Check(facadeLights.Length==3 && facadeLights.All(l=>l.type==LightType.Spot && l.intensity>=400 &&
-      l.transform.forward.y<-.96f && l.transform.forward.x<-.1f),"Three strong downward facade spots");
+   Check(facadeLights.Length==3 && facadeLights.All(l=>l.type==LightType.Spot && Mathf.Approximately(l.intensity,140) &&
+      l.transform.forward.y<-.96f && l.transform.forward.x<-.1f),"Three dimmed downward facade spots");
+   CheckFeedback(b,root,site,graph);
    var tripods=site.GetComponentsInChildren<Light>().Where(l=>l.name=="Worklight").ToArray();
    Check(tripods.Length==8,"Four existing work lights retained per tower");
    foreach(var l in tripods) {
@@ -204,8 +205,8 @@ public static class RailNuclearPlantChecks
    Walk(new(-38.5f,8.1f,74.5f),"Roof landing");
    Connected(graph,new[]{new Vector3(-37,3.2f,86),new(-38.5f,8.3f,74)},"Gallery to roof");
    for(float x=17.8f;x<=22.4f;x+=.4f)Walk(new(x,.02f,72),"Reactor doorway");
-   foreach(float x in new[]{25.55f,34.4f})for(float z=67;z<=77;z+=.5f)Walk(new(x,.93f,z),"Refueling pool loop");
-   Walk(new(30,.10f,72),"Recoverable pool floor");Walk(new(37.10f,1.62f,75.8f),"Crane control platform");
+   foreach(float x in new[]{25.55f,34.4f})for(float z=67;z<=77;z+=.5f)Walk(new(x,1.164f,z),"Refueling pool loop");
+   Walk(new(30,0,72),"Recoverable pool floor");Walk(new(37.10f,1.62f,75.8f),"Crane control platform");
    foreach(var w in new[]{new Vector3(-34.9f,2,34.5f),new(29.9f,2,36.5f),new(20.5f,2.45f,51.5f)})
     Check(!Physics.Raycast(w,Vector3.forward,1.1f,1<<6),"Open-air window "+w);
    foreach(float x in new[]{-47f,47f})foreach(float z in new[]{4f,30f,65f,90f,119f,150f})
@@ -218,6 +219,33 @@ public static class RailNuclearPlantChecks
    foreach(var mf in root.GetComponentsInChildren<MeshFilter>().Where(m=>!m.GetComponent<TMPro.TMP_Text>()))Check(mf.sharedMesh.uv.Length==mf.sharedMesh.vertexCount&&mf.sharedMesh.uv2.Length==mf.sharedMesh.vertexCount,"UV channels "+mf.name);
    var failed=lines.Where(l=>l.StartsWith("FAIL")).ToArray();if(failed.Length>0)throw new Exception(failed.Length+" failures:\n"+string.Join("\n",failed.Take(40)));Debug.Log("NUCLEAR PLANT CHECKS: "+lines.Count+" passed");
   }finally{File.WriteAllLines(Output+"/geometry-checks.txt",lines);}
+ }
+ // November 26 feedback: water depth, walkway, dimmed buildings and the emptied east rack.
+ static void CheckFeedback(RailBlock block,Transform root,Transform site,CrawlGraph graph)
+ {
+  var volumes=site.GetComponentsInChildren<Game.Audio.WaterVolume>();
+  Check(volumes.Length==RailNuclearFullBlock.Waters.Length,"Six water volumes");
+  foreach(var water in RailNuclearFullBlock.Waters) {
+   var v=volumes.Single(q=>q.name=="Water volume "+water.name);
+   Check(Mathf.Abs(v.SurfaceY-water.surface.y)<.001f && v.waterSurface && v.enterSound && v.exitSound && v.bubblesSound,"Water surface and sounds "+water.name);
+   Check(v.Contains(water.surface+Vector3.down*.05f) && v.Contains(water.surface+Vector3.down*1f) && !v.Contains(water.surface+Vector3.up*.05f),"Submersion range "+water.name);
+   var probe=water.surface+new Vector3(water.name=="Refueling pool"?1.6f:0,0,0);
+   Check(Physics.Raycast(probe+Vector3.down*.01f,Vector3.down,out var bed,2,1<<6) && Mathf.Abs(water.surface.y-bed.point.y-1)<.03f,"One metre deep "+water.name);
+  }
+  Check(site.GetComponentsInChildren<MeshRenderer>().Where(r=>r.sharedMaterial && r.sharedMaterial.name.EndsWith("water")).All(r=>!r.GetComponent<Collider>()),"Water surfaces have no collision");
+  for(int k=1;k<=7;k++)Walk(new(-12.81f-.34f*(7-k)-.17f,1.33f+1.34f*k/7,134),"Pond exit tread "+k);
+  for(int i=1;i<4;i++)for(int k=1;k<=4;k++)Walk(new(17,.23f+.9f*(i-1)+.18f*k,140.95f+i*3.1f+.085f-.35f*(4-k)-.175f),"Flume stair "+i+" tread "+k);
+  for(int k=1;k<=6;k++)Walk(new(17,2.93f+(4.12f-2.93f)/7*k,153.35f-.30f*(6-k)-.15f),"Flume deck stair "+k);
+  for(float t=0;t<=1.001f;t+=1f/72)Walk(Vector3.Lerp(new(-16.3f,35.49f,104.491f),new(16.3f,35.49f,101.509f),t),"Tower pipe walkway");
+  Connected(graph,new[]{new Vector3(-18.3f,35.7f,104.5f),new(18.3f,35.7f,101.5f)},"Lookouts joined by walkway");
+  foreach(var building in new[]{"Gatehouse","Maintenance"})
+   Check(Mathf.Approximately(root.Find(building+"/Baked plant light").GetComponent<Light>().intensity,14),"Dimmed interior lamp "+building);
+  var racks=site.GetComponentsInChildren<MeshFilter>().Single(f=>f.name.StartsWith("Pipe delivery racks Galvanized steel "));
+  var xs=racks.sharedMesh.vertices.Select(v=>racks.transform.TransformPoint(v).x).ToArray();
+  Check(xs.Max()<28 && xs.Min()>17,"East rack emptied, other stacks keep their width");
+  foreach(var zone in new[]{"Annex heat exchangers","Annex control panel","Annex lockers","Annex parts shelves","Annex shift desk"})
+   Check(site.GetComponentsInChildren<MeshCollider>().Any(c=>c.name.StartsWith(zone+" ")),zone+" installed");
+  for(float z=52.6f;z<=57.4f;z+=.4f)Walk(new(27,.07f,z),"Annex doorway aisle");
  }
  static void CheckSpawnPools(RailBlock block,CrawlGraph graph,RailSpawnMarker[] markers)
  {

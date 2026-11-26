@@ -1435,7 +1435,7 @@ PASS South-facing station sign
 PASS Overhead crossing 48
 PASS Overhead crossing 81
 PASS Overhead crossing 95
-PASS Emissive spill surface and highlights
+PASS Emissive spill surface, raised edges and highlights
 PASS Barrel supported (16.59, 1.23, 27.93)
 PASS Barrel supported (16.44, 1.23, 29.02)
 PASS Barrel supported (17.68, 1.23, 28.09)
@@ -5254,10 +5254,10 @@ PASS Support Shift arrival (-23.00, 0.12, 15.00)
 PASS Body clearance Shift arrival (-23.00, 0.12, 15.00)
 PASS Support Between delivery racks (23.00, 0.04, 9.00)
 PASS Body clearance Between delivery racks (23.00, 0.04, 9.00)
-PASS Support Settling pond floor (-24.00, 2.33, 131.00)
-PASS Body clearance Settling pond floor (-24.00, 2.33, 131.00)
-PASS Support First flume step (23.00, 1.23, 142.50)
-PASS Body clearance First flume step (23.00, 1.23, 142.50)
+PASS Support Settling pond floor (-24.00, 1.33, 131.00)
+PASS Body clearance Settling pond floor (-24.00, 1.33, 131.00)
+PASS Support First flume step (23.00, 0.23, 142.50)
+PASS Body clearance First flume step (23.00, 0.23, 142.50)
 PASS Authored bend and branch fittings
 PASS Installed pipe fitting (-16.80, 9.11, 47.08)
 PASS Installed pipe fitting (15.20, 9.11, 47.08)
@@ -5338,6 +5338,8 @@ PASS Installed pipe fitting (27.92, 7.22, 80.00)
 PASS Installed pipe fitting (16.80, 6.10, 84.46)
 PASS Installed pipe fitting (27.92, 4.06, 80.00)
 PASS Installed pipe fitting (-32.54, 2.30, 142.36)
+PASS Installed pipe fitting (26.35, 3.55, 58.95)
+PASS Installed pipe fitting (27.65, 3.55, 58.95)
 PASS Floating tower manifolds removed
 PASS Supply run ends before tower access
 PASS Independent barrel orientations
@@ -5437,7 +5439,257 @@ PASS Working floodlight on wall (1.00, 0.00, 0.00)
 PASS Mounted hall spotlight (-39.18, 6.63, 69.00)
 PASS Working floodlight on wall (-1.00, 0.00, 0.00)
 PASS Mounted hall spotlight (-12.82, 6.63, 85.00)
-PASS Three strong downward facade spots
+PASS Three dimmed downward facade spots
+PASS Six water volumes
+PASS Water surface and sounds Settling pond
+PASS Submersion range Settling pond
+PASS One metre deep Settling pond
+PASS Water surface and sounds Refueling pool
+PASS Submersion range Refueling pool
+PASS One metre deep Refueling pool
+PASS Water surface and sounds Flume step 1
+PASS Submersion range Flume step 1
+PASS One metre deep Flume step 1
+PASS Water surface and sounds Flume step 2
+PASS Submersion range Flume step 2
+PASS One metre deep Flume step 2
+PASS Water surface and sounds Flume step 3
+PASS Submersion range Flume step 3
+PASS One metre deep Flume step 3
+PASS Water surface and sounds Flume step 4
+PASS Submersion range Flume step 4
+PASS One metre deep Flume step 4
+PASS Water surfaces have no collision
+PASS Support Pond exit tread 1 (-15.02, 1.52, 134.00)
+PASS Body clearance Pond exit tread 1 (-15.02, 1.52, 134.00)
+PASS Support Pond exit tread 2 (-14.68, 1.71, 134.00)
+PASS Body clearance Pond exit tread 2 (-14.68, 1.71, 134.00)
+PASS Support Pond exit tread 3 (-14.34, 1.90, 134.00)
+PASS Body clearance Pond exit tread 3 (-14.34, 1.90, 134.00)
+PASS Support Pond exit tread 4 (-14.00, 2.10, 134.00)
+PASS Body clearance Pond exit tread 4 (-14.00, 2.10, 134.00)
+PASS Support Pond exit tread 5 (-13.66, 2.29, 134.00)
+PASS Body clearance Pond exit tread 5 (-13.66, 2.29, 134.00)
+PASS Support Pond exit tread 6 (-13.32, 2.48, 134.00)
+PASS Body clearance Pond exit tread 6 (-13.32, 2.48, 134.00)
+PASS Support Pond exit tread 7 (-12.98, 2.67, 134.00)
+PASS Body clearance Pond exit tread 7 (-12.98, 2.67, 134.00)
+PASS Support Flume stair 1 tread 1 (17.00, 0.41, 142.91)
+PASS Body clearance Flume stair 1 tread 1 (17.00, 0.41, 142.91)
+PASS Support Flume stair 1 tread 2 (17.00, 0.59, 143.26)
+PASS Body clearance Flume stair 1 tread 2 (17.00, 0.59, 143.26)
+PASS Support Flume stair 1 tread 3 (17.00, 0.77, 143.61)
+PASS Body clearance Flume stair 1 tread 3 (17.00, 0.77, 143.61)
+PASS Support Flume stair 1 tread 4 (17.00, 0.95, 143.96)
+PASS Body clearance Flume stair 1 tread 4 (17.00, 0.95, 143.96)
+PASS Support Flume stair 2 tread 1 (17.00, 1.31, 146.01)
+PASS Body clearance Flume stair 2 tread 1 (17.00, 1.31, 146.01)
+PASS Support Flume stair 2 tread 2 (17.00, 1.49, 146.36)
+PASS Body clearance Flume stair 2 tread 2 (17.00, 1.49, 146.36)
+PASS Support Flume stair 2 tread 3 (17.00, 1.67, 146.71)
+PASS Body clearance Flume stair 2 tread 3 (17.00, 1.67, 146.71)
+PASS Support Flume stair 2 tread 4 (17.00, 1.85, 147.06)
+PASS Body clearance Flume stair 2 tread 4 (17.00, 1.85, 147.06)
+PASS Support Flume stair 3 tread 1 (17.00, 2.21, 149.11)
+PASS Body clearance Flume stair 3 tread 1 (17.00, 2.21, 149.11)
+PASS Support Flume stair 3 tread 2 (17.00, 2.39, 149.46)
+PASS Body clearance Flume stair 3 tread 2 (17.00, 2.39, 149.46)
+PASS Support Flume stair 3 tread 3 (17.00, 2.57, 149.81)
+PASS Body clearance Flume stair 3 tread 3 (17.00, 2.57, 149.81)
+PASS Support Flume stair 3 tread 4 (17.00, 2.75, 150.16)
+PASS Body clearance Flume stair 3 tread 4 (17.00, 2.75, 150.16)
+PASS Support Flume deck stair 1 (17.00, 3.10, 151.70)
+PASS Body clearance Flume deck stair 1 (17.00, 3.10, 151.70)
+PASS Support Flume deck stair 2 (17.00, 3.27, 152.00)
+PASS Body clearance Flume deck stair 2 (17.00, 3.27, 152.00)
+PASS Support Flume deck stair 3 (17.00, 3.44, 152.30)
+PASS Body clearance Flume deck stair 3 (17.00, 3.44, 152.30)
+PASS Support Flume deck stair 4 (17.00, 3.61, 152.60)
+PASS Body clearance Flume deck stair 4 (17.00, 3.61, 152.60)
+PASS Support Flume deck stair 5 (17.00, 3.78, 152.90)
+PASS Body clearance Flume deck stair 5 (17.00, 3.78, 152.90)
+PASS Support Flume deck stair 6 (17.00, 3.95, 153.20)
+PASS Body clearance Flume deck stair 6 (17.00, 3.95, 153.20)
+PASS Support Tower pipe walkway (-16.30, 35.49, 104.49)
+PASS Body clearance Tower pipe walkway (-16.30, 35.49, 104.49)
+PASS Support Tower pipe walkway (-15.85, 35.49, 104.45)
+PASS Body clearance Tower pipe walkway (-15.85, 35.49, 104.45)
+PASS Support Tower pipe walkway (-15.39, 35.49, 104.41)
+PASS Body clearance Tower pipe walkway (-15.39, 35.49, 104.41)
+PASS Support Tower pipe walkway (-14.94, 35.49, 104.37)
+PASS Body clearance Tower pipe walkway (-14.94, 35.49, 104.37)
+PASS Support Tower pipe walkway (-14.49, 35.49, 104.33)
+PASS Body clearance Tower pipe walkway (-14.49, 35.49, 104.33)
+PASS Support Tower pipe walkway (-14.04, 35.49, 104.28)
+PASS Body clearance Tower pipe walkway (-14.04, 35.49, 104.28)
+PASS Support Tower pipe walkway (-13.58, 35.49, 104.24)
+PASS Body clearance Tower pipe walkway (-13.58, 35.49, 104.24)
+PASS Support Tower pipe walkway (-13.13, 35.49, 104.20)
+PASS Body clearance Tower pipe walkway (-13.13, 35.49, 104.20)
+PASS Support Tower pipe walkway (-12.68, 35.49, 104.16)
+PASS Body clearance Tower pipe walkway (-12.68, 35.49, 104.16)
+PASS Support Tower pipe walkway (-12.23, 35.49, 104.12)
+PASS Body clearance Tower pipe walkway (-12.23, 35.49, 104.12)
+PASS Support Tower pipe walkway (-11.77, 35.49, 104.08)
+PASS Body clearance Tower pipe walkway (-11.77, 35.49, 104.08)
+PASS Support Tower pipe walkway (-11.32, 35.49, 104.04)
+PASS Body clearance Tower pipe walkway (-11.32, 35.49, 104.04)
+PASS Support Tower pipe walkway (-10.87, 35.49, 103.99)
+PASS Body clearance Tower pipe walkway (-10.87, 35.49, 103.99)
+PASS Support Tower pipe walkway (-10.41, 35.49, 103.95)
+PASS Body clearance Tower pipe walkway (-10.41, 35.49, 103.95)
+PASS Support Tower pipe walkway (-9.96, 35.49, 103.91)
+PASS Body clearance Tower pipe walkway (-9.96, 35.49, 103.91)
+PASS Support Tower pipe walkway (-9.51, 35.49, 103.87)
+PASS Body clearance Tower pipe walkway (-9.51, 35.49, 103.87)
+PASS Support Tower pipe walkway (-9.06, 35.49, 103.83)
+PASS Body clearance Tower pipe walkway (-9.06, 35.49, 103.83)
+PASS Support Tower pipe walkway (-8.60, 35.49, 103.79)
+PASS Body clearance Tower pipe walkway (-8.60, 35.49, 103.79)
+PASS Support Tower pipe walkway (-8.15, 35.49, 103.75)
+PASS Body clearance Tower pipe walkway (-8.15, 35.49, 103.75)
+PASS Support Tower pipe walkway (-7.70, 35.49, 103.70)
+PASS Body clearance Tower pipe walkway (-7.70, 35.49, 103.70)
+PASS Support Tower pipe walkway (-7.24, 35.49, 103.66)
+PASS Body clearance Tower pipe walkway (-7.24, 35.49, 103.66)
+PASS Support Tower pipe walkway (-6.79, 35.49, 103.62)
+PASS Body clearance Tower pipe walkway (-6.79, 35.49, 103.62)
+PASS Support Tower pipe walkway (-6.34, 35.49, 103.58)
+PASS Body clearance Tower pipe walkway (-6.34, 35.49, 103.58)
+PASS Support Tower pipe walkway (-5.89, 35.49, 103.54)
+PASS Body clearance Tower pipe walkway (-5.89, 35.49, 103.54)
+PASS Support Tower pipe walkway (-5.43, 35.49, 103.50)
+PASS Body clearance Tower pipe walkway (-5.43, 35.49, 103.50)
+PASS Support Tower pipe walkway (-4.98, 35.49, 103.46)
+PASS Body clearance Tower pipe walkway (-4.98, 35.49, 103.46)
+PASS Support Tower pipe walkway (-4.53, 35.49, 103.41)
+PASS Body clearance Tower pipe walkway (-4.53, 35.49, 103.41)
+PASS Support Tower pipe walkway (-4.07, 35.49, 103.37)
+PASS Body clearance Tower pipe walkway (-4.07, 35.49, 103.37)
+PASS Support Tower pipe walkway (-3.62, 35.49, 103.33)
+PASS Body clearance Tower pipe walkway (-3.62, 35.49, 103.33)
+PASS Support Tower pipe walkway (-3.17, 35.49, 103.29)
+PASS Body clearance Tower pipe walkway (-3.17, 35.49, 103.29)
+PASS Support Tower pipe walkway (-2.72, 35.49, 103.25)
+PASS Body clearance Tower pipe walkway (-2.72, 35.49, 103.25)
+PASS Support Tower pipe walkway (-2.26, 35.49, 103.21)
+PASS Body clearance Tower pipe walkway (-2.26, 35.49, 103.21)
+PASS Support Tower pipe walkway (-1.81, 35.49, 103.17)
+PASS Body clearance Tower pipe walkway (-1.81, 35.49, 103.17)
+PASS Support Tower pipe walkway (-1.36, 35.49, 103.12)
+PASS Body clearance Tower pipe walkway (-1.36, 35.49, 103.12)
+PASS Support Tower pipe walkway (-0.91, 35.49, 103.08)
+PASS Body clearance Tower pipe walkway (-0.91, 35.49, 103.08)
+PASS Support Tower pipe walkway (-0.45, 35.49, 103.04)
+PASS Body clearance Tower pipe walkway (-0.45, 35.49, 103.04)
+PASS Support Tower pipe walkway (0.00, 35.49, 103.00)
+PASS Body clearance Tower pipe walkway (0.00, 35.49, 103.00)
+PASS Support Tower pipe walkway (0.45, 35.49, 102.96)
+PASS Body clearance Tower pipe walkway (0.45, 35.49, 102.96)
+PASS Support Tower pipe walkway (0.91, 35.49, 102.92)
+PASS Body clearance Tower pipe walkway (0.91, 35.49, 102.92)
+PASS Support Tower pipe walkway (1.36, 35.49, 102.88)
+PASS Body clearance Tower pipe walkway (1.36, 35.49, 102.88)
+PASS Support Tower pipe walkway (1.81, 35.49, 102.83)
+PASS Body clearance Tower pipe walkway (1.81, 35.49, 102.83)
+PASS Support Tower pipe walkway (2.26, 35.49, 102.79)
+PASS Body clearance Tower pipe walkway (2.26, 35.49, 102.79)
+PASS Support Tower pipe walkway (2.72, 35.49, 102.75)
+PASS Body clearance Tower pipe walkway (2.72, 35.49, 102.75)
+PASS Support Tower pipe walkway (3.17, 35.49, 102.71)
+PASS Body clearance Tower pipe walkway (3.17, 35.49, 102.71)
+PASS Support Tower pipe walkway (3.62, 35.49, 102.67)
+PASS Body clearance Tower pipe walkway (3.62, 35.49, 102.67)
+PASS Support Tower pipe walkway (4.08, 35.49, 102.63)
+PASS Body clearance Tower pipe walkway (4.08, 35.49, 102.63)
+PASS Support Tower pipe walkway (4.53, 35.49, 102.59)
+PASS Body clearance Tower pipe walkway (4.53, 35.49, 102.59)
+PASS Support Tower pipe walkway (4.98, 35.49, 102.54)
+PASS Body clearance Tower pipe walkway (4.98, 35.49, 102.54)
+PASS Support Tower pipe walkway (5.43, 35.49, 102.50)
+PASS Body clearance Tower pipe walkway (5.43, 35.49, 102.50)
+PASS Support Tower pipe walkway (5.89, 35.49, 102.46)
+PASS Body clearance Tower pipe walkway (5.89, 35.49, 102.46)
+PASS Support Tower pipe walkway (6.34, 35.49, 102.42)
+PASS Body clearance Tower pipe walkway (6.34, 35.49, 102.42)
+PASS Support Tower pipe walkway (6.79, 35.49, 102.38)
+PASS Body clearance Tower pipe walkway (6.79, 35.49, 102.38)
+PASS Support Tower pipe walkway (7.24, 35.49, 102.34)
+PASS Body clearance Tower pipe walkway (7.24, 35.49, 102.34)
+PASS Support Tower pipe walkway (7.70, 35.49, 102.30)
+PASS Body clearance Tower pipe walkway (7.70, 35.49, 102.30)
+PASS Support Tower pipe walkway (8.15, 35.49, 102.25)
+PASS Body clearance Tower pipe walkway (8.15, 35.49, 102.25)
+PASS Support Tower pipe walkway (8.60, 35.49, 102.21)
+PASS Body clearance Tower pipe walkway (8.60, 35.49, 102.21)
+PASS Support Tower pipe walkway (9.06, 35.49, 102.17)
+PASS Body clearance Tower pipe walkway (9.06, 35.49, 102.17)
+PASS Support Tower pipe walkway (9.51, 35.49, 102.13)
+PASS Body clearance Tower pipe walkway (9.51, 35.49, 102.13)
+PASS Support Tower pipe walkway (9.96, 35.49, 102.09)
+PASS Body clearance Tower pipe walkway (9.96, 35.49, 102.09)
+PASS Support Tower pipe walkway (10.41, 35.49, 102.05)
+PASS Body clearance Tower pipe walkway (10.41, 35.49, 102.05)
+PASS Support Tower pipe walkway (10.87, 35.49, 102.01)
+PASS Body clearance Tower pipe walkway (10.87, 35.49, 102.01)
+PASS Support Tower pipe walkway (11.32, 35.49, 101.96)
+PASS Body clearance Tower pipe walkway (11.32, 35.49, 101.96)
+PASS Support Tower pipe walkway (11.77, 35.49, 101.92)
+PASS Body clearance Tower pipe walkway (11.77, 35.49, 101.92)
+PASS Support Tower pipe walkway (12.23, 35.49, 101.88)
+PASS Body clearance Tower pipe walkway (12.23, 35.49, 101.88)
+PASS Support Tower pipe walkway (12.68, 35.49, 101.84)
+PASS Body clearance Tower pipe walkway (12.68, 35.49, 101.84)
+PASS Support Tower pipe walkway (13.13, 35.49, 101.80)
+PASS Body clearance Tower pipe walkway (13.13, 35.49, 101.80)
+PASS Support Tower pipe walkway (13.58, 35.49, 101.76)
+PASS Body clearance Tower pipe walkway (13.58, 35.49, 101.76)
+PASS Support Tower pipe walkway (14.04, 35.49, 101.72)
+PASS Body clearance Tower pipe walkway (14.04, 35.49, 101.72)
+PASS Support Tower pipe walkway (14.49, 35.49, 101.67)
+PASS Body clearance Tower pipe walkway (14.49, 35.49, 101.67)
+PASS Support Tower pipe walkway (14.94, 35.49, 101.63)
+PASS Body clearance Tower pipe walkway (14.94, 35.49, 101.63)
+PASS Support Tower pipe walkway (15.39, 35.49, 101.59)
+PASS Body clearance Tower pipe walkway (15.39, 35.49, 101.59)
+PASS Support Tower pipe walkway (15.85, 35.49, 101.55)
+PASS Body clearance Tower pipe walkway (15.85, 35.49, 101.55)
+PASS Support Tower pipe walkway (16.30, 35.49, 101.51)
+PASS Body clearance Tower pipe walkway (16.30, 35.49, 101.51)
+PASS Lookouts joined by walkway nodes
+PASS Lookouts joined by walkway path
+PASS Dimmed interior lamp Gatehouse
+PASS Dimmed interior lamp Maintenance
+PASS East rack emptied, other stacks keep their width
+PASS Annex heat exchangers installed
+PASS Annex control panel installed
+PASS Annex lockers installed
+PASS Annex parts shelves installed
+PASS Annex shift desk installed
+PASS Support Annex doorway aisle (27.00, 0.07, 52.60)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 52.60)
+PASS Support Annex doorway aisle (27.00, 0.07, 53.00)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 53.00)
+PASS Support Annex doorway aisle (27.00, 0.07, 53.40)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 53.40)
+PASS Support Annex doorway aisle (27.00, 0.07, 53.80)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 53.80)
+PASS Support Annex doorway aisle (27.00, 0.07, 54.20)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 54.20)
+PASS Support Annex doorway aisle (27.00, 0.07, 54.60)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 54.60)
+PASS Support Annex doorway aisle (27.00, 0.07, 55.00)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 55.00)
+PASS Support Annex doorway aisle (27.00, 0.07, 55.40)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 55.40)
+PASS Support Annex doorway aisle (27.00, 0.07, 55.80)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 55.80)
+PASS Support Annex doorway aisle (27.00, 0.07, 56.20)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 56.20)
+PASS Support Annex doorway aisle (27.00, 0.07, 56.60)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 56.60)
+PASS Support Annex doorway aisle (27.00, 0.07, 57.00)
+PASS Body clearance Annex doorway aisle (27.00, 0.07, 57.00)
 PASS Four existing work lights retained per tower
 PASS Entire tripod clears tower ramp and entrance (-33.80, 0.00, 92.50)
 PASS Tripod foot at paving (-34.50, 0.00, 92.10)
@@ -6049,8 +6301,8 @@ PASS Gallery post fully on deck -32.15,90.75
 PASS Gallery post fully on deck -32.15,90.85001
 PASS Truck bed seated on chassis
 PASS Beacon seated on dome cap
-PASS West ramp, deck and rails 7112 triangles (previously 15428)
-PASS East ramp, deck and rails 7112 triangles (previously 15428)
+PASS West ramp, deck and rails 7148 triangles (previously 15428)
+PASS East ramp, deck and rails 7148 triangles (previously 15428)
 PASS Southwest stripes on asphalt
 PASS Removed three unsupported west pipes
 PASS Beam ends inside outer wall 26 ring 0
@@ -6800,92 +7052,92 @@ PASS Support Reactor doorway (21.80, 0.02, 72.00)
 PASS Body clearance Reactor doorway (21.80, 0.02, 72.00)
 PASS Support Reactor doorway (22.20, 0.02, 72.00)
 PASS Body clearance Reactor doorway (22.20, 0.02, 72.00)
-PASS Support Refueling pool loop (25.55, 0.93, 67.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 67.00)
-PASS Support Refueling pool loop (25.55, 0.93, 67.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 67.50)
-PASS Support Refueling pool loop (25.55, 0.93, 68.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 68.00)
-PASS Support Refueling pool loop (25.55, 0.93, 68.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 68.50)
-PASS Support Refueling pool loop (25.55, 0.93, 69.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 69.00)
-PASS Support Refueling pool loop (25.55, 0.93, 69.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 69.50)
-PASS Support Refueling pool loop (25.55, 0.93, 70.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 70.00)
-PASS Support Refueling pool loop (25.55, 0.93, 70.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 70.50)
-PASS Support Refueling pool loop (25.55, 0.93, 71.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 71.00)
-PASS Support Refueling pool loop (25.55, 0.93, 71.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 71.50)
-PASS Support Refueling pool loop (25.55, 0.93, 72.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 72.00)
-PASS Support Refueling pool loop (25.55, 0.93, 72.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 72.50)
-PASS Support Refueling pool loop (25.55, 0.93, 73.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 73.00)
-PASS Support Refueling pool loop (25.55, 0.93, 73.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 73.50)
-PASS Support Refueling pool loop (25.55, 0.93, 74.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 74.00)
-PASS Support Refueling pool loop (25.55, 0.93, 74.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 74.50)
-PASS Support Refueling pool loop (25.55, 0.93, 75.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 75.00)
-PASS Support Refueling pool loop (25.55, 0.93, 75.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 75.50)
-PASS Support Refueling pool loop (25.55, 0.93, 76.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 76.00)
-PASS Support Refueling pool loop (25.55, 0.93, 76.50)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 76.50)
-PASS Support Refueling pool loop (25.55, 0.93, 77.00)
-PASS Body clearance Refueling pool loop (25.55, 0.93, 77.00)
-PASS Support Refueling pool loop (34.40, 0.93, 67.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 67.00)
-PASS Support Refueling pool loop (34.40, 0.93, 67.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 67.50)
-PASS Support Refueling pool loop (34.40, 0.93, 68.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 68.00)
-PASS Support Refueling pool loop (34.40, 0.93, 68.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 68.50)
-PASS Support Refueling pool loop (34.40, 0.93, 69.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 69.00)
-PASS Support Refueling pool loop (34.40, 0.93, 69.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 69.50)
-PASS Support Refueling pool loop (34.40, 0.93, 70.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 70.00)
-PASS Support Refueling pool loop (34.40, 0.93, 70.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 70.50)
-PASS Support Refueling pool loop (34.40, 0.93, 71.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 71.00)
-PASS Support Refueling pool loop (34.40, 0.93, 71.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 71.50)
-PASS Support Refueling pool loop (34.40, 0.93, 72.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 72.00)
-PASS Support Refueling pool loop (34.40, 0.93, 72.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 72.50)
-PASS Support Refueling pool loop (34.40, 0.93, 73.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 73.00)
-PASS Support Refueling pool loop (34.40, 0.93, 73.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 73.50)
-PASS Support Refueling pool loop (34.40, 0.93, 74.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 74.00)
-PASS Support Refueling pool loop (34.40, 0.93, 74.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 74.50)
-PASS Support Refueling pool loop (34.40, 0.93, 75.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 75.00)
-PASS Support Refueling pool loop (34.40, 0.93, 75.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 75.50)
-PASS Support Refueling pool loop (34.40, 0.93, 76.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 76.00)
-PASS Support Refueling pool loop (34.40, 0.93, 76.50)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 76.50)
-PASS Support Refueling pool loop (34.40, 0.93, 77.00)
-PASS Body clearance Refueling pool loop (34.40, 0.93, 77.00)
-PASS Support Recoverable pool floor (30.00, 0.10, 72.00)
-PASS Body clearance Recoverable pool floor (30.00, 0.10, 72.00)
+PASS Support Refueling pool loop (25.55, 1.16, 67.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 67.00)
+PASS Support Refueling pool loop (25.55, 1.16, 67.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 67.50)
+PASS Support Refueling pool loop (25.55, 1.16, 68.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 68.00)
+PASS Support Refueling pool loop (25.55, 1.16, 68.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 68.50)
+PASS Support Refueling pool loop (25.55, 1.16, 69.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 69.00)
+PASS Support Refueling pool loop (25.55, 1.16, 69.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 69.50)
+PASS Support Refueling pool loop (25.55, 1.16, 70.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 70.00)
+PASS Support Refueling pool loop (25.55, 1.16, 70.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 70.50)
+PASS Support Refueling pool loop (25.55, 1.16, 71.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 71.00)
+PASS Support Refueling pool loop (25.55, 1.16, 71.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 71.50)
+PASS Support Refueling pool loop (25.55, 1.16, 72.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 72.00)
+PASS Support Refueling pool loop (25.55, 1.16, 72.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 72.50)
+PASS Support Refueling pool loop (25.55, 1.16, 73.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 73.00)
+PASS Support Refueling pool loop (25.55, 1.16, 73.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 73.50)
+PASS Support Refueling pool loop (25.55, 1.16, 74.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 74.00)
+PASS Support Refueling pool loop (25.55, 1.16, 74.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 74.50)
+PASS Support Refueling pool loop (25.55, 1.16, 75.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 75.00)
+PASS Support Refueling pool loop (25.55, 1.16, 75.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 75.50)
+PASS Support Refueling pool loop (25.55, 1.16, 76.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 76.00)
+PASS Support Refueling pool loop (25.55, 1.16, 76.50)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 76.50)
+PASS Support Refueling pool loop (25.55, 1.16, 77.00)
+PASS Body clearance Refueling pool loop (25.55, 1.16, 77.00)
+PASS Support Refueling pool loop (34.40, 1.16, 67.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 67.00)
+PASS Support Refueling pool loop (34.40, 1.16, 67.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 67.50)
+PASS Support Refueling pool loop (34.40, 1.16, 68.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 68.00)
+PASS Support Refueling pool loop (34.40, 1.16, 68.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 68.50)
+PASS Support Refueling pool loop (34.40, 1.16, 69.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 69.00)
+PASS Support Refueling pool loop (34.40, 1.16, 69.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 69.50)
+PASS Support Refueling pool loop (34.40, 1.16, 70.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 70.00)
+PASS Support Refueling pool loop (34.40, 1.16, 70.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 70.50)
+PASS Support Refueling pool loop (34.40, 1.16, 71.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 71.00)
+PASS Support Refueling pool loop (34.40, 1.16, 71.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 71.50)
+PASS Support Refueling pool loop (34.40, 1.16, 72.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 72.00)
+PASS Support Refueling pool loop (34.40, 1.16, 72.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 72.50)
+PASS Support Refueling pool loop (34.40, 1.16, 73.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 73.00)
+PASS Support Refueling pool loop (34.40, 1.16, 73.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 73.50)
+PASS Support Refueling pool loop (34.40, 1.16, 74.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 74.00)
+PASS Support Refueling pool loop (34.40, 1.16, 74.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 74.50)
+PASS Support Refueling pool loop (34.40, 1.16, 75.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 75.00)
+PASS Support Refueling pool loop (34.40, 1.16, 75.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 75.50)
+PASS Support Refueling pool loop (34.40, 1.16, 76.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 76.00)
+PASS Support Refueling pool loop (34.40, 1.16, 76.50)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 76.50)
+PASS Support Refueling pool loop (34.40, 1.16, 77.00)
+PASS Body clearance Refueling pool loop (34.40, 1.16, 77.00)
+PASS Support Recoverable pool floor (30.00, 0.00, 72.00)
+PASS Body clearance Recoverable pool floor (30.00, 0.00, 72.00)
 PASS Support Crane control platform (37.10, 1.62, 75.80)
 PASS Body clearance Crane control platform (37.10, 1.62, 75.80)
 PASS Open-air window (-34.90, 2.00, 34.50)
@@ -7363,6 +7615,34 @@ PASS UV channels Compound chain-link panel
 PASS UV channels Compound chain-link panel
 PASS UV channels Compound chain-link panel
 PASS UV channels Compound chain-link panel
+PASS UV channels Annex control panel Cold glazing solid
+PASS UV channels Annex control panel Galvanized steel solid
+PASS UV channels Annex control panel Lamp lens solid
+PASS UV channels Annex control panel Lit glazing solid
+PASS UV channels Annex control panel Oxidized enamel solid
+PASS UV channels Annex control panel Plant ivory solid
+PASS UV channels Annex control panel Rubber solid
+PASS UV channels Annex control panel Work equipment solid
+PASS UV channels Annex heat exchangers Galvanized steel solid
+PASS UV channels Annex heat exchangers Gunmetal solid
+PASS UV channels Annex heat exchangers Oxidized enamel solid
+PASS UV channels Annex heat exchangers Work equipment solid
+PASS UV channels Annex lockers Galvanized steel solid
+PASS UV channels Annex lockers Gunmetal solid
+PASS UV channels Annex lockers Oxidized enamel solid
+PASS UV channels Annex lockers Rubber solid
+PASS UV channels Annex lockers Work equipment solid
+PASS UV channels Annex parts shelves Cedar solid
+PASS UV channels Annex parts shelves Galvanized steel solid
+PASS UV channels Annex parts shelves Gunmetal solid
+PASS UV channels Annex parts shelves Oxidized enamel solid
+PASS UV channels Annex parts shelves Work equipment solid
+PASS UV channels Annex shift desk Cedar solid
+PASS UV channels Annex shift desk Cold glazing solid
+PASS UV channels Annex shift desk Gunmetal solid
+PASS UV channels Annex shift desk Plant ivory solid
+PASS UV channels Annex shift desk Rubber solid
+PASS UV channels Annex shift desk Work equipment solid
 PASS UV channels Boundary concrete Concrete solid
 PASS UV channels Boundary concrete Galvanized steel solid
 PASS UV channels Boundary concrete Plant ivory solid
@@ -7437,7 +7717,7 @@ PASS UV channels Receiving lockers and shift bench Work equipment solid
 PASS UV channels Reed settling pond Concrete solid
 PASS UV channels Reed settling pond Foliage 2 detail
 PASS UV channels Reed settling pond Plant ivory solid
-PASS UV channels Reed settling pond Settling water solid
+PASS UV channels Reed settling pond Settling water detail
 PASS UV channels Refueling hall shell Gunmetal solid
 PASS UV channels Refueling hall shell Plant ivory solid
 PASS UV channels Refueling hall shell Work equipment solid
@@ -7446,7 +7726,7 @@ PASS UV channels Refueling pool Concrete solid
 PASS UV channels Refueling pool Galvanized steel solid
 PASS UV channels Refueling pool Gunmetal solid
 PASS UV channels Refueling pool Oxidized enamel solid
-PASS UV channels Refueling pool Refueling water solid
+PASS UV channels Refueling pool Refueling water detail
 PASS UV channels Refueling pool Work equipment solid
 PASS UV channels Roof access headhouse Galvanized steel solid
 PASS UV channels Roof access headhouse Gunmetal solid
@@ -7482,11 +7762,11 @@ PASS UV channels Spill workshop Luminous waste solid
 PASS UV channels Spill workshop Oxidized enamel solid
 PASS UV channels Spill workshop Plant ivory solid
 PASS UV channels Spill workshop Work equipment solid
-PASS UV channels Stepped discharge flume Aerated water solid
+PASS UV channels Stepped discharge flume Aerated water detail
 PASS UV channels Stepped discharge flume Concrete solid
 PASS UV channels Stepped discharge flume Gunmetal solid
 PASS UV channels Stepped discharge flume Plant ivory solid
-PASS UV channels Stepped discharge flume Settling water solid
+PASS UV channels Stepped discharge flume Settling water detail
 PASS UV channels Stepped discharge flume Work equipment solid
 PASS UV channels Striped verge bollards Rubber solid
 PASS UV channels Striped verge bollards Work equipment solid
@@ -7497,6 +7777,9 @@ PASS UV channels Supply trunk and collars Oxidized enamel solid
 PASS UV channels Tower entrance worklights Gunmetal solid
 PASS UV channels Tower entrance worklights Lamp lens solid
 PASS UV channels Tower entrance worklights Work equipment solid
+PASS UV channels Tower lookout pipe walkway Galvanized steel solid
+PASS UV channels Tower lookout pipe walkway Oxidized enamel solid
+PASS UV channels Tower lookout pipe walkway Work equipment solid
 PASS UV channels Transformer fins Gunmetal solid
 PASS UV channels Transformer gravel apron Aggregate solid
 PASS UV channels Transformer yard floodlights Concrete solid
@@ -7506,7 +7789,9 @@ PASS UV channels Waste loading apron light Concrete solid
 PASS UV channels Waste loading apron light Gunmetal solid
 PASS UV channels Waste loading apron light Lamp lens solid
 PASS UV channels Waste spill Luminous waste detail
+PASS UV channels Waste spill Waste edge detail
 PASS UV channels Waste spill Waste sheen detail
+PASS UV channels Waste spill Waste shoulder detail
 PASS UV channels Waste storage placard Concrete solid
 PASS UV channels Waste storage placard Gunmetal solid
 PASS UV channels Waste storage placard Oxidized enamel solid

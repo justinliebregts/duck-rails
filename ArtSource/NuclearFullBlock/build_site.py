@@ -42,6 +42,8 @@ mat("Red marker","ff6456","",2.3)
 
 waste = mat("Luminous waste","6ad51f","",1.15)
 waste_core = mat("Waste sheen","c3ff58","",2.4)
+waste_edge = mat("Waste edge","357a12","",.3)
+waste_shoulder = mat("Waste shoulder","55b01c","",.7)
 foam = mat("Aerated water","9cd4d1","",.25)
 # Blend 54% of each original Quackville texture into white in linear space,
 # matching the Multiply material nodes in the accepted Blender study.
@@ -147,6 +149,13 @@ def pipe_run(points,r,m):
     for corner in points[1:-1]:socket(corner,1.25*r,m)
 
 def slab(x,y,w,d,h,m,z=0):box(x,y,z+h/2,w,d,h,m)
+def water_face(verts,quads,m):
+    """Open water visible from both sides; swimmers stand on the basin floor."""
+    global solid
+    old=solid;solid=False
+    geo(m,verts,quads)
+    geo(m,[(x,y,z-.002) for x,y,z in verts],[tuple(reversed(q)) for q in quads])
+    solid=old
 def shrub(x,y,z,r,h,m=None):
     m=m or random.choice(leaf);a=random.random()*2*pi;n=7;rs=[random.uniform(.83,1.08) for _ in range(n)]
     pts=[(x+r*rr*q*cos(a+i*2*pi/n),y+r*rr*q*sin(a+i*2*pi/n),z+hh*h) for q,hh in [(.75,.02),(1,.4),(.63,.85)] for i,rr in enumerate(rs)]+[(x+.13*r,y-.12*r,z+h)]
@@ -242,12 +251,14 @@ for x in (19,26,33):
         box(x,y,.79,3.92,.43,.24,metal)
     # An open annulus at each end leaves the bore visible. The lower row
     # bears on both cross-members; successive rows nest between neighbours.
-    for row,count in enumerate((4,3,2)):
+    if x==33:continue
+    radius=3.64/6
+    for row,count in enumerate((3,2)):
         for j in range(count):
-            xx=x+(j-(count-1)/2)*.91;h=.91+.455+row*.788
+            xx=x+(j-(count-1)/2)*2*radius;h=.91+radius+row*radius*math.sqrt(3)
             n=12
             pts=[(xx+r*cos(k*2*pi/n),yy,h+r*sin(k*2*pi/n))
-                 for yy,r in ((7,.455),(16,.455),(7,.365),(16,.365)) for k in range(n)]
+                 for yy,r in ((7,radius),(16,radius),(7,radius*.8),(16,radius*.8)) for k in range(n)]
             quads=[]
             for k in range(n):
                 l=(k+1)%n
@@ -310,8 +321,14 @@ for y in (65.8,71.8,77.8):
 for y in (62,73,83):hvac(-31,y,8.0);tube((-20,y,8),(-20,y,10.7),.5,metal)
 group="Reed settling pond"
 # Raised settling tank with a sloped maintenance walk on the rail-facing bank.
-slab(-26,130,27,19,2.25,walk)
-slab(-26,130,25.8,17.8,.08,water,2.25)
+slab(-26,130,27,19,1.33,walk)
+for x in (-39.345,-12.655):box(x,130,1.79,.31,19,.92,walk)
+for y in (120.655,139.345):box(-26,y,1.79,26.38,.31,.92,walk)
+water_face([(-39.19,120.81,2.33),(-12.81,120.81,2.33),(-12.81,139.19,2.33),(-39.19,139.19,2.33)],[(0,1,2,3)],water)
+# Way out: seven treads climb from the tank floor to the east bank landing.
+for k in range(1,8):
+    h=1.33+1.34*k/7
+    box(-12.81-.34*(7-k)-.17,134,(1.33+h)/2,.34,2.2,h-1.33,walk)
 for x in (-33,-19):
     for y in (125.5,134.5):
         light("Settling pond aqua bounce",(x,y,6.05),1750,(.06,.81,1))
@@ -337,7 +354,7 @@ slab(-10.78,134.5,3.35,9,2.66,walk)
 solid=False
 for i in range(48):
     x=random.uniform(-38,-14);y=random.choice([121.8,138])+random.uniform(-.25,.25)
-    tube((x,y,2.29),(x+.09,y+.12,random.uniform(2.8,3.5)),.045,leaf[2],4)
+    tube((x,y,1.33),(x+.09,y+.12,random.uniform(2.8,3.5)),.045,leaf[2],4)
 solid=True
 group="Stepped discharge flume"
 # Profile extrusions give each sidewall a single stepped silhouette down to grade.
@@ -361,16 +378,24 @@ for i,x in ((0,21),(0,33),(3,21),(3,33)):
     light("Discharge flume aqua bounce",(x,start+(i+.5)*step,levels[i]+3.55),1900,(.045,.92,1))
 for x0,x1 in ((15.25,15.80),(38.20,38.75)):
     stepped_bank(x0,x1,start,step,[h+.64 for h in levels],cream)
-stepped_bank(15.80,38.20,start+.085,step,[h-.12 for h in levels],walk)
+stepped_bank(15.80,38.20,start+.085,step,[h-1 for h in levels],walk)
+# West-bank stairs: between each pool floor, then up to the rear deck.
+for i in range(1,4):
+    floor=levels[i-1]-1;edge=start+i*step+.085
+    for k in range(1,5):box(17.0,edge-.35*(4-k)-.175,floor+.09*k,2.4,.35,.18*k,walk)
+floor=levels[-1]-1;rise=(4.12-floor)/7
+for k in range(1,7):box(17.0,end-.30*(6-k)-.15,floor+rise*k/2,2.4,.30,rise*k,walk)
 for i,h in enumerate(levels):
     y=start+i*step
     low=levels[i-1] if i else .035
-    geo(water,[(15.80,y,low),(38.20,y,low),(38.20,y,h),(15.80,y,h),
-               (38.20,y+step,h),(15.80,y+step,h)],[(0,1,2,3),(3,2,4,5)])
+    water_face([(15.80,y,low),(38.20,y,low),(38.20,y,h),(15.80,y,h),
+                (38.20,y+step,h),(15.80,y+step,h)],[(0,1,2,3),(3,2,4,5)],water)
+    solid=False
     for k in range(15):
         x=16.29+k*1.49
         box(x,y-.022,h-.30,.12+(k%3)*.07,.036,.47+(k%4)*.07,foam)
     box(27,y+.085,h+.009,22.24,.17,.013,foam)
+    solid=True
 # The ramp and broad landing meet on one line with no doubled top surfaces.
 ramp(12.03,15.25,131,end,4.12)
 slab(25.40,(end+157.6)/2,26.74,157.6-end,4.12,walk)
@@ -487,16 +512,31 @@ for j in range(3):
     socket((endx,80,4.06),.54,teal)
 group="Waste spill"
 solid=False
-def puddle(x,y,rx,ry,level,material):
+def puddle(x,y,rx,ry,level,material,sides=()):
     count=16; phase=random.random()*pi
-    verts=[(x,y,level)]
-    for n in range(count):
-        a=n*2*pi/count;rad=1+.14*sin(3*a+phase)+.09*sin(5*a-.7)
-        verts.append((x+rx*rad*cos(a),y+ry*rad*sin(a),level))
-    geo(material,verts,[(0,1+n,1+(n+1)%count) for n in range(count)])
-for x,y,rx,ry in [(17.1,21.1,2.45,1.3),(20.1,22,1.75,.74),(23.2,25.6,1.94,1.2),(27,18.8,2.36,.86),(23.4,19,.86,.4)]:
-    puddle(x,y,rx,ry,.044,waste)
-    puddle(x-rx*.18,y+.18,rx*.50,ry*.36,.049,waste_core)
+    base,height,bevel=level
+    # Rings run from the floor contact up a rounded shoulder to a flat top.
+    rings=[(0,base),(.28,base+height*.55),(.62,base+height*.88),(1,base+height)]
+    verts=[]
+    for inset,z in rings:
+        for n in range(count):
+            a=n*2*pi/count;rad=1+.14*sin(3*a+phase)+.09*sin(5*a-.7)
+            verts.append((x+max(rx-bevel*inset,rx*.4)*rad*cos(a),y+max(ry-bevel*inset,ry*.4)*rad*sin(a),z))
+    top=len(verts);verts.append((x,y,base+height))
+    # Darker side bands keep the thickness readable on a self-lit surface.
+    for ring in range(len(rings)-1):
+        polys=[]
+        for n in range(count):
+            lo=ring*count;k=(n+1)%count
+            polys.append((lo+count+n,lo+n,lo+k,lo+count+k))
+        geo(sides[ring] if ring<len(sides) else material,verts,polys)
+    polys=[(top,(len(rings)-1)*count+n,(len(rings)-1)*count+(n+1)%count) for n in range(count)]
+    geo(material,verts,polys)
+for i,(x,y,rx,ry) in enumerate([(17.1,21.1,2.45,1.3),(20.1,22,1.75,.74),(23.2,25.6,1.94,1.2),(27,18.8,2.36,.86),(23.4,19,.86,.4)]):
+    # Slightly different heights keep overlapping tops from flickering.
+    height=.115+.006*i
+    puddle(x,y,rx,ry,(-.006,height,.24),waste,(waste_edge,waste_shoulder))
+    puddle(x-rx*.12,y+ry*.12,rx*.45,ry*.28,(height-.008,.030,.08),waste_core)
 # Treat adjoining puddles as one source so their falloffs overlap gently.
 for x,y,power in ((18.5,21.5,1100),(23.2,25.6,1300),(26.8,18.8,1050)):
     light("Waste spill green bounce",(x,y,1.9),power,(.17,1,.045))
@@ -551,8 +591,8 @@ for y in (35.92,40.08):
 # Mount arrival and waste-yard lights just below the eaves, facing the yards.
 group="Yard wall lights"
 for x,y,dx,dy,name,color,power in (
-    (-32.5,35,0,-1,"Bus yard wall light",(1,.86,.68),780),
-    (27,39.8,-1,0,"Workshop entry light",(.87,.91,1),620)):
+    (-32.5,35,0,-1,"Bus yard wall light",(1,.86,.68),390),
+    (27,39.8,-1,0,"Workshop entry light",(.87,.91,1),310)):
     u,v=x+dx*.58,y+dy*.58
     tube((x,y,3.18),(u,v,3.45),.075,metal)
     box(u,v,3.41,.65,.56,.20,metal)
@@ -657,8 +697,8 @@ box(29,48.30,2.33,1.88,.08,.39,teal);sign("SPILL KIT",29,48.22,2.33,.48,neon)
 tube((27.65,39.43,.38),(27.35,39.7,1.86),.057,wood)
 box(27.65,39.43,.29,.36,.10,.51,metal);box(27.65,39.37,.18,.32,.024,.20,waste)
 for x in (32.6,33.2,33.8):tube((x,45.32,1.13),(x+.20,45.32,1.13),.045,silver)
-light("Receiving task light",(-31.4,42.1,2.91),420,(1,.83,.58))
-light("Workbench task light",(33.3,45.6,3.0),520,(.68,.82,1))
+light("Receiving task light",(-31.4,42.1,2.91),210,(1,.83,.58))
+light("Workbench task light",(33.3,45.6,3.0),260,(.68,.82,1))
 
 group="Transformer gravel apron"
 for y,d in ((121.75,1.50),(133.25,15.50)):
@@ -741,26 +781,27 @@ box(20.08,72,3.60,.62,4.06,.26,ochre)
 for y in (69.99,74.01):box(20.12,y,1.82,.58,.22,3.62,metal)
 group="Refueling pool"
 pool_blue=mat("Refueling water","378db9","lake water",.36)
-slab(30,72,7.6,9.3,.10,pool_blue)
-for x in (25.58,34.42):box(x,72,.45,1.36,11.9,.90,metal)
-for y in (66.72,77.28):box(30,y,.45,7.5,1.25,.90,metal)
+water_face([(26.26,67.345,1.0),(33.74,67.345,1.0),(33.74,76.655,1.0),(26.26,76.655,1.0)],[(0,1,2,3)],pool_blue)
+rim=1.12
+for x in (25.58,34.42):box(x,72,rim/2,1.36,11.9,rim,metal)
+for y in (66.72,77.28):box(30,y,rim/2,7.5,1.25,rim,metal)
 for x in (25.58,34.42):
-    for j in range(39):box(x,66.25+j*.30,.922,1.36,.065,.044,silver)
+    for j in range(39):box(x,66.25+j*.30,rim+.022,1.36,.065,.044,silver)
 for y in (66.72,77.28):
-    for j in range(25):box(26.45+j*.295,y,.922,.065,1.25,.044,silver)
-for j in range(5):
-    h=.18*(j+1)
-    box(22.89+j*.43,72,h/2,.43,2.65,h,walk)
-    box(26.47+j*.36,72,(.9-.16*j)/2,.36,1.56,.9-.16*j,walk)
+    for j in range(25):box(26.45+j*.295,y,rim+.022,.065,1.25,.044,silver)
+for j in range(6):
+    h=.19*(j+1)
+    box(22.86+j*.37,72,h/2,.37,2.65,h,walk)
+    box(26.44+j*.36,72,(1.14-.19*j)/2,.36,1.56,1.14-.19*j,walk)
 for x in (26.17,33.83):
     for start,end in ((66.4,70.95),(73.05,77.6)):
-        tube((x,start,1.96),(x,end,1.96),.065,ochre)
-        for y in (start,(start+end)/2,end):box(x,y,1.44,.09,.09,1.03,metal)
+        tube((x,start,2.18),(x,end,2.18),.065,ochre)
+        for y in (start,(start+end)/2,end):box(x,y,1.66,.09,.09,1.03,metal)
 for y in (67.3,76.7):
-    tube((26.17,y,1.96),(33.83,y,1.96),.06,ochre)
+    tube((26.17,y,2.18),(33.83,y,2.18),.06,ochre)
 solid=False
 for x in (27,30,33):
-    box(x,72,.105,.32,7.9,.006,aqua)
+    box(x,72,.006,.32,7.9,.006,aqua)
 solid=True
 for x in (24.1,35.9):
     for y in (67.7,76.4):box(x,y,3.64,.38,.40,7.28,ochre)
@@ -772,7 +813,7 @@ box(30.8,76.25,7.49,1.55,1.5,.64,teal)
 tube((30.8,76.25,7.23),(30.8,76.25,4.0),.035,metal,6)
 tube((30.8,76.25,4.0),(31.06,76.25,3.78),.08,ochre)
 for j in range(4):
-    h=.90+.18*(j+1)
+    h=rim+(1.62-rim)*(j+1)/4
     box(35.28+j*.39,76,h/2,.39,1.38,h,walk)
 box(37.22,76,.81,.83,1.8,1.62,metal)
 box(37.48,76.46,2.1,.38,.51,.96,teal)
@@ -839,8 +880,12 @@ for tx in (-26,26):
     for yy in (103+facing*3,):
         square_beam((x-2.1,yy,36.56),(x+2.1,yy,36.56),.14,ochre)
     for xx in (x-2.10,x+2.10):
-        square_beam((xx,103,36.56),(xx,103+facing*3,36.56),.14,ochre)
-        for yy in (103.1,103+facing*2.96):box(xx,yy,36.02,.11,.11,1.04,metal)
+        # The rail facing the other tower parts around the pipe walkway.
+        gap=(xx-x)*facing>0
+        spans=((0,.85),(2.15,3)) if gap else ((0,3),)
+        for a,b in spans:square_beam((xx,103+facing*a,36.56),(xx,103+facing*b,36.56),.14,ochre)
+        for along in ((.1,.85,2.15,2.96) if gap else (.1,2.96)):
+            box(xx,103+facing*along,36.02,.11,.11,1.04,metal)
     group="Cooling tower luminaires"
     for i in range(6):
         a=(i+.55)*pi/3;ux=cos(a);uy=sin(a)
@@ -853,6 +898,60 @@ for tx in (-26,26):
         x=tx+facing*(shell_radius(h)-1.0)
         light("Ramp safety lamp",(x,104,h+1.53),390,(.51,.78,1))
 
+
+group="Tower lookout pipe walkway"
+a=Vector((-16.40,104.5,35.37));b=Vector((16.40,101.5,35.37))
+across=Vector((-(b-a).y,(b-a).x,0)).normalized()
+for offset,m in zip((-.245,0,.245),(silver,ochre,teal)):
+    tube(a+across*offset,b+across*offset,.12,m,10)
+
+group="Annex heat exchangers"
+for x in (26.35,27.65):
+    tube((x,58.95,.55),(x,58.95,2.75),.55,silver,12)
+    tube((x,58.95,.38),(x,58.95,.55),.34,silver,12,.55)
+    tube((x,58.95,2.75),(x,58.95,2.96),.55,silver,12,.22)
+    for h in (.72,1.65,2.58):tube((x,58.95,h),(x,58.95,h+.09),.59,metal,12)
+    for dx in (-.34,.34):box(x+dx,58.95,.28,.12,.50,.46,metal)
+    pipe_run([(x,58.95,2.90),(x,58.95,3.55),(x,59.75,3.55)],.13,ochre)
+tube((26.35,58.36,1.20),(27.65,58.36,1.20),.075,teal,8)
+for x in (26.35,27.65):tube((x,58.33,1.20),(x,58.52,1.20),.10,teal,8)
+tube((27,58.36,1.20),(27,58.17,1.20),.035,metal,6)
+tube((27,58.19,1.20),(27,58.14,1.20),.20,ochre,8)
+group="Annex control panel"
+box(19.54,56.3,.55,.56,2.4,1.10,teal)
+box(19.40,56.3,1.65,.28,2.4,1.10,teal)
+box(19.83,56.3,1.12,.10,2.5,.08,silver)
+for i,y in enumerate((55.45,56.02,56.59,57.16)):
+    tube((19.54,y,1.83),(19.60,y,1.83),.21,cream,10)
+    box(19.615,y+.04,1.87,.015,.17,.028,dark)
+    for j,m in enumerate((mint,neon,aqua)):box(19.57,y-.15+j*.15,1.37,.07,.08,.08,m)
+    box(19.85,y,.70,.07,.09,.28,ochre)
+group="Annex lockers"
+for i in range(4):
+    y=54.75+i*.68
+    box(34.43,y,1.16,.62,.64,2.18,teal if i%2 else metal)
+    box(34.105,y,1.16,.03,.55,2.02,silver if i%2 else teal)
+    for h in (1.78,1.88,1.98):box(34.08,y,h,.03,.36,.035,dark)
+    box(34.07,y+.18,1.15,.06,.06,.22,ochre)
+group="Annex parts shelves"
+for x in (30.15,32.55):
+    for y in (52.22,52.74):box(x,y,.92,.09,.09,1.70,silver)
+for h in (.30,.95,1.66):box(31.35,52.48,h,2.5,.60,.08,metal)
+for x,h,w,tall,m in ((30.55,.34,.55,.36,ochre),(31.35,.34,.70,.28,teal),(32.12,.34,.46,.44,wood),
+                     (30.65,.99,.46,.30,teal),(31.55,.99,.62,.40,wood),(32.20,.99,.34,.24,ochre)):
+    box(x,52.48,h+tall/2,w,.44,tall,m)
+for x in (30.65,31.15,31.65):tube((x,52.30,1.82),(x,52.66,1.82),.12,silver,10)
+tube((32.15,52.48,1.70),(32.15,52.48,2.02),.17,ochre,10)
+group="Annex shift desk"
+worktable(22.8,52.62,1.8,.82,.86)
+box(22.55,52.45,1.20,.78,.14,.50,dark)
+box(22.55,52.53,1.20,.66,.025,.39,aqua)
+box(22.55,52.45,.97,.13,.13,.08,metal)
+box(22.55,52.82,.955,.62,.22,.035,metal)
+tube((23.35,52.72,.94),(23.35,52.72,1.13),.075,ochre,8)
+box(23.15,52.45,.95,.34,.24,.025,cream)
+tube((22.7,53.50,.07),(22.7,53.50,.52),.06,metal,8)
+tube((22.7,53.50,.52),(22.7,53.50,.62),.27,wood,8)
 
 group="Receiving lockers and shift bench"
 for x in (-36.6,-35.6,-34.6):

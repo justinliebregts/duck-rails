@@ -1,5 +1,9 @@
 # Playtest queue
 
+## Quackwatt slime, water, tower walkway and lighting | queued for playtest, November 26, 2026
+
+On headset, visit Quackwatt through Test Block Order. In the drum yard, check the thick slime edges and the 3 and 2 pipe stacks with the east rack empty. Enter the settling pond, refueling pool and all four flume steps. Duck under each surface and confirm teal fog, muffled sound, splash in and out, footsteps and hand splashes, and that every basin can be left by its steps. Check that opaque water looks acceptable from above and below. Walk the three-pipe walkway between the tower lookouts, including footing, falls, enemy behavior on it and frame rate. Judge the dimmer maintenance shed, gatehouse and Turbine Hall front, and the furnished service annex. With two clients, confirm loot on the raised pool deck and enemy pursuit around the basins.
+
 ## Lakeside ferns, campfires and raised trails | queued for playtest, November 26, 2026
 
 On headset, walk the southwest fern passage and judge the smaller ferns from duck height, including the rustle sound on entering and leaving them. Visit all three campfires at night. Check the larger flames, whether items or hands clip into them awkwardly, the warm light on tents and ducks, and that the crackle is clearly audible and follows each fire without drowning crew speech. Measure frame time standing close to a fire. Walk the trails across slopes, junctions, the railway crossing, cabin thresholds and the dock approach and look for gaps, flicker or snagging along the new earth banks. [Layout notes](lakeside-campground-layout.md#ferns-campfires-and-raised-trails--november-26-2026)

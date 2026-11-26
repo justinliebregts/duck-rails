@@ -437,6 +437,50 @@ public static class RailNuclearFullBlock
         }
     }
 
+    // The maintenance shed and gatehouse keep their original interior lamp at half strength.
+    static void DimBuildingLamps(Transform root)
+    {
+        foreach(string building in new[]{"Gatehouse","Maintenance"})
+            root.Find(building+"/Baked plant light").GetComponent<Light>().intensity=14;
+    }
+
+    // The refueling deck rose with the 1 m pool; carry its loot candidates with it.
+    static void RaisePoolDeckMarkers(GameObject block)
+    {
+        foreach(var marker in block.GetComponentsInChildren<RailSpawnMarker>(true)) {
+            var p=marker.transform.position;
+            if(p.x>24.8f && p.x<35.2f && p.z>66 && p.z<78 && p.y>.85f && p.y<1.12f)
+                marker.transform.position=p+Vector3.up*.22f;
+        }
+    }
+
+    // Each box tops out at the visible surface. It reaches 0.1 m under the floor so
+    // footsteps and hand hits on the basin bed still count as water.
+    public static readonly (string name,Vector3 surface,Vector2 size)[] Waters = {
+        ("Settling pond",new Vector3(-26,2.33f,130),new Vector2(26.38f,18.38f)),
+        ("Refueling pool",new Vector3(30,1,72),new Vector2(7.48f,9.31f)),
+        ("Flume step 1",new Vector3(27,1.23f,142.5f),new Vector2(22.4f,3.1f)),
+        ("Flume step 2",new Vector3(27,2.13f,145.6f),new Vector2(22.4f,3.1f)),
+        ("Flume step 3",new Vector3(27,3.03f,148.7f),new Vector2(22.4f,3.1f)),
+        ("Flume step 4",new Vector3(27,3.93f,151.8f),new Vector2(22.4f,3.1f))
+    };
+
+    static void BuildWater(Transform site)
+    {
+        T Load<T>(string path) where T:Object => AssetDatabase.LoadAssetAtPath<T>(path) ?? throw new FileNotFoundException(path);
+        var surface=Load<Game.Audio.SurfaceType>("Assets/Audio/Surfaces/Water.asset");
+        var enter=Load<Game.Audio.SoundEvent>("Assets/Audio/Events/Water/Water_Enter.asset");
+        var exit=Load<Game.Audio.SoundEvent>("Assets/Audio/Events/Water/Water_Exit.asset");
+        var bubbles=Load<Game.Audio.SoundEvent>("Assets/Audio/Events/Water/Water_Bubbles.asset");
+        foreach(var water in Waters) {
+            var volume=new GameObject("Water volume "+water.name).AddComponent<Game.Audio.WaterVolume>();
+            volume.transform.SetParent(site,false);
+            volume.transform.position=water.surface+Vector3.down*.55f;
+            volume.size=new Vector3(water.size.x,1.1f,water.size.y);
+            volume.waterSurface=surface;volume.enterSound=enter;volume.exitSound=exit;volume.bubblesSound=bubbles;
+        }
+    }
+
     [MenuItem("Duck Rails/Authoring/Nuclear Plant/Install full site on existing prefab")]
     public static void Install()
     {
@@ -498,7 +542,13 @@ public static class RailNuclearFullBlock
                 g.layer=6;
                 r.scaleInLightmap=.45f; r.receiveGI=ReceiveGI.Lightmaps;
                 if(g.name.EndsWith(" solid",StringComparison.Ordinal)) g.AddComponent<MeshCollider>().sharedMesh=mesh;
+                // Opaque water must not black out the basin floor in the bake.
+                if(r.sharedMaterial.name is "Settling water" or "Refueling water")
+                    r.shadowCastingMode=ShadowCastingMode.Off;
             }
+            DimBuildingLamps(root);
+            BuildWater(siteRoot);
+            RaisePoolDeckMarkers(instance);
             var font=AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/Fonts/CutePixel SDF.asset");
             foreach(var data in site.labels) {
                 var label=new GameObject(data.text).AddComponent<TextMeshPro>();
@@ -517,7 +567,7 @@ public static class RailNuclearFullBlock
                 if(data.spot) {
                     l.type=LightType.Spot;l.spotAngle=60;l.innerSpotAngle=30;l.range=40;l.intensity=2200;
                     if (data.name=="Hall wall flood") { l.spotAngle=87; l.innerSpotAngle=49; l.range=20; l.intensity=185; }
-                    if (data.name=="Hall facade spotlight") { l.spotAngle=68; l.innerSpotAngle=34; l.range=14; l.intensity=560; }
+                    if (data.name=="Hall facade spotlight") { l.spotAngle=68; l.innerSpotAngle=34; l.range=14; l.intensity=140; }
                     if (data.name=="Pond corner flood") { l.spotAngle=82; l.innerSpotAngle=43; l.range=20; l.intensity=130; }
                     if (data.name=="Transformer floodlight") { l.spotAngle=78; l.innerSpotAngle=48; l.range=20; l.intensity=340; }
                     if (data.name=="Loading apron floodlight") { l.spotAngle=100; l.innerSpotAngle=70; l.range=21; l.intensity=220; }
