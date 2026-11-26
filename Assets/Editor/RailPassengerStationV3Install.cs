@@ -49,6 +49,15 @@ public static partial class RailAbandonedStation
             foreach (var r in old[0].GetComponentsInChildren<Transform>(true).Where(t => t.name == "Rail bed" || t.name == "Visual rail" || t.name == "Visual sleeper").ToArray())
                 r.SetParent(railway, true);
             Object.DestroyImmediate(old[0].gameObject);
+            // Retained rail-bed segments overlap a little on the curves; alternate 3 mm heights stop them z-fighting.
+            int bedIndex = 0;
+            foreach (var bed in railway.Cast<Transform>().Where(t => t.name == "Rail bed").OrderBy(t => t.localPosition.z).ToArray())
+            {
+                var lp = bed.localPosition;
+                float baseY = (RailHeight(lp.z - .5f) + RailHeight(lp.z + .5f)) / 2 - .15f;   // as the V2 builder placed it
+                if (Mathf.Abs(lp.y - baseY) < .02f) { lp.y = baseY + (bedIndex % 2) * .003f; bed.localPosition = lp; }
+                bedIndex++;
+            }
             int rails = railway.GetComponentsInChildren<Transform>().Count(t => t.name == "Visual rail");
             if (rails < 300) throw new Exception("Retained railway missing: " + rails);
             lootSpots = new(); enemySpots = new(); v3Lights = 0;

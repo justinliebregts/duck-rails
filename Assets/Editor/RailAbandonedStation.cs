@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Linq;
@@ -22,7 +22,7 @@ public static partial class RailAbandonedStation
     static Mesh cube;
     static Material concrete,paint,steel,roof,wood,yellow,gravel,grass;
     static readonly Dictionary<string,Mesh> meshes=new();
-    public static int LightCount => 69;
+    public static int LightCount => 74;
     public static float RailHeight(float z)
     {
         float t=Mathf.Clamp01((Mathf.Min(z,160-z)-6)/39);
@@ -58,7 +58,8 @@ public static partial class RailAbandonedStation
             float end=i<doors.Length?doors[i]:b;Seg(cursor,end,y,h);
             if(i<doors.Length){Seg(end,doors[i+1],y+2.7f,h-2.7f);cursor=doors[i+1];}
         }
-        void Seg(float lo,float hi,float bottom,float height){if(hi<=lo||height<=0)return;Box(p,n,alongZ?new(axis,bottom+height/2,(lo+hi)/2):new((lo+hi)/2,bottom+height/2,axis),alongZ?new(.25f,height,hi-lo):new(hi-lo,height,.25f),m);}
+        // Tops stop 1 cm short (1.6 cm for walls along X, so corner tops differ too) to avoid coplanar faces (z-fighting).
+        void Seg(float lo,float hi,float bottom,float height){height-=alongZ?.01f:.016f;if(hi<=lo||height<=0)return;Box(p,n,alongZ?new(axis,bottom+height/2,(lo+hi)/2):new((lo+hi)/2,bottom+height/2,axis),alongZ?new(.25f,height,hi-lo):new(hi-lo,height,.25f),m);}
     }
     static void Beam(Transform p,string n,Vector3 a,Vector3 b,float width,float depth,Material m,bool solid=true)
     {var g=Box(p,n,(a+b)/2,new(width,depth,(b-a).magnitude),m,solid);g.transform.localRotation=Quaternion.LookRotation(b-a);}

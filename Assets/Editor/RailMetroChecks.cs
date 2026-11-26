@@ -25,13 +25,19 @@ public static class RailMetroChecks
             Shot("platform-1" + suffix, new(-17.5f, -1.4f, 58), new(-18, -1.6f, 98));
             Shot("tunnel-approach" + suffix, new(-10.4f, -1.2f, 38), new(-12, -2.2f, 75));
             Shot("platform-1-edge" + suffix, new(-14.9f, -1.5f, 70), new(-12.3f, -2.6f, 92));
-            Shot("entrance-portal" + suffix, new(0, 1.8f, -4), new(0, 0.5f, 20));
+            Shot("entrance-portal" + suffix, new(0, 2.5f, -14), new(0, 6f, 20));
+            Shot("exit-portal" + suffix, new(0, 2.5f, 174), new(0, 6f, 140));
+            Shot("collapsed-tunnel" + suffix, new(1, -1.4f, 103), new(6.2f, -2f, 116));
+            Shot("maintenance-hall-clutter" + suffix, new(15, -1.4f, 78), new(15.2f, -1.9f, 104));
+            Shot("transfer-hall-clutter" + suffix, new(-39, -1.4f, 44), new(-39.5f, -1.9f, 70));
+            Shot("lost-and-found" + suffix, new(-30.2f, -1.2f, 37), new(-33.5f, -2.2f, 50));
+            Shot("pump-room" + suffix, new(18.5f, -.8f, 113.5f), new(28, -2f, 126));
             Shot("platform-1-escalators" + suffix, new(-20.5f, -1.4f, 82), new(-21, -1f, 66));
             Shot("ticket-concourse" + suffix, new(-25, 4.6f, 51), new(-2, 4.1f, 42));
             Shot("escalator-down-to-platform-3" + suffix, new(-2.4f, 4.6f, 51.5f), new(-2.4f, -1.5f, 69));
             Shot("platform-3" + suffix, new(1, -1.4f, 56), new(2.5f, -1.8f, 100));
-            Shot("wreck-interior" + suffix, new(6, -1.5f, 59.5f), new(6, -1.7f, 96));
-            Shot("cave-in" + suffix, new(.6f, -1.5f, 88), new(5, -.5f, 103));
+            Shot("wreck-interior" + suffix, new(6, -1.5f, 67.5f), new(6, -1.7f, 104));
+            Shot("cave-in" + suffix, new(.6f, -1.5f, 92), new(6, -1f, 110));
             Shot("transfer-hall" + suffix, new(-39, -1.4f, 30), new(-39, -1.6f, 80));
             Shot("konbini" + suffix, new(-26, -1.4f, 86), new(-33, -1.8f, 99));
             Shot("maintenance-hall" + suffix, new(15, -1.4f, 44), new(15, -1.6f, 90));
@@ -44,6 +50,91 @@ public static class RailMetroChecks
             try { cam.targetTexture = rt; cam.Render(); RenderTexture.active = rt; tex.ReadPixels(new Rect(0, 0, 1440, 900), 0, 0); tex.Apply(); File.WriteAllBytes(Shots + "/" + name + ".png", tex.EncodeToPNG()); }
             finally { cam.targetTexture = null; RenderTexture.active = prior; UnityEngine.Object.DestroyImmediate(rt); UnityEngine.Object.DestroyImmediate(tex); }
         }
+    }
+
+    /// <summary>Pairs of renderer faces that share a plane, face the same way and overlap by more than 40 cm².</summary>
+    public static List<string> ZFighting(RailBlock b)
+    {
+        var faces = new List<(Vector3 n, float d, Vector3 c, Vector3 u, Vector3 v, float hu, float hv, Renderer r)>();
+        foreach (var r in b.GetComponentsInChildren<MeshRenderer>())
+        {
+            var mf = r.GetComponent<MeshFilter>(); if (!mf || !mf.sharedMesh || !r.enabled) continue;
+            var t = r.transform; var mb = mf.sharedMesh.bounds; var ls = t.lossyScale;
+            var center = t.TransformPoint(mb.center);
+            var axes = new[] { t.right, t.up, t.forward }; var half = Vector3.Scale(mb.extents, ls);
+            for (int i = 0; i < 3; i++)
+                foreach (float sign in new[] { -1f, 1f })
+                {
+                    var n = axes[i] * sign; var c = center + n * Mathf.Abs(half[i]);
+                    int a = (i + 1) % 3, bb = (i + 2) % 3;
+                    faces.Add((n, Vector3.Dot(n, c), c, axes[a], axes[bb], Mathf.Abs(half[a]), Mathf.Abs(half[bb]), r));
+                }
+        }
+        string Key(Vector3 n, float d, int off) => Mathf.RoundToInt(n.x * 200) + "," + Mathf.RoundToInt(n.y * 200) + "," + Mathf.RoundToInt(n.z * 200) + "|" + (Mathf.RoundToInt(d * 500) + off);
+        var buckets = new Dictionary<string, List<int>>();
+        for (int i = 0; i < faces.Count; i++)
+        {
+            string k = Key(faces[i].n, faces[i].d, 0);
+            if (!buckets.TryGetValue(k, out var l)) buckets[k] = l = new List<int>();
+            l.Add(i);
+        }
+        bool RestsOnSurface((Vector3 n, float d, Vector3 c, Vector3 u, Vector3 v, float hu, float hv, Renderer r) f)
+        {
+            var up = Vector3.up; float y = f.c.y;
+            for (int off = -1; off <= 1; off++)
+                if (buckets.TryGetValue(Key(up, y, off), out var l))
+                    foreach (int j in l) { var h = faces[j]; if (h.r != f.r && Mathf.Abs(h.c.y - y) < .003f && Overlap(h, f) > .002f) return true; }
+            return false;
+        }
+        var result = new List<string>(); var seen = new HashSet<long>();
+        for (int i = 0; i < faces.Count; i++)
+        {
+            var f = faces[i];
+            for (int off = -1; off <= 1; off++)
+            {
+                if (!buckets.TryGetValue(Key(f.n, f.d, off), out var l)) continue;
+                foreach (int j in l)
+                {
+                    if (j <= i) continue; var g = faces[j];
+                    if (g.r == f.r || Vector3.Dot(f.n, g.n) < .9999f || Mathf.Abs(f.d - g.d) > .0015f) continue;
+                    // Visible cases: floors, ceilings and tops (horizontal faces), and decals/thin visuals with
+                    // no collider. Vertical faces of solid blocks meet inside walls at joints and are not seen.
+                    bool horizontal = Mathf.Abs(f.n.y) > .99f;
+                    if (!horizontal && (f.r.GetComponent<Collider>() || g.r.GetComponent<Collider>())) continue;
+                    float area = Overlap(f, g);
+                    if (area < .004f) continue;   // ignore slivers under 40 cm²
+                    // Undersides resting on a floor or slab are hidden by it.
+                    if (f.n.y < -.99f && RestsOnSurface(f)) continue;
+                    long key = ((long)Mathf.Min(f.r.GetInstanceID(), g.r.GetInstanceID()) << 32) ^ (uint)Mathf.Max(f.r.GetInstanceID(), g.r.GetInstanceID());
+                    if (!seen.Add(key)) continue;
+                    result.Add(Path(f.r.transform, b.transform) + " <> " + Path(g.r.transform, b.transform) + " at " + f.c.ToString("F2") + " area " + area.ToString("F3"));
+                }
+            }
+        }
+        return result;
+        static string Path(Transform t, Transform root) { var s = t.name; for (var p = t.parent; p && p != root && p.parent != root; p = p.parent) s = p.name + "/" + s; return s; }
+    }
+
+    // Area of overlap of two coplanar rectangles (convex polygon clipping in face A's 2D basis).
+    static float Overlap((Vector3 n, float d, Vector3 c, Vector3 u, Vector3 v, float hu, float hv, Renderer r) a, (Vector3 n, float d, Vector3 c, Vector3 u, Vector3 v, float hu, float hv, Renderer r) b)
+    {
+        Vector2 P(Vector3 w) { var q = w - a.c; return new Vector2(Vector3.Dot(q, a.u), Vector3.Dot(q, a.v)); }
+        var poly = new List<Vector2> { P(b.c - b.u * b.hu - b.v * b.hv), P(b.c + b.u * b.hu - b.v * b.hv), P(b.c + b.u * b.hu + b.v * b.hv), P(b.c - b.u * b.hu + b.v * b.hv) };
+        // Clip against the four edges of A: |x| <= hu, |y| <= hv.
+        foreach (var (axis, limit, sign) in new[] { (0, a.hu, 1f), (0, a.hu, -1f), (1, a.hv, 1f), (1, a.hv, -1f) })
+        {
+            var output = new List<Vector2>();
+            for (int i = 0; i < poly.Count; i++)
+            {
+                var p = poly[i]; var q = poly[(i + 1) % poly.Count];
+                float fp = limit - sign * p[axis], fq = limit - sign * q[axis];
+                if (fp >= 0) output.Add(p);
+                if (fp * fq < 0) output.Add(Vector2.Lerp(p, q, fp / (fp - fq)));
+            }
+            poly = output; if (poly.Count < 3) return 0;
+        }
+        float area = 0; for (int i = 0; i < poly.Count; i++) { var p = poly[i]; var q = poly[(i + 1) % poly.Count]; area += p.x * q.y - q.x * p.y; }
+        return Mathf.Abs(area) / 2;
     }
 
     [MenuItem("Duck Rails/Authoring/Abandoned Station/Validate geometry")]
@@ -87,18 +178,18 @@ public static class RailMetroChecks
         Line(new(-26.5f, D, 46.45f), new(-3.6f, D, 46.45f), .5f, "ticket concourse across gates");
         Line(new(-26.5f, D, 116.45f), new(-14, D, 116.45f), .5f, "shuttered concourse west");
         Line(new(-10.5f, D, 116.5f), new(3f, D, 116.5f), .5f, "shuttered concourse east");
-        Line(new(-39f, F, 19f), new(-39f, F, 145f), 1, "transfer hall");
-        Line(new(15, F, 41), new(15, F, 127), 1, "maintenance hall");
+        Line(new(-39f, F, 19f), new(-39f, F, 133f), 1, "transfer hall");
+        Line(new(15, F, 41), new(15, F, 121), 1, "maintenance hall");
         Line(new(10.5f, F, 13), new(10.5f, F, 43), 1, "fan gallery");
-        Line(new(6, F, 59), new(6, F, 95f), .5f, "wreck aisle");
+        Line(new(6, F, 67), new(6, F, 101f), .5f, "wreck aisle");
         Line(new(.5f, F, 48), new(12.5f, F, 48), .5f, "south cross passage");
-        Line(new(.5f, F, 112), new(12.5f, F, 112), .5f, "north cross passage");
-        Line(new(2, F, 82.75f), new(14, F, 82.75f), .5f, "wreck side door to hall");
+        // North cross passage removed: the collapsed tunnel closes it (Justin, Nov 26).
+        Line(new(2, F, 91f), new(14, F, 91f), .5f, "wreck side door to hall");
         Line(new(-6, F, 80.25f), new(-3, F, 80.25f), .5f, "ledge door to platform 3");
         foreach (float z in new[] { 58f, 69f, 79f, 93f, 105f }) Line(new(-26.5f, F, z), new(-23.9f, F, z), .5f, "shop door " + z);
-        foreach (var (x, z) in new[] { (-36f, 25.5f), (-36f, 44.5f), (-36f, 100f), (-36f, 107f), (-36f, 137.5f), (-30f, 137.5f) }) Line(new(x - 1.2f, F, z), new(x + 1.2f, F, z), .4f, "west door " + x + "," + z);
-        foreach (var (x, z) in new[] { (17f, 62f), (17f, 76f), (17f, 90f), (17f, 104f), (29f, 76f), (13f, 29.5f) }) Line(new(x - 1.2f, F, z), new(x + 1.2f, F, z), .4f, "east door " + x + "," + z);
-        Line(new(15, F, 126.5f), new(15, F, 130), .4f, "pump room door");
+        foreach (var (x, z) in new[] { (-36f, 25.5f), (-36f, 44.5f), (-36f, 100f), (-36f, 107f), (-36f, 125.5f), (-30f, 125.5f) }) Line(new(x - 1.2f, F, z), new(x + 1.2f, F, z), .4f, "west door " + x + "," + z);
+        foreach (var (x, z) in new[] { (17f, 62f), (17f, 76f), (17f, 90f), (17f, 104f), (17f, 116.5f), (29f, 76f), (13f, 29.5f) }) Line(new(x - 1.2f, F, z), new(x + 1.2f, F, z), .4f, "east door " + x + "," + z);
+
         foreach (var t in b.GetComponentsInChildren<Transform>().Where(t => t.name == "Stopped escalator step" || t.name == "Stair tread"))
         { var c = t.GetComponent<BoxCollider>(); Walk(new(c.bounds.center.x, c.bounds.max.y, c.bounds.center.z), "tread " + t.position.ToString("F1")); }
         foreach (var t in b.spawnCandidates.coal) { Check(Physics.Raycast(t.position, Vector3.down, out var h, .4f, env) && Mathf.Abs(t.position.y - h.point.y - .2f) < .07f, "coal support " + t.name); }
@@ -122,7 +213,7 @@ public static class RailMetroChecks
         if (requireGraph && b.graph)
         {
             var graph = CrawlGraph.Load(b.graph);
-            var probes = new[] { new Vector3(-16.6f, F, 80), new(-7, F, 80), new(1, F, 80), new(-20, D, 46.5f), new(-20, D, 114), new(-39, F, 80), new(15, F, 80), new(6, F, 66), new(20, F, 138), new(10.5f, F, 20) };
+            var probes = new[] { new Vector3(-16.6f, F, 80), new(-7, F, 80), new(1, F, 80), new(-20, D, 46.5f), new(-20, D, 114), new(-39, F, 80), new(15, F, 80), new(6, F, 74), new(26, F, 121), new(10.5f, F, 20) };
             var nodes = probes.Select(q => graph.FindNearestGroundNode(q, 1)).ToArray();
             for (int i = 0; i < probes.Length; i++) Check(nodes[i] >= 0, "graph node near " + probes[i]);
             if (nodes.All(n => n >= 0))
@@ -138,6 +229,9 @@ public static class RailMetroChecks
                 Check(ok, "enemy quadrant quota crew " + crew + " x100 seeds");
             }
         }
+        var fights = ZFighting(b);
+        Check(fights.Count == 0, "no coplanar overlapping faces (z-fighting): " + fights.Count);
+        foreach (var f in fights.Take(40)) lines.Add("  z-fight " + f);
         Directory.CreateDirectory(RailAbandonedStation.EvidenceFolder); File.WriteAllLines(RailAbandonedStation.EvidenceFolder + "/checks.txt", lines);
         Debug.Log("METRO V3: " + lines.Count + " checks, " + lines.Count(s => s.StartsWith("FAIL")) + " failures");
         if (lines.Any(s => s.StartsWith("FAIL"))) throw new Exception(string.Join("\n", lines.Where(s => s.StartsWith("FAIL")).Take(25)));
