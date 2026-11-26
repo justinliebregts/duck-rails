@@ -16,13 +16,13 @@ using Object=UnityEngine.Object;
 /// <summary>Approved abandoned Passenger Station. Explicit editor authoring only.</summary>
 public static partial class RailAbandonedStation
 {
-    public const string Id="passenger-station-v1", RootName="Abandoned underground station v2";
+    public const string Id="passenger-station-v1", RootName="Tokyo metro station v3";
     public const string Folder="Assets/DuckRails/AbandonedStation", PrefabPath="Assets/DuckRails/Blocks/"+Id+".prefab";
     public const string BakeScene="Assets/DuckRails/Lighting/Blocks/"+Id+"/"+Id+"-bake.unity";
     static Mesh cube;
     static Material concrete,paint,steel,roof,wood,yellow,gravel,grass;
     static readonly Dictionary<string,Mesh> meshes=new();
-    public static int LightCount => 52;
+    public static int LightCount => 69;
     public static float RailHeight(float z)
     {
         float t=Mathf.Clamp01((Mathf.Min(z,160-z)-6)/39);
@@ -240,8 +240,9 @@ public static partial class RailAbandonedStation
         }
     }
     static void Set(Transform t,Vector3 p){t.localPosition=p;PrefabUtility.RecordPrefabInstancePropertyModifications(t);}
-    [MenuItem("Duck Rails/Authoring/Abandoned Station/Install approved station")]
-    public static void Install()
+    // V3 replaced the V2 metro on Nov 26 2026; the old body below targets the pre-migration variation layout.
+    public static void Install() => InstallV3();
+    static void InstallV2Historical()
     {
         if(Application.dataPath.Replace('\\','/')!="X:/Work/duck-rails/Assets"||EditorApplication.isPlaying||Lightmapping.isRunning)throw new Exception("Use Duck Rails Edit Mode, no bake");
         for(int i=0;i<SceneManager.sceneCount;i++)if(SceneManager.GetSceneAt(i).isDirty)throw new Exception("Save current scene first");

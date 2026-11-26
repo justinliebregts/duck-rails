@@ -1,5 +1,36 @@
 # Abandoned underground station — V1 proposal
 
+## V3 installed — Tokyo metro, up-and-over to a buried wreck
+
+November 26, 2026. Justin found the installed V2 too basic and asked for a Tokyo-style subway with a low-ceiling main platform, many hallways, escalators going up and over to a second abandoned platform with a crashed train, and haunted lighting. Starting reference: [roof-cut concept](../output/full-block-concepts/passenger-station.png).
+
+Confirmed answers: the abandoned platform is on the **same level** as the main platform (up, over the live track, back down). V3 **replaces** the V2 lower floor. Style is **Tokyo**. The wreck is **buried under a cave-in**. Flicker is **shader/emissive only**; baked light stays steady. Justin approved the [scaled layout sheet](../output/passenger-station-v3/layout-v1.png) with "build in 3D". The built concourse floor is +3 m, not the sheet's +2.5 m (see below).
+
+### What is built (block-local metres)
+
+- Retained: block id, 96 x 160 envelope, curved descending track and its atlas rails/sleepers/rail bed (moved, not rebuilt), stop marker (-12,-4,80), midpoint shop pad, flat seams.
+- **Platform 1** (live, west): floor -3, 2.4 m ceiling, screen-door units with wide boarding gaps, tactile strip, columns with line-colour bands, `KAMOBASHI` name signs. Near both ends the channel wall and ceiling edge step back to X -16.2 because a 14 m carriage swings out of the curve there. An east **service ledge** beside the train has a door to Platform 3, so neither side of the train is a dead end.
+- Behind Platform 1: toilets, waiting room with vending machines, coin lockers, konbini (gondolas, fridges, counter) and staff room. A 128 m **long transfer hall** (stopped moving walkway) links the tiled **service portal** with the duck mural and closed exit A2, lost and found, konbini stockroom, staff room and the NW **cable vault / cable gallery** (lit windows; matching lit windows are on the departure tunnel wall).
+- **Escalators**: four shafts (south and north, both sides), each a stopped escalator plus stairs, 6 m rise over 18 m (34 treads). Shafts are fully enclosed with sloped ceilings.
+- **Concourses** at +3 over the live track: south ticket concourse (gate line, fare machines, departure board, station office) and north shuttered concourse (shutters, kiosk, toppled gates, red emergency lamp). Deck underside +2.7 clears the sweep box (top +1.3 to +1.5).
+- **Platform 3** (abandoned, east): dead tubes, red emergency lamps only, toppled screen doors, benches. Dead track with a three-car commuter wreck (longitudinal seats, side doors both sides, gangways, amber-lit windows in cars 2–3). Car 1's nose and roof are buried by a **cave-in** whose chimney opens through the overburden to the sky, with a baked moonlight spot. A 2 m strip beside the north escalator shaft stays open past the rubble. Rails here are named `Dead track rail/tie` so the catalogue track-surface validator does not treat them as running rails.
+- East side: maintenance hall (Z 40–128) with south, middle (through wreck car 2) and north passages to Platform 3; crew lockers, signal room, canteen, electrical room, parts store; SE **fan gallery** and fan control room behind the three recessed stopped fans in the approach tunnel; NE **pump room** with sump grilles.
+- Lighting: 69 baked lights (cool tubes, red emergency, amber wreck, warm windows, moon spot). Glow uses the new `DuckRails/StationGlow` shader (`Assets/Shaders/StationGlow.shader`): unlit, per-object random flicker bursts when `_Flicker > 0`. Flicker materials sit on dim or dying tubes, departure board, screens and wreck windows; their baked light does not flicker.
+
+### Spawns
+
+Replaced the V2 markers (they sat on removed geometry). 120 coal and 64 gold candidates (crew-8 ceilings 93/52), chosen round-robin across 30 areas from 607 supported, clear surface spots, 1.8 m same-type and 0.8 m cross-type spacing. Gold is weighted to Platform 3, the wreck, cable rooms, pump, fan control, parts and electrical rooms, the north concourse and the office. 51 enemy candidates (quadrants roughly 12–14 each) after removing those without ground navigation within 0.8 m.
+
+### Validation (Edit Mode, November 26)
+
+- [2,857 checks](validation/passenger-station-v3/checks.txt) pass: train sweep every 0.5 m, walk lines on every platform, hall, passage, concourse, wreck aisle and door, every escalator/stair tread, coal/gold support heights, entrance-exit sightline blocked, `RailRoute.SelectResources` crews 1–8 × 100 seeds exact and unique, ground graph connects Platform 1 to Platform 3, both concourses, the wreck, transfer hall, maintenance hall, pump room and fan gallery, and `RailEnemySpawnBalance` 4/8/12 for crews 1–8 × 100 seeds. [Install report](validation/passenger-station-v3/install.txt), [prune and probes](validation/passenger-station-v3/prune-and-probes.txt).
+- Navigation: offline full-area bake, 77,690 nodes. The concourse floor was raised from +2.5 to +3 because crawl-graph cells sit at n+0.5 and a floor exactly on a cell centre got no ground nodes.
+- Not yet verified: headset readability and darkness, hand locomotion on the 6 m escalators, moving players and cargo through the sloped track on real clients, late joining, enemy pursuit up escalators, flicker look on Quest, and Quest frame time with the larger graph and 69 lights. Station is not in the normal-run pool; use Test Block Order.
+
+### Rebuild steps
+
+With the bake scene saved and no dirty scenes: **Duck Rails > Authoring > Abandoned Station > 1 Install V3 Tokyo station**, **2 Bake V3 navigation**, **3 Prune enemies and set probes**, **Validate geometry**, then **Duck Rails > Lighting > All Blocks > Bake Open Block And Keep Open**. Builder: `Assets/Editor/RailPassengerStationV3.cs`; install/markers/probes: `RailPassengerStationV3Install.cs`; checks and captures: `RailMetroChecks.cs`. Reinstalling regenerates all markers.
+
 ## V2 installed rough metro
 
 November 6: approved lower-floor revision installed in the existing `passenger-station-v1` catalogue prefab. Rough Quackville concrete/paint/metal materials and CutePixel signs are retained. Main pedestrian floor is -3 m; lower floor is -8 m. Clear pedestrian ceilings are 2.13 m, with taller train/wreck channels. Two stairs and one stopped escalator connect the main platforms through the lower cross-passage, wreck platform and maintenance passages. The three-car wreck has side entrances, open gangways, seats, a buckled nose and rubble; pump/electrical rooms extend into the approach/departure areas.

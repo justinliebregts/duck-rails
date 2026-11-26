@@ -1,5 +1,9 @@
 # Playtest queue
 
+## Passenger Station V3 (Tokyo metro) | queued for playtest, November 26, 2026
+
+Pick `passenger-station-v1` in Test Block Order. Stop at Platform 1 and step off both sides of the train (platform and east service ledge). Ride the stopped escalators up to the ticket concourse, cross over the track and come down to Platform 3. Walk past the cave-in on the strip beside the north escalator, go through the wreck cars and out the side door to the maintenance hall, and return over the north concourse. Check the escalator climb in VR, ceiling height feel, whether the dark side is readable with red lamps only, and the tube, screen and wreck-window flicker. With two clients, collect loot from the konbini, wreck seats and pump room, have enemies chase up the escalators, and check the train on the sloped track ends with players and cargo aboard. Measure Quest frame time on Platform 1 and in the concourses. Edit Mode evidence: [V3 notes](underground-station-layout.md#v3-installed--tokyo-metro-up-and-over-to-a-buried-wreck).
+
 ## Lakeside terrain, scavenging and audio | queued for playtest, November 25, 2026
 
 Walk from the southwest woods past a fire to the dock and listen for the leaves, localized crackle and pond cicadas. Compare a footstep or shovel tap on the porch with one inside the bunk cabin, boathouse and washrooms. Listen for timber creaks and drips during a quiet interval. Check that nearby crew speech and enemy cues remain clear on headset.
