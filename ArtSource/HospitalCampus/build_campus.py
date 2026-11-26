@@ -11,6 +11,7 @@ out=root/"Assets/DuckRails/HospitalDistrict/Campus"
 swatches={}
 labels=[]
 fixtures=[]
+shrubs=[]
 zone="Campus"
 bpy.ops.wm.read_factory_settings(use_empty=True)
 s=bpy.context.scene
@@ -35,7 +36,10 @@ def mat(name,h,texture=None,strength=0,rough=.76):
         a=nt.nodes.new("ShaderNodeMixRGB");a.blend_type="MULTIPLY";a.inputs[0].default_value=.54;a.inputs[1].default_value=(*c,1);nt.links.new(im.outputs[0],a.inputs[2]);nt.links.new(a.outputs[0],b.inputs["Base Color"])
     swatches[name]={"name":name,"color":h,"texture":texture or "","emission":strength,"original":""}
     return m
-cream=mat("Aged ivory precast","e2d5b8","concrete"); lime=mat("Limestone coping","ede1cb","concrete");red=mat("Emergency enamel","a84036","weathered paint");terr=mat("Fired brick","a1614c","concrete"); brick2=mat("Brick variation","875444","concrete");teal=mat("Oxidised blue green enamel","416c67","weathered paint");metal=mat("Gunmetal frames","3e494b","weathered paint");silver=mat("Galvanised sheet","9caaab","weathered paint");roof=mat("Tar and gravel","525658","dark roofing");dark=mat("Rubber and shadow gaps","242a2c");wood=mat("Old cedar","9e7955","timber");grass=mat("Mown verge","69774b","grass");moss=mat("Planting bed","495d42","grass");asphalt=mat("Aggregate road","51525a","gravel");ballast=mat("Rail ballast","77716b","gravel");walk=mat("Sidewalk","b1afa1","concrete");stripe=mat("Worn road paint","d9cba0","concrete");yellow=mat("Amber safety enamel","d6aa4c");white=mat("Ambulance enamel","dedbd0");aqua=mat("Muted ward glazing","58777a",None,.18,.32); amber=mat("Lit ward blinds","ffc88b",None,1.7); mint=mat("Cool ward glazing","b3d8cd",None,.65); neon=mat("Warm ivory lettering","ffe6c1",None,3.5);led=mat("Emergency marker","ff6456",None,2.3);leaf=[mat("Foliage "+str(i),h,"foliage") for i,h in enumerate(["527050","698254","48654b","81905f"])];muted=mat("Lilac planting","a79095");screen=mat("Window reflection","829da3",None,.15);sheet=mat("Washed linen","e1d9c6","ochre canvas")
+cream=mat("Aged ivory precast","e2d5b8","concrete"); lime=mat("Limestone coping","ede1cb","concrete");red=mat("Emergency enamel","a84036","weathered paint");terr=mat("Fired brick","a1614c","concrete"); brick2=mat("Brick variation","875444","concrete");teal=mat("Oxidised blue green enamel","416c67","weathered paint");metal=mat("Gunmetal frames","3e494b","weathered paint");silver=mat("Galvanised sheet","9caaab","weathered paint");roof=mat("Tar and gravel","525658","dark roofing");dark=mat("Rubber and shadow gaps","242a2c");wood=mat("Old cedar","9e7955","timber");grass=mat("Mown verge","69774b","grass");moss=mat("Planting bed","495d42","grass");asphalt=mat("Aggregate road","51525a","gravel");ballast=mat("Rail ballast","77716b","gravel");walk=mat("Sidewalk","b1afa1","concrete");stripe=mat("Worn road paint","d9cba0","concrete");yellow=mat("Amber safety enamel","d6aa4c");white=mat("Ambulance enamel","dedbd0");aqua=mat("Muted ward glazing","58777a",None,0,.32); amber=mat("Lit ward blinds","927857"); mint=mat("Cool ward glazing","687f7b"); neon=mat("Warm ivory lettering","ffe6c1",None,3.5);led=mat("Emergency marker","ff4035",None,3.3);leaf=[mat("Foliage "+str(i),h,"foliage") for i,h in enumerate(["527050","698254","48654b","81905f"])];muted=mat("Lilac planting","a79095");screen=mat("Window reflection","627276");sheet=mat("Washed linen","e1d9c6","ochre canvas")
+# Smooth luminous faces and a narrow hot glass line give fixed crosses a neon profile.
+cross_red=mat("Neon cross red","ef0639",None,2.2)
+cross_core=mat("Neon cross glass","ff8295",None,3.5)
 # Batch static props by material in world coordinates.
 batches=defaultdict(lambda:[[],[]]); frame=Matrix.Identity(4)
 def geo(m,v,f):
@@ -65,6 +69,9 @@ def slab(x,y,w,d,h,m,z=0):box(x,y,z+h/2,w,d,h,m)
 def patch(x,y,rx,ry,z,m,n=10):
     pts=[(x+rx*cos(i*2*pi/n),y+ry*sin(i*2*pi/n),z) for i in range(n)];geo(m,pts,[tuple(range(n))])
 def shrub(x,y,z,r,h,m=None,*,close_base=False):
+    if not close_base:
+        centre=frame@Vector((x,y,z))
+        shrubs.append(dict(x=centre.x,y=centre.z,z=centre.y,radius=r))
     m=m or random.choice(leaf);a=random.random()*2*pi;n=7;rs=[random.uniform(.83,1.08) for _ in range(n)]
     pts=[(x+r*rr*q*cos(a+i*2*pi/n),y+r*rr*q*sin(a+i*2*pi/n),z+hh*h) for q,hh in [(.75,.02),(1,.4),(.63,.85)] for i,rr in enumerate(rs)]+[(x+.13*r,y-.12*r,z+h)]
     fs=[]
@@ -86,6 +93,22 @@ def bench(x,y):
 def light(name,loc,power,color,size=.45):
     fixtures.append(dict(name=name,x=loc[0],y=loc[2],z=loc[1],power=power,color=list(color)))
     d=bpy.data.lights.new(name,"POINT");d.energy=power;d.color=color;d.shadow_soft_size=size;o=bpy.data.objects.new(name,d);s.collection.objects.link(o);o.location=loc
+def fixed_cross(x,y,z,span,stroke):
+    # A red enamel-depth channel with a continuous illuminated outline on the front.
+    a,b=span*.5,stroke*.5
+    box(x,y,z,span,.13,stroke,cross_red)
+    box(x,y-.007,z,stroke,.14,span,cross_red)
+    inset=stroke*.17
+    a-=inset
+    b-=inset
+    outline=[(-b,a),(b,a),(b,b),(a,b),(a,-b),(b,-b),
+             (b,-a),(-b,-a),(-b,-b),(-a,-b),(-a,b),(-b,b)]
+    r=stroke*.078
+    for (u,v),(u2,v2) in zip(outline,outline[1:]+outline[:1]):
+        tube((x+u,y-.081,z+v),(x+u2,y-.081,z+v2),r,cross_core,8)
+    light("Cross neon spill",(x,y-1.25,z+.12),100,(1,.012,.045))
+    fixtures[-1]["range"]=4.8
+
 def lamp(x,y,angle):
     dx=cos(angle);dy=sin(angle);tube((x,y,-.025),(x,y,.8),.30,cream);tube((x,y,.8),(x,y,5.9),.13,metal,8,.095);tube((x,y,5.5),(x+dx*1.35,y+dy*1.35,6.1),.095,metal)
     box(x+dx*1.35,y+dy*1.35,6.1,1.05,.74,.23,metal);box(x+dx*1.35,y+dy*1.35,5.96,.88,.60,.08,neon);light("Street pool",(x+dx*1.35,y+dy*1.35,5.72),920,(1,.66,.36))
@@ -232,7 +255,7 @@ for x in [20.7,29.7]:box(x,54.46,1.45,2,.23,2.92,metal);box(x,54.32,1.72,1.78,.0
 zone="Emergency pylon"
 # Deep red wayfinding pylon at arrival with inset illuminated face.
 for x in [12.1,13.3]:box(x,17,2.4,.26,.32,4.6,metal)
-box(12.7,17,4.45,3.7,.52,3.7,red);box(12.7,16.67,4.65,2.3,.14,.68,neon);box(12.7,16.65,4.65,.68,.14,2.3,neon)
+box(12.7,17,4.45,3.7,.52,3.7,red);fixed_cross(12.7,16.65,4.65,2.3,.68)
 zone="Clinic and pharmacy"
 # Smaller street buildings with separate architectural identities.
 def small(x,y,w,d,name,base,awning):
@@ -240,7 +263,7 @@ def small(x,y,w,d,name,base,awning):
     elev(x,y-d/2,0,w,1,max(3,round(w/4.6)));elev(x-w/2,y,-pi/2,d,1,max(3,round(d/4.6)))
     for i in range(int(w)):
         box(x-w/2+i+.5,y-d/2-1.05,3.37,1,2.2,.18,awning if i%2==0 else cream);box(x-w/2+i+.5,y-d/2-2.07,3.21,1,.16,.38,awning if i%2==0 else cream)
-    box(x,y-d/2-.24,4.43,w*.76,.34,1.08,awning);sign(name,x,y-d/2-.43,4.43,1.06,neon)
+    sign(name,x+w/2+.405,y,2.80,1.06,neon,pi/2)
     hvac(x+w*.23,y+d*.18,4.13);hvac(x+w*.05,y+d*.18,4.13,2.35,2.1)
 small(-27,66.5,26,19,"PHARMACY",terr,teal);small(-27,92.5,26,21,"OUTPATIENT CLINIC",cream,metal)
 zone="Facade masonry"
@@ -270,8 +293,7 @@ for x in range(-40,-14,2):
 for x in [-34,-25]:
     box(x,125.81,1.52,6.3,.16,2.75,metal)
     for i in range(11):box(x,125.71,.29+i*.24,5.85,.07,.19,silver)
-box(-28,125.80,3.30,11.2,.22,.69,metal)
-sign("CENTRAL LAUNDRY",-28,125.65,3.30,1,neon)
+sign("CENTRAL LAUNDRY",-15.595,136,2.80,1,neon,pi/2)
 for x in [-40,-31,-22]:
     for y in [148,151]:box(x,y,1.55,.13,.13,3.1,metal)
 for y in [148,151]:
@@ -397,7 +419,7 @@ for y in [62,95]:
     for k in range(3):box(8.72,y-.94+k*.94,4.65,.22,.36,7.6,teal)
 for x in [15.5,38.4]:
     box(x,54.60,5.8,2.75,.30,3,cream)
-    box(x,54.40,5.85,1.98,.14,.48,red);box(x,54.37,5.85,.52,.18,1.94,red)
+    fixed_cross(x,54.37,5.85,1.98,.50)
 zone="Roof equipment"
 # Mechanical roof organized into service aisles, membrane seams and pipe bridges
 for x in [34.1,34.7]:
@@ -420,7 +442,7 @@ for y in [87,93,99]:
     for i in range(8):box(-34.55+i*2,y-1.28,5.48,1.8,.12,.49,mint)
 for x in [-38,-16]:
     box(x,57,3.09,1.85,2.2,6.1,terr);box(x,56,5.48,2.4,.5,1.9,teal)
-    box(x,55.71,5.52,1.3,.12,.36,neon);box(x,55.68,5.51,.36,.16,1.3,neon)
+    fixed_cross(x,55.68,5.52,1.3,.36)
 zone="Parking islands"
 # East parking islands, bus timetable, bike racks and trash cans
 for x,y in [(12,112),(39,112),(14,144),(38,144),(13,13),(40,38)]:
@@ -559,11 +581,15 @@ atlas_size=1024
 base_pixels=np.zeros((atlas_size,atlas_size,4),dtype=np.float32)
 glow_pixels=base_pixels.copy()
 for img in (base_pixels,glow_pixels):img[:,:,3]=1
-used=sorted({key[4] for key in batches},key=lambda m:m.name)
+used=sorted({key[4] for key in batches},key=lambda m:(m in (cross_red,cross_core),m.name))
 slots={}
 for i,m in enumerate(used):
     sw=swatches[m.name];x=(i%8)*128+32;y=(i//8)*128+32;slots[m]=(x,y)
     color=np.array(rgb(sw["color"]))
+    if m in (cross_red,cross_core):
+        base_pixels[y-32:y+96,x-32:x+96,:3]=srgb(color)
+        glow_pixels[y-32:y+96,x-32:x+96,:3]=srgb(color*sw["emission"]/3.5)
+        continue
     grain=swatch_cells[m] @ np.array([.2126,.7152,.0722])
     # Blocky damp patches share the same seamless repeat as the source cell.
     noise=np.random.default_rng(710+i).random((8,8))
@@ -631,5 +657,5 @@ for ob in bpy.context.selected_objects:ob.select_set(False)
 for ob in s.objects:
     if ob.type=='MESH':ob.select_set(True)
 bpy.ops.export_scene.fbx(filepath=str(out/'Hospital Campus.fbx'),use_selection=True,object_types={'MESH'},axis_forward='-Z',axis_up='Y',add_leaf_bones=False,bake_anim=False,path_mode='STRIP',use_custom_props=False)
-(root/'ArtSource/HospitalCampus/campus.json').write_text(json.dumps(dict(materials=list(swatches.values()),labels=labels,fixtures=fixtures),indent=2))
+(root/'ArtSource/HospitalCampus/campus.json').write_text(json.dumps(dict(materials=list(swatches.values()),labels=labels,fixtures=fixtures,shrubs=shrubs),indent=2))
 

@@ -11,6 +11,9 @@ Deposit coal solo and with two clients. Each deposit should float a whole number
 ## Quackwatt slime, water, tower walkway and lighting | queued for playtest, November 26, 2026
 
 On headset, visit Quackwatt through Test Block Order. In the drum yard, check the thick slime edges and the 3 and 2 pipe stacks with the east rack empty. Enter the settling pond, refueling pool and all four flume steps. Duck under each surface and confirm teal fog, muffled sound, splash in and out, footsteps and hand splashes, and that every basin can be left by its steps. Check that opaque water looks acceptable from above and below. Walk the three-pipe walkway between the tower lookouts, including footing, falls, enemy behavior on it and frame rate. Judge the dimmer maintenance shed, gatehouse and Turbine Hall front, and the furnished service annex. With two clients, confirm loot on the raised pool deck and enemy pursuit around the basins.
+## Hospital night lighting — queued for playtest, November 26
+
+Select Hospital District through Test Block Order in B. During the train approach, read the three west building names, compare the painted ambulance markings with the fixed neon crosses, and inspect the red light on the walls. Walk under WAITING from reception and the corridor to check readability in motion. Check the dark ward glazing from the train, the raised letters and crosses at an angle, and the moved washer bank under WASH. Walk through the staff-garden shrubs and parking-island bushes, then stop and step back onto clear paving to check that the corn rustle follows movement through foliage. At night on Quest, approach the ER from the train, walk both floors and stair cores, and visit the roof, clinic, pharmacy and laundry. Check whether doors, stair landings and loose items are readable between the remaining pools of light.
 
 ## Lakeside ferns, campfires and raised trails | queued for playtest, November 26, 2026
 
