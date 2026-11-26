@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Linq;
@@ -22,7 +22,7 @@ public static partial class RailAbandonedStation
     static Mesh cube;
     static Material concrete,paint,steel,roof,wood,yellow,gravel,grass;
     static readonly Dictionary<string,Mesh> meshes=new();
-    public static int LightCount => 74;
+    public static int LightCount => 77;
     public static float RailHeight(float z)
     {
         float t=Mathf.Clamp01((Mathf.Min(z,160-z)-6)/39);

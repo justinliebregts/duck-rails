@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.Linq;
 using System.IO;
@@ -33,10 +33,14 @@ public static class RailMetroChecks
             Shot("lost-and-found" + suffix, new(-30.2f, -1.2f, 37), new(-33.5f, -2.2f, 50));
             Shot("pump-room" + suffix, new(18.5f, -.8f, 113.5f), new(28, -2f, 126));
             Shot("platform-1-escalators" + suffix, new(-20.5f, -1.4f, 82), new(-21, -1f, 66));
-            Shot("ticket-concourse" + suffix, new(-25, 4.6f, 51), new(-2, 4.1f, 42));
-            Shot("escalator-down-to-platform-3" + suffix, new(-2.4f, 4.6f, 51.5f), new(-2.4f, -1.5f, 69));
+            Shot("ticket-concourse" + suffix, new(-25, 2.6f, 51), new(-2, 2.1f, 42));
+            Shot("mens-toilet" + suffix, new(-26f, -1.3f, 57.6f), new(-34.5f, -2.3f, 54));
+            Shot("womens-toilet" + suffix, new(-26f, -1.3f, 59.2f), new(-34.5f, -2.3f, 62.5f));
+            Shot("train-exterior" + suffix, new(1.2f, -1.3f, 64), new(6, -2.2f, 85));
+            Shot("station-office" + suffix, new(-2.2f, 2.6f, 44), new(2.8f, 1.8f, 45.8f));
+            Shot("escalator-down-to-platform-3" + suffix, new(-2.4f, 2.6f, 51.5f), new(-2.4f, -1.5f, 66));
             Shot("platform-3" + suffix, new(1, -1.4f, 56), new(2.5f, -1.8f, 100));
-            Shot("wreck-interior" + suffix, new(6, -1.5f, 67.5f), new(6, -1.7f, 104));
+            Shot("wreck-interior" + suffix, new(6, -1.4f, 52f), new(6, -1.6f, 88));
             Shot("cave-in" + suffix, new(.6f, -1.5f, 92), new(6, -1f, 110));
             Shot("transfer-hall" + suffix, new(-39, -1.4f, 30), new(-39, -1.6f, 80));
             Shot("konbini" + suffix, new(-26, -1.4f, 86), new(-33, -1.8f, 99));
@@ -58,7 +62,7 @@ public static class RailMetroChecks
         var faces = new List<(Vector3 n, float d, Vector3 c, Vector3 u, Vector3 v, float hu, float hv, Renderer r)>();
         foreach (var r in b.GetComponentsInChildren<MeshRenderer>())
         {
-            var mf = r.GetComponent<MeshFilter>(); if (!mf || !mf.sharedMesh || !r.enabled) continue;
+            var mf = r.GetComponent<MeshFilter>(); if (!mf || !mf.sharedMesh || !r.enabled || mf.sharedMesh.vertexCount != 24) continue;   // boxes only
             var t = r.transform; var mb = mf.sharedMesh.bounds; var ls = t.lossyScale;
             var center = t.TransformPoint(mb.center);
             var axes = new[] { t.right, t.up, t.forward }; var half = Vector3.Scale(mb.extents, ls);
@@ -100,8 +104,9 @@ public static class RailMetroChecks
                     // Visible cases: floors, ceilings and tops (horizontal faces), and decals/thin visuals with
                     // no collider. Vertical faces of solid blocks meet inside walls at joints and are not seen.
                     bool horizontal = Mathf.Abs(f.n.y) > .99f;
-                    if (!horizontal && (f.r.GetComponent<Collider>() || g.r.GetComponent<Collider>())) continue;
                     float area = Overlap(f, g);
+                    // Large vertical overlaps between solid blocks are visible too (platform edges); small ones are joints.
+                    if (!horizontal && (f.r.GetComponent<Collider>() || g.r.GetComponent<Collider>()) && area < .25f) continue;
                     if (area < .004f) continue;   // ignore slivers under 40 cm²
                     // Undersides resting on a floor or slab are hidden by it.
                     if (f.n.y < -.99f && RestsOnSurface(f)) continue;
@@ -150,6 +155,13 @@ public static class RailMetroChecks
             Check(Physics.Raycast(p + Vector3.up * .1f, Vector3.down, out var h, .25f, env) && Mathf.Abs(h.point.y - p.y) < .05f, "floor " + label);
             var hits = Physics.OverlapCapsule(p + Vector3.up * .35f, p + Vector3.up * 1.75f, .3f, env);
             Check(hits.Length == 0, "body " + label + " " + string.Join(",", hits.Select(c => c.name).Distinct()));
+            // Enclosure: from every walkable point, eight level rays must hit station geometry (no missing walls).
+            if (!label.StartsWith("tread"))
+                for (int k = 0; k < 8; k++)
+                {
+                    var dir = Quaternion.Euler(0, k * 45, 0) * Vector3.forward;
+                    if (!Physics.Raycast(p + Vector3.up * 1.2f, dir, 200f, env, QueryTriggerInteraction.Ignore)) { Check(false, "enclosure " + label + " open toward " + (k * 45) + " deg"); break; }
+                }
         }
         void Line(Vector3 a, Vector3 c, float step, string label)
         {
@@ -166,11 +178,10 @@ public static class RailMetroChecks
             var o = p + Vector3.up;
             var hull = Physics.OverlapBox(o + r * new Vector3(0, -.35f, .5f), new Vector3(2.13f, .3f, 5.55f), r, env);
             var body = Physics.OverlapBox(o + r * new Vector3(0, 1.31f, .5f), new Vector3(2.33f, 1.29f, 5.55f), r, env);
-            var head = Physics.OverlapBox(o + r * new Vector3(0, 3.55f, .5f), new Vector3(2.05f, .95f, 5.55f), r, env);
-            var hits = hull.Concat(body).Concat(head).ToArray();
+            var hits = hull.Concat(body).ToArray();   // Nov 26: Justin lowered the roof 2 m, leaving ~0.4 m over the train top
             Check(hits.Length == 0, "train sweep " + d + " " + string.Join(",", hits.Select(c => c.name).Distinct()));
         }
-        const float F = -3, D = 3f;
+        const float F = -3, D = 1f;
         Line(new(-16.4f, F, 53.5f), new(-16.4f, F, 106.5f), 1, "platform 1 track side");
         Line(new(-24.1f, F, 54), new(-24.1f, F, 106), 1, "platform 1 shop side");
         Line(new(-7f, F, 53.5f), new(-7f, F, 106.5f), 1, "service ledge");
@@ -181,12 +192,12 @@ public static class RailMetroChecks
         Line(new(-39f, F, 19f), new(-39f, F, 133f), 1, "transfer hall");
         Line(new(15, F, 41), new(15, F, 121), 1, "maintenance hall");
         Line(new(10.5f, F, 13), new(10.5f, F, 43), 1, "fan gallery");
-        Line(new(6, F, 67), new(6, F, 101f), .5f, "wreck aisle");
+        Line(new(6, F, 52f), new(6, F, 89.5f), .5f, "wreck aisle (cars 3 and 2)");
         Line(new(.5f, F, 48), new(12.5f, F, 48), .5f, "south cross passage");
         // North cross passage removed: the collapsed tunnel closes it (Justin, Nov 26).
-        Line(new(2, F, 91f), new(14, F, 91f), .5f, "wreck side door to hall");
+        foreach (var (x0, x1) in new[] { (2f, 4.05f), (4.75f, 7.25f), (7.9f, 9.5f), (10f, 14f) }) Line(new(x0, F, RailAbandonedStation.WreckSideDoorZ), new(x1, F, RailAbandonedStation.WreckSideDoorZ), .5f, "wreck side door to hall " + x0);   // steps over the 0.2-0.3 m gaps beside the car
         Line(new(-6, F, 80.25f), new(-3, F, 80.25f), .5f, "ledge door to platform 3");
-        foreach (float z in new[] { 58f, 69f, 79f, 93f, 105f }) Line(new(-26.5f, F, z), new(-23.9f, F, z), .5f, "shop door " + z);
+        foreach (float z in new[] { 55.5f, 61f, 69f, 79f, 93f, 105f }) Line(new(-26.2f, F, z), new(-23.9f, F, z), .5f, "shop door " + z);
         foreach (var (x, z) in new[] { (-36f, 25.5f), (-36f, 44.5f), (-36f, 100f), (-36f, 107f), (-36f, 125.5f), (-30f, 125.5f) }) Line(new(x - 1.2f, F, z), new(x + 1.2f, F, z), .4f, "west door " + x + "," + z);
         foreach (var (x, z) in new[] { (17f, 62f), (17f, 76f), (17f, 90f), (17f, 104f), (17f, 116.5f), (29f, 76f), (13f, 29.5f) }) Line(new(x - 1.2f, F, z), new(x + 1.2f, F, z), .4f, "east door " + x + "," + z);
 
@@ -229,6 +240,20 @@ public static class RailMetroChecks
                 Check(ok, "enemy quadrant quota crew " + crew + " x100 seeds");
             }
         }
+        // Rubble stays inside the wreck area: no corner of any rock reaches walkable rooms beside it.
+        var keepOut = new[] { new Bounds(new(-.6f, -1.8f, 110.5f), new(9.1f, 2.4f, 7f)), new Bounds(new(.95f, -1.8f, 92f), new(2.1f, 2.4f, 12f)), new Bounds(new(13.4f, -1.8f, 90f), new(7f, 2.4f, 40f)) };
+        foreach (var r in b.GetComponentsInChildren<MeshRenderer>().Where(r => r.name.Contains("rubble") || r.name == "Collapse fill" || r.name == "Fallen roof slab"))
+        {
+            var tr = r.transform; var e = Vector3.Scale(r.GetComponent<MeshFilter>().sharedMesh.bounds.extents, tr.lossyScale);
+            bool inside = false;
+            foreach (float sx in new[] { -1f, 1f }) foreach (float sy in new[] { -1f, 1f }) foreach (float sz in new[] { -1f, 1f })
+                    {
+                        var corner = b.transform.InverseTransformPoint(tr.TransformPoint(Vector3.Scale(new Vector3(sx, sy, sz), r.GetComponent<MeshFilter>().sharedMesh.bounds.extents) + r.GetComponent<MeshFilter>().sharedMesh.bounds.center));
+                        if (keepOut.Any(k => k.Contains(corner))) inside = true;
+                    }
+            if (inside) Check(false, "rubble pokes into a room: " + r.name + " at " + tr.position.ToString("F2"));
+        }
+        Check(true, "rubble containment checked");
         var fights = ZFighting(b);
         Check(fights.Count == 0, "no coplanar overlapping faces (z-fighting): " + fights.Count);
         foreach (var f in fights.Take(40)) lines.Add("  z-fight " + f);

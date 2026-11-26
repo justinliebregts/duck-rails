@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 public static partial class RailAbandonedStation
 {
     const float F = -3f;                 // main floor level
-    const float Deck = 3f;               // concourse floor level (crawl graph cells sit at n+0.5, so floors avoid n+0.5)
+    const float Deck = 1f;                // concourse floor level (crawl graph cells sit at n+0.5, so floors avoid n+0.5)
     const float PlatformClear = 2.4f, HallClear = 2.13f;
     static Material tile, band, floorTile, darkTile, wreckRed, rubbleMat, glowTube, glowFlicker, glowRed, glowAmber, glowScreen, glowWindow, deadTube;
     struct Spot { public Vector3 p; public float gold; public string area; }
@@ -60,6 +60,7 @@ public static partial class RailAbandonedStation
         zoneOrange = AtlasTile("Stripe orange (maintenance)", "white panel", false, 128, 0, 32, new(1f, .52f, .15f), 2);
         zoneTeal = AtlasTile("Stripe teal (cable rooms)", "white panel", false, 128, 0, 32, new(.2f, .8f, .8f), 2);
         band = zoneGreen;
+        SignMaterials(); FinishMaterials();
         glowTube = Glow("Glow tube steady", new(.82f, .9f, 1f), 2.2f, 0);
         glowFlicker = Glow("Glow tube flickering", new(.82f, .9f, 1f), 2.2f, .55f);
         glowRed = Glow("Glow emergency red", new(1f, .12f, .08f), 2.4f, 0);
@@ -188,8 +189,8 @@ public static partial class RailAbandonedStation
 
     static void Sign3(Transform p, string text, Vector3 pos, float yaw, float scale)
     {
-        Sign(p, text, pos, yaw);
-        p.GetChild(p.childCount - 1).localScale = Vector3.one * scale;
+        // Compound-style board (RailPassengerStationV3Props.SignBoard); old scales map to letter heights.
+        SignBoard(p, text, pos, yaw, scale >= .45f ? .45f : scale >= .3f ? .26f : .22f);
     }
 
     // Band of line colour along a wall face, broken at openings.
@@ -213,16 +214,17 @@ public static partial class RailAbandonedStation
         Platform3(Group(root, "Platform 3 (abandoned)"));
         WreckV3(Group(root, "Buried wreck and cave-in"));
         var esc = Group(root, "Escalators");
-        Escalator(esc, "South escalators to Platform 1", WestShaft, 71f, 53f);
-        Escalator(esc, "North escalators to Platform 1", WestShaft, 89f, 107f);
-        Escalator(esc, "South escalators to Platform 3", EastShaft, 71f, 53f);
-        Escalator(esc, "North escalators to Platform 3", EastShaft, 89f, 107f);
+        Escalator(esc, "South escalators to Platform 1", WestShaft, 65f, 53f);
+        Escalator(esc, "North escalators to Platform 1", WestShaft, 95f, 107f);
+        Escalator(esc, "South escalators to Platform 3", EastShaft, 65f, 53f);
+        Escalator(esc, "North escalators to Platform 3", EastShaft, 95f, 107f);
         Concourse(Group(root, "Ticket concourse (south)"), 40, 53, true);
         Concourse(Group(root, "Shuttered concourse (north)"), 107, 120, false);
         WestRooms(Group(root, "West rooms and transfer hall"));
         Facade(Group(root, "South facade (King's Quack)"), true);
         Facade(Group(root, "North facade (King's Quack)"), false);
         EastRooms(Group(root, "East maintenance side"));
+        BuildPipes(root);
     }
 
     // ---------------- tunnels ----------------
@@ -232,6 +234,9 @@ public static partial class RailAbandonedStation
         // roof underside at least 2 m above the train top (rail + 1 + 2.56 + 2), plus slope allowance.
         zoneTint = Cool;
         float[] fans = { 18, 28, 38 };
+        // Walls and roof are one continuous swept mesh per tunnel (Justin, Nov 26); the loop adds fan bays, lights and windows.
+        SweepTunnel(t, "Approach tunnel (swept)", 6, 53, fans);
+        SweepTunnel(t, "Departure tunnel (swept)", 107, 154, new float[0]);
         for (int z = 6; z < 154; z++)
         {
             if (z >= 53 && z < 107) continue;
@@ -240,17 +245,14 @@ public static partial class RailAbandonedStation
             foreach (float side in new[] { -1f, 1f })
             {
                 bool fanGap = side > 0 && fans.Any(f => Mathf.Abs(z + .5f - f) < 2.5f);
-                if (!fanGap) Beam(t, "Tunnel wall", a + new Vector3(side * TunnelHalf, wallY, 0), c + new Vector3(side * TunnelHalf, wallY, 0), .4f, wallH, tile);
-                else
+                if (fanGap)
                 {
                     // Recessed ventilation fan bay in the east wall.
                     Beam(t, "Fan bay back wall", a + new Vector3(TunnelHalf + 1.6f, wallY, 0), c + new Vector3(TunnelHalf + 1.6f, wallY, 0), .4f, wallH, darkTile);
                     Beam(t, "Fan bay floor", a + new Vector3(TunnelHalf + .8f, -.157f + (z % 2) * .004f, 0), c + new Vector3(TunnelHalf + .8f, -.157f + (z % 2) * .004f, 0), 1.6f, .3f, gravel);
-                    Beam(t, "Fan bay ceiling", a + new Vector3(TunnelHalf + .8f, TunnelRoof + .142f, 0), c + new Vector3(TunnelHalf + .8f, TunnelRoof + .142f, 0), 1.6f, .3f, roof);
+                    Beam(t, "Fan bay ceiling", a + new Vector3(TunnelHalf + .7f, TunnelRoof + .142f, 0), c + new Vector3(TunnelHalf + .7f, TunnelRoof + .142f, 0), 1.8f, .3f, roof);
                 }
             }
-            float lift = (z % 2) * .004f;   // neighbouring segments overlap slightly on curves; alternate heights avoid z-fighting
-            Beam(t, "Tunnel roof", a + Vector3.up * (TunnelRoof + .15f + lift), c + Vector3.up * (TunnelRoof + .15f + lift), TunnelHalf * 2 + .38f, .3f, roof);
             if (z % 12 == 0) Tube(t, (a + c) / 2 + Vector3.up * (TunnelRoof - .08f), true, z % 36 == 0 ? 1 : 0, true, 12);
             // Lit cable-gallery windows staggered along the outside of the departure curve.
             if (z >= 112 && z < 135 && z % 5 == 2)
@@ -268,23 +270,23 @@ public static partial class RailAbandonedStation
                 var e = new Vector3(RailX(zz), RailHeight(zz), zz);
                 Box(t, "Fan bay end wall", e + new Vector3(TunnelHalf + .8f, (TunnelRoof + .3f - .5f) / 2, 0), new(2f, TunnelRoof + .8f, .4f), darkTile);
             }
-            var fc = new Vector3(RailX(f) + TunnelHalf + 1.21f, RailHeight(f) + 2.8f, f);
+            var fc = new Vector3(RailX(f) + TunnelHalf + 1.21f, RailHeight(f) + 1.9f, f);
             var tangent = new Vector3(RailX(f + .5f) - RailX(f - .5f), 0, 1).normalized;
             var fan = Group(t, "Stopped ventilation fan"); fan.localPosition = fc; fan.localRotation = Quaternion.LookRotation(Vector3.Cross(Vector3.up, tangent) * -1, Vector3.up);
-            Box(fan, "Fan shroud", Vector3.zero, new(3.8f, 3.8f, .3f), steel, false);
+            Box(fan, "Fan shroud", Vector3.zero, new(3f, 3f, .3f), steel, false);
             Box(fan, "Fan hub", new(0, 0, -.25f), new(.6f, .6f, .3f), darkTile, false);
             for (int i = 0; i < 4; i++)
             {
-                var blade = Box(fan, "Fan blade", new(0, 0, -.2f), new(.45f, 3.3f, .06f), concrete, false);
+                var blade = Box(fan, "Fan blade", new(0, 0, -.2f), new(.4f, 2.6f, .06f), concrete, false);
                 blade.transform.localRotation = Quaternion.Euler(0, 0, i * 45 + f); blade.transform.localPosition += Vector3.forward * (i * .006f);
             }
-            Box(fan, "Fan guard bar", new(0, 0, -.42f), new(3.6f, .08f, .06f), steel, false);
-            Box(fan, "Fan guard bar", new(0, 0, -.43f), new(.08f, 3.6f, .06f), steel, false);
+            Box(fan, "Fan guard bar", new(0, 0, -.42f), new(2.8f, .08f, .06f), steel, false);
+            Box(fan, "Fan guard bar", new(0, 0, -.43f), new(.08f, 2.8f, .06f), steel, false);
         }
     }
 
     // Tunnel cross-section around the rail centre line (see Tunnels).
-    const float TunnelHalf = 3.25f, TunnelRoof = 5.95f;   // + 0.4 m for the rigid train chord on the vertical curves
+    const float TunnelHalf = 3.25f, TunnelRoof = 3.95f;   // Justin, Nov 26: 2 m lower; ~0.4 m over the train top (rail + 3.56)
 
     static void Envelope(Transform t)
     {
@@ -313,15 +315,16 @@ public static partial class RailAbandonedStation
         const float edgeMid = -12 - 2.17f, edgeEnd = -12 - 2.7f;
         Slab(t, "Platform floor", -25, 60, edgeMid + 25, 40, F, floorTile);
         foreach (float z in new[] { 53f, 100f }) Slab(t, "Platform floor", -25, z, edgeEnd + 25, 7, F, floorTile);
-        Box(t, "Platform edge face", new(edgeMid - .1f, -3.505f, 80), new(.2f, .99f, 40), concrete);
-        foreach (float z in new[] { 56.5f, 103.5f }) Box(t, "Platform edge face", new(edgeEnd - .1f, -3.505f, z), new(.2f, .99f, 7), concrete);
+        Box(t, "Platform edge face", new(edgeMid - .095f, -3.505f, 80), new(.2f, .99f, 40), concrete);   // 5 mm proud of the slab side
+        foreach (float z in new[] { 59.9f, 100.1f }) Box(t, "Platform step face", new((edgeMid + edgeEnd) / 2, -3.505f, z), new(edgeMid - edgeEnd, .99f, .2f), concrete);
+        foreach (float z in new[] { 56.5f, 103.5f }) Box(t, "Platform edge face", new(edgeEnd - .095f, -3.505f, z), new(.2f, .99f, 7), concrete);
         foreach (float z in new[] { 53f, 107f }) Box(t, "Platform end face", new((-25 + edgeEnd) / 2, -3.65f, z), new(edgeEnd + 25, .7f, .2f), concrete);
         // Low ceiling over the platform, holes over the escalator shafts; it stops at the channel wall.
         float ceil = F + PlatformClear + .3f, wallMid = -12 - 2.6f, wallEnd = -12 - 3.1f;
         Slab(t, "Platform ceiling", -25, 53, WestShaft + 25, 54, ceil, roof);
         Slab(t, "Platform ceiling", WestShaft + 4.5f, 60, wallMid - (WestShaft + 4.5f), 40, ceil, roof);
         foreach (float z in new[] { 53f, 100f }) Slab(t, "Platform ceiling", WestShaft + 4.5f, z, wallEnd - (WestShaft + 4.5f), 7, ceil, roof);
-        Slab(t, "Platform ceiling", WestShaft, 71f, 4.5f, 18, ceil, roof);
+        Slab(t, "Platform ceiling", WestShaft, 65f, 4.5f, 30, ceil, roof);
         // Track channel: same low roof as the tunnels (2 m over the train), walls just outside the train.
         float roofTop = -4 + TunnelRoof + .3f, upperH = roofTop - (F + PlatformClear);
         Wall(t, "Rail channel upper wall", true, wallMid, 60, 100, F + PlatformClear + .01f, upperH - .01f, tile);
@@ -330,8 +333,8 @@ public static partial class RailAbandonedStation
         Wall(t, "Rail channel upper wall", true, -12 + 2.6f, 53, 107, F + PlatformClear + .01f, upperH - .01f, tile);
         Slab(t, "Rail channel roof", wallEnd - .1f, 53, 5.9f, 54, roofTop + .006f, roof);
         // Shopfront wall and ends (the tunnels have no walkways, so the ends are closed).
-        Wall(t, "Shopfront wall", true, -25, 53, 110, F, PlatformClear + .3f, tile, 57, 59, 66, 72, 77, 81, 89, 97, 104, 106);
-        BandAlongZ(t, -24.86f, 53, 107, -1.4f, 57, 59, 66, 72, 77, 81, 89, 97, 104, 106);
+        Wall(t, "Shopfront wall", true, -25, 53, 110, F, PlatformClear + .3f, tile, 54.75f, 56.25f, 60.25f, 61.75f, 66, 72, 77, 81, 89, 97, 104, 106);
+        BandAlongZ(t, -24.86f, 53, 107, -1.4f, 54.75f, 56.25f, 60.25f, 61.75f, 66, 72, 77, 81, 89, 97, 104, 106);
         foreach (float z in new[] { 53f, 107f }) Wall(t, "Platform end wall", false, z, -25, wallEnd - .1f, F, PlatformClear + .3f, tile);
         Box(t, "Tactile strip", new(edgeEnd - .45f, F + .012f, 80), new(.3f, .024f, 54), yellow, false);
         Box(t, "Platform edge line", new(edgeMid - .07f, F + .012f, 80), new(.12f, .024f, 40), yellow, false);
@@ -346,18 +349,17 @@ public static partial class RailAbandonedStation
         {
             Box(t, "Platform column", new(-20.95f, F + 1.2f, z), new(.6f, 2.4f, .6f), tile);
             Box(t, "Column band", new(-20.95f, -1.75f, z), new(.64f, .28f, .64f), band, false);
-            Sign3(t, "1  DAWN LINE", new(-20.95f, -1.1f, z + .33f), 0, .3f);
-            Sign3(t, "1  DAWN LINE", new(-20.95f, -1.1f, z - .33f), 180, .3f);
         }
         foreach (var (x, z) in new[] { (-22.6f, 80f), (-17.9f, 80f) })
         {
             Box(t, "Platform bench", new(x, F + .22f, z), new(.6f, .45f, 3f), wood);
             TopLoot("platform 1", new(x, F + .45f, z - .9f), .15f); TopLoot("platform 1", new(x, F + .45f, z + .9f), .15f);
         }
-        Sign3(t, "KING'S QUACK", new(-5.1f, -1.35f, 66), -90, .45f);
-        Sign3(t, "KING'S QUACK", new(-5.1f, -1.35f, 94), -90, .45f);
-        Sign3(t, "EXIT  /  TICKET GATES", new(-20.95f, -.9f, 70), 0, .3f);
-        Sign3(t, "EXIT  /  TICKET GATES", new(-20.95f, -.9f, 90), 180, .3f);
+        Sign3(t, "KING'S QUACK", new(-5.14f, -1.35f, 66), -90, .45f);
+        Sign3(t, "KING'S QUACK", new(-5.14f, -1.35f, 94), -90, .45f);
+        foreach (float z in new[] { 72f, 88f }) SignBoard(t, "1   DAWN LINE", new(-17.6f, F + 2.07f, z), 0, .26f, ' ', F + PlatformClear, true);
+        SignBoard(t, "TICKET GATES  EXIT", new(-20.95f, F + 2.07f, 66.5f), 0, .26f, 'u', F + PlatformClear);
+        SignBoard(t, "TICKET GATES  EXIT", new(-20.95f, F + 2.07f, 93.5f), 180, .26f, 'u', F + PlatformClear);
         int k = 0;
         for (float z = 56; z <= 104; z += 6, k++)
         {
@@ -369,7 +371,7 @@ public static partial class RailAbandonedStation
 
         // East service ledge beside the train (no side of the train is a dead end).
         Slab(t, "Service ledge floor", -12 + 2.17f, 53, -4.9f - (-12 + 2.17f), 54, F, floorTile);
-        Box(t, "Service ledge edge face", new(-12 + 2.27f, -3.505f, 80), new(.2f, .99f, 54), concrete);
+        Box(t, "Service ledge edge face", new(-12 + 2.265f, -3.505f, 80), new(.2f, .99f, 54), concrete);
         foreach (float z in new[] { 53f, 107f })
         {
             Box(t, "Service ledge end face", new(-7.4f, -3.65f, z), new(4.9f, .7f, .2f), concrete);
@@ -380,7 +382,7 @@ public static partial class RailAbandonedStation
         BandAlongZ(t, -5.06f, 53, 107, -1.4f, 79, 81.5f);
         Box(t, "Ledge edge line", new(-12 + 2.24f, F + .012f, 80), new(.12f, .024f, 54), yellow, false);
         Tube(t, new(-6.9f, F + PlatformClear - .08f, 62), true, 0); Tube(t, new(-6.9f, F + PlatformClear - .08f, 80), true, 1); Tube(t, new(-6.9f, F + PlatformClear - .08f, 98), true, 2);
-        Sign3(t, "STAFF ONLY", new(-5.06f, -1.5f, 77.6f), -90, .3f);
+        Sign3(t, "STAFF ONLY", new(-5.14f, -1.5f, 77.4f), -90, .3f);
         FloorLoot("service ledge", -8.6f, 54, -5.3f, 106, F, .35f, 4.4f, .5f);
         Enemy("service ledge", -7f, F, 96);
     }
@@ -393,14 +395,15 @@ public static partial class RailAbandonedStation
         // Ends run under the curving tunnel wall so no gap opens beside it.
         Slab(t, "Platform 3 south end", -5.2f, 46, 9.2f, 7, F, darkTile);
         Slab(t, "Platform 3 north end", -5.2f, 107, 9.2f, 7, F, darkTile);
-        Box(t, "Platform 3 edge face", new(4.15f, -3.505f, 80), new(.2f, .99f, 60), concrete);
+        Box(t, "Platform 3 edge face", new(4.155f, -3.505f, 80), new(.2f, .99f, 60), concrete);
         float ceil = F + PlatformClear + .3f;
         Slab(t, "Platform 3 ceiling", EastShaft + 4.5f, 53, 4 - (EastShaft + 4.5f), 45, ceil, roof);   // to Z 98
         Slab(t, "Platform 3 ceiling", EastShaft + 4.5f, 98, 2 - (EastShaft + 4.5f), 9, ceil, roof);     // beside the cave-in
-        Slab(t, "Platform 3 ceiling", -4.75f, 71f, 4.65f, 18, ceil, roof);
-        Slab(t, "Platform 3 ceiling", -4f, 46, 8, 7, ceil, roof);
-        Slab(t, "Platform 3 ceiling", -4f, 107, 8, 7, ceil, roof);
-        Wall(t, "Platform 3 south wall", false, 46, -4, 13, F, PlatformClear + .3f, darkTile);
+        Slab(t, "Platform 3 ceiling", -4.75f, 65f, 4.65f, 30, ceil, roof);
+        Slab(t, "Platform 3 ceiling", -5.2f, 46, 9.2f, 7, ceil, roof);
+        foreach (float z in new[] { 46f, 107f }) Wall(t, "Platform 3 end west wall", true, -5.2f, z, z + 7, F, PlatformClear + .3f, darkTile);
+        Slab(t, "Platform 3 ceiling", -5.2f, 107, 9.2f, 7, ceil, roof);
+        Wall(t, "Platform 3 south wall", false, 46, -5.2f, 13, F, PlatformClear + .3f, darkTile);
         Wall(t, "Platform 3 north wall", false, 114, -5.2f, 4.05f, F, PlatformClear + .3f, darkTile);
         Box(t, "Platform 3 edge line", new(4.13f, F + .012f, 80), new(.12f, .024f, 66), yellow, false);
         // Dead track: bed, non-catalogue rails, east service walkway, high channel ceiling.
@@ -414,34 +417,36 @@ public static partial class RailAbandonedStation
         Wall(tunnel, "Dead tunnel wall", true, 8.15f, 110, 122, -4.3f, 5.2f, darkTile);
         Wall(tunnel, "Dead tunnel end", false, 122, 4.05f, 8.15f, -4.29f, 5.19f, rubbleMat);
         Slab(tunnel, "Dead tunnel roof", 3.9f, 110, 4.4f, 12, .9f, roof);
-        P(tunnel, "Portal pillar", 4.15f, -1.705f, 109.85f, .7f, 5.15f, .3f, tile);
-        P(tunnel, "Portal pillar", 8.6f, -1.705f, 109.85f, 2.2f, 5.15f, .3f, tile);
-        P(tunnel, "Portal lintel", 6.1f, .48f, 109.85f, 4.5f, .74f, .3f, tile);
+        P(tunnel, "Portal pillar", 4.15f, -1.705f, 109.84f, .7f, 5.15f, .3f, tile);
+        P(tunnel, "Portal pillar", 8.6f, -1.705f, 109.84f, 2.2f, 5.15f, .3f, tile);
+        P(tunnel, "Portal lintel", 6.1f, .48f, 109.82f, 4.5f, .74f, .3f, tile);
         P(tunnel, "Portal hazard band", 6.1f, .08f, 109.68f, 3.2f, .12f, .03f, yellow, false);
         P(tunnel, "Dead signal post", 8.45f, -2.4f, 109.55f, .12f, 2.6f, .12f, steel);
         P(tunnel, "Dead signal head", 8.45f, -.9f, 109.5f, .45f, .8f, .3f, darkTile);
         foreach (float y in new[] { -.7f, -1.1f }) P(tunnel, "Dead signal lens", 8.45f, y, 109.34f, .22f, .22f, .03f, y > -1 ? wreckRed : deadTube, false);
-        Sign3(tunnel, "LINE CLOSED", new(6.1f, -.15f, 109.66f), 180, .3f);
+        Sign3(tunnel, "LINE CLOSED", new(6.1f, -.15f, 109.6f), 180, .3f);
         var bent = P(tunnel, "Bent rail", 5.2f, -3.4f, 111.6f, .1f, .12f, 2.6f, steel); bent.transform.localRotation = Quaternion.Euler(-28, 6, 0);
         var fill = new System.Random(19);
         for (float z = 110.6f; z < 121.6f; z += .9f)
             for (float y = -3.6f; y < .5f; y += .9f)
-                for (float x = 4.7f; x < 7.8f; x += 1.0f)
+                for (int k = 0; k < 3; k++)
                 {
-                    float s = .9f + fill.Next(3) * .25f;   // few sizes keep the box mesh assets shared
-                    var rock = Box(tunnel, "Collapse fill", new(x + (float)fill.NextDouble() * .2f, y, z), new(s, s * .85f, s), rubbleMat);
+                    float s = .9f + fill.Next(3) * .25f, hd = .825f * s;   // few sizes keep the box mesh assets shared
+                    float xMin = 4.18f + hd, xMax = 8.02f - hd, x = xMin + (float)fill.NextDouble() * Mathf.Max(0, xMax - xMin);
+                    float yy = Mathf.Min(y, .58f - hd), zz = Mathf.Min(z, 121.85f - hd);
+                    var rock = Box(tunnel, "Collapse fill", new(x, yy, zz), new(s, s * .85f, s), rubbleMat);
                     rock.transform.localRotation = Quaternion.Euler(fill.Next(360), fill.Next(360), fill.Next(360));
                 }
         foreach (float z in new[] { 111.5f, 115f, 119f })
         {
-            var slab = Box(tunnel, "Fallen roof slab", new(6.1f, -2.2f + (z - 111) * .12f, z), new(3.6f, .3f, 2.2f), roof);
-            slab.transform.localRotation = Quaternion.Euler(z * 3 % 30 - 15, 0, z * 7 % 20 - 10);
+            var slab = Box(tunnel, "Fallen roof slab", new(6.1f, -2.2f + (z - 111) * .12f, z), new(3.2f, .3f, 2.2f), roof);
+            slab.transform.localRotation = Quaternion.Euler(z * 3 % 20 - 10, 0, z * 7 % 12 - 6);
         }
-        Box(t, "Buffer stop", new(6f, -3.4f, 50.5f), new(2.6f, 1.2f, .6f), steel);
-        Slab(t, "Dead track east walkway", 8f, 50, 1.7f, 60, F, concrete);
-        Box(t, "Walkway edge face", new(8f, -3.505f, 80), new(.2f, .99f, 60), concrete);
+        Box(t, "Buffer stop", new(6f, -3.4f, 50.25f), new(2.6f, 1.2f, .5f), steel);
+        Slab(t, "Dead track east walkway", 7.65f, 50, 2.05f, 60, F, concrete);   // 0.18 m from the wreck's doors
+        Box(t, "Walkway edge face", new(7.645f, -3.505f, 80), new(.2f, .99f, 60), concrete);
         Box(t, "Dead track wall base", new(9.7f, -3.65f, 80), new(.25f, 1.28f, 60), darkTile);
-        Wall(t, "Dead track wall", true, 9.7f, 50, 110, F, 3.9f, darkTile, 90, 92);
+        Wall(t, "Dead track wall", true, 9.7f, 50, 110, F, 3.9f, darkTile, WreckSideDoorZ - .85f, WreckSideDoorZ + .85f);
         Wall(t, "Dead track channel upper wall", true, 4f, 50, 98, F + PlatformClear + .01f, 1.49f, darkTile);
         Wall(t, "Dead track channel upper wall", true, 4f, 107, 110, F + PlatformClear + .01f, 1.49f, darkTile);
         Slab(t, "Dead track channel ceiling", 3.75f, 50, 6.1f, 48, .9f, roof);
@@ -450,7 +455,7 @@ public static partial class RailAbandonedStation
         // Abandoned furniture, toppled screen doors, dead tubes, red emergency lamps.
         for (float z = 56.5f; z < 106; z += 7)
         {
-            if (Mathf.Abs(z - 91) < 2) continue;   // keep the way to the wreck's side door clear
+            if (Mathf.Abs(z - WreckSideDoorZ) < 2) continue;   // keep the way to the wreck's side door clear
             var d = Box(t, z % 2 < 1 ? "Toppled platform door" : "Platform door unit (abandoned)", z % 2 < 1 ? new(3.0f, F + .12f, z + .6f) : new(3.4f, F + .65f, z), z % 2 < 1 ? new(.2f, 1.3f, 1.6f) : new(.2f, 1.3f, 1.6f), steel);
             if (z % 2 < 1) d.transform.localRotation = Quaternion.Euler(0, 20, 88);
         }
@@ -471,47 +476,21 @@ public static partial class RailAbandonedStation
 
     static void WreckV3(Transform t)
     {
-        const float x0 = 4.4f, x1 = 7.6f, cx = 6f;
-        float[] starts = { 66f, 81f, 96f };   // car 1's nose jams into the collapsed tunnel portal at Z 110
-        for (int i = 0; i < 3; i++)
-        {
-            float z = starts[i]; bool front = i == 2; var car = Group(t, "Crashed carriage " + (3 - i));
-            Slab(car, "Carriage floor", x0, z, x1 - x0, 14, F, wood);
-            Box(car, "Carriage underframe", new(cx, -3.65f, z + 7), new(2.6f, .7f, 13.6f), steel);
-            float[] doors = { z + 3.2f, z + 4.8f, z + 9.2f, z + 10.8f };
-            Wall(car, "Carriage body", true, x0, z, z + 14, F, 2.75f, wreckRed, doors);
-            Wall(car, "Carriage body", true, x1, z, z + 14, F, 2.75f, wreckRed, doors);
-            Wall(car, "Carriage end", false, z, x0, x1, F, 2.75f, wreckRed, cx - .6f, cx + .6f);
-            Wall(car, "Carriage end", false, z + 14, x0, x1, F, 2.75f, wreckRed, front ? Solid : new[] { cx - .6f, cx + .6f });
-            Slab(car, "Carriage roof", x0 - .1f, z, 3.4f, front ? 9 : 14, .05f, steel);
-            foreach (var (a, l) in new[] { (z + .4f, 2.6f), (z + 5.1f, 3.8f), (z + 11.1f, 2.5f) })
-                foreach (float x in new[] { x0 + .45f, x1 - .45f })
-                {
-                    if (front && a > z + 10) continue;
-                    Box(car, "Bench seat", new(x, F + .22f, a + l / 2), new(.6f, .45f, l), wood);
-                    TopLoot("wreck", new(x, F + .45f, a + l / 2), 1f);
-                }
-            foreach (var (a, l) in new[] { (z + 1.6f, 2f), (z + 7f, 2f), (z + 12.2f, 1.6f) })
-                foreach (float x in new[] { x0 - .14f, x1 + .14f })
-                    if (front) Box(car, "Broken window", new(x, -1.6f, a), new(.03f, .7f, l), darkTile, false);
-                    else GlowBox(car, "Lit window", new(x, -1.6f, a), new(.03f, .7f, l), glowAmber);
-            if (!front) PL(car, "Baked carriage light", new(cx, -.7f, z + 7), Amber, 6, 6);
-            FloorLoot("wreck", cx, z + 1, cx, front ? z + 5.5f : z + 13, F, 1f, 3.6f, 0);
-            Enemy("wreck car " + (3 - i), cx, F, front ? z + 3.5f : z + 7);
-        }
-        foreach (float z in new[] { 80f, 95f }) Slab(t, "Gangway plate", cx - .7f, z, 1.4f, 1, F - .004f, steel);
-        // Crushed front roof and the cave-in mound.
-        Box(t, "Crushed roof", new(cx, -1.1f, 107.5f), new(3.4f, .3f, 5.4f), steel).transform.localRotation = Quaternion.Euler(-14, 0, 6);
+        TrainWreck(t);   // three real-scale commuter cars (RailPassengerStationV3Train.cs)
         var rng = new System.Random(7); float[] sizes = { .8f, 1.1f, 1.4f, 1.8f };
         for (int i = 0; i < 90; i++)
         {
-            float s = sizes[rng.Next(4)];
-            float x = 2.3f + s * .55f + (float)rng.NextDouble() * (9.5f - 2.3f - s * 1.1f);
-            float z = 101f + s * .5f + (float)rng.NextDouble() * (109.6f - 101f - s);
-            if (x < 4.2f && z < 101) continue;              // keep the platform strip beside the escalators clear
-            float r = Mathf.Clamp01(Mathf.Pow((x - 6f) / 4.2f, 2) + Mathf.Pow((z - 108f) / 6f, 2));
+            // Every corner of a randomly rotated rock stays inside its space: clamp by the half-diagonal.
+            float s = sizes[rng.Next(4)], hd = .844f * s;
+            float z = 100.5f + (float)rng.NextDouble() * 9.2f;
+            if (z + hd > 109.65f) continue;                                    // portal plane
+            float xMin = (z + hd > 107f || z - hd < 98f) ? 4.2f + hd : 2.05f + hd, xMax = 9.57f - hd;   // platform ends / track wall
+            if (xMin > xMax) continue;
+            float x = xMin + (float)rng.NextDouble() * (xMax - xMin);
+            float r = Mathf.Clamp01(Mathf.Pow((x - 6f) / 4.2f, 2) + Mathf.Pow((z - 106f) / 6f, 2));
             float h = 4.6f * (1 - r);
             float y = -4f + h * (.35f + .65f * (float)rng.NextDouble());
+            if (z + hd > 107f) y = Mathf.Min(y, .58f - hd);                    // under the channel ceiling outside the hole
             var rock = Box(t, "Cave-in rubble", new(x, y, z), new(s, s * .8f, s * 1.1f), rubbleMat);
             rock.transform.localRotation = Quaternion.Euler(rng.Next(360), rng.Next(360), rng.Next(360));
         }
@@ -523,7 +502,7 @@ public static partial class RailAbandonedStation
         // Chimney up to the surface, lit by a cold moon shaft.
         Wall(t, "Cave-in shaft wall", true, 2f, 98, 107, F + PlatformClear + .03f, 12, rubbleMat);
         Wall(t, "Cave-in shaft wall", true, 9.7f, 98, 107, .9f, 8.2f, rubbleMat);
-        foreach (float z in new[] { 98f, 107f }) Wall(t, "Cave-in shaft wall", false, z, 2, 9.7f, F + PlatformClear + .04f, 12, rubbleMat);
+        foreach (float z in new[] { 98f, 106.85f }) Wall(t, "Cave-in shaft wall", false, z, 2, 9.7f, F + PlatformClear + .04f, 12, rubbleMat);
         var moon = Group(t, "Baked moonlight shaft").gameObject.AddComponent<Light>();
         moon.transform.localPosition = new(5.85f, 8.2f, 102.5f); moon.transform.localRotation = Quaternion.Euler(90, 0, 0);
         moon.type = LightType.Spot; moon.spotAngle = 70; moon.lightmapBakeType = LightmapBakeType.Baked; moon.intensity = 30; moon.range = 15; moon.color = Moon; moon.shadows = LightShadows.Soft; v3Lights++;
@@ -535,7 +514,8 @@ public static partial class RailAbandonedStation
     static void Escalator(Transform p, string name, float x0, float zBottom, float zTop)
     {
         Zone(x0 < -10 ? zoneGreen : zoneRed);
-        var t = Group(p, name); const int count = 34; float dir = Mathf.Sign(zTop - zBottom), run = Mathf.Abs(zTop - zBottom);
+        var t = Group(p, name); const int count = 24;   // 4 m rise over 12 m
+        float dir = Mathf.Sign(zTop - zBottom), run = Mathf.Abs(zTop - zBottom);
         float step = run / count, rise = (Deck - F) / count;
         void Flight(float fx, float width, bool esc)
         {
@@ -571,18 +551,19 @@ public static partial class RailAbandonedStation
         float y = Deck, clear = PlatformClear;
         Slab(t, "Concourse deck", -28, z0, 32, z1 - z0, y, floorTile);
         Slab(t, "Concourse ceiling", -28, z0, 32, z1 - z0, y + clear + .3f, roof);
-        float[] shafts = { WestShaft + .125f, WestShaft + 4.375f, EastShaft + .125f, EastShaft + 4.375f };
-        Wall(t, "Concourse wall", false, z0, -28, 4, y, clear + .3f, tile, south ? Solid : shafts);
-        Wall(t, "Concourse wall", false, z1, -28, 4, y, clear + .3f, tile, south ? shafts : Solid);
-        Wall(t, "Concourse wall", true, -28, z0, z1, y, clear + .3f, tile);
-        Wall(t, "Concourse wall", true, 4, z0, z1, y, clear + .3f, tile);
+        float[] shafts = { WestShaft + .135f, WestShaft + 4.365f, EastShaft + .135f, EastShaft + 4.365f };   // jambs 1 cm inside the shaft walls
+        var cw = south ? ceramic : tile;   // the ticket hall is tiled
+        Wall(t, "Concourse wall", false, z0, -28, 4, y, clear + .3f, cw, south ? Solid : shafts);
+        Wall(t, "Concourse wall", false, z1, -28, 4, y, clear + .3f, cw, south ? shafts : Solid);
+        Wall(t, "Concourse wall", true, -28, z0, z1, y, clear + .3f, cw);
+        Wall(t, "Concourse wall", true, 4, z0, z1, y, clear + .3f, cw);
         Stripe(t, false, z0 + .15f, -28, 4, y + 1.6f, south ? Solid : shafts);
         Stripe(t, false, z1 - .15f, -28, 4, y + 1.6f, south ? shafts : Solid);
         Stripe(t, true, -27.85f, z0, z1, y + 1.6f, Solid);
         Stripe(t, true, 3.85f, z0, z1, y + 1.6f, Solid);
         float shaftSide = south ? z1 - .16f : z0 + .16f, shaftYaw = south ? 180 : 0;
-        Sign3(t, "PLATFORM 1   DAWN LINE", new(WestShaft + 2.25f, y + 2.15f, shaftSide), shaftYaw, .32f);
-        Sign3(t, "PLATFORM 3   CLOSED", new(EastShaft + 2.25f, y + 2.15f, shaftSide), shaftYaw, .32f);
+        SignBoard(t, "PLATFORM 1   DAWN LINE", new(WestShaft + 2.25f, y + 2.02f, shaftSide), shaftYaw, .22f, 'd', y + clear);
+        SignBoard(t, "PLATFORM 3   CLOSED", new(EastShaft + 2.25f, y + 2.02f, shaftSide), shaftYaw, .22f, 'd', y + clear);
         float mz = (z0 + z1) / 2;
         // Ticket gate line across the concourse (over the live track).
         for (int i = 0; i < 8; i++)
@@ -593,7 +574,7 @@ public static partial class RailAbandonedStation
             if (toppled) { gate.transform.localPosition = new(-11.2f, y + .18f, z); gate.transform.localRotation = Quaternion.Euler(0, 30, 90); }
             else GlowBox(t, "Gate indicator", new(-12.66f, y + .95f, z), new(.03f, .1f, .2f), south ? glowScreen : glowRed);
         }
-        Sign3(t, south ? "TICKET GATES" : "GATES CLOSED", new(-12, y + 2.1f, z0 + .16f), 0, .32f);
+        SignBoard(t, south ? "TICKET GATES" : "GATES CLOSED", new(-12, y + 1.95f, z0 + .16f), 0, .26f);
         if (south)
         {
             for (int i = 0; i < 6; i++)
@@ -606,7 +587,13 @@ public static partial class RailAbandonedStation
             // Station office in the south-east corner.
             Wall(t, "Office wall", true, -3, z0, z0 + 6.5f, y, clear + .3f, tile, z0 + 3, z0 + 5);
             Wall(t, "Office wall", false, z0 + 6.5f, -3, 4, y, clear + .3f, tile);
+            Box(t, "Office carpet", new(.5f, y + .006f, z0 + 3.25f), new(6.8f, .008f, 6.3f), carpet, false);
+            Box(t, "Office wood panelling", new(-2.86f, y + .6f, z0 + 1.5f), new(.02f, 1.2f, 2.8f), wood, false);
+            Box(t, "Office wood panelling", new(.5f, y + .6f, z0 + 6.36f), new(6.7f, 1.2f, .02f), wood, false);
             Box(t, "Office desk", new(1.5f, y + .38f, z0 + 2.2f), new(2.4f, .76f, 1f), wood);
+            foreach (float mx in new[] { .9f, 2.1f }) { Box(t, "CRT monitor", new(mx, y + .98f, z0 + 2.45f), new(.45f, .4f, .4f), tile); GlowBox(t, "CRT screen", new(mx, y + .99f, z0 + 2.24f), new(.34f, .26f, .02f), glowScreen); }
+            Box(t, "Filing cabinet", new(-2.5f, y + .65f, z0 + 5.6f), new(.5f, 1.3f, .6f), steel);
+            for (int i = 0; i < 6; i++) GlowBox(t, i % 3 == 1 ? "CCTV screen (dead)" : "CCTV screen", new(1.0f + (i % 3) * .75f, y + 1.55f + (i / 3) * .5f, z0 + 6.34f), new(.6f, .4f, .03f), i % 3 == 1 ? glowRed : glowScreen);
             Box(t, "Office lockers", new(3.55f, y + .9f, z0 + 4.5f), new(.6f, 1.8f, 2.6f), steel);
             TopLoot("station office", new(1.0f, y + .76f, z0 + 2.2f), 1f); TopLoot("station office", new(2.1f, y + .76f, z0 + 2.2f), 1f);
             FloorLoot("station office", -2.6f, z0 + .3f, 3.3f, z0 + 6.2f, y, 1f, 2.2f, .5f);
