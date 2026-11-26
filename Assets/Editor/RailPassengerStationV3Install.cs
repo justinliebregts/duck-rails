@@ -55,7 +55,7 @@ public static partial class RailAbandonedStation
             SweepBed(railway, bedMat);
             int rails = railway.GetComponentsInChildren<Transform>().Count(t => t.name == "Visual rail");
             if (rails < 300) throw new Exception("Retained railway missing: " + rails);
-            lootSpots = new(); enemySpots = new(); v3Lights = 0;
+            lootSpots = new(); enemySpots = new(); v3Lights = 0; reverbRooms = new();
             BuildV3(root, b);
             if (!b.track.SequenceEqual(trackBefore)) throw new Exception("Track changed");
             b.displayName = "Abandoned Underground Station"; b.tags = new[] { "interior", "underground", "graded" };
@@ -114,9 +114,10 @@ public static partial class RailAbandonedStation
                 }
             }
         }
-        foreach (float threshold in new[] { .8f, .5f, 0f })
-            RoundRobin(gold, GoldTarget, s => s.gold >= threshold && Far(gold, s.p, 1.8f) && Far(coal, s.p, .8f));
-        RoundRobin(coal, CoalTarget, s => Far(coal, s.p, 1.8f) && Far(gold, s.p, .8f));
+        foreach (float spacing in new[] { 3f, 1.8f })   // batch 5: spread them out first, relax only if a crew-8 pool would fall short
+            foreach (float threshold in new[] { .8f, .5f, 0f })
+                RoundRobin(gold, GoldTarget, s => s.gold >= threshold && Far(gold, s.p, spacing) && Far(coal, s.p, .8f));
+        foreach (float spacing in new[] { 3f, 1.8f }) RoundRobin(coal, CoalTarget, s => Far(coal, s.p, spacing) && Far(gold, s.p, .8f));
         int coalNeed = RailResourceBalance.CoalCount(RailResourceBalance.MaxCrew), goldNeed = RailResourceBalance.GoldCount(RailResourceBalance.MaxCrew);
         report.Add("Selected " + coal.Count + " coal (need " + coalNeed + "), " + gold.Count + " gold (need " + goldNeed + ")");
         if (coal.Count < coalNeed || gold.Count < goldNeed) throw new Exception(report.Last());

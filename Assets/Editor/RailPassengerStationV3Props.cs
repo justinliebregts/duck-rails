@@ -223,6 +223,23 @@ public static partial class RailAbandonedStation
         return Proc(t, "Rail bed (swept)", mesh, new[] { m }, Vector3.zero, Quaternion.identity, true, true);
     }
 
+    // Straight staircase climbing +Z from the origin: treads, risers, side faces, back face; nosings in submesh 1.
+    static Mesh StairMesh(float width, int count, float step, float rise) => SaveProc("stair-" + width.ToString("F2") + "-" + count + "-" + step.ToString("F3") + "-" + rise.ToString("F3"), () =>
+    {
+        var mb = new MB(2); float hw = width / 2;
+        for (int i = 0; i < count; i++)
+        {
+            float z0 = i * step, z1 = z0 + step, y0 = i * rise, y1 = y0 + rise;
+            mb.Quad(new(-hw, y1, z0), new(hw, y1, z0), new(hw, y1, z1), new(-hw, y1, z1), Vector3.up);          // tread
+            mb.Quad(new(-hw, y0, z0), new(hw, y0, z0), new(hw, y1, z0), new(-hw, y1, z0), Vector3.back);        // riser
+            foreach (float s in new[] { -1f, 1f })
+                mb.Quad(new(s * hw, 0, z0), new(s * hw, y1, z0), new(s * hw, y1, z1), new(s * hw, 0, z1), new Vector3(s, 0, 0));   // side
+            Cube(mb, new Vector3(0, y1 + .006f, z0 + .04f), new Vector3(width - .02f, .012f, .08f), 1);       // yellow nosing
+        }
+        mb.Quad(new(-hw, 0, count * step), new(hw, 0, count * step), new(hw, count * rise, count * step), new(-hw, count * rise, count * step), Vector3.forward);
+        return mb;
+    }, true);
+
     // ---------------- signs (Compound style) ----------------
     static Material signOlive, signIvory;
     static void SignMaterials()
@@ -233,31 +250,26 @@ public static partial class RailAbandonedStation
 
     // Olive board with timber trim, big ivory CutePixel letters and an area-colour strip. arrow: 'u','d','l','r' or ' '.
     // yaw keeps the old Sign() convention: 0 faces +Z, 180 faces -Z, 90 faces +X.
+    static float SignBoardWidth(string text, float letterH, char arrow) => PixelTextWidth(text, letterH) + (arrow == ' ' ? 0 : letterH * 1.6f) + letterH * 1.4f;
     static Transform SignBoard(Transform p, string text, Vector3 pos, float yaw, float letterH, char arrow = ' ', float hangTo = float.NaN, bool twoSided = false)
     {
         var t = Group(p, "Sign " + text); t.localPosition = pos; t.localRotation = Quaternion.Euler(0, yaw - 180, 0);
-        float arrowW = arrow == ' ' ? 0 : letterH * 1.3f;
-        float textW = text.Length * letterH * .78f;
-        float w = textW + arrowW + letterH * 1.4f, h = letterH * 1.75f;
+        float arrowW = arrow == ' ' ? 0 : letterH * 1.6f;
+        float textW = PixelTextWidth(text, letterH);
+        float w = SignBoardWidth(text, letterH, arrow), h = letterH * 1.75f;
         Box(t, "Sign board", new(0, 0, .03f), new(w, h, .05f), signOlive, false);
         foreach (float y in new[] { h / 2 + .035f, -h / 2 - .035f }) Box(t, "Sign timber trim", new(0, y, .03f), new(w + .12f, .07f, .09f), wood, false);
         Box(t, "Sign area strip", new(0, -h / 2 - .095f, .03f), new(w + .04f, .05f, .06f), band, false);
         void Face(float side)
         {
             var f = Group(t, side > 0 ? "Front" : "Back"); if (side < 0) f.localRotation = Quaternion.Euler(0, 180, 0);
-            float textX = arrowW / 2 * (arrow == 'r' ? -1 : 1);
-            var label = Group(f, "Lettering").gameObject.AddComponent<TMPro.TextMeshPro>();
-            label.transform.localPosition = new(textX, 0, side > 0 ? -.006f : -.066f);
-            label.font = AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>("Assets/Fonts/CutePixel SDF.asset"); label.text = text;
-            label.enableAutoSizing = true; label.fontSizeMin = 1; label.fontSizeMax = letterH * 14; label.fontSize = letterH * 14;
-            label.alignment = TMPro.TextAlignmentOptions.Center; label.rectTransform.sizeDelta = new(textW + .1f, h * .8f); label.color = new(.95f, .9f, .74f);
+            // Raised CutePixel mesh lettering and a bold pixel arrow, lit like everything else (batch 5).
+            float textX = arrowW / 2 * (arrow == 'r' ? -1 : 1), z = side > 0 ? .005f : -.055f;   // the board face this side
+            if (text.Trim().Length > 0) Proc(f, "Lettering", PixelTextMesh(text, letterH), new[] { signIvory }, new(textX, 0, z), Quaternion.identity, false, false);   // probe-lit: lightmapped 2 cm letters baked too dark to read
             if (arrow != ' ')
             {
-                float ax = (arrow == 'r' ? textW / 2 + arrowW * .35f : -textW / 2 - arrowW * .35f) + textX;
-                var a = Group(f, "Arrow"); a.localPosition = new(ax, 0, side > 0 ? -.012f : -.072f);
-                a.localRotation = Quaternion.Euler(0, 0, arrow == 'u' ? 0 : arrow == 'd' ? 180 : arrow == 'l' ? 90 : -90);
-                Box(a, "Arrow shaft", new(0, -letterH * .1f, 0), new(letterH * .2f, letterH * .75f, .012f), signIvory, false);
-                foreach (float s in new[] { -1f, 1f }) Box(a, "Arrow head", new(s * letterH * .16f, letterH * .2f, 0), new(letterH * .2f, letterH * .5f, .012f), signIvory, false).transform.localRotation = Quaternion.Euler(0, 0, s * 40);
+                float ax = (arrow == 'r' ? textW / 2 + arrowW * .5f : -textW / 2 - arrowW * .5f) + textX;
+                Proc(f, "Arrow", PixelArrowMesh(letterH), new[] { signIvory }, new(ax, 0, z), Quaternion.Euler(0, 0, arrow == 'u' ? 0 : arrow == 'd' ? 180 : arrow == 'l' ? 90 : -90), false, false);
             }
         }
         Face(1); if (twoSided) Face(-1);
@@ -406,7 +418,7 @@ public static partial class RailAbandonedStation
             // Pictogram sized to sit inside the board, left of the word (leading spaces make room), with a beak.
             string word = isMen ? "    MEN" : "    WOMEN"; const float letterH = .22f;
             var sign = SignBoard(room, word, new(-24.84f, -1.05f, isMen ? 53.95f : 63.45f), 90, letterH);   // on the wall beside the doorway
-            float boardW = word.Length * letterH * .78f + letterH * 1.4f;
+            float boardW = SignBoardWidth(word, letterH, ' ');
             Fixture(sign, "Pictogram", PersonSignMesh(!isMen), signIvory, new(-boardW / 2 + .2f, .015f, -.008f), 0, false).transform.localScale = Vector3.one * .38f;
             // Basins with a framed (cracked) mirror on the divider wall side.
             float basinZ = isMen ? 58.185f : 63.685f; int basins = isMen ? 2 : 3;   // wall inner face - 0.19

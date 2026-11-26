@@ -133,13 +133,13 @@ public static partial class RailAbandonedStation
     }
 
     // state: 0 steady, 1 flickering (glow only, dimmer light), 2 dead (no glow, no light)
-    static void Tube(Transform p, Vector3 pos, bool alongZ, int state, bool light = true, float range = 9)
+    static void Tube(Transform p, Vector3 pos, bool alongZ, int state, bool light = true, float range = 9, float power = 1)
     {
         Vector3 S(float w, float h, float l) => alongZ ? new(w, h, l) : new(l, h, w);
         Box(p, "Tube housing", pos + Vector3.up * .06f, S(.26f, .06f, 1.3f), steel, false);
         if (state == 2) Box(p, "Dead tube", pos, S(.12f, .06f, 1.2f), deadTube, false);
         else GlowBox(p, state == 1 ? "Flickering tube" : "Tube", pos, S(.12f, .06f, 1.2f), state == 1 ? glowFlicker : glowTube);
-        if (light && state != 2) PL(p, "Baked tube light", pos - Vector3.up * .2f, Color.Lerp(Cool, zoneTint, .5f), state == 1 ? 7 : 16, range);
+        if (light && state != 2) PL(p, "Baked tube light", pos - Vector3.up * .2f, Color.Lerp(Cool, zoneTint, .5f), (state == 1 ? 7 : 16) * power, range);
     }
 
     static void RedLamp(Transform p, Vector3 pos, float yaw)
@@ -165,6 +165,7 @@ public static partial class RailAbandonedStation
         if (e != null) Stripe(t, true, x1 - .15f, z0, z1, y + 1.6f, e);
         if (s != null) Stripe(t, false, z0 + .15f, x0, x1, y + 1.6f, s);
         if (n != null) Stripe(t, false, z1 - .15f, x0, x1, y + 1.6f, n);
+        reverbRooms?.Add((name, new Bounds(new((x0 + x1) / 2, y + clear / 2, (z0 + z1) / 2), new(x1 - x0, clear, z1 - z0))));   // batch 5 reverb
         return t;
     }
 
@@ -226,7 +227,9 @@ public static partial class RailAbandonedStation
         Facade(Group(root, "South facade (King's Quack)"), true);
         Facade(Group(root, "North facade (King's Quack)"), false);
         EastRooms(Group(root, "East maintenance side"));
+        EvacuationClutter(root);   // batch 5
         BuildPipes(root);
+        StationReverb(Group(root, "Reverb zones"));   // batch 5
     }
 
     // ---------------- tunnels ----------------
@@ -255,7 +258,8 @@ public static partial class RailAbandonedStation
                     Beam(t, "Fan bay ceiling", a + new Vector3(TunnelHalf + .7f, TunnelRoof + .142f, 0), c + new Vector3(TunnelHalf + .7f, TunnelRoof + .142f, 0), 1.8f, .3f, roof);
                 }
             }
-            if (z % 12 == 0) Tube(t, (a + c) / 2 + Vector3.up * (TunnelRoof - .08f), true, z % 36 == 0 ? 1 : 0, true, 12);
+            // Batch 5: darker tunnels, small dim pools with dead tubes between (was 16 / 7 at 12 m range).
+            if (z % 12 == 0) Tube(t, (a + c) / 2 + Vector3.up * (TunnelRoof - .08f), true, z == 24 || z == 132 ? 2 : z % 36 == 0 ? 1 : 0, true, 7, .33f);
             // Dark wall panels staggered along the outside of the departure curve (their glow was removed, Justin Nov 26).
             if (z >= 112 && z < 135 && z % 5 == 2)
             {
@@ -296,17 +300,40 @@ public static partial class RailAbandonedStation
     {
         foreach (float z in new[] { 0f, 154f }) { Slab(t, "Flat seam", -48, z, 43.5f, 6, 0, grass); Slab(t, "Flat seam", 4.5f, z, 43.5f, 6, 0, grass); }   // the retained rail bed fills the middle
         foreach (float x in new[] { -48f, 44f }) Slab(t, "Flat side boundary", x, 6, 4, 148, 0, grass);
-        // RailRoute places the existing midpoint shop at (-16,0,148) on any selected middle block.
-        Slab(t, "Reserved midpoint shop pad", -44, 140, 38, 14, 0, concrete);
-        foreach (float x in new[] { -44f, 43.75f }) Box(t, "Buried outer retaining wall", new(x, -1, 80), new(.5f, 20, 148), gravel);
-        // Nov 26: the overburden roof over the whole block is left out on request so the block is easy to look
-        // around; rooms, platforms and tunnels keep their own ceilings. Put it back (Y 9, hole over the cave-in) later.
+        // (The old reserved midpoint-shop pad is gone: the midpoint shop is its own helipad block now.)
+        foreach (float x in new[] { -44f, 43.75f }) Box(t, "Buried outer retaining wall", new(x, -1.01f, 80), new(.5f, 19.98f, 148), gravel);   // top 1 cm under the roof top
         Slab(t, "Buried foundation", -44, 6, 87.75f, 148, -11, gravel);
         foreach (float z in new[] { 6f, 154f })
         {
-            Wall(t, "Buried end wall", false, z, -44, -TunnelHalf - .2f, -11, 20, gravel);
-            Wall(t, "Buried end wall", false, z, TunnelHalf + .2f, 43.75f, -11, 20, gravel);
+            // Out to the block edges (Justin, batch 5) so nobody can walk around the station.
+            Wall(t, "Buried end wall", false, z, -47.99f, -TunnelHalf - .2f, -11, 20, gravel);
+            Wall(t, "Buried end wall", false, z, TunnelHalf + .2f, 47.99f, -11, 20, gravel);
             Box(t, "Tunnel portal lintel", new(0, (TunnelRoof + .3f + 9) / 2, z), new(TunnelHalf * 2 + .4f, 9 - TunnelRoof - .3f, .25f), gravel);
+        }
+        // Batch 5: the roof (street level, Y 9) is back over the whole block, open only over the cave-in shaft.
+        float hx0 = 2.135f, hx1 = 9.565f, hz0 = 98.135f, hz1 = 106.715f;   // 1 cm past the shaft wall faces (no coplanar faces)
+        foreach (var (x0, z0, x1, z1) in new[] { (-48f, 6f, 48f, hz0), (-48f, hz1, 48f, 154f), (-48f, hz0, hx0, hz1), (hx1, hz0, 48f, hz1) })
+        {
+            var roofSlab = Box(t, "Overburden roof", new((x0 + x1) / 2, 8.85f, (z0 + z1) / 2), new(x1 - x0, .3f, z1 - z0), gravel, false);   // no collider: unreachable, keeps the crawl graph off it
+            roofSlab.GetComponent<MeshRenderer>().scaleInLightmap = .02f;   // only its top is ever seen
+        }
+        RoofBuildings(Group(t, "Rooftop buildings"));
+    }
+
+    // A few very low-poly buildings on the roof in the middle of the block: plain boxes, a parapet, window bands.
+    static void RoofBuildings(Transform t)
+    {
+        var specs = new (float x, float z, float w, float d, float h)[] { (-30, 48, 12, 10, 7), (-9, 72, 9, 9, 12), (22, 58, 11, 14, 9), (33, 94, 12, 10, 6), (-27, 108, 10, 12, 10), (19, 124, 9, 9, 8) };
+        int n = 0;
+        foreach (var (x, z, w, d, h) in specs)
+        {
+            var mat = n % 2 == 0 ? tile : darkTile;
+            Box(t, "Rooftop building", new(x, 9 + h / 2, z), new(w, h, d), mat, false).GetComponent<MeshRenderer>().scaleInLightmap = .05f;
+            Box(t, "Rooftop parapet", new(x, 9 + h + .2f, z), new(w + .2f, .4f, d + .2f), roof, false).GetComponent<MeshRenderer>().scaleInLightmap = .05f;
+            for (float y = 10.5f; y < 9 + h - 1; y += 2.6f)
+                Box(t, "Window band", new(x, y, z), new(w + .06f, .9f, d + .06f), roof, false).GetComponent<MeshRenderer>().scaleInLightmap = .05f;
+            if (h > 7) GlowBox(t, "Lit window", new(x - w / 4, 10.5f + 2.6f * (n % 2), z - d / 2 - .04f), new(1.2f, .8f, .04f), glowWindow);
+            n++;
         }
     }
     // ---------------- Platform 1 ----------------
@@ -472,9 +499,9 @@ public static partial class RailAbandonedStation
         TrainWreck(t);   // three real-scale commuter cars (RailPassengerStationV3Train.cs)
         // Chimney walls first so the rubble can rest against them; slabs jammed across the shaft close it off
         // (Justin, Nov 26 batch 4: no floating rocks against open sky); thin cracks let the moonlight through.
-        Wall(t, "Cave-in shaft wall", true, 2f, 98, 107, F + PlatformClear + .03f, 5.2f, rubbleMat);
-        Wall(t, "Cave-in shaft wall", true, 9.7f, 98, 107, .9f, 3.9f, rubbleMat);
-        foreach (float z in new[] { 98f, 106.85f }) Wall(t, "Cave-in shaft wall", false, z, 2, 9.7f, F + PlatformClear + .04f, 5.2f, rubbleMat);
+        Wall(t, "Cave-in shaft wall", true, 2f, 98, 107, F + PlatformClear + .03f, 9 - (F + PlatformClear + .03f), rubbleMat);   // up to the roof (batch 5)
+        Wall(t, "Cave-in shaft wall", true, 9.7f, 98, 107, .9f, 8.1f, rubbleMat);
+        foreach (float z in new[] { 98f, 106.85f }) Wall(t, "Cave-in shaft wall", false, z, 2, 9.7f, F + PlatformClear + .04f, 9 - (F + PlatformClear + .04f), rubbleMat);
         float[] slabZ = { 99.0f, 101.2f, 103.4f, 105.6f }, slabY = { 3.45f, 3.85f, 3.6f, 4.05f };
         for (int i = 0; i < slabZ.Length; i++)
         {
@@ -531,21 +558,13 @@ public static partial class RailAbandonedStation
         var t = Group(p, name); const int count = 24;   // 4 m rise over 12 m
         float dir = Mathf.Sign(zTop - zBottom), run = Mathf.Abs(zTop - zBottom);
         float step = run / count, rise = (Deck - F) / count;
-        void Flight(float fx, float width, bool esc)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                float h = (i + 1) * rise, zc = zBottom + dir * (i + .5f) * step;
-                Box(t, esc ? "Stopped escalator step" : "Stair tread", new(fx + width / 2, F + h / 2, zc), new(width, h, step), esc ? steel : concrete);
-                Box(t, "Tread edge", new(fx + width / 2, F + h + .012f, zBottom + dir * (i * step + .04f)), new(width, .024f, .08f), yellow, false);
-            }
-        }
-        Flight(x0 + .15f, 1.6f, true);
-        Flight(x0 + 2.05f, 2.3f, false);
+        // Batch 5: one full-width staircase per shaft as a single stepped mesh (was an escalator plus a stair of
+        // ~100 boxes); yellow nosings are its second submesh, and it carries its own mesh collider.
+        Proc(t, "Staircase (single mesh)", StairMesh(4f, count, step, rise), new[] { concrete, yellow }, new(x0 + 2.25f, F, zBottom), Quaternion.Euler(0, dir > 0 ? 0 : 180, 0), true, true);
         var bottom = new Vector3(0, F, zBottom); var top = new Vector3(0, Deck, zTop);
-        foreach (var (x, w) in new[] { (x0 + .15f, .2f), (x0 + 1.9f, .3f), (x0 + 4.35f, .2f) })
+        foreach (var (x, w) in new[] { (x0 + .15f, .2f), (x0 + 4.35f, .2f) })
         {
-            Beam(t, "Escalator casing", new(x, bottom.y + .45f, bottom.z), new(x, top.y + .45f, top.z), w, .9f, x == x0 + 1.9f ? steel : tile);
+            Beam(t, "Stair casing", new(x, bottom.y + .45f, bottom.z), new(x, top.y + .45f, top.z), w, .9f, tile);
             Beam(t, "Handrail", new(x, bottom.y + 1f, bottom.z), new(x, top.y + 1f, top.z), .12f, .12f, darkTile, false);
         }
         float lo = Mathf.Min(zBottom, zTop), hi = Mathf.Max(zBottom, zTop);

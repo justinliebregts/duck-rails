@@ -11,11 +11,16 @@ public static partial class RailAbandonedStation
     public static readonly float[] CarCentres = { 60.35f, 80.35f, 100.35f };   // car 3, car 2, car 1 (front, crashed)
     public const float WreckSideDoorZ = 80.35f + 7.1f;                          // car 2's last door faces the maintenance hall passage
 
-    static Mesh CarRoofMesh(float length) => SaveProc("car-roof-" + length.ToString("F2"), () =>
+    static readonly Vector2[] RoofOuter = { new(-CarHalfW, WallTop), new(-1.42f, WallTop + .28f), new(-1.22f, WallTop + .48f), new(-.85f, WallTop + .6f), new(.85f, WallTop + .6f), new(1.22f, WallTop + .48f), new(1.42f, WallTop + .28f), new(CarHalfW, WallTop) };
+    // Inner skin 6 cm in; its lower edges land on the side wall tops (batch 5: the old inner skin dipped below
+    // the wall top and crossed the wall at a shallow angle, which flickered at the car ends).
+    static Vector2[] RoofInner() { var a = RoofOuter.Select(p => new Vector2(p.x * .96f, p.y - .06f)).ToArray(); a[0] = new(-(CarHalfW - .06f), WallTop); a[a.Length - 1] = new(CarHalfW - .06f, WallTop); return a; }
+
+    static Mesh CarRoofMesh(float length) => SaveProc("car-roof-v2-" + length.ToString("F2"), () =>
     {
         var mb = new MB();
-        Vector2[] outer = { new(-CarHalfW, WallTop), new(-1.42f, WallTop + .28f), new(-1.22f, WallTop + .48f), new(-.85f, WallTop + .6f), new(.85f, WallTop + .6f), new(1.22f, WallTop + .48f), new(1.42f, WallTop + .28f), new(CarHalfW, WallTop) };
-        Vector2[] inner = outer.Select(p => new Vector2(p.x * .96f, p.y - .06f)).ToArray();
+        Vector2[] outer = RoofOuter;
+        Vector2[] inner = RoofInner();
         float z0 = -length / 2, z1 = length / 2;
         for (int i = 0; i < outer.Length - 1; i++)
         {
@@ -30,8 +35,13 @@ public static partial class RailAbandonedStation
     }, true);
 
     // The space between the wall top and the roof arch at each car end.
-    static Mesh CarEndTopMesh() => SaveProc("car-end-top", () =>
-        Extrude(new MB(), new[] { new Vector2(-1.41f, WallTop), new Vector2(-1.37f, WallTop + .24f), new Vector2(-1.18f, WallTop + .42f), new Vector2(-.82f, WallTop + .53f), new Vector2(.82f, WallTop + .53f), new Vector2(1.18f, WallTop + .42f), new Vector2(1.37f, WallTop + .24f), new Vector2(1.41f, WallTop) }, -.03f, .03f), true);
+    // Fills the arch at each car end; its outline runs midway through the roof shell so its edges hide inside it.
+    static Mesh CarEndTopMesh() => SaveProc("car-end-top-v2", () =>
+    {
+        var inner = RoofInner(); var mid = RoofOuter.Select((p, i) => (p + inner[i]) / 2).ToArray();
+        mid[0].y = WallTop; mid[mid.Length - 1].y = WallTop;
+        return Extrude(new MB(), mid, -.03f, .03f);
+    }, true);
 
     static Mesh WheelMesh() => SaveProc("car-wheel", () =>
         Lathe(new MB(), new[] { new Vector2(0, -.07f), new Vector2(.43f, -.07f), new Vector2(.46f, -.04f), new Vector2(.46f, .04f), new Vector2(.43f, .07f), new Vector2(0, .07f) }, 10), false);

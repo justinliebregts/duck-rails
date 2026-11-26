@@ -1,4 +1,6 @@
 #if UNITY_EDITOR
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>V3 Passenger Station rooms with their detail props, hall clutter and the King's Quack facades.</summary>
@@ -47,6 +49,174 @@ public static partial class RailAbandonedStation
             Box(t, "Locker door seam", baseCentre + Off(face * .308f, a) + Vector3.up * (height / 2), S(.016f, height - .06f, .025f), darkTile, false);
         for (int i = 1; i < tiers; i++)
             Box(t, "Locker tier seam", baseCentre + Off(face * .312f, 0) + Vector3.up * (height * i / tiers), S(.024f, .025f, length - .06f), darkTile, false);
+    }
+
+    // ---------------- reverb (batch 5: "lots of reverb") ----------------
+    static List<(string name, Bounds b)> reverbRooms;
+    enum Echo { Small, Medium, Big, Tunnel }
+
+    static void StationReverb(Transform t)
+    {
+        void Zone3(string n, Vector3 c, Vector3 size, Quaternion rot, Echo e)
+        {
+            var box = Group(t, n + " reverb"); box.localPosition = c; box.localRotation = rot;
+            var z = Group(box, "Reverb settings").gameObject.AddComponent<AudioReverbZone>();
+            z.reverbPreset = AudioReverbPreset.User;
+            var (decay, room, roomHF, refl, rev, rd, vd, hf) = e switch
+            {
+                Echo.Tunnel => (5.5f, -150, -500, -500, 350, .04f, .06f, .7f),
+                Echo.Big => (4.2f, -250, -650, -650, 250, .03f, .05f, .8f),
+                Echo.Medium => (2.4f, -400, -800, -800, 100, .02f, .035f, .8f),
+                _ => (1.4f, -600, -1000, -900, -100, .01f, .02f, .85f),
+            };
+            z.decayTime = decay; z.room = room; z.roomHF = roomHF; z.reflections = refl; z.reverb = rev; z.reflectionsDelay = rd; z.reverbDelay = vd; z.decayHFRatio = hf;
+            var so = new UnityEditor.SerializedObject(box.gameObject.AddComponent<Game.Audio.BoxReverbZone>());
+            so.FindProperty("size").vector3Value = size; so.FindProperty("fadeDistance").floatValue = e == Echo.Small ? .6f : 1.2f;
+            so.FindProperty("zone").objectReferenceValue = z; so.ApplyModifiedPropertiesWithoutUndo();
+        }
+        var flat = Quaternion.identity;
+        foreach (var (name, b) in reverbRooms)
+        {
+            float area = b.size.x * b.size.z;
+            Zone3(name, b.center, b.size, flat, area > 300 ? Echo.Big : area > 60 ? Echo.Medium : Echo.Small);
+        }
+        Zone3("Platform 1 and track channel", new(-15, F + 1.6f, 80), new(20, 3.6f, 54), flat, Echo.Big);
+        Zone3("Platform 3 and dead track", new(2.25f, -2.2f, 80), new(14.9f, 3.6f, 68), flat, Echo.Big);
+        Zone3("Ticket concourse", new(-12, Deck + 1.35f, 46.5f), new(32, 2.7f, 13), flat, Echo.Big);
+        Zone3("Shuttered concourse", new(-12, Deck + 1.35f, 113.5f), new(32, 2.7f, 13), flat, Echo.Big);
+        foreach (var (x0, zb, zt) in new[] { (WestShaft, 65f, 53f), (WestShaft, 95f, 107f), (EastShaft, 65f, 53f), (EastShaft, 95f, 107f) })
+        {
+            var a = new Vector3(x0 + 2.25f, F + 1.3f, zb); var c = new Vector3(x0 + 2.25f, Deck + 1.3f, zt);
+            Zone3("Stair shaft", (a + c) / 2, new(4.5f, 3f, (c - a).magnitude), Quaternion.LookRotation(c - a), Echo.Big);
+        }
+        Zone3("Cave-in shaft", new(5.85f, 3f, 102.4f), new(7.5f, 12f, 8.6f), flat, Echo.Big);
+        foreach (var (z0, z1) in new[] { (6f, 53f), (107f, 154f) })
+            for (float z = z0; z < z1 - .1f; z += 8f)
+            {
+                float zc = Mathf.Min(z + 4, (z + z1) / 2), len = Mathf.Min(8.6f, z1 - z + .6f);
+                var tg = new Vector3(RailX(zc + .5f) - RailX(zc - .5f), RailHeight(zc + .5f) - RailHeight(zc - .5f), 1);
+                Zone3("Tunnel", new(RailX(zc), RailHeight(zc) + 2, zc), new(6.5f, 4.6f, len), Quaternion.LookRotation(tg), Echo.Tunnel);
+            }
+    }
+
+    // ---------------- evacuation clutter (batch 5) ----------------
+    // Things dropped when the station was evacuated in a hurry. Bulky items are solid (so spawns avoid them);
+    // small ones are visual only. Every spot is off the walk lines and the shaft openings.
+    static void EvacuationClutter(Transform root)
+    {
+        // Batch 5: more enemy candidates so they spread through every platform, hall and concourse (never on track).
+        foreach (var (area, x, y, z) in new[] { ("platform 1 south", -16.6f, F, 58f), ("platform 1 north", -16.6f, F, 102f), ("platform 1 shops", -24.1f, F, 70f), ("platform 1 shops", -24.1f, F, 90f),
+                 ("service ledge", -7f, F, 60f), ("ticket concourse", -16f, Deck, 50f), ("shuttered concourse", -12f, Deck, 110f),
+                 ("transfer hall", -38.8f, F, 45f), ("transfer hall", -38.8f, F, 85f), ("transfer hall", -38.8f, F, 115f),
+                 ("maintenance hall", 15f, F, 62f), ("maintenance hall", 15f, F, 90f), ("maintenance hall", 15f, F, 110f),
+                 ("platform 3", 1.8f, F, 66f), ("platform 3", 1.8f, F, 94f) })
+            Enemy(area, x, y, z);
+        var t = Group(root, "Evacuation clutter");
+        const float D = Deck;
+        var spots = new (string kind, float x, float y, float z, float yaw)[]
+        {
+            ("suitcase lying", -17.6f, F, 58.5f, 30), ("rolling bag", -21.0f, F, 68.0f, 70), ("papers", -19.0f, F, 71.0f, 0), ("umbrella", -22.4f, F, 76.8f, 35),
+            ("cup", -17.3f, F, 83.2f, 0), ("pram", -19.6f, F, 90.5f, 15), ("shoe", -15.6f, F, 75f, 60), ("hat", -23.0f, F, 92f, 0), ("tickets", -20.2f, F, 84.2f, 0),
+            ("rolling bag", -5.6f, F, 66f, 10), ("papers", -8.4f, F, 88f, 40),
+            ("suitcase", -22f, D, 49.5f, 80), ("tickets", -12.8f, D, 44f, 0), ("rolling bag", -6.5f, D, 43.0f, 200), ("umbrella", -17.5f, D, 51.6f, 100), ("cup", -24.5f, D, 44.2f, 0),
+            ("suitcase lying", -19f, D, 110.8f, 15), ("papers", -8f, D, 118f, 0), ("hat", -2f, D, 112f, 0),
+            ("rolling bag", -40.9f, F, 40f, 90), ("suitcase", -37.0f, F, 88f, 0), ("pram", -40.9f, F, 104f, 80), ("papers", -38.8f, F, 66f, 20), ("shoe", -39.6f, F, 98f, 20),
+            ("cleaning trolley", 16.4f, F, 72.5f, 0), ("hat", 13.6f, F, 90f, 0), ("papers", 15.6f, F, 112f, 70),
+            ("suitcase", -2.6f, F, 62f, 40), ("papers", 2.4f, F, 70f, 0), ("umbrella", -1.6f, F, 100f, 120),
+            ("rolling bag", -27.2f, F, 66.2f, 0), ("basket", -27.6f, F, 93.8f, 20), ("bento", -30.5f, F + .76f, 106.3f, 15),
+            ("papers", -1.6f, D + .01f, 43.8f, 0), ("rolling bag", 5.35f, F, 75f, 0), ("shoe", -21.0f, F + 11 * (Deck - F) / 24, 59.75f, 80),
+            ("cup", 21.9f, F + .76f, 87.6f, 0), ("tickets", -27.5f, F, 30.2f, 0), ("umbrella", -33.8f, F, 38.4f, 60),
+        };
+        Material[] bagMats = { wreckRed, zoneBlue, darkTile, zoneGreen };
+        int n = 0;
+        foreach (var (kind, x, y, z, yaw) in spots)
+        {
+            var g = Group(t, "Dropped " + kind); g.localPosition = new(x, y, z); g.localRotation = Quaternion.Euler(0, yaw, 0);
+            var m = bagMats[n++ % bagMats.Length];
+            switch (kind)
+            {
+                case "suitcase":
+                    Box(g, "Suitcase", new(0, .33f, 0), new(.45f, .65f, .22f), m);
+                    Box(g, "Suitcase handle", new(0, .68f, 0), new(.16f, .05f, .03f), darkTile, false); break;
+                case "suitcase lying":
+                    Box(g, "Suitcase", new(0, .11f, 0), new(.45f, .22f, .65f), m);
+                    Box(g, "Suitcase handle", new(0, .11f, .34f), new(.16f, .03f, .05f), darkTile, false); break;
+                case "rolling bag":
+                    Box(g, "Rolling bag", new(0, .13f, 0), new(.38f, .26f, .55f), m);
+                    Box(g, "Rolling bag handle", new(.1f, .1f, .52f), new(.02f, .02f, .5f), steel, false);
+                    Box(g, "Rolling bag handle", new(-.1f, .1f, .52f), new(.02f, .02f, .5f), steel, false); break;
+                case "pram":
+                    Box(g, "Pram body", new(0, .5f, 0), new(.5f, .35f, .8f), m);
+                    Box(g, "Pram hood", new(0, .78f, -.25f), new(.48f, .3f, .3f), darkTile, false).transform.localRotation = Quaternion.Euler(-20, 0, 0);
+                    Box(g, "Pram handle", new(0, .95f, .5f), new(.46f, .03f, .03f), steel, false);
+                    foreach (float sx in new[] { -.22f, .22f }) foreach (float sz in new[] { -.3f, .3f })
+                            Proc(g, "Pram wheel", WheelMesh(), new[] { darkTile }, new(sx, .14f, sz), Quaternion.Euler(0, 0, 90), false, false).transform.localScale = Vector3.one * .3f;
+                    break;
+                case "cleaning trolley":
+                    Box(g, "Trolley base", new(0, .12f, 0), new(.5f, .08f, .9f), yellow);
+                    Box(g, "Trolley frame", new(0, .5f, -.42f), new(.48f, .8f, .05f), yellow);
+                    Proc(g, "Mop bucket", BinMesh(), new[] { zoneBlue }, new(0, .16f, .15f), Quaternion.identity, false, false).transform.localScale = new(1.1f, .5f, 1.1f);
+                    Box(g, "Mop handle", new(.12f, .75f, .15f), new(.03f, 1.2f, .03f), wood, false).transform.localRotation = Quaternion.Euler(12, 0, -8); break;
+                case "umbrella":
+                    Box(g, "Umbrella shaft", new(0, .02f, 0), new(.02f, .02f, .9f), darkTile, false);
+                    Box(g, "Umbrella canopy", new(0, .06f, .15f), new(.32f, .08f, .55f), m, false); break;
+                case "cup":
+                    Proc(g, "Coffee cup", SaveProc("coffee-cup", () => Lathe(new MB(), new[] { new Vector2(0, 0), new Vector2(.035f, 0), new Vector2(.045f, .11f), new Vector2(0, .11f) }, 8), false), new[] { whitePanel }, new(0, .045f, 0), Quaternion.Euler(0, 0, 90), false, false); break;
+                case "shoe":
+                    Box(g, "Lost shoe", new(0, .04f, 0), new(.1f, .08f, .26f), darkTile, false); break;
+                case "hat":
+                    Proc(g, "Dropped hat", SaveProc("hat", () => Lathe(new MB(), new[] { new Vector2(0, 0), new Vector2(.17f, 0), new Vector2(.17f, .015f), new Vector2(.1f, .02f), new Vector2(.1f, .11f), new Vector2(0, .12f) }, 8), false), new[] { m }, Vector3.zero, Quaternion.identity, false, false); break;
+                case "papers":
+                    for (int i = 0; i < 5; i++) Box(g, "Scattered paper", new(Mathf.Sin(i * 2.1f) * .45f, .002f + i * .001f, Mathf.Cos(i * 1.7f) * .4f), new(.21f, .001f, .3f), tile, false).transform.localRotation = Quaternion.Euler(0, i * 37, 0); break;
+                case "tickets":
+                    for (int i = 0; i < 8; i++) Box(g, "Dropped ticket", new(Mathf.Sin(i * 1.3f) * .5f, .002f + i * .001f, Mathf.Cos(i * 2.3f) * .5f), new(.06f, .001f, .03f), yellow, false).transform.localRotation = Quaternion.Euler(0, i * 53, 0); break;
+                case "bento":
+                    Box(g, "Dropped bento", new(0, .025f, 0), new(.2f, .05f, .15f), wreckRed, false);
+                    Box(g, "Bento lid", new(.18f, .006f, .05f), new(.2f, .012f, .15f), darkTile, false).transform.localRotation = Quaternion.Euler(0, 30, 0); break;
+                case "basket":
+                    Box(g, "Dropped shop basket", new(0, .06f, 0), new(.3f, .12f, .4f), zoneBlue, false).transform.localRotation = Quaternion.Euler(0, 0, 80); break;
+            }
+        }
+        // Warning tape left across Platform 3 on both sides of the cave-in.
+        foreach (var (a, b) in new[] { (new Vector3(-4.6f, F + .95f, 97.8f), new Vector3(1.9f, F + 1.25f, 97.8f)), (new Vector3(-4.6f, F + 1.3f, 97.81f), new Vector3(1.9f, F + .9f, 97.81f)),
+                                       (new Vector3(-4.6f, F + .95f, 107.2f), new Vector3(1.9f, F + 1.25f, 107.2f)), (new Vector3(-4.6f, F + 1.3f, 107.21f), new Vector3(1.9f, F + .9f, 107.21f)) })
+            Beam(t, "Warning tape", a, b, .005f, .07f, yellow, false);
+    }
+
+    // Open shop shelf unit on floor point c: uprights, a kick base, three boards (0.6 m apart so a spawn fits on
+    // each) and a back panel (centre divider when two-sided). Length runs along local Z; a one-sided unit faces +X.
+    // Mostly empty: a little leftover stock, and coal/gold spots on every board.
+    static void ShelfUnit(Transform t, Vector3 c, float len, float yaw, bool twoSided, float sideDepth, Material[] goods, ref int g)
+    {
+        var u = Group(t, "Shelf unit"); u.localPosition = c; var rot = Quaternion.Euler(0, yaw, 0); u.localRotation = rot;
+        float depth = twoSided ? sideDepth * 2 : sideDepth;
+        float[] boards = { .12f, .72f, 1.32f };
+        var upZ = new List<float> { -len / 2 + .02f, len / 2 - .02f }; if (len > 2.6f) upZ.Add(0);
+        foreach (float z in upZ) Box(u, "Shelf upright", new(0, .725f, z), new(depth, 1.45f, .04f), steel);
+        // Boards and base stop at the end uprights' inner faces; a middle upright splits them.
+        var spans = upZ.Count == 3 ? new[] { (-len / 2 + .04f, -.02f), (.02f, len / 2 - .04f) } : new[] { (-len / 2 + .04f, len / 2 - .04f) };
+        foreach (var (a, b) in spans)
+        {
+            Box(u, "Shelf base", new(0, .05f, (a + b) / 2), new(depth - .02f, .1f, b - a), steel);
+            foreach (float y in boards) Box(u, "Shelf board", new(0, y, (a + b) / 2), new(depth, .03f, b - a), steel);
+            Box(u, "Shelf back", new(twoSided ? 0 : -depth / 2 + .012f, .735f, (a + b) / 2), new(.02f, 1.17f, b - a), whitePanel, false);
+        }
+        foreach (float side in twoSided ? new[] { -1f, 1f } : new[] { 1f })
+        {
+            float x = twoSided ? side * sideDepth / 2 : .01f;
+            foreach (float y in boards)
+                for (float z = -len / 2 + .45f; z < len / 2 - .4f; z += .9f)
+                {
+                    if (upZ.Any(uz => Mathf.Abs(uz - z) < .3f)) continue;
+                    TopLoot("konbini", c + rot * new Vector3(x, y + .015f, z), .3f);
+                    // Leftover stock between the spawn spots on about one slot in six (probe-lit, not lightmapped).
+                    if ((g++ * 7 + (int)(y * 10)) % 6 == 0 && z + .6f < len / 2 && !upZ.Any(uz => Mathf.Abs(uz - z - .45f) < .25f))
+                    {
+                        var item = Box(u, "Shelf stock", new(x, y + .015f + .11f, z + .45f), new(.3f, .22f, .1f + (g % 3) * .05f), goods[g % goods.Length], false);
+                        UnityEditor.GameObjectUtility.SetStaticEditorFlags(item, 0); item.GetComponent<MeshRenderer>().receiveGI = ReceiveGI.LightProbes;
+                    }
+                }
+        }
     }
 
     // Electrical cabinet standing on basePos; local +Z (after yaw) is the front with a door seam, vent and lamp.
@@ -232,22 +402,16 @@ public static partial class RailAbandonedStation
 
         var konbini = RoomV3(t, "Konbini", -36, 84, -25, 102, F, pc, whitePanel, vinyl, null, null, null, Solid);
         Wainscot(konbini, -36, 84, -25, 102, F, .3f, zoneGreen, new[] { 99f, 101 }, null, null, Solid);
+        // Batch 5: real open shelf units in shorter, varied runs (Justin: three identical long blocks felt samey),
+        // mostly empty, with coal/gold spots on the shelf boards.
         Material[] goods = { yellow, wreckRed, zoneGreen, zoneBlue, zoneOrange };
         int g = 0;
-        foreach (float x in new[] { -33f, -30.5f, -28f })
-        {
-            P(konbini, "Gondola shelf", x, F + .65f, 93, .9f, 1.3f, 12f, steel);
-            // Individual product blocks (probe-lit, not lightmapped, to keep the bake small).
-            for (int s = 0; s < 3; s++) foreach (float side in new[] { -1f, 1f })
-                    for (float z = 87.4f; z < 98.8f; z += .5f)
-                    {
-                        if ((int)(z * 10 + s * 7 + side * 3) % 9 == 0) continue;   // a few gaps where stock was taken
-                        var item = P(konbini, "Shelf stock", x + side * .5f, F + .3f + s * .4f, z, .1f, .2f + (g % 3) * .03f, .36f, goods[g++ % goods.Length], false);
-                        UnityEditor.GameObjectUtility.SetStaticEditorFlags(item, 0);
-                        item.GetComponent<MeshRenderer>().receiveGI = ReceiveGI.LightProbes;
-                    }
-            for (float z = 88f; z <= 98.5f; z += 1.5f) TopLoot("konbini", new(x, F + 1.3f, z), .15f);
-        }
+        ShelfUnit(konbini, new(-32.6f, F, 88.1f), 4.2f, 0, true, .45f, goods, ref g);
+        ShelfUnit(konbini, new(-29.6f, F, 86.5f), 3.0f, 0, true, .45f, goods, ref g);
+        ShelfUnit(konbini, new(-32.5f, F, 93.0f), 3.8f, 90, true, .45f, goods, ref g);
+        ShelfUnit(konbini, new(-29.4f, F, 96.5f), 3.0f, 0, true, .45f, goods, ref g);
+        ShelfUnit(konbini, new(-35.645f, F, 94.5f), 6.0f, 0, false, .45f, goods, ref g);   // along the west wall, facing the aisle
+        ShelfUnit(konbini, new(-32.4f, F, 97.6f), 2.4f, 25, true, .5f, goods, ref g);      // knocked askew in the rush
         for (int i = 0; i < 4; i++) { P(konbini, "Drinks fridge", -35.6f, F + 1f, 86 + i * 1.3f, .7f, 2f, 1.2f, steel); GlowBox(konbini, "Fridge glow", new(-35.23f, F + 1.1f, 86 + i * 1.3f), new(.03f, 1.6f, 1f), glowScreen); }
         P(konbini, "Konbini counter", -26.2f, F + .5f, 100.2f, 1f, 1f, 3f, wood);
         P(konbini, "Register", -26.3f, F + 1.12f, 99.2f, .45f, .25f, .4f, darkTile);
@@ -258,12 +422,13 @@ public static partial class RailAbandonedStation
         P(konbini, "Magazine rack", -34.6f, F + .65f, 101.6f, 1.4f, 1.3f, .45f, steel);
         P(konbini, "ATM", -35.6f, F + .8f, 84.6f, .7f, 1.6f, .7f, steel);
         GlowBox(konbini, "ATM screen", new(-35.24f, F + 1.15f, 84.6f), new(.02f, .3f, .4f), glowScreen);
-        for (int i = 0; i < 5; i++) P(konbini, "Fallen stock", -31.75f + (i % 2) * 2.5f, F + .1f, 88.5f + i * 2.1f, .3f, .2f, .25f, goods[i], true, i * 47);
+        var fallen = new[] { (-31.2f, 89.6f), (-28.2f, 90.2f), (-31.0f, 94.6f), (-28.3f, 94.3f), (-30.8f, 99.6f) };
+        for (int i = 0; i < fallen.Length; i++) P(konbini, "Fallen stock", fallen[i].Item1, F + .1f, fallen[i].Item2, .3f, .2f, .25f, goods[i], true, i * 47);
         TopLoot("konbini", new(-26.2f, F + 1f, 100.2f), .2f); TopLoot("konbini", new(-31.5f, F + 1.02f, 101.5f), .3f);
         SignBoard(konbini, "KONBINI  24", new(-25.15f, -1.0f, 93), 90, .26f, ' ', F + pc);   // hangs in the wide shop doorway
         Tube(konbini, new(-31.8f, F + pc - .08f, 89), false, 1); Tube(konbini, new(-31.8f, F + pc - .08f, 97), false, 0);
         FloorLoot("konbini", -35f, 84.4f, -25.6f, 101.6f, F, .15f, 2.5f, .5f);
-        Enemy("konbini", -31.8f, F, 86.2f); Enemy("konbini back", -29.3f, F, 100.6f);
+        Enemy("konbini", -31.1f, F, 86.2f); Enemy("konbini back", -29.3f, F, 100.6f);
 
         var staff = RoomV3(t, "Staff room", -36, 102, -25, 110, F, pc, tile, vinyl, null, null, null, Solid);
         Wainscot(staff, -36, 102, -25, 110, F, 1.1f, paint, new[] { 106f, 108 }, null, null, Solid);
@@ -512,7 +677,7 @@ public static partial class RailAbandonedStation
         float face = z + s * .125f;
         Vector3 At(float x, float y, float d) => new(x, y, face + s * d);
         // Plaster cladding over the earth wall, olive base band, arch frame and keystone.
-        foreach (var (x0, x1) in new[] { (-44f, -TunnelHalf - .2f), (TunnelHalf + .2f, 43.75f) })
+        foreach (var (x0, x1) in new[] { (-48f, -TunnelHalf - .2f), (TunnelHalf + .2f, 48f) })   // to the block edges (batch 5)
         {
             P(t, "Facade cladding", (x0 + x1) / 2, 4.5f, At(0, 0, .05f).z, x1 - x0, 9f, .1f, concrete);
             P(t, "Facade base band", (x0 + x1) / 2, .45f, At(0, 0, .12f).z, x1 - x0 - .02f, .9f, .06f, paint);
@@ -540,15 +705,12 @@ public static partial class RailAbandonedStation
         }
         PL(t, "Baked sign light", At(0, signY, 2.2f), Warm, 14, 9);
         // Parapet railing along the top of the wall.
-        for (float x = -43.5f; x <= 43.5f; x += 2.5f) P(t, "Parapet post", x, 9.5f, At(0, 0, .05f).z, .07f, 1f, .07f, steel, false);
-        P(t, "Parapet rail", 0, 10f, At(0, 0, .05f).z, 87.5f, .08f, .08f, steel, false);
-        // Ledge behind the wall with a row of city buildings (kept clear of the midpoint shop pad at the north end).
-        float deckZ0 = south ? 6 : 140, deckLen = 14;
-        float deckX0 = south ? -44 : -5.5f;
-        Slab(t, "City ledge", deckX0, deckZ0, 43.75f - deckX0, deckLen, 9.006f, gravel);
+        for (float x = -47.5f; x <= 47.5f; x += 2.5f) P(t, "Parapet post", x, 9.5f, At(0, 0, .05f).z, .07f, 1f, .07f, steel, false);
+        P(t, "Parapet rail", 0, 10f, At(0, 0, .05f).z, 95.5f, .08f, .08f, steel, false);
+        // A row of city buildings on the roof behind the wall (batch 5: the roof replaces the old ledges).
         var specs = south
             ? new[] { (-36f, 10f, 9f), (-24.5f, 9f, 16f), (-13.5f, 9f, 11f), (14f, 10f, 13f), (26f, 9f, 20f), (37.5f, 8f, 10f) }
-            : new[] { (4f, 9f, 12f), (15f, 9f, 18f), (26f, 10f, 9f), (37.5f, 8f, 14f) };
+            : new[] { (-40f, 9f, 13f), (-29f, 10f, 17f), (-18f, 9f, 10f), (-8.5f, 8f, 15f), (4f, 9f, 12f), (15f, 9f, 18f), (26f, 10f, 9f), (37.5f, 8f, 14f) };   // west half filled in batch 5
         int n = 0;
         foreach (var (bx, bw, bh) in specs)
         {

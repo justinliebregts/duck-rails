@@ -348,11 +348,35 @@ public static class RailMetroChecks
         Line(new(-33.4f, F, 75.4f), new(-33.4f, F, 82.6f), 1f, "coin lockers west lane");
         Line(new(-28.3f, F, 127.5f), new(-28.3f, F, 133.4f), 1f, "cable gallery west lane");
 
-        foreach (var t in b.GetComponentsInChildren<Transform>().Where(t => t.name == "Stopped escalator step" || t.name == "Stair tread"))
-        { var c = t.GetComponent<BoxCollider>(); Walk(new(c.bounds.center.x, c.bounds.max.y, c.bounds.center.z), "tread " + t.position.ToString("F1")); }
+        // Batch 5: each shaft is one stair mesh; walk every tread (0.5 m) at three points across the width.
+        var stairs = b.GetComponentsInChildren<MeshCollider>().Where(c => c.name == "Staircase (single mesh)").ToArray();
+        Check(stairs.Length == 4, "four single-mesh staircases: " + stairs.Length);
+        foreach (var c in stairs)
+        {
+            var bb = c.bounds;
+            for (float zz = bb.min.z + .25f; zz < bb.max.z; zz += .5f)
+                foreach (float dx in new[] { -1.4f, 0f, 1.4f })
+                {
+                    var from = new Vector3(bb.center.x + dx, bb.max.y + .05f, zz);
+                    if (c.Raycast(new Ray(from, Vector3.down), out var hit, 10f)) Walk(hit.point, "tread " + hit.point.ToString("F1"));
+                    else Check(false, "stair tread missing at " + from.ToString("F1"));
+                }
+        }
         foreach (var t in b.spawnCandidates.coal) { Check(Physics.Raycast(t.position, Vector3.down, out var h, .4f, env) && Mathf.Abs(t.position.y - h.point.y - .2f) < .07f, "coal support " + t.name); }
         foreach (var t in b.spawnCandidates.gold) { Check(Physics.Raycast(t.position + Vector3.up * .1f, Vector3.down, out var h, .4f, env) && Mathf.Abs(t.position.y - h.point.y - .05f) < .07f, "gold support " + t.name); }
         Check(Physics.Linecast(new(0, 1.5f, 7), new(0, 1.5f, 153), env), "Entrance-exit sightline blocked by solid geometry");
+        // Batch 5: no spawn of any kind on the track (live track corridor or the dead-track bed).
+        var trackPts = new List<Vector3>(); for (float d = 0; d < b.TrackLength; d += .5f) { b.Sample(d, out var tp, out _); trackPts.Add(b.transform.InverseTransformPoint(tp)); }
+        int onTrack = 0;
+        foreach (var m in b.spawnCandidates.coal.Concat(b.spawnCandidates.gold).Concat(b.spawnCandidates.enemies))
+        {
+            var lp = b.transform.InverseTransformPoint(m.position);
+            var near = trackPts.OrderBy(q => (new Vector2(q.x - lp.x, q.z - lp.z)).sqrMagnitude).First();
+            bool live = new Vector2(near.x - lp.x, near.z - lp.z).magnitude < 2.6f && lp.y < near.y + 1.4f;
+            bool deadBed = lp.y < F - .5f;
+            if (live || deadBed) { onTrack++; if (onTrack <= 10) lines.Add("FAIL spawn on track " + m.name + " " + lp.ToString("F2")); }
+        }
+        Check(onTrack == 0, "no coal, gold or enemy spawn on the track: " + onTrack);
         int coalNeed = RailResourceBalance.CoalCount(8), goldNeed = RailResourceBalance.GoldCount(8);
         Check(RailSpawnPool.Available(b, RailSpawnKind.Coal).Length >= coalNeed, "coal capacity " + RailSpawnPool.Available(b, RailSpawnKind.Coal).Length + " >= " + coalNeed);
         Check(RailSpawnPool.Available(b, RailSpawnKind.Gold).Length >= goldNeed, "gold capacity " + RailSpawnPool.Available(b, RailSpawnKind.Gold).Length + " >= " + goldNeed);
@@ -410,7 +434,7 @@ public static class RailMetroChecks
         foreach (var r in b.GetComponentsInChildren<MeshRenderer>())
         {
             var mf = r.GetComponent<MeshFilter>(); if (!mf || !mf.sharedMesh || mf.sharedMesh.vertexCount != 24 || r.GetComponent<Collider>()) continue;
-            if (freeStanding.Any(n => r.name.StartsWith(n)) || HangingSign(r.transform) || r.GetComponentsInParent<Transform>().Any(p => p.name == "Pipes")) continue;   // pipe fittings sit on pipes
+            if (freeStanding.Any(n => r.name.StartsWith(n)) || HangingSign(r.transform) || r.GetComponentsInParent<Transform>().Any(p => p.name == "Pipes" || p.name == "Rooftop buildings")) continue;   // pipe fittings sit on pipes; rooftop buildings have no colliders
             var s = Vector3.Scale(mf.sharedMesh.bounds.size, r.transform.lossyScale); s = new(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z));
             int thin = s.x < s.z ? (s.x < s.y ? 0 : 1) : (s.z < s.y ? 2 : 1);
             if (thin == 1 || s[thin] > .07f || Mathf.Min(s[(thin + 1) % 3], s[(thin + 2) % 3]) < .12f) continue;   // vertical, thin, panel-sized
