@@ -105,7 +105,8 @@ public static class RailCampgroundChecks
                         fill.intensity>0 && fill.intensity<spot.intensity;
                 }),"four dropped lantern spotlights with overhead baked point lights");
                 var shellMats=authored.GetComponentsInChildren<MeshRenderer>().SelectMany(r=>r.sharedMaterials).Where(m=>m && AssetDatabase.GetAssetPath(m).Contains("/Finish/Surfaces/")).Distinct();
-                Check(shellMats.Count()==(refined?9:11) && shellMats.All(m=>m.mainTexture),
+                // The southwest folding chair, the last ochre canvas shell object, was removed by hand.
+                Check(shellMats.Count()==(refined?8:11) && shellMats.All(m=>m.mainTexture),
                     "campground-local Quackville shell materials");
             }
             log.Add("TOTAL "+count+" checks. Editor geometry only; headset and multiplayer acceptance pending.");
