@@ -140,7 +140,7 @@ public static partial class RailAbandonedStation
                 }
                 else
                 {
-                    foreach (float s in new[] { -1f, 1f }) Box(car, "Car end wall", new(s * (CarHalfW + .45f) / 2, WallTop / 2, ez), new(CarHalfW - .45f, WallTop, .06f), body);
+                    foreach (float s in new[] { -1f, 1f }) Box(car, "Car end wall", new(s * (CarHalfW - .03f + .45f) / 2, WallTop / 2, ez), new(CarHalfW - .03f - .45f, WallTop, .06f), body);   // stops inside the side panel thickness (its outer face used to share the side panels' outer plane)
                     Box(car, "Gangway header", new(0, (DoorH + WallTop) / 2, ez), new(.9f, WallTop - DoorH, .06f), body);
                 }
                 Proc(car, "Car end top", CarEndTopMesh(), new[] { body }, new(0, 0, ez), Quaternion.identity, true, false);

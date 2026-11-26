@@ -145,11 +145,13 @@ public static class RailMetroChecks
         // Pressed: a triangle coincident with an opposite-facing triangle of another renderer is hidden there.
         bool Pressed(int i, int other)
         {
-            var A = tris[i];
+            var A = tris[i]; float pressed = 0;
             for (int off = -1; off <= 1; off++)
                 if (buckets.TryGetValue(Key(-A.n, -A.d, off), out var l))
-                    foreach (int j in l) { if (tris[j].r == A.r || tris[j].r == other || Mathf.Abs(tris[j].d + A.d) > .0015f || !Bounded(i, j)) continue; if (TriOverlap(i, j) > .002f) return true; }
-            return false;
+                    foreach (int j in l) { if (tris[j].r == A.r || tris[j].r == other || Mathf.Abs(tris[j].d + A.d) > .0015f || !Bounded(i, j)) continue; pressed += TriOverlap(i, j); }
+            // Polish: only hidden when (nearly) all of it is pressed; a thin stripe pressed on part of a face used to hide a
+            // real z-fight on the rest of it (the wreck car corners).
+            return pressed >= .8f * Vector3.Cross(A.b - A.a, A.c - A.a).magnitude / 2;
         }
         var pairArea = new Dictionary<long, (float area, Vector3 at)>();
         for (int i = 0; i < tris.Count; i++)
@@ -164,6 +166,8 @@ public static class RailMetroChecks
                     if (g.r == f.r || Vector3.Dot(f.n, g.n) < .9999f || Mathf.Abs(f.d - g.d) > .0015f || !Bounded(i, j)) continue;
                     float area = TriOverlapAt(i, j, out var at); if (area < 1e-5f) continue;
                     if (Buried(at, f.n, f.r, g.r) || Pressed(i, g.r) || Pressed(j, f.r)) continue;
+                    // Undersides sitting at a walking level (main floor, concourse deck, track beds) are never seen from below.
+                    if (f.n.y < -.99f && new[] { -3f, 1f, -4f, -4.3f }.Any(level => Mathf.Abs(at.y - level) < .012f)) continue;
                     long key = ((long)Mathf.Min(f.r, g.r) << 32) | (uint)Mathf.Max(f.r, g.r);
                     pairArea.TryGetValue(key, out var e); pairArea[key] = (e.area + area, at);
                 }

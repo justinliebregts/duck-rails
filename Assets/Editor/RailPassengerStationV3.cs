@@ -308,7 +308,7 @@ public static partial class RailAbandonedStation
             // Out to the block edges (Justin, batch 5) so nobody can walk around the station.
             Wall(t, "Buried end wall", false, z, -47.99f, -TunnelHalf - .2f, -11, 20, gravel);
             Wall(t, "Buried end wall", false, z, TunnelHalf + .2f, 47.99f, -11, 20, gravel);
-            Box(t, "Tunnel portal lintel", new(0, (TunnelRoof + .3f + 9) / 2, z), new(TunnelHalf * 2 + .4f, 9 - TunnelRoof - .3f, .25f), gravel);
+            Box(t, "Tunnel portal lintel", new(0, (TunnelRoof + .3f + 8.99f) / 2, z), new(TunnelHalf * 2 + .4f, 9 - TunnelRoof - .3f - .01f, .25f), gravel);   // top 1 cm under the roof top
         }
         // Batch 5: the roof (street level, Y 9) is back over the whole block, open only over the cave-in shaft.
         float hx0 = 2.135f, hx1 = 9.565f, hz0 = 98.135f, hz1 = 106.715f;   // 1 cm past the shaft wall faces (no coplanar faces)
@@ -357,7 +357,7 @@ public static partial class RailAbandonedStation
         foreach (float z in new[] { 53f, 100f }) Slab(t, "Platform floor", -25, z, edgeEnd + 25, 7, F, floorTile);
         Box(t, "Platform edge face", new(edgeMid - .095f, -3.505f, 80), new(.2f, .99f, 40), concrete);   // 5 mm proud of the slab side
         foreach (float z in new[] { 59.9f, 100.1f }) Box(t, "Platform step face", new((edgeMid + edgeEnd) / 2, -3.505f, z), new(edgeMid - edgeEnd, .99f, .2f), concrete);
-        foreach (float z in new[] { 56.505f, 103.495f }) Box(t, "Platform edge face", new(edgeEnd - .095f, -3.505f, z), new(.2f, .99f, 6.99f), concrete);
+        foreach (float z in new[] { 56.5f, 103.5f }) Box(t, "Platform edge face", new(edgeEnd - .095f, -3.505f, z), new(.2f, .99f, 6.98f), concrete);   // ends clear of the step faces and the platform ends
         foreach (float z in new[] { 53f, 107f }) Box(t, "Platform end face", new((-25 + edgeEnd) / 2, -3.65f, z), new(edgeEnd + 25, .7f, .2f), concrete);
         // Low ceiling over the platform, holes over the escalator shafts; it stops at the channel wall.
         float ceil = F + PlatformClear + .3f, wallMid = -12 - 2.6f, wallEnd = -12 - 3.1f;
@@ -448,7 +448,7 @@ public static partial class RailAbandonedStation
         // Dead track: bed, non-catalogue rails, east service walkway, high channel ceiling.
         Slab(t, "Dead track bed", 3.75f, 50, 5.95f, 60, -4f, gravel);
         Slab(t, "Dead track bed (tunnel)", 4.05f, 110, 4.1f, 3.72f, -4.004f, gravel);
-        foreach (float x in new[] { 5.2f, 6.8f }) Box(t, "Dead track rail", new(x, -3.92f, 80.5f), new(.1f, .12f, 61), steel, false);
+        foreach (float x in new[] { 5.2f, 6.8f }) Box(t, "Dead track rail", new(x, -3.92f, 80.505f), new(.1f, .12f, 60.99f), steel, false);
         for (float z = 51; z < 111; z += 2) Box(t, "Dead track tie", new(6f, -3.98f, z), new(2.4f, .08f, .25f), wood, false);
         // The line the wreck was leaving on: its own tunnel north of the platform, collapsed and impassable.
         // Justin, Nov 26 batch 4: only a short stub past the portal, a rubble face where players are stopped,
@@ -474,12 +474,12 @@ public static partial class RailAbandonedStation
         Box(t, "Buffer stop", new(6f, -3.4f, 50.25f), new(2.6f, 1.2f, .5f), steel);
         Slab(t, "Dead track east walkway", 7.65f, 50, 2.05f, 60, F, concrete);   // 0.18 m from the wreck's doors
         Box(t, "Walkway edge face", new(7.645f, -3.505f, 80), new(.2f, .99f, 60), concrete);
-        Box(t, "Dead track wall base", new(9.7f, -3.65f, 80), new(.25f, 1.28f, 60), darkTile);
-        Wall(t, "Dead track wall", true, 9.7f, 50, 110, F, 3.9f, darkTile, WreckSideDoorZ - .85f, WreckSideDoorZ + .85f);
+        Box(t, "Dead track wall base", new(9.7f, -3.65f, 80.015f), new(.25f, 1.28f, 60.01f), darkTile);   // 50.01..110.02: clear of the bed, walkway and portal pillar faces
+        Wall(t, "Dead track wall", true, 9.7f, 50, 110.02f, F, 3.9f, darkTile, WreckSideDoorZ - .85f, WreckSideDoorZ + .85f);
         Wall(t, "Dead track channel upper wall", true, 4f, 50, 98, F + PlatformClear + .01f, 1.49f, darkTile);
-        Wall(t, "Dead track channel upper wall", true, 4f, 107.01f, 110, F + PlatformClear + .01f, 1.49f, darkTile);
+        Wall(t, "Dead track channel upper wall", true, 4f, 107.02f, 110, F + PlatformClear + .01f, 1.49f, darkTile);
         Slab(t, "Dead track channel ceiling", 3.75f, 50, 6.1f, 48, .9f, roof);
-        Slab(t, "Dead track channel ceiling", 3.75f, 107, 6.1f, 3, .9f, roof);
+        Slab(t, "Dead track channel ceiling", 3.75f, 107.01f, 6.1f, 2.99f, .9f, roof);   // 1 cm off the concourse deck end
         Wall(t, "Dead track end wall", false, 50, 3.75f, 9.7f, F + PlatformClear + .02f, 1.48f, darkTile);
         // Abandoned furniture, toppled screen doors, dead tubes, red emergency lamps.
         for (float z = 56.5f; z < 106; z += 7)
