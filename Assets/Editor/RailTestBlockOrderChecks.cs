@@ -46,8 +46,10 @@ public static class RailTestBlockOrderChecks
                 Check(route.finaleRoot.position.z == RailRoute.StartZ + selected.Sum(b => b.length) + RailRoute.MidpointLength, count + " bridge follows last block");
                 Check(route.midpointBlock.transform.position == state.placements[(count - 1) / 2] + Vector3.forward * selected[(count-1)/2].length, count + " midpoint block placement");
                 Check(Mathf.Abs(route.FinaleStart - RailRoute.StationDepartureLength - selected.Sum(b => b.TrackLength) - RailRoute.MidpointLength) < .01f, count + " train route distance");
-                Check(route.expedition.ActivePoints(RailSpawnKind.Coal).Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Coal, copy).Length) + RailSpawnPool.Select(route.finale, RailSpawnKind.Coal, copy.enemySeed).Length &&
-                    route.expedition.ActivePoints(RailSpawnKind.Gold).Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Gold, copy).Length) + RailSpawnPool.Select(route.finale, RailSpawnKind.Gold, copy.enemySeed).Length &&
+                int FixedResources(RailSpawnKind kind) => RailSpawnPool.Select(route.midpointBlock, kind, copy.enemySeed).Length +
+                    RailSpawnPool.Select(route.finale, kind, copy.enemySeed).Length;
+                Check(route.expedition.ActivePoints(RailSpawnKind.Coal).Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Coal, copy).Length) + FixedResources(RailSpawnKind.Coal) &&
+                    route.expedition.ActivePoints(RailSpawnKind.Gold).Length == selected.Sum(b => RailRoute.SelectResources(b, RailSpawnKind.Gold, copy).Length) + FixedResources(RailSpawnKind.Gold) &&
                     route.expedition.ActiveBaseEnemyCount == selected.Sum(b => RailEnemySpawnBalance.Select(b, copy.enemySeed, copy.resourceCrew).Length), count + " exact configured supplies and encounters scale with route");
                 foreach (var block in route.Blocks)
                 {
@@ -69,20 +71,24 @@ public static class RailTestBlockOrderChecks
         var invalid = RailRoute.ChooseOrdered("invalid", catalog.Take(1).ToArray(), 1);
         invalid.placements[0].x = float.NaN;
         Reject(() => RailRoute.Validate(invalid, catalog), "Nonfinite placement rejected");
-        var expected = new[] { "skyscraper-works-v1", "container-yard-v1", "farm-silos-v1", "convenience-store-v1" }.OrderBy(id => id).ToArray();
-        Check(catalog.Where(b => b.allowedInNormalRuns).Select(b => b.id).OrderBy(id => id).SequenceEqual(expected), "Only the four playtest prefabs enabled");
-        var orders = new HashSet<string>();
+        var expected = new[] {
+            "container-yard-v1", "convenience-store-v1", "farm-silos-v1", "lakeside-campground-v1",
+            "nuclear-power-plant-v1", "passenger-station-v1", "roadside-motel-v1", "skyscraper-works-v1"
+        };
+        Check(catalog.Where(b => b.allowedInNormalRuns).Select(b => b.id).OrderBy(id => id).SequenceEqual(expected), "Expected normal route pool enabled");
+        var seen = new HashSet<string>();
         for (int seed = 0; seed < 100; seed++)
         {
             var normal = RailRoute.ChooseNormal("normal", catalog, seed);
-            Check(normal.blocks.OrderBy(id => id).SequenceEqual(expected), "Four allowed blocks exactly once, seed " + seed);
+            Check(normal.blocks.Length == RailRoute.NormalBlockCount && normal.blocks.Distinct().Count() == RailRoute.NormalBlockCount &&
+                normal.blocks.All(expected.Contains), "Four distinct eligible blocks, seed " + seed);
             Check(JsonUtility.ToJson(normal) == JsonUtility.ToJson(RailRoute.ChooseNormal("normal", catalog.Reverse().ToArray(), seed)), "Deterministic despite catalogue ordering, seed " + seed);
             var copy = JsonUtility.FromJson<RailRouteState>(JsonUtility.ToJson(normal));
             RailRoute.Validate(copy, catalog);
             Check(copy.blocks.SequenceEqual(normal.blocks) && copy.placements.SequenceEqual(normal.placements) && copy.variations.SequenceEqual(normal.variations), "Retained normal route round trip, seed " + seed);
-            orders.Add(string.Join(",", normal.blocks));
+            seen.UnionWith(normal.blocks);
         }
-        Check(orders.Count == 24, "All 24 possible orders reached");
+        Check(seen.SetEquals(expected), "Every eligible block selected across 100 seeds");
         Reject(() => RailRoute.ChooseNormal("short-pool", catalog.Where(b => b.allowedInNormalRuns).Take(3).ToArray(), 1), "Insufficient enabled pool rejected without disabled fallback");
         Directory.CreateDirectory("docs/validation/test-block-order");
         File.WriteAllLines("docs/validation/test-block-order/editor-checks.txt", lines);

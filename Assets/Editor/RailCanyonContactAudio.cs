@@ -34,7 +34,8 @@ public static class RailCanyonContactAudio
         {
             if (!c.enabled || c.isTrigger || c.gameObject.layer != 6 || AudioSurface.TypeOf(c)) continue;
             string mat = c.GetComponent<Renderer>().sharedMaterial.name;
-            if (mat == "Canyon Survey Atlas") TagSurvey((MeshCollider)c);
+            if (c.name.StartsWith("Survey tents_")) Tag(c.gameObject, "Dirt");
+            else if (mat == "Canyon Survey Atlas" || mat == "Lantern glass and iron") TagSurvey((MeshCollider)c);
             else Tag(c.gameObject, mat switch {
                 "Canyon sand" or "Ochre rim" => "Sand",
                 "Bedded sandstone" or "Layered sandstone" => "Stone",

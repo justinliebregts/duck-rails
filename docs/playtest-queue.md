@@ -1,5 +1,23 @@
 # Playtest queue
 
+## Five post-trailer blocks | queued for playtest, November 26, 2026
+
+Use a private Test Block Order route to walk Canyon, Hospital, Lakeside Campground, Nuclear Power Plant and Passenger Station on Quest. Dismount and reboard at each stop, retrieve coal and gold from representative interiors, watch enemies follow the baked navigation, and verify a second client sees the same scenery, loot and enemies. The individual entries below cover the block-specific paths.
+
+All five are referenced by Expedition and have enabled lighting payload scenes. Edit Mode exercised crews 1–8 over 100 seeds each. All five met the enemy quadrant quotas. Lakeside Campground, Nuclear Power Plant and Passenger Station met the coal and gold targets throughout. Canyon and Hospital met the loot targets for crews 1–5. They have 68 and 64 usable coal markers respectively, against the current eight-player target of 93, and fall short from crew 6 onward. Keep those two out of normal rotation pending a placement pass and rerun.
+
+### Automated Quest 3 results
+
+The 0.6.2 Android development APK built with zero errors from the local workspace at `abd502dbc` plus existing workspace edits. Quest 3 signed in, created two private solo expeditions, loaded the route and lighting, and drove from departure to the bridge approach in both. The runner refuelled and recorded four stationary views per stop. All 48 measured views passed focus and tracking.
+
+- Canyon → Hospital → Lakeside Campground → Nuclear Power Plant, seed 12345. Completed in 349 seconds. Each requested stop's four brief views reported native median FPS between 71 and 73 at 72 Hz. [Run summary](../output/quest-performance/de334f6193ae49ff81bbe0e9027d342c/summary.json)
+- Passenger Station → Lakeside Campground → Nuclear Power Plant → Farm Silos, seed 12345. Completed in 349 seconds. Passenger Station's forward view reported 69 FPS with 13.7 ms CPU p95. Its other three views reported 72 FPS. Recheck performance in the station interior and on approach with a crew. [Run summary](../output/quest-performance/b527f3e84b8b484da21677d18069a27b/summary.json)
+
+Lakeside Campground, Nuclear Power Plant and Passenger Station are now eligible for normal selection. In the updated editor, the ordered route suite passed 430 checks and the resource suite passed 5,436. The Expedition scene also assembled all five in a single explicit route and passed all seven sampled track seams to the finale. Manual locomotion, scavenging, enemy pursuit, multiplayer and the bridge escape remain queued for playtest.
+
+The updated Android development APK also built with zero errors and was installed on Quest 3. Seed 8 used normal selection with no explicit block list and picked Passenger Station → Container Yard → Nuclear Power Plant → Lakeside Campground. The private solo survey reached the bridge approach in 363 seconds, with all 24 measured views focused and tracked. Passenger Station's four views reported 72–73 FPS on this repeat, with forward CPU p95 at 13.9 ms. [Updated APK](../output/quest-performance/normal-rotation/duckrails-quest-profile.apk) · [Run summary](../output/quest-performance/1cc102459db2442facdd122fa77322d9/summary.json)
+
+
 ## Quackwatt ramp and walkway loot | queued for playtest, November 26, 2026
 
 On headset, climb both cooling tower ramps and cross the pipe walkway. Check that coal and gold rest where they spawn, can be picked up without falling, do not block footing on the ramps or walkway, and appear identically to a second client. Judge how much loot now sits on the towers and walking the item-filled walkway, and check frame rate near the top. Enemies are not expected to follow onto the walkway.

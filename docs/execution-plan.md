@@ -781,6 +781,8 @@ Record device, client count, network conditions, and reproducible failures. Test
 
 ## Week 3 — full expedition and repeatable content workflow
 
+- November 26: automated Quest 3 private routes on Android development builds covered all five post-trailer blocks and confirmed the updated normal rotation selects Lakeside Campground, Nuclear Power Plant and Passenger Station. Edit Mode passed route selection, resource scaling and track seam checks. Interior play, multiplayer and the bridge escape remain open. [Evidence and rotation eligibility](playtest-queue.md#five-post-trailer-blocks--queued-for-playtest-november-26-2026)
+
 Lighting reference: [bake/export workflow, probes, fog, troubleshooting and validation](block-lighting.md). November 1 user review reports that the lighting works; target-headset performance remains a separate acceptance item.
 
 - [x] November 1 StartingStation baked-lighting workflow: dedicated bake scene, prefab renderer bindings, additive probe-only companion, translation and unload/reload proof in Play Mode. Updated Week 3 checks pass (463); see `docs/block-lighting.md`.

@@ -15,6 +15,11 @@ public static class RailCanyonSurvey
     const string Folder = RailCanyon.Folder + "/Survey/";
     const string Model = Folder + "Canyon Survey.fbx";
     const string MaterialPath = Folder + "Canyon Survey Atlas.mat";
+    public const string TentMaterialPath = RailCampgroundFinish.Folder + "/Lakeside atlas.mat";
+    public const string LanternMaterialPath = Folder + "Lantern glass and iron.mat";
+
+    public static bool IsLanternMesh(string name) => name.StartsWith("Ground lanterns_") ||
+        name.StartsWith("Under river lanterns_") || name.StartsWith("South landing lantern_");
 
     [MenuItem("Duck Rails/Authoring/Canyon/Install finished survey works")]
     public static void Install()
@@ -43,6 +48,8 @@ public static class RailCanyonSurvey
         importer.isReadable = true;
         importer.generateSecondaryUV = true;
         importer.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), "Canyon Survey Atlas"), atlas);
+        var canvas = AssetDatabase.LoadAssetAtPath<Material>(TentMaterialPath);
+        importer.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), "Lakeside tent canvas"), canvas);
         importer.SaveAndReimport();
 
         var works = new GameObject(Name).transform;
@@ -54,8 +61,11 @@ public static class RailCanyonSurvey
         foreach (var renderer in model.GetComponentsInChildren<MeshRenderer>())
         {
             var mesh = renderer.GetComponent<MeshFilter>().sharedMesh;
-            if (renderer.sharedMaterial != atlas || !mesh || mesh.uv2.Length != mesh.vertexCount)
+            bool tent = renderer.name.StartsWith("Survey tents_");
+            if (renderer.sharedMaterial != (tent ? canvas : atlas) || !mesh || mesh.uv2.Length != mesh.vertexCount)
                 throw new InvalidOperationException("Missing atlas or lightmap UVs: " + renderer.name);
+            if (IsLanternMesh(renderer.name))
+                renderer.sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>(LanternMaterialPath);
             renderer.gameObject.layer = 6;
             if (renderer.name.EndsWith("_solid", StringComparison.Ordinal))
                 renderer.gameObject.AddComponent<MeshCollider>().sharedMesh = mesh;

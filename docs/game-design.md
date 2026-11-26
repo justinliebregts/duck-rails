@@ -671,6 +671,8 @@ November 6 supersedes the deferral of minion/spider boarding and navigation aboa
 
 ## Authored level blocks and crawlgraphs
 
+November 26 normal rotation includes Lakeside Campground, Nuclear Power Plant and Passenger Station. Canyon and Hospital are available through private Test Block Order while their coal candidate pools are below the eight-player requirement. [Quest ride-throughs and remaining playtests](playtest-queue.md#five-post-trailer-blocks--queued-for-playtest-november-26-2026)
+
 November 4 test workflow: the user authorized a saved, reorderable prefab list in Duck Rails Tests. Private editor-hosted development runs can use one or more distinct scavenging blocks in exact list order, with the station and finale added automatically. Normal gameplay retains five randomized distinct stops. See [Test Block Order](testing-tools.md#test-block-order--november-4-2026) for usage and validation limits.
 
 October 31 layout follow-up: add buildings and coal on the left side of the track as requested. All twelve scavenging blocks now have two additional left-side buildings; each authored variation distributes its existing six coal chunks three per side. Entrances face the track. Existing right-side enemy patrols and baked graphs remain unchanged; the left additions are player scavenging areas. See `week3-session.md` for validation and limits.

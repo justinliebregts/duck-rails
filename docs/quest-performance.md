@@ -1,5 +1,17 @@
 # Quest 3 automated performance testing
 
+## Post-trailer blocks versus existing rotation — November 26, 2026
+
+Two private solo surveys on the same 0.6.2 development APK, Quest 3 at 72 Hz, seed 12345, Vulkan, 0.8 render scale, 4× MSAA and authored view distance. Each stop had four six-second measured views. All 48 views passed validity checks. Both runs started with Container Yard as the repeated reference and the second ended its scavenging route at Farm Silos. The comparison uses the worst stationary view's p95 and the approach p95 at cruise speed 7–35 m before the measured stop, with 480–503 approach frames per block. CPU and GPU are separate app counters. The whole-frame measurements include neighboring scenery.
+
+- **Passenger Station first.** Approach CPU/GPU p95 was 15.6/14.4 ms versus the existing stops' 11.3–12.4/7.6–9.4 ms, exceeding the 13.89 ms budget on both counters. Stationary worst CPU/GPU p95 was 14.3/11.9 ms. The forward view had 3,040 median draw calls and 101,300 triangles versus 290 calls and 138,745 triangles in the same run's Container Yard forward view. The editor inventory counted 5,198 active mesh renderers, led by pipes (1,217) and west rooms and transfer hall (1,056). Test batching compatible pipe renderers by room or short zone before moving on to the transfer hall or wreck. Keep collision, lighting and fine-grained visibility intact.
+- **Hospital second.** Approach p95 was 13.5/10.4 ms and stationary worst was 13.5/10.5 ms. The forward view reached 1,586 median draw calls. Batching repeated window piers, sills and stairs in bounded campus groups is the first hypothesis to test.
+- **Canyon, Lakeside and Nuclear were close to the references.** Approach CPU/GPU p95 was 12.5/9.1, 11.9/8.6 and 12.1/9.5 ms respectively. All three held at least 72 FPS in each stationary view median in these captures. Any further pass should target a measured interior or scenery hotspot.
+
+[Run 1](../output/quest-performance/5647dbb54b834711a2b025f5725723fc/summary.json) · [Run 2](../output/quest-performance/0cfd54fb77324c8c99a2268f655e036a/summary.json) · [Comparison data](../output/quest-performance/post-trailer-comparison.json) · [Active renderer groups](../output/quest-performance/post-trailer-renderer-groups.txt)
+
+These runs cover solo train approaches and views. Interior traversal, crew load and release performance remain open.
+
 ## Four versus eight synthetic ducks — November 14, 2026
 
 Explicitly requested overnight Quest test. Use `-CrewLoad 4` or `-CrewLoad 8`
