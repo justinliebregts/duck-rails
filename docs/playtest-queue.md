@@ -1,5 +1,9 @@
 # Playtest queue
 
+## Quarry gate, office junction and drill stairs | queued for playtest, November 26, 2026
+
+Approach QUACKRRY from the south on the train at night and read the smaller letters head-on and from an angle. Inspect both amber globes close up, check the white centers of the cave lanterns and look along the northeast fence from the ore siding. Walk around the end of the office wall from both galleries. Board the drill from the left and inspect the two orange tray edges while moving. Edit Mode geometry, machine access, resource selection and lighting export passed. [Inspection results](validation/quarry-mountain/gate-office-borer.txt)
+
 ## Hospital night lighting — queued for playtest, November 26
 
 Select Hospital District through Test Block Order in B. During the train approach, read the three west building names, compare the painted ambulance markings with the fixed neon crosses, and inspect the red light on the walls. Walk under WAITING from reception and the corridor to check readability in motion. Check the dark ward glazing from the train, the raised letters and crosses at an angle, and the moved washer bank under WASH. Walk through the staff-garden shrubs and parking-island bushes, then stop and step back onto clear paving to check that the corn rustle follows movement through foliage. At night on Quest, approach the ER from the train, walk both floors and stair cores, and visit the roof, clinic, pharmacy and laundry. Check whether doors, stair landings and loose items are readable between the remaining pools of light.

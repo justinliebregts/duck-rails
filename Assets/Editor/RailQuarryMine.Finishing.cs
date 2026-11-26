@@ -47,44 +47,11 @@ public static partial class RailQuarryMine
         Box(screen,"Office noticeboard",new(0,2.03f,-.152f),new(2.42f,.95f,.12f),wood);
     }
 
-    static readonly System.Collections.Generic.List<(Vector3 a,Vector3 b,Vector3 ta,Vector3 tb)> officeReturns=new();
-    static float OfficeContour(Vector3 p)=>RoundedRoom(p.x,p.z,13.5f,80.25f,8.4f,5.75f);
-
-    static void CollectOfficeWall(Vector3 a,Vector3 b,Vector3 ta,Vector3 tb){
-        if((a-b).sqrMagnitude<1e-8f || Mathf.Abs(OfficeContour(a))>.16f ||
-           Mathf.Abs(OfficeContour(b))>.16f || Mathf.Abs(OfficeContour((a+b)*.5f))>.16f)return;
-        officeReturns.Add((a,b,ta,tb));
-    }
-
-    static void BuildOfficeWallReturns(Transform p){
-        var skin=new Surface();
-        var ends=new System.Collections.Generic.Dictionary<Vector3Int,int>();
-        Vector3Int Key(Vector3 at)=>Vector3Int.RoundToInt(at*1000);
-        foreach(var span in officeReturns){
-            foreach(var at in new[]{span.a,span.b}){
-                var k=Key(at);ends.TryGetValue(k,out int count);ends[k]=count+1;
-            }
-        }
-        Vector3 Outward(Vector3 at){
-            float x=OfficeContour(at+.03f*Vector3.right)-OfficeContour(at-.03f*Vector3.right);
-            float z=OfficeContour(at+.03f*Vector3.forward)-OfficeContour(at-.03f*Vector3.forward);
-            return new Vector3(x,0,z).normalized*.48f;
-        }
-        foreach(var (a,b,ta,tb) in officeReturns){
-            var da=Outward(a);var db=Outward(b);
-            var ba=a+da-Vector3.up*.07f;var bb=b+db-Vector3.up*.07f;
-            var ca=ta+da-Vector3.up*.10f;var cb=tb+db-Vector3.up*.10f;
-            skin.Quad(bb,cb,ca,ba);skin.Quad(ta,ca,cb,tb);skin.Quad(a,b,bb,ba);
-            if(ends[Key(a)]==1) skin.Quad(ba,ca,ta,a);
-            if(ends[Key(b)]==1) skin.Quad(b,tb,cb,bb);
-        }
-        skin.Build(p,"Office rock wall returns",rock);
-        officeReturns.Clear();
-    }
-
     static void CaveLanterns(Transform root,Transform tunnels){
         var enamel=Lens("Field lantern graphite enamel",new(.24f,.25f,.235f),.15f);
-        var lens=Lens("Field lantern opal diffuser",new(.86f,.85f,.79f),.76f);
+        var lens=Finish("Field lantern opal diffuser",Color.white,2f);
+        // The baked point light supplies the spill. The opaque diffuser glows on its own.
+        lens.globalIlluminationFlags=MaterialGlobalIlluminationFlags.BakedEmissive;
         var tank=RingMesh("Field lantern five sided base",new[]{.18f,.18f,.092f},new[]{0f,.105f,.155f},5,0);
         var hood=RingMesh("Field lantern five sided hood",new[]{.164f,.13f,.063f},new[]{.417f,.45f,.50f},5,0);
         var diffuser=RingMesh("Field lantern solid diffuser",new[]{.099f,.115f},new[]{.153f,.42f},5,0);

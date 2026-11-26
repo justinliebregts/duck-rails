@@ -540,11 +540,11 @@ public static partial class RailQuarryMine
         body.Box(dark,new(-1.0f,1.3f,-1.62f),new(1.3f,.8f,.3f));Col(rig,"Operator console",new(-1.0f,1.3f,-1.62f),new(1.3f,.8f,.3f));
         foreach(float x in new[]{-1.35f,-.7f})body.Box(cutter,new(x,1.9f,-1.6f),new(.5f,.36f,.06f),Quaternion.Euler(12,0,0));
         Seat(body,cloth,dark,new(-1.0f,.9f,-2.4f),Vector3.forward);
-        Steps(body,rig,steel,dark,new(-1.3f,.9f,-5.6f),Vector3.back,.9f,3,.3f,.8f);
+        Steps(body,rig,steel,dark,new(-1.8f,.9f,-4.75f),Vector3.left,.9f,3,.3f,.8f);
         body.Box(steel,new(1.5f,1.55f,-3.2f),new(.55f,1.3f,3.4f));Col(rig,"Power cabinets",new(1.5f,1.55f,-3.2f),new(.55f,1.3f,3.4f));
         for(int i=0;i<3;i++)body.Box(dark,new(1.79f,1.6f,-4.3f+i*1.1f),new(.03f,1.0f,.9f));
         Solid(rig,"Tail conveyor",new(.55f,1.04f,-3.1f),new(1.16f,.42f,4.7f),steel);
-        foreach(float x in new[]{.02f,1.08f})Solid(rig,"Conveyor lip",new(x,1.33f,-3.1f),new(.12f,.28f,4.7f),orange);
+        foreach(float x in new[]{.02f,1.08f})Solid(rig,"Conveyor lip",new(x,1.38f,-3.1f),new(.10f,.26f,4.60f),orange);
         for(int i=0;i<7;i++)gear.Box(dark,new(.55f,1.29f,-5.18f+i*.61f),new(.91f,.085f,.09f));
         gear.Plate(dark,new(.5f,1.27f,-.8f),new(.2f,1.8f,.9f),.7f,.06f,Vector3.right);
         body.Build(rig,"Borer body");gear.Build(rig,"Borer fittings",true);
@@ -636,7 +636,7 @@ public static partial class RailQuarryMine
         var yard=root.Find("Surface machinery and gravel");
         Probe("Crane",yard.Find("Crane"),new(-1.6f,1.45f,.45f),new(-1.6f,1.45f,-1.0f),new(-2.25f,1.45f,.65f),Vector3.left,1.306f,4,.36f);
         Probe("Loader",yard.Find("Articulated quarry loader"),new(-1.09f,1.75f,-.62f),new(-.05f,1.75f,-.62f),new(-1.1f,1.75f,-.09f),Vector3.forward,1.75f,4,.28f);
-        Probe("Borer",root.Find("Tunnel boring machine"),new(-1.02f,.9f,-4.5f),new(-1.02f,.9f,-2.9f),new(-1.3f,.9f,-5.6f),Vector3.back,.9f,3,.3f);
+        Probe("Borer",root.Find("Tunnel boring machine"),new(-1.02f,.9f,-4.5f),new(-1.02f,.9f,-2.9f),new(-1.8f,.9f,-4.75f),Vector3.left,.9f,3,.3f);
         foreach(var name in new[]{"Surface machinery and gravel/Crane","Surface machinery and gravel/Articulated quarry loader","Summit shaft hoist","Tunnel boring machine"}){
             var t=root.Find(name);
             int tris=t.GetComponentsInChildren<MeshFilter>().Sum(f=>f.sharedMesh.triangles.Length/3);
