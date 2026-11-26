@@ -12,7 +12,7 @@ Quackwatt is ready for a headset playtest in B through Test Block Order. Its pre
 
 Coal follows the coach stop, delivery racks, barrel yard, offices, equipment and service walks. Gold includes accessible interior finds and climb rewards in the turbine gallery, on the roof and along both cooling tower ramps up to their lookouts. The pump hut, settling pond banks, transformer apron and flume landing extend the search into the northern third.
 
-The enemy pools contain 6 southwest, 7 southeast, 10 northwest and 10 northeast candidates. Across 100 seeds for each crew size from one to eight, the saved prefab filled each resource budget and selected 4, 8 or 12 enemies with equal quadrant quotas and at least 15 m horizontal separation. The B checkout selects 31 coal and 52 gold for eight players. The coal pool also exceeds the 93-candidate project target.
+The enemy pools contain 6 southwest, 7 southeast, 10 northwest and 10 northeast candidates. Across 100 seeds for each crew size from one to eight, the saved prefab filled each resource budget and selected 4, 8 or 12 enemies with equal quadrant quotas and at least 15 m horizontal separation. The initial B checkout selected 31 coal and 52 gold for eight players. After integrating current main, the eight-player checks passed with 93 coal, 52 gold and 12 enemies.
 
 The full crawlgraph bake produced 40,467 nodes and 377,148 edges. All 7,323 Edit Mode checks passed, including supported marker footprints, enemy proximity to baked ground and graph connectivity to the tower lookouts and turbine hall roof. All 529 prefab lightmap bindings passed export verification. Headset reach, runtime pursuit and multiplayer pickup are queued for playtest.
 
