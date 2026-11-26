@@ -299,10 +299,12 @@ public static partial class RailQuarryMine
         var rubber=Mat("Machine tyre rubber","weathered paint",new(.075f,.08f,.085f));
         var dark=DarkIron;var bright=BrightSteel;var cloth=SeatCloth;
         var body=new Kit();var gear=new Kit();
-        var tyre=new Vector2[]{new(.38f,-.18f),new(.45f,-.27f),new(.74f,-.31f),new(.82f,-.2f),new(.82f,.2f),new(.74f,.31f),new(.45f,.27f),new(.38f,.18f)};
+        var tyre=new Vector2[]{new(.45f,-.27f),new(.74f,-.31f),new(.82f,-.2f),new(.82f,.2f),new(.74f,.31f),new(.45f,.27f)};
         foreach(float s in new[]{-1f,1f})foreach(float z in new[]{-1.65f,1.65f}){
             var c=new Vector3(s*1.07f,.82f,z);
             body.Lathe(rubber,c,Vector3.right,tyre,12,0);
+            // Beads face the axle, so they need the inverted winding to close the tyre against the rim.
+            foreach(float e in new[]{-1f,1f})body.Lathe(rubber,c,Vector3.right,new Vector2[]{new(.36f,e*.16f),new(.45f,e*.27f)},12,0,true);
             body.Cyl(paint,c-Vector3.right*.2f,c+Vector3.right*.2f,.46f,12);
             body.Cyl(dark,c+Vector3.right*s*.2f,c+Vector3.right*s*.3f,.17f,8);
             ColRound(p,"Tyre",c-Vector3.right*.31f,c+Vector3.right*.31f,.82f);
