@@ -1,5 +1,11 @@
 # Nuclear power plant — layout and implementation
 
+## November 25 — spiral ramp loot and plant acoustics
+
+Each of the four turns inside each cooling tower gained three coal and two gold candidates. The saved test-only block totals 137 coal, 89 gold and 33 enemy candidates. All 7,523 plant checks passed, including support and clearance and 100 seeds for every crew size. [Current spawn map](../output/nuclear-full-block/spawn-map.png)
+
+Seven box reverb volumes cover both towers, the turbine hall, containment, receiving office, spill workshop and pump hut. Cooling towers have the longest decay at 2.3 seconds. The outdoor railway stays dry. Eleven listener areas select machinery, wind, electrical hum, leaks and water beds with occasional directional creaks and drips. Edit Mode verified lookup and playable clip references. Headset mix and transitions are queued for playtest.
+
 ## November 25 — scavenging and enemy placement
 
 Quackwatt is ready for a headset playtest in B through Test Block Order. Its prefab holds 113 coal, 73 gold and 33 enemy candidates. The existing marker instances were reused. Crowded variation markers were distributed around the plant, including repeated gold positions. The three rail patrol locations remain available.

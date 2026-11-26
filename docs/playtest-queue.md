@@ -1,5 +1,9 @@
 # Playtest queue
 
+## Quackwatt spiral loot and acoustics — queued for playtest, November 25
+
+Collect coal and gold during both tower climbs. Listen from the train, tower ramp, turbine gallery, pump hut and both waterworks. Check that tails fade outside and that machinery, running water and drips leave footsteps and voice clear.
+
 ## Quackwatt scavenging and enemy pursuit — queued for playtest, November 25
 
 Select Nuclear Power Plant through Test Block Order in B. Collect low pickups in both approach yards and interiors, then retrieve gold from the roof and both tower spirals. Check waterworks access, pickup height, loose-item settling, enemy routes back toward the railway and synchronized pickups with another player. Check Quest performance around the towers and lit waterworks. [Spawn map and editor checks](nuclear-power-plant-layout.md#november-25--scavenging-and-enemy-placement)

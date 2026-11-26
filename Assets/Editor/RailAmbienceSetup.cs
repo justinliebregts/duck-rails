@@ -106,6 +106,7 @@ public static class RailAmbienceSetup
                 Area("North guest wing", 25, 3.6f, 103, 29, 7, 11.5f, Sounds("SpookyAttic"), Sounds("HouseCreak")),
                 Area("Change rooms", -32.5f, 1.85f, 100, 18, 3.4f, 17.5f, Sounds("SlowLeak", "Fluorescent"), Sounds("WaterDrops")),
                 Area("Pool vendor", -16.5f, 1.85f, 100, 12, 3.4f, 17.5f, Sounds("MachineHum"), Sounds("WaterDrops"))),
+            NuclearPlantProfile(),
             Profile("bridge-finale-v1", Sounds("DistantWind", "HorridSignal"), Sounds("MetalCreak"), true,
                 Area("Gorge floor", 0, -6, 100, 96, 10, 38, Sounds("RiverRush"), Sounds("WaterDrops", "MetalCreak")),
                 Area("Bridge and river banks", 0, 2, 100, 96, 6, 38, Sounds("GentleStream", "DistantWind"), Sounds("MetalCreak")),
@@ -113,8 +114,22 @@ public static class RailAmbienceSetup
         };
         EditorUtility.SetDirty(settings);
         AssetDatabase.SaveAssets();
-        Debug.Log("Installed 21 approved ambience clips/events and seven location profiles.");
+        Debug.Log($"Installed {manifest.tracks.Length} ambience clips/events and {settings.profiles.Length} location profiles.");
     }
+
+    public static RailAmbienceProfile NuclearPlantProfile() =>
+        Profile("nuclear-power-plant-v1", Sounds("DistantWind"), Sounds("MetalCreak"), false,
+            Area("Turbine hall", -26, 4, 73, 27.6f, 8, 35.6f, Sounds("MachineHum"), Sounds("MetalCreak")),
+            Area("West cooling tower", -26, 18, 103, 18, 36, 18, Sounds("IndustrialEerie"), Sounds("MetalCreak")),
+            Area("East cooling tower", 26, 18, 103, 18, 36, 18, Sounds("DistantWind", "LowElectricHum"), Sounds("MetalCreak")),
+            Area("Containment", 30, 6, 72, 17, 12, 17, Sounds("LowElectricHum"), Sounds("WaterDrops", "MetalCreak")),
+            Area("Receiving office", -32, 1.8f, 42, 12, 3.6f, 10, Sounds("Fluorescent"), Sounds("MetalCreak")),
+            Area("Spill workshop", 33.5f, 1.8f, 43, 13, 3.6f, 12, Sounds("MachineHum"), Sounds("MetalCreak")),
+            Area("Pump hut", -32, 1.8f, 145, 9.8f, 3.6f, 9.8f, Sounds("MachineHum"), Sounds("WaterDrops")),
+            Area("Settling pond", -26, 4, 130, 30, 8, 21, Sounds("GentleStream"), Sounds("WaterDrops")),
+            Area("Discharge flume", 26, 4, 149, 28, 9, 19, Sounds("RiverRush"), Sounds("WaterDrops")),
+            Area("Transformer yard", 27, 2.5f, 130, 24, 5, 18, Sounds("LowElectricHum"), Sounds("MetalCreak")),
+            Area("Waste loading apron", 25, 2, 25, 27, 5, 20, Sounds("SlowLeak"), Sounds("WaterDrops")));
 
     static SoundEvent[] Sounds(params string[] names) => names.Select(name =>
         AssetDatabase.LoadAssetAtPath<SoundEvent>(EventFolder + name + ".asset") ??
